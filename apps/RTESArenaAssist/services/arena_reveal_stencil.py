@@ -1,37 +1,22 @@
-"""arena_reveal_stencil.py — Arena 原作の AUTOMAP reveal stencil。
-
-特徴:
-- brush 形状: 9×9 weighted stencil (= 下記 ARENA_REVEAL_STENCIL)
-- 値の更新: max(existing, stencil_value) (= 加算ではない)
-- 適用条件: player が未訪問の cell に初めて入った時のみ
-- 既訪問 cell への往復移動・回転のみでは bitmap 変化なし
-- bitmap は 128×128 で、player 位置が左端付近のとき dx=-4 等は & 0x7F で wrap
-
-「壁の見通し OFF」モード (= apply_reveal_stencil_with_los) では未確認 cell に
-対してのみ LoS で壁ブロック判定する。既に判明している cell (= bitmap > 0) は
-LoS にかかわらず維持され、マップ上の記録が消えることはない。
-"""
 from __future__ import annotations
 
 import numpy as np
 
 
-# 各 row は dy=-4..+4、各 char は dx=-4..+4。"." は 0 (= reveal せず)。
 ARENA_REVEAL_STENCIL: tuple[str, ...] = (
-    "1..111...",   # dy = -4
-    "11122211.",   # dy = -3
-    "11222221.",   # dy = -2
-    "112333211",   # dy = -1
-    "112333211",   # dy =  0
-    "112333211",   # dy = +1
-    ".1222221.",   # dy = +2
-    ".1111111.",   # dy = +3
-    "...111...",   # dy = +4
+    "1..111...",
+    "11122211.",
+    "11222221.",
+    "112333211",
+    "112333211",
+    "112333211",
+    ".1222221.",
+    ".1111111.",
+    "...111...",
 )
 
 
 def iter_arena_reveal_offsets():
-    """Arena reveal stencil の (dx, dy, value) を yield する。"""
     for row_idx, row in enumerate(ARENA_REVEAL_STENCIL):
         dy = row_idx - 4
         for col_idx, ch in enumerate(row):
@@ -41,11 +26,6 @@ def iter_arena_reveal_offsets():
 
 
 def apply_reveal_stencil(bitmap: np.ndarray, player_x: int, player_y: int) -> int:
-    """壁の見通し ON 用: 9×9 weighted stencil を max() 合成で適用する。
-
-    bitmap は 128×128 uint8。player_x/player_y が左端付近のとき dx=-4 等は
-    `& 0x7F` (= modulo 128) で wrap する。
-    """
     changes = 0
     for dx, dy, value in iter_arena_reveal_offsets():
         x = (player_x + dx) & 0x7F
@@ -63,12 +43,6 @@ def apply_reveal_stencil_with_los(
     player_x: int,
     player_y: int,
 ) -> int:
-    """壁の見通し OFF 用: 未確認 cell に対してのみ LoS で壁ブロック判定する。
-
-    既に判明している (= bitmap > 0) cell は LoS にかかわらず維持されるため、
-    マップ上の記録が消えることはない。MIF データが無い場合 (map1=None) は
-    LoS チェックをスキップし、apply_reveal_stencil と同じ挙動になる。
-    """
     if map1 is None:
         return apply_reveal_stencil(bitmap, player_x, player_y)
     changes = 0
@@ -88,7 +62,6 @@ def apply_reveal_stencil_with_los(
 
 
 def rebuild_seen_cells_from_bitmap(bitmap: np.ndarray) -> set[tuple[int, int]]:
-    """AUTOMAP.64 取り込み直後に value=3 cell から seen 集合を再構築する。"""
     seen: set[tuple[int, int]] = set()
     if bitmap is None:
         return seen
@@ -98,7 +71,6 @@ def rebuild_seen_cells_from_bitmap(bitmap: np.ndarray) -> set[tuple[int, int]]:
     return seen
 
 
-# ── LoS 判定 ────────────────────────────────────────────────
 
 
 def _map1_kind(value: int) -> str:
@@ -158,12 +130,6 @@ def _bresenham(x0: int, y0: int, x1: int, y1: int) -> list[tuple[int, int]]:
 def _line_of_sight_blocked(
     map1: np.ndarray, px: int, py: int, tx: int, ty: int,
 ) -> bool:
-    """player (px,py) から (tx,ty) までの LoS が壁で遮られているかを返す。
-
-    対角抜け防止: 斜め step で両側の orth cell どちらかが blocker なら遮断扱い。
-    ターゲット自身が blocker でも、そこまでの line が通っていれば可視扱い
-    (= ターゲット手前で line を打ち切るため)。
-    """
     if (px, py) == (tx, ty):
         return False
     H, W = map1.shape

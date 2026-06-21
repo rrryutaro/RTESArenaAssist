@@ -1,11 +1,3 @@
-"""
-tab_translate_ui.py — TabTranslate UI ビルダー
-
-tab_translate.py の _build_ui 相当をモジュールレベル関数として保持する。
-ロジック・スロット・スタック・シグナルハンドラはすべて tab_translate.py 本体に残す。
-
-循環 import 禁止: このモジュールは tab_translate.py を import しない。
-"""
 
 from __future__ import annotations
 
@@ -30,15 +22,10 @@ from tabs.tab_map import TabMap
 
 
 def build_ui(tab: "TabTranslate") -> None:
-    """
-    TabTranslate の UI を構築し、ウィジェット参照を tab に設定する。
-    tab_translate.py の _build_ui から cut-paste（self → tab リネーム・インデント調整のみ）。
-    """
     root = QVBoxLayout(tab)
     root.setContentsMargins(10, 10, 10, 10)
     root.setSpacing(8)
 
-    # 未接続オーバーレイ
     tab._no_conn = QLabel(i18n.tr("translate.no_connection"))
     tab._no_conn.setAlignment(Qt.AlignmentFlag.AlignCenter)
     tab._no_conn.setWordWrap(True)
@@ -47,17 +34,13 @@ def build_ui(tab: "TabTranslate") -> None:
     )
     root.addWidget(tab._no_conn)
 
-    # 接続時コンテンツ（コンテナ）
     tab._conn_widget = QWidget()
     cl = QVBoxLayout(tab._conn_widget)
     cl.setContentsMargins(0, 0, 0, 0)
     cl.setSpacing(8)
 
-    # モード切替用 QStackedWidget
-    # 旧 ゲーム状態行 (場所/階数/方角/天気/座標) は廃止。マップタブ上部に集約。
     tab._stack = QStackedWidget()
 
-    # ── 翻訳モード ─────────────────────────────────────────────
     translate_page = QWidget()
     tp_lay = QVBoxLayout(translate_page)
     tp_lay.setContentsMargins(0, 0, 0, 0)
@@ -66,7 +49,6 @@ def build_ui(tab: "TabTranslate") -> None:
     trans_group = QGroupBox(i18n.tr("translate.translation"))
     trans_lay = QVBoxLayout(trans_group)
 
-    # 翻訳結果（長文 cinematic 等で溢れる場合はスクロール）
     tab._trans_val = QLabel(i18n.tr("translate.no_data"))
     tab._trans_val.setWordWrap(True)
     tab._trans_val.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
@@ -85,7 +67,6 @@ def build_ui(tab: "TabTranslate") -> None:
 
     orig_lbl = QLabel(i18n.tr("translate.original") + ":")
     orig_lbl.setObjectName("subLabel")
-    # 原文も同様にスクロール対応
     tab._orig_val = QLabel(i18n.tr("translate.no_data"))
     tab._orig_val.setWordWrap(True)
     tab._orig_val.setObjectName("dimLabel")
@@ -104,24 +85,16 @@ def build_ui(tab: "TabTranslate") -> None:
 
     tp_lay.addWidget(trans_group, 1)
 
-    # ── クラス一覧モード ───────────────────────────────────────
     tab._class_list_panel = ClassListPanel()
 
-    # ── 種族一覧モード ────────────────────────
     tab._race_list_panel = RaceListPanel()
 
-    # ── ChooseAttributes / fallback status モード ───────────────
-    # AttributesPanel 実体は __init__ で受け取った共有インスタンス。
-    # ここでは reparent 先となる slot だけを用意する (実体のマウントは
-    # assist_window が mount_attributes_panel() 経由で行う)。
     tab._attr_slot = QWidget()
     _attr_slot_lay = QVBoxLayout(tab._attr_slot)
     _attr_slot_lay.setContentsMargins(0, 0, 0, 0)
 
-    # ── Appearance Faces モード: chargen 外見選択時の顔候補表示
     tab._appearance_faces_panel = AppearanceFacesPanel()
 
-    # ── ロード画面モード ───────────────────────────────────────
     load_page = QWidget()
     lp_lay = QVBoxLayout(load_page)
     lp_lay.setContentsMargins(0, 0, 0, 0)
@@ -151,7 +124,6 @@ def build_ui(tab: "TabTranslate") -> None:
     lg_lay.addWidget(tab._load_table)
     lp_lay.addWidget(load_group, 1)
 
-    # ── アイテム取得モード（b32）─────────────────────────────
     pickup_page = QWidget()
     pp_lay = QVBoxLayout(pickup_page)
     pp_lay.setContentsMargins(0, 0, 0, 0)
@@ -162,7 +134,6 @@ def build_ui(tab: "TabTranslate") -> None:
     pg_lay.setContentsMargins(4, 4, 4, 4)
     pg_lay.setSpacing(2)
 
-    # アイテム行を動的に追加するコンテナ
     tab._pickup_rows_widget = QWidget()
     tab._pickup_rows_layout = QVBoxLayout(tab._pickup_rows_widget)
     tab._pickup_rows_layout.setContentsMargins(0, 0, 0, 0)
@@ -182,7 +153,6 @@ def build_ui(tab: "TabTranslate") -> None:
 
     pp_lay.addWidget(pickup_group, 1)
 
-    # ── 装備画面モード ────────────────────────────
     equip_page = QWidget()
     ep_lay = QVBoxLayout(equip_page)
     ep_lay.setContentsMargins(0, 0, 0, 0)
@@ -193,7 +163,6 @@ def build_ui(tab: "TabTranslate") -> None:
     eg_lay.setContentsMargins(4, 4, 4, 4)
     eg_lay.setSpacing(2)
 
-    # 列表示切替ボタン行（col0 "装" を含む全8列をトグル）
     _TOGGLE_DEFS = [
         ("equipped_mark", "装",    0),
         ("identified",    "鑑",    1),
@@ -229,7 +198,6 @@ def build_ui(tab: "TabTranslate") -> None:
     toggle_row.addStretch(1)
     eg_lay.addLayout(toggle_row)
 
-    # 8列テーブル（装/鑑/部位/原文名/翻訳名/重量/状態/性能）
     tab._equip_table = QTableWidget(0, 8)
     tab._equip_table.setHorizontalHeaderLabels(
         ["装", "鑑", "部位", "原文名", "翻訳名", "重量", "状態", "性能"])
@@ -272,7 +240,6 @@ def build_ui(tab: "TabTranslate") -> None:
 
     ep_lay.addWidget(tab._equip_group, 1)
 
-    # ── 呪文詳細モード ─ ゲーム内 SPELLBOOK パーチメントの構成を再現
     spell_detail_page = QWidget()
     sd_lay = QVBoxLayout(spell_detail_page)
     sd_lay.setContentsMargins(0, 0, 0, 0)
@@ -283,7 +250,6 @@ def build_ui(tab: "TabTranslate") -> None:
     sdg_lay.setContentsMargins(8, 8, 8, 8)
     sdg_lay.setSpacing(4)
 
-    # 共通スタイル
     _LBL_HEAD = "QLabel { color: #7ab8d4; font-size: 11px; font-weight: bold; }"
     _LBL_VAL  = "QLabel { color: #c9d1e0; font-size: 12px; }"
     _LBL_VAL_JA = "QLabel { color: #a0c4d8; font-size: 12px; }"
@@ -301,8 +267,6 @@ def build_ui(tab: "TabTranslate") -> None:
         row.addWidget(head)
         row.addWidget(val_widget, 1)
 
-    # ── プレイヤー情報行（Name / Balance / Level / Spell Cost）──
-    # ゲーム画面は左上に Name/Level、右上に Balance/Spell Cost を表示
     row1 = _make_row()
     tab._sd_player_name = QLabel("")
     tab._sd_player_name.setStyleSheet(_LBL_VAL)
@@ -321,13 +285,11 @@ def build_ui(tab: "TabTranslate") -> None:
     _add_field(row2, "Spell Cost / 呪文コスト:", tab._sd_spell_cost)
     sdg_lay.addLayout(row2)
 
-    # 区切り
     sep1 = QFrame()
     sep1.setFrameShape(QFrame.Shape.HLine)
     sep1.setStyleSheet("QFrame { color: #2a4258; }")
     sdg_lay.addWidget(sep1)
 
-    # ── 呪文名 / Save Vs.（JA は EN の右に横並び表示 b50）──
     row3 = _make_row()
     tab._sd_name_en = QLabel("")
     tab._sd_name_en.setStyleSheet(
@@ -347,7 +309,6 @@ def build_ui(tab: "TabTranslate") -> None:
     _add_field(row3, "Save Vs. / セーブ:", tab._sd_save_vs)
     sdg_lay.addLayout(row3)
 
-    # ── Target / Casting Cost ──
     row4 = _make_row()
     tab._sd_target = QLabel("")
     tab._sd_target.setStyleSheet(_LBL_VAL)
@@ -357,13 +318,11 @@ def build_ui(tab: "TabTranslate") -> None:
     _add_field(row4, "Casting Cost / 詠唱コスト:", tab._sd_cost_lbl)
     sdg_lay.addLayout(row4)
 
-    # 区切り
     sep2 = QFrame()
     sep2.setFrameShape(QFrame.Shape.HLine)
     sep2.setStyleSheet("QFrame { color: #2a4258; }")
     sdg_lay.addWidget(sep2)
 
-    # ── Effects ──
     eff_caption = QLabel("Effects / 効果:")
     eff_caption.setStyleSheet(_LBL_HEAD)
     sdg_lay.addWidget(eff_caption)
@@ -377,7 +336,6 @@ def build_ui(tab: "TabTranslate") -> None:
     sdg_lay.addStretch(1)
     sd_lay.addWidget(tab._spell_detail_group, 1)
 
-    # ── 場所一覧 / 詳細場所一覧モード ────────────────────────────
     place_page = QWidget()
     plp_lay = QVBoxLayout(place_page)
     plp_lay.setContentsMargins(0, 0, 0, 0)
@@ -403,24 +361,16 @@ def build_ui(tab: "TabTranslate") -> None:
 
     plp_lay.addWidget(tab._place_list_group, 1)
 
-    # ── 店アイテム一覧モード (shop_buy) ─────────────────
-    # 店主メニュー「Buy Drinks」等の選択後に表示されるアイテム一覧。
-    # 独自タイトル「店アイテム一覧」と
-    # 列ヘッダー「原文 / 翻訳 / 金額」は出さない。bullet も出さない。
-    # データ行 (原文 / 翻訳 / 金額) のみを並べる。
     shop_buy_page = QWidget()
     sb_lay = QVBoxLayout(shop_buy_page)
     sb_lay.setContentsMargins(0, 0, 0, 0)
     sb_lay.setSpacing(4)
 
-    # タイトル空 (GroupBox の枠だけ残す、見出し非表示)
     tab._shop_buy_group = QGroupBox("")
     sbg_lay = QVBoxLayout(tab._shop_buy_group)
     sbg_lay.setContentsMargins(4, 4, 4, 4)
     sbg_lay.setSpacing(2)
 
-    # 列ヘッダー (原文 / 翻訳 / 金額) は表示しない。
-    # ゲーム画面に表示されていない見出しは出さない。
 
     tab._shop_buy_rows_widget = QWidget()
     tab._shop_buy_rows_layout = QVBoxLayout(tab._shop_buy_rows_widget)
@@ -438,9 +388,6 @@ def build_ui(tab: "TabTranslate") -> None:
 
     sb_lay.addWidget(tab._shop_buy_group, 1)
 
-    # ── 施設専用 L4 一覧モード (facility_list) ─────────────
-    # 武具店/魔術師ギルド等の一覧。宿屋 shop_buy とは別ページ・別 layout に
-    # 描画し (= 完全分離)、共有するのは純粋な行描画 helper のみ。
     facility_list_page = QWidget()
     fl_lay = QVBoxLayout(facility_list_page)
     fl_lay.setContentsMargins(0, 0, 0, 0)
@@ -455,7 +402,6 @@ def build_ui(tab: "TabTranslate") -> None:
     flh_lay = QHBoxLayout(tab._facility_list_header)
     flh_lay.setContentsMargins(8, 2, 8, 2)
     flh_lay.setSpacing(8)
-    # 鑑定マーカー列（ShopItemRow の "?" 列と同じ固定幅・stretch0 でヘッダーを揃える）
     tab._facility_header_mark = QLabel("")
     tab._facility_header_mark.setFixedWidth(16)
     tab._facility_header_en = QLabel("原文名")
@@ -511,23 +457,21 @@ def build_ui(tab: "TabTranslate") -> None:
     flg_lay.addWidget(facility_list_scroll, 1)
     fl_lay.addWidget(tab._facility_list_group, 1)
 
-    # 翻訳タブ全域に表示するフォールバック用マップ画面 (= ステータスタブ/マップタブと
-    # 同じ内容を翻訳タブで表示)。ステータス画面側は _attributes_panel を共有する。
     tab._fallback_map_tab = TabMap(name="fallback_map")
 
-    tab._stack.addWidget(translate_page)               # index 0: translate
-    tab._stack.addWidget(tab._class_list_panel)       # index 1: class list
-    tab._stack.addWidget(tab._attr_slot)              # index 2: choose attrs / fallback status (共有パネルの slot)
-    tab._stack.addWidget(load_page)                    # index 3: load screen
-    tab._stack.addWidget(pickup_page)                  # index 4: item pickup
-    tab._stack.addWidget(equip_page)                   # index 5: equipment
-    tab._stack.addWidget(spell_detail_page)            # index 6: spell detail
-    tab._stack.addWidget(tab._race_list_panel)        # index 7: race list
-    tab._stack.addWidget(place_page)                   # index 8: place list
-    tab._stack.addWidget(shop_buy_page)                # index 9: shop buy
-    tab._stack.addWidget(tab._appearance_faces_panel) # index 10: appearance faces
-    tab._stack.addWidget(tab._fallback_map_tab)       # index 11: fallback map
-    tab._stack.addWidget(facility_list_page)           # index 12: facility list
+    tab._stack.addWidget(translate_page)
+    tab._stack.addWidget(tab._class_list_panel)
+    tab._stack.addWidget(tab._attr_slot)
+    tab._stack.addWidget(load_page)
+    tab._stack.addWidget(pickup_page)
+    tab._stack.addWidget(equip_page)
+    tab._stack.addWidget(spell_detail_page)
+    tab._stack.addWidget(tab._race_list_panel)
+    tab._stack.addWidget(place_page)
+    tab._stack.addWidget(shop_buy_page)
+    tab._stack.addWidget(tab._appearance_faces_panel)
+    tab._stack.addWidget(tab._fallback_map_tab)
+    tab._stack.addWidget(facility_list_page)
 
     cl.addWidget(tab._stack, 1)
     root.addWidget(tab._conn_widget)

@@ -1,4 +1,3 @@
-"""city_facility_detector.py — 街区 MIF から施設入口を復元する。"""
 from __future__ import annotations
 
 import os
@@ -31,8 +30,6 @@ _SERVICE_MARKERS: dict[ArenaMenuType, int] = {
     ArenaMenuType.EQUIPMENT: 0x0606,
     ArenaMenuType.TAVERN: 0x0B0B,
     ArenaMenuType.TEMPLE: 0x1818,
-    # 魔術師ギルドの MENU voxel マーカー。MGBD*.MIF ブロックにのみ出現し、
-    # 他施設ブロック (EQ/TV/TP/NB) には無いことを実 MIF 走査で確認済み。
     ArenaMenuType.MAGES_GUILD: 0x1111,
 }
 
@@ -195,10 +192,6 @@ def detect_city_facilities(entries: list[CityBlockEntry], city_seed: int,
             translation=translate_temple(name),
         ))
 
-    # 魔術師ギルドも他施設と同じく MENU voxel マーカー (0x1111) を検出し、
-    # ドア voxel 位置から内装 MIF (MAGE*.MIF) を導出する。これにより
-    # find_nearest_facility でスキップされず (mif_name 非 None)、宿屋等への
-    # 誤フォールバックを防ぐ (= L3 建物判定が L4 セッションと一致する)。
     mages_hits = _iter_marker_hits(
         entries, start_position, _SERVICE_MARKERS[ArenaMenuType.MAGES_GUILD])
     for hit in mages_hits:

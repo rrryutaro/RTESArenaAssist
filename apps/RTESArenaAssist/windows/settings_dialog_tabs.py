@@ -1,16 +1,3 @@
-"""
-windows/settings_dialog_tabs.py — _SettingsDialog 各タブ UI ビルダー
-
-settings_dialog.py の _build_*_tab / _make_form_group メソッドを
-モジュールレベル関数として切り出したもの。
-
-呼び出し規約: 各関数は _SettingsDialog インスタンス (dlg) を受け取り、
-  self.* への属性セット・シグナル接続を含む UI 構築を行い、QWidget を返す。
-  ロジック・スロット・バリデーションはすべて settings_dialog.py 本体に残す。
-
-循環 import 禁止: このモジュールは settings_dialog.py を import しない。
-  dlg 引数の型は Any 相当で扱う (TYPE_CHECKING ブロックで文字列注釈のみ許可)。
-"""
 
 from __future__ import annotations
 
@@ -31,9 +18,6 @@ from layout_manager import TrackMode, LayoutCorner, LayoutForm
 if TYPE_CHECKING:
     from windows.settings_dialog import _SettingsDialog
 
-# NOTE: settings_dialog.py 本体の定数 (_WIN_RES_PRESETS / _POLL_MS 等) は直接
-#       インポートすると循環 import になるため、ビルダー関数の引数として本体側から
-#       受け取る方式で対処する (定数の単一住所は本体側に保つ・複製しない)。
 
 
 def build_general_tab(dlg: "_SettingsDialog", *,
@@ -42,13 +26,11 @@ def build_general_tab(dlg: "_SettingsDialog", *,
     outer = QVBoxLayout(page)
     outer.setSpacing(8)
 
-    # ── パス設定 ──────────────────────────────────────────
     paths_grp = QGroupBox(i18n.tr("settings.group_paths"))
     form = QFormLayout(paths_grp)
     form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
     form.setSpacing(6)
 
-    # ゲームフォルダ
     gw = QWidget()
     gr = QHBoxLayout(gw)
     gr.setContentsMargins(0, 0, 0, 0)
@@ -62,7 +44,6 @@ def build_general_tab(dlg: "_SettingsDialog", *,
     gr.addWidget(gb)
     form.addRow(i18n.tr("settings.game_dir") + ":", gw)
 
-    # バックアップ先
     bw = QWidget()
     br = QHBoxLayout(bw)
     br.setContentsMargins(0, 0, 0, 0)
@@ -76,7 +57,6 @@ def build_general_tab(dlg: "_SettingsDialog", *,
     br.addWidget(bb)
     form.addRow(i18n.tr("settings.backup_dir") + ":", bw)
 
-    # キャプチャ保存先
     cw = QWidget()
     cr = QHBoxLayout(cw)
     cr.setContentsMargins(0, 0, 0, 0)
@@ -92,13 +72,11 @@ def build_general_tab(dlg: "_SettingsDialog", *,
 
     outer.addWidget(paths_grp)
 
-    # ── 動作 ──────────────────────────────────────────────
     beh_grp = QGroupBox(i18n.tr("settings.group_behavior"))
     bform = QFormLayout(beh_grp)
     bform.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
     bform.setSpacing(6)
 
-    # ポーリング間隔
     dlg._poll_ms_spin = QSpinBox()
     dlg._poll_ms_spin.setRange(100, 5000)
     dlg._poll_ms_spin.setSingleStep(50)
@@ -107,17 +85,14 @@ def build_general_tab(dlg: "_SettingsDialog", *,
         settings.get("poll_interval_ms", poll_ms_default))
     bform.addRow(i18n.tr("settings.poll_interval") + ":", dlg._poll_ms_spin)
 
-    # 削除前確認
     dlg._del_confirm_cb = QCheckBox()
     dlg._del_confirm_cb.setChecked(settings.get("capture_delete_confirm", True))
     bform.addRow(i18n.tr("settings.delete_confirm") + ":", dlg._del_confirm_cb)
 
-    # 常に最前面
     dlg._aot_cb = QCheckBox()
     dlg._aot_cb.setChecked(settings.get("always_on_top", False))
     bform.addRow(i18n.tr("menu.always_on_top") + ":", dlg._aot_cb)
 
-    # テーマ
     dlg._theme_combo = QComboBox()
     dlg._theme_combo.addItems([
         i18n.tr("menu.theme_dark"),
@@ -129,7 +104,6 @@ def build_general_tab(dlg: "_SettingsDialog", *,
     dlg._theme_combo.setCurrentIndex(idx)
     bform.addRow(i18n.tr("menu.theme") + ":", dlg._theme_combo)
 
-    # 表示言語（変更は再起動で反映）。先頭="自動"（system locale→英語既定）。
     dlg._language_combo = QComboBox()
     dlg._language_items = [""]
     dlg._language_combo.addItem(i18n.tr("settings.language_auto"))
@@ -145,7 +119,6 @@ def build_general_tab(dlg: "_SettingsDialog", *,
 
     outer.addWidget(beh_grp)
 
-    # ── シャッター音 ─────────────────────────────────────
     se_grp = QGroupBox(i18n.tr("settings.group_shutter_se"))
     se_form = QFormLayout(se_grp)
     se_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
@@ -200,7 +173,6 @@ def build_display_tab(dlg: "_SettingsDialog") -> QWidget:
     outer = QVBoxLayout(page)
     outer.setSpacing(8)
 
-    # ── 接続バー表示 ───────────────────────────────
     conn_grp = QGroupBox(i18n.tr("settings.group_conn_bar"))
     conn_form = QFormLayout(conn_grp)
     conn_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
@@ -219,7 +191,6 @@ def build_display_tab(dlg: "_SettingsDialog") -> QWidget:
                      dlg._show_version_cb)
     outer.addWidget(conn_grp)
 
-    # ── アイテム一覧 装備マーク ─────────────────────────────
     mark_grp = QGroupBox(i18n.tr("settings.group_item_marks"))
     mark_lay = QHBoxLayout(mark_grp)
     mark_lay.setSpacing(6)
@@ -245,7 +216,6 @@ def build_display_tab(dlg: "_SettingsDialog") -> QWidget:
     mark_lay.addStretch()
     outer.addWidget(mark_grp)
 
-    # ── 翻訳パネル フォント ───────────────────────────────
     font_grp = QGroupBox(i18n.tr("settings.group_panel_font"))
     fg = QVBoxLayout(font_grp)
     fg.setSpacing(6)
@@ -305,13 +275,11 @@ def build_display_tab(dlg: "_SettingsDialog") -> QWidget:
 
     outer.addWidget(font_grp)
 
-    # ── レイアウト設定 ─────────────────────────────────────
     layout_grp = QGroupBox(i18n.tr("settings.group_layout"))
     layout_form = QFormLayout(layout_grp)
     layout_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
     layout_form.setSpacing(6)
 
-    # 追従モード
     dlg._layout_track_combo = QComboBox()
     for track, key in [
         (TrackMode.NONE,                 "layout.track_none"),
@@ -327,7 +295,6 @@ def build_display_tab(dlg: "_SettingsDialog") -> QWidget:
     layout_form.addRow(i18n.tr("settings.layout_track_mode") + ":",
                        dlg._layout_track_combo)
 
-    # コーナー
     dlg._layout_corner_combo = QComboBox()
     for corner, key in [
         (LayoutCorner.TOP_LEFT,     "layout.corner_tl"),
@@ -344,7 +311,6 @@ def build_display_tab(dlg: "_SettingsDialog") -> QWidget:
     layout_form.addRow(i18n.tr("settings.layout_corner") + ":",
                        dlg._layout_corner_combo)
 
-    # 配置形式
     dlg._layout_form_combo = QComboBox()
     for form, key in [
         (LayoutForm.FORM_1, "layout.form_1"),
@@ -360,7 +326,6 @@ def build_display_tab(dlg: "_SettingsDialog") -> QWidget:
     layout_form.addRow(i18n.tr("settings.layout_form") + ":",
                        dlg._layout_form_combo)
 
-    # レイアウトサイズ
     size_row = QWidget()
     size_lay = QHBoxLayout(size_row)
     size_lay.setContentsMargins(0, 0, 0, 0)
@@ -459,9 +424,6 @@ def build_map_tab(dlg: "_SettingsDialog") -> QWidget:
     form.addRow(i18n.tr("settings.map_chunk_coord_font_size") + ":",
                 dlg._map_chunk_coord_font_size)
 
-    # ── フィールド(C3)拡張表示グループ ───────────────────────────────
-    # マスター ON/OFF ＋ 項目別 ON/OFF。マスター OFF（またはマスター ON でも全項目
-    # OFF）でゲーム自動マップと同一表示になる。各項目の実効値 = マスター AND 個別。
     ext_grp = QGroupBox(i18n.tr("settings.group_field_extended"))
     ext_form = QFormLayout(ext_grp)
 
@@ -521,7 +483,6 @@ def build_map_tab(dlg: "_SettingsDialog") -> QWidget:
     ext_form.addRow(i18n.tr("settings.wild_show_static_flats") + ":",
                     dlg._wild_show_static_flats_cb)
 
-    # マスター OFF のとき個別トグルを無効化（＝ゲーム同一表示であることを明示）。
     def _sync_ext_enabled(on: bool) -> None:
         for cb in (dlg._wild_distinguish_road_cb, dlg._wild_show_edge_cb,
                    dlg._wild_distinguish_edge_cb, dlg._wild_show_crops_cb,
@@ -538,19 +499,16 @@ def build_map_tab(dlg: "_SettingsDialog") -> QWidget:
     return page
 
 
-# 速度プリセット (表示, SAPI Rate)
 _TTS_RATE_PRESETS = [
     ("とても遅い", -6), ("遅い", -3), ("標準", 0), ("速い", 3), ("とても速い", 6),
 ]
 
 
 def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
-    """読み上げ(TTS) 設定タブ。"""
     page = QWidget()
     outer = QVBoxLayout(page)
     outer.setSpacing(8)
 
-    # ── 基本 ──────────────────────────────────────────────
     grp = QGroupBox(i18n.tr("settings.group_tts", default="読み上げ"))
     form = QFormLayout(grp)
     form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
@@ -561,9 +519,6 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
     form.addRow(i18n.tr("settings.tts_enabled", default="読み上げを有効にする") + ":",
                 dlg._tts_enabled_cb)
 
-    # ── エンジン選択（SAPI5 / VOICEVOX）──────────────────────
-    # VOICEVOX は「起動して応答する時だけ」選択可能にする（インストール有無の
-    # 厳密判定は脆いため、ローカル HTTP サーバーへの到達可否で判定）。
     _vv_ok = False
     try:
         import voicevox_client as _vv
@@ -588,19 +543,18 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
             _it = dlg._tts_engine_combo.model().item(
                 dlg._tts_engine_combo.count() - 1)
             if _it is not None:
-                _it.setEnabled(False)   # 未検出項目は選択不可
+                _it.setEnabled(False)
         except Exception:  # noqa: BLE001
             pass
     dlg._tts_engine_saved = settings.get("tts_engine", "sapi5") or "sapi5"
     _show_engine = dlg._tts_engine_saved
     if _show_engine == "voicevox" and not _vv_ok:
-        _show_engine = "sapi5"   # 未検出時は表示だけ SAPI へ（保存値は維持）
+        _show_engine = "sapi5"
     _ei = dlg._tts_engine_combo.findData(_show_engine)
     dlg._tts_engine_combo.setCurrentIndex(_ei if _ei >= 0 else 0)
     form.addRow(i18n.tr("settings.tts_engine", default="エンジン") + ":",
                 dlg._tts_engine_combo)
 
-    # ── SAPI5 音声 ────────────────────────────────────────
     dlg._tts_voice_combo = QComboBox()
     dlg._tts_voice_combo.addItem(i18n.tr("settings.tts_voice_default",
                                          default="（既定）"), "")
@@ -616,7 +570,6 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
     form.addRow(i18n.tr("settings.tts_voice", default="音声") + ":",
                 dlg._tts_voice_combo)
 
-    # ── VOICEVOX キャラクター / スタイル ────────────────────
     dlg._tts_vv_speakers = []
     if _vv_ok:
         try:
@@ -642,7 +595,6 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
             if _si >= 0:
                 dlg._tts_vv_style_combo.setCurrentIndex(_si)
 
-    # 保存済み style id が属するキャラクターを初期選択
     _init_char = 0
     for _ci, _sp in enumerate(dlg._tts_vv_speakers):
         if any(int(st["id"]) == dlg._tts_vv_speaker_saved
@@ -660,7 +612,6 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
     form.addRow(i18n.tr("settings.tts_vv_style", default="スタイル") + ":",
                 dlg._tts_vv_style_combo)
 
-    # テスト再生（選択中のキャラ＋スタイルで短い文を鳴らす）
     dlg._tts_vv_test_btn = QPushButton(
         i18n.tr("settings.tts_vv_test", default="🔊 テスト再生"))
 
@@ -695,7 +646,6 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
         _vv_note.setWordWrap(True)
         form.addRow("", _vv_note)
 
-    # エンジンに応じて該当行のみ表示する
     def _update_engine_rows() -> None:
         is_vv = (dlg._tts_engine_combo.currentData() == "voicevox")
         form.setRowVisible(dlg._tts_voice_combo, not is_vv)
@@ -712,7 +662,7 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
         dlg._tts_rate_combo.addItem(label, val)
     _cur_rate = int(settings.get("tts_rate", 0))
     _ri = dlg._tts_rate_combo.findData(_cur_rate)
-    dlg._tts_rate_combo.setCurrentIndex(_ri if _ri >= 0 else 2)  # 既定=標準
+    dlg._tts_rate_combo.setCurrentIndex(_ri if _ri >= 0 else 2)
     form.addRow(i18n.tr("settings.tts_rate", default="速度") + ":",
                 dlg._tts_rate_combo)
 
@@ -737,7 +687,6 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
                 dlg._tts_interrupt_cb)
     outer.addWidget(grp)
 
-    # ── 読み上げ対象 (意味ベース2分類) ──────────────
     grp2 = QGroupBox(i18n.tr("settings.group_tts_targets", default="読み上げ対象"))
     v2 = QVBoxLayout(grp2)
     dlg._tts_target_situation_cb = QCheckBox(
@@ -759,7 +708,6 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
     v2.addWidget(_tts_note)
     outer.addWidget(grp2)
 
-    # ── その他 ────────────────────────────────────────────
     grp3 = QGroupBox(i18n.tr("settings.group_tts_misc", default="その他"))
     v3 = QVBoxLayout(grp3)
     dlg._tts_speaker_icon_cb = QCheckBox(
@@ -774,7 +722,6 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
     dlg._log_show_original_cb.setChecked(
         bool(settings.get("log_show_original", False)))
     v3.addWidget(dlg._log_show_original_cb)
-    # ログ保存上限（件）。超過分は古い順に切り捨てる。
     _max_row = QHBoxLayout()
     _max_row.addWidget(QLabel(
         i18n.tr("settings.log_max_entries", default="ログ保存上限（件）") + ":"))
@@ -791,14 +738,12 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
     _max_w = QWidget()
     _max_w.setLayout(_max_row)
     v3.addWidget(_max_w)
-    # ログの日時表示 ON/OFF ＋ フォーマット指定
     dlg._log_show_datetime_cb = QCheckBox(
         i18n.tr("settings.log_show_datetime",
                 default="ログに記録日時を表示する"))
     dlg._log_show_datetime_cb.setChecked(
         bool(settings.get("log_show_datetime", True)))
     v3.addWidget(dlg._log_show_datetime_cb)
-    # 日時の表示形式: プリセット（表示例付き）から選択。カスタムはトークン入力。
     from datetime import datetime as _dtmod
     from services.log_store import (
         DEFAULT_LOG_DATETIME_FORMAT, format_datetime as _fmt_dt,
@@ -816,7 +761,6 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
         i18n.tr("settings.log_datetime_format", default="日時の表示形式") + ":"))
     dlg._log_datetime_format_combo = QComboBox()
     for _tok in _DT_PRESETS:
-        # 表示は「現在時刻での表示例」。データはトークン文字列。
         dlg._log_datetime_format_combo.addItem(
             _fmt_dt(_dtmod.now(), _tok), _tok)
     dlg._log_datetime_format_combo.addItem(
@@ -850,7 +794,6 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
             i18n.tr("settings.log_datetime_preview", default="例") + ": "
             + _fmt_dt(_dtmod.now(), _tok))
 
-    # 現在値を選択（プリセット一致なら選択、無ければカスタム）。
     _cur_fmt = settings.get("log_datetime_format", DEFAULT_LOG_DATETIME_FORMAT)
     _idx = dlg._log_datetime_format_combo.findData(_cur_fmt)
     if _idx >= 0:
@@ -866,7 +809,6 @@ def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
     _update_dt_preview()
     outer.addWidget(grp3)
 
-    # ── キャラクター名の読み替え（読み上げのみ）──────────────
     grp4 = QGroupBox(i18n.tr("settings.group_tts_name",
                              default="キャラクター名の読み替え（読み上げのみ）"))
     f4 = QFormLayout(grp4)
@@ -900,13 +842,11 @@ def build_translate_tab(dlg: "_SettingsDialog") -> QWidget:
     form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
     form.setSpacing(6)
 
-    # 翻訳パネル: メッセージ保持
     dlg._keep_trigger_cb = QCheckBox()
     dlg._keep_trigger_cb.setChecked(settings.get("keep_trigger_on_panel", False))
     form.addRow(i18n.tr("settings.keep_trigger_on_panel") + ":",
                 dlg._keep_trigger_cb)
 
-    # 翻訳タブ全域に表示するフォールバック画面の選択
     dlg._fallback_combo = QComboBox()
     dlg._fallback_items = [
         ("none",   i18n.tr("settings.translate_fallback_none")),
@@ -927,7 +867,6 @@ def build_translate_tab(dlg: "_SettingsDialog") -> QWidget:
 
     outer.addWidget(beh_grp)
 
-    # 翻訳タブ拡張設定
     ext_grp = QGroupBox(i18n.tr("settings.group_translate_advanced"))
     ext_form = QFormLayout(ext_grp)
     ext_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
@@ -961,11 +900,6 @@ def build_cheat_tab(dlg: "_SettingsDialog") -> QWidget:
     form.addRow(i18n.tr("settings.cheat_enabled") + ":", dlg._cheat_cb)
 
     def _confirm_cheat_enable(checked: bool) -> None:
-        """チート有効化チェック時、初回のみ利用確認を表示する。
-
-        キャンセル時はチェックを元に戻す。はい選択で同意を永続化し以後は再確認しない。
-        初期状態の setChecked では発火しないよう、本ハンドラは接続後の操作のみ受ける。
-        """
         if not checked or settings.get("cheat_consent_acknowledged", False):
             return
         box = QMessageBox(dlg)
@@ -998,7 +932,6 @@ def build_cheat_tab(dlg: "_SettingsDialog") -> QWidget:
     form.addRow(i18n.tr("settings.cheat_reveal_map") + ":",
                 dlg._cheat_reveal_map_cb)
 
-    # 常時 MAX 系 (cheat 親 ON のみで有効 = ステータス変更 ON は不要)。
     dlg._cheat_health_max_cb = QCheckBox()
     dlg._cheat_health_max_cb.setChecked(
         settings.get("cheat_health_max", False))
@@ -1035,7 +968,6 @@ def build_dosbox_tab(
     outer = QVBoxLayout(page)
     outer.setSpacing(8)
 
-    # ── conf パスバー ─────────────────────────────────────
     path_bar = QHBoxLayout()
     lbl_path = QLabel(i18n.tr("dosbox.conf_path") + ":")
     lbl_path.setFixedWidth(80)
@@ -1050,14 +982,12 @@ def build_dosbox_tab(
     path_bar.addWidget(browse_btn)
     outer.addLayout(path_bar)
 
-    # ── エラーラベル ───────────────────────────────────────
     dlg._dosbox_error_lbl = QLabel()
     dlg._dosbox_error_lbl.setObjectName("dimLabel")
     dlg._dosbox_error_lbl.setWordWrap(True)
     dlg._dosbox_error_lbl.setVisible(False)
     outer.addWidget(dlg._dosbox_error_lbl)
 
-    # ── ウィンドウ動作 (DOSBox 最前面) ─────────────────────
     win_grp = QGroupBox(i18n.tr("dosbox.section_window"))
     win_form = QFormLayout(win_grp)
     win_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
@@ -1067,7 +997,6 @@ def build_dosbox_tab(
     win_form.addRow(i18n.tr("dosbox.always_on_top") + ":", dlg._dosbox_top_cb)
     outer.addWidget(win_grp)
 
-    # ── ディスプレイ ───────────────────────────────────────
     disp_grp, disp_form = dlg._make_form_group(
         i18n.tr("dosbox.section_display"))
     dlg._cb_winres_preset = QComboBox()
@@ -1119,7 +1048,6 @@ def build_dosbox_tab(
     disp_form.addRow(i18n.tr("dosbox.sensitivity") + ":", dlg._sp_sensitivity)
     outer.addWidget(disp_grp)
 
-    # ── 映像 ──────────────────────────────────────────────
     vid_grp, vid_form = dlg._make_form_group(
         i18n.tr("dosbox.section_video"))
     dlg._chk_aspect = QCheckBox()
@@ -1129,7 +1057,6 @@ def build_dosbox_tab(
     vid_form.addRow(i18n.tr("dosbox.scaler") + ":", dlg._cb_scaler)
     outer.addWidget(vid_grp)
 
-    # ── パフォーマンス ────────────────────────────────────
     perf_grp, perf_form = dlg._make_form_group(
         i18n.tr("dosbox.section_perf"))
     cycles_w = QWidget()
@@ -1153,7 +1080,6 @@ def build_dosbox_tab(
     perf_form.addRow(i18n.tr("dosbox.cycles") + ":", cycles_w)
     outer.addWidget(perf_grp)
 
-    # ── サウンド ──────────────────────────────────────────
     snd_grp, snd_form = dlg._make_form_group(
         i18n.tr("dosbox.section_sound"))
     dlg._chk_nosound = QCheckBox()

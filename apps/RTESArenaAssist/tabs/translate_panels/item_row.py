@@ -1,11 +1,3 @@
-"""tabs/translate_panels/item_row.py — アイテム取得 / 一覧 用 1 行ウィジェット
-
-item_pickup モード（NEWPOP アイテム取得一覧）と場所一覧 / 詳細場所一覧で使う。
-
-show_mark フラグで切り替える。bullet (`•`) と
-チェック (`✓`) はアイテム取得画面の「未取得 / 取得済み」状態マーカー専用とし、
-場所一覧 / 詳細場所一覧 など取得状態の概念がない画面では出さない。
-"""
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
@@ -13,12 +5,6 @@ from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QSizePolicy
 
 
 class ItemRow(QFrame):
-    """アイテム取得一覧 / 場所一覧 等の 1 行ウィジェット。
-
-    show_mark=True (default): 状態マーカー (• / ✓) を表示。アイテム取得画面用。
-    show_mark=False: マーカー領域を出さない。場所一覧など取得状態の概念がない
-                    画面で使う。
-    """
 
     def __init__(self, en: str, ja: str, parent=None, *, show_mark: bool = True):
         super().__init__(parent)

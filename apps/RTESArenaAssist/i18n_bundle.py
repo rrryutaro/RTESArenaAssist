@@ -1,16 +1,3 @@
-"""i18n_bundle.py — Assist 内蔵の単一翻訳 bundle のローダ。
-
-`i18n_bundle.json`（categories + locales）を読み、整数 ID 解決に必要な索引を作る。
-Arena 原文そのものは持たない（原文は localpack 側）。
-
-fail（読み込み拒否＝例外）:
-  - schema が未知。
-  - schema_version が互換不能（サポート版より新しい）。
-  - categories / locales の必須構造が壊れている（型不正・id 重複）。
-
-warning（読み込み継続・収集のみ）:
-  - registry_hash / registry_version は bundle 自身では判定しない（localpack/mod 側で照合）。
-"""
 from __future__ import annotations
 
 import hashlib
@@ -21,12 +8,6 @@ SUPPORTED_SCHEMA_VERSION = 1
 
 
 def compute_registry_hash(raw: dict) -> str:
-    """ID 集合の決定論ハッシュ（registry_hash 用）。
-
-    registry = ID 集合の版。locale（訳）は版に含めない（訳変更で hash を動かさない）。
-    対象＝schema_version / registry_version ＋ 各 entry の id/category/source_policy/
-    source_provider/source（id 昇順で正規化）。
-    """
     rows: list[tuple] = []
     for cat in raw.get("categories") or []:
         name = cat.get("category")
@@ -49,11 +30,10 @@ def compute_registry_hash(raw: dict) -> str:
 
 
 class BundleError(Exception):
-    """bundle が読み取り不能（schema 非互換・構造破損）。fail 相当。"""
+    pass
 
 
 class Bundle:
-    """読み込み済み bundle の索引。"""
 
     def __init__(self, raw: dict):
         self.schema_version: int = int(raw.get("schema_version", 0))
@@ -61,19 +41,14 @@ class Bundle:
         self.registry_hash: str = str(raw.get("registry_hash", ""))
         self.warnings: list[str] = []
 
-        # id -> category メタ（category/source_policy/source_provider）。
         self._cat_by_id: dict[int, dict] = {}
-        # category 名 -> category メタ + entries。
         self.categories: dict[str, dict] = {}
-        # locale -> { id: text }。
         self._locale_texts: dict[str, dict[int, str]] = {}
-        # derived redirect: placeholder int id -> target int id。
         self._redirect: dict[int, int] = {}
 
         self._ingest_categories(raw.get("categories"))
         self._ingest_locales(raw.get("locales"))
 
-    # --- 構築 ---
     def _ingest_categories(self, cats: object) -> None:
         if not isinstance(cats, list):
             raise BundleError("bundle.categories must be a list")
@@ -126,7 +101,6 @@ class Bundle:
                 table[int(t["id"])] = str(t["text"])
             self._locale_texts[tag] = table
 
-    # --- 参照 ---
     def category_of(self, id: int) -> dict | None:
         return self._cat_by_id.get(int(id))
 
@@ -135,7 +109,6 @@ class Bundle:
         return meta.get("source_policy") if meta else None
 
     def redirect_of(self, id: int) -> int | None:
-        """derived redirect target 整数 ID（無ければ None）。"""
         return self._redirect.get(int(id))
 
     def locale_text(self, id: int, locale: str) -> str | None:
@@ -155,7 +128,6 @@ class Bundle:
 
 
 def load_bundle_obj(raw: dict) -> Bundle:
-    """dict から bundle を読み込む（schema 検証つき）。"""
     schema = raw.get("schema")
     if schema != SCHEMA:
         raise BundleError(f"unknown bundle schema: {schema!r}")
@@ -168,7 +140,6 @@ def load_bundle_obj(raw: dict) -> Bundle:
 
 
 def load_bundle(path: str) -> Bundle:
-    """ファイルパスから bundle を読み込む。"""
     with open(path, "r", encoding="utf-8") as fh:
         raw = json.load(fh)
     return load_bundle_obj(raw)

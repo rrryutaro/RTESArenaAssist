@@ -1,14 +1,3 @@
-"""
-attributes_panel_ui.py — AttributesPanel UI ビルダー
-
-attributes_panel.py の _build_main_grid / _build_cheat_values_group 相当を
-モジュールレベル関数として保持する。ロジック・スロット・ポーリング・
-シグナルハンドラはすべて attributes_panel.py 本体に残す。
-
-循環 import 回避: 本体 attributes_panel.py からは定数のみ import する
-（本体のクラス/関数は import しない）。本体側の委譲は関数ローカル import で
-行うため、本モジュールは本体ロード完了後に初めて import される。
-"""
 
 from __future__ import annotations
 
@@ -64,7 +53,6 @@ def build_main_grid(panel: "AttributesPanel") -> QWidget:
     g.setHorizontalSpacing(8)
     g.setVerticalSpacing(2)
 
-    # rows 0-2: 名前 / 種族 / クラス（左寄せ、cols 0-3 を span）
     for row, lbl in ((ROW_NAME, panel._name_lbl),
                      (ROW_RACE, panel._race_lbl),
                      (ROW_CLASS, panel._class_lbl)):
@@ -74,11 +62,9 @@ def build_main_grid(panel: "AttributesPanel") -> QWidget:
 
     g.setRowMinimumHeight(ROW_HEADER_GAP, 8)
 
-    # rows 4-11: primary 8項目 + col 2 / col 3 に該当行のみ派生値配置
     for idx in range(8):
         row = ROW_PRIMARY_FIRST + idx
 
-        # primary label + spinbox
         primary_lbl = QLabel(_bilingual(ATTR_DISPLAY_EN[idx],
                                         ATTR_DISPLAY_JA[idx]) + ":")
         primary_lbl.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
@@ -87,7 +73,6 @@ def build_main_grid(panel: "AttributesPanel") -> QWidget:
 
         sb = QSpinBox()
         sb.setRange(0, 255)
-        # cheat ON 時の up/down ボタンを含めて 3 桁が見切れないよう余裕確保
         sb.setMinimumWidth(72)
         sb.setMaximumWidth(96)
         sb.setAlignment(Qt.AlignmentFlag.AlignRight)
@@ -97,7 +82,6 @@ def build_main_grid(panel: "AttributesPanel") -> QWidget:
         g.addWidget(sb, row, COL_PRIMARY_VALUE,
                     alignment=Qt.AlignmentFlag.AlignLeft)
 
-        # col 2 派生（該当行のみ）
         d_key = DERIVED_COL2_BY_ATTR.get(idx)
         if d_key:
             en, ja = DERIVED_LABELS[d_key]
@@ -113,7 +97,6 @@ def build_main_grid(panel: "AttributesPanel") -> QWidget:
                         alignment=Qt.AlignmentFlag.AlignLeft)
             panel._derived[d_key] = d_value
 
-        # col 3 派生（該当行のみ: Str=Max Kilos, Spd=to Defend, Per=Heal Mod）
         k_key = DERIVED_COL3_BY_ATTR.get(idx)
         if k_key:
             en, ja = DERIVED_LABELS[k_key]
@@ -129,20 +112,12 @@ def build_main_grid(panel: "AttributesPanel") -> QWidget:
                         alignment=Qt.AlignmentFlag.AlignLeft)
             panel._derived[k_key] = k_value
 
-    # row 14: BONUS PTS 前の余白（常に確保。BONUS PTS 行だけを show/hide する）
     g.setRowMinimumHeight(ROW_PRE_BONUS_GAP, 16)
 
-    # BONUS PTS（中央寄せ、1 つの spinbox で表示・編集）
-    # primary attr と同じパターン:
-    #   cheat OFF: read-only（ラベルのように見える）
-    #   cheat ON:  編集可能
-    # spinbox の値 = remaining（= pool - distributed）
-    # ユーザーが編集すると pool = remaining + distributed として保存。
     en, ja = DERIVED_LABELS["bonus_pts"]
     bp_label = QLabel(_bilingual(en, ja) + ":")
     panel._bp_spin = QSpinBox()
-    panel._bp_spin.setRange(0, 255)   # u8 (memory +0x129C)
-    # cheat ON で up/down ボタンが現れるため、3 桁 + ボタン分の余裕を確保
+    panel._bp_spin.setRange(0, 255)
     panel._bp_spin.setMinimumWidth(80)
     panel._bp_spin.setAlignment(Qt.AlignmentFlag.AlignRight)
     panel._bp_spin.valueChanged.connect(panel._on_bonus_changed)
@@ -155,14 +130,12 @@ def build_main_grid(panel: "AttributesPanel") -> QWidget:
     bp_h.addWidget(panel._bp_spin)
     bp_h.addStretch(1)
     panel._bp_widget = bp_widget
-    bp_widget.setVisible(False)  # 通常プレイ中は非表示（chargen/LvUp 時のみ表示）
+    bp_widget.setVisible(False)
     g.addWidget(bp_widget, ROW_BONUS_PTS, 0, 1, 6,
                 alignment=Qt.AlignmentFlag.AlignHCenter)
 
-    # row 16: BONUS PTS と HP の間（常に確保。BONUS PTS 行だけを show/hide する）
     g.setRowMinimumHeight(ROW_POST_BONUS_GAP, 16)
 
-    # rows 17-20: 下部ステータス（Gold と Experience の間に 1 行ギャップ）
     stat_rows = [
         (ROW_HP,       "hp"),
         (ROW_FATIGUE,  "fatigue"),
@@ -184,18 +157,12 @@ def build_main_grid(panel: "AttributesPanel") -> QWidget:
 
     g.setRowMinimumHeight(ROW_GOLD_EXP_GAP, 8)
 
-    # 右端列に伸縮を持たせて、列幅が無駄に広がらないようにする
     g.setColumnStretch(COL_KILOS_VALUE + 1, 1)
 
     return w
 
 
 def build_cheat_values_group(panel: "AttributesPanel") -> QGroupBox:
-    """体力/疲労/呪文ポイント/ゴールド/経験値の任意値書込み UI。
-
-    各行 = ラベル + 入力 spinbox + 実行ボタン。ボタンクリック時に該当
-    メモリへ一回だけ書き込む (常時 MAX とは独立)。cheat 親 ON 時のみ表示。
-    """
     grp = QGroupBox(i18n.tr("status.cheat_values_title"), panel)
     g = QGridLayout(grp)
     g.setContentsMargins(8, 8, 8, 8)

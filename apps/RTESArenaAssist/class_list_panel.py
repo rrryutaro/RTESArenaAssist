@@ -1,12 +1,3 @@
-"""
-class_list_panel.py — クラス一覧パネル
-
-chargen のクラス選択方法で「I will pick my own class」を選んだ後に
-表示される 18 クラス一覧画面用の補助パネル。
-上部: 18 クラスを 2 列 9 行で表示、各行は「英名 | カタカナ（漢字）」を
-       縦に揃えた列レイアウトで表示する。
-下部: 選択したクラスのマニュアル説明。
-"""
 
 from __future__ import annotations
 
@@ -26,15 +17,10 @@ import i18n_helper as i18n
 _MANUAL_SIMPLE = os.path.join(os.path.dirname(__file__), "manual", "simple")
 _MANUAL_FULL   = os.path.join(os.path.dirname(__file__), "manual", "full")
 _CLASS_DOC     = "05_classes.html"
-# 旧名互換（_read_base_html / _load_class_descriptions の base ファイル参照用）
 _MANUAL_BASE   = _MANUAL_SIMPLE
 
 
-# クラス一覧の表示順（Arena ゲーム内 "Choose thy class" 画面のアルファベット順）。
-# 1-9 が左列、10-18 が右列。
-# (英名, カタカナ, 漢字 or None)
 CLASS_LIST_ORDER: list[tuple[str, str, Optional[str]]] = [
-    # 左列 1-9
     ("Acrobat",    "アクロバット",   "軽業師"),
     ("Archer",     "アーチャー",     "弓使い"),
     ("Assassin",   "アサシン",       "暗殺者"),
@@ -44,7 +30,6 @@ CLASS_LIST_ORDER: list[tuple[str, str, Optional[str]]] = [
     ("Burglar",    "バーグラー",     "侵入者"),
     ("Healer",     "ヒーラー",       "治癒師"),
     ("Knight",     "ナイト",         "騎士"),
-    # 右列 10-18
     ("Mage",       "メイジ",         "魔法使い"),
     ("Monk",       "モンク",         "修道士"),
     ("Nightblade", "ナイトブレード", "夜刃使い"),
@@ -62,7 +47,6 @@ def _format_ja(kana: str, kanji: Optional[str]) -> str:
 
 
 class _ClassRow(QFrame):
-    """1 クラス分の行ウィジェット。英名と日本語名を列で揃えて表示する。"""
 
     clicked = Signal(str)
 
@@ -106,8 +90,6 @@ class _ClassRow(QFrame):
         self._apply_style()
 
     def _apply_style(self) -> None:
-        # ボタン見栄えに揃える: 通常時はボタン枠/グラデ、hover でハイライト風、
-        # 選択中はアクセント色で枠+背景を強調する。
         if self._highlighted:
             self.setStyleSheet(
                 "QFrame#classRow {"
@@ -151,11 +133,9 @@ class _ClassRow(QFrame):
         super().mousePressEvent(event)
 
 
-# ゲーム内 NPC バッファに書き込まれるクラス名 → カノニカル名 の解決テーブル
 _NPC_CLASS_NAME_LOOKUP: dict[str, str] = {
     name.lower(): name for name, _, _ in CLASS_LIST_ORDER
 }
-# 表記ゆれ（マニュアル側 / Arena 側で異なる場合の予備マッピング）
 _NPC_CLASS_NAME_LOOKUP.update({
     "battle mage": "Battlemage",
     "sorcerer":    "Sorceror",
@@ -163,9 +143,6 @@ _NPC_CLASS_NAME_LOOKUP.update({
 
 
 def resolve_npc_class_name(text: str) -> Optional[str]:
-    """NPC ダイアログテキストがクラス名そのもの（例: "Acrobat"）の場合に
-    カノニカル名を返す。一致しない場合は None。
-    """
     if not text:
         return None
     cleaned = text.strip()
@@ -174,14 +151,10 @@ def resolve_npc_class_name(text: str) -> Optional[str]:
     return _NPC_CLASS_NAME_LOOKUP.get(cleaned.lower())
 
 
-# 英語クラス名のマニュアル表記ゆれ（マニュアル中の別表記 → カノニカル名）。
-# 単複両形（plural / singular）を吸収するため、現マニュアルの plural 表記を
-# すべて登録しておく。Sorceror のような綴り揺れも併せて吸収。
 _CLASS_NAME_ALIASES: dict[str, str] = {
     "battle mage": "Battlemage",
     "sorcerer":    "Sorceror",
 }
-# 全クラスの plural 形を自動登録（"Thieves" → "Thief" 等の不規則形は個別に上書き）
 for _canonical, _, _ in CLASS_LIST_ORDER:
     _CLASS_NAME_ALIASES[_canonical.lower() + "s"] = _canonical
 _CLASS_NAME_ALIASES.update({
@@ -192,13 +165,7 @@ _CLASS_NAME_ALIASES.update({
 
 
 def _extract_english_from_heading(heading_text: str) -> str | None:
-    """見出しテキストからマニュアル表記の英語クラス名を抽出する。
-
-    現マニュアルの想定: 「シーフ（Thieves）」「バトルメイジ（Battlemages）」
-    旧マニュアル互換: 英名のみ「Thief」/ 「Battle Mage」 もそのまま返す。
-    """
     plain = re.sub(r"<[^>]+>", "", heading_text).strip()
-    # 全角・半角どちらの括弧でも拾う
     m = re.search(r"[（(]([A-Za-z][A-Za-z ]*)[）)]", plain)
     if m:
         return m.group(1).strip()
@@ -208,7 +175,6 @@ def _extract_english_from_heading(heading_text: str) -> str | None:
 
 
 def _resolve_canonical_class(name: str) -> str | None:
-    """マニュアル表記の英語名を、CLASS_LIST_ORDER のカノニカル名に解決する。"""
     key = name.lower()
     if key in _CLASS_NAME_ALIASES:
         return _CLASS_NAME_ALIASES[key]
@@ -219,12 +185,6 @@ def _resolve_canonical_class(name: str) -> str | None:
 
 
 def _resolve_class_from_heading(heading_text: str) -> Optional[str]:
-    """見出し内のテキストから、英名・カタカナ・漢字のいずれかでカノニカル名を解決する。
-
-    優先順位:
-      1) 英名（カッコ内 or 見出し全体）→ _resolve_canonical_class
-      2) カタカナ・漢字のうち、最も長い完全一致を取る（短い名前の部分一致を回避）
-    """
     plain = re.sub(r"<[^>]+>", "", heading_text).strip()
     if not plain:
         return None
@@ -246,11 +206,6 @@ def _resolve_class_from_heading(heading_text: str) -> Optional[str]:
 
 
 def _parse_class_sections_simple(html_text: str) -> dict[str, str]:
-    """簡易マニュアル（manual/simple/）から英語クラス名ごとの HTML 断片を返す。
-
-    構造: <h2>シーフ（盗賊）</h2> → <p>...</p> → <div class="ability">...</div>
-          → <table>...</table> → 次の <h2>
-    """
     result: dict[str, str] = {}
     body_match = re.search(r"<body[^>]*>(.*?)</body>", html_text, re.IGNORECASE | re.DOTALL)
     body = body_match.group(1) if body_match else html_text
@@ -279,8 +234,6 @@ def _parse_class_sections_simple(html_text: str) -> dict[str, str]:
     return result
 
 
-# 詳細版から除外する装備系 <p> パターン
-# （簡易版の表に同じ情報が既にあるため重複表示を避ける）
 _FULL_STATS_P_PATTERNS = (
     re.compile(r"^使用可能武器[:：]"),
     re.compile(r"^武器[:：]"),
@@ -291,7 +244,6 @@ _FULL_STATS_P_PATTERNS = (
 
 
 def _strip_stats_paragraphs(section_html: str) -> str:
-    """詳細版セクションから装備情報の <p>...</p> を除去する。"""
     def _is_stats_p(p_text: str) -> bool:
         plain = re.sub(r"<[^>]+>", "", p_text).strip()
         return any(pat.match(plain) for pat in _FULL_STATS_P_PATTERNS)
@@ -303,13 +255,6 @@ def _strip_stats_paragraphs(section_html: str) -> str:
 
 
 def _parse_class_sections_full(html_text: str) -> dict[str, str]:
-    """詳細マニュアル（manual/full/）から英語クラス名ごとの HTML 断片を返す。
-
-    構造: <h2>盗賊系クラス</h2>（カテゴリ）→ <h3>シーフ（Thieves）</h3> → <p>...</p>...
-    各 <h3> の開始から、次の <h3> / <h2> / <h1> / <div class="section-header"> / </body>
-    までを 1 セクションとして抽出する。装備情報 <p>（武器/防具/盾/初期体力）は
-    簡易版の表と重複するため除去する。
-    """
     result: dict[str, str] = {}
     body_match = re.search(r"<body[^>]*>(.*?)</body>", html_text, re.IGNORECASE | re.DOTALL)
     body = body_match.group(1) if body_match else html_text
@@ -325,8 +270,6 @@ def _parse_class_sections_full(html_text: str) -> dict[str, str]:
         m = h3_re.search(body, pos)
         if not m:
             break
-        # 詳細版セクションは見出し（<h3>クラス名</h3>）を含めず本文のみ抽出する。
-        # 結合表示時に簡易版の <h2>クラス名</h2> が既にあるため重複を避ける。
         start = m.end()
         heading_inner = m.group(1)
         end_search = next_boundary_re.search(body, m.end())
@@ -341,15 +284,10 @@ def _parse_class_sections_full(html_text: str) -> dict[str, str]:
     return result
 
 
-# 旧名互換（外部から呼ばれる場合のため）
 _parse_class_sections = _parse_class_sections_simple
 
 
 def _read_manual_html(mode: str, lang: str) -> str:
-    """manual/<mode>/<lang>/<CLASS_DOC> を読む（無ければ ja・それも無ければ ""）。
-
-    公開版は manual を _internal に置かず exe 内 seed から読む。dev はディスク。
-    """
     import app_resources
     for L in (lang, "ja"):
         txt = app_resources.read_text(f"manual/{mode}/{L}/{_CLASS_DOC}")
@@ -364,14 +302,6 @@ def _load_html_or_empty(base_dir: str, lang: str) -> str:
 
 
 def _load_class_descriptions(lang: str) -> dict[str, str]:
-    """簡易版（要約）+ 詳細版（マニュアル原文）を結合した HTML 断片を返す。
-
-    表示順:
-      1. 簡易版（kana・概要・★能力・装備テーブル）
-      2. 区切り <h3>詳細解説</h3>
-      3. 詳細版（マニュアル原文の段落）
-    詳細版が無い場合は簡易版のみ返す（後方互換）。
-    """
     simple_html = _load_html_or_empty(_MANUAL_SIMPLE, lang)
     full_html   = _load_html_or_empty(_MANUAL_FULL, lang)
     simple_sections = _parse_class_sections_simple(simple_html) if simple_html else {}
@@ -388,7 +318,6 @@ def _load_class_descriptions(lang: str) -> dict[str, str]:
     return combined
 
 
-# QTextBrowser での折り返し時の余分な行間を抑える上書き CSS
 _OVERRIDE_CSS = """
 <style>
   body { line-height: 1.0; }
@@ -401,9 +330,6 @@ _OVERRIDE_CSS = """
 
 
 def _wrap_html_fragment(fragment: str, base_html: str) -> str:
-    """マニュアルの <style> ブロックを引き継いで断片を表示用の完全 HTML に包む。
-    後段に _OVERRIDE_CSS を置いて折り返し行間を引き締める。
-    """
     style_match = re.search(r"<style[^>]*>(.*?)</style>", base_html, re.IGNORECASE | re.DOTALL)
     style = style_match.group(0) if style_match else ""
     return (
@@ -417,11 +343,6 @@ def _read_base_html(lang: str) -> str:
 
 
 class ClassListPanel(QWidget):
-    """chargen クラス一覧画面用パネル。
-
-    上部: 18 クラスのボタンを 2 列 9 行で配置（左 1-9、右 10-18）。
-    下部: 選択したクラスのマニュアル説明を表示。
-    """
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -433,7 +354,6 @@ class ClassListPanel(QWidget):
         self._build_ui()
         self._reload_descriptions()
 
-    # ------------------------------------------------------------------
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
@@ -443,7 +363,6 @@ class ClassListPanel(QWidget):
         splitter = QSplitter(Qt.Orientation.Vertical)
         splitter.setChildrenCollapsible(False)
 
-        # 上部: 18 クラスを 2 列 9 行で表示
         top = QWidget()
         grid = QGridLayout(top)
         grid.setContentsMargins(4, 4, 4, 4)
@@ -462,7 +381,6 @@ class ClassListPanel(QWidget):
             grid.setColumnStretch(c, 1)
         splitter.addWidget(top)
 
-        # 下部: クラス説明
         self._desc = QTextBrowser()
         self._desc.setOpenExternalLinks(False)
         self._desc.setHtml("")
@@ -473,33 +391,24 @@ class ClassListPanel(QWidget):
         splitter.setSizes([220, 320])
         root.addWidget(splitter, 1)
 
-    # ------------------------------------------------------------------
 
     def reload_for_language(self) -> None:
-        """言語切替時に呼ぶ。マニュアル読み直しと現在表示の更新を行う。"""
         self._reload_descriptions()
         if self._current_en:
             self._show_description(self._current_en)
 
     def _reload_descriptions(self) -> None:
-        """簡易版（要約）+ 詳細版（マニュアル原文）を結合した HTML を読み出す。"""
         lang = i18n.current_lang() or "ja"
         self._base_html = _read_base_html(lang)
         self._sections = _load_class_descriptions(lang)
 
     def reset_selection(self) -> None:
-        """選択を解除し、説明欄をクリアする。"""
         for row in self._rows:
             row.set_highlighted(False)
         self._current_en = None
         self._desc.setHtml("")
 
     def select_class(self, en_name: str) -> None:
-        """指定クラスをハイライトし、説明を表示する。
-
-        NPC バッファ追従からの呼び出しと、ユーザーのパネルクリックの
-        両方からこのメソッドを使う。
-        """
         if en_name == self._current_en:
             return
         for en, row in self._rows_by_en.items():
@@ -507,10 +416,8 @@ class ClassListPanel(QWidget):
         self._current_en = en_name
         self._show_description(en_name)
 
-    # ------------------------------------------------------------------
 
     def _on_row_clicked(self, en_name: str) -> None:
-        # ユーザーがパネル上のクラスをクリックした場合もハイライト＋説明表示。
         self.select_class(en_name)
 
     def _show_description(self, en_name: str) -> None:

@@ -1,11 +1,3 @@
-"""normal_play/c1_cinematic_module.py — C1 cinematic 表示単位 (VISION/死亡演出)。
-
-VISION.XMI cinematic と死亡 cinematic の判定描画セット (検出・テキスト読取・
-翻訳 lookup・UiRouter push) を C1 配下の独立表示単位として trigger_module
-から物理分離 (挙動不変)。プレイヤー HP 読取 helper (_current_hp_is_zero)
-も本モジュールが所有し、trigger_module 側 (runtime メッセージの死亡文言
-抑止) は import して使う。
-"""
 from __future__ import annotations
 
 import logging
@@ -146,12 +138,6 @@ def _death_cinematic_translation(text: str) -> str:
 
 def _lookup_vision_cinematic_payload(
         w, text: str) -> tuple[str, str, str] | None:
-    """VISION.XMI 中に表示される cinematic 本文を翻訳 payload へ解決する。
-
-    ``VISION.XMI`` は旅立ち専用ではなく、死亡時や休憩時のメインクエスト
-    啓示にも使われる。IMG 名で chargen に寄せず、本文の種類で owner を
-    分けて扱う。
-    """
     if not text:
         return None
 
@@ -173,7 +159,6 @@ def _lookup_vision_cinematic_payload(
 
 
 def _find_death_cinematic_text(w, *, allow_scan: bool = False) -> tuple[str, int]:
-    """死亡 cinematic 本文を hint address → prefix scan の順で探す。"""
     block = _read_cinematic_block(w, _DEATH_CINEMATIC_HINT_ADDR)
     if block and _death_cinematic_translation(block):
         return block, _DEATH_CINEMATIC_HINT_ADDR
@@ -204,7 +189,6 @@ def _find_death_cinematic_text(w, *, allow_scan: bool = False) -> tuple[str, int
 
 
 def _find_vision_cinematic_text(w) -> tuple[str, int]:
-    """VISION.XMI cinematic 本文を hint address → prefix scan の順で探す。"""
     block = _read_cinematic_block(w, _DEATH_CINEMATIC_HINT_ADDR)
     if block and _lookup_vision_cinematic_payload(w, block):
         return block, _DEATH_CINEMATIC_HINT_ADDR
@@ -232,7 +216,6 @@ def _find_vision_cinematic_text(w) -> tuple[str, int]:
 
 
 def poll_vision_cinematic(w, *, b30: dict | None = None) -> None:
-    """VISION.XMI を normal-play cinematic として扱い、本文翻訳を表示する。"""
     if _current_top_level(w) != "normal-play":
         return
     img_name = b30.get("img_name") if isinstance(b30, dict) else None
@@ -265,7 +248,6 @@ def poll_vision_cinematic(w, *, b30: dict | None = None) -> None:
 
 
 def poll_death_cinematic(w) -> None:
-    """TEMPLATE.DAT #1402/#1403 の死亡 cinematic を検出して翻訳表示する。"""
     if _current_top_level(w) != "normal-play":
         return
     if _is_vision_xmi_active(w):

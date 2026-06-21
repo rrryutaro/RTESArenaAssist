@@ -1,20 +1,3 @@
-"""normal_play/equipment_reply_module.py — 武具店 L4 店主応答の描画オーナー。
-
-完全分離: 武具店店主の応答文 (購入/売却/修理の結果文・費用文
-等) を、全施設共有の堅牢な応答経路 (npc_dialog_module / owner ``npc_dialog``) への
-相乗りから撤廃し、武具店専用 owner ``equipment_reply`` に閉じて描画する。
-
-神殿 (temple_dialog_module / temple_priest_reply) と同型の機構を武具店専用 owner で
-複製したもの。共有してよいのは:
-- (A) 純粋データ取得 / 翻訳基本処理: ``popup11_response_reader`` の応答バッファ読み
-  取り (= 全施設が物理的に共有する 1 つの応答バッファ)、辞書 lookup
-  (``npc_dialog_lookup``)。
-- (C) UiRouter 描画シンク (``update_translation``、owner 引数)。
-
-候補選択 (= 判定) と owner 所有は本モジュール (武具店分離内) で完結する。surface
-種別単位の細分化 (equipment_cost 等) は実機観測後に行う。それまで費用文も本 owner
-で表示し、共有 dispatch への非依存 (= 完全分離) を満たす。
-"""
 from __future__ import annotations
 
 import logging
@@ -78,7 +61,6 @@ def _reset_state(w) -> None:
 
 
 def reset_equipment_reply_state(w) -> None:
-    """武具店応答表示 state を初期化する。poll_controller / tests 用。"""
     _reset_state(w)
 
 
@@ -114,7 +96,6 @@ def _with_yesno_buttons(img_name: str, en: str, ja: str) -> tuple[str, str]:
 
 def _read_active_reply_candidates(analyzer, anchor: int, ndl
                                   ) -> list["ResponseCandidate"]:
-    """Repair 後の active_template 応答を equipment_reply 候補として読む。"""
     try:
         from popup11_response_reader import ResponseCandidate
         from active_template_reader import read_active_template_candidates
@@ -220,7 +201,6 @@ def _read_c_string(analyzer, anchor: int, offset: int,
 
 def _read_active_reply_choice_group(analyzer, anchor: int,
                                     start_offset: int) -> list[str]:
-    """A190 の連続3行選択肢を active slot 位置から読む。"""
     first = _read_c_string(analyzer, anchor, start_offset)
     if first != _ACTIVE_REPLY_CHOICE_PREFIXES[0]:
         return []
@@ -269,7 +249,6 @@ def _format_reply_choice_rows(lines: list[str], ndl) -> list[dict]:
 
 
 def _menu_rt_equipment_menu_present(w) -> bool:
-    """shop_state が揺れた poll でも、MENU_RT の武具店メニュー復帰を拾う。"""
     try:
         from popup11_response_reader import read_current_text_pointer
         from shop_menu_reader import (
@@ -296,14 +275,7 @@ def poll_equipment_reply(w, *, equipment_active: bool,
                          equipment_just_started: bool,
                          img_name: str,
                          shop_menu_visible: bool) -> bool:
-    """武具店店主の応答文を equipment_reply owner で描画する。
-
-    戻り値 True は、この poll で武具店応答を表示または保持したことを表す。
-    """
     _ensure_state(w)
-    # 分離化: 非active時のクリーンアップ(state reset)は
-    # poll_controller の施設 stop エッジ(reset_equipment_reply_state)へ移設。
-    # 本関数は active 時のみ描画する純責務に縮約する。
     if not equipment_active:
         return False
 

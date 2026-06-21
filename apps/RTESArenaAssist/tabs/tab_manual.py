@@ -1,6 +1,3 @@
-"""
-tab_manual.py — マニュアルビューアタブ
-"""
 
 import os
 
@@ -15,29 +12,23 @@ import i18n_helper as i18n
 _MODE_SIMPLE = "simple"
 _MODE_FULL = "full"
 
-# 公開版は manual を _internal に置かず exe 内 seed から読む。resource 相対の
-# "manual/<mode>/<lang>" を app_resources で解決し、表示時に実パスへ（seed 時のみ一時抽出）。
 
 
 def _manual_subdir(mode: str) -> str:
-    """resource 相対の manual サブフォルダ "manual/<mode>/<lang>" を返す（seed/disk 共通）。"""
     import app_resources
     lang = i18n.current_lang()
     rel = f"manual/{mode}/{lang}"
     if app_resources.is_dir(rel) and any(
             f.endswith(".html") for f in app_resources.listdir(rel)):
         return rel
-    # full モードで当該言語がない場合は en/ にフォールバック
     if mode == _MODE_FULL:
         en_rel = f"manual/{mode}/en"
         if app_resources.is_dir(en_rel):
             return en_rel
-    # simple フォールバック
     return f"manual/{mode}/ja"
 
 
 def _list_docs(mode: str) -> list[tuple[str, str]]:
-    """Return [(stem, resource_rel), ...] sorted by filename."""
     import app_resources
     d = _manual_subdir(mode)
     return sorted(
@@ -51,7 +42,6 @@ def _doc_label(stem: str, mode: str) -> str:
     key = f"manual.doc.{mode}.{stem}"
     label = i18n.tr(key)
     if label == key:
-        # simple モードの旧キーへフォールバック
         key2 = f"manual.doc.{stem}"
         label2 = i18n.tr(key2)
         return stem if label2 == key2 else label2
@@ -73,14 +63,12 @@ class TabManual(QWidget):
         root.setContentsMargins(6, 6, 6, 6)
         root.setSpacing(4)
 
-        # ── ツールバー（モード切替 + 検索）──
         toolbar = QWidget()
         toolbar.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         toolbar_row = QHBoxLayout(toolbar)
         toolbar_row.setContentsMargins(0, 0, 0, 0)
         toolbar_row.setSpacing(4)
 
-        # 簡易 / 詳細 トグルボタン
         self._btn_simple = QPushButton(i18n.tr("manual.mode.simple"))
         self._btn_full = QPushButton(i18n.tr("manual.mode.full"))
         for btn in (self._btn_simple, self._btn_full):
@@ -94,7 +82,6 @@ class TabManual(QWidget):
         self._btn_simple.clicked.connect(lambda: self._switch_mode(_MODE_SIMPLE))
         self._btn_full.clicked.connect(lambda: self._switch_mode(_MODE_FULL))
 
-        # 検索バー
         self._search_edit = QLineEdit()
         self._search_edit.setPlaceholderText(i18n.tr("manual.search_placeholder"))
         self._search_edit.setMaximumWidth(180)
@@ -119,7 +106,6 @@ class TabManual(QWidget):
         toolbar_row.addStretch()
         root.addWidget(toolbar)
 
-        # ── Splitter: left nav | right browser ──
         splitter = QSplitter(Qt.Orientation.Horizontal)
 
         self._nav = QListWidget()
@@ -147,7 +133,6 @@ class TabManual(QWidget):
         self._mode = mode
         current_row = self._nav.currentRow()
         self._load_docs()
-        # 同じ位置を選択し直す（章が異なる場合は先頭）
         if current_row < self._nav.count():
             self._nav.setCurrentRow(current_row)
 

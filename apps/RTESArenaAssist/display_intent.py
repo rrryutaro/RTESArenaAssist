@@ -1,8 +1,3 @@
-"""Poll 内の表示候補を表す軽量データ構造。
-
-UiRouter が poll 内の表示候補を集め、poll 末尾で実 UI に反映するための
-共通表現にする。
-"""
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -13,7 +8,6 @@ from hierarchy_state import SeparationHierarchy
 
 @dataclass(frozen=True)
 class PollFrame:
-    """1 poll の表示判定に使う安定 snapshot。"""
 
     top_level: str = "pregame"
     screen_id: Optional[str] = None
@@ -39,7 +33,6 @@ class PollFrame:
 
 @dataclass(frozen=True)
 class DisplayIntent:
-    """UiRouter が反映できる表示更新 1 件。"""
 
     kind: str
     panel_owner: str = ""
@@ -58,12 +51,6 @@ class DisplayIntent:
     priority: int = 0
     reason: str = ""
     allowed_current_owners: Optional[tuple[str, ...]] = None
-    # 読み上げの発生源宣言。表示を組む発生源が「読み上げ役割」と
-    # 「読み上げ本文」を宣言し、受け手(読み上げの振り分け)は再判定せず消費する。
-    #   speech_role: 意味カテゴリ "situation"(状況説明) / "conversation"(会話)。
-    #                None = 宣言なし(システム/メニュー扱い) = 読まない(安全側)。
-    #   speech_text: 表示訳と異なる本文を読む場合のみ指定(例: 価格交渉の差分)。
-    #                None = 表示訳(ja)を読む。
     speech_role: Optional[str] = None
     speech_text: Optional[str] = None
 
@@ -212,9 +199,6 @@ class DisplayIntent:
                       panel_en: str, panel_ja: str,
                       *, priority: int = 0,
                       reason: str = "") -> "DisplayIntent":
-        """施設専用 L4 一覧 intent。宿屋 shop_buy_list とは別 identity
-        (kind="facility_list" / mode="facility_list")。owner は施設専用名を渡す。
-        純粋なリスト行ウィジェットのみ共有する (副作用なし描画部品)。"""
         return cls(
             kind="facility_list",
             panel_owner=panel_owner,

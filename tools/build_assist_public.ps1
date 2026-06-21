@@ -1,14 +1,9 @@
 param(
     [string]$Python = "python",
     [switch]$SkipInstall,
-    [switch]$OneDir,           # 指定で onedir（補助系統）。既定は onefile（主系統・単一exe）。
-    [switch]$NoGate            # 公開前混入検査をスキップ（非推奨・デバッグ用）
+    [switch]$OneDir,
+    [switch]$NoGate
 )
-
-# 公開ビルド（資産非同梱）。
-# RTESArenaAssist-public.spec を使い、dist-public/build-public へ隔離出力する
-# （dev ビルドの dist/ と混ざらない）。ビルド後に公開前混入検査を -PublicGate 相当で
-# 実行し、Arena 由来データの混入（DENY）を検出したらビルドを失敗にする。
 
 $ErrorActionPreference = "Stop"
 
@@ -33,7 +28,6 @@ $WorkPath = Join-Path $RepoRoot "build-public"
     --distpath $DistPath --workpath $WorkPath `
     "RTESArenaAssist-public.spec"
 
-# --- 公開前混入検査（安全柵・DENY でビルド失敗） ---------------------------
 if (-not $NoGate) {
     Write-Host ""
     Write-Host "=== 公開前混入検査（公開ビルド・安全柵） ===" -ForegroundColor Cyan

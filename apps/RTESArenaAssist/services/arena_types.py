@@ -1,7 +1,3 @@
-"""arena_types.py — Arena 関連の enum と基本データ型。
-
-OpenTESArena `Assets/ArenaTypes.h` の enum を Python に移植する。
-"""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -9,7 +5,6 @@ from enum import IntEnum, Enum
 
 
 class ArenaMenuType(Enum):
-    """街マップの MENU voxel が指す building 種別。"""
 
     NONE        = "None"
     CITY_GATES  = "CityGates"
@@ -48,14 +43,12 @@ class ArenaClimateType(IntEnum):
 
 @dataclass(frozen=True)
 class Int2:
-    """2D 整数ベクトル (OpenTESArena Int2 相当)。"""
     x: int
     y: int
 
 
 @dataclass(frozen=True)
 class Rect:
-    """矩形 (left, top, width, height)。"""
     left:   int
     top:    int
     width:  int

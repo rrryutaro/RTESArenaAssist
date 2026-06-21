@@ -1,17 +1,3 @@
-"""i18n_mods.py — ユーザー translation mod のローダ（表示翻訳のみ）。
-
-`<user_data>/RTESArenaAssist/mods/translations/*.json` を列挙し、表示翻訳の上書きを
-locale 別にマージする。ライブ照合には使わない（呼び出し側の責務）。
-
-適用順（deterministic）:
-  1. ファイルを列挙。
-  2. 各ファイルの priority を読む（無ければ 0）。
-  3. priority 昇順 → 正規化ファイル名昇順 に並べる。
-  4. その順で適用し、後から適用された text が勝つ
-     （＝同一 ID は priority 大が勝つ／同 priority はファイル名後が勝つ）。
-
-schema 不正・読み取り不能なファイルは skip し warning に記録（全体を fail にしない）。
-"""
 from __future__ import annotations
 
 import glob
@@ -67,12 +53,10 @@ def _load_one(path: str, warnings: list[str]) -> TranslationMod | None:
 
 
 class ModSet:
-    """読み込み済み mod 群を locale 別にマージしたもの。"""
 
     def __init__(self, mods: list[TranslationMod], warnings: list[str]):
         self.mods = mods
         self.warnings = warnings
-        # locale -> { id: text }（適用順で後勝ち）。
         self._merged: dict[str, dict[int, str]] = {}
         ordered = sorted(
             mods, key=lambda m: (m.priority, m.filename.lower()))
@@ -91,7 +75,6 @@ class ModSet:
 
 
 def load_mods(mods_dir: str) -> ModSet:
-    """mods ディレクトリから translation mod を読み込む（不在は空 ModSet）。"""
     warnings: list[str] = []
     mods: list[TranslationMod] = []
     if mods_dir and os.path.isdir(mods_dir):

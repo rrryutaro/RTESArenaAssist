@@ -1,6 +1,3 @@
-"""
-tab_capture.py — スクリーンキャプチャビューアタブ
-"""
 
 import datetime
 import json
@@ -19,7 +16,6 @@ import i18n_helper as i18n
 
 
 class _ZoomableImage(QGraphicsView):
-    """ホイールズーム・ドラッグパン対応の画像ビュー。"""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -68,16 +64,12 @@ class TabCapture(QWidget):
         self._locks: set[int] = set()
         self._build_ui()
 
-    # ------------------------------------------------------------------
-    # UI構築
-    # ------------------------------------------------------------------
 
     def _build_ui(self):
         root = QVBoxLayout(self)
         root.setContentsMargins(6, 6, 6, 6)
         root.setSpacing(4)
 
-        # ── ディレクトリバー ──────────────────────────────────
         bar = QHBoxLayout()
         self._dir_lbl = QLabel("—")
         self._dir_lbl.setObjectName("dimLabel")
@@ -91,11 +83,9 @@ class TabCapture(QWidget):
         bar.addWidget(btn_refresh)
         root.addLayout(bar)
 
-        # ── スプリッター（リスト + プレビュー） ───────────────
         splitter = QSplitter(Qt.Orientation.Horizontal)
         splitter.setChildrenCollapsible(False)
 
-        # 左: リスト + ロック/削除ボタン
         left = QWidget()
         ll = QVBoxLayout(left)
         ll.setContentsMargins(0, 0, 0, 0)
@@ -108,7 +98,6 @@ class TabCapture(QWidget):
         self._list.installEventFilter(self)
         ll.addWidget(self._list, 1)
 
-        # ボタン行はキャプチャ無し時に非表示にする（_set_empty で制御）
         self._btn_row_w = QWidget()
         btn_row = QHBoxLayout(self._btn_row_w)
         btn_row.setContentsMargins(0, 0, 0, 0)
@@ -135,7 +124,6 @@ class TabCapture(QWidget):
 
         splitter.addWidget(left)
 
-        # 右: タイムスタンプ + 画像
         right = QWidget()
         rl = QVBoxLayout(right)
         rl.setContentsMargins(0, 0, 0, 0)
@@ -178,7 +166,6 @@ class TabCapture(QWidget):
 
         root.addWidget(splitter, 1)
 
-        # キャプチャなしメッセージ
         self._empty_lbl = QLabel(i18n.tr("capture.no_captures"))
         self._empty_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._empty_lbl.setObjectName("dimLabel")
@@ -186,9 +173,6 @@ class TabCapture(QWidget):
 
         self._set_empty(True)
 
-    # ------------------------------------------------------------------
-    # 公開 API
-    # ------------------------------------------------------------------
 
     def set_cap_dir(self, cap_dir: str) -> None:
         self._cap_dir = cap_dir
@@ -232,12 +216,8 @@ class TabCapture(QWidget):
         for n in self._caps:
             self._list.addItem(self._make_item(n))
         self._list.setCurrentRow(0)
-        # 一括削除はロックされていないキャプチャが 1 件以上あれば有効
         self._del_all_btn.setEnabled(any(n not in self._locks for n in self._caps))
 
-    # ------------------------------------------------------------------
-    # ロック管理
-    # ------------------------------------------------------------------
 
     def _locks_path(self) -> str:
         return os.path.join(self._cap_dir, "cap_locks.json")
@@ -274,9 +254,6 @@ class TabCapture(QWidget):
         self._list.setCurrentRow(row)
         self._update_buttons(n)
 
-    # ------------------------------------------------------------------
-    # 削除
-    # ------------------------------------------------------------------
 
     def _delete_cap(self) -> None:
         row = self._list.currentRow()
@@ -315,11 +292,6 @@ class TabCapture(QWidget):
         self.refresh()
 
     def _delete_all_unlocked(self) -> None:
-        """ロックされていないキャプチャを一括削除する。
-
-        確認ダイアログは設定 capture_delete_confirm に関わらず必ず表示する
-        （取り返しのつかない一括操作のため）。ロック中のキャプチャは保持する。
-        """
         if not self._cap_dir or not self._caps:
             return
         targets = [n for n in self._caps if n not in self._locks]
@@ -357,16 +329,12 @@ class TabCapture(QWidget):
                 self._locks.discard(n)
         self._save_locks()
         self.refresh()
-        # 完了メッセージ（ステータスバーがあれば、なければダイアログで省略）
         try:
             self.window().statusBar().showMessage(
                 f"キャプチャを {deleted} 件削除しました（ロック {locked} 件保持）", 5000)
         except Exception:
             pass
 
-    # ------------------------------------------------------------------
-    # 内部ヘルパー
-    # ------------------------------------------------------------------
 
     def _cap_timestamp(self, n: int) -> str:
         for suffix in ("_layout.png", "_game.png", "_viewer.png"):
@@ -400,8 +368,6 @@ class TabCapture(QWidget):
     def _set_empty(self, empty: bool) -> None:
         self._empty_lbl.setVisible(empty)
         self._list.setVisible(not empty)
-        # ロック/削除/一括削除のボタン列はキャプチャがある時だけ表示する
-        # （無いと中央に浮いて見えるのを避けるため）
         self._btn_row_w.setVisible(not empty)
 
     def _update_buttons(self, n: int) -> None:

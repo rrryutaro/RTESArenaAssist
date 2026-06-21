@@ -1,19 +1,8 @@
-"""spell_effect_compose.py — effect-text 合成ヘルパー群。
-
-spell_reader から分離した effect-text 合成ヘルパー群。挙動不変。
-"""
 
 from __future__ import annotations
 import re
 
-# ──────────────────────────────────────────────────────────────
-# 効果合成用の内部定数テーブル
-# ──────────────────────────────────────────────────────────────
 
-# Effect ID は効果カテゴリ、subEffects/affectedAttrs が対象を補う。255 は未使用スロット。
-# 表示文字列(en,ja)をコードに直書きせず、effect_id/sub_id/attr_id → **翻訳ID**
-# (mages.*) の対応のみ保持し、表示は i18n から現在言語で取得する。原文照合アンカーは原文から引く。
-# 構成語(target/element/attribute/sub)→翻訳ID。
 _DAMAGE_TARGET_IDS = {0: "mages.Health", 1: "mages.Fatigue", 2: "mages.Spell Points"}
 _HEAL_TARGET_IDS = {0: "mages.Fatigue", 1: "mages.Health", 2: "mages.Spell Points"}
 _ELEMENT_SUB_IDS = {0: "mages.Fire", 1: "mages.Cold", 2: "mages.Shock",
@@ -21,7 +10,6 @@ _ELEMENT_SUB_IDS = {0: "mages.Fire", 1: "mages.Cold", 2: "mages.Shock",
 _ATTRIBUTE_IDS = {0: "mages.Strength", 1: "mages.Intelligence", 2: "mages.Willpower",
                   3: "mages.Agility", 4: "mages.Speed", 5: "mages.Endurance",
                   6: "mages.Personality", 7: "mages.Luck"}
-# 合成効果は完成ID(prefix+sub の連結でなく Arena 完成名)優先。(effect_id, sub_id) → 完成翻訳ID。
 _DAMAGE_COMPOSITE_IDS = {0: "mages.Damage Health", 1: "mages.Damage Fatigue",
                          2: "mages.Damage Spell Points"}
 _CONT_DAMAGE_COMPOSITE_IDS = {0: "mages.Continuous Damage Health",
@@ -38,29 +26,15 @@ _CREATE_COMPOSITE_IDS = {0: "mages.Create Shield", 1: "mages.Create Wall",
 _DESTROY_COMPOSITE_IDS = {0: "mages.Destroy Wall", 1: "mages.Destroy Floor"}
 _SIMPLE_EFFECT_IDS = {
     5: "mages.Designate as Non-Target",
-    # effect_id 7/8/14 はライブ採取の effect 名配列（ACD.EXE image_base+0x40CC7・24 件）と
-    # 既知 effect_id の照合で確定した構造写像 effect_id = 配列index+1（既知 21 件で完全一致）から。
-    # 注: simple 扱いは推定（配列は標準名のみ・sub 要素の有無は当該効果スペルで要確認）。
     7: "mages.Disintegrate", 8: "mages.Dispel", 14: "mages.Imprison",
     15: "mages.Invisibility",
     16: "mages.Levitate", 17: "mages.Light", 18: "mages.Lock", 19: "mages.Open",
     20: "mages.Regenerate", 21: "mages.Silence", 22: "mages.Spell Absorption",
     23: "mages.Spell Reflection", 24: "mages.Spell Resistance",
 }
-# prefix のみの完成ID(attr/element 合成で完成ID が無い場合に prefix+component を翻訳ID で表示合成)。
 _PREFIX_ID = {9: "mages.Drain Attribute", 10: "mages.Elemental Resistance",
               11: "mages.Fortify Attribute", 13: "mages.Transfer Attribute"}
 
-# ──────────────────────────────────────────────────────────────
-# 効果テキストのテンプレート翻訳
-# Arena は Casting Cost や level 等の数値を埋め込んだ rendered text を
-# anchor+0x1044 に書き出す。元テンプレートはバイナリ内にある。
-# rendered text からパターン照合してテンプレートを特定し、和訳する。
-# 観測サンプル:
-#   Fire Dart  : "1 to 2 pts damage to health +3 to 4 pts per 1 level(s)."
-#   Light Heal : "+1 to 2 pts to Health + 4 to 5 pts per 1 level(s)."
-# 全パターンを網羅するには更なる呪文サンプルが必要。
-# ──────────────────────────────────────────────────────────────
 _EFFECT_TARGET_JA = {
     "health":    "ヘルス",
     "Health":    "ヘルス",
@@ -71,17 +45,14 @@ _EFFECT_TARGET_JA = {
 }
 
 _TEMPLATES = [
-    # Damage type: "X to Y pts damage to <target> +A to B pts per N level(s)."
     (re.compile(
         r"^(\d+)\s+to\s+(\d+)\s+pts\s+damage\s+to\s+(\w+(?:\s+\w+)?)"
         r"\s*\+\s*(\d+)\s+to\s+(\d+)\s+pts\s+per\s+(\d+)\s+level\(s\)\.?$"),
      "damage"),
-    # Heal type: "+X to Y pts to <target> + A to B pts per N level(s)."
     (re.compile(
         r"^\+\s*(\d+)\s+to\s+(\d+)\s+pts\s+to\s+(\w+(?:\s+\w+)?)"
         r"\s*\+\s*(\d+)\s+to\s+(\d+)\s+pts\s+per\s+(\d+)\s+level\(s\)\.?$"),
      "heal"),
-    # Drain type: "X to Y pts drain to <target> +A to B pts per N level(s)."
     (re.compile(
         r"^(\d+)\s+to\s+(\d+)\s+pts\s+drain\s+to\s+(\w+(?:\s+\w+)?)"
         r"\s*\+\s*(\d+)\s+to\s+(\d+)\s+pts\s+per\s+(\d+)\s+level\(s\)\.?$"),
@@ -90,7 +61,6 @@ _TEMPLATES = [
 
 
 def _lookup_pair(table: dict, key: int) -> tuple[str, str]:
-    """互換ヘルパ（旧 API）。現在は ID ベース解決へ移行済。"""
     pair = table.get(key)
     if pair is not None:
         return pair
@@ -98,7 +68,6 @@ def _lookup_pair(table: dict, key: int) -> tuple[str, str]:
 
 
 def _active_effect_slot(effects: list[int]) -> int:
-    """SpellData の3効果スロットから最初の使用スロットを返す。"""
     for i, effect_id in enumerate(effects[:3]):
         if effect_id != 0xFF:
             return i
@@ -106,11 +75,6 @@ def _active_effect_slot(effects: list[int]) -> int:
 
 
 def _effect_display_ids(effect_id: int, sub_id: int, attr_id: int) -> list[str]:
-    """効果(effect_id/sub_id/attr_id) → 表示翻訳ID 列。
-
-    1要素=完成ID（mages.X）／2要素=prefix+component の表示合成（attr/element 合成で完成ID 無し）
-    ／空=degraded（未知効果）。コード内に (en,ja) 表示文字列を持たず ID のみ保持する。
-    """
     if effect_id == 0:
         cid = _CAUSE_COMPOSITE_IDS.get(sub_id)
         return [cid] if cid else []
@@ -129,10 +93,10 @@ def _effect_display_ids(effect_id: int, sub_id: int, attr_id: int) -> list[str]:
     if effect_id == 6:
         cid = _DESTROY_COMPOSITE_IDS.get(sub_id)
         return [cid] if cid else []
-    if effect_id in (9, 11):  # Drain / Fortify Attribute X（完成ID 無し＝prefix+component 合成）
+    if effect_id in (9, 11):
         comp = _ATTRIBUTE_IDS.get(sub_id) or _ATTRIBUTE_IDS.get(attr_id)
         return [_PREFIX_ID[effect_id], comp] if comp else [_PREFIX_ID[effect_id]]
-    if effect_id == 10:  # Elemental Resistance X
+    if effect_id == 10:
         comp = _ELEMENT_SUB_IDS.get(sub_id)
         return [_PREFIX_ID[10], comp] if comp else [_PREFIX_ID[10]]
     if effect_id == 12:
@@ -145,10 +109,6 @@ def _effect_display_ids(effect_id: int, sub_id: int, attr_id: int) -> list[str]:
 
 
 def _id_anchor(id_str: str) -> str:
-    """翻訳ID → 原文照合アンカー surface（原文）。未収録は ID 末尾語（=surface）へ。
-
-    `en`（ユーザー編集可能な英語翻訳レイヤ）は照合に使わない。
-    """
     import i18n_helper as i18n
     o = i18n.original(id_str)
     return o if o else id_str.split(".", 1)[-1]
@@ -156,11 +116,6 @@ def _id_anchor(id_str: str) -> str:
 
 def _resolve_effect_name(effect_id: int, sub_id: int,
                          attr_id: int) -> tuple[str, str]:
-    """effects/subEffects/affectedAttrs の組み合わせを (照合アンカー en, 表示 ja) へ変換する。
-
-    en＝原文照合アンカー（原文由来・本文照合用）／ja＝表示訳（i18n 現在訳・ja レイヤ）。
-    コード内 (en,ja) 直書きを廃し翻訳ID から解決する。
-    """
     if effect_id == 0xFF:
         return ("(none)", "(なし)")
     ids = _effect_display_ids(effect_id, sub_id, attr_id)
@@ -180,7 +135,6 @@ def _effect_details_from_arrays(
         effects: list[int],
         sub_effects: list[int],
         affected_attrs: list[int]) -> list[dict]:
-    """SpellData の最大3効果スロットを表示用 detail 配列へ展開する。"""
     details: list[dict] = []
     for slot, effect_id in enumerate(effects[:3]):
         if effect_id == 0xFF:
@@ -194,8 +148,6 @@ def _effect_details_from_arrays(
             "effect_id": effect_id,
             "sub_effect_id": sub_id,
             "affected_attr_id": attr_id,
-            # 表示は display_ids を i18n 現在訳で、照合は anchor を原文で解決する。
-            # effect_en＝照合アンカー surface（原文由来）／effect_ja＝表示訳（互換・i18n 由来）。
             "effect_display_ids": display_ids,
             "effect_anchor_id": display_ids[0] if len(display_ids) == 1 else None,
             "effect_en": effect_en,
@@ -207,7 +159,6 @@ def _effect_details_from_arrays(
 
 
 def _decode_spell_effect_segments(raw: bytes) -> list[str]:
-    """効果本文バッファを Arena の NUL 区切りチャンクとして読む。"""
     if not raw:
         return []
     m = re.search(rb"\x00{4,}", raw)
@@ -227,12 +178,10 @@ def _decode_spell_effect_segments(raw: bytes) -> list[str]:
 
 
 def _decode_spell_effect_text(raw: bytes) -> str:
-    """効果本文を、Arena の埋め込み NUL 区切りを保ったまま1文へ戻す。"""
     return " ".join(_decode_spell_effect_segments(raw)).strip()
 
 
 def _effect_template_ids(effect_en: str) -> set[int]:
-    """効果名から、対応し得る SPELLMKR.TXT テンプレート番号を返す。"""
     effect = (effect_en or "").strip()
     table = {
         "Cause Disease": {0},
@@ -287,7 +236,6 @@ def _normalize_spell_effect_text(
         effect_en: str,
         *,
         allow_mismatch_fallback: bool = False) -> tuple[str, str]:
-    """効果本文をテンプレートで正規化し、効果名と合う翻訳だけを返す。"""
     if not text_en:
         return "", ""
     try:
@@ -307,7 +255,6 @@ def _normalize_spell_effect_text(
 
 
 def _strip_effect_heading(text_en: str, effect_en: str) -> str:
-    """効果一覧見出し（例: ``Damage Health``）を本文先頭から除く。"""
     text = (text_en or "").strip()
     effect = (effect_en or "").strip()
     if not text or not effect:
@@ -340,7 +287,6 @@ def _effect_heading_index(
 def _attach_effect_texts_from_segments(
         segments: list[str],
         details: list[dict]) -> list[dict] | None:
-    """NUL チャンク列から効果見出しごとに本文を割り当てる。"""
     if not segments or not details:
         return None
     out = [dict(d) for d in details]
@@ -417,7 +363,6 @@ def _effect_text_start_pattern(effect_en: str) -> re.Pattern | None:
 def _attach_effect_texts_by_template_starts(
         text: str,
         details: list[dict]) -> list[dict] | None:
-    """効果見出しが無い本文列を、各効果テンプレの開始形で分割する。"""
     if not text or len(details) <= 1:
         return None
     starts: list[tuple[int, int]] = []
@@ -434,7 +379,6 @@ def _attach_effect_texts_by_template_starts(
     if not starts:
         return None
 
-    # 先頭効果の開始形が欠けても、次効果の開始より前に本文断片があれば前効果へ渡す。
     if starts[0][0] > 0 and starts[0][1] > 0:
         prefix = text[:starts[0][1]].strip()
         current_idx = starts[0][0]
@@ -471,7 +415,6 @@ def _attach_effect_texts(
         text_en: str,
         details: list[dict],
         segments: list[str] | None = None) -> list[dict]:
-    """0x1044 の複数効果本文を effect_details の各スロットへ割り当てる。"""
     out = [dict(d) for d in details]
     segmented = _attach_effect_texts_from_segments(segments or [], out)
     if segmented is not None:
@@ -645,13 +588,8 @@ def _target_word_ja(word: str) -> str:
 
 
 def translate_effect_text(text_en: str) -> str:
-    """rendered な効果テキストを日本語に翻訳する。
-
-    既知テンプレートにマッチしなければ空文字を返す。
-    """
     if not text_en:
         return ""
-    # SPELLMKR.TXT の全43効果テンプレで翻訳を試みる（中立モジュール）。
     try:
         from spell_effect_text import translate as _set
         ja = _set(text_en)

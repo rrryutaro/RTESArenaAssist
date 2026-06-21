@@ -1,20 +1,3 @@
-"""tab_map.py — Assist のマップタブ。
-
-本 widget は描画の **表示シェル** のみ。マップ判定 + データロード + state は
-`normal_play/map/` 配下の 4 軸独立 session が所有する:
-
-  - DungeonMapSession    (C1) — 単一 MIF + AUTOMAP.NN reveal stencil
-  - CityMapSession       (C2) — テンプレ MIF + citySeed 生成
-  - InteriorMapSession   (店) — 単一 interior MIF
-  - WildernessMapSession (C3) — wildSeed + WILD{NNN}.RMD 64×64 grid
-
-各 session は判定 + 描画 + state を閉じたセットで所有。
-本 widget は `MapDispatcher.poll(ctx)` を呼び、`get_canvas_data()` で
-active session の描画データを取得して `AutomapCanvas` に渡す。
-
-非アクティブ session の state は **他軸描画に leak しない**
-(= dispatcher が active 1 個に絞る)。
-"""
 from __future__ import annotations
 
 import logging
@@ -38,7 +21,6 @@ _log = logging.getLogger("tab_map")
 
 
 class TabMap(QWidget):
-    """Assist マップタブ。表示シェル + MapDispatcher delegate。"""
 
     def __init__(self, parent: Optional[QWidget] = None,
                  name: str = "map") -> None:
@@ -70,10 +52,8 @@ class TabMap(QWidget):
         self._wall_los_enabled: bool = False
         self.apply_settings()
 
-    # ── 外部 API ───────────────────────────────────────────────
 
     def apply_settings(self) -> None:
-        """設定ダイアログ閉じた直後の反映用。"""
         self._wall_los_enabled = bool(
             settings.get("map_wall_line_of_sight", False))
         cheat = bool(settings.get("cheat_enabled", False))
@@ -95,16 +75,13 @@ class TabMap(QWidget):
             int(settings.get("map_chunk_coord_font_size", 10)))
 
     def reset_progress(self) -> None:
-        """ロード等で active session の探索状態をリセットする。"""
         self._dispatcher.reset_progress()
-        # ロード契機で拡張データのアクティブ層も破棄し再束縛へ
         try:
             get_lifecycle().on_load()
         except Exception:  # noqa: BLE001
             _log.exception("map_ext on_load failed")
 
     def poll_automap_file(self) -> bool:
-        """AUTOMAP.NN 再取込試行 (= dispatcher 経由)。dungeon active 時のみ動作。"""
         return self._dispatcher.poll_automap_file()
 
     def update_map_state(
@@ -122,15 +99,7 @@ class TabMap(QWidget):
         in_interior: Optional[bool] = None,
         area: Optional[str] = None,
     ) -> None:
-        """ライブメモリ状態でマップ表示を更新する。
-
-        active session の選択は単一分類器 classify_map_axis が決定し、
-        MapDispatcher がその結論を消費する (= classify→dispatch・1軸化)。
-        in_interior は poll 確定値の注入 (単一の真実)。None の場合のみ
-        classify_map_axis が互換 fallback として自前 read する。
-        """
         _save_dir = str(settings.get("save_dir", ""))
-        # 拡張データのライフサイクル駆動（スロット束縛・セーブ確定検知）
         try:
             get_lifecycle().poll(analyzer, anchor, _save_dir)
         except Exception:  # noqa: BLE001
@@ -161,8 +130,6 @@ class TabMap(QWidget):
             show_grid=bool(settings.get("map_show_grid", True)),
             wilderness_compact_view=bool(
                 settings.get("wilderness_compact_view", False)),
-            # 拡張表示: 実効値 = マスター AND 個別（master OFF or 全個別 OFF で
-            # ゲーム自動マップ同一）。
             wild_distinguish_road=(
                 bool(settings.get("map_extended_display", True))
                 and bool(settings.get("wild_distinguish_road", True))),
@@ -188,13 +155,10 @@ class TabMap(QWidget):
             _log.exception("MapDispatcher.poll failed")
             return
 
-        # 場所ラベル + canvas 反映
         if place_text is not None:
             self._place_label.setText(place_text)
         _cd = self._dispatcher.get_canvas_data()
         self._canvas.set_data(_cd)
-        # 診断: どの TabMap (map / fallback) の canvas にどんなデータが
-        # 渡ったかを状態変化時のみ記録。施設マップ空表示の切り分け用。
         _w = None if _cd.walkable is None else _cd.walkable.shape
         _diag = (self._dispatcher.active_key(), _w,
                  self.isVisible(), self._canvas.isVisible(),
@@ -207,7 +171,6 @@ class TabMap(QWidget):
                 self._name, _diag[0], _w, _diag[2], _diag[3], _diag[4])
 
     def clear_map(self) -> None:
-        """マップ全体非表示 (= chargen 中など)。"""
         try:
             self._canvas.set_data(CanvasData())
             self._canvas.setVisible(False)

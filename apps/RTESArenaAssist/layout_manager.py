@@ -1,17 +1,3 @@
-"""
-layout_manager.py — ウィンドウ追従・DOSBox 配置管理
-
-■ 通常モード
-  TrackMode で DOSBox/Assist を個別に追従させる。
-  arrange() で一発配置（DOSBox を角に固定、Assist を隣接移動）。
-
-■ レイアウトモード (AssistWindow 側が管理)
-  AssistWindow を指定サイズのコンテナにリサイズし、DOSBox エリアを
-  setMask() で「窓抜き」する。DOSBox は独立した Win32 ウィンドウのまま
-  窓抜き領域と同じグローバル座標に配置する。
-  AssistWindow.moveEvent から nudge_dosbox() を呼ぶことで同期追従する。
-  (SetParent は SDL2 描画コンテキストを破壊するため使用しない)
-"""
 
 import ctypes
 import ctypes.wintypes
@@ -37,9 +23,9 @@ class LayoutCorner(Enum):
 
 
 class LayoutForm(Enum):
-    FORM_1 = "form_1"  # 右全高 + DOSBox列下部の2分割
-    FORM_2 = "form_2"  # 下全幅 + 横列の2分割（デフォルト）
-    FORM_3 = "form_3"  # 横列 + DOSBox列下部 + 横列下部の3分割
+    FORM_1 = "form_1"
+    FORM_2 = "form_2"
+    FORM_3 = "form_3"
 
 
 def calc_layout_zones(
@@ -48,32 +34,25 @@ def calc_layout_zones(
     dos_w: int, dos_h: int,
     lw: int, lh: int,
 ) -> list[tuple[int, int, int, int]]:
-    """パネルゾーンの論理px座標リストを返す。
-    戻り値[0] = 主ゾーン（メイン情報パネル）、[1]以降 = 副ゾーン。
-    DOSBox領域はsetMaskで別途除外済み想定。
-    """
     if corner == LayoutCorner.TOP_LEFT:
         dx, dy = 0, 0
     elif corner == LayoutCorner.TOP_RIGHT:
         dx, dy = lw - dos_w, 0
     elif corner == LayoutCorner.BOTTOM_LEFT:
         dx, dy = 0, lh - dos_h
-    else:  # BOTTOM_RIGHT
+    else:
         dx, dy = lw - dos_w, lh - dos_h
 
-    col_x = dos_w if dx == 0 else 0   # DOSBox反対側の列X
+    col_x = dos_w if dx == 0 else 0
     col_w = lw - dos_w
-    row_y = dos_h if dy == 0 else 0   # DOSBox反対側の行Y
+    row_y = dos_h if dy == 0 else 0
     row_h = lh - dos_h
 
     if form == LayoutForm.FORM_1:
-        # 主: 反対列・全高  副: DOSBox列・反対行
         return [(col_x, 0, col_w, lh), (dx, row_y, dos_w, row_h)]
     elif form == LayoutForm.FORM_2:
-        # 主: 反対列・DOSBox高  副: 全幅・反対行
         return [(col_x, dy, col_w, dos_h), (0, row_y, lw, row_h)]
-    else:  # FORM_3
-        # 主: 反対列・DOSBox高  副B: DOSBox列・反対行  副C: 反対列・反対行
+    else:
         return [(col_x, dy, col_w, dos_h), (dx, row_y, dos_w, row_h), (col_x, row_y, col_w, row_h)]
 
 
@@ -96,7 +75,6 @@ _WS_CAPTION   = 0x00C00000
 _WS_THICKFRAME = 0x00040000
 
 
-# ── Win32 ヘルパー ────────────────────────────────────────────────────────
 
 def _get_rect(hwnd: int):
     r = ctypes.wintypes.RECT()
@@ -106,7 +84,6 @@ def _get_rect(hwnd: int):
 
 
 def _screen_of(widget) -> "QRect":
-    """widget が現在表示されているスクリーンのジオメトリを返す。"""
     from PySide6.QtWidgets import QApplication
     sc = widget.screen() if hasattr(widget, "screen") and widget.screen() else None
     if sc is None:
@@ -147,7 +124,6 @@ def _resize_win(hwnd: int, x: int, y: int, w: int, h: int) -> bool:
     return bool(ret)
 
 
-# ── LayoutManager ─────────────────────────────────────────────────────────
 
 class LayoutManager(QObject):
     def __init__(self, parent=None):
@@ -171,16 +147,13 @@ class LayoutManager(QObject):
         self._timer.setInterval(_TRACK_MS)
         self._timer.timeout.connect(self._tick)
 
-    # ── DOSBox PID / HWND ────────────────────────────────────────────────
 
     def set_dosbox_pid(self, pid: int) -> None:
-        """接続・切断時に DOSBox プロセス PID をセットする（0 = 未接続）。"""
         _log.info("set_dosbox_pid: %s", pid)
         self._dosbox_pid = pid
         self._dosbox_hwnd = 0
 
     def find_dosbox_hwnd(self) -> int:
-        """DOSBox HWND を検索する。PID が既知ならそちらを優先。"""
         try:
             from screen_capture import find_hwnds_by_pid, find_hwnds_by_prefix
 
@@ -217,7 +190,6 @@ class LayoutManager(QObject):
                     and ctypes.windll.user32.IsWindow(self._dosbox_hwnd))
 
     def is_dosbox_found(self) -> bool:
-        """DOSBox HWND を検索して有効かどうかを返す。"""
         if not self._valid():
             self.find_dosbox_hwnd()
         return self._valid()
@@ -225,10 +197,8 @@ class LayoutManager(QObject):
     def get_dosbox_hwnd(self) -> int:
         return self._dosbox_hwnd
 
-    # ── DOSBox 配置（レイアウトモード用, 埋め込みなし） ──────────────────
 
     def place_dosbox(self, x: int, y: int, w: int, h: int) -> bool:
-        """DOSBox をグローバル座標 (x, y) に移動・リサイズする（埋め込みなし）。"""
         if not self._valid():
             _log.warning("place_dosbox: invalid HWND — trying re-find")
             self.find_dosbox_hwnd()
@@ -239,12 +209,8 @@ class LayoutManager(QObject):
         _log.info("place_dosbox: pos=(%d,%d) size=%dx%d result=%s", x, y, w, h, ret)
         return ret
 
-    # ── レイアウトモード用 DOSBox クローム除去 ───────────────────────────
 
     def strip_dosbox_chrome(self) -> bool:
-        """DOSBox のタイトルバー・ボーダーを除去してスタイルを保存する。
-        レイアウトモード開始時に呼ぶ。DOSBox が AssistWindow に内包されているように見せる。
-        """
         if not self._valid():
             return False
         hwnd = self._dosbox_hwnd
@@ -261,7 +227,6 @@ class LayoutManager(QObject):
         return True
 
     def restore_dosbox_chrome(self) -> None:
-        """DOSBox のタイトルバー・ボーダーを復元する。レイアウトモード終了時に呼ぶ。"""
         if self._layout_original_style is None:
             return
         if self._valid():
@@ -277,7 +242,6 @@ class LayoutManager(QObject):
         self._layout_original_style = None
 
     def set_dosbox_topmost(self, enable: bool) -> None:
-        """DOSBox ウィンドウの最前面表示を設定する。"""
         if not self._valid():
             return
         insert_after = ctypes.c_void_p(_HWND_TOPMOST if enable else _HWND_NOTOPMOST)
@@ -287,13 +251,8 @@ class LayoutManager(QObject):
         )
         _log.info("set_dosbox_topmost: %s", enable)
 
-    # ── 埋め込みモード（surface output 専用） ────────────────────────────
 
     def enter_embed_mode(self, parent_widget, x: int, y: int, w: int, h: int):
-        """DOSBox を Qt ウィジェットとして parent_widget 内に埋め込む。
-        成功時は配置済みの QWidget を返す。失敗時は None。
-        surface output モードのみ動作保証。
-        """
         from PySide6.QtGui import QWindow
         from PySide6.QtWidgets import QWidget
 
@@ -305,7 +264,6 @@ class LayoutManager(QObject):
 
         hwnd = self._dosbox_hwnd
 
-        # タイトルバー・リサイズ枠を非表示にしてからコンテナに渡す
         style = ctypes.windll.user32.GetWindowLongW(hwnd, _GWL_STYLE)
         self._embed_original_style = style
         ctypes.windll.user32.SetWindowLongW(
@@ -323,7 +281,6 @@ class LayoutManager(QObject):
         self._embed_container = container
         _log.info("enter_embed_mode: hwnd=%s pos=(%d,%d) size=%dx%d", hwnd, x, y, w, h)
 
-        # createWindowContainer 直後は描画されないことがあるため遅延再描画
         from PySide6.QtCore import QTimer
         def _repaint(h=hwnd, c=container):
             ctypes.windll.user32.RedrawWindow(
@@ -335,7 +292,6 @@ class LayoutManager(QObject):
         return container
 
     def exit_embed_mode(self) -> None:
-        """埋め込みを解除し DOSBox を独立ウィンドウに戻す。"""
         if self._embed_container is not None:
             self._embed_container.hide()
             self._embed_container.setParent(None)
@@ -354,22 +310,17 @@ class LayoutManager(QObject):
         _log.info("exit_embed_mode done")
 
     def nudge_dosbox(self, dx: int, dy: int) -> None:
-        """DOSBox を現在位置から (dx, dy) だけ移動する。
-        AssistWindow.moveEvent から呼んで同期追従させる。
-        """
         if not self._valid() or (dx == 0 and dy == 0):
             return
         r = _get_rect(self._dosbox_hwnd)
         if r:
             _move_win(self._dosbox_hwnd, r[0] + dx, r[1] + dy)
 
-    # ── 追従モード（通常モード用） ────────────────────────────────────────
 
     def get_track_mode(self) -> TrackMode:
         return self._track_mode
 
     def set_track_mode(self, mode: TrackMode, assist_win):
-        """追従モードを設定する（通常モード用）。"""
         _log.info("set_track_mode: %s -> %s", self._track_mode.value, mode.value)
         self._track_mode = mode
         self._assist_win = assist_win
@@ -385,14 +336,9 @@ class LayoutManager(QObject):
         self._timer.start()
         _log.debug("track timer started (dosbox_hwnd=%s)", self._dosbox_hwnd)
 
-    # ── 一発配置（通常モード用） ──────────────────────────────────────────
 
     def arrange(self, dos_w: int, dos_h: int, assist_win,
                 corner: LayoutCorner = LayoutCorner.TOP_LEFT) -> bool:
-        """一発配置:
-        DOSBox を指定コーナーに固定サイズで配置し、
-        AssistWindow を DOSBox に隣接する位置に移動する（リサイズしない）。
-        """
         _log.info("arrange: dos=%dx%d corner=%s", dos_w, dos_h, corner.value)
         try:
             if not self._valid():
@@ -406,7 +352,6 @@ class LayoutManager(QObject):
             sw, sh = screen.width(), screen.height()
             _log.debug("screen: origin=(%d,%d) size=%dx%d", sx, sy, sw, sh)
 
-            # DOSBox をコーナーに配置
             if corner == LayoutCorner.TOP_LEFT:
                 dos_x, dos_y = sx, sy
             elif corner == LayoutCorner.TOP_RIGHT:
@@ -425,8 +370,6 @@ class LayoutManager(QObject):
                 _log.warning("arrange: SetWindowPos failed (hwnd=%s)", self._dosbox_hwnd)
                 return False
 
-            # AssistWindow を DOSBox 横に移動（リサイズしない）
-            # dos_w は Win32 物理px。Qt 論理px へ変換してから move()
             try:
                 dpr = assist_win.screen().devicePixelRatio()
             except Exception:
@@ -451,7 +394,6 @@ class LayoutManager(QObject):
             _log.exception("arrange failed")
             return False
 
-    # ── タイマーコールバック（通常追従モード） ────────────────────────────
 
     def _tick(self):
         try:
@@ -504,7 +446,6 @@ class LayoutManager(QObject):
         self._last_dos = None
         self._last_ast = None
 
-    # ── 停止 ─────────────────────────────────────────────────────────────
 
     def stop(self):
         _log.info("LayoutManager.stop()")

@@ -1,10 +1,3 @@
-"""normal_play/equipment_list_reader.py — 武具店 一覧データ取得/安定化。
-
-武具店一覧 (所持品/修理/静的武器辞書) の表示内容取得・チラツキ安定化
-(2-poll 安定確認) ・静的アイテム辞書ロードを equipment_render_module から
-物理分離 (挙動不変)。武具店 L4 分離化単位の専有サブモジュール
-(他施設と共有しない・一方向依存: render→reader)。
-"""
 from __future__ import annotations
 
 import logging
@@ -40,18 +33,10 @@ def _read_list_items(w, img: str) -> list[dict]:
         except Exception:  # noqa: BLE001
             _log.exception("equipment sell/repair list read failed")
             return []
-    # _render_list は img ∈ LIST_IMGS (POPUP3/4/NEWPOP) でのみ呼ばれるため、
-    # ここへ到達する img は上の3分岐で必ず処理済み（到達不能の安全網）。
-    # 宿屋専用 shop_item_list_reader への共有依存を除去（施設完全分離）。
     return []
 
 
 def _stabilize_list_items(w, img: str, items: list[dict]) -> list[dict]:
-    """POPUP3 の一瞬だけ欠ける読み取りを抑制する。
-
-    武具店の遠方一覧バッファは画面表示中でも1 pollだけ中間行が欠けることがある。
-    短い候補は連続3回同じ内容になるまで、直前の安定リストを返す。
-    """
     if img not in ("POPUP3.IMG", "POPUP4.IMG"):
         return items
     stable_by_img = getattr(w, _LIST_STABLE_ATTR, {})
@@ -101,7 +86,6 @@ def _list_signature(items: list[dict]) -> tuple:
 
 
 def _load_static_weapon_items() -> list[dict]:
-    """i18n コアの items/weapons を、武器一覧解析失敗時の表示用に読み込む。"""
     global _STATIC_WEAPON_ITEMS
     if _STATIC_WEAPON_ITEMS is not None:
         return [dict(it) for it in _STATIC_WEAPON_ITEMS]

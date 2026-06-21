@@ -1,9 +1,3 @@
-"""C1 dungeon runtime dialog axis.
-
-This module is the single reader for dungeon runtime message visibility.
-It keeps the observed DLGFLG-family bytes together so individual renderers
-do not each invent their own dialog-active rule.
-"""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -14,22 +8,18 @@ A847_OFFSET = 0xA847
 A84D_OFFSET = 0xA84D
 CURRENT_TEXT_PTR_OFFSET = 0xA844
 
-# Observed C1/runtime values. Several are also the high byte of the current
-# text pointer (+0xA844), so this is deliberately treated as a display axis,
-# not as a pure semantic phase byte.
 KNOWN_C1_A845_VALUES = frozenset({
-    0x10,  # NPC_DIALOG / corpse/no-loot response buffer high byte
-    0x4F,  # level-up dialog observation
-    0x79,  # runtime red-text buffer high byte
-    0x92,  # gold-drop / response buffer high byte
-    0x9A,  # message buffer / building-entry observation
+    0x10,
+    0x4F,
+    0x79,
+    0x92,
+    0x9A,
 })
 KNOWN_C1_A84D_VALUES = frozenset({0x40})
 
 
 @dataclass(frozen=True)
 class C1DialogAxis:
-    """One C1 runtime-message visibility decision for a poll."""
 
     active: bool
     prev_active: bool
@@ -82,12 +72,6 @@ def read_c1_dialog_axis(
     in_gameplay: bool = True,
     update_prev: bool = False,
 ) -> C1DialogAxis:
-    """Read the C1 runtime dialog axis.
-
-    ``+0xA847`` is an auxiliary observed byte with known delayed-clear risk,
-    so it does not start the axis by itself. It can hold an already-owned
-    runtime message while paired with the stronger DLGFLG-family evidence.
-    """
     a845 = _read_u8(w, A845_OFFSET)
     a84d = _read_u8(w, A84D_OFFSET)
     a847 = _read_u8(w, A847_OFFSET)

@@ -1,12 +1,3 @@
-"""city_data.py — A.EXE / CITYDATA.65 抽出済データの読込モジュール。
-
-- city_generation.json: A.EXE の [CityGeneration] セクション
-  (CoastalCityList / CityTemplateFilenames / StartingPositions / ReservedBlockLists)
-- world_map.json: CITYDATA.65 の 9 province × 48 location
-
-extract_city_data.py / extract_world_data.py で生成された JSON を読み、
-各テーブルへのアクセサを提供する。
-"""
 from __future__ import annotations
 
 import json
@@ -38,14 +29,12 @@ _WORLD_FILE = os.path.join(_DATA_DIR, "world_map.json")
 
 @dataclass(frozen=True)
 class CityGenerationData:
-    """A.EXE から抽出された city generation 用テーブル。"""
     coastal_city_list:      list[int]
     city_template_filenames: list[str]
     starting_positions:     list[tuple[int, int]]
     reserved_block_lists:   list[list[int]]
 
     def is_coastal(self, global_city_id: int) -> bool:
-        """global_city_id (= (provinceID << 5) + localCityID) が海岸都市か?"""
         return global_city_id in self.coastal_city_list
 
     def get_starting_position(self, index: int) -> Optional[tuple[int, int]]:
@@ -68,7 +57,6 @@ _cached: Optional[CityGenerationData] = None
 
 
 def _read_city_generation_raw() -> Optional[dict]:
-    """city_generation を provider 経由で読む: ローカルパック優先 → bundled disk fallback。"""
     txt = _read_pack_text("services/data/city_generation.json")
     if txt:
         try:
@@ -82,17 +70,11 @@ def _read_city_generation_raw() -> Optional[dict]:
 
 
 def reset_city_generation_cache() -> None:
-    """city_generation キャッシュを破棄する（pack 切替/テスト用）。"""
     global _cached
     _cached = None
 
 
 def load_city_generation_data(path: Optional[str] = None) -> CityGenerationData:
-    """CityGenerationData を構築する (キャッシュ)。
-
-    path 明示時はそのファイル（後方互換）。未指定は provider 経由
-    （ローカルパック → bundled disk fallback）。
-    """
     global _cached
     if _cached is not None:
         return _cached
@@ -115,26 +97,20 @@ def load_city_generation_data(path: Optional[str] = None) -> CityGenerationData:
 
 
 def is_data_available() -> bool:
-    """city_generation が provider（ローカルパック）または bundled disk から得られるか。"""
     if os.path.isfile(_DATA_FILE):
         return True
     return _read_pack_text("services/data/city_generation.json") is not None
 
 
-# ══════════════════════════════════════════════════════════════
-# World map (CITYDATA.65) 読込
-# ══════════════════════════════════════════════════════════════
 
 @dataclass(frozen=True)
 class LocationData:
-    """1 location (city / town / village / dungeon)。"""
     name:       str
-    x:          int       # province local 座標
+    x:          int
     y:          int
     visibility: int
 
     def city_seed(self) -> int:
-        """citySeed = (local.x << 16) | local.y"""
         return ((self.x & 0xFFFF) << 16) | (self.y & 0xFFFF)
 
 
@@ -145,20 +121,14 @@ class ProvinceData:
     global_y:       int
     global_w:       int
     global_h:       int
-    city_states:    list[LocationData]   # 8 件
-    towns:          list[LocationData]   # 8 件
-    villages:       list[LocationData]   # 16 件
+    city_states:    list[LocationData]
+    towns:          list[LocationData]
+    villages:       list[LocationData]
     second_dungeon: LocationData
     first_dungeon:  LocationData
-    random_dungeons: list[LocationData]  # 14 件
+    random_dungeons: list[LocationData]
 
     def get_location(self, location_id: int) -> Optional[LocationData]:
-        """locationID (0-47) → LocationData。
-            0-7  = cityStates
-            8-15 = towns
-           16-31 = villages
-           32+   = dungeons (32 = secondDungeon, 33 = firstDungeon, 34-47 = random)
-        """
         if 0 <= location_id < 8:
             return self.city_states[location_id]
         if 8 <= location_id < 16:
@@ -176,14 +146,10 @@ class ProvinceData:
 
 @dataclass(frozen=True)
 class WorldMapData:
-    provinces: list[ProvinceData]   # 9 件
+    provinces: list[ProvinceData]
 
     def find_location_by_name(self, name: str
                               ) -> Optional[tuple[int, int, LocationData]]:
-        """全 province 横断で name 一致する location を探す。
-        Returns:
-            (province_id, location_id, location) または None
-        """
         for pid, prov in enumerate(self.provinces):
             for lid in range(48):
                 loc = prov.get_location(lid)
@@ -196,12 +162,6 @@ _world_cached: Optional[WorldMapData] = None
 
 
 def _read_pack_text(name: str) -> Optional[str]:
-    """翻訳外 Arena 生成資産を v2 localpack の `generated_assets/<basename>` から読む（無ければ None）。
-
-    Read generated Arena assets only from the v2 localpack (`RTESArenaAssist.localpack`),
-    which is the single Arena-derived provider for the public build.
-    未ロード/未収録は None（呼び側が bundled disk(dev) へ fallback、それも無ければ degraded）。
-    """
     try:
         import i18n_helper as i18n
         data = i18n.v2_generated_asset(os.path.basename(name))
@@ -211,7 +171,6 @@ def _read_pack_text(name: str) -> Optional[str]:
 
 
 def _read_world_map_raw() -> Optional[dict]:
-    """world_map を読む: v2 localpack の generated_assets 優先 → bundled disk（dev）fallback。"""
     txt = _read_pack_text("services/data/world_map.json")
     if txt:
         try:
@@ -225,17 +184,11 @@ def _read_world_map_raw() -> Optional[dict]:
 
 
 def reset_world_map_cache() -> None:
-    """world_map キャッシュを破棄する（pack 切替/テスト用）。"""
     global _world_cached
     _world_cached = None
 
 
 def load_world_map_data(path: Optional[str] = None) -> WorldMapData:
-    """WorldMapData を構築する (キャッシュ)。
-
-    path 明示時はそのファイルを読む（後方互換）。未指定は provider 経由
-    （ローカルパック → bundled disk fallback）。
-    """
     global _world_cached
     if _world_cached is not None:
         return _world_cached
@@ -272,7 +225,6 @@ def load_world_map_data(path: Optional[str] = None) -> WorldMapData:
 
 
 def is_world_map_available() -> bool:
-    """world_map が provider（ローカルパック）または bundled disk から得られるか。"""
     if os.path.isfile(_WORLD_FILE):
         return True
     return _read_pack_text("services/data/world_map.json") is not None

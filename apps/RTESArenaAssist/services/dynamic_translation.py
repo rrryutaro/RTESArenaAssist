@@ -1,9 +1,3 @@
-"""dynamic_translation.py — Assist `dynamic_places.json` を流用した名称組立・翻訳。
-
-分解合成翻訳スキーマ (form_decomposed v2) を読み、prefix/suffix
-インデックスから英固有名と日本語訳を組み立てる。Assist 辞書がマスタで、
-不足は Assist 側 dynamic_places.json に追加する。
-"""
 from __future__ import annotations
 
 import json
@@ -27,10 +21,9 @@ _ASSIST_DIR = os.path.normpath(os.path.join(
 
 @dataclass
 class BuildingTranslation:
-    """1 施設の原文 + 翻訳。"""
-    en:           str          # 例: "Green Griffin" / "Order of the Red Rose"
-    ja:           Optional[str]  # 例: "緑のグリフォン亭" — 翻訳できなければ None
-    parts_missing: list[str]   # 翻訳できなかった部品 (例: ["Griffin"] など)
+    en:           str
+    ja:           Optional[str]
+    parts_missing: list[str]
 
 
 _data_cache: Optional[dict] = None
@@ -39,7 +32,6 @@ _missing_parts: set[str] = set()
 
 
 def _load() -> dict:
-    """地名合成規則を i18n/<lang>/_rules.json の dynamic_places から得る（言語別規則）。"""
     global _data_cache
     if _data_cache is not None:
         return _data_cache
@@ -51,11 +43,6 @@ def _load() -> dict:
 
 
 def _read_public_city_generation() -> Optional[dict]:
-    """公開 v2 localpack の city_generation 生成資産（data）を読む（無ければ None）。
-
-    公開版は aexe_strings.json を同梱しないため、建物名パーツ（prefix/suffix）は
-    ユーザー環境で採取して localpack へ収録した city_generation.json から読む。
-    """
     try:
         if _ASSIST_DIR not in sys.path:
             sys.path.insert(0, _ASSIST_DIR)
@@ -65,29 +52,20 @@ def _read_public_city_generation() -> Optional[dict]:
             return None
         data = json.loads(blob.decode("utf-8")).get("data")
         return data if isinstance(data, dict) else None
-    except Exception:  # noqa: BLE001 - 読込失敗は名称解決のみ諦める（地図描画は継続）
+    except Exception:  # noqa: BLE001
         return None
 
 
 def _load_aexe_city_generation() -> dict:
-    """建物名パーツ（tavern/temple/equipment の prefix/suffix）を得る。
-
-    dev は aexe_strings.json（正本・Arena 原文含む）から、公開版はそれが非同梱のため
-    v2 localpack の city_generation.json（生成資産・名称パーツ収録）から読む。どちらも
-    得られなければ空 dict を返す（= 名称は未解決でも、施設検出・mif_name 解決・地図描画は
-    巻き込まれずに継続させる＝表示と名称の分離）。
-    """
     global _aexe_city_gen_cache
     if _aexe_city_gen_cache is not None:
         return _aexe_city_gen_cache
     out: dict = {}
-    # dev: aexe_strings.json（正本）。公開版は非同梱で FileNotFoundError → 公開経路へ。
     try:
         with open(_AEXE_STRINGS_PATH, encoding="utf-8") as f:
             out = json.load(f).get("city_generation", {}) or {}
     except (OSError, ValueError):
         out = {}
-    # 公開: localpack の city_generation 生成資産（名称パーツ収録）。
     if not out.get("tavern_prefixes"):
         pub = _read_public_city_generation()
         if pub:
@@ -115,7 +93,6 @@ def _lookup_place_ja(en: str, category: str) -> Optional[str]:
 
 
 def _lookup_array_part(arr: list[dict], index: int) -> tuple[str, Optional[str]]:
-    """配列 [{en, value}, ...] から index 番目の (en, 現在言語訳) を取り出す。"""
     if not (0 <= index < len(arr)):
         return ("", None)
     entry = arr[index]
@@ -123,7 +100,6 @@ def _lookup_array_part(arr: list[dict], index: int) -> tuple[str, Optional[str]]
 
 
 def translate_tavern(t: TavernName) -> BuildingTranslation:
-    """Tavern 名を組み立て + 翻訳。"""
     data = _load().get("tavern", {})
     pre_en = _aexe_part("tavern_prefixes", t.prefix_index)
     suffix_key = "tavern_marine_suffixes" if t.coastal else "tavern_suffixes"
@@ -152,7 +128,6 @@ def translate_tavern(t: TavernName) -> BuildingTranslation:
 
 
 def translate_temple(t: TempleName) -> BuildingTranslation:
-    """Temple 名を組み立て + 翻訳。model ごとに prefix と suffix セットが異なる。"""
     data = _load().get("temple", {})
     models = data.get("models", [])
     if not (0 <= t.model < len(models)):
@@ -180,18 +155,12 @@ def translate_temple(t: TempleName) -> BuildingTranslation:
     return BuildingTranslation(en=en, ja=ja, parts_missing=missing)
 
 
-# city type キー → 英表示ラベル (実機表示に合わせ小文字)。
 _CITY_TYPE_EN = {
     "city_state": "city",
     "town":       "town",
     "village":    "village",
 }
 
-# city type キー → city_types カテゴリの構造 app_id (direct-id・公開版安全)。
-# city_types は Assist 所有の構造ラベル 3 件 (city/town/village = OTA の
-# localCityID 範囲→CityState/Town/Village 構造) で id は index 固定。
-# en 逆引きではなく id 直引き (`i18n.text_opt`) で訳を解決する。id↔en の対応は
-# tests/test_dynamic_translation_city_type の guard が ui.json 同様に固定する。
 _CITY_TYPE_ID = {
     "city_state": "city_types.0.0",
     "town":       "city_types.1.0",
@@ -202,11 +171,6 @@ _CITY_TYPE_ID = {
 def translate_equipment(e: EquipmentName,
                         city_type: Optional[str] = None
                         ) -> BuildingTranslation:
-    """Equipment 名を組み立て + 翻訳。
-
-    %ct (city type) は city_type から置換。
-    %ef / %n は EquipmentName に座標由来の NPC 名が入っていれば置換する。
-    """
     data = _load().get("equipment_store", {})
     pre_en = _aexe_part("equipment_prefixes", e.prefix_index)
     suf_en = _aexe_part("equipment_suffixes", e.suffix_index)
@@ -225,8 +189,6 @@ def translate_equipment(e: EquipmentName,
     if "%n" in en and e.n_name:
         en = en.replace("%n", e.n_name)
 
-    # Assist の分解翻訳は %ct を大文字の場所種別として受け取るため、
-    # 表示英名は Arena 実機に合わせて小文字のまま、翻訳だけ正規化して照合する。
     lookup_en = en
     if ct_en:
         lookup_en = lookup_en.replace(f"The {ct_en} ", f"The {ct_en.title()} ")
@@ -264,7 +226,6 @@ def translate_equipment(e: EquipmentName,
 
 
 def translate_mages_guild() -> BuildingTranslation:
-    """Mages Guild は固定名 1 件。"""
     data = _load().get("mages_guild", {})
     en = data.get("static_name_en", "Mages Guild")
     ja = data.get("static_name_value")
@@ -272,7 +233,6 @@ def translate_mages_guild() -> BuildingTranslation:
 
 
 def get_missing_parts() -> list[str]:
-    """Assist 辞書 dynamic_places.json で翻訳できなかった部品の一覧。"""
     return sorted(_missing_parts)
 
 

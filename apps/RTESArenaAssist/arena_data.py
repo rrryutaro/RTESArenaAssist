@@ -1,16 +1,3 @@
-"""
-arena_data.py — Arena 全アイテム/クラス/種族データの統合ローダー。
-
-データソースは i18n 統一構造（`i18n/_original/{items,classes,races}.json` の `data`/`original`
-＋ `<lang>/` の名称レイヤ）。構造データ（重量/価格/装備可否）は `_original` の `data` から、
-英語名はアンカー `original`（言語非依存・名称マッチ用）から、各言語名は言語レイヤから得る。
-
-呼び出し側は従来通り c["en"], c["allowed_armors"] 等でアクセス可能。
-種族複数形（規則a）は `i18n_helper.lang_value_in(id, lang, "plural")` で解決する。
-
-注: `armors_by_material` は新構造で material グループが平坦化されているため flat list で再構築する
-（実消費なし＝get_*/呼出側はいずれも未参照のため構造非互換は無害）。
-"""
 
 from __future__ import annotations
 from typing import Optional
@@ -21,7 +8,6 @@ _items_data: dict | None = None
 _classes_data: dict | None = None
 _races_data: dict | None = None
 
-# 旧 _items_data が公開していたアイテムセクション（id 接頭辞 items.<section>.）。
 _ITEM_SECTIONS = [
     "weapons", "armor_slots", "shields", "armor_materials", "armors_by_material",
     "accessories", "accessory_attributes", "magical_materials", "potions", "conditions",
@@ -29,12 +15,10 @@ _ITEM_SECTIONS = [
 
 
 def _num_id(entry_id: str) -> int:
-    """i18n id（`items.weapons.17.0` / `classes.5.0` / `races.0.0`）から数値 id を取り出す。"""
     return int(entry_id.split(".")[-2])
 
 
 def _section_entries(category: str, prefix: str) -> list[tuple[str, dict]]:
-    """`prefix`（例 `items.weapons.`）で始まる (id, _original entry) を id 昇順で返す。"""
     out = [(k, e) for k, e in i18n.originals(category).items()
            if isinstance(e, dict) and k.startswith(prefix)]
     out.sort(key=lambda ke: _num_id(ke[0]))
@@ -42,7 +26,6 @@ def _section_entries(category: str, prefix: str) -> list[tuple[str, dict]]:
 
 
 def _item_flat(entry_id: str, e: dict) -> dict:
-    """アイテムエントリを旧フラット形式に正規化（id/en/ja ＋ data 展開）。"""
     flat = {
         "id": _num_id(entry_id),
         "en": e.get("original", ""),
@@ -53,7 +36,6 @@ def _item_flat(entry_id: str, e: dict) -> dict:
 
 
 def _class_flat(entry_id: str, e: dict) -> dict:
-    """クラスエントリを旧フラット形式に正規化。"""
     data = e.get("data", {}) or {}
     meta = e.get("_meta", {}) or {}
     flat = {
@@ -75,7 +57,6 @@ def _class_flat(entry_id: str, e: dict) -> dict:
 
 
 def _race_flat(entry_id: str, e: dict) -> dict:
-    """種族エントリを旧フラット形式に正規化（複数形は言語別語形＝規則a）。"""
     data = e.get("data", {}) or {}
     return {
         "id":           _num_id(entry_id),
@@ -105,12 +86,10 @@ def _load() -> None:
 
 
 def reload() -> None:
-    """キャッシュを破棄して次回 _load で再構築する（言語切替後等）。"""
     global _items_data, _classes_data, _races_data
     _items_data = _classes_data = _races_data = None
 
 
-# ── アイテム照会 ───────────────────────────────────────────
 
 def get_weapon(weapon_id: int) -> Optional[dict]:
     _load()
@@ -144,7 +123,6 @@ def get_potion(potion_id: int) -> Optional[dict]:
     return None
 
 
-# ── クラス照会 ─────────────────────────────────────────────
 
 def get_class_by_id(class_id: int) -> Optional[dict]:
     _load()
@@ -167,7 +145,6 @@ def all_classes() -> list[dict]:
     return list(_classes_data.get("classes", []))
 
 
-# ── 種族照会 ────────────────────────────────────────────────
 
 def get_race_by_id(race_id: int) -> Optional[dict]:
     _load()
@@ -182,10 +159,8 @@ def all_races() -> list[dict]:
     return list(_races_data.get("races", []))
 
 
-# ── 装備可否判定（仮説ベース） ────────────────────────────
 
 def can_class_use_armor(class_id: int, material_id: int) -> bool | None:
-    """class_id がこの素材の鎧を装備可能か。Noneは仮説不明（クラス未登録）。"""
     cls = get_class_by_id(class_id)
     if cls is None:
         return None
@@ -207,6 +182,5 @@ def can_class_use_shield(class_id: int, shield_id: int) -> bool | None:
 
 
 def is_class_data_hypothesis(class_id: int) -> bool:
-    """このクラスの装備可否データが仮説（未検証）であるか。"""
     cls = get_class_by_id(class_id)
     return bool(cls and cls.get("_hypothesis_note"))

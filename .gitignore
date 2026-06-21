@@ -15,9 +15,6 @@ venv/
 .DS_Store
 Thumbs.db
 
-# Claude Code ローカル設定
-.claude/
-
 # ビルド成果物
 build/
 build-public/

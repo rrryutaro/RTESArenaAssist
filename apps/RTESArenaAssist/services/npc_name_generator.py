@@ -1,16 +1,13 @@
-"""npc_name_generator.py — NAMECHNK.DAT ベースの NPC 名生成。"""
 from __future__ import annotations
 
 import os
 from functools import lru_cache
 
 from .arena_random import ArenaRandom
+from runtime_paths import resolve_arena_data_dir
 
 
-_NAMECHNK_PATH = os.path.normpath(os.path.join(
-    os.path.dirname(os.path.abspath(__file__)),
-    "..", "..", "..", "docs", "ARENA-data", "DAT", "NAMECHNK.DAT",
-))
+_NAMECHNK_PATH = os.fspath(resolve_arena_data_dir() / "DAT" / "NAMECHNK.DAT")
 
 
 NameRule = tuple[str, int | str, int | None]
@@ -70,8 +67,6 @@ _RULES: tuple[tuple[tuple[NameRule, ...], tuple[NameRule, ...]], ...] = (
 
 @lru_cache(maxsize=1)
 def _read_namechnk() -> bytes | None:
-    """NAMECHNK.DAT を loose（ローカルの Arena データ）優先→ユーザー Arena install の VFS
-    （GLOBAL.BSA・DAT 非暗号）の順で読む（公開版対応・無ければ None）。"""
     try:
         if os.path.isfile(_NAMECHNK_PATH):
             with open(_NAMECHNK_PATH, "rb") as f:

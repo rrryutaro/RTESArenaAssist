@@ -1,11 +1,3 @@
-"""logbook 画面のジャーナル本文を翻訳タブ・パネルに反映する独立モジュール。
-
-window から analyzer / anchor / tab_journal / ui_router を借用し、自身は
-変化検出キャッシュ (window._journal_key_prev) を介して再描画を抑制する。
-画面判定は行わず、モーダル系統の単一分類 (modal_overlay.
-classify_modal_overlay) の結論を消費して動作する (= 判定描画セット。
-内部で screen_id を再判定しない)。
-"""
 from __future__ import annotations
 
 import logging

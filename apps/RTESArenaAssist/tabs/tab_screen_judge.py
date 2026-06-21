@@ -1,9 +1,3 @@
-"""
-tabs/tab_screen_judge.py — screen_judge デバッグタブ
-
-DOSBox クライアント領域のライブキャプチャ表示・
-クリックで RGB 値と Arena 座標を確認し、観測点として登録する。
-"""
 
 from __future__ import annotations
 
@@ -26,7 +20,6 @@ _DOT_RADIUS = 4
 
 
 class _ClickableLabel(QLabel):
-    """クリック位置を親に通知する QLabel サブクラス。"""
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -43,7 +36,6 @@ class _ClickableLabel(QLabel):
 
 
 class TabScreenJudge(QWidget):
-    """screen_judge デバッグ / 観測点可視化タブ。"""
 
     def __init__(self, window, parent=None):
         super().__init__(parent)
@@ -56,16 +48,12 @@ class TabScreenJudge(QWidget):
         self._pending_point: Optional[dict] = None
         self._build_ui()
 
-    # ------------------------------------------------------------------
-    # UI 構築
-    # ------------------------------------------------------------------
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
         root.setContentsMargins(6, 6, 6, 6)
         root.setSpacing(6)
 
-        # ─ ツールバー ─
         toolbar = QHBoxLayout()
         self._cap_btn = QPushButton("キャプチャ")
         self._cap_btn.clicked.connect(self._do_capture)
@@ -85,10 +73,8 @@ class TabScreenJudge(QWidget):
 
         root.addLayout(toolbar)
 
-        # ─ スプリッター（画像 | 観測点リスト）─
         splitter = QSplitter(Qt.Orientation.Horizontal)
 
-        # 画像表示エリア
         img_widget = QWidget()
         img_layout = QVBoxLayout(img_widget)
         img_layout.setContentsMargins(0, 0, 0, 0)
@@ -102,7 +88,6 @@ class TabScreenJudge(QWidget):
         self._img_lbl.set_click_callback(self._on_image_click)
         img_layout.addWidget(self._img_lbl)
 
-        # 観測点保存ボタン
         self._save_obs_btn = QPushButton("観測点として保存")
         self._save_obs_btn.setEnabled(False)
         self._save_obs_btn.clicked.connect(self._save_pending_point)
@@ -110,7 +95,6 @@ class TabScreenJudge(QWidget):
 
         splitter.addWidget(img_widget)
 
-        # 観測点リスト
         obs_group = QGroupBox("観測点リスト")
         obs_layout = QVBoxLayout(obs_group)
 
@@ -139,9 +123,6 @@ class TabScreenJudge(QWidget):
 
         self._set_placeholder()
 
-    # ------------------------------------------------------------------
-    # キャプチャ
-    # ------------------------------------------------------------------
 
     def _controller(self) -> Optional["ScreenJudgeController"]:
         return getattr(self._window, "_screen_judge", None)
@@ -156,7 +137,6 @@ class TabScreenJudge(QWidget):
             self._info_lbl.setText("キャプチャ失敗（DOSBox が見つかりません）")
             return
 
-        # PIL Image → QPixmap
         buf = io.BytesIO()
         img.save(buf, format="PNG")
         qimg = QImage.fromData(buf.getvalue())
@@ -172,7 +152,6 @@ class TabScreenJudge(QWidget):
             return
         pix = self._last_pixmap.copy()
 
-        # 選択中観測点のハイライト
         selected = self._selected_obs()
         ctrl = self._controller()
         if ctrl and selected:
@@ -189,7 +168,6 @@ class TabScreenJudge(QWidget):
                     painter.drawText(cx + _DOT_RADIUS + 2, cy, obs.get("name", ""))
                 painter.end()
 
-        # pending 観測点（クリック位置）
         if self._pending_point:
             ctrl = self._controller()
             if ctrl:
@@ -215,9 +193,6 @@ class TabScreenJudge(QWidget):
     def _set_placeholder(self) -> None:
         self._img_lbl.setText("「キャプチャ」ボタンを押すと画像が表示されます")
 
-    # ------------------------------------------------------------------
-    # クリック処理
-    # ------------------------------------------------------------------
 
     def _on_image_click(self, label_pos: QPoint) -> None:
         if self._last_pixmap is None:
@@ -229,7 +204,6 @@ class TabScreenJudge(QWidget):
         if mapper is None:
             return
 
-        # label 上の座標 → 実ピクセル座標に変換
         pix = self._last_pixmap
         lw = self._img_lbl.width()
         lh = self._img_lbl.height()
@@ -251,13 +225,11 @@ class TabScreenJudge(QWidget):
         cx = round(rx * pw / disp_w)
         cy = round(ry * ph / disp_h)
 
-        # RGB 取得
         img = ctrl.get_last_capture()
         if img is None:
             return
         r, g, b = img.getpixel((min(cx, pw - 1), min(cy, ph - 1)))
 
-        # Arena 座標換算
         ax, ay = mapper.client_to_arena(cx, cy)
 
         existing_names = {p.get("name", "") for p in self._obs_points}
@@ -277,9 +249,6 @@ class TabScreenJudge(QWidget):
         )
         self._refresh_image()
 
-    # ------------------------------------------------------------------
-    # 観測点操作
-    # ------------------------------------------------------------------
 
     def _save_pending_point(self) -> None:
         if self._pending_point is None:
@@ -332,9 +301,6 @@ class TabScreenJudge(QWidget):
         self._rebuild_obs_table()
         self._refresh_image()
 
-    # ------------------------------------------------------------------
-    # ライブモード
-    # ------------------------------------------------------------------
 
     def _on_live_toggled(self, checked: bool) -> None:
         if checked:
@@ -343,31 +309,22 @@ class TabScreenJudge(QWidget):
         else:
             self._live_timer.stop()
 
-    # ------------------------------------------------------------------
-    # リサイズ時に画像を再スケール
-    # ------------------------------------------------------------------
 
     def resizeEvent(self, ev) -> None:
         super().resizeEvent(ev)
         if self._last_pixmap is not None:
             self._refresh_image()
 
-    # ------------------------------------------------------------------
-    # 公開 API（Phase C 以降から呼ばれる）
-    # ------------------------------------------------------------------
 
     def get_obs_points(self) -> list[dict]:
-        """現在登録中の観測点リストを返す。"""
         return list(self._obs_points)
 
     def set_obs_points(self, points: list[dict]) -> None:
-        """外部（registry）から観測点リストを上書きする。"""
         self._obs_points = list(points)
         self._rebuild_obs_table()
         self._refresh_image()
 
     def load_from_registry(self) -> None:
-        """ScreenJudgeController.get_registry() から観測点をロードして表示する。"""
         ctrl = self._controller()
         if ctrl is None:
             return

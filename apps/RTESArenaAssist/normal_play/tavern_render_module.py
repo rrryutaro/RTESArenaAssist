@@ -1,27 +1,3 @@
-"""normal_play/tavern_render_module.py — 宿屋店主会話の描画オーナー。
-
-宿屋分離化が active な poll で、店主会話の各子画面 (L4) の描画・終了時整理を
-**この 1 モジュールに閉じて所有**する (判定描画セット分離)。
-
-設計 (1軸化):
-- 「いまどの子画面を描くか」は単一判定 `session.tavern_view.TavernView`
-  (= `_tview`) の `render_owner` だけを見て決める。各描画は render_owner に
-  従う renderer に徹する (= 複数経路の食い違いによる崩れを構造的に排除)。
-- 描画オーナーが扱う owner:
-    shop_menu / shop_rumor_type : 店主メニュー / 噂種別 popup
-    shop_buy                    : 酒一覧 (drinks) / 部屋一覧 (rooms)
-    negotiation                 : 宿泊金額交渉 (normal_play/negotiation_module へ委譲)
-    active_template             : 宿泊日数/忍込確認・結果/部屋契約/費用 (active_template_module へ委譲)
-- 以下は本モジュールでは描かず、既存の判定描画セットを再利用する:
-    npc_dialog (店内応答=酒/噂応答) … normal_play/npc_dialog_module
-    tavern_rumor_type (ASK ABOUT 借用の噂種別) … session/tavern_session.poll()
-    死亡演出 … normal_play/trigger_module.poll_death_cinematic
-    クエスト/店主クリック NPC … 既存 NPC / journal 経路
-
-共通描画 (店主メニューの表示テキスト生成) は `shop_render_common.build_menu_display`
-を呼ぶ (= 副作用なし契約)。「どの owner で描くか」は本モジュールが決め、
-神殿等は従来の共有経路を残す (今回は宿屋のみ移植、神殿は次フェーズで同枠移植)。
-"""
 from __future__ import annotations
 
 import logging
@@ -37,49 +13,28 @@ def poll_tavern_render(
     shop_img_name: str,
     top_level_state: str,
 ) -> tuple[bool, bool, bool, bool]:
-    """宿屋店主会話の子画面を render_owner に従って描画する。
-
-    戻り値: (negot_handled, active_tmpl_handled, shop_menu_visible,
-             shop_buy_active)
-    poll_controller の後段 (map_safe_coord / active_template gate / 接続バー
-    診断ログ等) が参照するため、判定結果を 4 フラグで返す。
-    """
     owner = tview.render_owner
     l4_kind = tview.l4_kind
     shop_menu_visible = False
     shop_buy_active = False
 
-    # ------------------------------------------------------------------
-    # 1. 一覧 (酒 drinks / 部屋 rooms) … render_owner == "shop_buy"
-    # ------------------------------------------------------------------
     if owner == "shop_buy" and shop_state is not None:
         if l4_kind == "rooms" and shop_state.kind == "shop_rooms":
-            # 部屋一覧: static rooms area 由来のため累積不要 (毎 poll 全件表示)。
             shop_buy_active = True
             _render_shop_rooms(w, shop_state)
         elif shop_state.kind == "shop_buy":
-            # 酒一覧: 表示順に累積 (popup スクロールで一部しか見えないため)。
             shop_buy_active = True
             _render_shop_drinks(w, shop_state)
 
-    # ------------------------------------------------------------------
-    # 2. 店主メニュー / 噂種別 popup … render_owner in (shop_menu, shop_rumor_type)
-    # ------------------------------------------------------------------
     elif (owner in ("shop_menu", "shop_rumor_type")
             and shop_state is not None
             and shop_state.kind in ("shop_menu", "shop_rumor_type")):
         shop_menu_visible = True
         _render_shop_menu(w, shop_state, shop_img_name)
 
-    # ------------------------------------------------------------------
-    # 3. 終了時整理: 一覧 / メニューが前景でない時の残置クリア。
-    # ------------------------------------------------------------------
     _cleanup_shop_buy(w, shop_buy_active, shop_menu_visible, shop_img_name)
     _cleanup_shop_menu(w, shop_menu_visible, shop_buy_active, shop_img_name)
 
-    # ------------------------------------------------------------------
-    # 4. 宿泊金額交渉 … render_owner == "negotiation"
-    # ------------------------------------------------------------------
     from normal_play.negotiation_module import (
         poll_negotiation as _poll_negotiation,
         cleanup_if_owner as _cleanup_negotiation,
@@ -93,10 +48,6 @@ def poll_tavern_render(
         negot_handled = False
         _cleanup_negotiation(w)
 
-    # ------------------------------------------------------------------
-    # 5. 直接描画テンプレ (active_template) … render_owner == "active_template"
-    #    確認/結果/入力/契約/費用。negotiation が描いた poll では走らせない。
-    # ------------------------------------------------------------------
     from normal_play.active_template_module import (
         poll_active_template as _poll_active_template,
         cleanup_if_owner as _cleanup_active_template,
@@ -106,11 +57,6 @@ def poll_tavern_render(
     elif owner != "active_template":
         active_tmpl_handled = False
     else:
-        # 宿屋描画オーナーは _facility_tavern 中のみ呼ばれるため、施設文脈は常に
-        # tavern。会話 latch (tavern_active_now) が未開始の中途接続でも宿屋 surface
-        # を採用できるよう active_facility="tavern" を渡す (active_template_reader
-        # が facility 一致を active_slot 候補の採用条件に使うため)。render_owner が
-        # "active_template" の poll でしか到達しないので過剰描画にはならない。
         active_tmpl_handled = _poll_active_template(
             w,
             shop_img_name=shop_img_name,
@@ -127,12 +73,8 @@ def poll_tavern_render(
             shop_menu_visible, shop_buy_active)
 
 
-# ----------------------------------------------------------------------
-# 描画ヘルパ (本モジュール内に閉じる。poll_controller から物理移植)
-# ----------------------------------------------------------------------
 
 def _render_shop_drinks(w, shop_state) -> None:
-    """酒一覧 (shop_buy) を 3 列 UI に描画する (表示順に累積)。"""
     try:
         from shop_item_list_reader import translate_shop_item_list
         _buy_now_tr = translate_shop_item_list(
@@ -172,7 +114,6 @@ def _render_shop_drinks(w, shop_state) -> None:
 
 
 def _render_shop_rooms(w, shop_state) -> None:
-    """部屋一覧 (shop_rooms) を shop_buy と同じ 3 列 UI に描画する。"""
     try:
         from room_list_reader import translate_room_list
         _room_tr = translate_room_list(shop_state.room_items, section="rooms")
@@ -201,12 +142,6 @@ def _render_shop_rooms(w, shop_state) -> None:
 
 
 def _render_shop_menu(w, shop_state, shop_img_name: str) -> None:
-    """店主メニュー / 噂種別 popup を翻訳タブ・パネルに描画する。
-
-    panel_owner は shop_menu / shop_rumor_type で分離する。
-    タイトルは state.menu_title_en から取得し、表示テキスト生成は共通描画
-    `shop_render_common.build_menu_display` (副作用なし) に委ねる。
-    """
     _shop_kind = shop_state.kind
     try:
         from shop_menu_reader import (
@@ -222,7 +157,6 @@ def _render_shop_menu(w, shop_state, shop_img_name: str) -> None:
         _owner_taken = (w._panel_owner != _shop_kind)
         if _menu_key != _prev_menu_key or _owner_taken:
             w._shop_menu_key_prev = _menu_key
-            # 宿屋メニューは context-aware 直引き (公開版安全)。
             _menu_tr = translate_shop_menu_items(_menu_items, owner_kind="tavern")
             _title_en = shop_state.menu_title_en or ""
             _title_ja = ((translate_ui_text("tavern", _title_en) or _title_en)
@@ -246,12 +180,6 @@ def _render_shop_menu(w, shop_state, shop_img_name: str) -> None:
 
 def _cleanup_shop_buy(w, shop_buy_active: bool, shop_menu_visible: bool,
                       shop_img_name: str) -> None:
-    """一覧 (shop_buy) が前景でない時の残置クリア (= 終了時整理)。
-
-    空更新は「自分自身が所有者だったとき」のみに限定する。他経路が所有して
-    いる場合は seen_items / key_prev 残置クリアは行うが翻訳表示の空更新はしない
-    (= 他経路の表示を不正に上書きしない)。
-    """
     if shop_buy_active:
         return
     _was_shop_buy_owner = (w._panel_owner == "shop_buy")
@@ -283,10 +211,6 @@ def _cleanup_shop_buy(w, shop_buy_active: bool, shop_menu_visible: bool,
 
 def _cleanup_shop_menu(w, shop_menu_visible: bool, shop_buy_active: bool,
                        shop_img_name: str) -> None:
-    """店主メニュー / 噂種別 popup が前景でない時の残置クリア (= 終了時整理)。
-
-    panel_owner が shop_menu / shop_rumor_type のいずれでもクリアする。
-    """
     if shop_menu_visible:
         return
     _had_shop_menu = bool(
@@ -308,34 +232,21 @@ def _cleanup_shop_menu(w, shop_menu_visible: bool, shop_buy_active: bool,
             "shop_buy" if shop_buy_active else "none")
 
 
-# 公開 API (宿屋 shop surface 描画の1本化): 共有 dispatch
-# (poll_controller の _poll_shared_shop_route) が session 非active 文脈でも
-# 同一実装で宿屋 shop surface を描画できるよう公開する。active 経路
-# (poll_tavern_render) と pre-session 経路で実装を複製しない。
 def render_no_session_shop(
         w, *, shop_state, shop_img_name: str,
         shop_buy_active: bool, shop_menu_visible: bool,
 ) -> tuple[bool, bool]:
-    """非施設文脈 (宿屋 session 非active 等) の shop surface 描画 +
-    離脱クリーンアップ (宿屋 L4 分離化単位の所有)。
-
-    呼出は施設ディスパッチの非施設分岐 (`_unified_node is None and not
-    _facility_tavern`) でのみ行う (相互排他はディスパッチ構造で保証)。
-    描画/クリーンアップは session active 経路 (poll_tavern_render) と
-    同一 helper = 単一実装。戻り値: (shop_buy_active, shop_menu_visible)。
-    """
     if shop_state is not None:
         _kind = shop_state.kind
         if _kind == "shop_buy":
             shop_buy_active = True
             _render_shop_drinks(w, shop_state)
         elif _kind == "shop_rooms":
-            shop_buy_active = True  # cleanup 経路を共通化
+            shop_buy_active = True
             _render_shop_rooms(w, shop_state)
         elif _kind in ("shop_menu", "shop_rumor_type"):
             shop_menu_visible = True
             _render_shop_menu(w, shop_state, shop_img_name)
-    # 離脱処理: 前景でない surface の残置クリア。
     _cleanup_shop_buy(w, shop_buy_active, shop_menu_visible, shop_img_name)
     _cleanup_shop_menu(w, shop_menu_visible, shop_buy_active, shop_img_name)
     return shop_buy_active, shop_menu_visible

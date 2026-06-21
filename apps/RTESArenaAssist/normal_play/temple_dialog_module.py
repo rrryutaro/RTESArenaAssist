@@ -1,23 +1,3 @@
-"""神殿神官応答の翻訳表示(神殿分離内・単一軸 + episode 設計)。
-
-再設計に基づく作り直し。前景判定の軸を一本化する:
-- **前景の主軸 = menu 確定 + 結果 edge**。+0x8F74 ゲートはメニュー表示中でも
-  0x51↔0x00 に振動し、popup_foreground だけでは stale 結果を誤表示するため、
-  結果描画の単独根拠にはしない。
-- **episode 機構**: 結果採用は「episode baseline (= メニュー確定前景=結果が
-  出る前の背景スナップショット) と異なるか」で判定する。strict_menu / release 中は結果
-  候補を baseline 化しない (= 表示前の候補を baseline に取り込んで変化を潰さない)。
-  - メニュー/費用/入力の確定前景で reply_armed=True かつ episode baseline を更新
-  - episode baseline と異なる候補(= この episode で新規/変化)を最優先で採る
-  - 変化が無い繰り返し施術(armed)では、結果スロットの offset 優先で 1 件採る
-    (実機ログ根拠: 0x10A8 系=healed/perfect の primary 結果スロット、0x11E8=cannot cure は
-    全 poll に常時残る慢性 stale。低 offset を優先 = primary を採る)。複数でも ambiguous で
-    捨てず必ず 1 件に決める。
-- **bounded hold**: 表示継続中(reason=="hold")は保持、none は grace 減算。
-  poll_controller の context から hold>0 を外し自己永続を解消済。
-- 書式コード(TAB+3桁)は reader 側で canonical 化済。"Curing" は一時文として低優先。
-完全分離: 共有 npc_dialog/active_template/negotiation owner へ戻さない。
-"""
 from __future__ import annotations
 
 import logging
@@ -37,26 +17,19 @@ _RESPONSE_HOLD_POLLS = 18
 _BLESSING_TEMPLATE_PTR = 0x75A3
 _BLESSING_TEMPLATE_TEXT = "Receive our blessings..."
 _BLESSING_TEMPLATE_IMGS = frozenset({"MENU_RT.IMG", "YESNO.IMG", "NEWPOP.IMG"})
-# perfect/cannot cure が同居する結果段で観測した +0xA904 は、
-# 後続観測で stale 残存が判明したため診断ログ専用とし、結果選択には使わない。
 _RESULT_SURFACE_PTR_OFFSET = 0xA904
-# 2026-06-04 静止サンプル観測(仮説): 同じ perfect + cannot 候補集合でも
-# Heal 系は 0x85、Cure 系は 0xF3 で分離した。未観測状態で変化する恐れが
-# あるため、既知値の場合だけ候補ランキングの補助信号として使う。
 _RESULT_INTENT_HINT_OFFSET = 0xADB6
 _RESULT_INTENT_HEAL_VALUE = 0x85
 _RESULT_INTENT_CURE_VALUE = 0xF3
 
 
 def _result_episode_signature(edge_sig, p8f6e):
-    """同一本文の再表示検出に使う結果生成 signature を返す。"""
     if edge_sig is None and p8f6e is None:
         return None
     return (edge_sig, p8f6e)
 
 
 def _read_result_surface_ptr(w) -> int | None:
-    """診断用 pointer(+0xA904)を読む。失敗時 None。選択判定には使わない。"""
     try:
         raw = w._analyzer.read_bytes(w._anchor + _RESULT_SURFACE_PTR_OFFSET, 2)
     except (OSError, AttributeError):
@@ -70,7 +43,6 @@ def _read_result_surface_ptr(w) -> int | None:
 
 
 def _read_result_intent_hint(w) -> int | None:
-    """Heal/Cure 分離の補助候補(+0xADB6)を読む。失敗時 None。"""
     try:
         raw = w._analyzer.read_bytes(w._anchor + _RESULT_INTENT_HINT_OFFSET, 1)
     except (OSError, AttributeError):
@@ -81,7 +53,6 @@ def _read_result_intent_hint(w) -> int | None:
 
 
 def _result_intent_name(value: int | None) -> str:
-    """+0xADB6 の既知観測値を intent 名に変換する。未知値は空文字。"""
     if value == _RESULT_INTENT_HEAL_VALUE:
         return "heal"
     if value == _RESULT_INTENT_CURE_VALUE:
@@ -93,12 +64,6 @@ def _extend_current_template_candidate(w, candidates: list, *,
                                        phase: str = "",
                                        armed: bool = False,
                                        img_name: str = "") -> list:
-    """active_template 由来の神殿文を候補へ合流する。
-
-    Bless の "Receive our blessings..." など、解決済み response buffer では
-    なく表示テンプレ ptr だけに出る結果を拾う。active_slot は stale が強いため
-    原則採用せず、祝福導入 A152 だけを結果段の armed 中に限定して受ける。
-    """
     try:
         from active_template_reader import read_active_template_candidates
         from temple_dialog_reader import (
@@ -154,7 +119,6 @@ def _extend_current_template_candidate(w, candidates: list, *,
 
 
 def _classify_kind(text: str) -> str:
-    """canonical 本文の種別を返す ("cost" / "prompt" / "result")。"""
     s = " ".join((text or "").split())
     if s.startswith("This service will cost"):
         return "cost"
@@ -164,7 +128,6 @@ def _classify_kind(text: str) -> str:
 
 
 def _owner_for_kind(kind: str) -> str:
-    """種別 → 神殿専用 owner。"""
     if kind == "cost":
         return "temple_cost"
     if kind == "prompt":
@@ -183,12 +146,6 @@ def _is_blessing_result(c) -> bool:
 def _is_donation_blessing_state(
     w, *, view, img: str,
 ) -> bool:
-    """寄付額入力後の祝福結果 view か。
-
-    0x75A3 は静的 A.EXE テンプレートで常時読めるため、表示中本文の
-    証拠にしない。神殿分離内の ``classify_temple_view`` が確定した
-    ``donation_blessing`` だけを主軸にする。
-    """
     return (
         getattr(view, "kind", "") == "donation_blessing"
         and (img or "").upper() in _BLESSING_TEMPLATE_IMGS
@@ -211,13 +168,11 @@ def _is_heal_result(c) -> bool:
 
 
 def _snapshot_episode_baseline(w, candidates) -> None:
-    """結果が出る前の背景(メニュー/費用/入力 確定前景)を episode baseline に取る。"""
     w._temple_reply_episode_baseline = {
         c.source_offset: c.text for c in candidates}
 
 
 def _snapshot_edge_baseline(w, edge) -> None:
-    """結果 edge の背景値を保存する。"""
     w._temple_reply_edge_baseline = edge
     w._temple_reply_edge_consumed = edge
 
@@ -238,15 +193,10 @@ def _reset_state(w) -> None:
 
 
 def reset_temple_dialog_state(w) -> None:
-    """神殿応答表示 state を初期化する。poll_controller / tests 用。"""
     _reset_state(w)
 
 
 def reset_temple_reply_on_stop(w) -> None:
-    """神殿会話 context 終了エッジで応答表示を片付ける(B-2 S2-1)。
-
-    旧 poll_temple_dialog の「非active かつ baselined なら release+reset」を
-    そのまま外出しした純クリーンアップ。render 責務(active時)と分離する。"""
     if getattr(w, "_temple_dialog_baselined", False):
         _release_reply(w)
         _reset_state(w)
@@ -288,7 +238,6 @@ def _with_yesno_buttons(img_name: str, kind: str,
 
 
 def _release_reply(w) -> None:
-    """神官応答表示を解除する(stale を残さない)。"""
     owner = getattr(w, "_temple_dialog_current_owner", None)
     w._temple_dialog_current_key = None
     w._temple_dialog_current_text = None
@@ -309,14 +258,7 @@ def poll_temple_dialog(w, *, temple_active: bool,
                        shop_menu_visible: bool,
                        menu_foreground: bool = False,
                        popup_foreground: bool = False) -> bool:
-    """神殿神官の結果文/費用/入力を単一軸 + episode で描画する。
-
-    戻り値 True は、この poll で神殿応答を表示または保持したことを表す。
-    """
     _ensure_state(w)
-    # 分離化(B-2 S2-1): 非active時のクリーンアップ(release+reset)は
-    # poll_controller の temple context 終了エッジ(reset_temple_reply_on_stop)
-    # へ移設。本関数は active 時のみ描画する純責務に縮約する。
     if not temple_active:
         return False
 
@@ -365,8 +307,6 @@ def poll_temple_dialog(w, *, temple_active: bool,
     edge_base = getattr(w, "_temple_reply_edge_baseline", None)
     edge_consumed = getattr(w, "_temple_reply_edge_consumed", None)
 
-    # 開始直後は現在の候補(= 接続時点の stale 背景)を episode baseline に取り込み、
-    # 表示しない (初回接続直後の stale 候補は表示しない)。
     if temple_just_started:
         _snapshot_episode_baseline(w, candidates)
         _snapshot_edge_baseline(w, result_sig)
@@ -401,9 +341,8 @@ def poll_temple_dialog(w, *, temple_active: bool,
                 phase, bool(menu_foreground), bool(popup_foreground),
                 episode, armed, img, outcome, cset)
         except Exception:  # noqa: BLE001
-            pass  # 診断ログは poll を壊さない
+            pass
 
-    # 1. 候補分類 (canonical 本文ベース)。
     transients = [c for c in candidates if is_transient_priest_text(c.text)]
     nontrans = [c for c in candidates if not is_transient_priest_text(c.text)]
     results = [c for c in nontrans if _classify_kind(c.text) == "result"]
@@ -432,11 +371,6 @@ def poll_temple_dialog(w, *, temple_active: bool,
         )
     )
 
-    # 2. メニュー確定前景 → 応答を出さず解除。次の応答 episode の背景を snapshot し arm。
-    #    ただし YESNO.IMG の費用確認中に +0x8F74 が 0x51 へ
-    #    フリッカーし、費用 owner を release した直後に stale cannot cure を
-    #    result_edge が採用した。費用/入力候補が現在の前景として保持されている
-    #    間は menu_foreground release を無視し、後段の hold/cost 選択へ進める。
     if menu_foreground and not cost_prompt_foreground:
         w._temple_reply_armed = True
         _snapshot_episode_baseline(w, candidates)
@@ -456,10 +390,6 @@ def poll_temple_dialog(w, *, temple_active: bool,
 
     def _rank(pool, *, prefer_cannot_cure: bool = False,
               result_intent: str = ""):
-        # 結果スロットの offset 優先 (低 offset = primary 結果スロット 0x10A8 系を優先、
-        # 0x11E8 cannot cure の慢性 stale は後順位)。ログ根拠による決定的選択。
-        # ただし Bless 導入 A152 は response buffer に解決済みで出ないため、結果段で
-        # 候補化できた場合は stale の 0x10A8/0x11E8 より先に採る。
         pool = list(pool)
         def _base_key(c):
             return (0 if _is_blessing_result(c) else 1, c.source_offset)
@@ -519,10 +449,6 @@ def poll_temple_dialog(w, *, temple_active: bool,
     reason = ""
     new_episode = False
     if phase == "select_input":
-        # 寄付額入力などの選択/入力段では、応答バッファに慢性 stale の
-        # 結果文が残っていても神官結果として描画しない。既に自 owner で
-        # reply を保持している場合だけ解放して temple_prompt / temple_cost に
-        # 表示権を戻す。
         blessing_results = [c for c in results if _is_blessing_result(c)]
         new_blessing_results = [c for c in new_results
                                 if _is_blessing_result(c)]
@@ -533,10 +459,6 @@ def poll_temple_dialog(w, *, temple_active: bool,
                     chosen, reason = c, "hold"
                     break
         elif donation_blessing_state:
-            # 寄付後の祝福結果は select_input 段で出る (0xA83B=0x75 が
-            # 残るため phase が result にならない)。current_text が祝福本文に
-            # なるのを待つと初回が永遠に出ないため、donation_blessing_state が
-            # 立った時点で合成・表示する。
             chosen, reason = _append_synth_blessing(), "donation_blessing"
         else:
             if getattr(w, "_temple_dialog_current_owner", None) == (
@@ -576,18 +498,12 @@ def poll_temple_dialog(w, *, temple_active: bool,
                 break
     elif (yesno_cost_prompt_present and (costs or prompts)
           and result_edge and not _result_intent):
-        # YESNO.IMG の費用確認候補が present のまま、
-        # +0xADB6 が未知値だと stale result_edge が古い回復結果を拾う。
-        # Heal/Cure の既知 intent がない限り、費用/入力を前景として扱う。
         chosen, reason = (
             _rank(costs or prompts)[0], "yesno_cost_prompt_present")
     elif new_transients:
         chosen, reason = _rank(new_transients)[0], "transient_new"
     elif result_edge and results and (
             _result_intent or not yesno_cost_prompt_present):
-        # 同一結果文の再表示は本文差分では拾えないため、
-        # +0x8F7C 帯 edge を補助信号として 1 回だけ消費する。+0x8F74
-        # popup_foreground 単独ではメニュー中の振動で stale を出すため使わない。
         suffix = f"_{_result_intent}" if _result_intent else ""
         chosen, reason, new_episode = (
             _rank(results, prefer_cannot_cure=True,
@@ -599,7 +515,6 @@ def poll_temple_dialog(w, *, temple_active: bool,
         chosen, reason, new_episode = (
             _rank(transients)[0], "popup_transient", True)
 
-    # text_by_offset (session 継続判定用) を非メニュー poll でのみ更新する。
     now_by_offset = dict(getattr(w, "_temple_dialog_text_by_offset", {}))
     for c in candidates:
         now_by_offset[c.source_offset] = c.text
@@ -622,14 +537,11 @@ def poll_temple_dialog(w, *, temple_active: bool,
             w._temple_reply_episode_id = episode
             if result_sig is not None:
                 w._temple_reply_edge_consumed = result_sig
-            # 採用済み結果を baseline に取り込み、同じ候補を毎 poll
-            # result_new として再採用し続けないようにする。
             ep_base = dict(getattr(w, "_temple_reply_episode_baseline", {}))
             ep_base[chosen.source_offset] = chosen.text
             w._temple_reply_episode_baseline = ep_base
         w._temple_reply_armed = False
     else:
-        # 費用/入力の前景: 次の結果を新規 episode と認識するため arm + 背景更新。
         w._temple_reply_armed = True
         _snapshot_episode_baseline(w, candidates)
         _snapshot_edge_baseline(w, result_sig)
@@ -655,8 +567,6 @@ def poll_temple_dialog(w, *, temple_active: bool,
         w._temple_dialog_current_key = key
         w._temple_dialog_current_text = chosen.text
         w._temple_dialog_current_owner = owner
-        # 神官の応答(temple_priest_reply)だけ会話として読み上げを宣言。
-        # 費用提示(temple_cost)・入力プロンプト(temple_prompt)はシステム=宣言なし。
         _speech_role = ("conversation"
                         if owner == "temple_priest_reply" else None)
         w._ui_router.update_translation(

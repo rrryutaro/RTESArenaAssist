@@ -1,25 +1,3 @@
-"""
-spell_reader.py — スペルブック呪文リスト読み取り
-
-NPCData+870 の knownSpellCount と +871 の knownSpellIDs から習得呪文 ID を読み、
-SPELLSG.NN ファイルの SpellData 配列から呪文名を取得する。
-
-SpellData 構造（85 bytes / spell）:
-  +0x00: params[36]   (uint8_t[36])
-  +0x24: targetType   (uint8_t)
-  +0x25: unknown      (uint8_t)
-  +0x26: element      (uint8_t)
-  +0x27: flags        (uint16_t LE)
-  +0x29: effects[3]   (uint8_t[3])
-  +0x2C: subEffects[3](uint8_t[3])
-  +0x2F: affectedAttrs(uint8_t[3])
-  +0x32: cost         (uint16_t LE)
-  +0x34: name[33]     (char[33])  ← 呪文名 null 終端 ASCII
-
-live memory offsets:
-  knownSpellCount: anchor+0x1A4+870 = anchor+0x50A
-  knownSpellIDs:   anchor+0x1A4+871 = anchor+0x50B
-"""
 
 from __future__ import annotations
 import os
@@ -36,8 +14,6 @@ from spell_effect_compose import (
     translate_effect_text,
 )
 
-# translate_effect_text は spell_effect_compose の公開名として利用可能。
-# spell_reader 経由の参照を維持するため名前空間に保持する。
 __all__ = [
     "load_spellsg",
     "read_spell_detail",
@@ -46,19 +22,16 @@ __all__ = [
 ]
 
 NPCDATA_BASE       = 0x1A4
-SPELL_COUNT_OFFSET = NPCDATA_BASE + 870   # = 0x50A
-SPELL_IDS_OFFSET   = NPCDATA_BASE + 871   # = 0x50B
+SPELL_COUNT_OFFSET = NPCDATA_BASE + 870
+SPELL_IDS_OFFSET   = NPCDATA_BASE + 871
 
 SPELL_DATA_SIZE    = 85
-SPELL_NAME_OFFSET  = 0x34   # SpellData.name フィールド
+SPELL_NAME_OFFSET  = 0x34
 SPELL_NAME_LEN     = 33
-MAX_KNOWN_SPELLS   = 160    # 標準128 + 作成呪文。knownSpellIDs の上限に合わせる。
+MAX_KNOWN_SPELLS   = 160
 
 
 def load_spellsg(game_dir: str) -> dict[int, str]:
-    """save_dir 内の SPELLSG.NN を探して spell_id → spell_name 辞書を返す。
-    読み取れない場合は空辞書を返す。
-    """
     if not game_dir:
         return {}
     for nn in ("00", "01", "02", "03", "04", "05", "06", "07", "08", "09"):
@@ -85,40 +58,24 @@ def load_spellsg(game_dir: str) -> dict[int, str]:
     return {}
 
 
-# ──────────────────────────────────────────────────────────────
-# 呪文詳細画面（SPELLBOOK パーチメント）読み取り
-# 観測（仮説、Fire Dart vs Light Heal の差分より）:
-#   anchor+0x57E6 = 現在表示中の SpellData レコード（85 bytes）
-#       - +0x32 (anchor+0x5818) = cost (u16 LE)
-#       - +0x34 (anchor+0x581A) = name[33]
-#   anchor+0x1044 = 効果テキストバッファ（"1 to 2 pts damage to health..."）
-# ──────────────────────────────────────────────────────────────
-SPELL_DETAIL_DATA_OFFSET = 0x57E6  # 現在表示中 SpellData レコード（仮説）
-SPELL_DETAIL_NAME_OFFSET = SPELL_DETAIL_DATA_OFFSET + SPELL_NAME_OFFSET  # 0x581A
-SPELL_DETAIL_COST_OFFSET = SPELL_DETAIL_DATA_OFFSET + 0x32  # 0x5818
-# SpellData 構造内の他フィールド（観測ベース）:
-SPELL_DETAIL_TARGET_OFFSET   = SPELL_DETAIL_DATA_OFFSET + 0x24  # 0x580A u8
-SPELL_DETAIL_ELEMENT_OFFSET  = SPELL_DETAIL_DATA_OFFSET + 0x26  # 0x580C u8
-SPELL_DETAIL_FLAGS_OFFSET    = SPELL_DETAIL_DATA_OFFSET + 0x27  # 0x580D u16 LE
-SPELL_DETAIL_EFFECTS_OFFSET  = SPELL_DETAIL_DATA_OFFSET + 0x29  # 0x580F u8[3]
-SPELL_DETAIL_SUB_EFFECTS_OFFSET = SPELL_DETAIL_DATA_OFFSET + 0x2C  # 0x5812 u8[3]
-SPELL_DETAIL_AFFECTED_ATTRS_OFFSET = SPELL_DETAIL_DATA_OFFSET + 0x2F  # 0x5815 u8[3]
+SPELL_DETAIL_DATA_OFFSET = 0x57E6
+SPELL_DETAIL_NAME_OFFSET = SPELL_DETAIL_DATA_OFFSET + SPELL_NAME_OFFSET
+SPELL_DETAIL_COST_OFFSET = SPELL_DETAIL_DATA_OFFSET + 0x32
+SPELL_DETAIL_TARGET_OFFSET   = SPELL_DETAIL_DATA_OFFSET + 0x24
+SPELL_DETAIL_ELEMENT_OFFSET  = SPELL_DETAIL_DATA_OFFSET + 0x26
+SPELL_DETAIL_FLAGS_OFFSET    = SPELL_DETAIL_DATA_OFFSET + 0x27
+SPELL_DETAIL_EFFECTS_OFFSET  = SPELL_DETAIL_DATA_OFFSET + 0x29
+SPELL_DETAIL_SUB_EFFECTS_OFFSET = SPELL_DETAIL_DATA_OFFSET + 0x2C
+SPELL_DETAIL_AFFECTED_ATTRS_OFFSET = SPELL_DETAIL_DATA_OFFSET + 0x2F
 
 SPELL_DETAIL_TEXT_OFFSET = 0x1044
-SPELL_DETAIL_TEXT_LEN    = 512  # 効果テキスト（複数行、null 区切りの可能性あり）
+SPELL_DETAIL_TEXT_LEN    = 512
 
-# プレイヤー情報
-PLAYER_NAME_OFFSET   = 0x1AD   # NPCData+9: 26B NUL 終端 ASCII
-PLAYER_LEVEL_OFFSET  = 0x1AA   # u8 = Level - 1
-PLAYER_GOLD_OFFSET   = 0x5C2   # u16 LE（attributes_panel OFF_GOLD と同等の運用）
+PLAYER_NAME_OFFSET   = 0x1AD
+PLAYER_LEVEL_OFFSET  = 0x1AA
+PLAYER_GOLD_OFFSET   = 0x5C2
 
-# ──────────────────────────────────────────────────────────────
-# Arena spell field 名前ルックアップ（観測ベース、要検証）
-# 数値 → 表示名のマッピング。観測値: Fire Dart targetType=2, element=0, effects[0]=4
-# Light Heal targetType=0, element=5, effects[0]=12
-# ──────────────────────────────────────────────────────────────
 TARGET_TYPE_NAMES = {
-    # 0x5691 の実測 Target 名順に合わせる。
     0: ("Caster only",                 "自分のみ"),
     1: ("1 Target, Touch",             "対象1体・接触"),
     2: ("1 Target at Range",           "対象1体・遠隔"),
@@ -127,7 +84,6 @@ TARGET_TYPE_NAMES = {
 }
 
 ELEMENT_NAMES = {
-    # 実機バッファ 0x5620 付近の Save Vs. 名順に合わせる。
     0: ("Fire",       "火"),
     1: ("Cold",       "冷気"),
     2: ("Poison",     "毒"),
@@ -139,23 +95,6 @@ ELEMENT_NAMES = {
 
 
 def read_spell_detail(analyzer, anchor: int) -> dict:
-    """呪文詳細画面で現在表示中の呪文情報を読み取る。
-
-    Returns:
-        辞書（読み取り失敗時はデフォルト値）:
-            name           str  呪文名
-            cost           int  Casting Cost (u16)
-            target_id      int  targetType (u8)
-            target_en/_ja  str  targetType ルックアップ
-            element_id     int  element (u8)
-            element_en/_ja str  element ルックアップ
-            effect_id      int  有効効果スロットの effects[i] (u8)
-            effect_en/_ja  str  effects/subEffects/affectedAttrs ルックアップ
-            text_en        str  効果テキスト全体
-            player_name    str  プレイヤー名
-            player_level   int  プレイヤーレベル
-            player_gold    int  所持金
-    """
     def _u8(off: int) -> int:
         try:
             return analyzer.read_bytes(anchor + off, 1)[0]
@@ -211,7 +150,6 @@ def read_spell_detail(analyzer, anchor: int) -> dict:
     effect_en, effect_ja = _resolve_effect_name(
         effect_id, sub_effect_id, affected_attr_id)
 
-    # 効果テキスト: Arena は長文内にも単発 NUL を挟むため、連続 NUL までを採用する。
     text_en = ""
     text_segments: list[str] = []
     try:
@@ -227,8 +165,6 @@ def read_spell_detail(analyzer, anchor: int) -> dict:
     player_level = level_raw + 1 if level_raw is not None else 0
     player_gold = _u16(PLAYER_GOLD_OFFSET)
 
-    # テンプレート一致で残留文字列を落とす。複数効果の本文は
-    # 効果見出しごとに分割し、各 effect_details に割り当てる。
     effect_details = _attach_effect_texts(
         text_en, effect_details, text_segments)
     effect_details = _fill_missing_spellmaker_effect_texts(
@@ -272,12 +208,6 @@ def read_spell_detail(analyzer, anchor: int) -> dict:
 
 
 def read_spellbook_items(analyzer, anchor: int) -> list[dict]:
-    """
-    習得呪文リストを辞書リストで返す。
-
-    Returns list of:
-        {"en": str}  (spell name from SPELLSG file)
-    """
     import assist_settings as settings
     game_dir = settings.get("save_dir", "")
     spell_table = load_spellsg(game_dir)

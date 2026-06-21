@@ -1,20 +1,3 @@
-"""normal_play/mages_reply_module.py — 魔術師ギルド L4 応答の描画オーナー。
-
-完全分離: ギルド応答文 (呪文購入/作成/Detect/Steal の結果文・
-費用文等) を、全施設共有の堅牢な応答経路 (npc_dialog_module / owner ``npc_dialog``)
-への相乗りから撤廃し、ギルド専用 owner ``mages_reply`` に閉じて描画する。
-
-神殿 (temple_dialog_module / temple_priest_reply) と同型の機構をギルド専用 owner で
-複製したもの。共有してよいのは:
-- (A) 純粋データ取得 / 翻訳基本処理: ``popup11_response_reader`` の応答バッファ読み
-  取り (= 全施設が物理的に共有する 1 つの応答バッファ)、辞書 lookup
-  (``npc_dialog_lookup``)。
-- (C) UiRouter 描画シンク (``update_translation``、owner 引数)。
-
-候補選択 (= 判定) と owner 所有は本モジュール (ギルド分離内) で完結する。surface
-種別単位の細分化 (mages_cost 等) は実機観測後に行う。それまで費用文も本 owner で
-表示し、共有 dispatch への非依存 (= 完全分離) を満たす。
-"""
 from __future__ import annotations
 
 import logging
@@ -43,11 +26,6 @@ _DETECT_MAGIC_RESULT_OFFSET = 0x929E
 
 
 def _normalize_reply_text(text: str) -> str:
-    """応答本文の改行/CR/NUL を空白へ正規化し連続空白を圧縮する（辞書照合用）。
-
-    Arena は描画折り返しで本文中に CR/改行を挿入するため、辞書テンプレ（論理文）と
-    照合するには空白を正規化する必要がある。ローカル処理（他施設に影響しない）。
-    """
     s = (text or "").replace("\r", " ").replace("\n", " ").replace("\x00", " ")
     return " ".join(s.split())
 
@@ -70,7 +48,6 @@ def _clear_reply_owner(w) -> None:
 
 
 def reset_mages_reply_state(w) -> None:
-    """ギルド応答表示 state を初期化する。poll_controller / tests 用。"""
     _reset_state(w)
 
 
@@ -103,7 +80,6 @@ def _with_yesno_buttons(img_name: str, en: str, ja: str) -> tuple[str, str]:
 
 
 def _is_negotiation_img(img_name: str) -> bool:
-    """交渉専用 IMG は mages_negotiation 側に委ねる。"""
     try:
         from negotiation_reader import get_negotiation_profile
         return get_negotiation_profile((img_name or "").upper()) is not None
@@ -114,13 +90,6 @@ def _is_negotiation_img(img_name: str) -> bool:
 def _read_detect_magic_already_known(w, current_ptr,
                                      candidates, *,
                                      force: bool = False) -> ResponseCandidate | None:
-    """Detect Magic の「既に知っている」応答を 0x6F00 域から拾う。
-
-    +0x1044 に直前の見積り文が残る一方、実表示は
-    +0x6F5C の固定応答だった。現在ポインタが同じ 0x6F00 メニュー/応答
-    ブロックを指し、かつ +0x1044 側に探知見積り候補が残っている時だけ
-    この固定応答を前景として採用する。
-    """
     if not force:
         if not (isinstance(current_ptr, int)
                 and _MAGES_MENU_PTR_START <= current_ptr < _MAGES_MENU_PTR_END):
@@ -192,14 +161,7 @@ def poll_mages_reply(w, *, mages_active: bool,
                      mages_just_started: bool,
                      img_name: str,
                      shop_menu_visible: bool) -> bool:
-    """ギルド応答文を mages_reply owner で描画する。
-
-    戻り値 True は、この poll でギルド応答を表示または保持したことを表す。
-    """
     _ensure_state(w)
-    # 分離化(B-2 S2-1): 非active時のクリーンアップ(state reset)は
-    # poll_controller の施設 stop エッジ(reset_mages_reply_state)へ移設。
-    # 本関数は active 時のみ描画する純責務に縮約する。
     if not mages_active:
         return False
 
@@ -249,8 +211,6 @@ def poll_mages_reply(w, *, mages_active: bool,
         except Exception:  # noqa: BLE001
             return False
 
-    # 描画折り返しで CR/改行が入る応答 (例: 探知見積り) は素の lookup_hit が False に
-    # なるため、正規化後の lookup でも hit 判定する。
     hits = [c for c in candidates
             if c.text and (c.lookup_hit or _norm_hit(c.text))]
     detect_known = (
