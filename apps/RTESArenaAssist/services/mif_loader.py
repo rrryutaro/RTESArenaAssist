@@ -1,9 +1,3 @@
-"""
-Arena MIF/INF parsing helpers for RTESArenaAssist (移植元: RTESArenaMapViewer/map_data.py)。
-
-GUI 依存なし。Assist 内で MIF/INF パースに使う。検証ツール (MapViewer) 側の
-変更からは独立。
-"""
 
 from __future__ import annotations
 
@@ -16,8 +10,6 @@ from runtime_paths import resolve_arena_data_dir, resolve_arena_install_dir
 DEFAULT_ARENA_DATA_DIR = resolve_arena_data_dir()
 DEFAULT_MIF_DIR = DEFAULT_ARENA_DATA_DIR / "MIF"
 DEFAULT_INF_DIR = DEFAULT_ARENA_DATA_DIR / "INF"
-# ユーザー Arena インストール先（loose MIF 等）は実行時に設定 save_dir から解決する
-# （`runtime_paths.resolve_arena_install_dir`）。ハードコード絶対パスは使わない。
 KNOWN_CHUNKS = {
     "FLAT", "FLOR", "INFO", "INNS", "LEVL", "LOCK", "LOOT", "MAP1", "MAP2",
     "MHDR", "NAME", "NUMF", "STOR", "TARG", "TRIG",
@@ -50,19 +42,17 @@ class LockRecord:
 
 @dataclass(frozen=True)
 class EntityRecord:
-    """MAP1 または FLOR から抽出したエンティティ配置。"""
     x: int
     y: int
-    flat_index: int  # @FLATS リストの 0-based インデックス
-    source: str = "map1"  # "map1" | "flor"
+    flat_index: int
+    source: str = "map1"
 
 
 @dataclass(frozen=True)
 class InfFlatEntry:
-    """INF @FLATS セクションの 1 エントリ。"""
-    index: int        # 0-based sequential index in @FLATS
-    name: str         # lowercase filename (e.g. "treasre1.img")
-    item_number: int | None  # *ITEM N の N、またはアイテムでない場合 None
+    index: int
+    name: str
+    item_number: int | None
 
 
 @dataclass(frozen=True)
@@ -80,8 +70,8 @@ class MifMap:
     level_index: int = 0
     level_count: int = 1
     raw_map1_size: int = 0
-    mif_name: str = ""        # NAME タグ (レベル名、例 "TAVERN1")
-    info_name: str = ""       # INFO タグ (参照 INF ファイル名、例 "TAVERN.INF")
+    mif_name: str = ""
+    info_name: str = ""
 
     @property
     def name(self) -> str:
@@ -100,14 +90,6 @@ def _read_chunk_size(data: bytes, offset: int) -> int | None:
 def parse_mif(path: str | Path,
               level_index_override: int | None = None,
               player_floor: int | None = None) -> MifMap:
-    """MIF をパースして MifMap を返す。
-
-    level_index_override が指定された場合は、その level を直接選択。
-    player_floor が指定された場合は MIF header の starting_level_index から
-    player_floor を引いた level を選択 (Arena 慣習: starting=1F、上の階に上ると
-    player_floor が増加し、levels[] では index が減少する)。
-    両方とも指定範囲外なら starting_level_index にフォールバック。
-    """
     mif_path = Path(path)
     return parse_mif_bytes(mif_path.read_bytes(), mif_path,
                            level_index_override, player_floor)
@@ -471,7 +453,6 @@ def detect_dimensions(
 
 
 def parse_inf_texts(path: str | Path) -> dict[int, str]:
-    """Parse @TEXT entries from an INF file."""
     lines = _read_inf_lines(path)
     if not lines:
         return {}
@@ -479,7 +460,6 @@ def parse_inf_texts(path: str | Path) -> dict[int, str]:
 
 
 def parse_inf_text_lines(lines: list[str]) -> dict[int, str]:
-    """Parse @TEXT entries from already-read INF lines."""
     texts: dict[int, list[str]] = {}
     current: int | None = None
     in_text = False
@@ -525,7 +505,6 @@ def matching_inf_path(mif_path: str | Path, inf_dir: str | Path) -> Path | None:
 
 
 def parse_mif_name(path: str | Path) -> str:
-    """Return the NAME chunk string from a MIF file without full parsing."""
     mif_path = Path(path)
     try:
         data = mif_path.read_bytes()
@@ -560,7 +539,6 @@ def parse_mif_name(path: str | Path) -> str:
 
 
 def _extract_entities(map1: list[int], flor: list[int], width: int, height: int) -> list[EntityRecord]:
-    """MAP1 エンティティタイル（上位ニブル=0x8）と FLOR 下位バイト != 0 からエンティティを抽出する。"""
     entities: list[EntityRecord] = []
     for sn in range(height):
         for we in range(width):
@@ -568,30 +546,21 @@ def _extract_entities(map1: list[int], flor: list[int], width: int, height: int)
             m1v = map1[idx] if idx < len(map1) else 0
             flv = flor[idx] if idx < len(flor) else 0
 
-            # MAP1 エンティティ: 上位ニブル == 0x8
             if (m1v & 0xF000) >> 12 == 0x8:
                 entities.append(EntityRecord(x=we, y=sn, flat_index=m1v & 0x00FF, source="map1"))
 
-            # FLOR エンティティ: 下位バイト != 0 → flat_index = lower_byte - 1
             floor_flat_id = flv & 0x00FF
             if floor_flat_id > 0:
                 entities.append(EntityRecord(x=we, y=sn, flat_index=floor_flat_id - 1, source="flor"))
     return entities
 
 
-# INF テキスト行の取得（公開版対応）。loose ファイル（ローカルの Arena データ・
-# ユーザー install dir）が在ればそれを読む。無ければユーザー Arena
-# install の VFS から basename で読む（GLOBAL.BSA 内 INF は `read_inf` が復号する）。
-# 構造データ（@WALLS/@FLATS/@MENU 等）は ASCII のため decode 差は出ない（BSA 復号 INF の
-# パース結果が loose INF と一致することを検証済）。
 def _install_vfs():
-    """ユーザー Arena install dir 上の VFS（無ければ None）。runtime_paths に集約。"""
     from runtime_paths import install_vfs
     return install_vfs()
 
 
 def read_inf_bytes(path: str | Path) -> bytes | None:
-    """INF の生バイト列を返す。loose 優先→ install VFS（GLOBAL.BSA 復号）fallback。無ければ None。"""
     inf_path = Path(path)
     try:
         if inf_path.is_file():
@@ -607,7 +576,6 @@ def read_inf_bytes(path: str | Path) -> bytes | None:
 
 
 def _read_inf_lines(path: str | Path) -> list[str]:
-    """INF のテキスト行を返す。loose 優先→ install VFS（GLOBAL.BSA 復号）fallback。"""
     data = read_inf_bytes(path)
     if data is None:
         return []
@@ -615,10 +583,6 @@ def _read_inf_lines(path: str | Path) -> list[str]:
 
 
 def read_mif_bytes(path: str | Path) -> bytes | None:
-    """MIF の生バイト列を返す。loose 優先→ install VFS fallback。無ければ None。
-
-    MIF は GLOBAL.BSA 内でも非暗号（INF と異なり復号不要）。
-    """
     mif_path = Path(path)
     try:
         if mif_path.is_file():
@@ -633,13 +597,6 @@ def read_mif_bytes(path: str | Path) -> bytes | None:
 
 def load_mif(mif_name: str, mif_dirs, *, player_floor: int = 0,
              level_index_override: int | None = None) -> "MifMap | None":
-    """MIF を名前から MifMap へ解決する（公開版対応・loose dir → install VFS fallback）。
-
-    `mif_dirs`（loose ディレクトリ列）に在ればそれを parse する（dev 挙動不変）。無ければ
-    ユーザー Arena install の VFS から読む（GLOBAL.BSA 内 MIF は非暗号＝復号不要）。
-    どこにも無ければ None。parse 失敗は parse_mif/parse_mif_bytes が送出する例外を伝播する
-    （呼び出し側が従来どおり捕捉する）。
-    """
     for d in mif_dirs:
         dp = Path(d)
         try:
@@ -658,14 +615,13 @@ def load_mif(mif_name: str, mif_dirs, *, player_floor: int = 0,
             pass
     vfs = _install_vfs()
     if vfs is not None:
-        data = vfs.read(mif_name)   # MIF は BSA 内でも非暗号（INF と異なり復号不要）
+        data = vfs.read(mif_name)
         if data is not None:
             return parse_mif_bytes(data, mif_name, level_index_override, player_floor)
     return None
 
 
 def _inf_available(name: str) -> bool:
-    """INF 名が loose（docs/install dir）または install VFS（GLOBAL.BSA）に在るか。"""
     if not name:
         return False
     try:
@@ -679,13 +635,6 @@ def _inf_available(name: str) -> bool:
 
 def resolve_inf_for_mif(mif_name: str, info_name: str,
                         inf_dir: str | Path) -> Path | None:
-    """MIF に対応する INF を読むための path を返す（loose/BSA いずれかに在る場合）。
-
-    優先: `<stem>.INF` → MIF の INFO チャンク名（`info_name`）。返す path は `inf_dir`
-    配下の構築パス（実在しなくてよい＝parser が basename で loose→GLOBAL.BSA 復号 fallback）。
-    どちらの名も loose/BSA に無ければ None（INF 無し MIF）。dev では docs INF が在るため
-    `<stem>.INF` が先に解決し従来 `matching_inf_path` と同結果。
-    """
     base = Path(inf_dir)
     stem = Path(mif_name).stem
     for name in (f"{stem}.INF", info_name):
@@ -695,7 +644,6 @@ def resolve_inf_for_mif(mif_name: str, info_name: str,
 
 
 def parse_inf_flats(path: str | Path) -> list[InfFlatEntry]:
-    """INF ファイルの @FLATS セクションを解析して InfFlatEntry のリストを返す。"""
     lines = _read_inf_lines(path)
     if not lines:
         return []
@@ -720,7 +668,6 @@ def parse_inf_flats(path: str | Path) -> list[InfFlatEntry]:
             if len(parts) >= 2 and parts[1].isdigit():
                 pending_item = int(parts[1])
             continue
-        # フラットファイル名行（末尾に F:1 / S:4 / Y:-35 等のフラグが付くことがある）
         name_part = stripped.split()[0]
         if name_part.startswith("*") or name_part.startswith("@"):
             continue
@@ -731,11 +678,6 @@ def parse_inf_flats(path: str | Path) -> list[InfFlatEntry]:
 
 
 def parse_inf_walls_hidden_door_ids(path: str | Path) -> set[int]:
-    """INF @WALLS セクションを解析し、*DOOR 2（壁テクスチャ隠し扉）のMAP1下位バイトIDセットを返す。
-
-    Arena MIF では扉タイル (MAP1 上位ニブル=0xB) の下位バイトが INF @WALLS エントリの
-    0-based 連番インデックスと対応する。*DOOR 2 のエントリは壁テクスチャで描かれる隠し扉。
-    """
     lines = _read_inf_lines(path)
     if not lines:
         return set()
@@ -760,9 +702,8 @@ def parse_inf_walls_hidden_door_ids(path: str | Path) -> set[int]:
             door_type = int(parts[1]) if len(parts) >= 2 and parts[1].isdigit() else None
         elif up.startswith(("*BOXCAP", "*BOXSIDE", "*LEVELDOWN", "*LEVELUP",
                              "*LAVACHASM", "*WETCHASM", "*DRYCHASM", "*TRANS")):
-            pass  # メタデータ行、スキップ
+            pass
         elif not s.startswith(("*", "@")):
-            # テクスチャファイル名行 → 1エントリ確定
             if door_type == 2:
                 hidden_ids.add(idx)
             idx += 1
@@ -771,13 +712,6 @@ def parse_inf_walls_hidden_door_ids(path: str | Path) -> set[int]:
 
 
 def parse_inf_menu_indices(path: str | Path) -> set[int]:
-    """INF @WALLS の *MENU N 直後のテクスチャ voxelTextures index を返す。
-
-    Interior MIF (TAVERN1.MIF 等) の MAP1 voxel で textureID がこの set に
-    含まれる場合、その voxel は街路への出口扉 (ExitInterior) を表す。
-    OpenTESArena MapGeneration.cpp::tryMakeVoxelTransitionDefGenInfo の
-    `inf.getMenuIndex(textureID)` 判定に対応。
-    """
     lines = _read_inf_lines(path)
     if not lines:
         return set()
@@ -821,16 +755,6 @@ def parse_inf_menu_indices(path: str | Path) -> set[int]:
 
 
 def parse_inf_menu_texture_map(path: str | Path) -> dict[int, int]:
-    """INF を解析し `*MENU id -> full voxel texture index` の写像を返す。
-
-    `parse_inf_menu_indices` は full index の集合だけを返すため menuID が落ちる。
-    荒地 (wilderness) の表示分類では menuID 別の意味（クリプト/塔/ダンジョン/家/
-    酒場/神殿/街門）で出し分けるため、menuID を保持した写像が要る。
-
-    texture index は OpenTESArena `INFFile` と同じく @FLOORS → @WALLS を連結した
-    voxelTextures の通し番号（= MAP1 wall voxel の `mostSigByte - 1` と同基準）。
-    OTA `INFFile.cpp` の `this->menus[menuID] = currentIndex` に対応。
-    """
     lines = _read_inf_lines(path)
     if not lines:
         return {}
@@ -871,13 +795,6 @@ def parse_inf_menu_texture_map(path: str | Path) -> dict[int, int]:
 
 
 def parse_inf_wall_texture_names(path: str | Path) -> dict[int, str]:
-    """INF を解析し `full voxel texture index -> テクスチャ名` の写像を返す。
-
-    index は OpenTESArena `INFFile` と同じく @FLOORS → @WALLS を連結した
-    voxelTextures の通し番号（= MAP1 voxel の texture index と同基準）。`.SET` は
-    set_count ぶん展開し、各 index に同じ名前を割り当てる（edge voxel の
-    `(value & 0x003F) - 1` がどの index を指しても名前を引けるように）。
-    """
     lines = _read_inf_lines(path)
     if not lines:
         return {}
@@ -896,7 +813,7 @@ def parse_inf_wall_texture_names(path: str | Path) -> dict[int, str]:
         if section not in ("@FLOORS", "@WALLS"):
             continue
         if s.startswith("*"):
-            continue  # ディレクティブは index を進めない
+            continue
         parts = s.split("#")
         name = parts[0].strip()
         set_count = int(parts[1].strip()) if len(parts) == 2 else 1
@@ -908,12 +825,6 @@ def parse_inf_wall_texture_names(path: str | Path) -> dict[int, str]:
 
 
 def parse_inf_level_transitions(path: str | Path) -> tuple[int | None, int | None]:
-    """INF @FLOORS + @WALLS を解析し (levelUpIndex, levelDownIndex) を返す。
-
-    OpenTESArena と同様に、@FLOORS の .SET エントリを展開した上で voxelTextures の
-    通し番号を計算する。これにより MAP1 壁テクスチャ index（= mostSigByte - 1）と
-    levelUpIndex / levelDownIndex を比較してゲート・階段を判定できる。
-    """
     lines = _read_inf_lines(path)
     if not lines:
         return None, None
@@ -922,7 +833,7 @@ def parse_inf_level_transitions(path: str | Path) -> tuple[int | None, int | Non
     level_up_index: int | None = None
     level_down_index: int | None = None
     section: str | None = None
-    pending_mode: str | None = None  # "levelup" | "leveldown" | None
+    pending_mode: str | None = None
 
     for line in lines:
         s = line.strip()
@@ -945,13 +856,12 @@ def parse_inf_level_transitions(path: str | Path) -> tuple[int | None, int | Non
             elif up.startswith(("*TRANS", "*DOOR", "*BOXCAP", "*BOXSIDE",
                                 "*LAVACHASM", "*WETCHASM", "*DRYCHASM",
                                 "*WALKTHRU", "*TRANSWALKTHRU")):
-                pass  # 他ディレクティブはモードに影響しない
+                pass
             continue
 
-        # テクスチャファイル名行：.SET はカウント数を展開
         parts = s.split("#")
         set_count = int(parts[1].strip()) if len(parts) == 2 else 1
-        idx = voxel_count  # このエントリの開始 index
+        idx = voxel_count
 
         if pending_mode == "levelup":
             level_up_index = idx

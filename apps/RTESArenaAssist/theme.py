@@ -1,9 +1,3 @@
-"""
-theme.py — ダーク/ライトテーマ管理
-
-OS のテーマ設定を検出し、QApplication に適用するスタイルシートを提供する。
-RYouTubeLiveTools-dev/RRoulette/pyside6/dark_theme.py の構成を踏襲。
-"""
 
 import sys
 
@@ -11,7 +5,6 @@ from assist_constants import Dark, Light
 
 
 def detect_os_theme() -> str:
-    """OS テーマを検出して "dark" または "light" を返す。判定不能時は "dark"。"""
     if sys.platform == "win32":
         try:
             import winreg
@@ -28,7 +21,6 @@ def detect_os_theme() -> str:
 
 
 def resolve_theme(mode: str) -> str:
-    """設定値 ("dark"/"light"/"system") を実効テーマ ("dark"/"light") に解決する。"""
     if mode in ("system", "auto"):
         return detect_os_theme()
     return "light" if mode == "light" else "dark"
@@ -283,6 +275,5 @@ QPushButton#winCloseBtn:hover {{
 
 
 def get_stylesheet(mode: str) -> str:
-    """テーマモードに応じたスタイルシートを返す。"""
     effective = resolve_theme(mode)
     return _build_stylesheet(Light if effective == "light" else Dark)

@@ -1,13 +1,3 @@
-"""normal_play/c1_gold_drop_module.py — C1 金貨ドロップ表示単位。
-
-死体クリック時の金貨有無メッセージ (+0x929E) の判定描画セットと、
-INF 断片補完の分離関心を trigger_module から物理分離 (挙動不変)。
-トリガー表示 payload 描画 (_render_trigger_entry) は trigger 表示単位の
-所有のため import して使う (一方向依存)。
-
-chargen ボーナス警告 (旧 同居関心) は L1=chargen 関心のため
-`top_level.chargen_state._poll_bonus_warning` へ移設 (L1 跨ぎの解消)。
-"""
 from __future__ import annotations
 
 import logging
@@ -28,12 +18,6 @@ _INF_FRAG_EXCLUDE_RE = _re.compile(
 
 def _poll_gold_inf_fragment(w, b131_str: str, inf_name: str,
                             mif_name: str) -> None:
-    """+0x929E が gold 形式でない変化を INF テキスト断片として補完する別関心処理。
-
-    gold-drop とは別関心 (トリガーバナーの断片を INF lookup で補完) で、従来
-    poll_gold_drop の elif に同居していたものを分離。多重 push 抑止/除外/最低長/
-    NEWPOP open 中スキップ等の既存ガードはそのまま保持 (挙動不変)。
-    """
     _log.debug("b131 0x929E changed but not gold-drop format: %r",
                b131_str[:64])
     _inf_fragment_pushed = getattr(w, "_b131_inf_fragment_pushed", "")
@@ -43,7 +27,6 @@ def _poll_gold_inf_fragment(w, b131_str: str, inf_name: str,
     except Exception:
         _inf_excluded = False
 
-    # inf_name 不明時、MIF basename から INF 名を推定
     _inf_for_lookup = inf_name
     if not _inf_for_lookup and mif_name:
         _mif_base = mif_name.split(".")[0].upper()
@@ -93,9 +76,6 @@ def _poll_gold_inf_fragment(w, b131_str: str, inf_name: str,
 
 def poll_gold_drop(w, *, b30: dict, inf_name: str, mif_name: str,
                    c1_fg: str = "") -> None:
-    # 単一前景が gold_drop 以外の C1 ダイアログ面を指す poll では gold-dialog の
-    # 描画を抑止する (= 1軸)。検出 (+0x929E 読取・prev 更新) は走らせる。chargen
-    # bonus / INF fragment fallback は別関心のため c1_fg ゲート対象外。
     _c1_fg_blocks_gold = bool(c1_fg and c1_fg != "gold_drop")
     try:
         _b131_raw = w._analyzer.read_bytes(w._anchor + 0x929E, 64)
@@ -107,11 +87,6 @@ def poll_gold_drop(w, *, b30: dict, inf_name: str, mif_name: str,
     _b131_changed = (_b131_str != _b131_prev)
     w._b131_str_prev = _b131_str
 
-    # chargen ボーナス警告 (旧 同居関心) は chargen 系統
-    # (`chargen_state._poll_bonus_warning`) が自前 prev で検出する。
-    # 本単位 (normal-play C1) は gold-drop 形式のみを扱う。chargen 中の
-    # 当該文言は下の elif (INF 断片) に入っても "not in normal-play" で
-    # skip される (= 表示の二重化なし)。
     _b131_match = bool(_b131_str and _GOLD_DROP_RE.match(_b131_str))
 
     _axis = b30.get("c1_dialog_axis")
@@ -151,8 +126,6 @@ def poll_gold_drop(w, *, b30: dict, inf_name: str, mif_name: str,
                 _current_top_level(w, default="?"),
                 _b131_str[:64])
     elif _b131_changed and _b131_str:
-        # +0x929E が gold 形式でない変化 = INF テキスト断片の可能性。別関心
-        # (トリガーバナーの断片補完) のため専用関数へ委譲。
         _poll_gold_inf_fragment(w, _b131_str, inf_name, mif_name)
 
 

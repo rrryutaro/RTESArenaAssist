@@ -1,23 +1,3 @@
-"""
-ask_about_menu_parser.py — ASK ABOUT? メニューバッファパーサ・翻訳ルックアップ
-
-arena_bridge.read_ask_about_menu() が返す生バイト列を解析し、
-構造化された dict に変換する。
-
-観測仕様:
-  バッファ先頭: anchor + 0x8525
-  制御コード:
-    09 60  タイトル行マーカー
-    09 C0  ホットキー文字（強調色）
-    09 D4  通常文字
-    0D 00  行末（改行）
-    00     文字列終端
-
-API:
-  parse_menu(raw: bytes) -> dict
-  translate(en_text: str, lang: str) -> str
-  build_display(parsed: dict, lang: str) -> tuple[str, str]
-"""
 
 from __future__ import annotations
 
@@ -36,11 +16,6 @@ _ITEM_STARTERS = frozenset([_CC_HOTKEY, _CC_NORMAL])
 
 
 def _extract_hotkey(data: bytes) -> tuple[str, str]:
-    """
-    制御コード付きバイト列からホットキーと plain text を抽出する。
-    入力は行の先頭（09 C0 か 09 D4）から 0D 00 までのスライス。
-    戻り値: (hotkey, plain_text)
-    """
     hotkey = ""
     chars: list[str] = []
     i = 0
@@ -70,11 +45,6 @@ def _extract_hotkey(data: bytes) -> tuple[str, str]:
 
 
 def _scan_items_in_range(raw: bytes, start: int, end: int) -> tuple[list[str], list[str]]:
-    """
-    raw[start:end] の範囲から 09 C0 / 09 D4 で始まる行をメニュー項目として収集する。
-    間に挟まる非項目バイト（ホットキーテーブル・ポインタブロック等）は 1B ずつスキップ。
-    戻り値: (options, hotkeys)
-    """
     options: list[str] = []
     hotkeys: list[str] = []
     pos = start
@@ -95,11 +65,6 @@ def _scan_items_in_range(raw: bytes, start: int, end: int) -> tuple[list[str], l
 
 
 def parse_menu(raw: bytes) -> dict:
-    """
-    ASK ABOUT? メニューバッファ生バイト列を構造化 dict に変換する。
-
-    パース失敗時はキー "parse_error" に例外メッセージを含む dict を返す。
-    """
     try:
         return _parse_menu_impl(raw)
     except Exception as exc:
@@ -124,9 +89,6 @@ def _parse_menu_impl(raw: bytes) -> dict:
 
     TITLE_SEQ = bytes([_CC_TITLE[0], _CC_TITLE[1]])
 
-    # ── メインセクション（バッファ先頭の ASCII タイトル）───────────────
-    # メインタイトルは制御コード無しの ASCII 直書きで、最初の \r\n まで。
-    # 例: "ASK ABOUT ?\r\n"
     first_nl = raw.find(b"\x0d\x00", 0)
     if first_nl <= 0:
         _log.debug("parse_menu: main title line not found")
@@ -134,7 +96,6 @@ def _parse_menu_impl(raw: bytes) -> dict:
     main_title = raw[0:first_nl].decode("ascii", errors="replace").strip()
     result["title"] = main_title
 
-    # メイン本体: first_nl の直後から、次のサブセクションマーカー (09 60) まで
     main_content_start = first_nl + 2
     next_section = raw.find(TITLE_SEQ, main_content_start)
     main_end = next_section if next_section != -1 else len(raw)
@@ -142,7 +103,6 @@ def _parse_menu_impl(raw: bytes) -> dict:
     result["options"] = opts
     result["hotkeys"] = hks
 
-    # ── サブメニューセクション（09 60 プレフィクス付き）──────────────
     pos = next_section
     while pos != -1 and pos < len(raw):
         line_end = raw.find(b"\x0d\x00", pos)
@@ -160,7 +120,6 @@ def _parse_menu_impl(raw: bytes) -> dict:
         })
         pos = sm_next
 
-    # ── フォールバック文字列（文字列検索） ────────────────────────────
     not_sure = b"I'm not sure."
     ns_pos = raw.find(not_sure)
     if ns_pos != -1:
@@ -180,7 +139,6 @@ def _parse_menu_impl(raw: bytes) -> dict:
             nr_end = len(raw)
         result["fallback_no_rumor"] = raw[nr_pos:nr_end].decode("ascii", errors="replace").strip()
 
-    # ── 場所名リスト ──────────────────────────────────────────────────
     inn_marker = b"Inn\x00"
     inn_pos = raw.find(inn_marker)
     if inn_pos != -1:
@@ -207,12 +165,7 @@ def _split_nul_strings(data: bytes, start: int, max_len: int) -> list[str]:
     return results
 
 
-# ---------------------------------------------------------------------------
-# 翻訳ルックアップ
-# ---------------------------------------------------------------------------
 
-# メニュー chrome（見出し/選択肢/固定地名）の同梱訳キー。chrome は固定常駐テンプレからの
-# ライブ採取のみで原文アンカーを localpack に持てないため、同梱訳を direct-id 解決する。
 _TITLE_LEGACY_ID = "ask_about_menu.title_ask_about.0"
 _OPT_LEGACY_IDS = (
     "ask_about_menu.opt_who_are_you.0",
@@ -221,9 +174,6 @@ _OPT_LEGACY_IDS = (
     "ask_about_menu.opt_exit.0",
 )
 
-# EN 表面 → 同梱訳キー。メインの見出し/選択肢に加え、サブメニュー（Rumor Type / General /
-# Work）と固定地名も含む。全 chrome を同じ direct-id 経路で解決し、call site ごとの取りこぼし
-# を防ぐ。可変な目的地名は value_by_surface で先に解決され、ここには載らない。
 _CHROME_SURFACE_LEGACY_IDS = {
     "ASK ABOUT ?": "ask_about_menu.title_ask_about.0",
     "Who are you?": "ask_about_menu.opt_who_are_you.0",
@@ -247,13 +197,6 @@ _CHROME_SURFACE_LEGACY_IDS = {
 
 
 def translate(en_text: str, lang: str = "ja", legacy_id: str | None = None) -> str:
-    """en_text に対応する翻訳を返す。未登録時は en_text をそのまま返す。
-
-    解決順: ①`value`（dev は disk 由来で解決）→ ②`value_by_surface`（採取済み表面＝目的地等を
-    provider から解決・カテゴリ有効化に非依存）→ ③同梱訳を direct-id 解決（`legacy_id` 指定時は
-    それを優先、無ければ EN 表面から chrome キーを引く）。chrome の見出し/選択肢/サブメニュー/
-    固定地名はすべてこの direct-id 経路で解決され、原文アンカー非依存。
-    """
     s = en_text.strip()
     ja = i18n.value("ask_about_menu", s)
     if ja is not None:
@@ -270,25 +213,10 @@ def translate(en_text: str, lang: str = "ja", legacy_id: str | None = None) -> s
 
 
 def _opt_legacy_id(index: int) -> str | None:
-    """メインメニュー選択肢の構造位置 → chrome 同梱訳キー（範囲外は None＝採取済み表面で解決）。"""
     return _OPT_LEGACY_IDS[index] if 0 <= index < len(_OPT_LEGACY_IDS) else None
 
 
 def detect_active_sub_menu_title(parsed: dict, marker: str) -> str:
-    """marker (= 現在表示中項目テキスト) からアクティブサブメニュータイトルを返す。
-
-    parsed["options"] (メイン選択肢) に marker が含まれていればメイン表示中
-    と判断し空文字を返す。parsed["sub_menus"] のいずれかの options に含まれ
-    ていればそのサブメニューのタイトルを返す。
-
-    判定機構: anchor + 0xA844 (u16 LE) が「現在表示中項目テキストへの anchor
-    相対ポインタ」を保持し、popup11_list_detector.read_active_menu_marker()
-    がポインタの指し先テキストを返す。メイン項目最終 (例: "Exit") だけでなく
-    サブメニュー内のどの項目 (例: "General" / "Work") を指していても
-    "Rumor Type" 等のタイトルを正しく特定できる。
-
-    parse_error / 空 marker は空文字を返す。
-    """
     if not marker:
         return ""
     if "parse_error" in parsed:
@@ -303,19 +231,6 @@ def detect_active_sub_menu_title(parsed: dict, marker: str) -> str:
 
 def build_panel_display_sub(parsed: dict, sub_title: str = "Rumor Type",
                             lang: str = "ja") -> tuple[str, str]:
-    """
-    翻訳パネル用シンプル表示（サブメニュー版）。
-
-    parsed["sub_menus"] から指定された sub_title のサブメニュー項目のみを
-    plain text で対訳表示する。該当サブメニューが見つからない場合は
-    タイトルのみ返す。
-
-    フォーマット例 (Rumor Type サブ表示時):
-      Rumor Type        噂の種類
-
-      General           一般
-      Work              仕事
-    """
     if "parse_error" in parsed:
         return (sub_title, translate(sub_title))
 
@@ -340,18 +255,6 @@ def build_panel_display_sub(parsed: dict, sub_title: str = "Rumor Type",
 
 
 def build_panel_display(parsed: dict, lang: str = "ja") -> tuple[str, str]:
-    """
-    翻訳パネル用シンプル表示。**画面に出ているメインメニュー項目のみ**を
-    plain text で対訳表示する（補足情報・サブメニューは含めない）。
-
-    フォーマット例:
-      ASK ABOUT ?       質問する
-
-      Who are you?      あなたは誰？
-      Where is...       どこにある？
-      Rumors            うわさ
-      Exit              やめる
-    """
     if "parse_error" in parsed:
         return ("ASK ABOUT ?", translate("ASK ABOUT ?"))
 
@@ -375,20 +278,6 @@ def build_panel_display(parsed: dict, lang: str = "ja") -> tuple[str, str]:
 
 def build_display_sub(parsed: dict, sub_title: str = "Rumor Type",
                        lang: str = "ja") -> tuple[str, str]:
-    """翻訳タブ用 サブメニューのみ表示。
-
-    parsed["sub_menus"] から指定された sub_title のサブメニュー項目のみを
-    翻訳タブ書式 (タイトル + 空行 + 2 スペースインデント + [hotkey]) で出力する。
-
-    宿屋 (TavernSession) など、ASK ABOUT? メニュー本体を表示せず指定サブ
-    メニューだけを翻訳タブに描画したいケースで使う。
-
-    フォーマット例 (Rumor Type サブ表示時):
-      Rumor Type                噂の種類
-
-        [G] General                [G] 一般
-        [W] Work                   [W] 仕事
-    """
     if "parse_error" in parsed:
         return (sub_title, translate(sub_title))
 
@@ -422,10 +311,6 @@ def build_display_sub(parsed: dict, sub_title: str = "Rumor Type",
 
 def build_display(parsed: dict, lang: str = "ja",
                   include_sub: bool = True) -> tuple[str, str]:
-    """
-    翻訳タブ用表示。include_sub=True (既定) でサブメニューも含む全表示、
-    include_sub=False でメインメニューのみを表示する。
-    """
     if "parse_error" in parsed:
         return ("ASK ABOUT ?", "質問する")
 
@@ -454,9 +339,6 @@ def build_display(parsed: dict, lang: str = "ja",
             en_lines.append("")
             ja_lines.append("")
             sm_title_en = sub.get("title", "")
-            # 目的地サブ（Where is...）の項目は value_by_surface で解決し、固定 chrome の
-            # サブ見出し/選択肢（Rumor Type / General / Work）は translate 内で表面→同梱訳の
-            # direct-id 解決される。
             sm_title_ja = translate(sm_title_en)
             en_lines.append(sm_title_en)
             ja_lines.append(sm_title_ja)

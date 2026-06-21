@@ -1,9 +1,3 @@
-"""city_lookup.py — Assist 連携用ラッパー。
-
-街名 (MapName) または (province_id, location_id) から、その街の facility リスト
-(FacilityPlacement) を取得する。Assist 側 poll_controller から呼ばれ、入店時の
-Interior MIF 名特定に使う。
-"""
 from __future__ import annotations
 
 from typing import Optional
@@ -57,11 +51,6 @@ def _location_type_from_id(location_id: int) -> Optional[ArenaLocationType]:
 
 def get_facilities_for(province_id: int, location_id: int
                        ) -> Optional[list[FacilityPlacement]]:
-    """(province_id, location_id) から facility リストを返す。
-
-    街以外 (ダンジョン等) や、city_generation.json / world_map.json が
-    取得できない環境では None を返す。
-    """
     if not (is_data_available() and is_world_map_available()):
         return None
     location_type = _location_type_from_id(location_id)
@@ -106,7 +95,6 @@ def get_facilities_for(province_id: int, location_id: int
 
 def get_facilities_by_location_name(location_name: str
                                     ) -> Optional[list[FacilityPlacement]]:
-    """街名 (例 "Moonguard") から facility リストを返す。"""
     if not is_world_map_available():
         return None
     world_map = load_world_map_data()
@@ -118,13 +106,6 @@ def get_facilities_by_location_name(location_name: str
 
 
 def get_palace_mif_for_location(location_name: str) -> Optional[str]:
-    """街名から宮殿内装 MIF 名 (PALACE* / TOWNPAL* / VILPAL*) を導出する。
-
-    宮殿は街区の MENU voxel マーカーを持たず detect_city_facilities に含まれない
-    ため、扉座標→施設の最寄り解決では拾えない。宮殿 MIF は cityType (prefix) と
-    rulerSeed (variant 0-2) のみで決まる (= 扉座標不要) ので、街名から直接導出する。
-    導出規則は arena_level_utils.get_door_voxel_mif_name の PALACE 分岐と一致。
-    """
     if not is_world_map_available():
         return None
     world_map = load_world_map_data()
@@ -133,7 +114,7 @@ def get_palace_mif_for_location(location_name: str) -> Optional[str]:
         return None
     province_id, location_id, location = found
     location_type = _location_type_from_id(location_id)
-    if location_type is None:  # ダンジョン等は宮殿なし
+    if location_type is None:
         return None
     province = world_map.provinces[province_id]
     rect = Rect(province.global_x, province.global_y,
@@ -141,9 +122,9 @@ def get_palace_mif_for_location(location_name: str) -> Optional[str]:
     ruler_seed = get_ruler_seed(Int2(location.x, location.y), rect)
     variant = ((ruler_seed >> 8) & 0xFFFF) % 3
     prefix_index = {
-        ArenaLocationType.CITY_STATE: 0,   # PALACE
-        ArenaLocationType.TOWN:       8,   # TOWNPAL
-        ArenaLocationType.VILLAGE:    9,   # VILPAL
+        ArenaLocationType.CITY_STATE: 0,
+        ArenaLocationType.TOWN:       8,
+        ArenaLocationType.VILLAGE:    9,
     }[location_type]
     return f"{MENU_MIF_PREFIXES[prefix_index]}{variant + 1}.MIF"
 
@@ -151,7 +132,6 @@ def get_palace_mif_for_location(location_name: str) -> Optional[str]:
 def find_nearest_facility(facilities: list[FacilityPlacement],
                           x: int, y: int
                           ) -> Optional[FacilityPlacement]:
-    """door 候補座標 (x, y) に最も近い facility を返す。"""
     best: Optional[FacilityPlacement] = None
     best_d2 = -1
     for f in facilities:
@@ -170,11 +150,6 @@ def find_facility_by_mif_and_pos(facilities: list[FacilityPlacement],
                                   mif_name: str,
                                   door_x: int, door_y: int
                                   ) -> Optional[FacilityPlacement]:
-    """指定 MIF 名にマッチする facility の中から door 座標が最も近いものを返す。
-
-    Moonguard の TEMPLE6.MIF のように同一 MIF が複数 facility に割り当てられる
-    ケースで、door 位置 (= 街路時の rt_x, rt_z) で個別 facility を特定する。
-    """
     candidates = [f for f in facilities if f.mif_name == mif_name]
     if not candidates:
         return None

@@ -1,8 +1,3 @@
-"""cif_decoder.py — Arena CIF/COL デコーダー。
-
-CIF Type04 (LZ) / Type08 (Adaptive Huffman+LZ) デコード + COL パレット + PNG 生成。
-Compression.h の decodeType04 / decodeType08 を Python に移植。
-"""
 from __future__ import annotations
 
 import base64
@@ -11,32 +6,20 @@ import struct
 import zlib
 
 
-# ──────────────────────────────────────────────────
-# COL パレット
-# ──────────────────────────────────────────────────
 
 def load_col_bytes(data: bytes) -> list[tuple[int, int, int]]:
-    """COL パレットのバイト列を (R,G,B) タプル 256 個のリストで返す。"""
     return [(data[8 + i * 3], data[8 + i * 3 + 1], data[8 + i * 3 + 2])
             for i in range(256)]
 
 
 def load_col(col_path: str) -> list[tuple[int, int, int]]:
-    """COL パレットを (R,G,B) タプル 256 個のリストで返す。
-
-    フォーマット: 8 バイトヘッダー(length u32 + version u32) + 256×3 RGB バイト。
-    """
     with open(col_path, "rb") as f:
         data = f.read()
     return load_col_bytes(data)
 
 
-# ──────────────────────────────────────────────────
-# Type04 LZ デコーダー
-# ──────────────────────────────────────────────────
 
 def _decode_type04(src: bytes, out_size: int) -> bytes:
-    """LZ Type04 デコーダー（4KB history リングバッファ、LSB-first bitmask）。"""
     history = bytearray(b'\x20' * 4096)
     historypos = 0
     dst = bytearray(out_size)
@@ -84,11 +67,7 @@ def _decode_type04(src: bytes, out_size: int) -> bytes:
     return bytes(dst)
 
 
-# ──────────────────────────────────────────────────
-# Type08 Adaptive Huffman + LZ デコーダー
-# ──────────────────────────────────────────────────
 
-# Compression.h decodeType08 のルックアップテーブル
 _HIGH_OFFSET_BITS = bytes([
     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
     0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,
@@ -129,14 +108,9 @@ _LOW_OFFSET_BIT_COUNT = bytes([
 
 
 def _decode_type08(src: bytes, out_size: int) -> bytes:
-    """Adaptive Huffman + LZ Type08 デコーダー（Compression.h decodeType08 移植）。"""
     history = bytearray(b'\x20' * 4096)
     historypos = 0
 
-    # NodeIdxMap[941]: リーフ/内部ノードの親 freqidx へのポインタ
-    #   [0..625]  = (i>>1)+314  (隣接2ノードを子に持つ親インデックス)
-    #   [626]     = 0           (ルートの親は 0)
-    #   [627..940]= 0..313      (リーフノードの NodeFreq/NodeTree インデックス)
     NodeIdxMap = [0] * 941
     for i in range(626):
         NodeIdxMap[i] = (i >> 1) + 314
@@ -144,16 +118,12 @@ def _decode_type08(src: bytes, out_size: int) -> bytes:
     for i in range(314):
         NodeIdxMap[627 + i] = i
 
-    # NodeTree[627]: 各 freqidx が保持する子インデックス or リーフ値
-    #   [0..313]  = 627..940    (内部ノード → リーフ or 別内部ノードへの参照)
-    #   [314..626]= 0,2,4,...624 (内部ノード → 子ペアの偶数インデックス)
     NodeTree = [0] * 627
     for i in range(314):
         NodeTree[i] = 627 + i
     for i in range(313):
         NodeTree[314 + i] = i * 2
 
-    # NodeFreq[627]: 各ノードの出現頻度（ソート維持）
     NodeFreq = [0] * 627
     for i in range(314):
         NodeFreq[i] = 1
@@ -178,7 +148,6 @@ def _decode_type08(src: bytes, out_size: int) -> bytes:
     dstpos = 0
 
     while dstpos < out_size:
-        # ── Huffman ツリーをルートから葉までたどる ──
         node = NodeTree[626]
         while node < 627:
             ensure_bits()
@@ -186,7 +155,6 @@ def _decode_type08(src: bytes, out_size: int) -> bytes:
             bitmask = (bitmask << 1) & 0xFFFF
             validbits -= 1
 
-        # ── 頻度更新・ツリー再ソート ──
         freqidx = NodeIdxMap[node]
         while True:
             NodeFreq[freqidx] += 1
@@ -218,7 +186,6 @@ def _decode_type08(src: bytes, out_size: int) -> bytes:
             if freqidx == 0:
                 break
 
-        # ── 出力 ──
         codeword = node - 627
         if codeword < 256:
             val = codeword
@@ -227,7 +194,6 @@ def _decode_type08(src: bytes, out_size: int) -> bytes:
             dst[dstpos] = val
             dstpos += 1
         else:
-            # バック参照: 8 ビット読み取ってオフセットテーブルを引く
             ensure_bits()
             tableidx = (bitmask >> 8) & 0xFF
             bitmask = (bitmask << 8) & 0xFFFF
@@ -257,33 +223,18 @@ def _decode_type08(src: bytes, out_size: int) -> bytes:
     return bytes(dst)
 
 
-# ──────────────────────────────────────────────────
-# CIF フレーム解析
-# ──────────────────────────────────────────────────
 
 def decode_cif_frames(cif_path: str) -> list[tuple[int, int, bytes]]:
-    """CIF ファイルを全フレーム (width, height, pixels) として返す。
-
-    pixels はパレットインデックスの生バイト列 (width×height バイト)。
-    対応圧縮タイプ: Type04 (LZ), Type08 (Adaptive Huffman+LZ), Type00 (無圧縮)。
-
-    フレームごとの xOffset/yOffset は decode_cif_frames_with_offsets() を使う。
-    """
     return [(w, h, pix) for w, h, _x, _y, pix in decode_cif_frames_with_offsets(cif_path)]
 
 
 def decode_cif_frames_bytes(data: bytes) -> list[tuple[int, int, bytes]]:
-    """CIF バイト列を全フレーム (width, height, pixels) として返す（path 不要・公開版用）。"""
     return [(w, h, pix)
             for w, h, _x, _y, pix in decode_cif_frames_with_offsets_bytes(data)]
 
 
 def decode_cif_frames_with_offsets(
         cif_path: str) -> list[tuple[int, int, int, int, bytes]]:
-    """CIF ファイルを (width, height, x_offset, y_offset, pixels) の列で返す。
-
-    OpenTESArena CIFFile.cpp 準拠。各 12B ヘッダーに x/y オフセットがある。
-    """
     with open(cif_path, "rb") as f:
         data = f.read()
     return decode_cif_frames_with_offsets_bytes(data)
@@ -291,7 +242,6 @@ def decode_cif_frames_with_offsets(
 
 def decode_cif_frames_with_offsets_bytes(
         data: bytes) -> list[tuple[int, int, int, int, bytes]]:
-    """CIF バイト列を (width, height, x_offset, y_offset, pixels) の列で返す。"""
     frames: list[tuple[int, int, int, int, bytes]] = []
     offset = 0
 
@@ -316,7 +266,6 @@ def decode_cif_frames_with_offsets_bytes(
             raw = data[offset + 12: offset + 12 + clen]
             pixels = _decode_type04(raw, out_size)
         elif ctype == 0x08:
-            # Type08: 12バイトヘッダー後に 2バイトの展開長プレフィックスがあるのでスキップ
             raw = data[offset + 14: offset + 12 + clen]
             pixels = _decode_type08(raw, out_size)
         elif ctype == 0x00:
@@ -330,14 +279,10 @@ def decode_cif_frames_with_offsets_bytes(
     return frames
 
 
-# ──────────────────────────────────────────────────
-# PNG 生成
-# ──────────────────────────────────────────────────
 
 def pixels_to_png_b64(pixels: bytes, width: int, height: int,
                        palette: list[tuple[int, int, int]],
                        transparent_index: int = 0) -> str:
-    """パレットインデックス画像を RGBA PNG data URI (base64) に変換する。"""
     rgba = bytearray(width * height * 4)
     for idx, pal_idx in enumerate(pixels):
         r, g, b = palette[pal_idx]
@@ -350,7 +295,6 @@ def pixels_to_png_b64(pixels: bytes, width: int, height: int,
                 + crc_src
                 + struct.pack(">I", zlib.crc32(crc_src) & 0xFFFFFFFF))
 
-    # IHDR: width(4), height(4), bit_depth=8, color_type=6(RGBA), comp=0, filter=0, interlace=0
     ihdr = struct.pack(">IIBBBBB", width, height, 8, 6, 0, 0, 0)
 
     raw_rows = bytearray()
@@ -365,21 +309,10 @@ def pixels_to_png_b64(pixels: bytes, width: int, height: int,
     return "data:image/png;base64," + base64.b64encode(png).decode()
 
 
-# ──────────────────────────────────────────────────
-# ポートレイト取得
-# ──────────────────────────────────────────────────
 
 def get_portrait_b64(cif_dir: str, pal_col_path: str, charsht_col_path: str,
                      race_idx: int, is_male: bool,
                      frame_index: int) -> str:
-    """指定キャラクターのポートレイト画像を base64 PNG data URI として返す。
-
-    ファイル選択とパレット対応:
-      FACES{F?}0{race}.CIF (Type04, trimmed)  + PAL.COL    (in-game UI 用)
-      FACES{F?}1{race}.CIF (Type08, full)     + CHARSHT.COL (character sheet 用)
-    digit "0" を優先して試み、なければ "1" にフォールバック。
-    エラー時は空文字列を返す。
-    """
     try:
         prefix = "" if is_male else "F"
         cif_path = ""
@@ -399,7 +332,6 @@ def get_portrait_b64(cif_dir: str, pal_col_path: str, charsht_col_path: str,
         idx = frame_index if frame_index < len(frames) else 0
         w, h, pixels = frames[idx]
 
-        # digit "0" (trimmed) は PAL.COL、digit "1" (full) は CHARSHT.COL
         col_path = pal_col_path if selected_digit == "0" else charsht_col_path
         palette = load_col(col_path)
         return pixels_to_png_b64(pixels, w, h, palette)

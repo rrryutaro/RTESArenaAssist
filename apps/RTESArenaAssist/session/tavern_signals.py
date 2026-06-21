@@ -1,12 +1,3 @@
-"""session/tavern_signals.py — 店主会話 単一判定の入力 (TavernSignals) を集約する。
-
-poll_controller が 1 poll に一度だけ呼び、店主会話分離化の判定材料を 1 か所で
-読み取って TavernSignals を組み立てる。読み取りはすべて防御的 (失敗時は安全側の
-既定値) で、ここで他経路の判定に依存しない (= 分離化内に閉じた入力収集)。
-
-実際の判定 (どの子画面か) は session.tavern_view.classify_tavern_view が行う。
-本ファイルは「メモリ → 純データ」の変換だけを担当する。
-"""
 from __future__ import annotations
 
 from typing import Optional
@@ -14,7 +5,6 @@ from typing import Optional
 from .tavern_view import TavernSignals
 
 
-# negotiation 本文と判定する surface 集合の prefix
 def _safe(fn, default):
     try:
         return fn()
@@ -33,10 +23,8 @@ def gather_tavern_signals(
     facility_tavern: bool,
     npc_phase: Optional[int] = None,
 ) -> TavernSignals:
-    """店主会話の判定材料を読み取り TavernSignals を返す。"""
     img_u = (img or "").upper()
 
-    # active_template 候補 surface 集合 + current_ptr 一致候補の surface
     active_surfaces: set = set()
     cur_ptr_surface = ""
     try:
@@ -61,7 +49,6 @@ def gather_tavern_signals(
 
     counter_active = ("negotiation_counter" in active_surfaces)
 
-    # 交渉本文 (= 金額提示の offer text が辞書 hit するか)
     negotiation_body = False
     try:
         from negotiation_reader import read_negotiation_diagnostic
@@ -73,7 +60,6 @@ def gather_tavern_signals(
     except Exception:  # noqa: BLE001
         negotiation_body = False
 
-    # 店内応答 (酒/噂応答) が前景に出ているか (= ptr 一致 + 辞書 hit)
     npc_response_hit = False
     try:
         from popup11_response_reader import (
@@ -90,7 +76,6 @@ def gather_tavern_signals(
     except Exception:  # noqa: BLE001
         npc_response_hit = False
 
-    # 噂種別 marker (ASK ABOUT 借用) — npc_phase が ASKING のときのみ確認
     rumor_marker = False
     try:
         from .npc_chat_session import NPC_PHASE_ASKING

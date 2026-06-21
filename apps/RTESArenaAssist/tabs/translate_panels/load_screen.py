@@ -1,4 +1,3 @@
-"""tabs/translate_panels/load_screen.py — LOADSAVE.IMG セーブスロット一覧レンダリング"""
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
@@ -6,10 +5,6 @@ from PySide6.QtWidgets import QTableWidget, QTableWidgetItem
 
 
 def render_load_screen_slots(table: QTableWidget, slots: list) -> None:
-    """ロード画面テーブルをセーブスロット情報で更新する。
-
-    slots: list of dict with keys: slot, save_name, note_label, modified
-    """
     table.setRowCount(0)
     for info in slots:
         row = table.rowCount()

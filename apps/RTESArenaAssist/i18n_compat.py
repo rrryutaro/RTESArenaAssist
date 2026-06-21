@@ -1,11 +1,3 @@
-"""i18n_compat.py — 移行中の v1→v2 互換 adapter（旧文字列 ID で v2 を引く）。
-
-既存コードの `legacy_id`（`mages.Damage Health` 等）を `legacy_id_map` で整数 ID へ変換し、
-v2 resolver（bundle/localpack/mod）で解決する薄い層。runtime の段階移行に使い、全カテゴリ
-移行後に削除する（完成形は整数 ID 直参照）。
-
-lang コードは v1 系（`ja`/`en`/`es`）でも v2 の locale tag（`ja-JP` 等）でも受ける。
-"""
 from __future__ import annotations
 
 import json
@@ -13,7 +5,6 @@ import os
 
 import i18n_v2
 
-# v1 lang コード → v2 locale tag。
 _LOCALE_TAG = {"ja": "ja-JP", "en": "en-US", "es": "es-ES"}
 
 
@@ -44,14 +35,12 @@ class V2Compat:
         return self.legacy_map.get(legacy_id)
 
     def text_opt(self, legacy_id: str, locale: str | None = None) -> str | None:
-        """旧 ID の表示テキストを現在 locale で返す（未登録/未解決は None）。"""
         nid = self.legacy_map.get(legacy_id)
         if nid is None:
             return None
         return self.v2.resolve_text(nid, _to_tag(locale or self.default_locale))
 
     def original(self, legacy_id: str) -> str | None:
-        """旧 ID のライブ照合 surface（localpack 原文）を返す。"""
         nid = self.legacy_map.get(legacy_id)
         if nid is None:
             return None

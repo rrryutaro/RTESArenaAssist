@@ -1,9 +1,3 @@
-"""
-tab_dict.py — 辞書タブ
-
-旧 tab_inf_text.py のダンジョンテキスト機能を本タブに統合。
-表示モードを「辞書」「ダンジョンテキスト」の 2 つで切り替える。
-"""
 
 from __future__ import annotations
 
@@ -26,7 +20,6 @@ _I18N_DIR = os.path.join(os.path.dirname(__file__), "..", "i18n")
 _UNTRANSLATED_STYLE = "background: #3a2a00; border-radius: 4px; padding: 4px;"
 _TRANSLATED_STYLE = ""
 
-# セグメンテッドボタン用 QSS。選択中ボタンを強調する。
 _SEGMENT_QSS = """
 QPushButton[segment="true"] {
     padding: 6px 18px;
@@ -52,32 +45,14 @@ QPushButton[segment-right="true"] {
 """
 
 
-# ダンジョンテキスト(専用モード)・UI/用語(別経路)・原文のみカテゴリは通常辞書ビューから除外。
 _DICT_VIEW_SKIP = {"inf_text", "ui", "ui_app", "glossary"}
 
 
 def _load_dict_entries() -> tuple[list, list]:
-    """通常辞書を i18n 統一構造 (`_original` + 現在言語レイヤ) から読み込む。
-
-    対象: `i18n/_original/<cat>.json` の各エントリ (`original` = 原文アンカー) と
-          現在言語の訳 (`i18n.lang_only(id)`)。ダンジョンテキスト (inf_text) は
-          専用モード、UI/用語集は別経路のため除外する。
-
-    末尾に Assist 自体の UI 文言 (i18n リソースから動的展開) を追加する
-    (UI 翻訳は i18n リソースで管理・二重管理回避)。
-
-    Returns:
-      (entries, categories)
-      entry:    {"eng", "jpn", "cat_id", "cat_display"}
-      category: {"id", "display"}
-    """
     entries: list = []
     categories: list = []
     lang = i18n.current_lang()
 
-    # カテゴリ列挙: dev は disk `_original` の内部索引。公開ビルドは disk `_original`
-    # 非同梱で `original_categories()` が空になるため、v2 bundle 収録カテゴリ
-    # （enable 非依存・公開安全）へフォールバックする。
     cat_ids = i18n.original_categories()
     if not cat_ids:
         cat_ids = i18n.v2_bundle_categories()
@@ -91,7 +66,6 @@ def _load_dict_entries() -> tuple[list, list]:
             entries.extend(rows)
             categories.append({"id": cat_id, "display": label})
 
-    # Assist 自体の UI 文言を i18n リソースから動的に追加
     ui_entries, ui_cat = _load_assist_ui_entries(lang)
     if ui_entries and ui_cat is not None:
         entries.extend(ui_entries)
@@ -101,25 +75,12 @@ def _load_dict_entries() -> tuple[list, list]:
 
 
 def _cat_label(cat_id: str) -> str:
-    """カテゴリ ID をユーザー向け表示名へ変換する。
-
-    i18n の `dict.cat.<id>`（ui_app 名前空間・正規辞書登録）で解決し、未登録なら
-    生 ID にフォールバックする（`i18n.tr` は未解決時にキー文字列を返す）。
-    """
     key = f"dict.cat.{cat_id}"
     label = i18n.tr(key)
     return cat_id if (not label or label == key) else label
 
 
 def _category_dict_rows(cat_id: str, cat_display: str) -> list:
-    """1 カテゴリの辞書行（英語原文/日本語訳）を返す。
-
-    dev は disk `_original`（`i18n.originals()`）から構築する（従来どおり）。公開
-    ビルドは `_original` 非同梱で `originals()` が空のため、公開安全な
-    `i18n.v2_category_entries`（localpack の原文 surface + 現在言語訳・enable
-    非依存）から構築する。これにより公開でも辞書が空にならない（§3-1 再発バグクラス）。
-    `cat_display` はユーザー向けカテゴリ表示名（`_cat_label` 解決済み）。
-    """
     rows: list = []
     src = i18n.originals(cat_id)
     if src:
@@ -136,7 +97,6 @@ def _category_dict_rows(cat_id: str, cat_display: str) -> list:
                 "cat_display": cat_display,
             })
         return rows
-    # 公開ビルド: _original 非同梱 → v2 bundle/localpack 由来（公開安全）。
     for e in i18n.v2_category_entries(cat_id):
         eng = e.get("original") or ""
         if not eng:
@@ -151,7 +111,6 @@ def _category_dict_rows(cat_id: str, cat_display: str) -> list:
 
 
 def _read_strings(path: str) -> dict[str, str]:
-    """i18n/<lang>.json を読み込んで strings 部分のフラット dict を返す。"""
     try:
         with open(path, encoding="utf-8") as f:
             data = json.load(f)
@@ -162,7 +121,6 @@ def _read_strings(path: str) -> dict[str, str]:
             k: v for k, v in data["strings"].items()
             if isinstance(v, str)
         }
-    # 旧スキーマ (flat dict) 後方互換
     return {
         k: v for k, v in data.items()
         if not k.startswith("_") and isinstance(v, str)
@@ -170,13 +128,6 @@ def _read_strings(path: str) -> dict[str, str]:
 
 
 def _load_assist_ui_entries(lang: str) -> tuple[list, dict | None]:
-    """i18n リソースから Assist 自体の UI 文言を辞書エントリとして生成。
-
-    en.json を原文、現在言語の <lang>.json を翻訳として扱う。
-    両方に存在し、両方とも空文字でないキーのみ追加する。
-
-    Returns (entries, category) — どちらか不成立なら ([], None)。
-    """
     en_strings = _read_strings(os.path.join(_I18N_DIR, "en.json"))
     if not en_strings:
         return [], None
@@ -208,19 +159,11 @@ def _load_assist_ui_entries(lang: str) -> tuple[list, dict | None]:
 
 
 class TabDict(QWidget):
-    """辞書タブ。
-
-    モード切替:
-      - 辞書: 通常辞書 (character / monsters / spells 等)。カテゴリ + 検索
-      - ダンジョンテキスト: INF @TEXT エントリ。INF ファイル + 種別 + 検索
-    """
 
     def __init__(self, parent=None):
         super().__init__(parent)
-        # 通常辞書側のデータ
         self._dict_entries: list = []
         self._dict_categories: list = []
-        # ダンジョンテキスト側のデータ
         itl.load()
         self._inf_entries: list = []
 
@@ -228,16 +171,12 @@ class TabDict(QWidget):
         self._load_dict()
         self._populate_inf_files()
 
-    # ------------------------------------------------------------------
-    # UI 構築
-    # ------------------------------------------------------------------
 
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
         root.setContentsMargins(10, 10, 10, 10)
         root.setSpacing(6)
 
-        # モード切替 (セグメンテッドボタン)
         mode_row = QHBoxLayout()
         mode_row.setSpacing(0)
         self._btn_mode_dict = QPushButton(i18n.tr("dict.mode_dictionary"))
@@ -259,7 +198,6 @@ class TabDict(QWidget):
         mode_row.addStretch()
         root.addLayout(mode_row)
 
-        # スタック
         self._stack = QStackedWidget()
         self._stack.addWidget(self._build_dict_page())
         self._stack.addWidget(self._build_inf_page())
@@ -271,7 +209,6 @@ class TabDict(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(6)
 
-        # 検索バー
         top = QHBoxLayout()
         self._dict_search_edit = QLineEdit()
         self._dict_search_edit.setPlaceholderText(i18n.tr("dict.search_placeholder"))
@@ -288,11 +225,9 @@ class TabDict(QWidget):
         top.addWidget(self._dict_search_btn)
         layout.addLayout(top)
 
-        # 件数表示
         self._dict_result_lbl = QLabel(i18n.tr("dict.loading"))
         layout.addWidget(self._dict_result_lbl)
 
-        # テーブル
         self._dict_table = QTableWidget(0, 3)
         self._dict_table.setHorizontalHeaderLabels([
             i18n.tr("dict.col_eng"),
@@ -317,7 +252,6 @@ class TabDict(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(6)
 
-        # フィルタ行
         filter_row = QHBoxLayout()
         filter_row.setSpacing(8)
 
@@ -352,7 +286,6 @@ class TabDict(QWidget):
         filter_row.addWidget(self._inf_search_edit, 1)
         layout.addLayout(filter_row)
 
-        # 一覧 + 詳細
         splitter = QSplitter(Qt.Orientation.Vertical)
 
         self._inf_list = QListWidget()
@@ -402,9 +335,6 @@ class TabDict(QWidget):
 
         return page
 
-    # ------------------------------------------------------------------
-    # 通常辞書: ロード / 検索
-    # ------------------------------------------------------------------
 
     def _load_dict(self) -> None:
         self._dict_entries, self._dict_categories = _load_dict_entries()
@@ -449,15 +379,11 @@ class TabDict(QWidget):
             )
 
     def lookup(self, english: str) -> str | None:
-        """完全一致の英語キーから日本語訳を返す (外部 API、後方互換用)。"""
         for e in self._dict_entries:
             if e["eng"].lower() == english.lower():
                 return e["jpn"]
         return None
 
-    # ------------------------------------------------------------------
-    # ダンジョンテキスト: ロード / フィルタ / 詳細
-    # ------------------------------------------------------------------
 
     def _populate_inf_files(self) -> None:
         self._inf_combo.blockSignals(True)
@@ -546,9 +472,6 @@ class TabDict(QWidget):
             _TRANSLATED_STYLE if trans_text else _UNTRANSLATED_STYLE
         )
 
-    # ------------------------------------------------------------------
-    # モード切替
-    # ------------------------------------------------------------------
 
     def _on_mode_changed(self, mode_id: int) -> None:
         self._stack.setCurrentIndex(mode_id)

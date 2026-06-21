@@ -1,9 +1,3 @@
-"""normal_play/mages_spellmaker_render.py — 魔術師ギルド Spellmaker 描画サブモジュール。
-
-mages_guild_render_module から分離。挙動不変。
-本モジュールは mages_render_common を import してよいが、
-mages_guild_render_module は import してはならない（循環 import 防止）。
-"""
 from __future__ import annotations
 
 from normal_play.mages_render_common import (
@@ -12,7 +6,6 @@ from normal_play.mages_render_common import (
     _casting_cost_from_spell_cost,
 )
 
-# Spellmaker 専用定数
 _SPELLMAKER_LIVE_COST_HALF_OFFSET = 0xFAA4
 _SPELLMAKER_COST_CACHE_ATTR = "_mages_spellmaker_cost_cache"
 _SPELLMAKER_RECORD_OFFSET = 0x57E6
@@ -52,12 +45,6 @@ _SPELLMAKER_LIST_TITLES = frozenset({
 def _read_spellmaker_live_spell_cost(
         w, *, casting_cost: int | None = None,
         player_level=None) -> int | None:
-    """Spellmaker 編集中のワーク領域 half-cost から Spell Cost を読む。
-
-    SpellData +0x32 が 0 だが、anchor+0xFAA4 に画面表示
-    Spell Cost の半分値が残る。残留値誤認を避けるため、C= とレベルから
-    導ける Casting Cost と整合する場合だけ採用する。
-    """
     if casting_cost is None or casting_cost <= 0:
         return None
     try:
@@ -79,7 +66,6 @@ def _read_spellmaker_live_spell_cost(
 
 def _spellmaker_cost_cache_key(w, data: dict,
                                casting_cost: int | None) -> tuple:
-    """Spellmaker の同一入力状態だけで live cost を再利用するための署名。"""
     try:
         raw_record = w._analyzer.read_bytes(
             w._anchor + _SPELLMAKER_RECORD_OFFSET,
@@ -100,13 +86,6 @@ def _spellmaker_cost_cache_key(w, data: dict,
 
 def _resolve_spellmaker_spell_cost(
         w, data: dict, *, casting_cost: int | None) -> int:
-    """Spellmaker の Spell Cost を、安定レコード優先で決定する。
-
-    通常のステータス/購入詳細と違い、Spellmaker 編集中は +0x5818 が 0 の
-    ままになるため live half-cost を使う。ただし live 領域は描画中に揺れるので、
-    C= と整合した値だけを同一入力レコードのキャッシュへ保存し、無効な poll で
-    表示済みの正しい値を消さない。
-    """
     try:
         record_cost = int(data.get("cost") or 0)
     except (TypeError, ValueError):
@@ -138,7 +117,6 @@ def _resolve_spellmaker_spell_cost(
 
 
 def _has_spellmaker_prompt_slot(w) -> bool:
-    """Spellmaker 表示中に併走する 0x5Axx テンプレ slot を検出する。"""
     for off in _ACTIVE_TEMPLATE_PTR_OFFSETS:
         try:
             raw = w._analyzer.read_bytes(w._anchor + off, 2)
@@ -153,7 +131,6 @@ def _has_spellmaker_prompt_slot(w) -> bool:
 
 
 def _is_spellmaker_prompt_foreground(w, sig: dict) -> bool:
-    """Spellmaker 応答プロンプトが前景表示中かを L4 信号だけで判定する。"""
     if not (
         sig.get("view") == 0x00
         and sig.get("type") == 0xC7
@@ -169,13 +146,6 @@ def _is_spellmaker_prompt_foreground(w, sig: dict) -> bool:
 
 
 def _resolve_spellmaker_prompt(w, sig: dict):
-    """Spellmaker 背景上に重なる Spellmaker 専用プロンプトだけを解決する。
-
-    `0x1044` には Detect Magic の見積り/結果が残留する。Spellmaker 画面では
-    それらを overlay として採用せず、呪文作成・購入完了系の文だけに限定する。
-    `0x5AAB` 等の A.EXE 固定テンプレは閉じた後も current ptr に残るため、
-    L4 の前景信号と Spellmaker 0x5Axx active slot が表示中を示す時だけ読む。
-    """
     if not _is_spellmaker_prompt_foreground(w, sig):
         return None
     try:

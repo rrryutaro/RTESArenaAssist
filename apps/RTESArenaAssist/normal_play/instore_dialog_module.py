@@ -1,21 +1,3 @@
-"""店内ダイアログ表示単位 (NPC会話系・店主クリック割り込みNPC を含む)。
-
-店主クリック後メニュー表示前に割り込むイベント (クエスト受注打診等) の
-ダイアログメッセージや、店内の応答 (+0x929E 等の応答面) を、自前の前景
-テキストポインタ probe で判定し表示する判定描画セット (route1=店内応答)。
-npc_dialog_module から物理分離 (npc_conversation_module /
-npc_message_module と対称)。
-
-window 側状態: _instore_resp_text_by_offset / _instore_resp_current_key /
-_instore_resp_prev / _ui_router。表示ヘルパー `_show_npc_dialog_text` のみ
-関数ローカル import で参照する (owner は "npc_dialog" のまま)。
-
-相互排他 (1軸化): 前 poll の描画結果 (panel_owner) からの逆算は持たない。
-当 poll の判定描画結論 (施設 session latch / メニュー・一覧の可視 /
-detector kind / negotiation・active_template の描画結論) と、前 poll の
-店内 surface 種別 (`w._shop_kind_prev_poll` = 宿屋 classify 単位が所有
-する poll 間履歴) で確定する。
-"""
 from __future__ import annotations
 
 import logging
@@ -23,10 +5,6 @@ import logging
 _log = logging.getLogger("RTESArenaAssist")
 
 
-# 「一覧 → 応答」の正規遷移を許可する前 poll の店内 surface 種別。
-# 前 poll でメニュー/一覧が前景で、当 poll に前景テキストポインタが応答面
-# を指した場合のみ応答表示へ切り替える (単なる残留 response buffer では
-# 発火しない)。
 _SHOP_SURFACE_KINDS = (
     "shop_menu", "shop_buy", "shop_rooms", "shop_rumor_type",
 )
@@ -42,22 +20,6 @@ def _poll_route1_instore_response(
         shop_state_kind: str = "none",
         negot_handled: bool = False,
         active_tmpl_handled: bool = False):
-    """経路 1: 店内 NPC 応答 (+0x929E 等)。
-
-    戻り値: (instore_resp_handled, entry_handled)。
-    """
-    # 分離原則対応: 判定式から「翻訳タブ表示モード = 翻訳表示モード」を削除。
-    # 翻訳表示モードへの強制復帰は描画側 (= UiRouter.update_translation) で行う。
-    #
-    # 相互排他の確定 (1軸化): 旧実装は前 poll の panel_owner を L4 owner
-    # 集合と照合する逆算 (実行時相互排他ガード) だった。当 poll の判定描画
-    # 結論で確定する:
-    #   - 神殿/武具店/ギルドは応答を内製化済み (dedicated owner) のため、
-    #     session active (単一の真実 latch) 中は本経路を全面 skip する。
-    #   - 宿屋系 surface (メニュー/一覧/negotiation/active_template) が
-    #     当 poll に描画されている間は skip する (= 描画中の侵食防止)。
-    #   - 宿屋 Rumors 応答や酒応答は誰も内製化していないため
-    #     full block にせず、上記 surface 非描画の poll で本経路が描画する。
     _l4_surface_now = (
         internalized_facility_active
         or shop_menu_visible
@@ -110,9 +72,6 @@ def _poll_route1_instore_response(
             for c in _cands_probe
         )
 
-    # 「一覧 → 応答」の正規遷移: 前 poll の店内 surface 種別 (宿屋 classify
-    # 単位が所有する poll 間履歴 `_shop_kind_prev_poll`) がメニュー/一覧で、
-    # 当 poll の前景テキストポインタが応答面の候補を指す場合のみ発火する。
     _prev_poll_shop_kind = getattr(w, "_shop_kind_prev_poll", "none")
     _facility_response_override = (
         not entry_handled
@@ -122,11 +81,6 @@ def _poll_route1_instore_response(
         and _has_visible_response_hit()
     )
     _route1_active = npc_overlay_active or _facility_response_override
-    # 判定描画セット原則: 店内応答 (npc_dialog) は自前の ptr probe で
-    # 「応答が前景か」を判定し自身で描画する独立の判定描画セット。施設の単一判定
-    # (render_owner) に従属させると、その判定の誤りが応答描画を殺す。相互排他は
-    # 当 poll の判定描画結論 (_l4_surface_now) で構造確定する (前 poll の
-    # panel_owner 逆算は持たない=1軸化)。
     _route1_surface_allowed = (
         not _l4_surface_now or _facility_response_override)
 

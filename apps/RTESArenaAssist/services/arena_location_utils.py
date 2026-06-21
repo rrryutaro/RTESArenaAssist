@@ -1,8 +1,3 @@
-"""arena_location_utils.py — Arena の location ID/seed 計算ヘルパー。
-
-OpenTESArena `WorldMap/ArenaLocationUtils.cpp` を Python 移植。
-city_seed / ruler_seed / global_point / local_city_point など、街シード値計算の基本関数。
-"""
 from __future__ import annotations
 
 from .arena_types import ArenaLocationType, Int2, Rect
@@ -47,7 +42,6 @@ def get_dungeon_type(local_dungeon_id: int) -> ArenaLocationType:
 
 
 def get_global_point(local_point: Int2, province_rect: Rect) -> Int2:
-    """province local 座標 → 世界座標。"""
     global_x = ((local_point.x * ((province_rect.width * 100) // 320)) // 100
                 + province_rect.left)
     global_y = ((local_point.y * ((province_rect.height * 100) // 200)) // 100
@@ -62,27 +56,20 @@ def get_local_point(global_point: Int2, province_rect: Rect) -> Int2:
 
 
 def get_local_city_point(city_seed: int) -> Int2:
-    """citySeed (= (x << 16) | y) を local 座標に戻す。"""
     return Int2(city_seed >> 16, city_seed & 0xFFFF)
 
 
 def get_city_seed(local_x: int, local_y: int) -> int:
-    """街の local 座標 → citySeed。
-
-    OpenTESArena: `(location.x << 16) + location.y`
-    """
     return ((local_x & 0xFFFF) << 16) | (local_y & 0xFFFF)
 
 
 def get_wilderness_seed(location_name: str) -> int:
-    """街名の最初 4 文字を little-endian 32-bit として seed にする。"""
     if len(location_name) < 4:
         return 0
     return get_le32(location_name[:4].encode("ascii", errors="replace"))
 
 
 def get_ruler_seed(local_point: Int2, province_rect: Rect) -> int:
-    """rulerSeed = rol((globalPoint.x << 16) | globalPoint.y, 16)"""
     global_point = get_global_point(local_point, province_rect)
     seed = ((global_point.x & 0xFFFF) << 16) | (global_point.y & 0xFFFF)
     return rol32(seed, 16)

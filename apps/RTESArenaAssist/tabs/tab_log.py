@@ -1,13 +1,3 @@
-"""tabs/tab_log.py — 翻訳ログ表示タブ。
-
-読み上げ対象として宣言された翻訳を時系列でカード表示する。
-カード = 枠 + ヘッダ(時刻・種別・場所) + 本文。
-
-データは services/log_store.LogStore（2層・スロット連動保存）から取得する。
-- append observer: 新規1件を並び/フィルタに従い追加。
-- changed observer: 束縛/確定/破棄/クリア（ロード時差し替え等）で全再構築。
-並べ替え（新しい順/古い順）と種別フィルタ（すべて/状況説明/会話）に対応。
-"""
 from __future__ import annotations
 
 from typing import Optional
@@ -28,7 +18,6 @@ from tts_read_aloud import attach_read_aloud, make_speaker_button
 
 
 def _datetime_label(ts: float) -> str:
-    """設定に従い記録日時を整形する（非表示設定なら空文字）。"""
     if not settings.get("log_show_datetime", True):
         return ""
     fmt = settings.get("log_datetime_format", DEFAULT_LOG_DATETIME_FORMAT) \
@@ -41,7 +30,6 @@ def _datetime_label(ts: float) -> str:
 
 
 class LogCard(QGroupBox):
-    """ログ1件＝カード。タイトル＝日時・種別・場所、中身＝本文(＋原文)。"""
 
     def __init__(self, entry: LogEntry,
                  parent: Optional[QWidget] = None) -> None:
@@ -50,7 +38,6 @@ class LogCard(QGroupBox):
         layout.setContentsMargins(8, 4, 8, 6)
         layout.setSpacing(2)
         self.setTitle(self._header(entry))
-        # 本文（読み上げ：右クリック＋任意でスピーカーボタン）。
         body_text = entry.text or "—"
         body_row = QHBoxLayout()
         body_row.setContentsMargins(0, 0, 0, 0)
@@ -63,12 +50,10 @@ class LogCard(QGroupBox):
             QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         attach_read_aloud(body, lambda t=entry.text: t)
         body_row.addWidget(body, 1)
-        # 親を渡す（親なしだとスピーカーボタンが一瞬トップレベル窓化する）。
         body_row.addWidget(
             make_speaker_button(lambda t=entry.text: t, self),
             0, Qt.AlignmentFlag.AlignTop)
         layout.addLayout(body_row)
-        # 設定で原文併記が ON なら原文を淡色で添える。
         if settings.get("log_show_original", False) and entry.original:
             orig = QLabel(entry.original)
             orig.setObjectName("dimLabel")
@@ -88,7 +73,6 @@ class LogCard(QGroupBox):
 
 
 class TabLog(QWidget):
-    """翻訳ログ専用タブ。"""
 
     def __init__(self, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
@@ -98,7 +82,6 @@ class TabLog(QWidget):
         outer.setContentsMargins(6, 6, 6, 6)
         outer.setSpacing(4)
 
-        # ── ツールバー（並べ替え・フィルタ・件数・クリア）──
         bar = QHBoxLayout()
         self._sort_combo = QComboBox()
         self._sort_combo.addItem(
@@ -119,7 +102,6 @@ class TabLog(QWidget):
         self._filter_combo.currentIndexChanged.connect(self.refresh)
         bar.addWidget(self._filter_combo)
 
-        # 場所フィルタ（記録済みの場所から動的生成）。
         self._loc_combo = QComboBox()
         self._loc_combo.currentIndexChanged.connect(self.refresh)
         bar.addWidget(self._loc_combo)
@@ -134,7 +116,6 @@ class TabLog(QWidget):
         bar.addWidget(self._clear_btn)
         outer.addLayout(bar)
 
-        # ── カード一覧（スクロール）──
         self._scroll = QScrollArea()
         self._scroll.setWidgetResizable(True)
         self._inner = QWidget()
@@ -151,16 +132,13 @@ class TabLog(QWidget):
         self._empty_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._vbox.insertWidget(0, self._empty_lbl)
 
-    # ── 接続 ──────────────────────────────────────────────
     def set_store(self, store) -> None:
-        """LogStore を接続し、observer 登録＋全件再構築する。"""
         self._store = store
         if store is not None:
             store.set_observer(self._on_new_entry)
             store.set_changed_observer(self.refresh)
         self.refresh()
 
-    # ── 現在の表示条件 ────────────────────────────────────
     def _newest_first(self) -> bool:
         return bool(self._sort_combo.currentData())
 
@@ -171,7 +149,6 @@ class TabLog(QWidget):
         return self._loc_combo.currentData()
 
     def _rebuild_location_filter(self) -> None:
-        """記録済みの場所からフィルタ選択肢を再構築する（現在選択は維持）。"""
         prev = self._loc_combo.currentData()
         self._loc_combo.blockSignals(True)
         self._loc_combo.clear()
@@ -184,10 +161,7 @@ class TabLog(QWidget):
         self._loc_combo.setCurrentIndex(idx if idx >= 0 else 0)
         self._loc_combo.blockSignals(False)
 
-    # ── 更新 ──────────────────────────────────────────────
     def _on_new_entry(self, entry: LogEntry) -> None:
-        """新規1件を並び/フィルタに従って差分追加する（UI スレッド前提）。"""
-        # 新しい場所が来たらフィルタ選択肢へ追加（現在選択は維持）。
         if entry.location and self._loc_combo.findData(entry.location) < 0:
             self._loc_combo.addItem(entry.location, entry.location)
         cat = self._filter_category()
@@ -201,18 +175,16 @@ class TabLog(QWidget):
         if self._newest_first():
             self._vbox.insertWidget(0, card)
         else:
-            # 末尾 stretch の手前に追加
             self._vbox.insertWidget(self._vbox.count() - 1, card)
         self._update_count()
 
     def _on_clear(self) -> None:
         if self._store is not None:
-            self._store.clear()  # changed observer 経由で refresh される
+            self._store.clear()
         else:
             self.refresh()
 
     def refresh(self) -> None:
-        """LogStore の内容からカードを再構築する（並べ替え・フィルタ適用）。"""
         self._rebuild_location_filter()
         for i in reversed(range(self._vbox.count())):
             w = self._vbox.itemAt(i).widget()
@@ -233,7 +205,7 @@ class TabLog(QWidget):
         n = len(self._store.entries()) if self._store else 0
         self._count_lbl.setText(i18n.tr("log.count", n=n))
 
-    def showEvent(self, event) -> None:  # noqa: N802 (Qt override)
+    def showEvent(self, event) -> None:  # noqa: N802
         self.refresh()
         super().showEvent(event)
 

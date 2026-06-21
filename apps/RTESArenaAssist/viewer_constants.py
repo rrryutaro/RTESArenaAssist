@@ -1,11 +1,4 @@
-"""
-viewer_constants.py  ―  Arena Data Viewer 定数定義
-色・オフセット・テキストラベル等の定数をまとめる。
-"""
 
-# ══════════════════════════════════════════════════════════════
-# 色定数
-# ══════════════════════════════════════════════════════════════
 C_BG     = "#1a1a2e"
 C_BG2    = "#16213e"
 C_BG3    = "#0f3460"
@@ -18,12 +11,8 @@ C_ERROR  = "#f44336"
 C_EVEN   = "#1e2a3a"
 C_ODD    = "#162030"
 
-# ══════════════════════════════════════════════════════════════
-# GAMESTATE
-# ══════════════════════════════════════════════════════════════
-GAMESTATE_OFFSET = 2_450_583   # アンカーから GAMESTATE 先頭まで
+GAMESTATE_OFFSET = 2_450_583
 
-# (フィールド名, オフセット, 型, 表示ラベル)
 GS_DEFS = [
     ("WeatherFlags", 1,    "u8",    "天気フラグ"),
     ("PlayerFloor",  2,    "u8",    "現在フロア"),
@@ -38,117 +27,61 @@ GS_DEFS = [
     ("PlayerAngle",  2260, "u16",   "向き（0-511）"),
 ]
 
-# ══════════════════════════════════════════════════════════════
-# 固定バッファオフセット（全セッションで変わらないことを確認済み）
-# ══════════════════════════════════════════════════════════════
 LIVE_BUFFERS = [
-    # (表示名, オフセット, 最大読み取り長, 説明)
     ("マップ名",    2594,   64,  "現在のマップ名（常時）"),
     ("実効MIF候補", 2614,   16,  "現在ロード中の実効MIF候補"),
     ("マップ名(副)", 5839,   64,  "マップ名コピー"),
     ("NPC会話",     4164,  512,  "NPC会話テキスト（会話時に書き込み・残留）"),
-    # off=+34,217 "I'm not sure. Try asking someone outside." は常時存在の静的テキスト
-    # ゲームが直接描画するため動的バッファではない → 翻訳辞書に事前登録で対応
     ("メッセージ",  39582,  512,  "入店・Where is回答・イベントメッセージ"),
     ("エリア名 1",  38870,   64,  "エリア連番1（ギルド内では商品リストに上書きされる）"),
     ("エリア名 2",  38918,   64,  "エリア連番2"),
     ("エリア名 3",  38966,   64,  "エリア連番3"),
 ]
 
-# 単体アクセス用（arena_bridge.py 経由で Assist からも参照する）
 NPC_DIALOG_OFFSET = 4164
 NPC_DIALOG_MAXLEN = 512
 
-# anchor+4760 (0x1298): chargen 完了フラグ候補
-#   memdump diff (2026-05-04) で Appearance Done クリック時に 0x00→0x01 に変化を確認。
-#   顔インデックス(+4762)の 2 バイト手前。安定性は次回 観測 で要検証。
 CHARGEN_DONE_OFFSET = 4_760
 
-# anchor+0x5AD (1453): 経験値 (u32 LE)
-#   トップレベル判定 (通常プレイ中 / それ以外) の候補シグナル:
-#   - 0 = タイトル中 / キャラクター作成中 (仮説)
-#   - >0 = 通常プレイ中
 EXPERIENCE_OFFSET = 0x5AD
 
-# anchor+19343 (0x4B8F): chargen フェーズ識別バイト
-#   観測 (2026-05-03) で挙動を再特定:
-#   - 各 chargen 画面で stable（5秒×50サンプル全て同一値、サイクル値ではない）
-#   - 絶対値は走/セッションで異なる（クラス・乱数等に依存）
-#   - post-province_confirm 区間では画面遷移ごとに +28 (0x1C) 加算（Healer 走と Barbarian 走で再現）
-#     province_confirm → 完了 → 種族説明 → クラスアドバイス → GoYeNow が +28 ずつ
-#   - 0x2E は 10Q イントロ補助検出に使用可能（既存）
-#   過去のコメント（0x12=クラス選択 / 0x64=名前入力 等）は走依存のため不採用。
 CHARGEN_STATE_OFFSET = 19_343
 
-# anchor+16583 (0x40C7): chargen 10 questions 現在の設問シーケンス番号（1-10）
 CHARGEN_Q_SEQ_OFFSET = 16_583
 
-# anchor+16587 (0x40CB): QUESTION.TXT 設問番号配列（1-indexed, 1-40）
-#   [seq-1] = シーケンス seq で表示した設問の QUESTION.TXT 番号
 CHARGEN_Q_ARRAY_OFFSET = 16_587
 
-# ══════════════════════════════════════════════════════════════
-# TRIGGERシステム関連オフセット
-# ══════════════════════════════════════════════════════════════
-# NUL区切り可変長テキスト配列。INF の TEXT セクションがロードされる。
 TRIGGER_BLOCK_OFFSET = 1_420_240
-TRIGGER_BLOCK_READ   = 2048        # INF TEXT セクション全体を収めるのに十分
+TRIGGER_BLOCK_READ   = 2048
 
-# anchor+15,490 (0x3C82): 0x00=非表示, 0x28=表示中
 TRIGGER_FLAG_OFFSET  = 15_490
 
-# anchor+31,302 (0x7A46): トリガー発動の瞬間だけ非ゼロ（~50ms 以内に 0 に戻る）
 TRIGGER_INDEX_OFFSET = 31_302
 
-# ══════════════════════════════════════════════════════════════
-# リアルタイム座標オフセット（trig_coord_scan で特定済み・2026-03-29）
-# スケール 1.0: メモリ値 = タイル座標直値
-# ══════════════════════════════════════════════════════════════
-RT_COORD_X_OFFSET = 43_092   # 0xA854: X（WORD, タイル単位）
-RT_COORD_Z_OFFSET = 43_094   # 0xA856: Y/Z（WORD, タイル単位）
+RT_COORD_X_OFFSET = 43_092
+RT_COORD_Z_OFFSET = 43_094
 
-# プレイヤー向き角度 (anchor + 0xC3DA, u16 LE, 下位 9 bit)。
-# 512 step / 360° の真の連続角度値。真北で raw512 = 256、時計回りで値増加。
-# (隣接 +0xC3D9 は 8 cardinal の離散代表値で連続変化しないため不適)。
-# 計算式:
-#   raw512 = read_u16_le(anchor + RT_ANGLE_OFFSET) & RT_ANGLE_MASK
-#   angle_deg = ((raw512 - RT_ANGLE_NORTH_RAW) * 360 / RT_ANGLE_RANGE) % 360
 RT_ANGLE_OFFSET = 0xC3DA
-RT_ANGLE_BYTE_SIZE = 2      # u16 LE
-RT_ANGLE_MASK = 0x01FF      # 下位 9 bit 抽出 (= 0..511)
-RT_ANGLE_RANGE = 512        # 9-bit, 512 step / 360°
-RT_ANGLE_NORTH_RAW = 256    # 真北の raw 値 (= 中央)
+RT_ANGLE_BYTE_SIZE = 2
+RT_ANGLE_MASK = 0x01FF
+RT_ANGLE_RANGE = 512
+RT_ANGLE_NORTH_RAW = 256
 
-# ══════════════════════════════════════════════════════════════
-# ライブバッファ（anchor 相対・固定オフセット）
-# ══════════════════════════════════════════════════════════════
-LIVE_MIF_OFFSET = 2_614   # 0x0A36: 現在ロード中の実効 MIF 候補 (16B)
+LIVE_MIF_OFFSET = 2_614
 LIVE_MIF_MAXLEN = 16
 
-# anchor+0x9176: 現在表示中のイメージファイル名 (例: "MENU.IMG", "LOADSAVE.IMG")
-# 3スナップショット実測 (2026-05-05) で確定。メニュー/ロード画面判別に使用。
 SCREEN_IMG_OFFSET = 0x9176
 SCREEN_IMG_MAXLEN = 32
 
-MAP_NAME_OFFSET = 2_594   # 0x0A22: 現在のマップ名（常時更新, 64B）
+MAP_NAME_OFFSET = 2_594
 MAP_NAME_MAXLEN = 64
 
-# anchor+0x2E2BD1: ジャーナル render buffer (= Logbook 表示中の本文位置)
-# Memory Analyzer 観測 2 セッションで anchor 相対固定 offset を確認 (b120 検証)。
-# 日付ヘッダー (赤文字、Tirdas, 1st of Hearthfire in the year 3E 389\r\n)
-# とクエスト本文が連続して格納される 1 entry render buffer。
-# 複数 entry 表示時の挙動は未観測 (現状 1 entry 確認のみ)。
 JOURNAL_BUFFER_OFFSET = 0x2E2BD1
 JOURNAL_BUFFER_MAXLEN = 512
 
-# anchor+0x9176: 現在表示中の IMG ファイル名（MENU.IMG / LOADSAVE.IMG 等）
-# memdump 解析 (2026-05-05) で確認。ゲーム画面遷移時に更新される。
-SCREEN_IMG_OFFSET = 0x9176   # 37238
+SCREEN_IMG_OFFSET = 0x9176
 SCREEN_IMG_MAXLEN = 32
 
-# ══════════════════════════════════════════════════════════════
-# ロケーション解釈用
-# ══════════════════════════════════════════════════════════════
 FLAGS4_BITS  = {0x0200: "ワイルダネス（野外）"}
 INF_PREFIXES = {
     "MN": "民家", "MR": "民家", "MS": "民家", "MW": "民家",
@@ -156,50 +89,21 @@ INF_PREFIXES = {
     "TC": "寺院",  "TN": "寺院",  "TR": "寺院",  "TS": "寺院",  "TW": "寺院",
 }
 
-# ══════════════════════════════════════════════════════════════
-# NPC 会話フラグ候補（b21 確定: +43077 = 主判定の単一指示子）
-# 4 状態 diff から抽出。状態定義:
-#   A = 会話前（探索中）
-#   B = ASK ABOUT? ダイアログ表示中
-#   D = NPC 応答メッセージ表示中（ダイアログ消失）
-#   C = 会話終了後（探索中）
-#
-# kind 分類（active_value は "その状態で取る期待値"）:
-#   "primary"    ― +43077 単独で 探索/質問中/応答中 を 1B 識別。確定主判定。
-#   "talking"    ― B==D かつ A==C（会話全期間 ON 候補）。誤発火 / 遅延クリア注意。
-#   "asking"     ― B のみ差分、A==D==C（ASK ABOUT? 表示中のみ）
-#   "responding" ― D のみ差分、A==B==C（NPC 応答表示中のみ）
-#   "persist"    ― A vs C で持続変化（会話で進むカウンタ等）
-#   "weak"       ― 過去観測との挙動不一致 / 参考のみ
-# ══════════════════════════════════════════════════════════════
 
-# +43077 主判定バイトの値マッピング（b21 実機検証で確定）
-NPC_PHASE_IDLE          = 0x00   # 探索中・待機
-NPC_PHASE_RESPONDING    = 0x10   # NPC 応答表示中
-NPC_PHASE_ASKING        = 0x85   # ASK ABOUT? 表示中
-NPC_PHASE_BUILDING_ENTRY = 0x9A  # 入店メッセージ表示中
+NPC_PHASE_IDLE          = 0x00
+NPC_PHASE_RESPONDING    = 0x10
+NPC_PHASE_ASKING        = 0x85
+NPC_PHASE_BUILDING_ENTRY = 0x9A
 
-# +43077 のオフセット（主判定 / 副表示で参照）
 NPC_PHASE_OFFSET = 0x0000A845
 
-# ══════════════════════════════════════════════════════════════
-# 入店状態 (Interior IN/OUT) — 強い仮説 (仮説 B-1)
-# +0x0BC8E が 0 なら街路、非0 なら Interior 在室。
-# ダンジョン・各店出入りでユーザー検証済み (interior_id.py 参照)。
-# 値そのもの (menuType?) は仮説扱い、IN/OUT 判定のみ有効。
-# ══════════════════════════════════════════════════════════════
 INTERIOR_FLAG_OFFSET = 0x0000BC8E
 
 NPC_DIALOG_FLAG_CANDIDATES = [
-    # (anchor相対オフセット, 説明, kind, active_value, 観測根拠)
-    # offset は表示時に "+XXXXX" 形式で別カラムへ自動展開する。
-    # 説明は純粋なロール記述のみ（オフセット数値を含めない）。
 
-    # --- primary: 単独で全フェーズを正確に識別する確定指示子 ---
     (0x0000A845, "主判定 / フェーズバイト",     "primary", None,
         "確定: 0x00=待機 / 0x85=質問中 / 0x10=応答中。全状況で正確に動作"),
 
-    # --- observe: 真NPC会話と死体クリック等の区別根拠を探る観測候補 ---
     (0x0000A846, "主判定 上位バイト",            "observe", None,
         "ASKING時 0x43 観測 (旧 city_npc_active=0x4385 = u16 LE 展開)。"
         "死体クリック・bonus_screen など非NPC文脈で値が変わるかを観測"),
@@ -210,7 +114,6 @@ NPC_DIALOG_FLAG_CANDIDATES = [
         "仮説: 神殿結果静止サンプルで Heal系=0x85 / Cure系=0xF3 を観測。"
         "サービスNPC画面の分岐補助候補として継続観測"),
 
-    # --- talking: 会話中候補。検証で誤発火 / 遅延クリアあり、補助用 ---
     (0x0000A84D, "補助 / 会話中バイト",         "talking", 0x40,
         "B=D=0x40 / A=C=0x00。b21 検証で店入店・ダンジョン鍵取得など"
         "メッセージ表示一般でも発火（NPC 限定ではない）"),
@@ -221,7 +124,6 @@ NPC_DIALOG_FLAG_CANDIDATES = [
     (0x0000A849, "補助 / 会話中バイト（逆論理）","talking", 0x00,
         "B=D=0x00 / A=C=0xE0。+6502 と同様に遅延クリアあり"),
 
-    # --- asking: ASK ABOUT? ダイアログ表示中のみ ---
     (0x00008F6E, "ASK ABOUT? 中のみ",          "asking", 0x0D,
         "A=D=C=0x3A / B=0x0D"),
     (0x00008F74, "ASK ABOUT? 中のみ",          "asking", 0x5A,
@@ -229,19 +131,16 @@ NPC_DIALOG_FLAG_CANDIDATES = [
     (0x00008F7A, "ASK ABOUT? 中のみ",          "asking", 0xA4,
         "A=D=C=0xC7 / B=0xA4"),
 
-    # --- responding: NPC 応答メッセージ表示中のみ ---
     (0x0000137B, "NPC 応答中のみ",             "responding", 0x01,
         "A=B=C=0x00 / D=0x01"),
     (0x0000A83B, "NPC 応答中のみ",             "responding", 0x01,
         "A=B=C=0x00 / D=0x01"),
 
-    # --- persist: 会話で進むカウンタ等の持続変化（デフォルト OFF） ---
     (0x00003C8B, "持続変化（カウンタ風）",     "persist", None,
         "A=0x94 → C=0x97 (+3 カウンタ風)"),
     (0x0000884B, "持続変化（カウンタ風）",     "persist", None,
         "A=0x7C → C=0x7D (+1 カウンタ風)"),
 
-    # --- weak: 過去観測との挙動不一致 / 参考のみ（デフォルト OFF） ---
     (0x000005E0, "再現性なし（参考）",         "weak", None,
         "前回 A=0x00/B=0x40/C=0x00 に対しほぼ常時 0x40。挙動不安定"),
     (0x0000A902, "再現性なし（参考）",         "weak", None,
@@ -256,7 +155,6 @@ NPC_DIALOG_FLAG_CANDIDATES = [
         "前回 A=0x00→B=0x01→C=0x01 の sticky 仮説。再現せず"),
 ]
 
-# talking 候補（副候補一致表示で使用）
 NPC_TALKING_CANDIDATES = [
     (off, label, active)
     for (off, label, kind, active, _note) in NPC_DIALOG_FLAG_CANDIDATES
@@ -264,14 +162,7 @@ NPC_TALKING_CANDIDATES = [
 ]
 
 
-# ══════════════════════════════════════════════════════════════
-# 汎用調査候補 (anchor 相対オフセット)
-# キャラクター作成中の状態判定に使えるかを検証するための観測対象。
-# 値変化の安定性を見て採用可否を判断する用途。
-# (off, 説明, 観測根拠)
-# ══════════════════════════════════════════════════════════════
 INVESTIGATION_CANDIDATES = [
-    # --- Assist 側で監視対象に追加済の観測アドレス ---
     (0x0000B7C4, "ダイアログフラグ",
         "0x01=ダイアログ表示中 / 0x04=能力値配分通常 / 0x00=その他 "
         "(通常プレイの NEWPOP 文脈では別意味)"),
@@ -289,7 +180,6 @@ INVESTIGATION_CANDIDATES = [
     (0x00008F7A, "補助観測 (ボーナスエラー検出候補)",
         "ボーナス警告ダイアログ表示時に変化する観測例あり"),
 
-    # --- 能力値配分説明閉幕の差分観測 3 候補 (chargen_status_01/02 共通) ---
     (0x0000EC24, "能力値配分説明閉幕候補 (画像バッファ系の可能性)",
         "両ファイル一致: 説明中=0x00 / 閉幕後=0xFD"),
     (0x0000EC54, "能力値配分説明閉幕候補 (画像バッファ系の可能性)",
@@ -297,24 +187,11 @@ INVESTIGATION_CANDIDATES = [
     (0x0000FAEA, "能力値配分説明閉幕候補 (フラグ最有力)",
         "両ファイル一致: 説明中=0x91 / 閉幕後=0x94 (単バイト変化、周辺ノイズ少)"),
 
-    # --- フィールド (C3) chunk index 候補 (= 強い仮説、観測 9〜13 回、未確定) ---
-    # 4 chunk 隅観測 (フィールド座標_04.txt) で SW/SE/NE/NW 各 chunk 値抽出済。
-    # 仕様用語: フィールド = wilderness、各 chunk = 64x64 voxel の地形ブロック。
-    # rt_x/rt_z 上位 byte (= +0xA855/+0xA857) は両方 0x00 確認済 → 撤去。
-    # rt_x/rt_z 下位 byte (= +0xA854/+0xA856) は本体 RT_COORD_X/Z と
-    # 同一で main view に表示済 → 撤去 (= 重複)。
 
-    # ★ chunk_y index 最有力候補 (= 強い仮説、観測 4 回、座標近傍 +0xA856 隣接)
-    # 4 chunk 隅観測:
-    #   south 行 (= A/B): 25
-    #   north 行 (= C/D): 24
-    # → 北 1 chunk 移動で **-1**、つまり真の chunk_y index 候補
     (0x0000A902, "chunk_y index 最有力候補 (= 観測 4 回、未確定)",
         "4 chunk 隅観測で south=25 / north=24、Δ=-1 per chunk_y 北方向。"
         "rt_z (+0xA856) との対応で絶対 voxel_y 復元可能性"),
 
-    # chunk_x index 候補探索: +0xA902 隣接 byte (= chunk_y と対で chunk_x が
-    # 近接領域にある可能性が高い)
     (0x0000A900, "chunk_x 候補 (= +0xA902 隣接、未観測)",
         "chunk_y 隣接で chunk_x が居る可能性大。東西 chunk 境界跨ぎ観測待ち"),
     (0x0000A901, "chunk_x 候補 (= +0xA902 隣接、未観測)",
@@ -327,12 +204,10 @@ INVESTIGATION_CANDIDATES = [
         "2026-06-04 神殿静止観測: Heal系=0x85 / Cure系=0xF3。"
         "他状況で変化する恐れがあるため継続観測用"),
 
-    # rt_x ミラー (= +0xA854 と同パターンの可能性)
     (0x0000A880, "rt_x ミラー候補 (= 観測 4 回、Δ=+63 cycle 確認)",
         "4 chunk 観測で SW=2/SE=65/NE=65/NW=2 (= rt_x と同 chunk_x cycle、"
         "ただし base value 2/65 で rt_x の 32/95 と +30 オフセット)"),
 
-    # heightmap-like 配列の代表 (= 32-byte step で chunk_x に同期、座標領域外)
     (0x00000AB4, "heightmap 系? chunk_x 同期配列 代表 (= 観測 9 回)",
         "東 1 chunk で +32 increment、+0x0AB4..+0x0D1C 領域に同様の "
         "配列状 byte 多数。chunk_x の補助情報 or 可視範囲 voxel data の可能性"),

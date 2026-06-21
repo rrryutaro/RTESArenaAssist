@@ -1,7 +1,3 @@
-"""
-Arena Memory Analyzer - コアロジック
-DOSBox.exeプロセスへのアタッチとメモリ読み取りを担当する
-"""
 
 import ctypes
 import ctypes.wintypes as wintypes
@@ -9,7 +5,6 @@ import struct
 from dataclasses import dataclass, field
 from typing import Optional
 
-# Windows API 定数
 PROCESS_VM_READ           = 0x0010
 PROCESS_VM_WRITE          = 0x0020
 PROCESS_VM_OPERATION      = 0x0008
@@ -20,7 +15,6 @@ MEM_COMMIT                = 0x1000
 PAGE_NOACCESS             = 0x01
 PAGE_GUARD                = 0x100
 
-# Windows API 構造体
 
 class MEMORY_BASIC_INFORMATION(ctypes.Structure):
     _fields_ = [
@@ -64,15 +58,13 @@ class MODULEENTRY32(ctypes.Structure):
 
 @dataclass
 class ScanResult:
-    """スキャンで見つかったアドレスと値のペア"""
     address: int
     raw_bytes: bytes
-    display_value: str  # 表示用文字列（ASCII等）
+    display_value: str
 
 
 @dataclass
 class WatchEntry:
-    """ウォッチリストの1エントリ"""
     address: int
     label: str
     last_value: bytes = field(default_factory=bytes)
@@ -85,7 +77,6 @@ class WatchEntry:
 
 
 def _bytes_to_ascii(data: bytes, max_len: int = 32) -> str:
-    """バイト列を表示用ASCII文字列に変換する。非印字文字はドットで置換"""
     result = []
     for b in data[:max_len]:
         if 0x20 <= b <= 0x7E:
@@ -96,16 +87,6 @@ def _bytes_to_ascii(data: bytes, max_len: int = 32) -> str:
 
 
 class ArenaMemoryAnalyzer:
-    """
-    DOSBox.exeプロセスにアタッチしてArenaのメモリを解析するクラス
-
-    使い方:
-        analyzer = ArenaMemoryAnalyzer()
-        analyzer.attach()
-        results = analyzer.scan_string("Imperial City")
-        data = analyzer.read_bytes(0x1A2F, 32)
-        analyzer.detach()
-    """
 
     TARGET_PROCESS = "DOSBOX.EXE"
 
@@ -120,7 +101,6 @@ class ArenaMemoryAnalyzer:
         self._setup_api()
 
     def _setup_api(self):
-        """Windows APIの型定義を設定する"""
         k = self._kernel32
         k.CreateToolhelp32Snapshot.restype = wintypes.HANDLE
         k.Process32First.argtypes = [wintypes.HANDLE, ctypes.POINTER(PROCESSENTRY32)]
@@ -135,18 +115,13 @@ class ArenaMemoryAnalyzer:
         k.WriteProcessMemory.restype = wintypes.BOOL
         k.CloseHandle.restype = wintypes.BOOL
         k.VirtualQueryEx.restype = ctypes.c_size_t
-        # DOSBox.exe フルパス取得（Arena 起動フォルダ自動検出用）。
         k.QueryFullProcessImageNameW.argtypes = [
             wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR,
             ctypes.POINTER(wintypes.DWORD)]
         k.QueryFullProcessImageNameW.restype = wintypes.BOOL
 
-    # ------------------------------------------------------------------
-    # プロセス操作
-    # ------------------------------------------------------------------
 
     def find_pid(self) -> Optional[int]:
-        """実行中のDOSBox.exeのPIDを探して返す。見つからなければNone"""
         snapshot = self._kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
         if snapshot == wintypes.HANDLE(-1).value:
             return None
@@ -167,12 +142,6 @@ class ArenaMemoryAnalyzer:
         return None
 
     def get_image_path(self) -> Optional[str]:
-        """実行中の DOSBox.exe の実行ファイルフルパスを返す（見つからなければ None）。
-
-        Arena 起動フォルダの自動検出に使う（DOSBox.exe は通常 ``…\\The Elder Scrolls
-        Arena\\DOSBox-0.74\\DOSBox.exe``）。QUERY_LIMITED_INFORMATION 権限で開いて
-        ``QueryFullProcessImageNameW`` で取得する（アタッチ状態に依存しない）。
-        """
         pid = self.find_pid()
         if not pid:
             return None
@@ -190,11 +159,6 @@ class ArenaMemoryAnalyzer:
             self._kernel32.CloseHandle(h)
 
     def attach(self) -> bool:
-        """DOSBox.exeにアタッチする。成功すればTrue。
-
-        書き込み機能（チート）対応のため、まず R/W 権限で開く。
-        失敗した場合は読み取り専用にフォールバックし、can_write=False とする。
-        """
         pid = self.find_pid()
         if pid is None:
             raise RuntimeError("DOSBox.exe が見つかりません。Arenaが起動中か確認してください。")
@@ -222,7 +186,6 @@ class ArenaMemoryAnalyzer:
         return self._can_write and self.handle is not None
 
     def detach(self):
-        """プロセスハンドルを解放する"""
         if self.handle:
             self._kernel32.CloseHandle(self.handle)
             self.handle = None
@@ -233,7 +196,6 @@ class ArenaMemoryAnalyzer:
         return self.handle is not None
 
     def _get_base_address(self, pid: int) -> int:
-        """プロセスの最初のモジュール（exe本体）のベースアドレスを取得する"""
         TH32CS_SNAPMODULE = 0x00000008
         snapshot = self._kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, pid)
         if snapshot == wintypes.HANDLE(-1).value:
@@ -248,15 +210,8 @@ class ArenaMemoryAnalyzer:
             self._kernel32.CloseHandle(snapshot)
         return 0
 
-    # ------------------------------------------------------------------
-    # メモリ読み取り
-    # ------------------------------------------------------------------
 
     def read_bytes(self, address: int, size: int) -> bytes:
-        """
-        指定アドレスからsizeバイト読み取る。
-        アドレスはDOSBox内部の仮想アドレスをそのまま渡す。
-        """
         if not self.is_attached():
             raise RuntimeError("プロセスにアタッチされていません。")
 
@@ -284,7 +239,6 @@ class ArenaMemoryAnalyzer:
         return struct.unpack_from("<I", self.read_bytes(address, 4))[0]
 
     def read_string(self, address: int, max_len: int = 256) -> str:
-        """NUL終端のASCII文字列を読み取る"""
         data = self.read_bytes(address, max_len)
         end = data.find(b'\x00')
         if end >= 0:
@@ -292,10 +246,6 @@ class ArenaMemoryAnalyzer:
         return data.decode("ascii", errors="replace")
 
     def write_bytes(self, address: int, data: bytes) -> int:
-        """指定アドレスに data を書き込む。書き込んだバイト数を返す。
-
-        attach 時に R/W 権限で開かれていない場合は OSError を投げる。
-        """
         if not self.is_attached():
             raise RuntimeError("プロセスにアタッチされていません。")
         if not self._can_write:
@@ -315,16 +265,8 @@ class ArenaMemoryAnalyzer:
         return n.value
 
 
-    # ------------------------------------------------------------------
-    # スキャン
-    # ------------------------------------------------------------------
 
     def _enum_readable_regions(self, start: int, end: int) -> list[tuple[int, int]]:
-        """
-        VirtualQueryExで読み取り可能なメモリ領域だけを列挙して返す。
-        チャンク総当たりより大幅に高速になる。
-        戻り値: [(base, size), ...]
-        """
         regions = []
         addr = start
         mbi = MEMORY_BASIC_INFORMATION()
@@ -351,10 +293,6 @@ class ArenaMemoryAnalyzer:
         return regions
 
     def _scan_pattern(self, needle: bytes, start: int, end: int) -> list[tuple[int, bytes]]:
-        """
-        読み取り可能領域のみを対象にneedleを検索する内部メソッド。
-        戻り値: [(address, raw_bytes), ...]
-        """
         results = []
         overlap = len(needle) - 1
 
@@ -376,10 +314,6 @@ class ArenaMemoryAnalyzer:
         return results
 
     def scan_string(self, text: str, start: int, end: int) -> list[ScanResult]:
-        """
-        start〜endの範囲でASCII文字列を検索する。
-        読み取り可能な領域のみを対象にするため高速。
-        """
         if not self.is_attached():
             raise RuntimeError("プロセスにアタッチされていません。")
         needle = text.encode("ascii")
@@ -389,9 +323,6 @@ class ArenaMemoryAnalyzer:
         ]
 
     def scan_bytes(self, pattern: bytes, start: int, end: int) -> list[ScanResult]:
-        """
-        start〜endの範囲でバイトパターンを検索する。
-        """
         if not self.is_attached():
             raise RuntimeError("プロセスにアタッチされていません。")
         return [
@@ -399,25 +330,16 @@ class ArenaMemoryAnalyzer:
             for addr, raw in self._scan_pattern(pattern, start, end)
         ]
 
-    # ------------------------------------------------------------------
-    # ウォッチリスト
-    # ------------------------------------------------------------------
 
     def add_watch(self, address: int, label: str) -> WatchEntry:
-        """アドレスをウォッチリストに追加する（初回読み取りは行わない）"""
         entry = WatchEntry(address=address, label=label)
         self._watch_list.append(entry)
         return entry
 
     def remove_watch(self, address: int):
-        """アドレスをウォッチリストから削除する"""
         self._watch_list = [e for e in self._watch_list if e.address != address]
 
     def poll_watch_list(self, size: int = 32):
-        """
-        ウォッチリストの全エントリを再読み取りして変化を検出する。
-        UIのタイマーから定期的に呼び出す想定。
-        """
         for entry in self._watch_list:
             try:
                 data = self.read_bytes(entry.address, size)
@@ -431,16 +353,9 @@ class ArenaMemoryAnalyzer:
     def watch_list(self) -> list[WatchEntry]:
         return self._watch_list
 
-    # ------------------------------------------------------------------
-    # ヘキサダンプ用フォーマット
-    # ------------------------------------------------------------------
 
     @staticmethod
     def format_hexdump(data: bytes, base_address: int, width: int = 16) -> list[dict]:
-        """
-        バイト列をヘキサダンプ形式にフォーマットして返す。
-        戻り値は1行ごとのdict: {addr, hex_bytes, ascii_str, raw}
-        """
         lines = []
         for i in range(0, len(data), width):
             chunk = data[i: i + width]

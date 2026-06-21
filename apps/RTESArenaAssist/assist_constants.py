@@ -1,11 +1,7 @@
-"""
-assist_constants.py — RTESArenaAssist 定数定義
-"""
 
 APP_NAME    = "RTESArenaAssist"
 APP_VERSION = "0.1.0"
 
-# ── ダークテーマカラー（RTESArenaProbe パレットと統一）──────────────────
 class Dark:
     BG        = "#1a1a2e"
     PANEL     = "#16213e"
@@ -20,7 +16,6 @@ class Dark:
     ROW_EVEN  = "#1e2a3a"
     ROW_ODD   = "#162030"
 
-# ── ライトテーマカラー ──────────────────────────────────────────────────
 class Light:
     BG        = "#f0f2f5"
     PANEL     = "#ffffff"
@@ -35,7 +30,6 @@ class Light:
     ROW_EVEN  = "#f7f9fc"
     ROW_ODD   = "#eef1f6"
 
-# ── ウィンドウデフォルト ────────────────────────────────────────────────
 WIN_W = 460
 WIN_H = 660
 WIN_MIN_W = 380

@@ -1,12 +1,3 @@
-"""mif_file_parser.py — Arena .MIF ファイル (バイナリ) を Python でパースする。
-
-OpenTESArena の `Assets/MIFFile.cpp` / `Assets/Compression.cpp` を Python 移植した、
-ヘッダ + 各 LEVL ブロック + FLOR/MAP1/MAP2/その他タグの読み込み機能。FLOR/MAP1/MAP2
-は Type 8 圧縮 (adaptive Huffman + LZSS-like) を解凍した上で、16-bit voxel ID の
-2D 配列を返す。
-
-Type 8 解凍は OpenTESArena `Compression.h::decodeType08` のロジックを忠実に移植。
-"""
 from __future__ import annotations
 
 import struct
@@ -14,7 +5,6 @@ from dataclasses import dataclass, field
 from typing import List, Optional
 
 
-# Type 8 解凍で使うテーブル (OpenTESArena Compression.h 由来)
 _HIGH_OFFSET_BITS = [
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -55,15 +45,6 @@ _LOW_OFFSET_BIT_COUNT = [
 
 
 def decode_type08(src: bytes, uncompressed_size: int) -> bytes:
-    """OpenTESArena `Compression::decodeType08` の Python 移植。
-
-    Args:
-        src: 圧縮された生データ
-        uncompressed_size: 解凍後のサイズ (bytes)
-
-    Returns:
-        解凍された bytes (長さ = uncompressed_size)
-    """
     out = bytearray(uncompressed_size)
 
     history = bytearray(4096)
@@ -196,7 +177,6 @@ class MIFLevel:
     info: str = ""
     numf: int = 0
 
-    # 2D Buffer: width × depth、各セルは 16-bit voxel ID。
     flor: List[List[int]] = field(default_factory=list)
     map1: List[List[int]] = field(default_factory=list)
     map2: List[List[int]] = field(default_factory=list)
@@ -208,13 +188,12 @@ class MIFFile:
     width: int
     depth: int
     starting_level_index: int
-    start_points: List[tuple]  # [(x, y), ...] (centimeter-like units)
+    start_points: List[tuple]
     levels: List[MIFLevel]
 
 
 def _decode_mif_layer(data: bytes, tag_offset: int,
                        width: int, depth: int) -> tuple[List[List[int]], int]:
-    """FLOR / MAP1 / MAP2 タグを 1 つ読み、解凍した 2D 配列と次タグへの距離を返す。"""
     compressed_size = int.from_bytes(data[tag_offset + 4: tag_offset + 6], "little")
     uncompressed_size = int.from_bytes(data[tag_offset + 6: tag_offset + 8], "little")
 
@@ -240,7 +219,6 @@ def _decode_mif_layer(data: bytes, tag_offset: int,
 def _read_string_size_terminated(data: bytes, tag_offset: int) -> tuple[str, int]:
     size = int.from_bytes(data[tag_offset + 4: tag_offset + 6], "little")
     raw = data[tag_offset + 6: tag_offset + 6 + size]
-    # null 終端で切る
     nul = raw.find(0)
     if nul >= 0:
         raw = raw[:nul]
@@ -248,7 +226,6 @@ def _read_string_size_terminated(data: bytes, tag_offset: int) -> tuple[str, int
 
 
 def _read_opaque_tag(data: bytes, tag_offset: int) -> int:
-    """size + 6 を返すだけのタグ (中身は読まずスキップ)。"""
     size = int.from_bytes(data[tag_offset + 4: tag_offset + 6], "little")
     return size + 6
 
@@ -292,19 +269,12 @@ def _load_level(data: bytes, level_offset: int,
         elif tag in _TAGS_OPAQUE:
             tag_offset += _read_opaque_tag(data, tag_offset)
         else:
-            # 未知タグは打ち切り
             break
 
     return level, tag_offset - level_offset
 
 
 def load_mif(path: str) -> MIFFile:
-    """.MIF ファイルを読み込んで MIFFile を返す。
-
-    loose ファイルが在ればそれを、無ければユーザー Arena install の VFS（GLOBAL.BSA・
-    MIF 非暗号）から読む（公開版対応・dev では docs の loose を読み挙動不変）。
-    どこにも無ければ従来どおり open() で FileNotFoundError を送出する。
-    """
     data = None
     try:
         from .mif_loader import read_mif_bytes
@@ -312,7 +282,7 @@ def load_mif(path: str) -> MIFFile:
     except ImportError:  # pragma: no cover - direct script fallback
         data = None
     if data is None:
-        with open(path, "rb") as f:   # 真に不在＝従来どおり例外
+        with open(path, "rb") as f:
             data = f.read()
 
     if data[0:4] != b"MHDR":
@@ -320,18 +290,6 @@ def load_mif(path: str) -> MIFFile:
 
     header_size = int.from_bytes(data[4:6], "little")
 
-    # MHDR data start at 6, length = header_size
-    # OpenTESArena ArenaTypes::MIFHeader::init レイアウト:
-    #   [0]   unknown1
-    #   [1]   entryCount
-    #   [2-9] startX[4] (LE16 × 4)
-    #   [10-17] startY[4] (LE16 × 4)
-    #   [18]  startingLevelIndex
-    #   [19]  levelCount
-    #   [20]  unknown2
-    #   [21-22] mapWidth (LE16)
-    #   [23-24] mapHeight (LE16)
-    #   [25-58] unknown3[34]
     hdr = data[6: 6 + header_size]
     starting_level_index = hdr[18]
     width = int.from_bytes(hdr[21:23], "little")

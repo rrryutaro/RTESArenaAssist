@@ -1,12 +1,3 @@
-"""recognition_label.py — 接続バー（画面認識）の表示名生成 pure helper。
-
-画面名は安定化済み `_screen_id_stable`（bounce / bonus hold / char page settle 後）
-から一元的に生成する。raw 検出名は安定化前の値なので、stable が raw と変わった
-場合は stable id の画面名を使う。
-
-window / analyzer の時系列状態に触れない pure helper にして単体テストできる
-ようにする（map_safe_coord / char_screen_page と同方針）。
-"""
 from __future__ import annotations
 
 from typing import Callable
@@ -20,11 +11,8 @@ _FACILITY_PREFIX_KEYS: tuple[tuple[str, str], ...] = (
     ("EQUIP", "recognition.facility_equipment"),
     ("MAGES", "recognition.facility_mages"),
     ("MAGE", "recognition.facility_mages"),
-    # フィールド施設（C3 配下 L3）。TOWNPAL/VILPAL より前に置く必要は
-    # ないが、WCRYPT/TOWER は他 prefix と重ならない。
     ("WCRYPT", "recognition.facility_crypt"),
     ("TOWER", "recognition.facility_tower"),
-    # フィールドの家（door→MIF prefix は "BS"）。
     ("BS", "recognition.facility_house"),
     ("PALACE", "recognition.facility_palace"),
     ("TOWNPAL", "recognition.facility_palace"),
@@ -42,18 +30,6 @@ _SESSION_FACILITY_KEYS = {
 
 def resolve_stable_screen_name(stable_id: str, raw_id: str, raw_name: str,
                                tr: Callable[[str], str]) -> str:
-    """接続バー用の画面名を、安定化済み画面 ID から返す。
-
-    Args:
-      stable_id: 安定化済み画面 ID（bounce / bonus / settle 後の確定値）。
-      raw_id:    detect_screen 直後の生画面 ID。
-      raw_name:  生画面名（game_screen の area suffix / loading 等の加工済み）。
-      tr:        i18n 翻訳関数（"screen.<id>" を渡す）。
-
-    Returns:
-      stable_id == raw_id のときは raw_name（加工済みの生名）を使う。
-      異なるときは stable_id に対応する画面名を tr から取得する。
-    """
     if stable_id == raw_id:
         return raw_name
     return tr(f"screen.{stable_id}")
@@ -61,12 +37,6 @@ def resolve_stable_screen_name(stable_id: str, raw_id: str, raw_name: str,
 
 def format_recognition_label(screen_name: str, indicator: str,
                              facility_label: str, conv_label: str) -> str:
-    """接続バー文字列を合成する。
-
-    屋内施設認識時（facility_label 有り）は screen_name を抑止し、
-    indicator + facility + conv のみを表示する。屋外 / 施設未認識時は
-    indicator + screen_name + conv を表示する。
-    """
     if facility_label:
         return (f"{indicator}{facility_label}{conv_label}"
                 if indicator else f"{facility_label}{conv_label}")
@@ -74,15 +44,6 @@ def format_recognition_label(screen_name: str, indicator: str,
             if indicator else f"{screen_name}{conv_label}")
 
 
-# 宿屋店主会話の L4 サブ画面 → 接続バー表示用 i18n key。
-# 接続バーに「いま実際に翻訳パネルへ描画している経路 (= panel_owner)」を出して、
-# 人間が実画面・翻訳表示と突き合わせられるようにするためのデバッグ表示。
-# 方針: 実描画 owner を最優先にする (= 翻訳表示と一致させる)。img 名は
-#       メニューでも NEWPOP/FACES/YESNO と揺れて識別に使えないため owner 基準。
-#   - active_template owner は surface kind で確認/結果/入力を細分する。
-#   - shop_buy owner は酒一覧/部屋一覧の両方で使うため shop_kind で振り分ける。
-# owner がいずれの tavern 描画経路でもなければ「サブ状態なし」(= 探索中など) と
-# みなして "" を返す (= 接続バーには何も足さない)。
 _TAVERN_SURFACE_SUB_KEYS = {
     "tavern_stay_days": "recognition.tavern_sub_stay_days",
     "tavern_sneak_confirm": "recognition.tavern_sub_sneak_confirm",
@@ -100,31 +61,15 @@ def tavern_sub_state_key(
     img_name: str = "",
     negot_counter_active: bool = False,
 ) -> str:
-    """宿屋店主会話のサブ画面を接続バー表示用 i18n key に分類する pure helper。
-
-    実描画 owner (panel_owner) を最優先にして、いま翻訳パネルへ出ている内容と
-    一致するサブ状態 key を返す。どの tavern 描画経路でもなければ "" を返す
-    (= 探索中等。接続バーにはサブ状態を足さない)。
-
-    宿泊交渉 (= owner=negotiation) は img で細分する (実機ログ観測):
-      - NEGOTBUT.IMG = 金額提示 (ACCEPT/COUNTER/REJECT)
-      - YESNO.IMG    = 最終確認 (YES/NO/CANCEL)
-    対案入力 (= 'Enter counter offer :') は surface=negotiation_counter で判定。
-    """
     owner = panel_owner or ""
     img = (img_name or "").upper()
     surface = active_template_surface or ""
 
-    # 対案入力 (A600 'Enter counter offer :') は owner に依らず最優先判定する。
-    # negotiation_module が対案プロンプトを描画中 (= negot_counter_active) か、
-    # active_template surface が negotiation_counter のどちらかで判定する。
     if negot_counter_active or surface == "negotiation_counter":
         return "recognition.tavern_sub_amount_counter"
     if owner == "active_template":
-        # 確認 / 結果 / 入力は surface kind で細分。surface 不明なら無表示。
         return _TAVERN_SURFACE_SUB_KEYS.get(surface, "")
     if owner == "shop_buy":
-        # 同じ owner で酒一覧と部屋一覧を共用するため shop_kind で振り分け。
         if shop_kind == "shop_rooms":
             return "recognition.tavern_sub_rooms"
         return "recognition.tavern_sub_drinks"
@@ -133,7 +78,6 @@ def tavern_sub_state_key(
     if owner in ("shop_rumor_type", "tavern_rumor_type"):
         return "recognition.tavern_sub_rumor_type"
     if owner == "negotiation":
-        # 宿泊交渉: img で金額提示 / 最終確認を分ける。
         if img == "YESNO.IMG":
             return "recognition.tavern_sub_final_confirm"
         return "recognition.tavern_sub_amount_present"
@@ -142,9 +86,6 @@ def tavern_sub_state_key(
     return ""
 
 
-# 神殿神官会話の L4 サブ画面 → 接続バー表示用 i18n key。
-# 宿屋と同じく「実際に翻訳パネルへ描画している owner」を最優先し、画面表示と
-# 接続バーの認識状態を突き合わせやすくする。
 _TEMPLE_SURFACE_SUB_KEYS = {
     "temple_donate_amount": "recognition.temple_sub_donate_amount",
     "tavern_cost_show": "recognition.temple_sub_cost_show",
@@ -158,12 +99,6 @@ def temple_sub_state_key(
     img_name: str = "",
     current_text: str = "",
 ) -> str:
-    """神殿神官会話のサブ画面を接続バー表示用 i18n key に分類する。
-
-    実描画 owner (panel_owner) を最優先にし、`temple_priest_reply` だけは
-    表示本文から祝福/治療結果を分ける。owner が神殿描画経路でなければ ""
-    を返す (= 接続バーにはサブ状態を足さない)。
-    """
     owner = panel_owner or ""
     img = (img_name or "").upper()
     surface = active_template_surface or ""
@@ -198,7 +133,6 @@ def equipment_sub_state_key(
     img_name: str = "",
     negot_counter_active: bool = False,
 ) -> str:
-    """武具店店主会話のサブ画面を接続バー表示用 i18n key に分類する。"""
     owner = panel_owner or ""
     img = (img_name or "").upper()
     surface = active_template_surface or ""
@@ -222,10 +156,6 @@ def mages_sub_state_key(
         panel_owner: str,
         img_name: str = "",
         list_title: str = "") -> str:
-    """魔術師ギルド店主会話のサブ画面を接続バー表示用 i18n key に分類する。
-
-    武具店 (equipment_sub_state_key) と同型を魔術師ギルド分離内で実装したもの。
-    """
     owner = panel_owner or ""
     if owner == "mages_menu":
         return "recognition.mages_sub_menu"
@@ -264,12 +194,6 @@ def mages_sub_state_key(
 
 
 def known_facility_kind(*hints: str) -> str:
-    """ヒント（active session 名 / 店主種別 等）から既知の施設種別名を返す。
-
-    `_SESSION_FACILITY_KEYS` に載る種別（tavern/temple/equipment/mages_guild/
-    palace）を最初に見つけた順で返す。該当なしは ""。L3 施設識別の永続化
-    （途中接続で MIF が無い場合）に使う。
-    """
     for h in hints:
         if (h or "") in _SESSION_FACILITY_KEYS:
             return h
@@ -284,15 +208,6 @@ def facility_recognition_key(
     shop_owner_kind: str = "",
     persisted_facility_kind: str = "",
 ) -> str:
-    """屋内施設の接続バー表示に使う i18n key を返す。
-
-    中途接続では CityViewer 由来の `interior_mif_name` がまだ無い場合が
-    あるため、active session / shop owner から分かる施設種別を補助信号に
-    する。さらに `persisted_facility_kind` は L4 会話中に一度確定した施設種別を
-    L3 に保持したもので、L4 を抜けた後も（屋内に居る間は）施設識別を維持する
-    （階層化: L3 で確定した識別が L4 離脱で失われないようにする）。屋内である
-    こと自体が分かる場合は最低限「施設」を返す。
-    """
     if not in_interior:
         return ""
     u = (interior_mif_name or "").upper()

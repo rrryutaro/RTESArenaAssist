@@ -1,13 +1,4 @@
 # -*- coding: utf-8 -*-
-"""mages_spellmaker.py — 魔術師ギルド Spellmaker の FORM カタログと数値読み取り（完全分離）。
-
-観測結果の FORM カタログに基づく。武具店/神殿/宿屋の
-コードを呼ばず本ファイルに閉じて実装する（中立な analyzer.read_bytes のみ使用）。
-
-数値入力画面は15+2 FORM に有界。SpellData レコード 0x57E6 に u16 LE・6バイト間隔で
-パラメータが格納される（grp index 0..5）。編集中効果の値が入る列は登録スロット番号
-（slot 0/1/2 = 列 +0/+2/+4）。FORM はその効果の入力レイアウトを定める。
-"""
 from __future__ import annotations
 
 import logging
@@ -16,11 +7,9 @@ import re
 
 _log = logging.getLogger("RTESArenaAssist")
 
-# SpellData レコード（u16 LE, 6バイト間隔で grp が並ぶ）
 SPELLDATA_OFFSET = 0x57E6
 _GRP_OFFS = [0x57E6, 0x57EC, 0x57F2, 0x57F8, 0x57FE, 0x5804]
 
-# 効果タイトル → FORM 名（実測。未掲載効果は同型 FORM へ後追い）
 EFFECT_TO_FORM = {
     "Damage": "FORM1",
     "Continuous Damage": "FORM2",
@@ -37,8 +26,6 @@ EFFECT_TO_FORM = {
     "Regenerate": "FORM15",
 }
 
-# FORM → grp index→ラベル（実測）。None は未使用 grp。
-# 表記は英語ラベル（翻訳辞書側で JA に変換）。
 FORM_FIELDS = {
     "FORM1": {0: "Range min", 1: "Range max", 2: "Increase min",
               3: "Increase max", 4: "Levels"},
@@ -62,10 +49,8 @@ FORM_FIELDS = {
     "FORM13": {0: "Number"},
     "FORM15": {0: "Gain", 1: "Every", 4: "For"},
 }
-# 別名（同一レイアウト）
 FORM_ALIASES = {"FORM4A": "FORM4", "FORM12": "FORM3", "FORM14": "FORM5"}
 
-# FORM フィールドラベルの日本語訳（数値入力画面の翻訳表示用）
 FORM_FIELD_JA = {
     "Range min": "射程 最小", "Range max": "射程 最大",
     "Increase min": "増加 最小", "Increase max": "増加 最大",
@@ -82,7 +67,6 @@ FORM_FIELD_JA = {
 
 
 def field_label_ja(label_en: str) -> str:
-    """FORM フィールドラベルの日本語訳。未登録は原文。"""
     return FORM_FIELD_JA.get(label_en, label_en)
 
 
@@ -97,11 +81,9 @@ def _u16(analyzer, anchor: int, off: int):
 
 
 def resolve_form(effect_title: str) -> str | None:
-    """効果タイトル（例 'Damage Health'）から FORM を解決する。"""
     title = (effect_title or "").strip()
     if not title:
         return None
-    # 先頭一致（'Damage Health' → 'Damage', 'Drain Attribute Strength' → 'Drain Attribute'）
     for effect, form in EFFECT_TO_FORM.items():
         if title == effect or title.startswith(effect + " ") or title.startswith(effect):
             return form
@@ -110,11 +92,6 @@ def resolve_form(effect_title: str) -> str | None:
 
 def read_form_values(analyzer, anchor: int, form: str,
                      slot: int = 0) -> dict[str, int]:
-    """指定 FORM の各フィールド値を SpellData レコードから読む。
-
-    slot: 編集中効果の登録スロット番号（0=列+0 / 1=列+2 / 2=列+4）。既定 0。
-    戻り値: {ラベル: 値}。読めない grp は除外。
-    """
     form = FORM_ALIASES.get(form, form)
     fields = FORM_FIELDS.get(form)
     if not fields:
@@ -132,16 +109,12 @@ def read_form_values(analyzer, anchor: int, form: str,
 
 
 def all_form_labels() -> set[str]:
-    """全 FORM のラベル集合（翻訳辞書の網羅チェック用）。"""
     out: set[str] = set()
     for fields in FORM_FIELDS.values():
         out.update(fields.values())
     return out
 
 
-# 各 FORM の数値入力画面レイアウト（FORM画像で確定）。ゲーム画面の行
-# 構成を再現する。``{Field}`` は read_form_values の値で置換する。EN/JA 両方を定義
-# し、翻訳タブで原文・訳の両方を出せるようにする。
 FORM_LAYOUT_EN: dict[str, list[str]] = {
     "FORM1": ["Range: {Range min} to {Range max}",
               "Increase: {Increase min} to {Increase max} per {Levels} Levels"],
@@ -202,7 +175,6 @@ FORM_LAYOUT_JA: dict[str, list[str]] = {
     "FORM15": ["回復: {Gain}ヒットポイント", "間隔: {Every}ラウンドごと",
                "持続: {For}ラウンド/レベル"],
 }
-# レイアウト同一の別名（アセット重複）
 for _src, _dsts in {"FORM4": ["FORM4A"], "FORM3": ["FORM12"],
                     "FORM5": ["FORM14"]}.items():
     for _dst in _dsts:
@@ -211,7 +183,6 @@ for _src, _dsts in {"FORM4": ["FORM4A"], "FORM3": ["FORM12"],
 
 
 def _fill_layout(lines: list[str], values: dict) -> list[str]:
-    """``{Field}`` トークンを values で置換した行を返す（未取得はダッシュ）。"""
     out: list[str] = []
     for line in lines:
         s = line
@@ -222,7 +193,6 @@ def _fill_layout(lines: list[str], values: dict) -> list[str]:
 
 
 def format_form_layout(form: str, values: dict) -> tuple[list[str], list[str]]:
-    """FORM の画面配置を再現した (EN行, JA行) を返す。未定義なら ([], [])。"""
     f = resolve_form(form) or form
     en = FORM_LAYOUT_EN.get(f)
     ja = FORM_LAYOUT_JA.get(f)
@@ -245,11 +215,6 @@ def _line(label_en: str, label_ja: str, en_value: str, ja_value: str = "") -> st
 
 
 def format_form_display(form: str, values: dict) -> list[str]:
-    """翻訳タブ向けの bilingual FORM 表示行を返す。
-
-    ゲーム画面の英語レイアウトをそのまま併記するのではなく、入力項目の
-    原文ラベルと訳語を 1 つのラベルにまとめ、値側は日本語で読める単位に整える。
-    """
     base_form = resolve_form(form) or form
     f = FORM_ALIASES.get(base_form, base_form)
     if f == "FORM1":
@@ -386,11 +351,6 @@ def _value_html(value: str) -> str:
 def format_form_display_html(
         form: str, values: dict, *, cost: int | None = None,
         title_en: str = "", title_ja: str = "") -> str:
-    """数値入力画面の翻訳タブ向け HTML 表示を返す。
-
-    QLabel の rich text として描く前提で、ラベル列と値列を分けて揃える。
-    文字列版 ``format_form_display`` と同じ値を使い、本文の意味は変えない。
-    """
     lines = list(format_form_display(form, values))
     if cost is not None:
         lines.append(f"Spell Cost（呪文コスト）: {cost}")
@@ -476,11 +436,6 @@ def _same_form(form_a: str | None, form_b: str | None) -> bool:
 
 
 def resolve_edit_slot(analyzer, anchor: int, effect_title: str = "") -> int:
-    """現在の FORM 入力が対応する SpellData 効果スロットを推定する。
-
-    修正時は効果タイトルと一致する既存効果を使う。追加時は、使用済みスロットの
-    次の列を使うことで、直前効果 slot0 の残留値を表示しない。
-    """
     title = (effect_title or "").strip()
     details = _effect_details(analyzer, anchor)
     if title:
@@ -500,7 +455,6 @@ def resolve_edit_slot(analyzer, anchor: int, effect_title: str = "") -> int:
 
 def resolve_effect_title_from_record(analyzer, anchor: int,
                                      form: str = "") -> str:
-    """FORM 名から SpellData 内の対象効果名を補完する。"""
     details = _effect_details(analyzer, anchor)
     if not details:
         return ""

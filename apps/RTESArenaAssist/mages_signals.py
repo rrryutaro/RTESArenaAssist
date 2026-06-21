@@ -1,21 +1,14 @@
 # -*- coding: utf-8 -*-
-"""mages_signals.py — 魔術師ギルド L4 の前景判別信号（完全分離・ローカル実装）。
-
-観測結果のバッファマップの信号値に基づき、魔術師ギルドの会話子画面を
-確定的に分類する。武具店/神殿/宿屋のコードを呼ばず、本ファイルに閉じて offset を
-ローカル定数として保持する（中立な analyzer.read_bytes のみ使用）。
-"""
 from __future__ import annotations
 
-# 前景判別フラグ（u8）
-VIEW_FLAG_OFFSET = 0x8F74     # 51=メインメニュー / 65=サブメニュー / 81=Edit Effects / 00=ポップアップ
-VIEW_TYPE_OFFSET = 0x8F7A     # B1=メイン / 97=購入サブ / 8A=盗む / 8F=Edit Effects / C7=ポップアップ
-LIST_FLAG_OFFSET = 0xB7C4     # 00=一覧/選択 / 01=応答・詳細
-DIALOG_ACTIVE_OFFSET = 0xA847  # 00=交渉(barter) / 3D=通常
-TEXT_FAMILY_OFFSET = 0xA845   # 6F=メニュー/探知/作成族 / 70=購入族 / 59=効果族 / 71=盗む
-SUBSTATE_OFFSET = 0xA83B      # 探知/作成等の補助サブ状態
-VIEW_DESC_OFFSET = 0x8F6E     # 探知応答では low=2F
-RESULT_HINT_OFFSET = 0xADB6   # 探知_不要=9A / 金額提示=0A
+VIEW_FLAG_OFFSET = 0x8F74
+VIEW_TYPE_OFFSET = 0x8F7A
+LIST_FLAG_OFFSET = 0xB7C4
+DIALOG_ACTIVE_OFFSET = 0xA847
+TEXT_FAMILY_OFFSET = 0xA845
+SUBSTATE_OFFSET = 0xA83B
+VIEW_DESC_OFFSET = 0x8F6E
+RESULT_HINT_OFFSET = 0xADB6
 CURRENT_TEXT_PTR_OFFSET = 0xA844
 RESPONSE_TEXT_OFFSET = 0x1044
 MAGES_MENU_TEXT_OFFSET = 0x6F5C
@@ -86,7 +79,6 @@ def _contains_normalized(analyzer, anchor: int, off: int,
 
 
 def read_signals(analyzer, anchor: int) -> dict:
-    """魔術師ギルド判別信号を一括で読む。"""
     view_desc = _u16(analyzer, anchor, VIEW_DESC_OFFSET)
     return {
         "view": _u8(analyzer, anchor, VIEW_FLAG_OFFSET),
@@ -102,11 +94,6 @@ def read_signals(analyzer, anchor: int) -> dict:
 
 
 def classify(sig: dict) -> str:
-    """信号から子画面種別を返す。
-
-    返り値: main_menu / buy_submenu / steal_menu / edit_effects_menu /
-            list / negotiation / reply / unknown
-    """
     view = sig.get("view")
     if view == VIEW_MENU:
         return "main_menu"
@@ -126,13 +113,6 @@ def classify(sig: dict) -> str:
 
 
 def detect_magic_reply_kind(sig: dict, img_name: str = "") -> str:
-    """Detect Magic 応答前景の旧観測パターンを細分類する。
-
-    探知応答は family=0x6F, B7C4=0x01,
-    8F6E low=0x2F で、+0xADB6 が 0x9A（識別不要）または 0x0A
-    （識別費提示）に分岐する。YESNO.IMG は交渉画像と同じなので、
-    画像名だけでは分類しない。
-    """
     img = (img_name or "").upper()
     if img not in ("NEWPOP.IMG", "YESNO.IMG", ""):
         return ""
@@ -164,13 +144,6 @@ def is_detect_magic_reply_foreground(sig: dict, img_name: str = "") -> bool:
 
 def detect_magic_reply_kind_from_memory(
         analyzer, anchor: int, img_name: str = "", sig: dict | None = None) -> str:
-    """実メモリの表示バッファも含めて Detect Magic 応答を確定する。
-
-    バッファは残留するため、`0x6F5C` や `0x1044` の本文だけでは前景にしない。
-    まず L4 前景信号（一覧/メニュー/ポップアップ）を確定し、その内側で
-    Detect Magic の本文バッファを読む。これにより一覧・メニュー復帰・交渉を
-    探知応答が奪わない。
-    """
     sig = sig if sig is not None else read_signals(analyzer, anchor)
     img = (img_name or "").upper()
     if img not in ("NEWPOP.IMG", "YESNO.IMG", ""):

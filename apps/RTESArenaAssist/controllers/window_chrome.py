@@ -1,27 +1,3 @@
-"""
-controllers/window_chrome.py — フレームレスウィンドウのドラッグ・8方向リサイズ・
-コンテキストメニュー処理
-
-assist_window.py から分離。振る舞いは一切変更していない。
-
-含まれるもの:
-  - _is_interactive(widget)        ← module-level pure function（移動）
-  - WindowChrome クラス
-      __init__(window)             ← AssistWindow を back-reference として保持
-      handle_event(obj, event)     ← assist_window.eventFilter からの委譲先
-      show_context_menu(global_pos)
-      edge_at(local_pos)
-      do_resize(gpos)
-      set_edge_cursor(edge)
-      clear_edge_cursor()
-
-ドラッグ・リサイズに関する状態（_drag_start_pos / _resize_dir 等）は
-WindowChrome 自身が保持する。AssistWindow からは self._chrome.X 経由で
-アクセスできる。
-
-eventFilter / moveEvent は QMainWindow のオーバーライドのため AssistWindow に
-残し、内部で WindowChrome に委譲する。
-"""
 
 from PySide6.QtCore import QEvent, QPoint, QRect, Qt
 from PySide6.QtGui import QCursor
@@ -32,15 +8,10 @@ import assist_settings as settings
 from assist_constants import WIN_MIN_W, WIN_MIN_H
 
 
-# ── ドラッグ対象外ウィジェット型（遅延初期化）────────────────────────
 _INTERACTIVE_TYPES: tuple | None = None
 
 
 def _is_interactive(widget) -> bool:
-    """ボタン・スクロールバー等のインタラクティブ要素か判定する。
-
-    QTextEdit の viewport など子ウィジェットから親を辿って判定する。
-    """
     global _INTERACTIVE_TYPES
     if _INTERACTIVE_TYPES is None:
         from PySide6.QtWidgets import (
@@ -51,9 +22,6 @@ def _is_interactive(widget) -> bool:
             QAbstractButton, QAbstractScrollArea, QAbstractSlider,
             QLineEdit, QComboBox, QTabBar, QAbstractItemView, QSplitterHandle,
         )
-    # objectName で個別指定されたインタラクティブ widget。
-    # マップタブの MapCanvas など、ドラッグでウィンドウ移動を発火させたくない
-    # 自前イベント処理 widget に "AssistMapCanvas" 等を付与する。
     _NAMED_INTERACTIVE = frozenset({"AssistMapCanvas"})
     w = widget
     while w is not None:
@@ -69,40 +37,31 @@ def _is_interactive(widget) -> bool:
 
 
 class WindowChrome:
-    """フレームレス AssistWindow のドラッグ / リサイズ / コンテキストメニュー処理。"""
 
     def __init__(self, window):
         self._w = window
 
-        # ── ドラッグ状態 ───────────────────────────────
         self._drag_start_pos: QPoint | None = None
 
-        # ── リサイズ状態 ───────────────────────────────
         self._resize_dir: str = ""
         self._resize_start_geo: QRect | None = None
         self._resize_start_mouse: QPoint | None = None
 
-        # ── カーソル オーバーライド ─────────────────────
         self._cursor_overridden: bool = False
 
-        # ── エッジカーソル（QApplication 起動後に作成）──
         self._edge_cursors = {
             "n":  QCursor(Qt.CursorShape.SizeVerCursor),
             "s":  QCursor(Qt.CursorShape.SizeVerCursor),
             "e":  QCursor(Qt.CursorShape.SizeHorCursor),
             "w":  QCursor(Qt.CursorShape.SizeHorCursor),
-            "nw": QCursor(Qt.CursorShape.SizeFDiagCursor),  # ↘ (top-left corner)
-            "se": QCursor(Qt.CursorShape.SizeFDiagCursor),  # ↘ (bottom-right corner)
-            "ne": QCursor(Qt.CursorShape.SizeBDiagCursor),  # ↗ (top-right corner)
-            "sw": QCursor(Qt.CursorShape.SizeBDiagCursor),  # ↗ (bottom-left corner)
+            "nw": QCursor(Qt.CursorShape.SizeFDiagCursor),
+            "se": QCursor(Qt.CursorShape.SizeFDiagCursor),
+            "ne": QCursor(Qt.CursorShape.SizeBDiagCursor),
+            "sw": QCursor(Qt.CursorShape.SizeBDiagCursor),
         }
 
-        # リサイズ判定幅 (px) — assist_window.py の _RESIZE_BORDER と同値
         self._resize_border = 6
 
-    # ------------------------------------------------------------------
-    # コンテキストメニュー
-    # ------------------------------------------------------------------
 
     def show_context_menu(self, global_pos: QPoint):
         w = self._w
@@ -117,9 +76,6 @@ class WindowChrome:
         menu.addAction(i18n.tr("menu.quit"), w.close)
         menu.exec(global_pos)
 
-    # ------------------------------------------------------------------
-    # 8方向リサイズ
-    # ------------------------------------------------------------------
 
     def edge_at(self, local_pos: QPoint) -> str:
         x, y = local_pos.x(), local_pos.y()
@@ -184,12 +140,8 @@ class WindowChrome:
             QApplication.restoreOverrideCursor()
             self._cursor_overridden = False
 
-    # ------------------------------------------------------------------
-    # イベント処理（AssistWindow.eventFilter からの委譲先）
-    # ------------------------------------------------------------------
 
     def handle_event(self, obj, event) -> bool:
-        """assist_window.eventFilter から呼ばれる。True 返却で event を消費する。"""
         w = self._w
         if not isinstance(obj, QWidget):
             return False
@@ -200,7 +152,6 @@ class WindowChrome:
         gpos = (event.globalPosition().toPoint()
                 if hasattr(event, "globalPosition") else None)
 
-        # ── アクティブなリサイズ処理 ──────────────────────────────
         if self._resize_dir:
             if et == QEvent.Type.MouseMove and gpos:
                 self.do_resize(gpos)
@@ -211,43 +162,35 @@ class WindowChrome:
                 self.clear_edge_cursor()
                 return False
 
-        # ── エッジ判定 ─────────────────────────────────────────────
         if gpos:
             lpos = w.mapFromGlobal(gpos)
             edge = self.edge_at(lpos)
         else:
             edge = ""
 
-        # ── ホバー中カーソル変更 ──────────────────────────────────
         if et == QEvent.Type.MouseMove and gpos and not event.buttons():
             if edge and not _is_interactive(obj):
                 self.set_edge_cursor(edge)
             else:
                 self.clear_edge_cursor()
 
-        # ── マウス押下 ─────────────────────────────────────────────
         if et == QEvent.Type.MouseButtonPress and gpos:
             btn = event.button()
 
-            # 右クリック → コンテキストメニュー
             if btn == Qt.MouseButton.RightButton and not _is_interactive(obj):
                 self.show_context_menu(gpos)
                 return True
 
-            # 左クリック
             if btn == Qt.MouseButton.LeftButton:
                 if edge and not _is_interactive(obj):
-                    # リサイズ開始
                     self._resize_dir           = edge
                     self._resize_start_geo     = w.geometry()
                     self._resize_start_mouse   = gpos
                     self.set_edge_cursor(edge)
                     return True
                 elif not _is_interactive(obj):
-                    # ドラッグ開始
                     self._drag_start_pos = gpos - w.frameGeometry().topLeft()
 
-        # ── ドラッグ移動 ──────────────────────────────────────────
         if (et == QEvent.Type.MouseMove
                 and event.buttons() == Qt.MouseButton.LeftButton
                 and self._drag_start_pos is not None
@@ -256,7 +199,6 @@ class WindowChrome:
             w.move(gpos - self._drag_start_pos)
             return True
 
-        # ── リリース ──────────────────────────────────────────────
         if et == QEvent.Type.MouseButtonRelease:
             self._drag_start_pos = None
 

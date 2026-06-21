@@ -1,15 +1,3 @@
-"""normal_play/equipment_render_module.py — 武具店 L4 会話の描画オーナー。
-
-完全分離: 武具店店主会話の各子画面 (メニュー / 一覧) の判定・描画・
-終了時整理を本モジュールに閉じて所有する。owner 名前空間は ``equipment_*`` 専用で、
-宿屋 (tavern_render_module / shop_menu / shop_buy / shop_rooms / tavern state) には
-一切流さない。共有するのは副作用なしの純粋 helper (build_menu_display /
-translate_shop_menu_items / read_shop_item_list / translate_shop_item_list) と、
-owner を引数で受ける UiRouter の汎用描画 API のみ。
-
-Buy 武器/防具一覧は遠方バッファ (anchor+0x273B74 / +0x2752E4) を読み、
-宿屋とは別 owner の ``equipment_list`` で表示する。
-"""
 from __future__ import annotations
 
 import logging
@@ -29,15 +17,11 @@ from normal_play.equipment_list_reader import (
 
 _log = logging.getLogger("RTESArenaAssist")
 
-# 武具店専用 owner 名前空間 (宿屋 shop_menu / shop_buy とは別物)
 MENU_OWNER = "equipment_menu"
 LIST_OWNER = "equipment_list"
 NEGOTIATION_OWNER = "equipment_negotiation"
-# 応答 owner は equipment_reply_module が定義する単一の真実を参照する
-# (classify が前景を reply に確定する際の owner 名)。
 from normal_play.equipment_reply_module import REPLY_OWNER  # noqa: E402
 
-# 武具店の一覧 IMG: 武器=POPUP3 / 防具=POPUP4 / 売却・修理・盗み=NEWPOP
 LIST_IMGS = ("POPUP3.IMG", "POPUP4.IMG", "NEWPOP.IMG")
 _DIALOG_PTR = 0x001E
 _REPLY_BLOCK_IMGS = frozenset({
@@ -75,15 +59,10 @@ _TERMINAL_REPLY_MIN_POLLS = 4
 _TERMINAL_REPLY_MIN_SECONDS = 1.4
 _NO_REPAIR_REPLY_MIN_SECONDS = 2.8
 _MENU_RETURN_STABLE_POLLS = 2
-# 前景判別フラグ (u8): メニュー表示=0x51 / ポップアップ表示=0x00。
-# 武具店メニュー上に応答・見積り・一覧などのポップアップが重なっているかを
-# 1 byte で確定判定し、終端応答の「保持」⇔「メニュー復帰」、および見積り/一覧
-# 表示を時間・回数の推測に依存せず分離する。
 _VIEW_FLAG_OFFSET = 0x8F74
 _VIEW_FLAG_MENU = 0x51
 _VIEW_FLAG_POPUP = 0x00
 _VIEW_FLAG_MENU_STABLE_POLLS = 2
-# 前景フラグを参照する画像 (メニュー/応答/見積り/一覧)。買い物一覧 POPUP3/4 は対象外。
 _VIEW_FLAG_IMGS = frozenset({
     "MENU_RT.IMG", "YESNO.IMG", "NEWPOP.IMG", "FACES00.CIF", "STATUS.CIF",
 })
@@ -98,18 +77,8 @@ _LIST_KEY = "_equipment_list_key_prev"
 
 @dataclass(frozen=True)
 class EquipmentView(FacilityView):
-    """武具店 L4 の単一判定 (1軸) 結論 (FacilityView 拡張, 宿屋 TavernView と同型)。
-
-    ``classify_equipment_view`` が 1 poll に 1 回だけ前景子画面を確定し、
-    ``render_equipment_view`` がこの結論を**消費するだけ**で描画する
-    (描画側は前景判定を一切再計算しない = 完全分離 / 1軸化)。
-
-    ``l4_kind`` / ``render_owner`` / ``reason`` は FacilityView 由来の共通 view 契約。
-    以下のフィールドは描画分岐に必要な確定済み判定で、render が参照する。
-    """
-    # --- render が分岐に用いる確定済み前景判定 (classify で 1 回算出) ---
     img: str = ""
-    shop_state: object = None          # fallback 補完後の解決済み shop_state
+    shop_state: object = None
     is_negot_img: bool = False
     is_main_menu: bool = False
     terminal_reply_text: str = ""
@@ -130,11 +99,6 @@ def _resolve_equipment_l4(*, img, shop_state, is_main_menu, is_negot_img,
                           terminal_menu_foreground, menu_return_override,
                           terminal_reply_hold_blocks_menu,
                           terminal_reply_allows_list, negot_foreground):
-    """確定済み判定から前景子画面 (l4_kind / owner / reason) を 1 つに確定する。
-
-    描画分岐 (render_equipment_view) と同じ優先順位の要約。施設ノード共通の
-    view 契約 (l4_kind / render_owner / reason) を満たす。
-    """
     if menu_return_override and terminal_menu_foreground and is_main_menu:
         return ("menu", MENU_OWNER, "equipment_menu")
     if terminal_reply_text and not terminal_reply_allows_list:
@@ -161,27 +125,16 @@ def _resolve_equipment_l4(*, img, shop_state, is_main_menu, is_negot_img,
 
 def classify_equipment_view(w, *, shop_state=None, shop_img_name: str = "",
                             **_ignored) -> "EquipmentView":
-    """武具店 L4 の前景子画面を 1 つだけ確定する単一判定 (1軸)。
-
-    終端応答ホールド / メニュー復帰 / 前景フラグ追跡を含む**全前景判定をここに
-    閉じる**。描画 (render_equipment_view) は本結論を消費するだけで前景を再判定
-    しない (完全分離 / 1軸化)。状態追跡 (終端応答 / 前景フラグ) は
-    1 poll に 1 回ここで実施する。
-    """
     img = (shop_img_name or "").upper()
     is_negot_img = _is_negotiation_img(img)
     terminal_reply_text = _current_terminal_reply_text(w)
     _track_terminal_reply_display(w, terminal_reply_text)
-    # 前景フラグはメニュー/応答/見積り/一覧の判別に使う。買い物一覧などフラグが
-    # 無関係な画像では読まない (= 余計なメモリ読みと判定ブレを避ける)。
     if img in _VIEW_FLAG_IMGS:
         _track_view_flag(w)
     else:
         w._equipment_view_flag_value = None
         w._equipment_view_flag_menu_polls = 0
         w._equipment_view_menu_stable = False
-    # 前景フラグがポップアップ(0x00)を明示する間は、残留抑制やメニュー文字列残りで
-    # 見積り/一覧/応答をメニュー描画に奪われないようにする。
     view_popup_foreground = (
         getattr(w, "_equipment_view_flag_value", None) == _VIEW_FLAG_POPUP)
     suppressed_terminal_return = _has_suppressed_terminal_reply(w)
@@ -265,13 +218,6 @@ def classify_equipment_view(w, *, shop_state=None, shop_img_name: str = "",
 def render_equipment_view(w, *, view, shop_state=None, shop_img_name: str = "",
                           top_level_state: str = "normal-play",
                           **_ignored) -> tuple[bool, bool, bool, bool]:
-    """classify_equipment_view の結論 (view) を消費して武具店子画面を所有描画する。
-
-    前景判定は一切再計算せず view を参照するだけ (1軸化)。
-    戻り値: (negot_handled, active_tmpl_handled, menu_visible, list_visible)。
-    negotiation / active_template は poll_controller 後段の共有 L4 module 経路が
-    処理するため本モジュールでは扱わず False を返す (= 二重描画回避)。
-    """
     img = view.img
     shop_state = view.shop_state
     negot_visible = False
@@ -337,11 +283,6 @@ def render_equipment_view(w, *, view, shop_state=None, shop_img_name: str = "",
 def poll_equipment_render(w, *, shop_state=None, shop_img_name: str = "",
                           top_level_state: str = "normal-play",
                           **_ignored) -> tuple[bool, bool, bool, bool]:
-    """互換 entry: 判定 (classify) → 描画 (render) を 1 回ずつ実行する薄いラッパ。
-
-    施設ノード経由 (poll_controller) では classify_view → render(view) と
-    呼ぶため本関数は経由しない。tests / 後方互換のため判定描画を内部結線する。
-    """
     view = classify_equipment_view(
         w, shop_state=shop_state, shop_img_name=shop_img_name)
     return render_equipment_view(
@@ -359,7 +300,6 @@ def _is_negotiation_img(img: str) -> bool:
 
 def read_menu_rt_equipment_menu_state(
         w, img: str, *, allow_sticky_img: bool = False):
-    """MENU_RT の武具店メニュー bytes から shop_state 揺れを補完する。"""
     img_u = (img or "").upper()
     if img_u != "MENU_RT.IMG" and not (
             allow_sticky_img and img_u in ("YESNO.IMG", "NEWPOP.IMG")):
@@ -406,7 +346,6 @@ def read_menu_rt_equipment_menu_state(
 
 
 def _read_equipment_menu_group_near_ptr(w, ptr: int):
-    """0x8Axx 側など、0x725F 以外に置かれた武具店メニュー group を読む。"""
     if ptr < 0x200:
         return None
     try:
@@ -420,7 +359,6 @@ def _read_equipment_menu_group_near_ptr(w, ptr: int):
 
 
 def _fallback_equipment_menu_group(groups, w):
-    """ptr がメニュー項目外へ揺れた MENU_RT 復帰フレーム用の補完。"""
     exact_groups = []
     for group in groups:
         items = tuple(it.text for it in group.items)
@@ -541,7 +479,6 @@ def _has_suppressed_terminal_reply(w) -> bool:
 
 
 def _release_terminal_reply_after_menu_return(w) -> None:
-    """メニュー復帰後に古い終端応答が次の一覧/応答を塞がないよう解放する。"""
     w._equipment_reply_hold_polls = 0
     w._equipment_reply_current_key = None
     w._equipment_reply_current_text = None
@@ -552,7 +489,6 @@ def _release_terminal_reply_after_menu_return(w) -> None:
 
 
 def _poll_reply_first(w, img: str) -> bool:
-    """武具店応答をメニュー/一覧より先に描画し、L4 owner の競合を防ぐ。"""
     if img not in ("", "MENU_RT.IMG", "YESNO.IMG", "NEWPOP.IMG",
                    "FACES00.CIF", "STATUS.CIF"):
         return False
@@ -578,12 +514,10 @@ def _poll_reply_first(w, img: str) -> bool:
 
 
 def has_terminal_repair_reply_displayed(w) -> bool:
-    """直前にメニュー復帰可能な修理終端応答を表示しているか。"""
     return bool(_current_terminal_reply_text(w))
 
 
 def _read_view_flag(w):
-    """前景判別フラグ (+0x8F74) の生バイトを読む。読めない場合は None。"""
     try:
         raw = w._analyzer.read_bytes(w._anchor + _VIEW_FLAG_OFFSET, 1)
     except Exception:  # noqa: BLE001
@@ -592,11 +526,6 @@ def _read_view_flag(w):
 
 
 def _track_view_flag(w) -> None:
-    """前景フラグを毎 poll 読み、メニュー値が連続した回数を更新する。
-
-    一瞬のブレ (1 poll だけ別値) を吸収するため、メニュー値が安定して続いた
-    ときだけ「メニュー前景」と見なす。値が読めないフレームは安定状態を持ち越す。
-    """
     val = _read_view_flag(w)
     w._equipment_view_flag_value = val
     if val is None:
@@ -616,11 +545,8 @@ def _can_terminal_reply_return_to_menu(w, text: str, img: str, shop_state) -> bo
         return False
     if not is_main_equipment_menu_state(shop_state):
         return False
-    # 主判定: 前景フラグが安定してメニューを示せば確定的に復帰し、ポップアップを
-    # 示す間は応答を保持する (時間・ポーリング数・ptr 閾値の推測に依存しない)。
     if getattr(w, "_equipment_view_flag_value", None) is not None:
         return bool(getattr(w, "_equipment_view_menu_stable", False))
-    # フラグが読めないフレームのみ従来の保持時間ベース判定にフォールバックする。
     if (img or "").upper() not in ("MENU_RT.IMG", "YESNO.IMG", "NEWPOP.IMG"):
         return False
     return _terminal_reply_visible_long_enough(w, text) and _menu_return_is_stable(
@@ -628,7 +554,6 @@ def _can_terminal_reply_return_to_menu(w, text: str, img: str, shop_state) -> bo
 
 
 def _has_equipment_reply_foreground(w, img: str) -> bool:
-    """武具店応答表示中は背景メニュー描画で上書きしない。"""
     if img not in _REPLY_BLOCK_IMGS:
         return False
     current_text = getattr(w, "_equipment_reply_current_text", "") or ""
@@ -668,7 +593,6 @@ def _has_equipment_reply_foreground(w, img: str) -> bool:
 
 
 def has_newpop_repair_reply_foreground(w) -> bool:
-    """NEWPOP の修理プロンプト/結果応答が前景にあるか。"""
     try:
         from popup11_response_reader import read_response_candidates_all
         cands = read_response_candidates_all(w._analyzer, w._anchor)
@@ -686,7 +610,6 @@ def has_newpop_repair_reply_foreground(w) -> bool:
 
 
 def has_newpop_no_repair_reply_foreground(w) -> bool:
-    """NEWPOP 上の修理不要応答が前景候補にあるか。"""
     try:
         from popup11_response_reader import read_response_candidates_all
         cands = read_response_candidates_all(w._analyzer, w._anchor)
@@ -702,12 +625,10 @@ def has_newpop_no_repair_reply_foreground(w) -> bool:
 
 
 def has_newpop_repair_prompt_foreground(w) -> bool:
-    """互換用: NEWPOP の修理応答前景判定。"""
     return has_newpop_repair_reply_foreground(w)
 
 
 def has_active_repair_reply_foreground(w) -> bool:
-    """NEWPOP の修理応答 active slot が前景にあるか。"""
     try:
         from active_template_reader import read_active_template_candidates
         import npc_dialog_lookup as _ndl
@@ -727,7 +648,6 @@ def has_active_repair_reply_foreground(w) -> bool:
 
 
 def _render_negotiation(w, img: str, top_level_state: str) -> bool:
-    """武具店のアイテム交渉を equipment_negotiation owner で描画する。"""
     try:
         from normal_play.negotiation_module import (
             poll_negotiation,
@@ -745,7 +665,6 @@ def _render_negotiation(w, img: str, top_level_state: str) -> bool:
 
 
 def _render_menu(w, shop_state, img: str) -> bool:
-    """MENU OPTIONS / BUY OPTIONS 等のメニューを equipment_menu owner で描画。"""
     try:
         from shop_menu_reader import translate_shop_menu_items, translate_ui_text
         from normal_play.shop_render_common import build_menu_display
@@ -755,7 +674,6 @@ def _render_menu(w, shop_state, img: str) -> bool:
         owner_taken = (w._panel_owner != MENU_OWNER)
         if key_now != getattr(w, _MENU_KEY, None) or owner_taken:
             setattr(w, _MENU_KEY, key_now)
-            # 武具店メニューは context-aware 直引き (公開版安全)。
             menu_tr = translate_shop_menu_items(items, owner_kind="equipment")
             title_en = shop_state.menu_title_en or ""
             title_ja = ((translate_ui_text("equipment", title_en) or title_en)
@@ -774,7 +692,6 @@ def _render_menu(w, shop_state, img: str) -> bool:
 
 
 def _render_list(w, img: str) -> bool:
-    """一覧を equipment_list owner で描画する。"""
     title_en, title_ja = _LIST_TITLES.get(img, ("Items", "アイテム"))
     items = _stabilize_list_items(w, img, _read_list_items(w, img))
     try:
@@ -796,14 +713,12 @@ def _render_list(w, img: str) -> bool:
             if key_now != getattr(w, _LIST_KEY, None) or owner_taken:
                 setattr(w, _LIST_KEY, key_now)
                 _reset_reply_generation_for_list(w)
-                # 施設専用 list intent (= 宿屋 shop_buy とは別 identity/mode)
                 w._ui_router.update_facility_list(
                     LIST_OWNER, tr, title_en, title_ja)
                 _log.info(
                     "equipment_list update (img=%r items=%d source=%s)",
                     img, len(tr), source)
         else:
-            # 未解析: 施設専用 owner で「解析中」を表示 (宿屋一覧へ流さない)
             key_now = ("unparsed", img)
             if key_now != getattr(w, _LIST_KEY, None) or owner_taken:
                 setattr(w, _LIST_KEY, key_now)
@@ -819,7 +734,6 @@ def _render_list(w, img: str) -> bool:
 
 
 def _reset_reply_generation_for_list(w) -> None:
-    """一覧を新しい選択世代として扱い、同一修理応答の再表示を許可する。"""
     w._equipment_reply_text_by_offset = {}
     w._equipment_reply_current_key = None
     w._equipment_reply_current_text = None
@@ -833,7 +747,6 @@ def _reset_reply_generation_for_list(w) -> None:
 
 
 def is_main_equipment_menu_state(shop_state) -> bool:
-    """POPUP*.IMG が残留していても、主メニュー検出時はメニューを優先する。"""
     if not (shop_state is not None and shop_state.kind == "shop_menu"
             and getattr(shop_state, "owner_kind", "") == "equipment"):
         return False
@@ -844,12 +757,6 @@ def is_main_equipment_menu_state(shop_state) -> bool:
 
 
 def is_equipment_menu_foreground(shop_state) -> bool:
-    """shop_state が現在前景の武具店メニューを指すかを判定する。
-
-    NEGOTBUT.IMG は交渉完了後もしばらく残るため、画像名だけで交渉を優先すると
-    REJECT/戻る直後の BUY OPTIONS を描けない。一方、対案入力/結果中は current ptr
-    が 0x001E になり、背後のメニュー文字列が残っても shop menu として採用しない。
-    """
     if not (shop_state is not None and shop_state.kind == "shop_menu"
             and getattr(shop_state, "owner_kind", "") == "equipment"):
         return False
@@ -863,12 +770,6 @@ def is_equipment_menu_foreground(shop_state) -> bool:
 
 
 def has_equipment_negotiation_foreground(w) -> bool:
-    """武具店交渉本文が現在前景にあるかを本文 active slot で確認する。
-
-    金額提示中でも shop menu ptr が残る一方、本文側は
-    `+0x987A` の active slot として前景に出る。REJECT 後の
-    `NEGOTBUT.IMG` 残留ではこの本文前景 slot が無いため、メニュー復帰と分離する。
-    """
     try:
         from negotiation_reader import (
             NEGOT_RENDERED_OFFSET, read_negotiation_diagnostic,
@@ -894,7 +795,6 @@ def has_equipment_negotiation_foreground(w) -> bool:
 
 def _cleanup(w, menu_visible: bool, list_visible: bool,
              negot_visible: bool = False) -> None:
-    """前景でない自施設 owner の残置を片付ける (自 owner のみ)。"""
     if not menu_visible and getattr(w, _MENU_KEY, None) is not None:
         setattr(w, _MENU_KEY, None)
         if w._panel_owner == MENU_OWNER:

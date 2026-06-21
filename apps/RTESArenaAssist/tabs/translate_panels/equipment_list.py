@@ -1,9 +1,3 @@
-"""tabs/translate_panels/equipment_list.py — 装備画面インベントリレンダリング
-
-equipment モード（MRSHIRT.IMG 装備一覧）で使うテーブル更新ロジックを
-free function として切り出す。TabTranslate からは update_equipment_list
-で本関数を呼ぶだけ。
-"""
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
@@ -13,25 +7,15 @@ from PySide6.QtWidgets import QTableWidget, QTableWidgetItem
 import assist_settings as settings
 
 
-# 装備一覧の色スキーム（OpenTESArena 由来の確定値）
-_COL_YELLOW      = QColor("#EBC734")  # 装備中（鑑定済み）
-_COL_TAN         = QColor("#D38E00")  # 装備可能・未装備（またはクラス不明）
-_COL_RED         = QColor("#C72000")  # 装備不可
-_COL_CYAN        = QColor("#45BABE")  # 未鑑定 + 未装備
-_COL_BRIGHT_CYAN = QColor("#8AFFFF")  # 未鑑定 + 装備中
-_COL_DIM         = QColor("#6a8a9a")  # 補助情報
+_COL_YELLOW      = QColor("#EBC734")
+_COL_TAN         = QColor("#D38E00")
+_COL_RED         = QColor("#C72000")
+_COL_CYAN        = QColor("#45BABE")
+_COL_BRIGHT_CYAN = QColor("#8AFFFF")
+_COL_DIM         = QColor("#6a8a9a")
 
 
 def render_equipment_list(table: QTableWidget, items: list) -> None:
-    """装備画面インベントリ一覧をテーブルに描画する。
-
-    items の各要素:
-      {"en": str, "ja": str, "equipped": bool,
-       "is_unidentified": bool, "can_equip": bool|None,
-       "slot_label": str, "weight": str, "condition": str, "effect": str}
-
-    色優先順位: 未鑑定 > 装備不可 > 装備中 > 通常
-    """
     table.setRowCount(0)
 
     mark_equipped     = settings.get("equipment_mark_equipped",     "Ｅ")

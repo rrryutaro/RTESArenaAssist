@@ -1,8 +1,3 @@
-"""arena_voxel_utils.py — 街マップの MENU voxel → ArenaMenuType マッピング。
-
-OpenTESArena `Voxels/ArenaVoxelUtils.cpp` を Python 移植。menuID (0〜13) と
-MapType (City/Wilderness) の組み合わせから menuType を導出する。
-"""
 from __future__ import annotations
 
 from enum import Enum
@@ -48,10 +43,6 @@ WILD_MENU_MAPPINGS: dict[int, ArenaMenuType] = {
 
 
 def get_menu_type(menu_id: int, map_type: MapType) -> ArenaMenuType:
-    """menuID + MapType → menuType。
-
-    menu_id == -1 は MENU voxel ではない (NONE)。
-    """
     if menu_id == -1:
         return ArenaMenuType.NONE
     if map_type == MapType.CITY:
@@ -62,7 +53,6 @@ def get_menu_type(menu_id: int, map_type: MapType) -> ArenaMenuType:
 
 
 def menu_leads_to_interior(menu_type: ArenaMenuType) -> bool:
-    """この menuType から Interior 入店するか?"""
     return menu_type in {
         ArenaMenuType.CRYPT, ArenaMenuType.DUNGEON, ArenaMenuType.EQUIPMENT,
         ArenaMenuType.HOUSE, ArenaMenuType.MAGES_GUILD, ArenaMenuType.NOBLE,
@@ -72,7 +62,6 @@ def menu_leads_to_interior(menu_type: ArenaMenuType) -> bool:
 
 
 def menu_has_display_name(menu_type: ArenaMenuType) -> bool:
-    """この menuType は固有名称表示 building か (Inn 名等)?"""
     return menu_type in {
         ArenaMenuType.EQUIPMENT, ArenaMenuType.MAGES_GUILD,
         ArenaMenuType.TAVERN, ArenaMenuType.TEMPLE,

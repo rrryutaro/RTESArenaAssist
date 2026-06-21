@@ -1,14 +1,3 @@
-"""直接描画テンプレ (active_template) 翻訳表示。
-
-Arena が静的テンプレ領域 (+0x4000..+0xC000) を直接描画して +0x1044 等の
-render buffer に書かないケース (入力プロンプト等) を翻訳する。
-+0xFACC u16 LE が指す位置を「現在直接描画中のテンプレ」と仮説する。
-
-window 側状態: _active_tmpl_ctx_prev / _active_tmpl_sig_prev /
-_active_tmpl_key_prev / _ui_router / _panel_owner
-
-呼び出し側は active_facility ("temple" / "tavern" / "") を渡す。
-"""
 from __future__ import annotations
 
 import logging
@@ -39,9 +28,6 @@ def should_poll_active_template(
     top_level_state: str,
     tavern_l4_kind: str = "",
 ) -> bool:
-    """active_template の描画経路をこの poll で走らせてよいか判定する。"""
-    # 宿屋 L4 子状態の分類で menu/list 系が確定した poll では、同じ poll の
-    # 後段 active_template が stale active_slot で menu 表示を奪い返さない。
     if (active_facility == "tavern"
             and (tavern_l4_kind or "") in _TAVERN_SHOP_L4_KINDS):
         return False
@@ -61,7 +47,6 @@ def poll_active_template(w, *, shop_img_name: str,
                          allow_during_shop_menu: bool,
                          tavern_l4_kind: str = "",
                          c_area: str = "") -> bool:
-    """戻り値: 表示確定したら True (= active_tmpl_handled)。"""
     try:
         _ptr_raw = w._analyzer.read_bytes(w._anchor + 0xA844, 2)
         _ptr_val = _ptr_raw[0] | (_ptr_raw[1] << 8)
@@ -74,9 +59,6 @@ def poll_active_template(w, *, shop_img_name: str,
         _response_active = any(
             start <= _ptr_val < start + length
             for start, length in _RESPONSE_PTR_RANGES)
-    # 1軸化: 自前で c1_dialog_axis を再読せず、poll 前段で1回だけ行う単一
-    # authoritative read (w._c1_dialog_axis_now) を消費する (二重ソース=実行時
-    # 相互排他ガードを解消)。a845/fg は 1 poll 1値で排他のため単一前景で確定。
     _c1_axis = getattr(w, "_c1_dialog_axis_now", None)
     if _c1_axis is not None and _c1_axis.active:
         _block_key = (
@@ -97,13 +79,6 @@ def poll_active_template(w, *, shop_img_name: str,
                 _c1_axis.reason or "unknown")
         return False
 
-    # YESNO.IMG を _in_negot から除外する。
-    # NEGOTIATION_PROFILES 登録 IMG (= NEGOTBUT.IMG / YESNO.IMG) では shop_menu
-    # を出さず negotiation/active_template に委ねるが、active_template まで
-    # _in_negot で除外すると、YESNO.IMG で A131 等の宿屋 YES/NO surface が
-    # 誰にも描画されないデッドロックになる。
-    # NEGOTBUT.IMG のみ negotiation_module に任せ、YESNO.IMG は active_template
-    # が処理する。
     try:
         from negotiation_reader import NEGOTIATION_PROFILES as _NPF
         _in_negot = (
@@ -114,8 +89,6 @@ def poll_active_template(w, *, shop_img_name: str,
         _in_negot = False
 
     _top_level = _current_top_level(w)
-    # 宿屋 YES/NO (= A131 等) は本経路 (= active_template_module) が描画する
-    # のが正しい分離化。tavern_session 内に重複実装を持たない。
     _gate_ok = should_poll_active_template(
         shop_menu_visible=shop_menu_visible,
         shop_buy_active=shop_buy_active,
@@ -240,9 +213,6 @@ def poll_active_template(w, *, shop_img_name: str,
             except Exception:  # noqa: BLE001
                 w._active_tmpl_surface_kind_prev = ""
             _orig_clean = _active_tmpl.rstrip()
-            # 施設の単発 surface(忍び込み結果/契約文/費用提示 等)は
-            # 状況説明として宣言する。費用提示など個別に読み分け
-            # たい面は surface_kind 単位の調整余地あり。
             w._ui_router.update_translation(
                 "active_template", _orig_clean, _ja,
                 speech_role="situation")
@@ -254,7 +224,6 @@ def poll_active_template(w, *, shop_img_name: str,
 
 
 def cleanup_if_owner(w) -> None:
-    """active_template owner の所有権を解除する (= 表示クリア)。"""
     if w._ui_router.is_owner("active_template"):
         w._active_tmpl_key_prev = None
         w._active_tmpl_surface_kind_prev = ""

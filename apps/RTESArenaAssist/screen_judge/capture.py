@@ -1,9 +1,3 @@
-"""
-screen_judge/capture.py — DOSBox クライアント領域キャプチャ
-
-PrintWindow(PW_CLIENTONLY) でタイトルバーを除いたクライアント領域のみ取得する。
-PrintWindow が失敗する場合（output=opengl 等）は BitBlt フォールバックを使用する。
-"""
 
 import ctypes
 import ctypes.wintypes
@@ -18,7 +12,6 @@ except ImportError:
 
 _log = logging.getLogger("screen_judge.capture")
 
-# Win32 定数
 _PW_CLIENTONLY = 0x00000001
 _BI_RGB = 0
 _SRCCOPY = 0x00CC0020
@@ -41,8 +34,6 @@ class _BITMAPINFOHEADER(ctypes.Structure):
 
 
 def get_client_rect(hwnd: int) -> Optional[tuple[int, int, int, int]]:
-    """DOSBox HWND のクライアント矩形をスクリーン座標で返す。
-    戻り値: (left, top, right, bottom)。取得失敗時は None。"""
     pt = ctypes.wintypes.POINT(0, 0)
     ctypes.windll.user32.ClientToScreen(hwnd, ctypes.byref(pt))
     rc = ctypes.wintypes.RECT()
@@ -56,7 +47,6 @@ def get_client_rect(hwnd: int) -> Optional[tuple[int, int, int, int]]:
 
 
 def get_client_size(hwnd: int) -> Optional[tuple[int, int]]:
-    """クライアント領域の (width, height) を返す。失敗時は None。"""
     rc = ctypes.wintypes.RECT()
     if not ctypes.windll.user32.GetClientRect(hwnd, ctypes.byref(rc)):
         return None
@@ -68,7 +58,6 @@ def get_client_size(hwnd: int) -> Optional[tuple[int, int]]:
 
 
 def _capture_via_printwindow(hwnd: int, w: int, h: int) -> Optional["Image.Image"]:
-    """PrintWindow(PW_CLIENTONLY) でクライアント領域のみキャプチャする。"""
     hdc_win = ctypes.windll.user32.GetDC(hwnd)
     if not hdc_win:
         return None
@@ -89,7 +78,6 @@ def _capture_via_printwindow(hwnd: int, w: int, h: int) -> Optional["Image.Image
 
 
 def _capture_via_bitblt(hwnd: int, w: int, h: int) -> Optional["Image.Image"]:
-    """BitBlt フォールバック: クライアント DC から直接コピーする。"""
     hdc_src = ctypes.windll.user32.GetDC(hwnd)
     if not hdc_src:
         return None
@@ -110,7 +98,7 @@ def _dibits_to_image(hdc_mem, hbmp, w: int, h: int) -> Optional["Image.Image"]:
     bmi = _BITMAPINFOHEADER()
     bmi.biSize = ctypes.sizeof(_BITMAPINFOHEADER)
     bmi.biWidth = w
-    bmi.biHeight = -h  # トップダウン
+    bmi.biHeight = -h
     bmi.biPlanes = 1
     bmi.biBitCount = 32
     bmi.biCompression = _BI_RGB
@@ -124,9 +112,6 @@ def _dibits_to_image(hdc_mem, hbmp, w: int, h: int) -> Optional["Image.Image"]:
 
 
 def capture_client_area(hwnd: int) -> Optional["Image.Image"]:
-    """DOSBox クライアント領域を PIL Image として取得する。
-    PrintWindow(PW_CLIENTONLY) → 失敗時は BitBlt フォールバック。
-    取得失敗時は None。"""
     if not _PIL_OK:
         _log.warning("Pillow not available")
         return None

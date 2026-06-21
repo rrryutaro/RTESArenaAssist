@@ -1,8 +1,3 @@
-"""POPUP11 詳細場所一覧の英固有名を分解 → 部品翻訳 → 再合成する。
-
-カテゴリ別の分解アルゴリズムを実装。
-分解失敗時は _log.debug にカテゴリ + 英名を出力 (後追い辞書追加用)。
-"""
 
 from __future__ import annotations
 
@@ -11,8 +6,6 @@ import re
 
 _log = logging.getLogger(__name__)
 
-# データソースは i18n 統一構造: 地名合成規則は i18n/<lang>/_rules.json の dynamic_places
-# (言語別規則)、location_types は翻訳カテゴリ (core value)。
 _DATA: dict = {}
 _LOC_TYPES: dict[str, str] = {}
 _LOADED = False
@@ -35,7 +28,6 @@ def _load() -> None:
 
 
 def _translate_name_part(name: str) -> str:
-    """NPC 生成名 (%ef / %n) を翻訳する。未翻訳時は原文を返す。"""
     try:
         from npc_name_translator import translate_generated_name
         result = translate_generated_name(name)
@@ -45,14 +37,10 @@ def _translate_name_part(name: str) -> str:
 
 
 def _translate_ct(ct_en: str) -> str:
-    """%ct 値 (City-State / Town / Village / Dungeon) を日本語に変換する。"""
     _load()
     return _LOC_TYPES.get(ct_en, ct_en)
 
 
-# ---------------------------------------------------------------------------
-# カテゴリ別分解ロジック
-# ---------------------------------------------------------------------------
 
 def _lookup_tavern(en_text: str) -> str:
     data = _DATA.get("tavern", {})
@@ -105,11 +93,6 @@ def _lookup_temple(en_text: str) -> str:
 
 
 def _build_eq_prefix_regex(prefix_en: str) -> tuple[re.Pattern, list[str]]:
-    """Equipment Store prefix の英語テンプレートを正規表現化する。
-
-    %ef / %n → (.+?)、%ct → (City-State|Town|Village|Dungeon)。
-    返値: (pattern, variable_names)
-    """
     variables: list[str] = []
     parts = re.split(r"(%ef|%n|%ct)", prefix_en)
     regex_parts: list[str] = []
@@ -192,9 +175,6 @@ def _lookup_mages_guild(en_text: str) -> str:
     return ""
 
 
-# ---------------------------------------------------------------------------
-# カテゴリ自動検出
-# ---------------------------------------------------------------------------
 
 _EQ_SUFFIX_SET: set[str] | None = None
 
@@ -210,11 +190,6 @@ def _get_eq_suffix_set() -> set[str]:
 
 
 def detect_category(en_text: str) -> str | None:
-    """英固有名からカテゴリを自動検出する。
-
-    各カテゴリは構造的に非重複のため先頭一致で判定可能。
-    検出できない場合は None を返す。
-    """
     _load()
     text = (en_text or "").strip()
     if not text:
@@ -236,21 +211,8 @@ def detect_category(en_text: str) -> str | None:
     return "tavern"
 
 
-# ---------------------------------------------------------------------------
-# 公開 API
-# ---------------------------------------------------------------------------
 
 def lookup(en_text: str, category: str | None = None) -> str:
-    """en_text を category 別の分解ロジックで JA 化する。
-
-    Args:
-        en_text: メモリから読んだ英固有名 (例: "Black Dagger")
-        category: "tavern" / "temple" / "equipment_store" / "mages_guild" / None。
-                  None の場合は detect_category() で自動判定する。
-
-    Returns:
-        合成済 JA 文字列。分解失敗時は部分翻訳 (一致した部品のみ JA) or "" 。
-    """
     _load()
     text = (en_text or "").strip()
     if not text:

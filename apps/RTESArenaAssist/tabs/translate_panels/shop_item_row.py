@@ -1,9 +1,3 @@
-"""tabs/translate_panels/shop_item_row.py — 店アイテム一覧 1 行ウィジェット
-
-shop_buy モード (店主メニュー「Buy Drinks」等の選択後) で使う。
-基本列構成: 原文 (en) / 翻訳 (ja) / 任意の補助値列 / 金額 (gp)。
-item_pickup の ItemRow を 3 列化したスタイル。
-"""
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
@@ -11,7 +5,6 @@ from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QSizePolicy
 
 
 class ShopItemRow(QFrame):
-    """店アイテム一覧 (酒一覧等) の 1 行ウィジェット (原文 / 翻訳 / 金額)。"""
 
     def __init__(self, en: str, ja: str, price_display: str,
                  extras: list[str] | None = None, parent=None,
@@ -25,8 +18,6 @@ class ShopItemRow(QFrame):
         layout.setContentsMargins(8, 3, 8, 3)
         layout.setSpacing(8)
 
-        # 未鑑定マーカー: 装備一覧 (equipment_list) と同じシアン系で統一。
-        # 鑑定済みでも列幅を揃えるため、識別済みは空文字の同幅ラベルを置く。
         self._mark_lbl = QLabel("?" if unidentified else "")
         self._mark_lbl.setAlignment(
             Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
@@ -36,7 +27,6 @@ class ShopItemRow(QFrame):
             self._mark_lbl.setToolTip("未鑑定")
         layout.addWidget(self._mark_lbl, 0)
 
-        # 未鑑定行は原文・訳文をシアンで表示し、鑑定済みと一目で区別する。
         en_obj = "shopItemRowEnUnid" if unidentified else "shopItemRowEn"
         ja_obj = "shopItemRowJaUnid" if unidentified else "shopItemRowJa"
 
@@ -62,7 +52,6 @@ class ShopItemRow(QFrame):
             meta_lbl.setMinimumWidth(56)
             layout.addWidget(meta_lbl, 1)
 
-        # 金額列: 右寄せ。入力が "1 gp" のように単位付きならそのまま使う。
         if show_price:
             price_text = _format_price(price_display)
             self._price_lbl = QLabel(price_text)

@@ -1,11 +1,3 @@
-"""
-tab_save_ui.py — TabSave UI ビルダー
-
-tab_save.py の _setup_ui 相当をモジュールレベル関数として保持する。
-ロジック・スロット・スタック・シグナルハンドラはすべて tab_save.py 本体に残す。
-
-循環 import 禁止: このモジュールは tab_save.py を import しない。
-"""
 
 from __future__ import annotations
 
@@ -32,19 +24,13 @@ import i18n_helper as i18n
 
 
 def build_ui(tab: "TabSave") -> None:
-    """
-    TabSave の UI を構築し、ウィジェット参照を tab に設定する。
-    tab_save.py の _setup_ui から cut-paste（self → tab リネーム・インデント調整のみ）。
-    """
     root = QVBoxLayout(tab)
     root.setContentsMargins(0, 0, 0, 0)
     root.setSpacing(0)
 
-    # ── メイン水平スプリッタ ──────────────────────────────────
     tab._main_split = QSplitter(Qt.Orientation.Horizontal)
     tab._main_split.setHandleWidth(4)
 
-    # === 左ペイン ===
     left_w = QWidget()
     left_lay = QVBoxLayout(left_w)
     left_lay.setContentsMargins(0, 4, 0, 0)
@@ -66,21 +52,17 @@ def build_ui(tab: "TabSave") -> None:
     left_w.setMaximumWidth(270)
     tab._main_split.addWidget(left_w)
 
-    # === 右ペイン（垂直スプリッタ）===
     tab._right_split = QSplitter(Qt.Orientation.Vertical)
     tab._right_split.setHandleWidth(4)
 
-    # --- 右上: アクションバー + スロットテーブル ---
     top_w = QWidget()
     top_lay = QVBoxLayout(top_w)
     top_lay.setContentsMargins(4, 4, 4, 2)
     top_lay.setSpacing(4)
 
-    # アクションボタン行
     tab._action_row = QHBoxLayout()
     tab._action_row.setSpacing(3)
 
-    # game モードボタン
     tab._btn_backup_all      = QPushButton(i18n.tr("save.backup_all"))
     tab._btn_backup_checked  = QPushButton(i18n.tr("save.backup_checked"))
     tab._btn_backup_selected = QPushButton(i18n.tr("save.backup_selected"))
@@ -90,7 +72,6 @@ def build_ui(tab: "TabSave") -> None:
         tab._btn_backup_selected,
     ]
 
-    # backup モードボタン
     tab._btn_restore_selected = QPushButton(i18n.tr("save.restore_selected"))
     tab._btn_restore_checked  = QPushButton(i18n.tr("save.restore_checked"))
     tab._btn_restore_all      = QPushButton(i18n.tr("save.restore_all"))
@@ -107,7 +88,6 @@ def build_ui(tab: "TabSave") -> None:
     tab._action_row.addStretch()
     top_lay.addLayout(tab._action_row)
 
-    # スロットテーブル（5列: ☐ | No. | 名称 | ラベル | 日付）
     tab._table = QTableWidget(0, 5)
     tab._table.setHorizontalHeaderLabels([
         "",
@@ -134,7 +114,6 @@ def build_ui(tab: "TabSave") -> None:
 
     tab._right_split.addWidget(top_w)
 
-    # --- 右下: 詳細パネル ---
     tab._detail_scroll = QScrollArea()
     tab._detail_scroll.setWidgetResizable(True)
     tab._detail_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
@@ -148,9 +127,7 @@ def build_ui(tab: "TabSave") -> None:
 
     root.addWidget(tab._main_split)
 
-    # 初期状態
     tab._update_action_bar(tab._SOURCE_GAME)
     tab._swap_detail_widget(QWidget())
 
-    # スプリッターサイズを設定から復元（レイアウト確定後に実行）
     QTimer.singleShot(0, tab._restore_splitter_sizes)

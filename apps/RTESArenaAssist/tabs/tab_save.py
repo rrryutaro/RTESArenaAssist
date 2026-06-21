@@ -1,16 +1,3 @@
-"""
-tab_save.py — セーブ管理タブ
-
-レイアウト:
-  左ペイン : QListWidget#saveLeftList
-              - 先頭固定: 📁 ゲームフォルダ
-              - 以降: {name}  {date} （バックアップ一覧、新しい順）
-  右上ペイン: QTableWidget（スロット一覧）
-              列: [☐ | No. | 名称 | ラベル | 日付]
-  右下ペイン:
-    ゲームモード: 選択スロット詳細 + メモ編集
-    バックアップモード: タブ（バックアップ情報 / セーブデータ）
-"""
 
 from __future__ import annotations
 
@@ -42,9 +29,6 @@ import save_reader
 from tabs.tab_save_ui import build_ui
 
 
-# ------------------------------------------------------------------
-# モジュールレベルヘルパー
-# ------------------------------------------------------------------
 
 def _effective_backup_dir() -> str:
     d = cfg.get("backup_dir", "").strip()
@@ -52,7 +36,6 @@ def _effective_backup_dir() -> str:
 
 
 def _sep_widget() -> QWidget:
-    """水平区切り線（スタイルシート使用）。"""
     w = QWidget()
     w.setFixedHeight(1)
     w.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
@@ -60,12 +43,8 @@ def _sep_widget() -> QWidget:
     return w
 
 
-# ------------------------------------------------------------------
-# TabSave
-# ------------------------------------------------------------------
 
 class TabSave(QWidget):
-    """セーブ管理タブ。"""
 
     status_message = Signal(str)
 
@@ -79,14 +58,12 @@ class TabSave(QWidget):
         self._current_backup_meta: dict | None = None
         self._current_slot: int | None = None
 
-        # 詳細パネル内の編集ウィジェット（再構築時に差し替え）
         self._note_name_edit:  QLineEdit | None      = None
         self._note_memo_edit:  QPlainTextEdit | None = None
         self._bk_name_edit:    QLineEdit | None      = None
         self._bk_tags_edit:    QLineEdit | None      = None
         self._bk_memo_edit:    QPlainTextEdit | None = None
 
-        # ゲーム内セーブ変更検出用 (QFileSystemWatcher + 200ms debounce)
         self._save_watcher = QFileSystemWatcher(self)
         self._watcher_debounce = QTimer(self)
         self._watcher_debounce.setSingleShot(True)
@@ -98,14 +75,10 @@ class TabSave(QWidget):
 
         self._setup_ui()
         self._connect_signals()
-        # 起動時にゲーム内セーブ名の整合性チェック + watcher 張る
         self._rebuild_save_watcher()
         self._check_save_name_changes()
         self._refresh()
 
-    # ------------------------------------------------------------------
-    # UI 構築
-    # ------------------------------------------------------------------
 
     def _setup_ui(self):
         build_ui(self)
@@ -124,7 +97,6 @@ class TabSave(QWidget):
         self._btn_restore_all.clicked.connect(self._do_restore_all)
         self._btn_delete.clicked.connect(self._do_delete)
 
-        # スプリッターサイズ保存（デバウンス 300ms）
         self._splitter_timer = QTimer(self)
         self._splitter_timer.setSingleShot(True)
         self._splitter_timer.setInterval(300)
@@ -132,9 +104,6 @@ class TabSave(QWidget):
         self._main_split.splitterMoved.connect(lambda *_: self._splitter_timer.start())
         self._right_split.splitterMoved.connect(lambda *_: self._splitter_timer.start())
 
-    # ------------------------------------------------------------------
-    # スプリッターサイズ 保存・復元
-    # ------------------------------------------------------------------
 
     def _save_splitter_sizes(self):
         cfg.set_val("save_tab_split_h", self._main_split.sizes())
@@ -148,9 +117,6 @@ class TabSave(QWidget):
         if isinstance(sizes_v, list) and len(sizes_v) == 2:
             self._right_split.setSizes(sizes_v)
 
-    # ------------------------------------------------------------------
-    # アクションバー切替
-    # ------------------------------------------------------------------
 
     def _update_action_bar(self, source_type: str):
         is_game = source_type == self._SOURCE_GAME
@@ -159,21 +125,15 @@ class TabSave(QWidget):
         for btn in self._backup_btns:
             btn.setVisible(not is_game)
 
-    # ------------------------------------------------------------------
-    # 左リスト構築・更新
-    # ------------------------------------------------------------------
 
     def _refresh(self, keep_backup_id: str | None = None):
-        """左リストを再構築する。keep_backup_id が指定されたときはそのバックアップを選択する。"""
         self._left_list.blockSignals(True)
         self._left_list.clear()
 
-        # ゲームフォルダ（先頭固定）
         game_item = QListWidgetItem(i18n.tr("save.source_game"))
         game_item.setData(Qt.ItemDataRole.UserRole, {"type": "game"})
         self._left_list.addItem(game_item)
 
-        # バックアップ一覧（セパレータなし・アイコンなし）
         backup_dir = _effective_backup_dir()
         backups = save_manager.list_backups(backup_dir)
         for meta in backups:
@@ -186,7 +146,6 @@ class TabSave(QWidget):
 
         self._left_list.blockSignals(False)
 
-        # 選択行を決定: keep_backup_id があればそのバックアップ行を探す
         if keep_backup_id:
             for row in range(1, self._left_list.count()):
                 item = self._left_list.item(row)
@@ -195,13 +154,9 @@ class TabSave(QWidget):
                     self._left_list.setCurrentRow(row)
                     self._on_left_changed(row)
                     return
-        # デフォルト: ゲームフォルダ
         self._left_list.setCurrentRow(0)
         self._on_left_changed(0)
 
-    # ------------------------------------------------------------------
-    # 左リスト選択変更
-    # ------------------------------------------------------------------
 
     def _on_left_changed(self, row: int):
         if row < 0:
@@ -211,7 +166,6 @@ class TabSave(QWidget):
             return
         data = item.data(Qt.ItemDataRole.UserRole)
         if not data:
-            # セパレータ行: スキップ
             return
 
         src_type = data.get("type")
@@ -226,12 +180,8 @@ class TabSave(QWidget):
             self._update_action_bar(self._SOURCE_BACKUP)
             self._load_backup_slots(data["meta"])
 
-    # ------------------------------------------------------------------
-    # テーブル読み込み
-    # ------------------------------------------------------------------
 
     def _load_game_slots(self):
-        """ゲームフォルダのスロットをテーブルに読み込む。"""
         self._table.blockSignals(True)
         self._table.setRowCount(0)
         self._current_slot = None
@@ -252,7 +202,6 @@ class TabSave(QWidget):
             row = self._table.rowCount()
             self._table.insertRow(row)
 
-            # col 0: チェックボックス
             chk = QTableWidgetItem()
             chk.setFlags(
                 Qt.ItemFlag.ItemIsEnabled
@@ -262,27 +211,22 @@ class TabSave(QWidget):
             chk.setCheckState(Qt.CheckState.Unchecked)
             self._table.setItem(row, 0, chk)
 
-            # col 1: スロット番号
             slot_item = QTableWidgetItem(str(slot))
             slot_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
             slot_item.setData(Qt.ItemDataRole.UserRole, slot)
             self._table.setItem(row, 1, slot_item)
 
-            # col 2: 名称（NAMES.DAT の値のみ）
             save_name = info.get("save_name") or i18n.tr("save.parse_unknown")
             self._table.setItem(row, 2, QTableWidgetItem(save_name))
 
-            # col 3: ラベル（ユーザーが付けたメモラベル）
             note_label = notes.get(str(slot), {}).get("name", "")
             self._table.setItem(row, 3, QTableWidgetItem(note_label))
 
-            # col 4: 日付
             modified = info.get("modified") or ""
             self._table.setItem(row, 4, QTableWidgetItem(modified))
         self._table.blockSignals(False)
 
     def _load_backup_slots(self, meta: dict):
-        """バックアップのスロットをテーブルに読み込む。"""
         self._table.blockSignals(True)
         self._table.setRowCount(0)
         self._current_slot = None
@@ -313,15 +257,12 @@ class TabSave(QWidget):
             slot_item.setData(Qt.ItemDataRole.UserRole, slot)
             self._table.setItem(row, 1, slot_item)
 
-            # col 2: バックアップ時点の名称
             save_name = slot_names.get(str(slot), i18n.tr("save.parse_unknown"))
             self._table.setItem(row, 2, QTableWidgetItem(save_name))
 
-            # col 3: バックアップ内のユーザーラベル（backup_meta.json から）
             note_label = slot_notes.get(str(slot), {}).get("name", "")
             self._table.setItem(row, 3, QTableWidgetItem(note_label))
 
-            # col 4: 元のセーブファイルの最終更新日時（shutil.copy2 でタイムスタンプ保持）
             try:
                 file_info = save_reader.read_slot_info(backup_path, slot)
                 modified = file_info.get("modified", "")
@@ -330,12 +271,8 @@ class TabSave(QWidget):
             self._table.setItem(row, 4, QTableWidgetItem(modified))
         self._table.blockSignals(False)
 
-        # バックアップ概要を詳細パネルに表示
         self._rebuild_detail_backup_overview(meta)
 
-    # ------------------------------------------------------------------
-    # テーブル選択変更
-    # ------------------------------------------------------------------
 
     def _on_table_changed(self, current_row: int, _cc, _pr, _pc):
         if current_row < 0:
@@ -357,12 +294,8 @@ class TabSave(QWidget):
         else:
             self._rebuild_detail_backup_slot(slot)
 
-    # ------------------------------------------------------------------
-    # 詳細パネル構築ヘルパー
-    # ------------------------------------------------------------------
 
     def _clear_edit_refs(self):
-        """編集ウィジェットへの参照をリセットする。"""
         self._note_name_edit = None
         self._note_memo_edit = None
         self._bk_name_edit   = None
@@ -370,7 +303,6 @@ class TabSave(QWidget):
         self._bk_memo_edit   = None
 
     def _swap_detail_widget(self, w: QWidget):
-        """詳細スクロールエリアのウィジェットだけを差し替える（参照は触らない）。"""
         old = self._detail_scroll.takeWidget()
         if old:
             old.hide()
@@ -380,7 +312,6 @@ class TabSave(QWidget):
 
     @staticmethod
     def _make_form() -> QFormLayout:
-        """スタイル設定済みの QFormLayout を返す。"""
         form = QFormLayout()
         form.setSpacing(4)
         form.setLabelAlignment(
@@ -389,12 +320,8 @@ class TabSave(QWidget):
         form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         return form
 
-    # ------------------------------------------------------------------
-    # 詳細パネル — ゲームスロット
-    # ------------------------------------------------------------------
 
     def _rebuild_detail_game_slot(self, slot: int):
-        # ① 先にリセット ② ウィジェット構築 ③ 参照を設定 ④ スワップ
         self._clear_edit_refs()
 
         game_dir   = cfg.get("save_dir", "").strip()
@@ -455,22 +382,15 @@ class TabSave(QWidget):
 
         lay.addStretch()
 
-        # ③ 参照を保存してから ④ スワップ
         self._note_name_edit = note_name_edit
         self._note_memo_edit = note_memo_edit
         self._swap_detail_widget(container)
 
-    # ------------------------------------------------------------------
-    # 詳細パネル — バックアップ概要（スロット未選択時）
-    # ------------------------------------------------------------------
 
     def _rebuild_detail_backup_overview(self, meta: dict):
         self._clear_edit_refs()
         self._swap_detail_widget(self._build_backup_tabbed_widget(meta, slot=None))
 
-    # ------------------------------------------------------------------
-    # 詳細パネル — バックアップ内スロット選択時
-    # ------------------------------------------------------------------
 
     def _rebuild_detail_backup_slot(self, slot: int):
         meta = self._current_backup_meta
@@ -483,19 +403,10 @@ class TabSave(QWidget):
             self._build_backup_tabbed_widget(meta, slot=slot, initial_tab=1)
         )
 
-    # ------------------------------------------------------------------
-    # バックアップ詳細タブウィジェット共通ビルダー
-    # ------------------------------------------------------------------
 
     def _build_backup_tabbed_widget(
         self, meta: dict, slot: int | None, initial_tab: int = 0
     ) -> QWidget:
-        """
-        タブ付き詳細ウィジェットを組み立てる。
-          Tab0: バックアップ情報 + 編集フォーム
-          Tab1: セーブデータ情報 + メモ編集（slot=None のときはヒント表示）
-        _bk_*_edit / _note_*_edit 参照をこのメソッド内で self に設定する。
-        """
         container = QWidget()
         outer_lay = QVBoxLayout(container)
         outer_lay.setContentsMargins(0, 0, 0, 0)
@@ -503,7 +414,6 @@ class TabSave(QWidget):
 
         tabs = QTabWidget()
 
-        # ── Tab 0: バックアップ情報 ─────────────────────────────────
         bk_tab = QWidget()
         bk_lay = QVBoxLayout(bk_tab)
         bk_lay.setContentsMargins(10, 10, 10, 10)
@@ -551,7 +461,6 @@ class TabSave(QWidget):
         bk_lay.addStretch()
         tabs.addTab(bk_tab, i18n.tr("save.tab_backup_info"))
 
-        # ── Tab 1: セーブデータ情報 ──────────────────────────────────
         save_tab = QWidget()
         save_lay = QVBoxLayout(save_tab)
         save_lay.setContentsMargins(10, 10, 10, 10)
@@ -573,7 +482,6 @@ class TabSave(QWidget):
 
             slot_names = meta.get("slot_names", {})
             sv_name = slot_names.get(str(slot), i18n.tr("save.parse_unknown"))
-            # 元のセーブファイルの最終更新日時（copy2 でタイムスタンプ保持）
             try:
                 _bp = os.path.join(_effective_backup_dir(), meta["id"])
                 _fi = save_reader.read_slot_info(_bp, slot)
@@ -587,7 +495,6 @@ class TabSave(QWidget):
 
             save_lay.addWidget(_sep_widget())
 
-            # slot_note はバックアップメタから（slot_notes.json とは独立）
             slot_note = meta.get("slot_notes", {}).get(str(slot), {})
 
             note_form = self._make_form()
@@ -618,7 +525,6 @@ class TabSave(QWidget):
 
         outer_lay.addWidget(tabs)
 
-        # 参照を self に保存（_swap_detail_widget を呼ぶ前に設定）
         self._bk_name_edit = bk_name_edit
         self._bk_tags_edit = bk_tags_edit
         self._bk_memo_edit = bk_memo_edit
@@ -627,9 +533,6 @@ class TabSave(QWidget):
 
         return container
 
-    # ------------------------------------------------------------------
-    # チェック済みスロット取得
-    # ------------------------------------------------------------------
 
     def _get_checked_slots(self) -> list[int]:
         slots = []
@@ -642,7 +545,6 @@ class TabSave(QWidget):
         return slots
 
     def _get_game_dir(self) -> str | None:
-        """ゲームフォルダを検証して返す。問題があれば警告を出して None を返す。"""
         game_dir = cfg.get("save_dir", "").strip()
         if not game_dir:
             QMessageBox.warning(
@@ -658,9 +560,6 @@ class TabSave(QWidget):
             return None
         return game_dir
 
-    # ------------------------------------------------------------------
-    # バックアップ操作
-    # ------------------------------------------------------------------
 
     def _do_backup_all(self):
         game_dir = self._get_game_dir()
@@ -690,7 +589,6 @@ class TabSave(QWidget):
             self._run_create_backup(game_dir, slots=[self._current_slot])
 
     def _run_create_backup(self, game_dir: str, slots: list[int] | None):
-        # バックアップ名を入力させる
         name, ok = QInputDialog.getText(
             self,
             i18n.tr("save.create_backup"),
@@ -710,9 +608,6 @@ class TabSave(QWidget):
         except Exception as exc:
             QMessageBox.critical(self, i18n.tr("common.error"), str(exc))
 
-    # ------------------------------------------------------------------
-    # リストア操作
-    # ------------------------------------------------------------------
 
     def _do_restore_selected(self):
         if not self._current_backup_meta:
@@ -727,7 +622,6 @@ class TabSave(QWidget):
         if not game_dir:
             return
 
-        # ゲーム側のスロット占有状況を取得（0〜9）
         try:
             occupied_slots = set(save_manager.list_slots(game_dir))
         except Exception:
@@ -740,7 +634,6 @@ class TabSave(QWidget):
             else:
                 items.append(i18n.tr("save.restore_target_slot_item_empty").format(n=n))
 
-        # 初期選択はソーススロットと同じ番号
         chosen, ok = QInputDialog.getItem(
             self,
             i18n.tr("save.restore_target_title"),
@@ -753,7 +646,6 @@ class TabSave(QWidget):
             return
         target_slot = items.index(chosen)
 
-        # ターゲットスロットに既存データがあれば上書き確認
         if target_slot in occupied_slots:
             reply = QMessageBox.question(
                 self,
@@ -773,7 +665,6 @@ class TabSave(QWidget):
             self.status_message.emit(
                 i18n.tr("save.status_restored").format(name=meta.get("name", ""))
             )
-            # 復元後はゲーム側 NAMES.DAT が変化するため整合性チェックを通してから refresh
             self._check_save_name_changes()
             self._refresh()
         except Exception as exc:
@@ -822,15 +713,11 @@ class TabSave(QWidget):
             self.status_message.emit(
                 i18n.tr("save.status_restored").format(name=meta.get("name", ""))
             )
-            # ゲーム側 NAMES.DAT が変化するので整合性チェック → ゲームフォルダビューに戻る
             self._check_save_name_changes()
             self._refresh()
         except Exception as exc:
             QMessageBox.critical(self, i18n.tr("common.error"), str(exc))
 
-    # ------------------------------------------------------------------
-    # 削除操作
-    # ------------------------------------------------------------------
 
     def _do_delete(self):
         if not self._current_backup_meta:
@@ -855,21 +742,14 @@ class TabSave(QWidget):
         except Exception as exc:
             QMessageBox.critical(self, i18n.tr("common.error"), str(exc))
 
-    # ------------------------------------------------------------------
-    # テーブル選択の復元
-    # ------------------------------------------------------------------
 
     def _restore_table_slot(self, slot: int):
-        """テーブルを再読み込みした後に指定スロット行を再選択する。"""
         for row in range(self._table.rowCount()):
             item = self._table.item(row, 1)
             if item and item.data(Qt.ItemDataRole.UserRole) == slot:
                 self._table.setCurrentCell(row, 2)
                 return
 
-    # ------------------------------------------------------------------
-    # メモ・情報保存
-    # ------------------------------------------------------------------
 
     def _do_save_notes(self, slot: int):
         name = self._note_name_edit.text() if self._note_name_edit else ""
@@ -877,16 +757,13 @@ class TabSave(QWidget):
         backup_dir = _effective_backup_dir()
 
         if self._source_type == self._SOURCE_GAME:
-            # ゲームフォルダモード: slot_notes.json に保存
             notes = save_manager.load_slot_notes(backup_dir)
             notes[str(slot)] = {"name": name, "memo": memo}
             save_manager.save_slot_notes(backup_dir, notes)
             self.status_message.emit(i18n.tr("save.status_updated"))
-            # ラベル列を再描画し、選択スロットに戻る
             self._load_game_slots()
             self._restore_table_slot(slot)
         else:
-            # バックアップモード: backup_meta.json の slot_notes に保存（slot_notes.json とは独立）
             meta = self._current_backup_meta
             if not meta:
                 return
@@ -899,7 +776,6 @@ class TabSave(QWidget):
                 return
             self._current_backup_meta = updated_meta
             self.status_message.emit(i18n.tr("save.status_updated"))
-            # 左リストのキャッシュ済みメタを最新に差し替える（再選択時に古いデータが使われないよう）
             for lrow in range(self._left_list.count()):
                 litem = self._left_list.item(lrow)
                 if not litem:
@@ -910,7 +786,6 @@ class TabSave(QWidget):
                     ldata["meta"] = updated_meta
                     litem.setData(Qt.ItemDataRole.UserRole, ldata)
                     break
-            # col 3 (ラベル) をメタから更新
             new_label = updated_meta.get("slot_notes", {}).get(str(slot), {}).get("name", "")
             for row in range(self._table.rowCount()):
                 it = self._table.item(row, 1)
@@ -919,7 +794,6 @@ class TabSave(QWidget):
                     if lbl_it:
                         lbl_it.setText(new_label)
                     break
-            # セーブデータタブ(1)を表示したまま再描画
             self._clear_edit_refs()
             self._swap_detail_widget(
                 self._build_backup_tabbed_widget(updated_meta, slot=slot, initial_tab=1)
@@ -937,17 +811,12 @@ class TabSave(QWidget):
             meta = save_manager.update_meta(backup_dir, backup_id, name, tags, memo)
             self._current_backup_meta = meta
             self.status_message.emit(i18n.tr("save.status_updated"))
-            # 左リストのラベルを更新しつつ、このバックアップの選択を維持する
             self._refresh(keep_backup_id=backup_id)
         except Exception as exc:
             QMessageBox.critical(self, i18n.tr("common.error"), str(exc))
 
-    # ------------------------------------------------------------------
-    # ゲーム内セーブ変更検出（QFileSystemWatcher）
-    # ------------------------------------------------------------------
 
     def _find_names_dat_path(self) -> str | None:
-        """ゲームフォルダ内の NAMES.DAT (大文字小文字不問) のパスを返す。"""
         game_dir = cfg.get("save_dir", "").strip()
         if not game_dir or not os.path.isdir(game_dir):
             return None
@@ -960,8 +829,6 @@ class TabSave(QWidget):
         return None
 
     def _rebuild_save_watcher(self):
-        """ゲームフォルダ変更時 / 起動時に watcher を張り直す。"""
-        # 既存パスを全てクリア
         paths = self._save_watcher.files() + self._save_watcher.directories()
         if paths:
             self._save_watcher.removePaths(paths)
@@ -971,18 +838,14 @@ class TabSave(QWidget):
         if not game_dir or not os.path.isdir(game_dir):
             return
 
-        # 親フォルダを監視（NAMES.DAT が削除→再作成されるケースのフォールバック）
         self._save_watcher.addPath(game_dir)
 
-        # NAMES.DAT があれば直接監視
         names_path = self._find_names_dat_path()
         if names_path:
             self._save_watcher.addPath(names_path)
             self._watched_names_path = names_path
 
     def _on_names_dat_changed(self, _path: str):
-        """NAMES.DAT 変更を検出 → 200ms debounce 後に整合性チェック。"""
-        # 一部 OS では削除→再作成で監視が外れるため、念のため再登録を試みる
         names_path = self._find_names_dat_path()
         if names_path and names_path not in self._save_watcher.files():
             self._save_watcher.addPath(names_path)
@@ -990,7 +853,6 @@ class TabSave(QWidget):
         self._watcher_debounce.start()
 
     def _on_save_dir_changed(self, _path: str):
-        """ゲームフォルダ内のファイル増減検出 → NAMES.DAT の再監視 + debounce。"""
         names_path = self._find_names_dat_path()
         if names_path and names_path != self._watched_names_path:
             if self._watched_names_path:
@@ -1000,12 +862,6 @@ class TabSave(QWidget):
         self._watcher_debounce.start()
 
     def _check_save_name_changes(self):
-        """
-        全スロットについて NAMES.DAT の現在値 と slot_notes.game_save_name を比較し、
-        - 不一致なら name / memo を初期化して game_save_name を更新（= 新規セーブ扱い）
-        - 未記録なら現在値を game_save_name に記録するだけ（= 初回スロット）
-        変更があった場合のみ slot_notes.json を書き込み、テーブルを再描画する。
-        """
         game_dir = cfg.get("save_dir", "").strip()
         if not game_dir or not os.path.isdir(game_dir):
             return
@@ -1028,13 +884,11 @@ class TabSave(QWidget):
             prev_name = entry.get("game_save_name")
 
             if prev_name is None:
-                # 初回スロット: 記録のみ
                 entry = dict(entry)
                 entry["game_save_name"] = current_name
                 notes[s_key] = entry
                 dirty = True
             elif prev_name != current_name:
-                # 名称変更検出: ラベル/メモを初期化、game_save_name を更新
                 notes[s_key] = {"game_save_name": current_name}
                 slots_initialized.append(slot)
                 dirty = True
@@ -1044,7 +898,6 @@ class TabSave(QWidget):
                 save_manager.save_slot_notes(backup_dir, notes)
             except Exception:
                 return
-            # ゲームフォルダ表示中ならテーブルを再描画
             if self._source_type == self._SOURCE_GAME:
                 self._load_game_slots()
                 if self._current_slot is not None:
@@ -1054,12 +907,8 @@ class TabSave(QWidget):
                     i18n.tr("save.status_updated")
                 )
 
-    # ------------------------------------------------------------------
-    # 外部通知
-    # ------------------------------------------------------------------
 
     def on_settings_changed(self):
-        """設定変更後に呼ばれる。リストを再読み込みする。"""
         self._rebuild_save_watcher()
         self._check_save_name_changes()
         self._refresh()

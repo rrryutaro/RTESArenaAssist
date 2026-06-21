@@ -1,25 +1,3 @@
-"""
-mif_trigger.py  ―  MIF TRIG 座標照合モジュール（Step2-3-2-5）
-
-プレイヤーのリアルタイム座標と MIF ファイルの TRIG レコードを照合し、
-表示すべきテキストインデックスを特定する。
-
-TRIG レコード構造（MIF ファイル, 4バイト固定）:
-    x (1B) | y (1B) | textIndex (1B) | soundIndex (1B)
-
-照合ロジック:
-    トリガー発動時（TRIGGER_FLAG 0→非0 遷移）にキャッシュした RT座標と
-    TRIG レコードの (x, y) を完全一致で比較 → textIndex を取得
-    → TRIGGER_BLOCK の texts[textIndex] を表示テキストとする
-
-データソース優先順位（b26）:
-    1. バンドル済み JSON テーブル (RTESArenaAssist/dictionary/trig_table.json)
-       - 全 MIF の全レベル TRIG をプリパース済み
-    2. ランタイム MIF パース (legacy)
-       - JSON が無い MIF / 環境では従来通り mif_dir から読む
-       - parse_mif_trigs は最初の TRIG チャンクしか拾わないため multi-level MIF で
-         漏れる懸念があるが、JSON が利用できる場合は問題にならない
-"""
 
 import json
 import os
@@ -28,9 +6,6 @@ import sys
 
 
 def parse_mif_trigs_bytes(data: bytes) -> list[tuple[int, int, int, int]]:
-    """MIF バイト列をパースして TRIG レコードを返す。
-    戻り値: [(x, y, textIndex, soundIndex), ...]
-    """
     i = 0
     while i < len(data) - 6:
         if data[i:i+4] == b"TRIG":
@@ -46,15 +21,6 @@ def parse_mif_trigs_bytes(data: bytes) -> list[tuple[int, int, int, int]]:
 
 
 def parse_mif_trigs(path: str) -> list[tuple[int, int, int, int]]:
-    """
-    MIFファイルをパースして TRIG レコードを返す。
-    戻り値: [(x, y, textIndex, soundIndex), ...]
-
-    loose ファイルが在ればそれを、無ければユーザー Arena install の VFS（GLOBAL.BSA・
-    MIF 非暗号）から読む（公開版対応・dev では loose を読み挙動不変）。施設/宮殿の
-    TRIG MIF は loose に無く GLOBAL.BSA 内のため、この fallback が無いと公開版で
-    屋内トリガーが照合できない。どこにも無ければ空リスト。
-    """
     data = None
     try:
         from services.mif_loader import read_mif_bytes
@@ -71,7 +37,6 @@ def parse_mif_trigs(path: str) -> list[tuple[int, int, int, int]]:
 
 
 def extract_trigger_texts(raw_block: bytes) -> list[str]:
-    """TRIGGER_BLOCK（NUL区切り）からテキストリストを生成する。"""
     texts = []
     for chunk in raw_block.split(b"\x00"):
         text  = chunk.decode("ascii", errors="replace").strip().lstrip("~")
@@ -82,10 +47,6 @@ def extract_trigger_texts(raw_block: bytes) -> list[str]:
 
 
 def get_trigger_text_by_index(raw_block: bytes, text_index: int) -> str:
-    """
-    TRIGGER_BLOCK から text_index 番目のテキストを返す。
-    範囲外の場合は texts[0] にフォールバック。
-    """
     texts = extract_trigger_texts(raw_block)
     if not texts:
         return ""
@@ -95,11 +56,6 @@ def get_trigger_text_by_index(raw_block: bytes, text_index: int) -> str:
 
 
 def _load_bundled_trig_table() -> dict[str, list[tuple[int, int, int]]]:
-    """RTESArenaAssist/dictionary/trig_table.json をロード（b26）。
-
-    sibling アプリ（Probe）からも参照できるように、相対パスで Assist 側を指す。
-    存在しなければ空 dict を返す（フォールバックで legacy 動作）。
-    """
     if getattr(sys, "frozen", False):
         base_dir = getattr(
             sys,
@@ -142,19 +98,6 @@ def _bundled_table() -> dict[str, list[tuple[int, int, int]]]:
 
 
 class MifTriggerMatcher:
-    """
-    MIF TRIG レコードとプレイヤー座標を照合してテキストインデックスを特定するクラス。
-    マップ変更時に自動的に TRIG レコードを再ロードする。
-
-    使い方:
-        matcher = MifTriggerMatcher(mif_dir=settings.get("mif_dir", ""))
-        # マップ変更時（毎ポーリング）
-        matcher.update_map(mif_name)
-        # トリガー発動時
-        ti = matcher.find_text_index(cached_rt_x, cached_rt_y)
-        if ti is not None:
-            text = get_trigger_text_by_index(raw_block, ti)
-    """
 
     def __init__(self, mif_dir: str = ""):
         self._mif_dir = mif_dir
@@ -162,31 +105,21 @@ class MifTriggerMatcher:
         self._trigs: list[tuple[int, int, int, int]] = []
         self._last_status: str = "unknown"
         self._last_mif_entry: tuple[int, int, int, int] | None = None
-        self._source: str = "none"  # b26: 'bundled' or 'mif_file' or 'none'
+        self._source: str = "none"
 
     def update_map(self, mif_name: str) -> bool:
-        """
-        マップ変更時に TRIG を再ロード。
-        同じマップ名であれば何もしない。
-        戻り値: TRIG ロード済みなら True
-
-        b26: バンドル JSON を最初に試し、そこに無ければ legacy MIF パース。
-        """
         if not mif_name or mif_name == self._loaded_mif:
             return bool(self._trigs)
 
         key = mif_name.upper()
         bundled = _bundled_table().get(key)
         if bundled:
-            # JSON は (x, y, text_index) の 3 タプル → 4 タプルに拡張（sound_index は 0 詰め）
             self._trigs = [(x, y, ti, 0) for (x, y, ti) in bundled]
             self._loaded_mif = mif_name
             self._source = "bundled"
             self._last_status = "unknown"
             return True
 
-        # loose（mif_dir）→ GLOBAL.BSA fallback で TRIG を読む（parse_mif_trigs が解決）。
-        # mif_dir が空でも basename で VFS から読めるため早期 return しない。
         path = os.path.join(self._mif_dir, key) if self._mif_dir else key
         self._trigs      = parse_mif_trigs(path)
         self._loaded_mif = mif_name
@@ -195,10 +128,6 @@ class MifTriggerMatcher:
         return bool(self._trigs)
 
     def find_text_index(self, rt_x: int, rt_y: int) -> int | None:
-        """
-        RT座標が TRIG に一致する textIndex を返す。
-        複数ある場合は最初の一致を返す。一致なしは None。
-        """
         self._last_mif_entry = None
         if not self._trigs:
             self._last_status = (
@@ -232,5 +161,4 @@ class MifTriggerMatcher:
 
     @property
     def source(self) -> str:
-        """b26: トリガーデータの出所 ('bundled' / 'mif_file' / 'none')"""
         return self._source
