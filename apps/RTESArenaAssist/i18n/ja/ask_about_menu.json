@@ -1,0 +1,22 @@
+{
+  "ask_about_menu.title_ask_about.0": "質問する",
+  "ask_about_menu.opt_who_are_you.0": "あなたは誰？",
+  "ask_about_menu.opt_where_is.0": "どこにある？",
+  "ask_about_menu.opt_rumors.0": "噂を聞く",
+  "ask_about_menu.opt_exit.0": "やめる",
+  "ask_about_menu.title_rumor_type.0": "噂の種類",
+  "ask_about_menu.opt_general.0": "一般",
+  "ask_about_menu.opt_work.0": "仕事",
+  "ask_about_menu.place_inn.0": "宿屋",
+  "ask_about_menu.place_temple.0": "神殿",
+  "ask_about_menu.place_equipment_store.0": "装備店",
+  "ask_about_menu.place_mages_guild.0": "魔術師ギルド",
+  "ask_about_menu.place_palace.0": "宮殿",
+  "ask_about_menu.place_city_gates.0": "城門",
+  "ask_about_menu.place_nearest_inn.0": "最寄りの宿屋",
+  "ask_about_menu.place_nearest_temple.0": "最寄りの神殿",
+  "ask_about_menu.place_nearest_store.0": "最寄りの店",
+  "ask_about_menu.place_nearest_dungeon.0": "最寄りのダンジョン",
+  "ask_about_menu.fallback_no_rumor.0": "うわさは扱っていません…",
+  "ask_about_menu.fallback_not_sure.0": "わかりません。外にいる誰かに聞いてみてください。"
+}

@@ -1,0 +1,37 @@
+{
+  "protect_locations.0.0": {
+    "src_table": "equipment.body_part_names",
+    "src_index": 7,
+    "src_hash": "0db37792"
+  },
+  "protect_locations.1.0": {
+    "src_table": "equipment.body_part_names",
+    "src_index": 1,
+    "src_hash": "c0de26ea"
+  },
+  "protect_locations.2.0": {
+    "src_table": "equipment.body_part_names",
+    "src_index": 3,
+    "src_hash": "83cb4c14"
+  },
+  "protect_locations.3.0": {
+    "src_table": "equipment.body_part_names",
+    "src_index": 6,
+    "src_hash": "129e74dd"
+  },
+  "protect_locations.4.0": {
+    "src_table": "equipment.body_part_names",
+    "src_index": 2,
+    "src_hash": "48423a90"
+  },
+  "protect_locations.5.0": {
+    "src_table": "equipment.body_part_names",
+    "src_index": 5,
+    "src_hash": "98921133"
+  },
+  "protect_locations.6.0": {
+    "src_table": "equipment.body_part_names",
+    "src_index": 0,
+    "src_hash": "080a546a"
+  }
+}

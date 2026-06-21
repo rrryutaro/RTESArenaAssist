@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>操作方法・UI</title>
+<style>
+body { font-family: "メイリオ", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>操作方法・UI</h1>
+
+<h2>キャラクターシート（1ページ目）</h2>
+<table>
+  <tr><th>項目</th><th>説明</th></tr>
+  <tr><td>名前 / 種族 / クラス</td><td>キャラクターの基本情報</td></tr>
+  <tr><td>経験値（Experience）</td><td>現在の累計経験値</td></tr>
+  <tr><td>レベル（Level）</td><td>現在のレベル</td></tr>
+  <tr><td>体力（Health）</td><td>現在の体力</td></tr>
+  <tr><td>疲労（Fatigue）</td><td>2〜200の範囲</td></tr>
+  <tr><td>ゴールド（Gold）</td><td>所持金</td></tr>
+  <tr><td>次のページ（Next Page）</td><td>2ページ目（装備一覧）へ</td></tr>
+  <tr><td>完了（Done）</td><td>シートを閉じる</td></tr>
+</table>
+
+<h2>キャラクターシート（2ページ目） — 装備一覧</h2>
+<table>
+  <tr><th>表示色</th><th>意味</th></tr>
+  <tr><td style="color:#ffd700">黄色</td><td>装備中のアイテム</td></tr>
+  <tr><td style="color:#d2b48c">タン色</td><td>装備可能なアイテム</td></tr>
+  <tr><td style="color:#ff6b6b">赤色</td><td>装備不可のアイテム</td></tr>
+  <tr><td style="color:#00ffff">シアン</td><td>未鑑定の魔法アイテム</td></tr>
+  <tr><td style="color:#88ffff">明るいシアン</td><td>未鑑定の魔法アイテム（装備中）</td></tr>
+</table>
+<p>アイテムを<strong>左クリック</strong>で装備。<strong>右クリック</strong>で詳細表示。スクロール矢印で40アイテムをスクロール。</p>
+<p><strong>捨てる（Drop）</strong>: 選択中アイテムをドロップ。 <strong>呪文書（Spellbook）</strong>: 呪文一覧表示。 <strong>終了（Exit）</strong>: 1ページ目に戻る。</p>
+
+<h2>マウス操作</h2>
+<table>
+  <tr><th>操作</th><th>動作</th></tr>
+  <tr><td>左クリック（前方）</td><td>前進 / アクション実行 / アイテム装備</td></tr>
+  <tr><td>右クリック（前方）</td><td>後退</td></tr>
+  <tr><td>左クリック（UI）</td><td>選択・決定</td></tr>
+  <tr><td>右クリック（アイテム）</td><td>アイテム情報表示</td></tr>
+  <tr><td>マウス移動（左右）</td><td>視点の左右回転</td></tr>
+  <tr><td>マウス移動（上下）</td><td>視点の上下移動</td></tr>
+</table>
+
+<h2>キーボード操作</h2>
+<table>
+  <tr><th>キー</th><th>動作</th></tr>
+  <tr><td><span class="key">↑</span> / <span class="key">W</span></td><td>前進</td></tr>
+  <tr><td><span class="key">↓</span> / <span class="key">S</span></td><td>後退</td></tr>
+  <tr><td><span class="key">←</span> / <span class="key">A</span></td><td>左回転</td></tr>
+  <tr><td><span class="key">→</span> / <span class="key">D</span></td><td>右回転</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>オートマップ表示切替</td></tr>
+  <tr><td><span class="key">C</span></td><td>キャラクターシート</td></tr>
+  <tr><td><span class="key">L</span></td><td>ログブック</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>メニュー / 前画面に戻る</td></tr>
+  <tr><td><span class="key">F1</span></td><td>ヘルプ</td></tr>
+  <tr><td><span class="key">Space</span></td><td>攻撃（一部操作設定）</td></tr>
+  <tr><td><span class="key">Alt+F4</span></td><td>ゲーム終了</td></tr>
+</table>
+
+<div class="note">
+<strong>DOSBoxでの操作：</strong> DOSBox内ではマウスキャプチャの切替に <span class="key">Ctrl+F10</span> を使用。
+ウィンドウ/フルスクリーン切替は <span class="key">Alt+Enter</span>。
+</div>
+
+<h2>インゲームアクション（インタラクション）</h2>
+<table>
+  <tr><th>アクション</th><th>説明</th></tr>
+  <tr><td>話す（Talk）</td><td>NPCに話しかける。情報収集・クエスト受注</td></tr>
+  <tr><td>盗む（Steal）</td><td>対象からアイテムを盗む（AGI依存）</td></tr>
+  <tr><td>取る（Grab）</td><td>地面のアイテムを拾う</td></tr>
+  <tr><td>休息（Rest / Camp）</td><td>体力・疲労を回復。夢でリアが現れることも</td></tr>
+  <tr><td>詠唱（Cast）</td><td>呪文を使う</td></tr>
+  <tr><td>使用（Use）</td><td>アイテムを使用する</td></tr>
+</table>
+
+</body>
+</html>

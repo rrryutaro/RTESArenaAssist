@@ -1,0 +1,22 @@
+{
+  "setup.window_title": "RTESArenaAssist — 初回セットアップ",
+  "setup.lang.title": "表示言語の選択",
+  "setup.lang.prompt": "この補助ツールの表示言語を選んでください。あとから設定で変更できます。",
+  "setup.lang.system": "システムの言語（自動）",
+  "setup.arena.title": "ゲームの場所を指定",
+  "setup.arena.intro": "翻訳を表示するための準備をします。お使いの The Elder Scrolls: Arena を起動した状態で進めてください。ゲームのデータから翻訳ファイルを作成します。",
+  "setup.arena.running_required": "ゲーム（Arena）を起動してから進めてください。起動したら「再確認」を押してください。",
+  "setup.arena.detected": "起動中のゲームを検出しました。インストール先を自動入力しました。",
+  "setup.arena.folder_label": "ゲームのインストール先フォルダ",
+  "setup.arena.ok": "✓ 有効なゲームフォルダです。",
+  "setup.arena.invalid": "✗ ゲームのフォルダが正しくありません。インストール先のフォルダを指定してください。",
+  "setup.arena.browse": "参照…",
+  "setup.arena.refresh": "再確認",
+  "setup.btn.next": "次へ",
+  "setup.btn.back": "戻る",
+  "setup.btn.generate": "翻訳ファイルを作成",
+  "setup.btn.skip": "あとで設定する",
+  "setup.gen.running": "作成中です。完了まで数十秒かかることがあります…",
+  "setup.gen.done": "✓ 翻訳ファイルを作成しました。",
+  "setup.gen.failed": "✗ 作成に失敗しました: {msg}"
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>施設・場所ガイド</title>
+<style>
+body { font-family: "メイリオ", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.service { color: #a8d8a8; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>施設・場所ガイド</h1>
+
+<h2>都市内の施設一覧</h2>
+<table>
+  <tr><th>施設名</th><th>英語</th><th>提供サービス</th></tr>
+  <tr><td>酒場・宿屋</td><td>Tavern / Inn</td><td>休息・情報収集・依頼受注</td></tr>
+  <tr><td>寺院</td><td>Temple</td><td>病気治癒・毒消し・呪い解除・祝福・回復</td></tr>
+  <tr><td>魔術師ギルド</td><td>Mages Guild</td><td>呪文購入・呪文作成・テレポート・アイテム鑑定</td></tr>
+  <tr><td>戦士ギルド</td><td>Fighters Guild</td><td>クエスト受注・装備修理・訓練</td></tr>
+  <tr><td>装備品店</td><td>Equipment Store</td><td>武器・防具の購入と売却・修理・鑑定・エンチャント</td></tr>
+  <tr><td>宮殿</td><td>Palace</td><td>貴族クエスト受注・情報</td></tr>
+  <tr><td>図書館</td><td>Library</td><td>情報・地図・ヒント</td></tr>
+</table>
+
+<h2>酒場・宿屋（Tavern / Inn）</h2>
+<p>都市内でもっとも重要な情報源。NPCに話しかけることでクエストや噂を聞ける。
+有料で部屋を借りて休息すると体力・疲労が回復し、リア・シルマンが夢に現れることがある。</p>
+<div class="note">夢はメインクエスト進行の鍵。スタッフ・オブ・ケイオスの欠片の場所はリアが夢の中で教えてくれる。</div>
+
+<h2>寺院（Temple）</h2>
+<p>状態異常の治療を行う。ゴールドが必要。</p>
+<table>
+  <tr><th>サービス</th><th>効果</th></tr>
+  <tr><td>病気治癒（Cure Disease）</td><td>病気（Diseased）状態を解除</td></tr>
+  <tr><td>毒消し（Cure Poison）</td><td>毒（Poisoned）状態を解除</td></tr>
+  <tr><td>呪い解除（Remove Curse）</td><td>呪い（Cursed）状態を解除</td></tr>
+  <tr><td>祝福（Bless）</td><td>一時的なステータスボーナス</td></tr>
+</table>
+
+<h2>魔術師ギルド（Mages Guild）</h2>
+<p>魔法使い系クラスに必須の施設。呪文書に呪文を追加したり、オリジナルの呪文を作成できる。
+都市間テレポートサービスも提供（有料）。アイテムの鑑定も行う。</p>
+
+<h2>戦士ギルド（Fighters Guild）</h2>
+<p>依頼（クエスト）を受注できる。討伐・護衛・回収などの短期クエストが豊富。
+報酬としてゴールドと経験値が得られ、レベルアップの近道になる。</p>
+
+<h2>装備品店（Equipment Store）</h2>
+<p>武器・防具の購入と売却が行える。修理サービスと鑑定サービスも提供。
+プレートアーマーや魔法付与済みアイテムも取り扱う（在庫は店によって異なる）。</p>
+
+<h3>アーマーの種類と防護力</h3>
+<table>
+  <tr><th>防具種別</th><th>英語</th><th>防護力</th><th>使用可クラス</th></tr>
+  <tr><td>レザー鎧</td><td>Leather</td><td>低</td><td>全クラス（制限なし）</td></tr>
+  <tr><td>チェインメイル</td><td>Chain</td><td>中</td><td>一部クラスまで</td></tr>
+  <tr><td>プレートメイル</td><td>Plate</td><td>高・魔法付与可</td><td>戦士・騎士・レンジャーのみ</td></tr>
+</table>
+<div class="note"><strong>重要：</strong>魔法付与済みアーマーはプレートメイルのみ装備可能。戦士・騎士・レンジャー専用。</div>
+
+<h2>ダンジョン探索</h2>
+<p>都市の外には無数のダンジョン（地下墓地・廃墟・巣窟・洞窟など）が散在している。
+経験値稼ぎとアイテム入手の場として重要。メインクエストの欠片もダンジョン内に存在する。</p>
+<table>
+  <tr><th>ダンジョン種別</th><th>特徴</th></tr>
+  <tr><td>地下墓地（Crypt）</td><td>アンデッド系モンスターが多い。罠も多数。</td></tr>
+  <tr><td>廃墟（Ruin）</td><td>獣・人間型の敵が多い。宝箱あり。</td></tr>
+  <tr><td>巣窟（Lair）</td><td>特定の敵が多い。ボス部屋あることも。</td></tr>
+  <tr><td>洞窟（Cave）</td><td>自然地形。複雑な構造になりやすい。</td></tr>
+</table>
+
+<h2>オートマップの活用</h2>
+<p>ダンジョン内では<strong>Tab</strong>キーでオートマップを開ける。探索済みの経路が表示される。
+現在地・方角を確認しながら進もう。都市内でも利用可能。</p>
+
+</body>
+</html>

@@ -1,0 +1,47 @@
+{
+  "pronouns.0.0": {
+    "src_table": "entities.pronoun_names",
+    "src_index": 0,
+    "src_hash": "372f7e2fd2d01ce2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "pronouns.1.0": {
+    "src_table": "entities.pronoun_names",
+    "src_index": 1,
+    "src_hash": "2cda85e504e155f3",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "pronouns.2.0": {
+    "src_table": "entities.pronoun_names",
+    "src_index": 3,
+    "src_hash": "5a7cf4ac138054a8",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "pronouns.3.0": {
+    "src_table": "entities.pronoun_names",
+    "src_index": 4,
+    "src_hash": "354cbfc814262a7a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "pronouns.4.0": {
+    "src_table": "entities.pronoun_names",
+    "src_index": 6,
+    "src_hash": "73c9c98668a34c54",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  }
+}

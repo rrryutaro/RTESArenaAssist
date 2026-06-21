@@ -1,0 +1,1170 @@
+"""
+windows/settings_dialog_tabs.py — _SettingsDialog 各タブ UI ビルダー
+
+settings_dialog.py の _build_*_tab / _make_form_group メソッドを
+モジュールレベル関数として切り出したもの。
+
+呼び出し規約: 各関数は _SettingsDialog インスタンス (dlg) を受け取り、
+  self.* への属性セット・シグナル接続を含む UI 構築を行い、QWidget を返す。
+  ロジック・スロット・バリデーションはすべて settings_dialog.py 本体に残す。
+
+循環 import 禁止: このモジュールは settings_dialog.py を import しない。
+  dlg 引数の型は Any 相当で扱う (TYPE_CHECKING ブロックで文字列注釈のみ許可)。
+"""
+
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QCheckBox, QComboBox, QFormLayout, QGroupBox, QHBoxLayout, QLabel,
+    QLineEdit, QMessageBox, QPushButton, QSlider, QSpinBox, QVBoxLayout,
+    QWidget, QFontComboBox,
+)
+
+import i18n_helper as i18n
+import assist_settings as settings
+import dosbox_conf as dc
+from layout_manager import TrackMode, LayoutCorner, LayoutForm
+
+if TYPE_CHECKING:
+    from windows.settings_dialog import _SettingsDialog
+
+# NOTE: settings_dialog.py 本体の定数 (_WIN_RES_PRESETS / _POLL_MS 等) は直接
+#       インポートすると循環 import になるため、ビルダー関数の引数として本体側から
+#       受け取る方式で対処する (定数の単一住所は本体側に保つ・複製しない)。
+
+
+def build_general_tab(dlg: "_SettingsDialog", *,
+                      poll_ms_default: int) -> QWidget:
+    page = QWidget()
+    outer = QVBoxLayout(page)
+    outer.setSpacing(8)
+
+    # ── パス設定 ──────────────────────────────────────────
+    paths_grp = QGroupBox(i18n.tr("settings.group_paths"))
+    form = QFormLayout(paths_grp)
+    form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    form.setSpacing(6)
+
+    # ゲームフォルダ
+    gw = QWidget()
+    gr = QHBoxLayout(gw)
+    gr.setContentsMargins(0, 0, 0, 0)
+    dlg._game_edit = QLineEdit(settings.get("save_dir", ""))
+    dlg._game_edit.setReadOnly(True)
+    dlg._game_edit.setPlaceholderText(i18n.tr("save.game_dir_placeholder"))
+    gb = QPushButton(i18n.tr("save.browse"))
+    gb.setFixedWidth(70)
+    gb.clicked.connect(dlg._browse_game)
+    gr.addWidget(dlg._game_edit, 1)
+    gr.addWidget(gb)
+    form.addRow(i18n.tr("settings.game_dir") + ":", gw)
+
+    # バックアップ先
+    bw = QWidget()
+    br = QHBoxLayout(bw)
+    br.setContentsMargins(0, 0, 0, 0)
+    dlg._bk_edit = QLineEdit(settings.get("backup_dir", ""))
+    dlg._bk_edit.setReadOnly(True)
+    dlg._bk_edit.setPlaceholderText(i18n.tr("save.backup_dir_placeholder"))
+    bb = QPushButton(i18n.tr("save.browse"))
+    bb.setFixedWidth(70)
+    bb.clicked.connect(dlg._browse_backup)
+    br.addWidget(dlg._bk_edit, 1)
+    br.addWidget(bb)
+    form.addRow(i18n.tr("settings.backup_dir") + ":", bw)
+
+    # キャプチャ保存先
+    cw = QWidget()
+    cr = QHBoxLayout(cw)
+    cr.setContentsMargins(0, 0, 0, 0)
+    dlg._cap_edit = QLineEdit(settings.get("capture_dir", ""))
+    dlg._cap_edit.setReadOnly(True)
+    dlg._cap_edit.setPlaceholderText(i18n.tr("settings.capture_dir_placeholder"))
+    cb = QPushButton(i18n.tr("save.browse"))
+    cb.setFixedWidth(70)
+    cb.clicked.connect(dlg._browse_capture)
+    cr.addWidget(dlg._cap_edit, 1)
+    cr.addWidget(cb)
+    form.addRow(i18n.tr("settings.capture_dir") + ":", cw)
+
+    outer.addWidget(paths_grp)
+
+    # ── 動作 ──────────────────────────────────────────────
+    beh_grp = QGroupBox(i18n.tr("settings.group_behavior"))
+    bform = QFormLayout(beh_grp)
+    bform.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    bform.setSpacing(6)
+
+    # ポーリング間隔
+    dlg._poll_ms_spin = QSpinBox()
+    dlg._poll_ms_spin.setRange(100, 5000)
+    dlg._poll_ms_spin.setSingleStep(50)
+    dlg._poll_ms_spin.setSuffix(" ms")
+    dlg._poll_ms_spin.setValue(
+        settings.get("poll_interval_ms", poll_ms_default))
+    bform.addRow(i18n.tr("settings.poll_interval") + ":", dlg._poll_ms_spin)
+
+    # 削除前確認
+    dlg._del_confirm_cb = QCheckBox()
+    dlg._del_confirm_cb.setChecked(settings.get("capture_delete_confirm", True))
+    bform.addRow(i18n.tr("settings.delete_confirm") + ":", dlg._del_confirm_cb)
+
+    # 常に最前面
+    dlg._aot_cb = QCheckBox()
+    dlg._aot_cb.setChecked(settings.get("always_on_top", False))
+    bform.addRow(i18n.tr("menu.always_on_top") + ":", dlg._aot_cb)
+
+    # テーマ
+    dlg._theme_combo = QComboBox()
+    dlg._theme_combo.addItems([
+        i18n.tr("menu.theme_dark"),
+        i18n.tr("menu.theme_light"),
+        i18n.tr("menu.theme_system"),
+    ])
+    idx = (dlg._theme_items.index(dlg._current_theme)
+           if dlg._current_theme in dlg._theme_items else 2)
+    dlg._theme_combo.setCurrentIndex(idx)
+    bform.addRow(i18n.tr("menu.theme") + ":", dlg._theme_combo)
+
+    # 表示言語（変更は再起動で反映）。先頭="自動"（system locale→英語既定）。
+    dlg._language_combo = QComboBox()
+    dlg._language_items = [""]
+    dlg._language_combo.addItem(i18n.tr("settings.language_auto"))
+    for entry in i18n.available_languages():
+        dlg._language_items.append(entry["code"])
+        dlg._language_combo.addItem(entry["display_name"])
+    cur_lang = settings.get("ui_language", "")
+    try:
+        dlg._language_combo.setCurrentIndex(dlg._language_items.index(cur_lang))
+    except ValueError:
+        dlg._language_combo.setCurrentIndex(0)
+    bform.addRow(i18n.tr("settings.language") + ":", dlg._language_combo)
+
+    outer.addWidget(beh_grp)
+
+    # ── シャッター音 ─────────────────────────────────────
+    se_grp = QGroupBox(i18n.tr("settings.group_shutter_se"))
+    se_form = QFormLayout(se_grp)
+    se_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    se_form.setSpacing(6)
+
+    se_row = QWidget()
+    sr_lay = QHBoxLayout(se_row)
+    sr_lay.setContentsMargins(0, 0, 0, 0)
+    dlg._cap_se_cb = QCheckBox(i18n.tr("settings.shutter_se_enabled"))
+    dlg._cap_se_cb.setChecked(settings.get("capture_se_enabled", True))
+    dlg._cap_se_kind_combo = QComboBox()
+    dlg._cap_se_kind_items = [
+        ("phone_camera",  "携帯電話カメラ（標準）"),
+        ("phone_short",   "携帯電話 短縮版"),
+        ("phone_double",  "携帯電話 ダブル"),
+        ("phone_bright",  "携帯電話 高音強調"),
+        ("phone_soft",    "携帯電話 マイルド"),
+    ]
+    for _key, label in dlg._cap_se_kind_items:
+        dlg._cap_se_kind_combo.addItem(label)
+    cur_kind = settings.get("capture_se_kind", "phone_camera")
+    for i, (k, _l) in enumerate(dlg._cap_se_kind_items):
+        if k == cur_kind:
+            dlg._cap_se_kind_combo.setCurrentIndex(i)
+            break
+    dlg._cap_se_volume = QSpinBox()
+    dlg._cap_se_volume.setRange(0, 100)
+    dlg._cap_se_volume.setSuffix(" %")
+    dlg._cap_se_volume.setValue(int(round(float(
+        settings.get("capture_se_volume", 0.3)) * 100)))
+    dlg._cap_se_preview_btn = QPushButton("▶")
+    dlg._cap_se_preview_btn.setFixedWidth(28)
+    dlg._cap_se_preview_btn.setToolTip(i18n.tr("settings.shutter_se_preview_tip"))
+    dlg._cap_se_preview_btn.clicked.connect(dlg._preview_shutter_se)
+    sr_lay.addWidget(dlg._cap_se_cb)
+    sr_lay.addSpacing(8)
+    sr_lay.addWidget(QLabel(i18n.tr("settings.shutter_se_kind") + ":"))
+    sr_lay.addWidget(dlg._cap_se_kind_combo, 1)
+    sr_lay.addSpacing(4)
+    sr_lay.addWidget(QLabel(i18n.tr("settings.shutter_se_volume") + ":"))
+    sr_lay.addWidget(dlg._cap_se_volume)
+    sr_lay.addWidget(dlg._cap_se_preview_btn)
+    se_form.addRow("", se_row)
+    outer.addWidget(se_grp)
+
+    outer.addStretch()
+    return page
+
+
+def build_display_tab(dlg: "_SettingsDialog") -> QWidget:
+    page = QWidget()
+    outer = QVBoxLayout(page)
+    outer.setSpacing(8)
+
+    # ── 接続バー表示 ───────────────────────────────
+    conn_grp = QGroupBox(i18n.tr("settings.group_conn_bar"))
+    conn_form = QFormLayout(conn_grp)
+    conn_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    conn_form.setSpacing(6)
+    dlg._show_recog_cb = QCheckBox()
+    dlg._show_recog_cb.setChecked(
+        bool(settings.get("show_recognition_screen", True)))
+    conn_form.addRow(i18n.tr("settings.show_recognition_screen") + ":",
+                     dlg._show_recog_cb)
+    dlg._show_img_cb = QCheckBox()
+    dlg._show_img_cb.setChecked(bool(settings.get("show_img_info", True)))
+    conn_form.addRow(i18n.tr("settings.show_img_info") + ":", dlg._show_img_cb)
+    dlg._show_version_cb = QCheckBox()
+    dlg._show_version_cb.setChecked(bool(settings.get("show_version", True)))
+    conn_form.addRow(i18n.tr("settings.show_version") + ":",
+                     dlg._show_version_cb)
+    outer.addWidget(conn_grp)
+
+    # ── アイテム一覧 装備マーク ─────────────────────────────
+    mark_grp = QGroupBox(i18n.tr("settings.group_item_marks"))
+    mark_lay = QHBoxLayout(mark_grp)
+    mark_lay.setSpacing(6)
+
+    def _mark_edit(key: str, default: str) -> QLineEdit:
+        e = QLineEdit(settings.get(key, default))
+        e.setMaxLength(1)
+        e.setFixedWidth(34)
+        e.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        return e
+
+    dlg._mark_equipped     = _mark_edit("equipment_mark_equipped",     "Ｅ")
+    dlg._mark_equippable   = _mark_edit("equipment_mark_equippable",   "")
+    dlg._mark_unequippable = _mark_edit("equipment_mark_unequippable", "✕")
+    mark_lay.addWidget(QLabel(i18n.tr("settings.mark_equipped") + ":"))
+    mark_lay.addWidget(dlg._mark_equipped)
+    mark_lay.addSpacing(8)
+    mark_lay.addWidget(QLabel(i18n.tr("settings.mark_equippable") + ":"))
+    mark_lay.addWidget(dlg._mark_equippable)
+    mark_lay.addSpacing(8)
+    mark_lay.addWidget(QLabel(i18n.tr("settings.mark_unequippable") + ":"))
+    mark_lay.addWidget(dlg._mark_unequippable)
+    mark_lay.addStretch()
+    outer.addWidget(mark_grp)
+
+    # ── 翻訳パネル フォント ───────────────────────────────
+    font_grp = QGroupBox(i18n.tr("settings.group_panel_font"))
+    fg = QVBoxLayout(font_grp)
+    fg.setSpacing(6)
+
+    dlg._font_sync_cb = QCheckBox(i18n.tr("settings.font_sync"))
+    dlg._font_sync_cb.setChecked(settings.get("panel_translate_font_sync", False))
+    fg.addWidget(dlg._font_sync_cb)
+
+    font_form = QFormLayout()
+    font_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    font_form.setSpacing(6)
+
+    from PySide6.QtGui import QFont as _QFont
+
+    ja_row = QWidget()
+    ja_lay = QHBoxLayout(ja_row)
+    ja_lay.setContentsMargins(0, 0, 0, 0)
+    dlg._font_family_ja = QFontComboBox()
+    dlg._font_family_ja.setEditable(False)
+    fam_ja = settings.get("panel_translate_font_family_ja", "")
+    if fam_ja:
+        dlg._font_family_ja.setCurrentFont(_QFont(fam_ja))
+    dlg._font_family_ja.setMinimumWidth(160)
+    dlg._font_size_ja = QSpinBox()
+    dlg._font_size_ja.setRange(6, 72)
+    dlg._font_size_ja.setSuffix(" pt")
+    dlg._font_size_ja.setValue(settings.get("panel_translate_font_size_ja", 14))
+    ja_lay.addWidget(dlg._font_family_ja, 1)
+    ja_lay.addWidget(dlg._font_size_ja)
+    font_form.addRow(i18n.tr("settings.font_left_translation") + ":", ja_row)
+
+    en_row = QWidget()
+    en_lay = QHBoxLayout(en_row)
+    en_lay.setContentsMargins(0, 0, 0, 0)
+    dlg._font_family_en = QFontComboBox()
+    dlg._font_family_en.setEditable(False)
+    fam_en = settings.get("panel_translate_font_family_en", "")
+    if fam_en:
+        dlg._font_family_en.setCurrentFont(_QFont(fam_en))
+    dlg._font_family_en.setMinimumWidth(160)
+    dlg._font_size_en = QSpinBox()
+    dlg._font_size_en.setRange(6, 72)
+    dlg._font_size_en.setSuffix(" pt")
+    dlg._font_size_en.setValue(settings.get("panel_translate_font_size_en", 12))
+    en_lay.addWidget(dlg._font_family_en, 1)
+    en_lay.addWidget(dlg._font_size_en)
+    font_form.addRow(i18n.tr("settings.font_right_original") + ":", en_row)
+    fg.addLayout(font_form)
+
+    dlg._font_sync_cb.toggled.connect(dlg._on_font_sync_toggled)
+    dlg._font_family_ja.currentFontChanged.connect(dlg._preview_fonts)
+    dlg._font_size_ja.valueChanged.connect(dlg._preview_fonts)
+    dlg._font_family_en.currentFontChanged.connect(dlg._preview_fonts)
+    dlg._font_size_en.valueChanged.connect(dlg._preview_fonts)
+    dlg._font_sync_cb.toggled.connect(dlg._preview_fonts)
+    dlg._on_font_sync_toggled(dlg._font_sync_cb.isChecked())
+
+    outer.addWidget(font_grp)
+
+    # ── レイアウト設定 ─────────────────────────────────────
+    layout_grp = QGroupBox(i18n.tr("settings.group_layout"))
+    layout_form = QFormLayout(layout_grp)
+    layout_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    layout_form.setSpacing(6)
+
+    # 追従モード
+    dlg._layout_track_combo = QComboBox()
+    for track, key in [
+        (TrackMode.NONE,                 "layout.track_none"),
+        (TrackMode.ASSIST_FOLLOWS_DOSBOX, "layout.track_assist_follows_dosbox"),
+        (TrackMode.DOSBOX_FOLLOWS_ASSIST, "layout.track_dosbox_follows_assist"),
+    ]:
+        dlg._layout_track_combo.addItem(i18n.tr(key), track.value)
+    cur_track = settings.get("layout_track_mode", TrackMode.NONE.value)
+    for _i in range(dlg._layout_track_combo.count()):
+        if dlg._layout_track_combo.itemData(_i) == cur_track:
+            dlg._layout_track_combo.setCurrentIndex(_i)
+            break
+    layout_form.addRow(i18n.tr("settings.layout_track_mode") + ":",
+                       dlg._layout_track_combo)
+
+    # コーナー
+    dlg._layout_corner_combo = QComboBox()
+    for corner, key in [
+        (LayoutCorner.TOP_LEFT,     "layout.corner_tl"),
+        (LayoutCorner.TOP_RIGHT,    "layout.corner_tr"),
+        (LayoutCorner.BOTTOM_LEFT,  "layout.corner_bl"),
+        (LayoutCorner.BOTTOM_RIGHT, "layout.corner_br"),
+    ]:
+        dlg._layout_corner_combo.addItem(i18n.tr(key), corner.value)
+    cur_corner = settings.get("layout_corner", LayoutCorner.TOP_LEFT.value)
+    for _i in range(dlg._layout_corner_combo.count()):
+        if dlg._layout_corner_combo.itemData(_i) == cur_corner:
+            dlg._layout_corner_combo.setCurrentIndex(_i)
+            break
+    layout_form.addRow(i18n.tr("settings.layout_corner") + ":",
+                       dlg._layout_corner_combo)
+
+    # 配置形式
+    dlg._layout_form_combo = QComboBox()
+    for form, key in [
+        (LayoutForm.FORM_1, "layout.form_1"),
+        (LayoutForm.FORM_2, "layout.form_2"),
+        (LayoutForm.FORM_3, "layout.form_3"),
+    ]:
+        dlg._layout_form_combo.addItem(i18n.tr(key), form.value)
+    cur_form = settings.get("layout_form", LayoutForm.FORM_2.value)
+    for _i in range(dlg._layout_form_combo.count()):
+        if dlg._layout_form_combo.itemData(_i) == cur_form:
+            dlg._layout_form_combo.setCurrentIndex(_i)
+            break
+    layout_form.addRow(i18n.tr("settings.layout_form") + ":",
+                       dlg._layout_form_combo)
+
+    # レイアウトサイズ
+    size_row = QWidget()
+    size_lay = QHBoxLayout(size_row)
+    size_lay.setContentsMargins(0, 0, 0, 0)
+    dlg._layout_size_w = QSpinBox()
+    dlg._layout_size_w.setRange(800, 7680)
+    dlg._layout_size_w.setSingleStep(10)
+    dlg._layout_size_w.setValue(settings.get("layout_size_w", 1920))
+    dlg._layout_size_h = QSpinBox()
+    dlg._layout_size_h.setRange(600, 4320)
+    dlg._layout_size_h.setSingleStep(10)
+    dlg._layout_size_h.setValue(settings.get("layout_size_h", 1080))
+    size_lay.addWidget(dlg._layout_size_w)
+    size_lay.addWidget(QLabel("×"))
+    size_lay.addWidget(dlg._layout_size_h)
+    size_lay.addStretch()
+    layout_form.addRow(i18n.tr("settings.layout_size") + ":", size_row)
+
+    outer.addWidget(layout_grp)
+    outer.addStretch()
+    return page
+
+
+def build_map_tab(dlg: "_SettingsDialog") -> QWidget:
+    page = QWidget()
+    outer = QVBoxLayout(page)
+    outer.setSpacing(8)
+
+    grp = QGroupBox(i18n.tr("settings.group_map_settings"))
+    form = QFormLayout(grp)
+    form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    form.setSpacing(6)
+
+    dlg._map_wall_los_cb = QCheckBox()
+    dlg._map_wall_los_cb.setChecked(
+        bool(settings.get("map_wall_line_of_sight", False)))
+    dlg._map_wall_los_cb.setToolTip(
+        i18n.tr("settings.map_wall_line_of_sight_tip"))
+    form.addRow(i18n.tr("settings.map_wall_line_of_sight") + ":",
+                dlg._map_wall_los_cb)
+
+    dlg._map_show_unexplored_cb = QCheckBox()
+    dlg._map_show_unexplored_cb.setChecked(
+        bool(settings.get("map_show_unexplored_floor", False)))
+    dlg._map_show_unexplored_cb.setToolTip(
+        i18n.tr("settings.map_show_unexplored_floor_tip"))
+    form.addRow(i18n.tr("settings.map_show_unexplored_floor") + ":",
+                dlg._map_show_unexplored_cb)
+
+    dlg._map_center_cb = QCheckBox()
+    dlg._map_center_cb.setChecked(
+        bool(settings.get("map_center_on_player", True)))
+    dlg._map_center_cb.setToolTip(
+        i18n.tr("settings.map_center_on_player_tip"))
+    form.addRow(i18n.tr("settings.map_center_on_player") + ":",
+                dlg._map_center_cb)
+
+    dlg._map_show_grid_cb = QCheckBox()
+    dlg._map_show_grid_cb.setChecked(
+        bool(settings.get("map_show_grid", True)))
+    dlg._map_show_grid_cb.setToolTip(
+        i18n.tr("settings.map_show_grid_tip"))
+    form.addRow(i18n.tr("settings.map_show_grid") + ":",
+                dlg._map_show_grid_cb)
+
+    dlg._map_show_chunk_grid_cb = QCheckBox()
+    dlg._map_show_chunk_grid_cb.setChecked(
+        bool(settings.get("map_show_chunk_grid", True)))
+    dlg._map_show_chunk_grid_cb.setToolTip(
+        i18n.tr("settings.map_show_chunk_grid_tip"))
+    form.addRow(i18n.tr("settings.map_show_chunk_grid") + ":",
+                dlg._map_show_chunk_grid_cb)
+
+    dlg._map_show_chunk_coords_cb = QCheckBox()
+    dlg._map_show_chunk_coords_cb.setChecked(
+        bool(settings.get("map_show_chunk_coords", True)))
+    dlg._map_show_chunk_coords_cb.setToolTip(
+        i18n.tr("settings.map_show_chunk_coords_tip"))
+    form.addRow(i18n.tr("settings.map_show_chunk_coords") + ":",
+                dlg._map_show_chunk_coords_cb)
+
+    dlg._map_show_recenter_lines_cb = QCheckBox()
+    dlg._map_show_recenter_lines_cb.setChecked(
+        bool(settings.get("map_show_recenter_lines", False)))
+    dlg._map_show_recenter_lines_cb.setToolTip(
+        i18n.tr("settings.map_show_recenter_lines_tip"))
+    form.addRow(i18n.tr("settings.map_show_recenter_lines") + ":",
+                dlg._map_show_recenter_lines_cb)
+
+    dlg._map_chunk_coord_font_size = QSpinBox()
+    dlg._map_chunk_coord_font_size.setRange(5, 48)
+    dlg._map_chunk_coord_font_size.setSuffix(" pt")
+    dlg._map_chunk_coord_font_size.setValue(
+        int(settings.get("map_chunk_coord_font_size", 10)))
+    dlg._map_chunk_coord_font_size.setToolTip(
+        i18n.tr("settings.map_chunk_coord_font_size_tip"))
+    form.addRow(i18n.tr("settings.map_chunk_coord_font_size") + ":",
+                dlg._map_chunk_coord_font_size)
+
+    # ── フィールド(C3)拡張表示グループ ───────────────────────────────
+    # マスター ON/OFF ＋ 項目別 ON/OFF。マスター OFF（またはマスター ON でも全項目
+    # OFF）でゲーム自動マップと同一表示になる。各項目の実効値 = マスター AND 個別。
+    ext_grp = QGroupBox(i18n.tr("settings.group_field_extended"))
+    ext_form = QFormLayout(ext_grp)
+
+    dlg._map_extended_display_cb = QCheckBox()
+    dlg._map_extended_display_cb.setChecked(
+        bool(settings.get("map_extended_display", True)))
+    dlg._map_extended_display_cb.setToolTip(
+        i18n.tr("settings.map_extended_display_tip"))
+    ext_form.addRow(i18n.tr("settings.map_extended_display") + ":",
+                    dlg._map_extended_display_cb)
+
+    dlg._wild_distinguish_road_cb = QCheckBox()
+    dlg._wild_distinguish_road_cb.setChecked(
+        bool(settings.get("wild_distinguish_road", True)))
+    dlg._wild_distinguish_road_cb.setToolTip(
+        i18n.tr("settings.wild_distinguish_road_tip"))
+    ext_form.addRow(i18n.tr("settings.wild_distinguish_road") + ":",
+                    dlg._wild_distinguish_road_cb)
+
+    dlg._wild_show_edge_cb = QCheckBox()
+    dlg._wild_show_edge_cb.setChecked(
+        bool(settings.get("wild_show_edge", True)))
+    dlg._wild_show_edge_cb.setToolTip(
+        i18n.tr("settings.wild_show_edge_tip"))
+    ext_form.addRow(i18n.tr("settings.wild_show_edge") + ":",
+                    dlg._wild_show_edge_cb)
+
+    dlg._wild_distinguish_edge_cb = QCheckBox()
+    dlg._wild_distinguish_edge_cb.setChecked(
+        bool(settings.get("wild_distinguish_edge", True)))
+    dlg._wild_distinguish_edge_cb.setToolTip(
+        i18n.tr("settings.wild_distinguish_edge_tip"))
+    ext_form.addRow(i18n.tr("settings.wild_distinguish_edge") + ":",
+                    dlg._wild_distinguish_edge_cb)
+
+    dlg._wild_show_crops_cb = QCheckBox()
+    dlg._wild_show_crops_cb.setChecked(
+        bool(settings.get("wild_show_crops", True)))
+    dlg._wild_show_crops_cb.setToolTip(
+        i18n.tr("settings.wild_show_crops_tip"))
+    ext_form.addRow(i18n.tr("settings.wild_show_crops") + ":",
+                    dlg._wild_show_crops_cb)
+
+    dlg._wild_show_all_entrances_cb = QCheckBox()
+    dlg._wild_show_all_entrances_cb.setChecked(
+        bool(settings.get("wild_show_all_entrances", True)))
+    dlg._wild_show_all_entrances_cb.setToolTip(
+        i18n.tr("settings.wild_show_all_entrances_tip"))
+    ext_form.addRow(i18n.tr("settings.wild_show_all_entrances") + ":",
+                    dlg._wild_show_all_entrances_cb)
+
+    dlg._wild_show_static_flats_cb = QCheckBox()
+    dlg._wild_show_static_flats_cb.setChecked(
+        bool(settings.get("wild_show_static_flats", True)))
+    dlg._wild_show_static_flats_cb.setToolTip(
+        i18n.tr("settings.wild_show_static_flats_tip"))
+    ext_form.addRow(i18n.tr("settings.wild_show_static_flats") + ":",
+                    dlg._wild_show_static_flats_cb)
+
+    # マスター OFF のとき個別トグルを無効化（＝ゲーム同一表示であることを明示）。
+    def _sync_ext_enabled(on: bool) -> None:
+        for cb in (dlg._wild_distinguish_road_cb, dlg._wild_show_edge_cb,
+                   dlg._wild_distinguish_edge_cb, dlg._wild_show_crops_cb,
+                   dlg._wild_show_all_entrances_cb,
+                   dlg._wild_show_static_flats_cb):
+            cb.setEnabled(on)
+
+    dlg._map_extended_display_cb.toggled.connect(_sync_ext_enabled)
+    _sync_ext_enabled(dlg._map_extended_display_cb.isChecked())
+
+    outer.addWidget(grp)
+    outer.addWidget(ext_grp)
+    outer.addStretch()
+    return page
+
+
+# 速度プリセット (表示, SAPI Rate)
+_TTS_RATE_PRESETS = [
+    ("とても遅い", -6), ("遅い", -3), ("標準", 0), ("速い", 3), ("とても速い", 6),
+]
+
+
+def build_tts_tab(dlg: "_SettingsDialog") -> QWidget:
+    """読み上げ(TTS) 設定タブ。"""
+    page = QWidget()
+    outer = QVBoxLayout(page)
+    outer.setSpacing(8)
+
+    # ── 基本 ──────────────────────────────────────────────
+    grp = QGroupBox(i18n.tr("settings.group_tts", default="読み上げ"))
+    form = QFormLayout(grp)
+    form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    form.setSpacing(6)
+
+    dlg._tts_enabled_cb = QCheckBox()
+    dlg._tts_enabled_cb.setChecked(bool(settings.get("tts_enabled", False)))
+    form.addRow(i18n.tr("settings.tts_enabled", default="読み上げを有効にする") + ":",
+                dlg._tts_enabled_cb)
+
+    # ── エンジン選択（SAPI5 / VOICEVOX）──────────────────────
+    # VOICEVOX は「起動して応答する時だけ」選択可能にする（インストール有無の
+    # 厳密判定は脆いため、ローカル HTTP サーバーへの到達可否で判定）。
+    _vv_ok = False
+    try:
+        import voicevox_client as _vv
+        _vv_ok = _vv.is_available()
+    except Exception:  # noqa: BLE001
+        _vv_ok = False
+    dlg._tts_vv_available = _vv_ok
+
+    dlg._tts_engine_combo = QComboBox()
+    dlg._tts_engine_combo.addItem(
+        i18n.tr("settings.tts_engine_sapi", default="Windows標準（SAPI5）"),
+        "sapi5")
+    if _vv_ok:
+        dlg._tts_engine_combo.addItem(
+            i18n.tr("settings.tts_engine_voicevox", default="VOICEVOX"),
+            "voicevox")
+    else:
+        dlg._tts_engine_combo.addItem(
+            i18n.tr("settings.tts_engine_voicevox_unavail",
+                    default="VOICEVOX（未検出）"), "voicevox")
+        try:
+            _it = dlg._tts_engine_combo.model().item(
+                dlg._tts_engine_combo.count() - 1)
+            if _it is not None:
+                _it.setEnabled(False)   # 未検出項目は選択不可
+        except Exception:  # noqa: BLE001
+            pass
+    dlg._tts_engine_saved = settings.get("tts_engine", "sapi5") or "sapi5"
+    _show_engine = dlg._tts_engine_saved
+    if _show_engine == "voicevox" and not _vv_ok:
+        _show_engine = "sapi5"   # 未検出時は表示だけ SAPI へ（保存値は維持）
+    _ei = dlg._tts_engine_combo.findData(_show_engine)
+    dlg._tts_engine_combo.setCurrentIndex(_ei if _ei >= 0 else 0)
+    form.addRow(i18n.tr("settings.tts_engine", default="エンジン") + ":",
+                dlg._tts_engine_combo)
+
+    # ── SAPI5 音声 ────────────────────────────────────────
+    dlg._tts_voice_combo = QComboBox()
+    dlg._tts_voice_combo.addItem(i18n.tr("settings.tts_voice_default",
+                                         default="（既定）"), "")
+    try:
+        from tts_service import TTSService
+        for desc in TTSService.list_voices():
+            dlg._tts_voice_combo.addItem(desc, desc)
+    except Exception:  # noqa: BLE001
+        pass
+    _cur_voice = settings.get("tts_voice", "") or ""
+    _vi = dlg._tts_voice_combo.findData(_cur_voice)
+    dlg._tts_voice_combo.setCurrentIndex(_vi if _vi >= 0 else 0)
+    form.addRow(i18n.tr("settings.tts_voice", default="音声") + ":",
+                dlg._tts_voice_combo)
+
+    # ── VOICEVOX キャラクター / スタイル ────────────────────
+    dlg._tts_vv_speakers = []
+    if _vv_ok:
+        try:
+            import voicevox_client as _vv2
+            dlg._tts_vv_speakers = _vv2.list_speakers()
+        except Exception:  # noqa: BLE001
+            dlg._tts_vv_speakers = []
+
+    dlg._tts_vv_speaker_saved = int(settings.get("tts_vv_speaker", 0) or 0)
+    dlg._tts_vv_char_combo = QComboBox()
+    dlg._tts_vv_style_combo = QComboBox()
+    for _sp in dlg._tts_vv_speakers:
+        dlg._tts_vv_char_combo.addItem(_sp.get("name", ""), _sp)
+
+    def _fill_styles(char_index: int, select_id=None) -> None:
+        dlg._tts_vv_style_combo.clear()
+        if not (0 <= char_index < len(dlg._tts_vv_speakers)):
+            return
+        for st in dlg._tts_vv_speakers[char_index].get("styles", []):
+            dlg._tts_vv_style_combo.addItem(st.get("name", ""), int(st["id"]))
+        if select_id is not None:
+            _si = dlg._tts_vv_style_combo.findData(select_id)
+            if _si >= 0:
+                dlg._tts_vv_style_combo.setCurrentIndex(_si)
+
+    # 保存済み style id が属するキャラクターを初期選択
+    _init_char = 0
+    for _ci, _sp in enumerate(dlg._tts_vv_speakers):
+        if any(int(st["id"]) == dlg._tts_vv_speaker_saved
+               for st in _sp.get("styles", [])):
+            _init_char = _ci
+            break
+    if dlg._tts_vv_speakers:
+        dlg._tts_vv_char_combo.setCurrentIndex(_init_char)
+        _fill_styles(_init_char, dlg._tts_vv_speaker_saved)
+    dlg._tts_vv_char_combo.currentIndexChanged.connect(
+        lambda i: _fill_styles(i))
+    form.addRow(i18n.tr("settings.tts_vv_character",
+                        default="キャラクター") + ":",
+                dlg._tts_vv_char_combo)
+    form.addRow(i18n.tr("settings.tts_vv_style", default="スタイル") + ":",
+                dlg._tts_vv_style_combo)
+
+    # テスト再生（選択中のキャラ＋スタイルで短い文を鳴らす）
+    dlg._tts_vv_test_btn = QPushButton(
+        i18n.tr("settings.tts_vv_test", default="🔊 テスト再生"))
+
+    def _on_vv_test() -> None:
+        sid = dlg._tts_vv_style_combo.currentData()
+        if sid is None:
+            return
+        _txt = i18n.tr("settings.tts_vv_test_text",
+                       default="こんにちは。これはテスト再生です。")
+
+        def _work() -> None:
+            try:
+                import voicevox_client as _vv3
+                import winsound
+                data = _vv3.synthesize(_txt, int(sid))
+                if data:
+                    winsound.PlaySound(data, winsound.SND_MEMORY)
+            except Exception:  # noqa: BLE001
+                pass
+
+        import threading
+        threading.Thread(target=_work, daemon=True).start()
+
+    dlg._tts_vv_test_btn.clicked.connect(_on_vv_test)
+    form.addRow("", dlg._tts_vv_test_btn)
+
+    if not _vv_ok:
+        _vv_note = QLabel(
+            i18n.tr("settings.tts_vv_note",
+                    default="VOICEVOX を起動すると選択できます"
+                            "（127.0.0.1:50021）。"))
+        _vv_note.setWordWrap(True)
+        form.addRow("", _vv_note)
+
+    # エンジンに応じて該当行のみ表示する
+    def _update_engine_rows() -> None:
+        is_vv = (dlg._tts_engine_combo.currentData() == "voicevox")
+        form.setRowVisible(dlg._tts_voice_combo, not is_vv)
+        form.setRowVisible(dlg._tts_vv_char_combo, is_vv)
+        form.setRowVisible(dlg._tts_vv_style_combo, is_vv)
+        form.setRowVisible(dlg._tts_vv_test_btn, is_vv)
+
+    dlg._tts_engine_combo.currentIndexChanged.connect(
+        lambda _i: _update_engine_rows())
+    _update_engine_rows()
+
+    dlg._tts_rate_combo = QComboBox()
+    for label, val in _TTS_RATE_PRESETS:
+        dlg._tts_rate_combo.addItem(label, val)
+    _cur_rate = int(settings.get("tts_rate", 0))
+    _ri = dlg._tts_rate_combo.findData(_cur_rate)
+    dlg._tts_rate_combo.setCurrentIndex(_ri if _ri >= 0 else 2)  # 既定=標準
+    form.addRow(i18n.tr("settings.tts_rate", default="速度") + ":",
+                dlg._tts_rate_combo)
+
+    _vol_row = QHBoxLayout()
+    dlg._tts_volume_slider = QSlider(Qt.Orientation.Horizontal)
+    dlg._tts_volume_slider.setRange(0, 100)
+    dlg._tts_volume_slider.setValue(int(settings.get("tts_volume", 100)))
+    dlg._tts_volume_label = QLabel(str(dlg._tts_volume_slider.value()))
+    dlg._tts_volume_slider.valueChanged.connect(
+        lambda v: dlg._tts_volume_label.setText(str(v)))
+    _vol_row.addWidget(dlg._tts_volume_slider)
+    _vol_row.addWidget(dlg._tts_volume_label)
+    _vol_w = QWidget()
+    _vol_w.setLayout(_vol_row)
+    form.addRow(i18n.tr("settings.tts_volume", default="音量") + ":", _vol_w)
+
+    dlg._tts_interrupt_cb = QCheckBox(
+        i18n.tr("settings.tts_interrupt",
+                default="表示が切り替わったら前の読み上げを中止して新しい内容を読む"))
+    dlg._tts_interrupt_cb.setChecked(bool(settings.get("tts_interrupt", True)))
+    form.addRow(i18n.tr("settings.tts_interrupt_label", default="切り上げ") + ":",
+                dlg._tts_interrupt_cb)
+    outer.addWidget(grp)
+
+    # ── 読み上げ対象 (意味ベース2分類) ──────────────
+    grp2 = QGroupBox(i18n.tr("settings.group_tts_targets", default="読み上げ対象"))
+    v2 = QVBoxLayout(grp2)
+    dlg._tts_target_situation_cb = QCheckBox(
+        i18n.tr("settings.tts_target_situation",
+                default="状況説明（トリガー・入店・出来事・各種ダイアログ）"))
+    dlg._tts_target_situation_cb.setChecked(
+        bool(settings.get("tts_target_situation", True)))
+    dlg._tts_target_conversation_cb = QCheckBox(
+        i18n.tr("settings.tts_target_conversation",
+                default="会話（NPC の応答・店主のセリフ・宮殿・価格交渉の応答）"))
+    dlg._tts_target_conversation_cb.setChecked(
+        bool(settings.get("tts_target_conversation", True)))
+    for cb in (dlg._tts_target_situation_cb, dlg._tts_target_conversation_cb):
+        v2.addWidget(cb)
+    _tts_note = QLabel(
+        i18n.tr("settings.tts_targets_note",
+                default="※ メニュー・一覧・数値入力などのシステム表示は読み上げません。"))
+    _tts_note.setWordWrap(True)
+    v2.addWidget(_tts_note)
+    outer.addWidget(grp2)
+
+    # ── その他 ────────────────────────────────────────────
+    grp3 = QGroupBox(i18n.tr("settings.group_tts_misc", default="その他"))
+    v3 = QVBoxLayout(grp3)
+    dlg._tts_speaker_icon_cb = QCheckBox(
+        i18n.tr("settings.tts_speaker_icon",
+                default="テキスト横にスピーカーアイコンを表示（クリックで読み上げ）"))
+    dlg._tts_speaker_icon_cb.setChecked(
+        bool(settings.get("tts_speaker_icon", False)))
+    v3.addWidget(dlg._tts_speaker_icon_cb)
+    dlg._log_show_original_cb = QCheckBox(
+        i18n.tr("settings.log_show_original",
+                default="ログに原文も併記する（OFF=翻訳のみ）"))
+    dlg._log_show_original_cb.setChecked(
+        bool(settings.get("log_show_original", False)))
+    v3.addWidget(dlg._log_show_original_cb)
+    # ログ保存上限（件）。超過分は古い順に切り捨てる。
+    _max_row = QHBoxLayout()
+    _max_row.addWidget(QLabel(
+        i18n.tr("settings.log_max_entries", default="ログ保存上限（件）") + ":"))
+    dlg._log_max_entries_spin = QSpinBox()
+    dlg._log_max_entries_spin.setRange(50, 100000)
+    dlg._log_max_entries_spin.setSingleStep(100)
+    dlg._log_max_entries_spin.setValue(
+        int(settings.get("log_max_entries", 2000)))
+    dlg._log_max_entries_spin.setToolTip(
+        i18n.tr("settings.log_max_entries_tip",
+                default="この件数を超えた古いログは自動的に削除されます（既定 2000）。"))
+    _max_row.addWidget(dlg._log_max_entries_spin)
+    _max_row.addStretch()
+    _max_w = QWidget()
+    _max_w.setLayout(_max_row)
+    v3.addWidget(_max_w)
+    # ログの日時表示 ON/OFF ＋ フォーマット指定
+    dlg._log_show_datetime_cb = QCheckBox(
+        i18n.tr("settings.log_show_datetime",
+                default="ログに記録日時を表示する"))
+    dlg._log_show_datetime_cb.setChecked(
+        bool(settings.get("log_show_datetime", True)))
+    v3.addWidget(dlg._log_show_datetime_cb)
+    # 日時の表示形式: プリセット（表示例付き）から選択。カスタムはトークン入力。
+    from datetime import datetime as _dtmod
+    from services.log_store import (
+        DEFAULT_LOG_DATETIME_FORMAT, format_datetime as _fmt_dt,
+    )
+    _DT_PRESETS = (
+        "yyyy/MM/dd(aaa) HH:mm:ss",
+        "yyyy/MM/dd HH:mm:ss",
+        "yyyy年MM月dd日(aaa) HH:mm:ss",
+        "MM/dd(aaa) HH:mm:ss",
+        "HH:mm:ss",
+        "yyyy/MM/dd(aaa)",
+    )
+    _fmt_row = QHBoxLayout()
+    _fmt_row.addWidget(QLabel(
+        i18n.tr("settings.log_datetime_format", default="日時の表示形式") + ":"))
+    dlg._log_datetime_format_combo = QComboBox()
+    for _tok in _DT_PRESETS:
+        # 表示は「現在時刻での表示例」。データはトークン文字列。
+        dlg._log_datetime_format_combo.addItem(
+            _fmt_dt(_dtmod.now(), _tok), _tok)
+    dlg._log_datetime_format_combo.addItem(
+        i18n.tr("settings.log_datetime_custom", default="カスタム…"), "__custom__")
+    _fmt_row.addWidget(dlg._log_datetime_format_combo, 1)
+    _fmt_w = QWidget()
+    _fmt_w.setLayout(_fmt_row)
+    v3.addWidget(_fmt_w)
+    dlg._log_datetime_format_edit = QLineEdit()
+    dlg._log_datetime_format_edit.setPlaceholderText(
+        "yyyy/MM/dd(aaa) HH:mm:ss")
+    dlg._log_datetime_format_edit.setToolTip(
+        i18n.tr("settings.log_datetime_format_tip",
+                default="トークン: yyyy 年 / MM 月 / dd 日 / aaa 曜日 / "
+                        "HH 時 / mm 分 / ss 秒　例: yyyy/MM/dd(aaa) HH:mm:ss"))
+    v3.addWidget(dlg._log_datetime_format_edit)
+    dlg._log_datetime_preview = QLabel("")
+    dlg._log_datetime_preview.setObjectName("dimLabel")
+    v3.addWidget(dlg._log_datetime_preview)
+
+    def _update_dt_preview() -> None:
+        _is_custom = (
+            dlg._log_datetime_format_combo.currentData() == "__custom__")
+        dlg._log_datetime_format_edit.setVisible(_is_custom)
+        if _is_custom:
+            _tok = (dlg._log_datetime_format_edit.text().strip()
+                    or DEFAULT_LOG_DATETIME_FORMAT)
+        else:
+            _tok = dlg._log_datetime_format_combo.currentData()
+        dlg._log_datetime_preview.setText(
+            i18n.tr("settings.log_datetime_preview", default="例") + ": "
+            + _fmt_dt(_dtmod.now(), _tok))
+
+    # 現在値を選択（プリセット一致なら選択、無ければカスタム）。
+    _cur_fmt = settings.get("log_datetime_format", DEFAULT_LOG_DATETIME_FORMAT)
+    _idx = dlg._log_datetime_format_combo.findData(_cur_fmt)
+    if _idx >= 0:
+        dlg._log_datetime_format_combo.setCurrentIndex(_idx)
+    else:
+        dlg._log_datetime_format_combo.setCurrentIndex(
+            dlg._log_datetime_format_combo.findData("__custom__"))
+        dlg._log_datetime_format_edit.setText(_cur_fmt)
+    dlg._log_datetime_format_combo.currentIndexChanged.connect(
+        lambda _i: _update_dt_preview())
+    dlg._log_datetime_format_edit.textChanged.connect(
+        lambda _t: _update_dt_preview())
+    _update_dt_preview()
+    outer.addWidget(grp3)
+
+    # ── キャラクター名の読み替え（読み上げのみ）──────────────
+    grp4 = QGroupBox(i18n.tr("settings.group_tts_name",
+                             default="キャラクター名の読み替え（読み上げのみ）"))
+    f4 = QFormLayout(grp4)
+    f4.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    f4.setSpacing(6)
+    dlg._tts_name_reading_edit = QLineEdit(settings.get("tts_name_reading", ""))
+    dlg._tts_name_reading_edit.setPlaceholderText(
+        i18n.tr("settings.tts_name_reading_ph", default="例: エックス（読み上げる読み）"))
+    f4.addRow(i18n.tr("settings.tts_name_reading", default="名前の読み") + ":",
+              dlg._tts_name_reading_edit)
+    _name_note = QLabel(
+        i18n.tr("settings.tts_name_note",
+                default="※ キャラクター名はゲームから自動取得します。読みを設定すると、"
+                        "読み上げ時だけその読みに置き換えます（表示・ログは元の名前のまま）。"))
+    _name_note.setObjectName("dimLabel")
+    _name_note.setWordWrap(True)
+    f4.addRow(_name_note)
+    outer.addWidget(grp4)
+
+    outer.addStretch()
+    return page
+
+
+def build_translate_tab(dlg: "_SettingsDialog") -> QWidget:
+    page = QWidget()
+    outer = QVBoxLayout(page)
+    outer.setSpacing(8)
+
+    beh_grp = QGroupBox(i18n.tr("settings.group_translate_behavior"))
+    form = QFormLayout(beh_grp)
+    form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    form.setSpacing(6)
+
+    # 翻訳パネル: メッセージ保持
+    dlg._keep_trigger_cb = QCheckBox()
+    dlg._keep_trigger_cb.setChecked(settings.get("keep_trigger_on_panel", False))
+    form.addRow(i18n.tr("settings.keep_trigger_on_panel") + ":",
+                dlg._keep_trigger_cb)
+
+    # 翻訳タブ全域に表示するフォールバック画面の選択
+    dlg._fallback_combo = QComboBox()
+    dlg._fallback_items = [
+        ("none",   i18n.tr("settings.translate_fallback_none")),
+        ("map",    i18n.tr("settings.translate_fallback_map")),
+        ("status", i18n.tr("settings.translate_fallback_status")),
+    ]
+    for _k, label in dlg._fallback_items:
+        dlg._fallback_combo.addItem(label)
+    cur_fb = settings.get("translate_fallback_screen", "map")
+    for i, (k, _l) in enumerate(dlg._fallback_items):
+        if k == cur_fb:
+            dlg._fallback_combo.setCurrentIndex(i)
+            break
+    dlg._fallback_combo.setToolTip(
+        i18n.tr("settings.translate_fallback_screen_tip"))
+    form.addRow(i18n.tr("settings.translate_fallback_screen") + ":",
+                dlg._fallback_combo)
+
+    outer.addWidget(beh_grp)
+
+    # 翻訳タブ拡張設定
+    ext_grp = QGroupBox(i18n.tr("settings.group_translate_advanced"))
+    ext_form = QFormLayout(ext_grp)
+    ext_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    ext_form.setSpacing(6)
+    dlg._emulate_panel_hidden_cb = QCheckBox()
+    dlg._emulate_panel_hidden_cb.setChecked(
+        bool(settings.get("translate_tab_emulate_panel_hidden", False)))
+    dlg._emulate_panel_hidden_cb.setToolTip(
+        i18n.tr("settings.translate_tab_emulate_panel_hidden_tip"))
+    ext_form.addRow(
+        i18n.tr("settings.translate_tab_emulate_panel_hidden") + ":",
+        dlg._emulate_panel_hidden_cb)
+    outer.addWidget(ext_grp)
+
+    outer.addStretch()
+    return page
+
+
+def build_cheat_tab(dlg: "_SettingsDialog") -> QWidget:
+    page = QWidget()
+    outer = QVBoxLayout(page)
+    outer.setSpacing(8)
+
+    grp = QGroupBox(i18n.tr("settings.group_cheat"))
+    form = QFormLayout(grp)
+    form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    form.setSpacing(6)
+
+    dlg._cheat_cb = QCheckBox()
+    dlg._cheat_cb.setChecked(settings.get("cheat_enabled", False))
+    form.addRow(i18n.tr("settings.cheat_enabled") + ":", dlg._cheat_cb)
+
+    def _confirm_cheat_enable(checked: bool) -> None:
+        """チート有効化チェック時、初回のみ利用確認を表示する。
+
+        キャンセル時はチェックを元に戻す。はい選択で同意を永続化し以後は再確認しない。
+        初期状態の setChecked では発火しないよう、本ハンドラは接続後の操作のみ受ける。
+        """
+        if not checked or settings.get("cheat_consent_acknowledged", False):
+            return
+        box = QMessageBox(dlg)
+        box.setIcon(QMessageBox.Icon.Warning)
+        box.setWindowTitle(i18n.tr("settings.cheat_consent_title"))
+        box.setText(i18n.tr("settings.cheat_consent_body"))
+        yes_btn = box.addButton(
+            i18n.tr("settings.cheat_consent_yes"),
+            QMessageBox.ButtonRole.AcceptRole)
+        box.addButton(
+            i18n.tr("settings.cheat_consent_cancel"),
+            QMessageBox.ButtonRole.RejectRole)
+        box.exec()
+        if box.clickedButton() is yes_btn:
+            settings.set_val("cheat_consent_acknowledged", True)
+        else:
+            dlg._cheat_cb.setChecked(False)
+
+    dlg._cheat_cb.toggled.connect(_confirm_cheat_enable)
+
+    dlg._cheat_status_change_cb = QCheckBox()
+    dlg._cheat_status_change_cb.setChecked(
+        settings.get("cheat_status_change", False))
+    form.addRow(i18n.tr("settings.cheat_status_change") + ":",
+                dlg._cheat_status_change_cb)
+
+    dlg._cheat_reveal_map_cb = QCheckBox()
+    dlg._cheat_reveal_map_cb.setChecked(
+        settings.get("cheat_reveal_map", False))
+    form.addRow(i18n.tr("settings.cheat_reveal_map") + ":",
+                dlg._cheat_reveal_map_cb)
+
+    # 常時 MAX 系 (cheat 親 ON のみで有効 = ステータス変更 ON は不要)。
+    dlg._cheat_health_max_cb = QCheckBox()
+    dlg._cheat_health_max_cb.setChecked(
+        settings.get("cheat_health_max", False))
+    form.addRow(i18n.tr("settings.cheat_health_max") + ":",
+                dlg._cheat_health_max_cb)
+
+    dlg._cheat_fatigue_max_cb = QCheckBox()
+    dlg._cheat_fatigue_max_cb.setChecked(
+        settings.get("cheat_fatigue_max", False))
+    form.addRow(i18n.tr("settings.cheat_fatigue_max") + ":",
+                dlg._cheat_fatigue_max_cb)
+
+    dlg._cheat_spell_max_cb = QCheckBox()
+    dlg._cheat_spell_max_cb.setChecked(
+        settings.get("cheat_spell_max", False))
+    form.addRow(i18n.tr("settings.cheat_spell_max") + ":",
+                dlg._cheat_spell_max_cb)
+
+    outer.addWidget(grp)
+    outer.addStretch()
+    return page
+
+
+def build_dosbox_tab(
+    dlg: "_SettingsDialog",
+    win_res_presets: list,
+    full_resolutions: list,
+    output_modes: list,
+    scalers: list,
+    audio_rates: list,
+    midi_devices: list,
+) -> QWidget:
+    page = QWidget()
+    outer = QVBoxLayout(page)
+    outer.setSpacing(8)
+
+    # ── conf パスバー ─────────────────────────────────────
+    path_bar = QHBoxLayout()
+    lbl_path = QLabel(i18n.tr("dosbox.conf_path") + ":")
+    lbl_path.setFixedWidth(80)
+    dlg._dosbox_path_edit = QLineEdit(dlg._dosbox_conf_path)
+    dlg._dosbox_path_edit.setReadOnly(True)
+    dlg._dosbox_path_edit.setPlaceholderText(dc.DEFAULT_CONF_PATH)
+    browse_btn = QPushButton(i18n.tr("dosbox.browse"))
+    browse_btn.setFixedWidth(70)
+    browse_btn.clicked.connect(dlg._browse_dosbox_conf)
+    path_bar.addWidget(lbl_path)
+    path_bar.addWidget(dlg._dosbox_path_edit, 1)
+    path_bar.addWidget(browse_btn)
+    outer.addLayout(path_bar)
+
+    # ── エラーラベル ───────────────────────────────────────
+    dlg._dosbox_error_lbl = QLabel()
+    dlg._dosbox_error_lbl.setObjectName("dimLabel")
+    dlg._dosbox_error_lbl.setWordWrap(True)
+    dlg._dosbox_error_lbl.setVisible(False)
+    outer.addWidget(dlg._dosbox_error_lbl)
+
+    # ── ウィンドウ動作 (DOSBox 最前面) ─────────────────────
+    win_grp = QGroupBox(i18n.tr("dosbox.section_window"))
+    win_form = QFormLayout(win_grp)
+    win_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    win_form.setSpacing(6)
+    dlg._dosbox_top_cb = QCheckBox()
+    dlg._dosbox_top_cb.setChecked(settings.get("dosbox_always_on_top", False))
+    win_form.addRow(i18n.tr("dosbox.always_on_top") + ":", dlg._dosbox_top_cb)
+    outer.addWidget(win_grp)
+
+    # ── ディスプレイ ───────────────────────────────────────
+    disp_grp, disp_form = dlg._make_form_group(
+        i18n.tr("dosbox.section_display"))
+    dlg._cb_winres_preset = QComboBox()
+    for label, _, _ in win_res_presets:
+        dlg._cb_winres_preset.addItem(label)
+    dlg._cb_winres_preset.currentIndexChanged.connect(
+        dlg._on_winres_preset_changed)
+    disp_form.addRow(i18n.tr("dosbox.window_size") + ":",
+                     dlg._cb_winres_preset)
+
+    cw_widget = QWidget()
+    cw_lay = QHBoxLayout(cw_widget)
+    cw_lay.setContentsMargins(0, 0, 0, 0)
+    cw_lay.setSpacing(4)
+    dlg._sp_winres_w = QSpinBox()
+    dlg._sp_winres_w.setRange(320, 7680)
+    dlg._sp_winres_w.setSuffix(" px")
+    dlg._sp_winres_h = QSpinBox()
+    dlg._sp_winres_h.setRange(200, 4320)
+    dlg._sp_winres_h.setSuffix(" px")
+    cw_lay.addWidget(QLabel("W:"))
+    cw_lay.addWidget(dlg._sp_winres_w)
+    cw_lay.addSpacing(8)
+    cw_lay.addWidget(QLabel("H:"))
+    cw_lay.addWidget(dlg._sp_winres_h)
+    cw_lay.addStretch()
+    dlg._winres_custom_widget = cw_widget
+    cw_widget.setVisible(False)
+    disp_form.addRow("", cw_widget)
+
+    dlg._cb_fullres = QComboBox()
+    dlg._cb_fullres.addItems(full_resolutions)
+    dlg._cb_fullres.setEditable(True)
+    disp_form.addRow(i18n.tr("dosbox.fullresolution") + ":", dlg._cb_fullres)
+
+    dlg._chk_fullscreen = QCheckBox()
+    disp_form.addRow(i18n.tr("dosbox.fullscreen") + ":", dlg._chk_fullscreen)
+
+    dlg._cb_output = QComboBox()
+    dlg._cb_output.addItems(output_modes)
+    disp_form.addRow(i18n.tr("dosbox.output") + ":", dlg._cb_output)
+
+    dlg._chk_autolock = QCheckBox()
+    disp_form.addRow(i18n.tr("dosbox.autolock") + ":", dlg._chk_autolock)
+
+    dlg._sp_sensitivity = QSpinBox()
+    dlg._sp_sensitivity.setRange(1, 200)
+    dlg._sp_sensitivity.setFixedWidth(70)
+    disp_form.addRow(i18n.tr("dosbox.sensitivity") + ":", dlg._sp_sensitivity)
+    outer.addWidget(disp_grp)
+
+    # ── 映像 ──────────────────────────────────────────────
+    vid_grp, vid_form = dlg._make_form_group(
+        i18n.tr("dosbox.section_video"))
+    dlg._chk_aspect = QCheckBox()
+    vid_form.addRow(i18n.tr("dosbox.aspect") + ":", dlg._chk_aspect)
+    dlg._cb_scaler = QComboBox()
+    dlg._cb_scaler.addItems(scalers)
+    vid_form.addRow(i18n.tr("dosbox.scaler") + ":", dlg._cb_scaler)
+    outer.addWidget(vid_grp)
+
+    # ── パフォーマンス ────────────────────────────────────
+    perf_grp, perf_form = dlg._make_form_group(
+        i18n.tr("dosbox.section_perf"))
+    cycles_w = QWidget()
+    cycles_lay = QHBoxLayout(cycles_w)
+    cycles_lay.setContentsMargins(0, 0, 0, 0)
+    cycles_lay.setSpacing(4)
+    dlg._cb_cycles_mode = QComboBox()
+    dlg._cb_cycles_mode.addItems(["auto", "fixed", "max"])
+    dlg._cb_cycles_mode.setFixedWidth(70)
+    dlg._cb_cycles_mode.currentTextChanged.connect(
+        dlg._on_cycles_mode_changed)
+    dlg._edit_cycles = QLineEdit()
+    dlg._edit_cycles.setFixedWidth(70)
+    dlg._edit_cycles.setPlaceholderText("25000")
+    dlg._lbl_cycles_hint = QLabel(i18n.tr("dosbox.cycles_fixed_hint"))
+    dlg._lbl_cycles_hint.setObjectName("dimLabel")
+    cycles_lay.addWidget(dlg._cb_cycles_mode)
+    cycles_lay.addWidget(dlg._edit_cycles)
+    cycles_lay.addWidget(dlg._lbl_cycles_hint)
+    cycles_lay.addStretch()
+    perf_form.addRow(i18n.tr("dosbox.cycles") + ":", cycles_w)
+    outer.addWidget(perf_grp)
+
+    # ── サウンド ──────────────────────────────────────────
+    snd_grp, snd_form = dlg._make_form_group(
+        i18n.tr("dosbox.section_sound"))
+    dlg._chk_nosound = QCheckBox()
+    snd_form.addRow(i18n.tr("dosbox.nosound") + ":", dlg._chk_nosound)
+    dlg._cb_rate = QComboBox()
+    dlg._cb_rate.addItems(audio_rates)
+    snd_form.addRow(i18n.tr("dosbox.rate") + ":", dlg._cb_rate)
+    dlg._cb_mididevice = QComboBox()
+    dlg._cb_mididevice.addItems(midi_devices)
+    snd_form.addRow(i18n.tr("dosbox.mididevice") + ":", dlg._cb_mididevice)
+    outer.addWidget(snd_grp)
+
+    outer.addStretch()
+    return page

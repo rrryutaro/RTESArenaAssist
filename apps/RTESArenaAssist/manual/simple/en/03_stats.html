@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Character Stats</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #c9d1e0; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 5px 8px; text-align: left; font-size: 12px; border: 1px solid #1e3a4a; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.stat-label { color: #7ec8e3; font-weight: bold; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Character Stats</h1>
+
+<div class="note">All stats range from 1–100. <strong>50 is average</strong> — 50% of the Empire's population is better than you at that stat, and 50% are not.</div>
+
+<h2>The 8 Primary Stats</h2>
+
+<h3><span class="stat-label">STR — Strength</span></h3>
+<p>Governs how much damage you do in combat. Affects maximum carry weight (Max Kilos), fatigue, and jump distance. <strong>Essential for warrior classes.</strong></p>
+
+<h3><span class="stat-label">INT — Intelligence</span></h3>
+<p>Determines total spell points for spellcasters. Affects negotiation, price haggling, and lock-picking success. <strong>Essential for mage and thief classes.</strong></p>
+
+<h3><span class="stat-label">WIL — Willpower</span></h3>
+<p>Governs resistance to spells (Magic Defense). Also helps with negotiations. <strong>Vital for any character who wants spell protection.</strong></p>
+
+<h3><span class="stat-label">AGI — Agility</span></h3>
+<p>Directly affects melee hit chance (To Hit), chance to be hit (To Def), and chance to dodge targeted spells. Also governs stealing and lock-picking. <strong>Essential for thief classes.</strong></p>
+
+<h3><span class="stat-label">SPD — Speed</span></h3>
+<p>Controls movement rate, turning speed, and missile weapon fire rate. Can make the difference between life and death. <strong>Important for all classes.</strong></p>
+
+<h3><span class="stat-label">END — Endurance</span></h3>
+<p>Governs hit point totals, healing rate, and fatigue. Also affects resistance to poisons and drugs. <strong>Essential for warrior classes.</strong></p>
+
+<h3><span class="stat-label">PER — Personality</span></h3>
+<p>Determines Charisma modifier. Directly affects ability to negotiate, get better prices, and gather information. <strong>Important for social interactions.</strong></p>
+
+<h3><span class="stat-label">LUC — Luck</span></h3>
+<p>A powerful modifier to every action — attacking, defending, stealing, anything. Average is 50; higher is better. <strong>Affects all characters.</strong></p>
+
+<h2>Stat Modifiers Reference</h2>
+<table>
+  <tr><th>Stat</th><th>Modifier</th><th>Description</th></tr>
+  <tr><td>STR</td><td>Damage</td><td>Positive bonus at STR 55+; penalty at 45 and below</td></tr>
+  <tr><td>STR</td><td>Max Kilos</td><td>Exceeding this causes fatigue penalties until unable to move</td></tr>
+  <tr><td>INT</td><td>Spell Pts.</td><td>Non-spellcasters: 0. Sorcerers: up to INT×3</td></tr>
+  <tr><td>WIL</td><td>Magic Def.</td><td>Higher WIL = harder for enemies to hit you with spells</td></tr>
+  <tr><td>AGI</td><td>To Hit</td><td>Bonus or penalty to melee attack rolls</td></tr>
+  <tr><td>AGI</td><td>To Def.</td><td>Subtracts from your Armor Rating (lower AR = better protection)</td></tr>
+  <tr><td>END</td><td>Health</td><td>Added to health gained on each level-up</td></tr>
+  <tr><td>END</td><td>Heal Mod</td><td>Percentage modifier to base rest-healing rate</td></tr>
+  <tr><td>PER</td><td>Charisma</td><td>Modifier to NPC negotiation success chance</td></tr>
+  <tr><td>LUC</td><td>General</td><td>Latent influence on all actions taken</td></tr>
+</table>
+
+<h2>Armor Rating (AR)</h2>
+<p>AR is shown on the character portrait on Sheet Page 2. <strong>Lower AR = better protection</strong> (+10 is unprotected; negative values are heavily armored).</p>
+<table>
+  <tr><th>Body Part</th><th>Armor Piece</th></tr>
+  <tr><td>Head</td><td>Helm</td></tr>
+  <tr><td>Chest</td><td>Cuirass</td></tr>
+  <tr><td>Hands</td><td>Gauntlets</td></tr>
+  <tr><td>Waist and Legs</td><td>Greaves</td></tr>
+  <tr><td>Lower Legs and Feet</td><td>Boots</td></tr>
+  <tr><td>Shoulders (L &amp; R)</td><td>Pauldrons</td></tr>
+</table>
+
+</body>
+</html>

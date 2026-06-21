@@ -1,0 +1,11 @@
+{
+  "_comment": "degraded(en 後退)受容と確定した entry。整数 id のみ＝原文非含・公開安全。mixed-complete gate(v2_category_mixed_complete)がこれらを分母から除外し、provisioned が全解決するカテゴリを enable-ready にする。entry は static source 非存在(ACD 概念非存在/合成証明要)を確定した disposition と一致。",
+  "schema": "degraded_accepted/1",
+  "accepted": {
+    "pronouns": {"ids": [409005], "ref": "ACD pronoun 表に概念非存在=degraded が正"},
+    "npc_traits": {"ids": [407000], "ref": "intensity+trait 合成証明要の別段 D"},
+    "relations": {"ids": [410003, 410004, 410005, 410012, 410013], "ref": "ACD relation 表に当該概念非存在=degraded が正"},
+    "descriptors": {"ids": [402002, 402003, 402004, 402005, 402006, 402007], "ref": "age+gender 合成証明要の別段 D"},
+    "status_terms": {"ids": [412002, 412003, 412004], "ref": "ACD 非存在(別文脈外交語)D"}
+  }
+}

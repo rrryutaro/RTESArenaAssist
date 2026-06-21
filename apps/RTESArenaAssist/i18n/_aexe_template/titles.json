@@ -1,0 +1,156 @@
+{
+  "titles.title_lord.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 0,
+    "src_hash": "46b4a42e",
+    "index": 0,
+    "_meta": {
+      "gender": "male",
+      "verified_official": true,
+      "note": "TES5 ja: Lord Harkon 等で「ロード」使用"
+    }
+  },
+  "titles.title_duke.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 1,
+    "src_hash": "081677f6",
+    "index": 1,
+    "_meta": {
+      "gender": "male",
+      "verified_official": false,
+      "note": "Arena 固有称号。音写"
+    }
+  },
+  "titles.title_baron.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 2,
+    "src_hash": "1830cd8d",
+    "index": 2,
+    "_meta": {
+      "gender": "male",
+      "verified_official": false,
+      "note": "Arena 固有称号。音写"
+    }
+  },
+  "titles.title_count.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 3,
+    "src_hash": "66e12969",
+    "index": 3,
+    "_meta": {
+      "gender": "male",
+      "verified_official": true,
+      "note": "TES4 Oblivion 日本語版で「伯爵」が公式表記"
+    }
+  },
+  "titles.title_prince.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 4,
+    "src_hash": "e98c4b33",
+    "index": 4,
+    "_meta": {
+      "gender": "male",
+      "verified_official": false,
+      "note": "TES5 ja: Daedric Prince は「デイドラ・プリンス」"
+    }
+  },
+  "titles.title_king.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 5,
+    "src_hash": "364d37be",
+    "index": 5,
+    "_meta": {
+      "gender": "male",
+      "verified_official": true,
+      "note": "TES5 ja: High King→高王、King→王"
+    }
+  },
+  "titles.title_emperor.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 6,
+    "src_hash": "c3e50305",
+    "index": 6,
+    "_meta": {
+      "gender": "male",
+      "verified_official": true,
+      "note": "TES4/5 ja 公式"
+    }
+  },
+  "titles.title_lady.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 7,
+    "src_hash": "fc40dd41",
+    "index": 7,
+    "_meta": {
+      "gender": "female",
+      "verified_official": false,
+      "note": "音写"
+    }
+  },
+  "titles.title_duchess.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 8,
+    "src_hash": "9f354dd8",
+    "index": 8,
+    "_meta": {
+      "gender": "female",
+      "verified_official": false,
+      "note": "Arena 固有称号。音写"
+    }
+  },
+  "titles.title_baroness.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 9,
+    "src_hash": "cc70495c",
+    "index": 9,
+    "_meta": {
+      "gender": "female",
+      "verified_official": false,
+      "note": "Arena 固有称号。音写"
+    }
+  },
+  "titles.title_countess.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 10,
+    "src_hash": "7bf1c942",
+    "index": 10,
+    "_meta": {
+      "gender": "female",
+      "verified_official": false,
+      "note": "Count→伯爵 に準拠"
+    }
+  },
+  "titles.title_princess.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 11,
+    "src_hash": "ec65a740",
+    "index": 11,
+    "_meta": {
+      "gender": "female",
+      "verified_official": false,
+      "note": "音写"
+    }
+  },
+  "titles.title_queen.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 12,
+    "src_hash": "6911adcc",
+    "index": 12,
+    "_meta": {
+      "gender": "female",
+      "verified_official": true,
+      "note": "TES5 ja 公式"
+    }
+  },
+  "titles.title_empress.0": {
+    "src_table": "locations.ruler_titles",
+    "src_index": 13,
+    "src_hash": "f69a52bb",
+    "index": 13,
+    "_meta": {
+      "gender": "female",
+      "verified_official": true,
+      "note": "TES4 ja: Empress Katariah で「女帝」使用"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "location_types.lt_city_state.0": {
+    "src_table": "locations.location_types",
+    "src_index": 0,
+    "src_hash": "9b717dac"
+  },
+  "location_types.lt_town.0": {
+    "src_table": "locations.location_types",
+    "src_index": 1,
+    "src_hash": "5d9c113b"
+  },
+  "location_types.lt_village.0": {
+    "src_table": "locations.location_types",
+    "src_index": 2,
+    "src_hash": "1be3c783"
+  },
+  "location_types.lt_dungeon.0": {
+    "src_table": "locations.location_types",
+    "src_index": 4,
+    "src_hash": "ef947e3a"
+  }
+}

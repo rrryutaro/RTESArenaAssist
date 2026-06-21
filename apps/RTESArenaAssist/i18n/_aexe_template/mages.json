@@ -1,0 +1,650 @@
+{
+  "mages.Potion of Stamina": {
+    "src_table": "equipment.potion_names",
+    "src_index": 0,
+    "src_hash": "10772e9ee4390149",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Strength": {
+    "src_table": "equipment.potion_names",
+    "src_index": 1,
+    "src_hash": "b4a4a8ed22f0fc4d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Healing": {
+    "src_table": "equipment.potion_names",
+    "src_index": 2,
+    "src_hash": "fc14637321b7e755",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Restore Power": {
+    "src_table": "equipment.potion_names",
+    "src_index": 3,
+    "src_hash": "8417d8944b034f90",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Resist Fire": {
+    "src_table": "equipment.potion_names",
+    "src_index": 4,
+    "src_hash": "62b96b1dc535bdc0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Resist Cold": {
+    "src_table": "equipment.potion_names",
+    "src_index": 5,
+    "src_hash": "b32fc194b39f63f1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Resist Shock": {
+    "src_table": "equipment.potion_names",
+    "src_index": 6,
+    "src_hash": "08dfb3275b14673b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Cure Disease": {
+    "src_table": "equipment.potion_names",
+    "src_index": 7,
+    "src_hash": "de35d92d54a78e71",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Heal True": {
+    "src_table": "equipment.potion_names",
+    "src_index": 8,
+    "src_hash": "6c52d68daf9fcb1e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Levitation": {
+    "src_table": "equipment.potion_names",
+    "src_index": 9,
+    "src_hash": "aa780f7ff563a88a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Resist Poison": {
+    "src_table": "equipment.potion_names",
+    "src_index": 10,
+    "src_hash": "887fd3e9fd0d033c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Free Action": {
+    "src_table": "equipment.potion_names",
+    "src_index": 11,
+    "src_hash": "3e76c8397c60d84a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Cure Poison": {
+    "src_table": "equipment.potion_names",
+    "src_index": 12,
+    "src_hash": "59d1115f06f576a5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Invisibility": {
+    "src_table": "equipment.potion_names",
+    "src_index": 13,
+    "src_hash": "1b944d0862277033",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Potion of Purification": {
+    "src_table": "equipment.potion_names",
+    "src_index": 14,
+    "src_hash": "08c5dbc14d5d6e0f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Strength": {
+    "src_table": "entities.attribute_names",
+    "src_index": 0,
+    "src_hash": "63ee3a1b965a7bd2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Intelligence": {
+    "src_table": "entities.attribute_names",
+    "src_index": 1,
+    "src_hash": "78ea5ef30f1e6270",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Willpower": {
+    "src_table": "entities.attribute_names",
+    "src_index": 2,
+    "src_hash": "9a60a076b5624eb1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Agility": {
+    "src_table": "entities.attribute_names",
+    "src_index": 3,
+    "src_hash": "49796694dc677011",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Speed": {
+    "src_table": "entities.attribute_names",
+    "src_index": 4,
+    "src_hash": "c372fee9b4566b85",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Endurance": {
+    "src_table": "entities.attribute_names",
+    "src_index": 5,
+    "src_hash": "98c8abf84e23ff3f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Personality": {
+    "src_table": "entities.attribute_names",
+    "src_index": 6,
+    "src_hash": "95a295627e54e34a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Luck": {
+    "src_table": "entities.attribute_names",
+    "src_index": 7,
+    "src_hash": "382e766581df7c49",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "mages.Silence": {
+    "src_table": "mages.effect_types",
+    "src_index": 21,
+    "src_hash": "6c61fe498281f421",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Shield": {
+    "src_table": "mages.spell_geometry",
+    "src_index": 0,
+    "src_hash": "480d4be7d61fe52b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Light": {
+    "src_table": "mages.effect_types",
+    "src_index": 17,
+    "src_hash": "dbcd5e7bb7a0f538",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Heal": {
+    "src_table": "mages.effect_types",
+    "src_index": 12,
+    "src_hash": "421acf13c1cb044e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Invisibility": {
+    "src_table": "mages.effect_types",
+    "src_index": 15,
+    "src_hash": "d53895c6eb7816fb",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Cause": {
+    "src_table": "mages.effect_types",
+    "src_index": 0,
+    "src_hash": "7ba6317aefb0fec5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Continuous Damage": {
+    "src_table": "mages.effect_types",
+    "src_index": 1,
+    "src_hash": "c952ccff4ce38dd3",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Create": {
+    "src_table": "mages.effect_types",
+    "src_index": 2,
+    "src_hash": "4759498ac2a719c6",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Cure": {
+    "src_table": "mages.effect_types",
+    "src_index": 3,
+    "src_hash": "f22b5280088582f7",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Damage": {
+    "src_table": "mages.effect_types",
+    "src_index": 4,
+    "src_hash": "0c874f581a4534f1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Designate as Non-Target": {
+    "src_table": "mages.effect_types",
+    "src_index": 5,
+    "src_hash": "58736a46538d66ff",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Destroy": {
+    "src_table": "mages.effect_types",
+    "src_index": 6,
+    "src_hash": "ea9bb7ea83febba1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Drain Attribute": {
+    "src_table": "mages.effect_types",
+    "src_index": 9,
+    "src_hash": "82f4be39b119beaf",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Elemental Resistance": {
+    "src_table": "mages.effect_types",
+    "src_index": 10,
+    "src_hash": "9e48925e95ef86f0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Fortify Attribute": {
+    "src_table": "mages.effect_types",
+    "src_index": 11,
+    "src_hash": "569f89d5fa7a001e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Transfer": {
+    "src_table": "mages.effect_types",
+    "src_index": 13,
+    "src_hash": "dde8bef78cbb7206",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Levitate": {
+    "src_table": "mages.effect_types",
+    "src_index": 16,
+    "src_hash": "03a0beaa38ee0bf0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Lock": {
+    "src_table": "mages.effect_types",
+    "src_index": 18,
+    "src_hash": "db44b8db4f05d720",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Open": {
+    "src_table": "mages.effect_types",
+    "src_index": 19,
+    "src_hash": "ed077f3d8125d60d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Regenerate": {
+    "src_table": "mages.effect_types",
+    "src_index": 20,
+    "src_hash": "1651031bf58d8eea",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Spell Absorption": {
+    "src_table": "mages.effect_types",
+    "src_index": 22,
+    "src_hash": "6bfd889db0500696",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Spell Reflection": {
+    "src_table": "mages.effect_types",
+    "src_index": 23,
+    "src_hash": "a455ee60f116447f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Spell Resistance": {
+    "src_table": "mages.effect_types",
+    "src_index": 24,
+    "src_hash": "a5e3aca729682093",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.None": {
+    "src_table": "mages.resist_types",
+    "src_index": 5,
+    "src_hash": "dc937b59892604f5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Caster only": {
+    "src_table": "mages.target_types",
+    "src_index": 0,
+    "src_hash": "e5ec3132340708b8",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.1 Target, Touch": {
+    "src_table": "mages.target_types",
+    "src_index": 1,
+    "src_hash": "403c67c791ab6ff4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.1 Target at Range": {
+    "src_table": "mages.target_types",
+    "src_index": 2,
+    "src_hash": "71862009d047849a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Area - Centered on Caster": {
+    "src_table": "mages.target_types",
+    "src_index": 3,
+    "src_hash": "45340aca399e427d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Area - at Range, Explosion": {
+    "src_table": "mages.target_types",
+    "src_index": 4,
+    "src_hash": "a8e6b0a22a1d1dd9",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Fire": {
+    "src_table": "mages.damage_types",
+    "src_index": 0,
+    "src_hash": "c141faa80e43a119",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Cold": {
+    "src_table": "mages.damage_types",
+    "src_index": 1,
+    "src_hash": "f151cd9e12c8994e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Electricity": {
+    "src_table": "mages.damage_types",
+    "src_index": 2,
+    "src_hash": "a8b41baa4cf766fa",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Acid": {
+    "src_table": "mages.damage_types",
+    "src_index": 3,
+    "src_hash": "c4fdf6b89bdcabbc",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Poison": {
+    "src_table": "mages.damage_types",
+    "src_index": 4,
+    "src_hash": "d5a78b996fe640a3",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Magic": {
+    "src_table": "mages.resist_types",
+    "src_index": 4,
+    "src_hash": "ed1a5a81b8121ad1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Attribute": {
+    "src_table": "mages.attribute_kinds",
+    "src_index": 0,
+    "src_hash": "1d289028b79437ae",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Figured Attribute": {
+    "src_table": "mages.attribute_kinds",
+    "src_index": 1,
+    "src_hash": "1951d310cfba0c9a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Wall": {
+    "src_table": "mages.spell_geometry",
+    "src_index": 1,
+    "src_hash": "f76ea921edc2e55d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Floor": {
+    "src_table": "mages.spell_geometry",
+    "src_index": 2,
+    "src_hash": "d268c9c4492022ac",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Shock": {
+    "src_table": "mages.resist_types",
+    "src_index": 3,
+    "src_hash": "8d7aa335b28ead52",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Disintegrate": {
+    "src_table": "mages.effect_types",
+    "src_index": 7,
+    "src_hash": "59023abea680c1ec",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Dispel": {
+    "src_table": "mages.effect_types",
+    "src_index": 8,
+    "src_hash": "4db6659cf5cfe562",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Imprison": {
+    "src_table": "mages.effect_types",
+    "src_index": 14,
+    "src_hash": "20c5a7d825d6f2a6",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Health": {
+    "src_table": "character.stat_labels",
+    "src_index": 0,
+    "src_hash": "55898449eb74fb2e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Fatigue": {
+    "src_table": "character.stat_labels",
+    "src_index": 1,
+    "src_hash": "c83bec1f02849a09",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Spell Points": {
+    "src_table": "character.stat_labels",
+    "src_index": 2,
+    "src_hash": "9db44be953b0230c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "mages.Disease": {
+    "src_table": "mages.effect_sub_cause",
+    "src_index": 0,
+    "src_hash": "7bce5b949512e8c9",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_acd_title"
+    }
+  },
+  "mages.Paralyzation": {
+    "src_table": "mages.effect_sub_cause",
+    "src_index": 2,
+    "src_hash": "cb96521ce500708d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_acd_title"
+    }
+  },
+  "mages.Curse": {
+    "src_table": "mages.effect_sub_cause",
+    "src_index": 3,
+    "src_hash": "88b3d8eed54f6ff0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_acd_title"
+    }
+  }
+}

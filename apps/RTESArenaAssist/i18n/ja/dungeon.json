@@ -1,0 +1,23 @@
+{
+  "dungeon.imperial_city.0": "インペリアル・シティ",
+  "dungeon.dungeon.0": "ダンジョン",
+  "dungeon.wilderness.0": "ワイルダネス",
+  "dungeon.city.0": "都市",
+  "dungeon.town.0": "町",
+  "dungeon.north.0": "北",
+  "dungeon.northeast.0": "北東",
+  "dungeon.east.0": "東",
+  "dungeon.southeast.0": "南東",
+  "dungeon.south.0": "南",
+  "dungeon.southwest.0": "南西",
+  "dungeon.west.0": "西",
+  "dungeon.northwest.0": "北西",
+  "dungeon.iron.0": "アイアン",
+  "dungeon.steel.0": "スチール",
+  "dungeon.silver.0": "シルバー",
+  "dungeon.elven.0": "エルフの",
+  "dungeon.dwarven.0": "ドワーフの",
+  "dungeon.mithril.0": "ミスリル",
+  "dungeon.adamantium.0": "アダマンティウム",
+  "dungeon.ebony.0": "エボニー"
+}

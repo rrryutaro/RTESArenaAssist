@@ -1,0 +1,42 @@
+{
+  "chargen_provinces.0.0": {
+    "src_table": "locations.char_creation_province_names",
+    "src_index": 0,
+    "src_hash": "b3bc4969"
+  },
+  "chargen_provinces.1.0": {
+    "src_table": "locations.char_creation_province_names",
+    "src_index": 1,
+    "src_hash": "f70d9bd8"
+  },
+  "chargen_provinces.2.0": {
+    "src_table": "locations.char_creation_province_names",
+    "src_index": 2,
+    "src_hash": "a78da01c"
+  },
+  "chargen_provinces.3.0": {
+    "src_table": "locations.char_creation_province_names",
+    "src_index": 3,
+    "src_hash": "2110c502"
+  },
+  "chargen_provinces.5.0": {
+    "src_table": "locations.char_creation_province_names",
+    "src_index": 5,
+    "src_hash": "5b3b20c7"
+  },
+  "chargen_provinces.6.0": {
+    "src_table": "locations.char_creation_province_names",
+    "src_index": 6,
+    "src_hash": "82823cb4"
+  },
+  "chargen_provinces.7.0": {
+    "src_table": "locations.char_creation_province_names",
+    "src_index": 7,
+    "src_hash": "e0ba55b0"
+  },
+  "chargen_provinces.9.0": {
+    "src_table": "locations.char_creation_province_names",
+    "src_index": 4,
+    "src_hash": "b01900f0"
+  }
+}

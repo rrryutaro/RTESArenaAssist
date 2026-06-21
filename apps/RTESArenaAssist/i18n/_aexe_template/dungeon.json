@@ -1,0 +1,146 @@
+{
+  "dungeon.iron.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 0,
+    "src_hash": "bd223c81de7e86da",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "dungeon.steel.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 1,
+    "src_hash": "ea9973d1460ee95c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "dungeon.silver.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 2,
+    "src_hash": "a0b43df06f52085e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "dungeon.elven.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 3,
+    "src_hash": "969084145c4c0028",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "dungeon.dwarven.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 4,
+    "src_hash": "0dbb2ed558e85757",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "dungeon.mithril.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 5,
+    "src_hash": "1cad1be1b9bf74c4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "dungeon.adamantium.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 6,
+    "src_hash": "bc93634e216b57fe",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "dungeon.ebony.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 7,
+    "src_hash": "b2b3d59746ba2f47",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "dungeon.north.0": {
+    "src_table": "entities.directions",
+    "src_index": 0,
+    "src_hash": "dc365e79d41cfae1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "dungeon.northeast.0": {
+    "src_table": "entities.directions",
+    "src_index": 1,
+    "src_hash": "48d2278d84eb667b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "dungeon.east.0": {
+    "src_table": "entities.directions",
+    "src_index": 2,
+    "src_hash": "6bdb262b0201799a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "dungeon.southeast.0": {
+    "src_table": "entities.directions",
+    "src_index": 3,
+    "src_hash": "64e605d8ba678918",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "dungeon.south.0": {
+    "src_table": "entities.directions",
+    "src_index": 4,
+    "src_hash": "2daa8d4a05dfc643",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "dungeon.southwest.0": {
+    "src_table": "entities.directions",
+    "src_index": 5,
+    "src_hash": "7f692bc6ed459316",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "dungeon.west.0": {
+    "src_table": "entities.directions",
+    "src_index": 6,
+    "src_hash": "76a796208b71779c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "dungeon.northwest.0": {
+    "src_table": "entities.directions",
+    "src_index": 7,
+    "src_hash": "ff7744568082a6b8",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  }
+}

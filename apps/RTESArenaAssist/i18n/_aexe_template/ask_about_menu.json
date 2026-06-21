@@ -1,0 +1,101 @@
+{
+  "ask_about_menu.opt_work.0": {
+    "src_table": "menu.travel_places",
+    "src_index": 5,
+    "src_hash": "104ab9213e28e4ff",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "ask_about_menu.place_inn.0": {
+    "src_table": "menu.ask_about_places",
+    "src_index": 0,
+    "src_hash": "c53b45b2d2916331",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "ask_about_menu.place_temple.0": {
+    "src_table": "menu.ask_about_places",
+    "src_index": 1,
+    "src_hash": "67848024a5ed82f5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "ask_about_menu.place_equipment_store.0": {
+    "src_table": "menu.ask_about_places",
+    "src_index": 2,
+    "src_hash": "c18589ea99a08d61",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "ask_about_menu.place_mages_guild.0": {
+    "src_table": "menu.ask_about_places",
+    "src_index": 3,
+    "src_hash": "9e5e9877dac7d9ee",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "ask_about_menu.place_palace.0": {
+    "src_table": "menu.ask_about_places",
+    "src_index": 4,
+    "src_hash": "940d74b51ded0645",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "ask_about_menu.place_city_gates.0": {
+    "src_table": "menu.ask_about_places",
+    "src_index": 5,
+    "src_hash": "ebe5e3c14d6250b2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "ask_about_menu.place_nearest_inn.0": {
+    "src_table": "menu.ask_about_places",
+    "src_index": 6,
+    "src_hash": "428e664cc3b1492d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "ask_about_menu.place_nearest_temple.0": {
+    "src_table": "menu.ask_about_places",
+    "src_index": 7,
+    "src_hash": "3824bf9ce40e0184",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "ask_about_menu.place_nearest_store.0": {
+    "src_table": "menu.ask_about_places",
+    "src_index": 8,
+    "src_hash": "fb9177b044182e4a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "ask_about_menu.place_nearest_dungeon.0": {
+    "src_table": "menu.travel_places",
+    "src_index": 8,
+    "src_hash": "9638ca1ad555514b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  }
+}

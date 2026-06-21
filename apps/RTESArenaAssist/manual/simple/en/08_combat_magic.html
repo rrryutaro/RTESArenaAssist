@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Combat &amp; Magic</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.danger { background: #2e1a1a; border-left: 3px solid #a03030; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Combat &amp; Magic</h1>
+
+<h2>Combat Basics</h2>
+<p>Arena uses real-time combat. Click to attack. Whether you hit, and how much damage you deal, depends on your stats, your equipment, and the enemy's Armor Rating (AR).</p>
+
+<h2>Hit Chance Factors</h2>
+<table>
+  <tr><th>Factor</th><th>Effect</th></tr>
+  <tr><td>AGI (Agility)</td><td>To Hit bonus for attacker; To Def bonus for defender</td></tr>
+  <tr><td>LUC (Luck)</td><td>Random modifier applied to all actions</td></tr>
+  <tr><td>Redguard race</td><td>+level÷3 to hit and damage (melee only)</td></tr>
+  <tr><td>Wood Elf race</td><td>+level÷3 to hit and damage (bows only)</td></tr>
+  <tr><td>Dark Elf race</td><td>+level÷4 to hit and damage (melee and ranged)</td></tr>
+</table>
+
+<h2>Damage</h2>
+<p>Damage = weapon base value + STR modifier + race bonus. The target's Armor Rating (AR) reduces incoming damage — the lower the AR, the better the protection.</p>
+
+<h2>Critical Hit</h2>
+<div class="note">
+<strong>Critical Hit = 3× normal weapon damage.</strong><br>
+Thief-class characters gain a per-level chance to score one. Assassins have the highest chance. Rogues, Burglars, Bards, Acrobats, Monks, Archers (with bows), and Nightblades also have this ability.
+</div>
+
+<h2>Saving Throw</h2>
+<p>When targeted by a spell or special effect, a successful saving throw reduces or negates the effect. WIL (Willpower) governs success chance.</p>
+<table>
+  <tr><th>Class / Race</th><th>Save Result</th></tr>
+  <tr><td>Default</td><td>Success = half damage</td></tr>
+  <tr><td>Monk</td><td>Success = zero damage</td></tr>
+  <tr><td>Nord</td><td>Successful save vs. Cold = zero damage</td></tr>
+  <tr><td>Breton</td><td>Successful save vs. Magic = zero damage</td></tr>
+</table>
+
+<h2>Status Conditions</h2>
+<table>
+  <tr><th>Condition</th><th>Effect</th><th>How to Remove</th></tr>
+  <tr><td>Diseased</td><td>Stat penalties, impaired healing</td><td>Temple, healing spell</td></tr>
+  <tr><td>Poisoned</td><td>Ongoing damage over time</td><td>Temple, antidote potion</td></tr>
+  <tr><td>Cursed</td><td>Stat penalties</td><td>Temple</td></tr>
+  <tr><td>Blessed</td><td>Temporary stat bonuses (beneficial)</td><td>Wears off over time</td></tr>
+  <tr><td>Paralyzed</td><td>Unable to act</td><td>Wears off, dispel spell</td></tr>
+  <tr><td>Silenced</td><td>Cannot cast spells</td><td>Wears off, dispel spell</td></tr>
+  <tr><td>Encumbered</td><td>Movement and action penalties</td><td>Drop items / Fortify</td></tr>
+</table>
+<div class="danger">
+<strong>Paralysis immune:</strong> Knight and High Elf are completely immune to paralyzation.<br>
+<strong>Poison immune:</strong> Barbarian is completely immune to poison.
+</div>
+
+<h2>Magic System</h2>
+<p>Spells are selected from your Spellbook (character sheet Page 2). Each spell costs Spell Points (SP). When SP reaches 0, no spells can be cast. SP is determined by INT × a class-specific multiplier.</p>
+
+<h2>Spell Point Multipliers</h2>
+<table>
+  <tr><th>Class</th><th>SP = INT ×</th></tr>
+  <tr><td>Mage</td><td>× 2</td></tr>
+  <tr><td>Sorcerer</td><td>Up to × 3 (absorbed from spells, not self-generated)</td></tr>
+  <tr><td>Healer</td><td>× 1.75</td></tr>
+  <tr><td>Battle Mage</td><td>× 1.75</td></tr>
+  <tr><td>Spellsword</td><td>× 1.5</td></tr>
+  <tr><td>Nightblade</td><td>× 1.5</td></tr>
+  <tr><td>Bard</td><td>= INT (× 1)</td></tr>
+</table>
+
+<h2>Spell Categories</h2>
+<table>
+  <tr><th>Category</th><th>Examples</th><th>Purpose</th></tr>
+  <tr><td>Damage</td><td>Fire Damage, Frost, Shock</td><td>Deal damage to enemies</td></tr>
+  <tr><td>Healing</td><td>Heal, Heal Other</td><td>Restore hit points</td></tr>
+  <tr><td>Defense</td><td>Shield, Fortify, Slowfall</td><td>Enhance protection</td></tr>
+  <tr><td>Movement</td><td>Levitate, Teleport, Recall</td><td>Travel and escape</td></tr>
+  <tr><td>Stealth</td><td>Invisibility, Chameleon</td><td>Conceal yourself</td></tr>
+  <tr><td>Detection</td><td>Detect Life, Night Eye, Light</td><td>See enemies and surroundings</td></tr>
+  <tr><td>Debuff</td><td>Paralyze, Silence, Charm</td><td>Disable enemies</td></tr>
+  <tr><td>Utility</td><td>Open, Identify, Passwall</td><td>Unlock, appraise, traverse walls</td></tr>
+</table>
+
+<h2>Spellmaker</h2>
+<p>Available at the Mages Guild. Create custom spells by combining effects, range, duration, and magnitude. Healers get discounts on defensive effects; Battle Mages get discounts on offensive effects.</p>
+
+<h2>Experience &amp; Leveling</h2>
+<p>Earn experience by defeating enemies and completing quests. Leveling up increases stats and health (and SP for casters).</p>
+<div class="note">
+<strong>Level-up speed (fastest first):</strong> Thief → Warrior → Warrior subclasses → Thief subclasses → Mage → Mage subclasses
+</div>
+
+</body>
+</html>

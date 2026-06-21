@@ -1,0 +1,254 @@
+{
+  "equipment.dagger.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 1,
+    "src_hash": "5679daa7c55dde15",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.staff.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 0,
+    "src_hash": "681927e34b77e4b9",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.mace.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 11,
+    "src_hash": "6659c4ca642045f4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.flail.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 12,
+    "src_hash": "0aac4f3d8041a76c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.shortsword.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 2,
+    "src_hash": "47564edb94d9e188",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.broadsword.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 3,
+    "src_hash": "357ad3cc89a37597",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.saber.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 4,
+    "src_hash": "5f002f3dd83cc82f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.tanto.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 7,
+    "src_hash": "4eb8d15067887468",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.war_axe.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 14,
+    "src_hash": "706ae9f93c0af9bd",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.short_bow.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 16,
+    "src_hash": "bc0f80620ba6caca",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.long_bow.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 17,
+    "src_hash": "4cf469d6ea547ff7",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.buckler.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 7,
+    "src_hash": "614ea15d02fb6ab1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.round_shield.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 8,
+    "src_hash": "577a1b47bcaea05e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.tower_shield.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 10,
+    "src_hash": "405da423fa6535ec",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.helm.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 5,
+    "src_hash": "7e94675ff2dea116",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.cuirass.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 0,
+    "src_hash": "e33483afe4cd449c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.gauntlets.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 1,
+    "src_hash": "a3ef91cb42368893",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.greaves.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 2,
+    "src_hash": "13cc7152f93191c4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.boots.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 6,
+    "src_hash": "929433e4be1dbd23",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.iron.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 0,
+    "src_hash": "bd223c81de7e86da",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.steel.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 1,
+    "src_hash": "ea9973d1460ee95c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.silver.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 2,
+    "src_hash": "a0b43df06f52085e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.elven.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 3,
+    "src_hash": "969084145c4c0028",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.dwarven.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 4,
+    "src_hash": "0dbb2ed558e85757",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.mithril.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 5,
+    "src_hash": "1cad1be1b9bf74c4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.adamantium.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 6,
+    "src_hash": "bc93634e216b57fe",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.ebony.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 7,
+    "src_hash": "b2b3d59746ba2f47",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "equipment.broadsword_1.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 3,
+    "src_hash": "357ad3cc89a37597",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  }
+}

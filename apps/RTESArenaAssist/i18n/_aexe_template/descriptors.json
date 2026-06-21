@@ -1,0 +1,20 @@
+{
+  "descriptors.0.0": {
+    "src_table": "entities.person_names",
+    "src_index": 5,
+    "src_hash": "48b676e2b107da67",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "descriptors.1.0": {
+    "src_table": "entities.person_names",
+    "src_index": 6,
+    "src_hash": "cf2e5bff1ef03dcd",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  }
+}

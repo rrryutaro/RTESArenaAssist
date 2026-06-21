@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Controls &amp; UI</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Controls &amp; UI</h1>
+
+<h2>Character Sheet — Page 1</h2>
+<table>
+  <tr><th>Field</th><th>Description</th></tr>
+  <tr><td>Name / Race / Class</td><td>Character's basic identity</td></tr>
+  <tr><td>Experience</td><td>Current accumulated experience points</td></tr>
+  <tr><td>Level</td><td>Current character level</td></tr>
+  <tr><td>Health</td><td>Current hit points</td></tr>
+  <tr><td>Fatigue</td><td>Ranges from 2 to 200</td></tr>
+  <tr><td>Gold</td><td>Current gold on hand</td></tr>
+  <tr><td>Next Page</td><td>Go to Page 2 (equipment list)</td></tr>
+  <tr><td>Done</td><td>Close the character sheet</td></tr>
+</table>
+
+<h2>Character Sheet — Page 2 (Equipment)</h2>
+<table>
+  <tr><th>Color</th><th>Meaning</th></tr>
+  <tr><td style="color:#ffd700">Yellow</td><td>Currently equipped item</td></tr>
+  <tr><td style="color:#d2b48c">Tan</td><td>Equippable item</td></tr>
+  <tr><td style="color:#ff6b6b">Red</td><td>Cannot be equipped</td></tr>
+  <tr><td style="color:#00ffff">Cyan</td><td>Unidentified magical item</td></tr>
+  <tr><td style="color:#88ffff">Bright cyan</td><td>Unidentified magical item (equipped)</td></tr>
+</table>
+<p><strong>Left-click</strong> to equip an item. <strong>Right-click</strong> for item info. Scroll arrows navigate up to 40 items.</p>
+<p><strong>Drop</strong>: Drop the highlighted item. <strong>Spellbook</strong>: Show spells. <strong>Exit</strong>: Return to Page 1.</p>
+
+<h2>Mouse Controls</h2>
+<table>
+  <tr><th>Action</th><th>Effect</th></tr>
+  <tr><td>Left-click (in world)</td><td>Move forward / interact / equip</td></tr>
+  <tr><td>Right-click (in world)</td><td>Move backward</td></tr>
+  <tr><td>Left-click (UI)</td><td>Select / confirm</td></tr>
+  <tr><td>Right-click (item)</td><td>Show item information</td></tr>
+  <tr><td>Mouse move left/right</td><td>Turn left/right</td></tr>
+  <tr><td>Mouse move up/down</td><td>Look up/down</td></tr>
+</table>
+
+<h2>Keyboard Controls</h2>
+<table>
+  <tr><th>Key</th><th>Action</th></tr>
+  <tr><td><span class="key">↑</span> / <span class="key">W</span></td><td>Move forward</td></tr>
+  <tr><td><span class="key">↓</span> / <span class="key">S</span></td><td>Move backward</td></tr>
+  <tr><td><span class="key">←</span> / <span class="key">A</span></td><td>Turn left</td></tr>
+  <tr><td><span class="key">→</span> / <span class="key">D</span></td><td>Turn right</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>Toggle automap</td></tr>
+  <tr><td><span class="key">C</span></td><td>Character sheet</td></tr>
+  <tr><td><span class="key">L</span></td><td>Logbook</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>Menu / go back</td></tr>
+  <tr><td><span class="key">F1</span></td><td>Help</td></tr>
+  <tr><td><span class="key">Alt+F4</span></td><td>Quit game</td></tr>
+</table>
+
+<div class="note">
+<strong>DOSBox tips:</strong> <span class="key">Ctrl+F10</span> toggles mouse capture. <span class="key">Alt+Enter</span> toggles fullscreen/windowed mode.
+</div>
+
+<h2>In-Game Actions</h2>
+<table>
+  <tr><th>Action</th><th>Description</th></tr>
+  <tr><td>Talk</td><td>Speak to NPCs for information and quests</td></tr>
+  <tr><td>Steal</td><td>Steal an item from a target (AGI-based success)</td></tr>
+  <tr><td>Grab</td><td>Pick up an item from the ground</td></tr>
+  <tr><td>Rest / Camp</td><td>Recover health and fatigue; Ria may appear in dreams</td></tr>
+  <tr><td>Cast</td><td>Use a spell from your spellbook</td></tr>
+  <tr><td>Use</td><td>Use a held item</td></tr>
+</table>
+
+</body>
+</html>

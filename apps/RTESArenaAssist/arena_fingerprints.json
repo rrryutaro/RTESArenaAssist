@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "note": "Arena 資産の対応指紋(SHA-256)。原文を含まない。固定 offset 由来(EXE 由来)の採取を適用してよい『同一資産か』を機械判定するために使う。SHA-256=確立した内容同一性判定。Steam appmanifest/build id は補助情報で、最終判定は実ファイルハッシュで行う。",
+  "asset_sets": [
+    {
+      "id": "steam_acd_2026_06_15",
+      "label": "Steam版 Arena (ACD.EXE / CD版・2026-06-15 検証)",
+      "exe_kind": "ACD.EXE",
+      "files": {
+        "ACD.EXE": "40dfed48a66154feeda2dc33b9549570b4392874750101f264e7de25ece98a7d",
+        "GLOBAL.BSA": "345385c1565d9ca73e2d59d71a422498135485e2d01d4df66355ed804209042d"
+      },
+      "supports_aexe_offsets": true,
+      "supports_akey_acd_offsets": true
+    }
+  ]
+}

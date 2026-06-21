@@ -1,0 +1,74 @@
+{
+  "chargen_race_descriptions.0.0": {
+    "src_table": "races.singular",
+    "src_index": 0,
+    "src_hash": "c1901828a222e3a2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "chargen_race_descriptions.1.0": {
+    "src_table": "races.singular",
+    "src_index": 1,
+    "src_hash": "b3fb8324c0ce7634",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "chargen_race_descriptions.2.0": {
+    "src_table": "races.singular",
+    "src_index": 2,
+    "src_hash": "85fb49e051915a77",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "chargen_race_descriptions.3.0": {
+    "src_table": "races.singular",
+    "src_index": 3,
+    "src_hash": "85985c8c3a772172",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "chargen_race_descriptions.4.0": {
+    "src_table": "races.singular",
+    "src_index": 4,
+    "src_hash": "2a8e80c97798a59a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "chargen_race_descriptions.5.0": {
+    "src_table": "races.singular",
+    "src_index": 5,
+    "src_hash": "d6748071c4f3f01e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "chargen_race_descriptions.6.0": {
+    "src_table": "races.singular",
+    "src_index": 6,
+    "src_hash": "42d3e3c0227e59f0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "chargen_race_descriptions.7.0": {
+    "src_table": "races.singular",
+    "src_index": 7,
+    "src_hash": "856a8081ca116253",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  }
+}

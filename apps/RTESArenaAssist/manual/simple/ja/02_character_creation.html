@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>キャラクター作成</title>
+<style>
+body { font-family: "メイリオ", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 10px 0; }
+ol { margin: 0 0 10px 0; padding-left: 20px; }
+li { margin-bottom: 4px; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>キャラクター作成</h1>
+
+<h2>ゲーム開始オプション</h2>
+<ol>
+  <li><strong>新規ゲーム開始（Start New Game）</strong> — 初めてプレイするときに選択。クエストとNPCが初期化される。</li>
+  <li><strong>ゲームロード（Load Saved Game）</strong> — 以前のセーブデータから再開。</li>
+  <li><strong>終了（Exit）</strong> — DOSに戻る。</li>
+</ol>
+
+<h2>キャラクター作成の2通り</h2>
+<ol>
+  <li>
+    <strong>自動生成（Generate）</strong><br>
+    10の質問に答えることで、あなたの性格に合ったクラスが推奨される。
+    推奨クラスは参考に過ぎず、変更してもかまわない。質問への回答がクラスを「決定」するわけではない。
+  </li>
+  <li>
+    <strong>選択（Select）</strong><br>
+    18クラスの一覧から直接選ぶ。
+  </li>
+</ol>
+
+<h2>出身地と名前</h2>
+<p>クラス選択の後、故郷の州（Province）とキャラクター名を設定する。出身地を選ぶと種族（Race）が決まる。</p>
+
+<h2>ステータス配分</h2>
+<p>すべてのステータスは1〜100の範囲で、50が平均値。
+選んだ種族に基づいた初期ステータス範囲が設定される。さらに「ボーナスポイント（Bonus Points）」を自分でステータスに配分できる。
+選択したクラスにとって重要なステータスに重点的に振ること。</p>
+<div class="note">例：STR 72 のキャラクターは、帝国民の71%より強く、72のSTRを持つ者と同等、それ以上のSTRを持つ者には及ばない。</div>
+
+<h2>顔の選択</h2>
+<p>ステータス配分後、キャラクターの外見（顔）を選ぶ。左クリックで顔が切り替わる。「完了（Done）」で冒険へ。</p>
+
+</body>
+</html>

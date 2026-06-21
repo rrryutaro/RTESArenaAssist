@@ -1,0 +1,41 @@
+# Python キャッシュ
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 仮想環境
+.venv/
+venv/
+
+# 環境変数
+.env
+
+# OS 生成ファイル
+.DS_Store
+Thumbs.db
+
+# Claude Code ローカル設定
+.claude/
+
+# ビルド成果物
+build/
+build-public/
+dist/
+dist-public/
+
+# ビルド時生成物（exe 内 seed パック）
+apps/RTESArenaAssist/_seed_data.py
+
+# 実行時生成物（ユーザー環境で生成・配布物ではない）
+apps/RTESArenaAssist/assist_settings.json
+apps/RTESArenaAssist/assist_debug.log
+apps/RTESArenaAssist/logs/
+apps/RTESArenaAssist/captures/
+apps/RTESArenaAssist/ext_data/
+apps/RTESArenaAssist/saves_backup/
+apps/RTESArenaAssist/output/
+
+# Arena 由来データ（ユーザー環境のみ・公開物に含めない）
+*.localpack
+*.pak

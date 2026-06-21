@@ -1,0 +1,56 @@
+{
+  "_comment": "Central per-language metadata (single address). 言語追加=ここに1エントリ＋i18n/<tag>/フォルダ。",
+  "_default_fallback": "en",
+  "languages": {
+    "en": {
+      "lang_code": "en",
+      "display_name": "English",
+      "direction": "ltr",
+      "fallback_chain": [
+        "en"
+      ],
+      "font_hint": "Segoe UI, Arial, sans-serif",
+      "plural_form": "en_like_2",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "quote_open": "“",
+      "quote_close": "”",
+      "secondary_quote_open": "‘",
+      "secondary_quote_close": "’"
+    },
+    "ja": {
+      "lang_code": "ja",
+      "display_name": "日本語",
+      "direction": "ltr",
+      "fallback_chain": [
+        "ja",
+        "en"
+      ],
+      "font_hint": "Noto Sans CJK JP, Yu Gothic UI, Meiryo, sans-serif",
+      "plural_form": "no_plural",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "quote_open": "「",
+      "quote_close": "」",
+      "secondary_quote_open": "『",
+      "secondary_quote_close": "』"
+    },
+    "es": {
+      "lang_code": "es",
+      "display_name": "Español",
+      "direction": "ltr",
+      "fallback_chain": [
+        "es",
+        "en"
+      ],
+      "font_hint": "Segoe UI, Arial, sans-serif",
+      "plural_form": "en_like_2",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "quote_open": "“",
+      "quote_close": "”",
+      "secondary_quote_open": "‘",
+      "secondary_quote_close": "’"
+    }
+  }
+}

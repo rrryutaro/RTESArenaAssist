@@ -1,0 +1,1184 @@
+{
+  "items.weapons.0.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 0,
+    "src_hash": "681927e34b77e4b9",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.1.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 1,
+    "src_hash": "5679daa7c55dde15",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.2.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 2,
+    "src_hash": "47564edb94d9e188",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.3.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 3,
+    "src_hash": "357ad3cc89a37597",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.4.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 4,
+    "src_hash": "5f002f3dd83cc82f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.5.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 5,
+    "src_hash": "c47593d2cf1da5f5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.6.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 6,
+    "src_hash": "7606edf0523745f5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.7.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 7,
+    "src_hash": "4eb8d15067887468",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.8.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 8,
+    "src_hash": "8dafc3efddb94824",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.9.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 9,
+    "src_hash": "2a35ee9463d44929",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.10.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 10,
+    "src_hash": "c9269e06fdc7090f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.11.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 11,
+    "src_hash": "6659c4ca642045f4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.12.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 12,
+    "src_hash": "0aac4f3d8041a76c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.13.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 13,
+    "src_hash": "7c7bb9fa53976712",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.14.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 14,
+    "src_hash": "706ae9f93c0af9bd",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.15.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 15,
+    "src_hash": "218e607c02c8cdc9",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.16.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 16,
+    "src_hash": "bc0f80620ba6caca",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.weapons.17.0": {
+    "src_table": "equipment.weapon_names",
+    "src_index": 17,
+    "src_hash": "4cf469d6ea547ff7",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armor_slots.0.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 0,
+    "src_hash": "e33483afe4cd449c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armor_slots.1.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 1,
+    "src_hash": "a3ef91cb42368893",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armor_slots.2.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 2,
+    "src_hash": "13cc7152f93191c4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armor_slots.3.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 3,
+    "src_hash": "178488a1e817fbb0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armor_slots.4.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 4,
+    "src_hash": "b551fc97242ae6a6",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armor_slots.5.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 5,
+    "src_hash": "7e94675ff2dea116",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armor_slots.6.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 6,
+    "src_hash": "929433e4be1dbd23",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.shields.7.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 7,
+    "src_hash": "614ea15d02fb6ab1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.shields.8.0": {
+    "src_table": "equipment.armor_names",
+    "src_index": 8,
+    "src_hash": "577a1b47bcaea05e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.shields.9.0": {
+    "src_table": "equipment.plate_armor_names",
+    "src_index": 9,
+    "src_hash": "9374d7531a522825",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.shields.10.0": {
+    "src_table": "equipment.plate_armor_names",
+    "src_index": 10,
+    "src_hash": "918db6004edae841",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.accessories.0.0": {
+    "src_table": "equipment.enhancement_item_names",
+    "src_index": 0,
+    "src_hash": "9204116129ceb161",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.accessories.1.0": {
+    "src_table": "equipment.enhancement_item_names",
+    "src_index": 1,
+    "src_hash": "eeebd533ebeefdf5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.accessories.2.0": {
+    "src_table": "equipment.enhancement_item_names",
+    "src_index": 2,
+    "src_hash": "73ce8e69de0dc304",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.accessories.3.0": {
+    "src_table": "equipment.enhancement_item_names",
+    "src_index": 3,
+    "src_hash": "e721e319e5f96d78",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.accessory_attributes.0.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 0,
+    "src_hash": "143d2d7f8da2c0f6",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.accessory_attributes.1.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 1,
+    "src_hash": "ac7a3cc428c323dd",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.accessory_attributes.2.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 2,
+    "src_hash": "01faf67d6eb0017b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.accessory_attributes.3.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 3,
+    "src_hash": "254d0b27e0c919d7",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.accessory_attributes.4.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 4,
+    "src_hash": "ddec01c857c8c7b9",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.accessory_attributes.5.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 5,
+    "src_hash": "47f59430b58e6d21",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.accessory_attributes.6.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 6,
+    "src_hash": "d073f70be0e0f54d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.accessory_attributes.7.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 7,
+    "src_hash": "9cb698f6576f501c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.magical_materials.0.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 0,
+    "src_hash": "bd223c81de7e86da",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.magical_materials.1.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 1,
+    "src_hash": "ea9973d1460ee95c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.magical_materials.2.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 2,
+    "src_hash": "a0b43df06f52085e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.magical_materials.3.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 3,
+    "src_hash": "969084145c4c0028",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.magical_materials.4.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 4,
+    "src_hash": "0dbb2ed558e85757",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.magical_materials.5.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 5,
+    "src_hash": "1cad1be1b9bf74c4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.magical_materials.6.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 6,
+    "src_hash": "bc93634e216b57fe",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.magical_materials.7.0": {
+    "src_table": "equipment.material_names",
+    "src_index": 7,
+    "src_hash": "b2b3d59746ba2f47",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.0.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 0,
+    "src_hash": "10772e9ee4390149",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.1.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 1,
+    "src_hash": "b4a4a8ed22f0fc4d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.2.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 2,
+    "src_hash": "fc14637321b7e755",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.3.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 3,
+    "src_hash": "8417d8944b034f90",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.4.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 4,
+    "src_hash": "62b96b1dc535bdc0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.5.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 5,
+    "src_hash": "b32fc194b39f63f1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.6.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 6,
+    "src_hash": "08dfb3275b14673b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.7.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 7,
+    "src_hash": "de35d92d54a78e71",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.8.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 8,
+    "src_hash": "6c52d68daf9fcb1e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.9.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 9,
+    "src_hash": "aa780f7ff563a88a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.10.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 10,
+    "src_hash": "887fd3e9fd0d033c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.11.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 11,
+    "src_hash": "3e76c8397c60d84a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.12.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 12,
+    "src_hash": "59d1115f06f576a5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.13.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 13,
+    "src_hash": "1b944d0862277033",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.potions.14.0": {
+    "src_table": "equipment.potion_names",
+    "src_index": 14,
+    "src_hash": "08c5dbc14d5d6e0f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.conditions.0.0": {
+    "src_table": "equipment.item_condition_names",
+    "src_index": 0,
+    "src_hash": "cab6a859fda3243e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.conditions.1.0": {
+    "src_table": "equipment.item_condition_names",
+    "src_index": 1,
+    "src_hash": "8e5913f90c2f093c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.conditions.2.0": {
+    "src_table": "equipment.item_condition_names",
+    "src_index": 2,
+    "src_hash": "58a34c6726d0fd31",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.conditions.3.0": {
+    "src_table": "equipment.item_condition_names",
+    "src_index": 3,
+    "src_hash": "31a0a549d3df608d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.conditions.4.0": {
+    "src_table": "equipment.item_condition_names",
+    "src_index": 4,
+    "src_hash": "ae7d8dfac9ff5e0f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.conditions.5.0": {
+    "src_table": "equipment.item_condition_names",
+    "src_index": 5,
+    "src_hash": "9ba7cd8020da7768",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.conditions.6.0": {
+    "src_table": "equipment.item_condition_names",
+    "src_index": 6,
+    "src_hash": "a8af5326fa366344",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.conditions.7.0": {
+    "src_table": "equipment.item_condition_names",
+    "src_index": 7,
+    "src_hash": "18fdd549b2ed367a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.quest_items.0.0": {
+    "src_table": "equipment.spellcasting_item_names",
+    "src_index": 0,
+    "src_hash": "d7cda0ca2c8586e5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.quest_items.1.0": {
+    "src_table": "equipment.enhancement_item_names",
+    "src_index": 2,
+    "src_hash": "73ce8e69de0dc304",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.quest_items.2.0": {
+    "src_table": "quests.main_quest_item_names",
+    "src_index": 0,
+    "src_hash": "ff872964e5ec9c9b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.drinks.5.0": {
+    "src_table": "inn.drinks_common",
+    "src_index": 8,
+    "src_hash": "72e9a59f5a1d6289",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.key_materials.0.0": {
+    "src_table": "status.key_names",
+    "src_index": 9,
+    "strip_article": true,
+    "src_hash": "846a5acd667a2b2d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "aexe_table_keynames"
+    }
+  },
+  "items.key_materials.1.0": {
+    "src_table": "status.key_names",
+    "src_index": 1,
+    "strip_article": true,
+    "src_hash": "12bd0ec14a58f273",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "aexe_table_keynames"
+    }
+  },
+  "items.key_materials.3.0": {
+    "src_table": "status.key_names",
+    "src_index": 8,
+    "strip_article": true,
+    "src_hash": "7e86c85368989944",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "aexe_table_keynames"
+    }
+  },
+  "items.key_materials.4.0": {
+    "src_table": "status.key_names",
+    "src_index": 11,
+    "strip_article": true,
+    "src_hash": "ba5bc6118ba212b2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "aexe_table_keynames"
+    }
+  },
+  "items.key_materials.5.0": {
+    "src_table": "status.key_names",
+    "src_index": 4,
+    "strip_article": true,
+    "src_hash": "ad38faaac0f2e171",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "aexe_table_keynames"
+    }
+  },
+  "items.key_materials.6.0": {
+    "src_table": "status.key_names",
+    "src_index": 3,
+    "strip_article": true,
+    "src_hash": "be6ff071117918b3",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "aexe_table_keynames"
+    }
+  },
+  "items.key_materials.9.0": {
+    "src_table": "status.key_names",
+    "src_index": 7,
+    "strip_article": true,
+    "src_hash": "192e0795f46a210d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "aexe_table_keynames"
+    }
+  },
+  "items.key_materials.12.0": {
+    "src_table": "status.key_names",
+    "src_index": 5,
+    "strip_article": true,
+    "src_hash": "b1a597b8841042cb",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "aexe_table_keynames"
+    }
+  },
+  "items.key_materials.13.0": {
+    "src_table": "status.key_names",
+    "src_index": 0,
+    "strip_article": true,
+    "src_hash": "7e96f92bbdc9885c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "aexe_table_keynames"
+    }
+  },
+  "items.key_materials.14.0": {
+    "src_table": "status.key_names",
+    "src_index": 2,
+    "strip_article": true,
+    "src_hash": "5245ebda5bcc0772",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "aexe_table_keynames"
+    }
+  },
+  "items.key_materials.15.0": {
+    "src_table": "status.key_names",
+    "src_index": 6,
+    "strip_article": true,
+    "src_hash": "cd0872c7c9e67162",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "aexe_table_keynames"
+    }
+  },
+  "items.key_materials.16.0": {
+    "src_table": "status.key_names",
+    "src_index": 10,
+    "strip_article": true,
+    "src_hash": "e4ff2b4a10349947",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "aexe_table_keynames"
+    }
+  },
+  "items.spellcasting_items.0.0": {
+    "src_table": "equipment.spellcasting_item_names",
+    "src_index": 0,
+    "src_hash": "d7cda0ca2c8586e5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.spellcasting_items.1.0": {
+    "src_table": "equipment.spellcasting_item_names",
+    "src_index": 1,
+    "src_hash": "b8c18c6a3877270c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.spellcasting_items.2.0": {
+    "src_table": "equipment.spellcasting_item_names",
+    "src_index": 2,
+    "src_hash": "e00b7065984daa7d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.spellcasting_items.3.0": {
+    "src_table": "equipment.spellcasting_item_names",
+    "src_index": 3,
+    "src_hash": "b3f952e8b6787ce0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.0.0": {
+    "src_table": "equipment.leather_armor_names",
+    "src_index": 0,
+    "src_hash": "c46f9e75b4ba3b01",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.1.0": {
+    "src_table": "equipment.leather_armor_names",
+    "src_index": 1,
+    "src_hash": "457e58b388c872b5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.2.0": {
+    "src_table": "equipment.leather_armor_names",
+    "src_index": 2,
+    "src_hash": "4cdaf49fbe5a9610",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.3.0": {
+    "src_table": "equipment.leather_armor_names",
+    "src_index": 3,
+    "src_hash": "307548d574baad19",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.4.0": {
+    "src_table": "equipment.leather_armor_names",
+    "src_index": 4,
+    "src_hash": "dc89496d07e9a891",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.5.0": {
+    "src_table": "equipment.leather_armor_names",
+    "src_index": 5,
+    "src_hash": "5d73cb74c4f1db87",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.6.0": {
+    "src_table": "equipment.leather_armor_names",
+    "src_index": 6,
+    "src_hash": "f8e3c289cecfe95e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.7.0": {
+    "src_table": "equipment.chain_armor_names",
+    "src_index": 0,
+    "src_hash": "a1784dc6fced3aa9",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.8.0": {
+    "src_table": "equipment.chain_armor_names",
+    "src_index": 1,
+    "src_hash": "f291c0b22929ad70",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.9.0": {
+    "src_table": "equipment.chain_armor_names",
+    "src_index": 2,
+    "src_hash": "3c2cc29d3a6490a4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.10.0": {
+    "src_table": "equipment.chain_armor_names",
+    "src_index": 3,
+    "src_hash": "61a3294380e024a4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.11.0": {
+    "src_table": "equipment.chain_armor_names",
+    "src_index": 4,
+    "src_hash": "4de402817b5492dd",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.12.0": {
+    "src_table": "equipment.chain_armor_names",
+    "src_index": 5,
+    "src_hash": "c9227895d251081c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.13.0": {
+    "src_table": "equipment.chain_armor_names",
+    "src_index": 6,
+    "src_hash": "0b4b4b7eec531eef",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.14.0": {
+    "src_table": "equipment.plate_armor_names",
+    "src_index": 0,
+    "src_hash": "ca514c337c23b8e0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.15.0": {
+    "src_table": "equipment.plate_armor_names",
+    "src_index": 1,
+    "src_hash": "9a87ea1760394d60",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.16.0": {
+    "src_table": "equipment.plate_armor_names",
+    "src_index": 2,
+    "src_hash": "7adddce959e282bf",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.17.0": {
+    "src_table": "equipment.plate_armor_names",
+    "src_index": 3,
+    "src_hash": "7f6d0eceddf3bf38",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.18.0": {
+    "src_table": "equipment.plate_armor_names",
+    "src_index": 4,
+    "src_hash": "df6e7480d71721e0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.19.0": {
+    "src_table": "equipment.plate_armor_names",
+    "src_index": 5,
+    "src_hash": "82103f8bf6d994e1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.armors_by_material.20.0": {
+    "src_table": "equipment.plate_armor_names",
+    "src_index": 6,
+    "src_hash": "b2b5b4e1213da59b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "items.rooms.0.0": {
+    "src_table": "inn.room_types",
+    "src_index": 0,
+    "src_hash": "8888a029aaf60b70",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.rooms.1.0": {
+    "src_table": "inn.room_types",
+    "src_index": 1,
+    "src_hash": "529441523bec75ec",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.rooms.2.0": {
+    "src_table": "inn.room_types",
+    "src_index": 2,
+    "src_hash": "9c21005014a9eea8",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.rooms.3.0": {
+    "src_table": "inn.room_types",
+    "src_index": 3,
+    "src_hash": "99edac37596a6934",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.rooms.4.0": {
+    "src_table": "inn.room_types",
+    "src_index": 4,
+    "src_hash": "53a665701a553a1b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.0.0": {
+    "src_table": "inn.drinks_special",
+    "src_index": 2,
+    "src_hash": "2f3bf778b4a2998f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.1.0": {
+    "src_table": "inn.drinks_common",
+    "src_index": 11,
+    "src_hash": "0666365674a9e284",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.2.0": {
+    "src_table": "inn.drinks_common",
+    "src_index": 6,
+    "src_hash": "daa2840f0a1dacc0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.3.0": {
+    "src_table": "inn.drinks_common",
+    "src_index": 7,
+    "src_hash": "fa95335efc80e62a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.4.0": {
+    "src_table": "inn.drinks_common",
+    "src_index": 5,
+    "src_hash": "3781688d9e695dcd",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.6.0": {
+    "src_table": "inn.drinks_special",
+    "src_index": 3,
+    "src_hash": "9d67b36fae065756",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.7.0": {
+    "src_table": "inn.drinks_common",
+    "src_index": 4,
+    "src_hash": "f288997e51fd8e1f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.8.0": {
+    "src_table": "inn.drinks_common",
+    "src_index": 3,
+    "src_hash": "faf75030322cb3b6",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.9.0": {
+    "src_table": "inn.drinks_common",
+    "src_index": 2,
+    "src_hash": "ac1c5758f248ccb7",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.11.0": {
+    "src_table": "inn.drinks_common",
+    "src_index": 1,
+    "src_hash": "43eb10fc70a13911",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.12.0": {
+    "src_table": "inn.drinks_common",
+    "src_index": 0,
+    "src_hash": "2758060bedd99ddd",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.13.0": {
+    "src_table": "inn.drinks_common",
+    "src_index": 9,
+    "src_hash": "0e17925cc06efcc2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  }
+}

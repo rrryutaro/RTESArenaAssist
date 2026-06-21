@@ -1,0 +1,132 @@
+"""
+layout_panel_translate.py — レイアウトモード用翻訳パネル
+FORM_2 の下部ゾーンに配置する。
+左: 日本語（選択言語）翻訳  /  右: 英語原文
+
+このパネルは「ゲームメッセージ翻訳」の専用枠。chargen のクラス一覧
+画面のような補助 UI（クラス一覧パネル等）はここには出さず、メイン
+パネル（翻訳タブ）側で表示する。
+"""
+
+from __future__ import annotations
+
+import logging
+
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import (
+    QHBoxLayout, QLabel, QScrollArea, QSplitter, QVBoxLayout, QWidget,
+)
+
+import i18n_helper as i18n
+import assist_settings as settings
+
+_log = logging.getLogger("RTESArenaAssist")
+
+
+class LayoutPanelTranslate(QWidget):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self._build_ui()
+        self.set_connected(False)
+        self.apply_font_settings()
+
+    def _build_ui(self):
+        root = QHBoxLayout(self)
+        root.setContentsMargins(0, 0, 0, 0)
+        root.setSpacing(0)
+
+        # 未接続オーバーレイ
+        self._no_conn = QLabel(i18n.tr("translate.no_connection"))
+        self._no_conn.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        root.addWidget(self._no_conn)
+
+        # 接続時コンテンツ（左右スプリッター）
+        self._conn_widget = QWidget()
+        hw = QHBoxLayout(self._conn_widget)
+        hw.setContentsMargins(0, 0, 0, 0)
+        hw.setSpacing(0)
+
+        splitter = QSplitter(Qt.Orientation.Horizontal)
+        splitter.setChildrenCollapsible(False)
+
+        # 左: 日本語翻訳（cinematic 等長文の場合はスクロール）
+        left = QWidget()
+        ll = QVBoxLayout(left)
+        ll.setContentsMargins(10, 6, 10, 6)
+        ll.setSpacing(0)
+        self._ja_lbl = QLabel(i18n.tr("translate.no_data"))
+        self._ja_lbl.setWordWrap(True)
+        self._ja_lbl.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        self._ja_lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        from tts_read_aloud import attach_read_aloud as _attach_ra
+        _attach_ra(self._ja_lbl, self._ja_lbl.text)
+        self._ja_scroll = QScrollArea()
+        self._ja_scroll.setWidget(self._ja_lbl)
+        self._ja_scroll.setWidgetResizable(True)
+        self._ja_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+        self._ja_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        ll.addWidget(self._ja_scroll, 1)
+        splitter.addWidget(left)
+
+        # 右: 英語原文（cinematic 等長文の場合はスクロール）
+        right = QWidget()
+        rl = QVBoxLayout(right)
+        rl.setContentsMargins(10, 6, 10, 6)
+        rl.setSpacing(0)
+        self._en_lbl = QLabel(i18n.tr("translate.no_data"))
+        self._en_lbl.setWordWrap(True)
+        self._en_lbl.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
+        self._en_lbl.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        _attach_ra(self._en_lbl, self._en_lbl.text)
+        self._en_scroll = QScrollArea()
+        self._en_scroll.setWidget(self._en_lbl)
+        self._en_scroll.setWidgetResizable(True)
+        self._en_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
+        self._en_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        rl.addWidget(self._en_scroll, 1)
+        splitter.addWidget(right)
+
+        hw.addWidget(splitter)
+        root.addWidget(self._conn_widget)
+
+    def set_connected(self, connected: bool) -> None:
+        self._no_conn.setVisible(not connected)
+        self._conn_widget.setVisible(connected)
+
+    def update_translation(self, original: str, translated: str) -> None:
+        # 観測ログ: 翻訳パネル (= レイアウトモード左下) に渡される
+        # (原文, 翻訳) ペアの変化を追跡する（変化時のみ出力）。
+        _prev_orig = getattr(self, "_prev_orig", None)
+        _prev_trans = getattr(self, "_prev_trans", None)
+        if (original, translated) != (_prev_orig, _prev_trans):
+            self._prev_orig = original
+            self._prev_trans = translated
+            _log.info(
+                "layout_panel_translate.update_translation "
+                "(orig=%r trans=%r)",
+                original[:160], translated[:160])
+        nd = i18n.tr("translate.no_data")
+        not_in = i18n.tr("translate.not_in_dict")
+        self._ja_lbl.setText(translated if translated else not_in)
+        self._en_lbl.setText(original or nd)
+
+    def apply_font_direct(self, family_ja: str, size_ja: int,
+                          family_en: str, size_en: int) -> None:
+        """フォントパラメータを直接受け取って即時適用する（設定を読まない）。"""
+        for lbl, family, size in (
+            (self._ja_lbl, family_ja, size_ja),
+            (self._en_lbl, family_en, size_en),
+        ):
+            style = f"font-size: {size}pt;"
+            if family:
+                style = f"font-family: '{family}'; " + style
+            lbl.setStyleSheet(style)
+
+    def apply_font_settings(self) -> None:
+        """設定ファイルからフォントを読み込んで適用する。"""
+        sync      = settings.get("panel_translate_font_sync", False)
+        fam_ja    = settings.get("panel_translate_font_family_ja", "") or ""
+        size_ja   = settings.get("panel_translate_font_size_ja", 14)
+        fam_en    = fam_ja  if sync else (settings.get("panel_translate_font_family_en", "") or "")
+        size_en   = size_ja if sync else settings.get("panel_translate_font_size_en", 12)
+        self.apply_font_direct(fam_ja, size_ja, fam_en, size_en)

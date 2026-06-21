@@ -1,0 +1,11 @@
+{
+  "npc_traits.trait_mad.0": {
+    "src_table": "entities.title_names",
+    "src_index": 1,
+    "src_hash": "1caddc74ca28d2ff",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  }
+}

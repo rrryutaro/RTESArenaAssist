@@ -1,0 +1,83 @@
+{
+  "relations.0.0": {
+    "src_table": "entities.relation_names",
+    "src_index": 0,
+    "src_hash": "88a1881f0025cf71",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "relations.1.0": {
+    "src_table": "entities.relation_names",
+    "src_index": 1,
+    "src_hash": "cf0622ef2a661cd2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "relations.2.0": {
+    "src_table": "entities.relation_names",
+    "src_index": 2,
+    "src_hash": "98aa667548255288",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "relations.3.0": {
+    "src_table": "entities.relation_names",
+    "src_index": 3,
+    "src_hash": "4ed28f82ca96c334",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "relations.4.0": {
+    "src_table": "entities.relation_names",
+    "src_index": 4,
+    "src_hash": "0b4bd77cec705cf5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "relations.5.0": {
+    "src_table": "entities.relation_names",
+    "src_index": 5,
+    "src_hash": "1980d3927f07fec9",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "relations.6.0": {
+    "src_table": "entities.relation_names",
+    "src_index": 12,
+    "src_hash": "3107ea0301a27894",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "relations.7.0": {
+    "src_table": "entities.relation_names",
+    "src_index": 13,
+    "src_hash": "a892fec0a7ca63b4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "relations.10.0": {
+    "src_table": "entities.relation_names",
+    "src_index": 14,
+    "src_hash": "42e20cbe942249d8",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  }
+}

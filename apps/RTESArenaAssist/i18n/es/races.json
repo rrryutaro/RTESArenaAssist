@@ -1,0 +1,34 @@
+{
+  "races.0.0": {
+    "value": "Breton",
+    "plural": "Bretones"
+  },
+  "races.1.0": {
+    "value": "Redguard",
+    "plural": "Redguards"
+  },
+  "races.2.0": {
+    "value": "Nórdico",
+    "plural": "Nórdicos"
+  },
+  "races.3.0": {
+    "value": "Elfo oscuro",
+    "plural": "Elfos oscuros"
+  },
+  "races.4.0": {
+    "value": "Alto elfo",
+    "plural": "Altos elfos"
+  },
+  "races.5.0": {
+    "value": "Elfo del bosque",
+    "plural": "Elfos del bosque"
+  },
+  "races.6.0": {
+    "value": "Khajiit",
+    "plural": "Khajiit"
+  },
+  "races.7.0": {
+    "value": "Argoniano",
+    "plural": "Argonianos"
+  }
+}

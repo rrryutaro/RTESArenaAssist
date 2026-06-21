@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ステータス解説</title>
+<style>
+body { font-family: "メイリオ", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #c9d1e0; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 5px 8px; text-align: left; font-size: 12px; border: 1px solid #1e3a4a; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.stat-label { color: #7ec8e3; font-weight: bold; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>ステータス解説</h1>
+
+<div class="note">全ステータスは1〜100の範囲。<strong>50が平均</strong>（帝国の人口の50%がそのステータスより高く、50%が低い）。</div>
+
+<h2>8つの基本ステータス</h2>
+
+<h3><span class="stat-label">STR（筋力 / Strength）</span></h3>
+<p>近接戦闘のダメージ量を決定する。最大積載量（Max Kilos）と疲労（Fatigue）にも影響。
+ジャンプ距離も筋力次第。<strong>戦士系クラスに必須。</strong></p>
+
+<h3><span class="stat-label">INT（知性 / Intelligence）</span></h3>
+<p>呪文ポイント（Spell Points）の総量を決定する（魔法使い系のみ）。
+商品の交渉・値切り、鍵のピッキング成功率にも影響。<strong>魔法使い・盗賊系クラスに必須。</strong></p>
+
+<h3><span class="stat-label">WIL（意志力 / Willpower）</span></h3>
+<p>呪文への抵抗力（Magic Defense）を決定する。高いほど呪文ダメージを受けにくい。
+店主・宿屋との交渉にも有利。<strong>呪文対策として全クラスに重要。</strong></p>
+
+<h3><span class="stat-label">AGI（敏捷性 / Agility）</span></h3>
+<p>近接命中率（To Hit）と被命中率（To Def）、的を絞った呪文への回避に影響。
+盗み・ピッキングの成功率にも直結。<strong>盗賊系クラスに必須。</strong></p>
+
+<h3><span class="stat-label">SPD（速度 / Speed）</span></h3>
+<p>移動速度・旋回速度・遠距離武器の連射速度を決定する。
+高い速度は生死を分けることがある。<strong>全クラスに重要。</strong></p>
+
+<h3><span class="stat-label">END（持久力 / Endurance）</span></h3>
+<p>体力（Health）の増加量と回復速度（Heal Mod）を決定する。
+毒やドラッグへの抵抗力にも影響。<strong>戦士系クラスに必須。</strong></p>
+
+<h3><span class="stat-label">PER（個性・魅力 / Personality）</span></h3>
+<p>カリスマ（Charisma）修正値を決定する。人々との交渉・情報収集、
+価格交渉の成功率を高める。<strong>対人インタラクションに重要。</strong></p>
+
+<h3><span class="stat-label">LUC（幸運 / Luck）</span></h3>
+<p>攻撃・防御・盗みなどあらゆる行動に影響するパワフルな修正値。
+平均は50で、高いほど有利、低いほど不利な結果を引き寄せやすい。</p>
+
+<h2>各ステータスの修正値（モディファイア）一覧</h2>
+<table>
+  <tr><th>ステータス</th><th>修正値</th><th>説明</th></tr>
+  <tr><td>STR</td><td>Damage（ダメージ）</td><td>STR 55以上でプラス、45以下でマイナス修正</td></tr>
+  <tr><td>STR</td><td>Max Kilos（最大積載量）</td><td>超過すると疲労ペナルティ、最終的に動けなくなる</td></tr>
+  <tr><td>INT</td><td>Spell Pts.（呪文ポイント）</td><td>非魔法使いは0。ソーサラーは INT×3 まで</td></tr>
+  <tr><td>WIL</td><td>Magic Def.（魔法防御）</td><td>高いほど呪文を受けにくい（相手の命中にペナルティ）</td></tr>
+  <tr><td>AGI</td><td>To Hit（命中）</td><td>高いほど近接攻撃が当たりやすい</td></tr>
+  <tr><td>AGI</td><td>To Def.（防御）</td><td>高いほどアーマーレーティングが低下（より堅固になる）</td></tr>
+  <tr><td>END</td><td>Health（体力）</td><td>レベルアップ時の体力増加量に上乗せ</td></tr>
+  <tr><td>END</td><td>Heal Mod（回復修正）</td><td>休息時の回復率（%）を加減算</td></tr>
+  <tr><td>PER</td><td>Charisma（カリスマ）</td><td>NPCとの交渉成功率に加減算</td></tr>
+  <tr><td>LUC</td><td>General（全般）</td><td>すべての行動に潜在的に影響</td></tr>
+</table>
+
+<h2>アーマーレーティング（AR）について</h2>
+<p>ARは<strong>低いほど強い防御</strong>を意味する（+10が最低防護、負の値が最高防護）。
+キャラクターシート2ページ目の体型図に、体の各部位のARが表示される。</p>
+<table>
+  <tr><th>部位</th><th>対応防具</th></tr>
+  <tr><td>頭</td><td>兜（Helm）</td></tr>
+  <tr><td>胸</td><td>胸甲（Cuirass）</td></tr>
+  <tr><td>手</td><td>篭手（Gauntlets）</td></tr>
+  <tr><td>腰・脚</td><td>腰脚甲（Greaves）</td></tr>
+  <tr><td>脛・足</td><td>脚甲・ブーツ（Boots）</td></tr>
+  <tr><td>肩（左右）</td><td>肩甲（Pauldrons）</td></tr>
+</table>
+
+</body>
+</html>

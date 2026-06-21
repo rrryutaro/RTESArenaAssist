@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>クラス解説</title>
+<style>
+body { font-family: "メイリオ", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 13px; color: #5bc0de; margin-top: 4px; margin-bottom: 2px; }
+h3 { font-size: 12px; color: #7a8899; margin: 14px 0 2px 0; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+p { margin: 0 0 6px 0; font-size: 12px; }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 10px 0; font-size: 11px; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 3px 6px; text-align: left; border: 1px solid #1e3a4a; }
+td { padding: 3px 6px; border: 1px solid #1e3a4a; }
+tr:nth-child(even) { background: #111e2c; }
+.ability { color: #a8d8a8; font-size: 11px; margin: 2px 0 6px 0; }
+.section-header { background: #1c2e3f; color: #a0c4d8; font-size: 13px; font-weight: bold; padding: 5px 8px; margin: 18px 0 6px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>クラス解説（全18クラス）</h1>
+
+<div class="section-header">シーフ系クラス — 主要ステータス: 敏捷 (AGI) ・ 知性 (INT)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">全シーフ系クラスはピッキング・スリ・盗みができる。速度 (SPD) も重要。</p>
+
+<h2>シーフ（盗賊）</h2>
+<p>素早く狡猾。戦闘では奇襲・偵察・クリティカルヒットを狙う。経験値の上昇が最も速い。</p>
+<div class="ability">★ レベル毎にクリティカルヒット（3倍ダメージ）の確率が増加</div>
+<table><tr><th>武器</th><td>短剣・ショートソード・ブロードソード・サーベル・ウォーアックス・ショートボウ</td></tr>
+<tr><th>防具</th><td>レザーのみ</td></tr><tr><th>盾</th><td>バックラーのみ</td></tr>
+<tr><th>初期体力</th><td>25 + d10</td></tr></table>
+
+<h2>バーグラー（侵入者）</h2>
+<p>錠前解錠とエリア侵入の専門家。盾は使えない。</p>
+<div class="ability">★ クリティカルヒット確率（シーフより低い）</div>
+<table><tr><th>武器</th><td>短剣・ショートソード・タント・ショートボウ</td></tr>
+<tr><th>防具</th><td>レザーのみ</td></tr><tr><th>盾</th><td>なし</td></tr>
+<tr><th>初期体力</th><td>25 + d8</td></tr></table>
+
+<h2>アサシン（暗殺者）</h2>
+<p>暗殺特化。弱点を突く能力が高く、自分より強い敵を倒すことも。武器の選択肢は広いがレザー・盾不可。</p>
+<div class="ability">★ 全クラス中最高のクリティカルヒット確率</div>
+<table><tr><th>武器</th><td>全武器</td></tr>
+<tr><th>防具</th><td>レザーのみ</td></tr><tr><th>盾</th><td>なし</td></tr>
+<tr><th>初期体力</th><td>25 + d12</td></tr></table>
+
+<h2>ローグ（無法者）</h2>
+<p>武器訓練も積んだシーフ。戦闘力はウォーリアークラス並みで、ピッキングも可能。</p>
+<div class="ability">★ 低確率でクリティカルヒット</div>
+<table><tr><th>武器</th><td>全武器</td></tr>
+<tr><th>防具</th><td>レザー・チェインのみ</td></tr><tr><th>盾</th><td>タワーシールド以外</td></tr>
+<tr><th>初期体力</th><td>25 + d14</td></tr></table>
+
+<h2>アクロバット（軽業師）</h2>
+<p>壁登り・跳躍・転回が超人的。全クラス中最速の移動。敵の命中率を下げるパッシブ能力あり。</p>
+<div class="ability">★ 敵の命中基礎確率を一定割合減少 / クリティカルヒット確率あり</div>
+<table><tr><th>武器</th><td>短剣・ショートソード・ブロードソード・タント・ショートボウ</td></tr>
+<tr><th>防具</th><td>レザーのみ</td></tr><tr><th>盾</th><td>なし</td></tr>
+<tr><th>初期体力</th><td>25 + d8</td></tr></table>
+
+<h2>バード（吟遊詩人）</h2>
+<p>「なんでも屋」。クリティカル・武器・盗み・魔法すべてこなせる万能クラス。呪文ポイント = INT値。</p>
+<table><tr><th>武器</th><td>短剣・ショートソード・ブロードソード・サーベル・メイス・ウォーアックス・ショートボウ</td></tr>
+<tr><th>防具</th><td>レザー・チェインのみ</td></tr><tr><th>盾</th><td>タワーシールド以外</td></tr>
+<tr><th>初期体力</th><td>25 + d10</td></tr></table>
+
+<div class="section-header">ウォーリアー系クラス — 主要ステータス: 筋力 (STR) ・ 持久力 (END)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">基本的に呪文は使えない。敏捷 (AGI) も重要（アーマーレーティングに影響）。</p>
+
+<h2>ウォーリアー（戦士）</h2>
+<p>タムリエルの基盤。全武器・防具・盾を使用可能。経験値上昇はシーフの次に速い。プレートアーマーとその魔法付与版を使える唯一のクラス（ナイト・レンジャーと共に）。</p>
+<table><tr><th>武器</th><td>全武器</td></tr><tr><th>防具</th><td>全防具</td></tr><tr><th>盾</th><td>全盾</td></tr>
+<tr><th>初期体力</th><td>25 + d20</td></tr></table>
+
+<h2>ナイト（騎士）</h2>
+<p>貴族の戦士。礼節と名誉を重んじる。武器と防具の修理が自動的に行われる（インベントリ内すべて）。</p>
+<div class="ability">★ 麻痺（呪文・毒問わず）への完全免疫 / 武器・防具を自動修理</div>
+<table><tr><th>武器</th><td>全武器</td></tr>
+<tr><th>防具</th><td>レザー以外</td></tr><tr><th>盾</th><td>全盾</td></tr>
+<tr><th>初期体力</th><td>25 + d18</td></tr></table>
+
+<h2>レンジャー（放浪戦士）</h2>
+<p>追跡・生存・道案内の達人。都市間移動時間が短縮される。攻撃にレベル分のボーナスダメージ。</p>
+<div class="ability">★ 都市間移動時間を自動短縮 / 攻撃にレベル値のボーナスダメージ</div>
+<table><tr><th>武器</th><td>全武器</td></tr>
+<tr><th>防具</th><td>全防具</td></tr><tr><th>盾</th><td>タワーシールド以外</td></tr>
+<tr><th>初期体力</th><td>25 + d18</td></tr></table>
+
+<h2>アーチャー（弓使い）</h2>
+<p>遠距離武器のエキスパート。盾不可。弓でのクリティカルヒット確率あり。</p>
+<div class="ability">★ 弓使用時にレベル毎のクリティカルヒット確率</div>
+<table><tr><th>武器</th><td>全武器</td></tr>
+<tr><th>防具</th><td>レザー・チェインのみ</td></tr><tr><th>盾</th><td>なし</td></tr>
+<tr><th>初期体力</th><td>25 + d16</td></tr></table>
+
+<h2>モンク（修道士）</h2>
+<p>精神と肉体の鍛錬で体を武器化。防具・盾不可。レベルが上がるほど敵の命中率が下がる。呪文セービング成功時は無ダメージ。</p>
+<div class="ability">★ 敵の命中基礎確率をレベル分減少 / 呪文セーブ成功時ノーダメージ / クリティカルヒット（近接のみ）</div>
+<table><tr><th>武器</th><td>全武器</td></tr>
+<tr><th>防具</th><td>なし</td></tr><tr><th>盾</th><td>なし</td></tr>
+<tr><th>初期体力</th><td>25 + d14</td></tr></table>
+
+<h2>バーバリアン（野蛮人）</h2>
+<p>過酷な環境で生き延びてきた戦士。全クラス中最多の初期体力。体力回復量がENDに応じてボーナス。</p>
+<div class="ability">★ 毒への完全免疫 / ENDに応じた追加体力回復</div>
+<table><tr><th>武器</th><td>全武器</td></tr>
+<tr><th>防具</th><td>チェインまで</td></tr><tr><th>盾</th><td>全盾</td></tr>
+<tr><th>初期体力</th><td>25 + d30（全クラス最大）</td></tr></table>
+
+<div class="section-header">メイジ系クラス — 主要ステータス: 知性 (INT) ・ 意志力 (WIL)</div>
+
+<h2>メイジ（魔法使い）</h2>
+<p>魔法の扱いに特化。呪文ポイント = INT×2。防具・盾不可。攻防ともに呪文が頼り。</p>
+<table><tr><th>武器</th><td>短剣・杖</td></tr><tr><th>防具</th><td>なし</td></tr><tr><th>盾</th><td>バックラーのみ</td></tr>
+<tr><th>初期体力</th><td>25 + d6</td></tr></table>
+
+<h2>ソーサラー（妖術師）</h2>
+<p>魔法の「電池」。内部で呪文ポイントを生成しないが、自分に向けられた呪文を吸収してポイントにする。最大吸収量 = INT×3。フル充電時は最強の魔法使い。</p>
+<div class="ability">★ 自身に向けられた呪文を吸収（ダメージなし、ポイント増加）/ 上限超過時は通常ダメージ / 自己呪文の吸収・自動再生不可</div>
+<table><tr><th>武器</th><td>全武器</td></tr>
+<tr><th>防具</th><td>チェインまで</td></tr><tr><th>盾</th><td>なし</td></tr>
+<tr><th>初期体力</th><td>25 + d6</td></tr></table>
+
+<h2>ヒーラー（治癒師）</h2>
+<p>回復特化の魔法使い。防御的な呪文が得意で、呪文制作時の防御呪文コストが安い。呪文ポイント = INT×1.75。自然回復速度ボーナス。</p>
+<table><tr><th>武器</th><td>短剣・杖・メイス・フレイル</td></tr>
+<tr><th>防具</th><td>レザー・チェインのみ</td></tr><tr><th>盾</th><td>ラウンドシールドまで</td></tr>
+<tr><th>初期体力</th><td>25 + d8</td></tr></table>
+
+<h2>バトルメイジ（戦闘魔術師）</h2>
+<p>戦闘用攻撃魔法の達人。呪文制作時の攻撃呪文コストが安い。呪文ポイント = INT×1.75。</p>
+<table><tr><th>武器</th><td>全武器</td></tr>
+<tr><th>防具</th><td>レザーのみ</td></tr><tr><th>盾</th><td>ラウンドシールドまで</td></tr>
+<tr><th>初期体力</th><td>25 + d10</td></tr></table>
+
+<h2>スペルソード（呪文剣士）</h2>
+<p>防具を装備したまま呪文を使える戦士魔法使い。汎用性が高い。呪文ポイント = INT×1.5。</p>
+<table><tr><th>武器</th><td>全武器</td></tr>
+<tr><th>防具</th><td>レザー・チェインのみ</td></tr><tr><th>盾</th><td>タワーシールド以外</td></tr>
+<tr><th>初期体力</th><td>25 + d12</td></tr></table>
+
+<h2>ナイトブレード（夜刃使い）</h2>
+<p>魔法を潜入・諜報・隠密活動に使う夜の使者。ローグ並みのピッキング能力。呪文ポイント = INT×1.5。</p>
+<div class="ability">★ レベル毎にクリティカルヒット確率</div>
+<table><tr><th>武器</th><td>短剣・杖・ショートボウ・ショートソード・サーベル</td></tr>
+<tr><th>防具</th><td>レザーのみ</td></tr><tr><th>盾</th><td>バックラーのみ</td></tr>
+<tr><th>初期体力</th><td>25 + d8</td></tr></table>
+
+</body>
+</html>

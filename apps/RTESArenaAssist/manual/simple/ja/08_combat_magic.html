@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>戦闘と魔法</title>
+<style>
+body { font-family: "メイリオ", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.danger { background: #2e1a1a; border-left: 3px solid #a03030; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>戦闘と魔法</h1>
+
+<h2>基本戦闘システム</h2>
+<p>アリーナの戦闘はリアルタイム方式。マウスクリックで攻撃する。
+命中・ダメージはキャラクターのステータスと装備、敵のARによって決定される。</p>
+
+<h2>命中判定</h2>
+<p>攻撃が当たるかどうかは以下の要素で決まる：</p>
+<table>
+  <tr><th>要素</th><th>効果</th></tr>
+  <tr><td>AGI（敏捷性）</td><td>攻撃の命中ボーナス / 防御ボーナス（両方向）</td></tr>
+  <tr><td>LUC（幸運）</td><td>全行動に影響するランダム修正</td></tr>
+  <tr><td>レッドガード特性</td><td>レベル÷3 の命中・ダメージボーナス（近接のみ）</td></tr>
+  <tr><td>ウッドエルフ特性</td><td>レベル÷3 の命中・ダメージボーナス（弓のみ）</td></tr>
+  <tr><td>ダークエルフ特性</td><td>レベル÷4 の命中・ダメージボーナス（近接・弓）</td></tr>
+</table>
+
+<h2>ダメージ計算</h2>
+<p>ダメージは武器の基本値 + STRによる修正 + 種族ボーナスで決まる。
+敵のアーマーレーティング（AR）が低いほど、ダメージを軽減される。</p>
+
+<h2>クリティカルヒット</h2>
+<div class="note">
+<strong>クリティカルヒット = 通常の3倍ダメージ</strong><br>
+盗賊系・一部の魔法使い系クラスがレベルに応じた確率で発動。
+暗殺者が最高確率、侵入者・吟遊詩人・ローグなども保有。
+</div>
+
+<h2>セービングスロー（抵抗判定）</h2>
+<p>呪文・毒・特殊効果を受けたとき、成功すると効果を軽減または無効化できる。
+WIL（意志力）が高いほど成功しやすい。</p>
+<table>
+  <tr><th>クラス</th><th>セーブ効果</th></tr>
+  <tr><td>通常</td><td>成功でダメージ半減</td></tr>
+  <tr><td>修道士（Monk）</td><td>成功でダメージ完全無効</td></tr>
+  <tr><td>ノルド（Nord）</td><td>冷気攻撃のセーブ成功でダメージ無効</td></tr>
+  <tr><td>ブレトン（Breton）</td><td>魔法攻撃のセーブ成功でダメージ無効</td></tr>
+</table>
+
+<h2>状態異常</h2>
+<table>
+  <tr><th>状態</th><th>日本語</th><th>効果</th><th>解除方法</th></tr>
+  <tr><td>Diseased</td><td>病気</td><td>ステータス低下・回復阻害</td><td>寺院・回復呪文</td></tr>
+  <tr><td>Poisoned</td><td>毒</td><td>継続ダメージ</td><td>寺院・解毒ポーション</td></tr>
+  <tr><td>Cursed</td><td>呪い</td><td>ステータス低下</td><td>寺院</td></tr>
+  <tr><td>Blessed</td><td>祝福</td><td>一時的ステータス上昇（有益）</td><td>時間経過</td></tr>
+  <tr><td>Paralyzed</td><td>麻痺</td><td>行動不能</td><td>時間経過・解除呪文</td></tr>
+  <tr><td>Silenced</td><td>沈黙</td><td>呪文詠唱不可</td><td>時間経過・解除呪文</td></tr>
+  <tr><td>Encumbered</td><td>重量超過</td><td>移動・行動にペナルティ</td><td>アイテムを捨てる・強化</td></tr>
+</table>
+<div class="danger">
+<strong>麻痺免疫：</strong>騎士（Knight）とハイエルフ（High Elf）は麻痺に完全免疫。
+<strong>毒免疫：</strong>野蛮人（Barbarian）は毒に完全免疫。
+</div>
+
+<h2>魔法システム</h2>
+<p>呪文はキャラクターシートの呪文書から選択して使用する。各呪文には呪文ポイント（SP）コストがある。
+SPが0になると呪文は使えない。魔法使い系クラスはINT値×倍率のSPを持つ。</p>
+
+<h2>呪文ポイント（SP）の倍率</h2>
+<table>
+  <tr><th>クラス</th><th>SP = INT ×</th></tr>
+  <tr><td>魔法使い（Mage）</td><td>× 2</td></tr>
+  <tr><td>ソーサラー（Sorcerer）</td><td>× 3 まで吸収（自己生成なし）</td></tr>
+  <tr><td>ヒーラー（Healer）</td><td>× 1.75</td></tr>
+  <tr><td>戦闘魔術師（Battle Mage）</td><td>× 1.75</td></tr>
+  <tr><td>呪文剣士（Spellsword）</td><td>× 1.5</td></tr>
+  <tr><td>ナイトブレード（Nightblade）</td><td>× 1.5</td></tr>
+  <tr><td>吟遊詩人（Bard）</td><td>= INT</td></tr>
+</table>
+
+<h2>主要呪文カテゴリ</h2>
+<table>
+  <tr><th>種別</th><th>代表的な呪文</th><th>用途</th></tr>
+  <tr><td>攻撃魔法</td><td>Fire Damage / Frost / Shock</td><td>敵にダメージを与える</td></tr>
+  <tr><td>回復魔法</td><td>Heal / Heal Other</td><td>体力を回復する</td></tr>
+  <tr><td>補助魔法</td><td>Shield / Fortify / Slowfall</td><td>能力強化・防御</td></tr>
+  <tr><td>移動魔法</td><td>Levitate / Teleport / Recall</td><td>移動・転送</td></tr>
+  <tr><td>隠密魔法</td><td>Invisibility / Chameleon</td><td>姿を隠す</td></tr>
+  <tr><td>探知魔法</td><td>Detect Life / Night Eye / Light</td><td>索敵・暗視</td></tr>
+  <tr><td>妨害魔法</td><td>Paralyze / Silence / Charm</td><td>敵の行動を封じる</td></tr>
+  <tr><td>ユーティリティ</td><td>Open / Identify / Passwall</td><td>錠前開錠・鑑定・壁通過</td></tr>
+</table>
+
+<h2>呪文の作成（Spellmaker）</h2>
+<p>魔術師ギルドのSpellmakerを使うと、オリジナルの呪文を作成できる。
+効果・範囲・持続時間・強度を組み合わせてカスタマイズする。
+ヒーラーは防御系呪文が安く、戦闘魔術師は攻撃系呪文が安く作れる。</p>
+
+<h2>経験値とレベルアップ</h2>
+<p>敵を倒したり、クエストを完了することで経験値を獲得する。
+レベルアップ時はステータスが増加し、体力も上昇する。魔法使い系はSPも増加。</p>
+<div class="note">
+<strong>レベルアップ速度（速い順）：</strong>盗賊 → 戦士 → 戦士サブクラス → 盗賊サブクラス → 魔法使い → 魔法使いサブクラス
+</div>
+
+</body>
+</html>

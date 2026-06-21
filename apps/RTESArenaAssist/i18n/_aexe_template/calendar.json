@@ -1,0 +1,390 @@
+{
+  "calendar.month_morning_star.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 0,
+    "src_hash": "ad31360a",
+    "category": "month",
+    "index": 0,
+    "_meta": {
+      "verified_official": true
+    },
+    "terms": [
+      "glossary.month_morning_star.0"
+    ]
+  },
+  "calendar.month_suns_dawn.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 1,
+    "src_hash": "a028e11f",
+    "category": "month",
+    "index": 1,
+    "_meta": {
+      "verified_official": true
+    },
+    "terms": [
+      "glossary.month_suns_dawn.0"
+    ]
+  },
+  "calendar.month_first_seed.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 2,
+    "src_hash": "62f2f90c",
+    "category": "month",
+    "index": 2,
+    "_meta": {
+      "verified_official": true
+    },
+    "terms": [
+      "glossary.month_first_seed.0"
+    ]
+  },
+  "calendar.month_rains_hand.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 3,
+    "src_hash": "fb218ff6",
+    "category": "month",
+    "index": 3,
+    "_meta": {
+      "verified_official": true
+    },
+    "terms": [
+      "glossary.month_rains_hand.0"
+    ]
+  },
+  "calendar.month_second_seed.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 4,
+    "src_hash": "29f353fb",
+    "category": "month",
+    "index": 4,
+    "_meta": {
+      "verified_official": true
+    },
+    "terms": [
+      "glossary.month_second_seed.0"
+    ]
+  },
+  "calendar.month_mid_year.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 5,
+    "src_hash": "31d63b53",
+    "category": "month",
+    "index": 5,
+    "_meta": {
+      "verified_official": true,
+      "note": "書籍内表記。HUD では「年央」表示の場合あり"
+    }
+  },
+  "calendar.month_suns_height.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 6,
+    "src_hash": "9bbc6676",
+    "category": "month",
+    "index": 6,
+    "_meta": {
+      "verified_official": true
+    },
+    "terms": [
+      "glossary.month_suns_height.0"
+    ]
+  },
+  "calendar.month_last_seed.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 7,
+    "src_hash": "764f27bc",
+    "category": "month",
+    "index": 7,
+    "_meta": {
+      "verified_official": true
+    },
+    "terms": [
+      "glossary.month_last_seed.0"
+    ]
+  },
+  "calendar.month_hearthfire.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 8,
+    "src_hash": "a1be71af",
+    "category": "month",
+    "index": 8,
+    "_meta": {
+      "verified_official": true
+    },
+    "terms": [
+      "glossary.month_hearthfire.0"
+    ]
+  },
+  "calendar.month_frostfall.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 9,
+    "src_hash": "c2eb81c1",
+    "category": "month",
+    "index": 9,
+    "_meta": {
+      "verified_official": true
+    },
+    "terms": [
+      "glossary.month_frostfall.0"
+    ]
+  },
+  "calendar.month_suns_dusk.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 10,
+    "src_hash": "6958a057",
+    "category": "month",
+    "index": 10,
+    "_meta": {
+      "verified_official": true
+    },
+    "terms": [
+      "glossary.month_suns_dusk.0"
+    ]
+  },
+  "calendar.month_evening_star.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 11,
+    "src_hash": "02252457",
+    "category": "month",
+    "index": 11,
+    "_meta": {
+      "verified_official": true
+    },
+    "terms": [
+      "glossary.month_evening_star.0"
+    ]
+  },
+  "calendar.day_morndas.0": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 0,
+    "src_hash": "ccd50e82",
+    "category": "weekday",
+    "index": 0,
+    "_meta": {
+      "verified_official": true
+    }
+  },
+  "calendar.day_tirdas.0": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 1,
+    "src_hash": "59a673c9",
+    "category": "weekday",
+    "index": 1,
+    "_meta": {
+      "verified_official": true
+    }
+  },
+  "calendar.day_middas.0": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 2,
+    "src_hash": "60888a2b",
+    "category": "weekday",
+    "index": 2,
+    "_meta": {
+      "verified_official": true
+    }
+  },
+  "calendar.day_turdas.0": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 3,
+    "src_hash": "c2edd99a",
+    "category": "weekday",
+    "index": 3,
+    "_meta": {
+      "verified_official": true
+    }
+  },
+  "calendar.day_fredas.0": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 4,
+    "src_hash": "903f2552",
+    "category": "weekday",
+    "index": 4,
+    "_meta": {
+      "verified_official": true
+    }
+  },
+  "calendar.day_loredas.0": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 5,
+    "src_hash": "69d59ff5",
+    "category": "weekday",
+    "index": 5,
+    "_meta": {
+      "verified_official": true
+    }
+  },
+  "calendar.day_sundas.0": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 6,
+    "src_hash": "18c20973",
+    "category": "weekday",
+    "index": 6,
+    "_meta": {
+      "verified_official": true
+    }
+  },
+  "calendar.holiday_new_life.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 0,
+    "src_hash": "02c5aab6",
+    "category": "holiday",
+    "index": 0,
+    "_meta": {
+      "verified_official": true
+    }
+  },
+  "calendar.holiday_south_winds_prayer.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 1,
+    "src_hash": "28a2ff02",
+    "category": "holiday",
+    "index": 1,
+    "_meta": {
+      "verified_official": false,
+      "note": "Arena 固有・音写"
+    }
+  },
+  "calendar.holiday_hearts_day.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 2,
+    "src_hash": "3e4f194f",
+    "category": "holiday",
+    "index": 2,
+    "_meta": {
+      "verified_official": false,
+      "note": "Arena 固有・音写"
+    }
+  },
+  "calendar.holiday_first_planting.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 3,
+    "src_hash": "bd57d61d",
+    "category": "holiday",
+    "index": 3,
+    "_meta": {
+      "verified_official": false,
+      "note": "Arena 固有・意訳"
+    }
+  },
+  "calendar.holiday_jesters_day.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 4,
+    "src_hash": "57653132",
+    "category": "holiday",
+    "index": 4,
+    "_meta": {
+      "verified_official": true,
+      "note": "ESO 公式訳「道化師祭り」に準拠"
+    }
+  },
+  "calendar.holiday_second_planting.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 5,
+    "src_hash": "ccefe66f",
+    "category": "holiday",
+    "index": 5,
+    "_meta": {
+      "verified_official": false,
+      "note": "Arena 固有・意訳"
+    }
+  },
+  "calendar.holiday_midyear.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 6,
+    "src_hash": "34accb76",
+    "category": "holiday",
+    "index": 6,
+    "_meta": {
+      "verified_official": false,
+      "note": "Arena 固有。月名「真央の月」に準拠した意訳"
+    }
+  },
+  "calendar.holiday_merchants.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 7,
+    "src_hash": "310d1b80",
+    "category": "holiday",
+    "index": 7,
+    "_meta": {
+      "verified_official": false,
+      "note": "Arena 固有・意訳"
+    }
+  },
+  "calendar.holiday_suns_rest.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 8,
+    "src_hash": "a53f9d0e",
+    "category": "holiday",
+    "index": 8,
+    "_meta": {
+      "verified_official": false,
+      "note": "Arena 固有・意訳"
+    }
+  },
+  "calendar.holiday_harvest_end.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 9,
+    "src_hash": "7cba1fb8",
+    "category": "holiday",
+    "index": 9,
+    "_meta": {
+      "verified_official": false,
+      "note": "Arena 固有・意訳"
+    }
+  },
+  "calendar.holiday_tales_tallow.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 10,
+    "src_hash": "fec30910",
+    "category": "holiday",
+    "index": 10,
+    "_meta": {
+      "verified_official": false,
+      "note": "Arena 固有・意訳"
+    }
+  },
+  "calendar.holiday_witches.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 11,
+    "src_hash": "cc3e7862",
+    "category": "holiday",
+    "index": 11,
+    "_meta": {
+      "verified_official": true,
+      "note": "ESO 公式訳「魔女祭り」に準拠"
+    }
+  },
+  "calendar.holiday_emperors_day.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 12,
+    "src_hash": "f347113d",
+    "category": "holiday",
+    "index": 12,
+    "_meta": {
+      "verified_official": false,
+      "note": "Arena 固有・意訳"
+    }
+  },
+  "calendar.holiday_warriors.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 13,
+    "src_hash": "c1d1313d",
+    "category": "holiday",
+    "index": 13,
+    "_meta": {
+      "verified_official": false,
+      "note": "Arena 固有・意訳"
+    }
+  },
+  "calendar.holiday_north_winds_prayer.0": {
+    "src_table": "calendar.holiday_names",
+    "src_index": 14,
+    "src_hash": "e76796e8",
+    "category": "holiday",
+    "index": 14,
+    "_meta": {
+      "verified_official": false,
+      "note": "Arena 固有・意訳"
+    }
+  }
+}

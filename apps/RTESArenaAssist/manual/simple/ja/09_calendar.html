@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>日付と暦</title>
+<style>
+body { font-family: "メイリオ", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.kana { color: #d8c7a8; }
+.tr { color: #a8d8a8; }
+</style>
+</head>
+<body>
+
+<h1>日付と暦</h1>
+
+<p>タムリエルの1年は <b>360日</b>（12ヶ月 × 各月30日）で、1週間は <b>7日</b> です。年は「時代（Era）＋その時代の年」で表されます。例：<b>3E 389</b> ＝ 第3時代389年。各時代はおよそ1000年続きます。</p>
+
+<div class="note">
+このページは、ゲーム内で日付に出てくる<b>原文（英語）</b>・<b>カタカナ読み</b>・<b>ゲーム内の翻訳表示</b>を並べた早見表です。読み上げで「ミダス」と聞こえたり、画面に「薪木の月」と出たときに、元の英語と意味をすぐ照合できます。
+</div>
+
+<h2>曜日（7日）</h2>
+<p>曜日名はゲーム内では<b>カタカナ表記（音写）</b>で表示されます。現実の曜日と次のように対応します。</p>
+<table>
+  <tr><th>原文</th><th class="kana">カタカナ読み（＝ゲーム内表示）</th><th>対応する曜日</th></tr>
+  <tr><td>Morndas</td><td class="kana">モーンダス</td><td>月曜（第1日）</td></tr>
+  <tr><td>Tirdas</td><td class="kana">ティルダス</td><td>火曜</td></tr>
+  <tr><td>Middas</td><td class="kana">ミダス</td><td>水曜（週の中日）</td></tr>
+  <tr><td>Turdas</td><td class="kana">トゥルダス</td><td>木曜</td></tr>
+  <tr><td>Fredas</td><td class="kana">フレダス</td><td>金曜</td></tr>
+  <tr><td>Loredas</td><td class="kana">ロレダス</td><td>土曜</td></tr>
+  <tr><td>Sundas</td><td class="kana">サンダス</td><td>日曜（第7日）</td></tr>
+</table>
+<div class="note">例：「by Middas（ミダス）」は曜日の「ミダス＝水曜」を指します。人名ではなく曜日名です。</div>
+
+<h2>月（12ヶ月）</h2>
+<p>月名はゲーム内では<b>意味を訳した名称</b>で表示されます（カタカナではありません）。</p>
+<table>
+  <tr><th>順</th><th>原文</th><th class="kana">カタカナ読み</th><th class="tr">ゲーム内翻訳</th><th>季節</th></tr>
+  <tr><td>1</td><td>Morning Star</td><td class="kana">モーニング・スター</td><td class="tr">暁星の月</td><td>冬</td></tr>
+  <tr><td>2</td><td>Sun's Dawn</td><td class="kana">サンズ・ドーン</td><td class="tr">薄明の月</td><td>春</td></tr>
+  <tr><td>3</td><td>First Seed</td><td class="kana">ファースト・シード</td><td class="tr">蒔種の月</td><td>春</td></tr>
+  <tr><td>4</td><td>Rain's Hand</td><td class="kana">レインズ・ハンド</td><td class="tr">恵雨の月</td><td>春</td></tr>
+  <tr><td>5</td><td>Second Seed</td><td class="kana">セカンド・シード</td><td class="tr">栽培の月</td><td>夏</td></tr>
+  <tr><td>6</td><td>Mid Year</td><td class="kana">ミッド・イヤー</td><td class="tr">真央の月</td><td>夏</td></tr>
+  <tr><td>7</td><td>Sun's Height</td><td class="kana">サンズ・ハイト</td><td class="tr">南中の月</td><td>夏</td></tr>
+  <tr><td>8</td><td>Last Seed</td><td class="kana">ラスト・シード</td><td class="tr">収穫の月</td><td>秋</td></tr>
+  <tr><td>9</td><td>Hearthfire</td><td class="kana">ハースファイア</td><td class="tr">薪木の月</td><td>秋</td></tr>
+  <tr><td>10</td><td>Frostfall</td><td class="kana">フロストフォール</td><td class="tr">降霜の月</td><td>秋</td></tr>
+  <tr><td>11</td><td>Sun's Dusk</td><td class="kana">サンズ・ダスク</td><td class="tr">黄昏の月</td><td>冬</td></tr>
+  <tr><td>12</td><td>Evening Star</td><td class="kana">イヴニング・スター</td><td class="tr">星霜の月</td><td>冬</td></tr>
+</table>
+
+<h2>祝祭日</h2>
+<p>1年を通じて特別な祝祭日があり、その日は特定のサービスが特別価格になります（例：戦士の祭＝武器が半額）。</p>
+<table>
+  <tr><th>原文</th><th class="kana">カタカナ読み</th><th class="tr">ゲーム内翻訳</th><th>日付</th></tr>
+  <tr><td>New Life Festival</td><td class="kana">ニュー・ライフ・フェスティバル</td><td class="tr">ニュー・ライフ・フェスティバル</td><td>暁星の月 1日</td></tr>
+  <tr><td>South Wind's Prayer</td><td class="kana">サウス・ウィンズ・プレイヤー</td><td class="tr">南風の祈り</td><td>暁星の月 15日</td></tr>
+  <tr><td>Heart's Day</td><td class="kana">ハーツ・デイ</td><td class="tr">ハーツデイ</td><td>薄明の月 16日</td></tr>
+  <tr><td>First Planting</td><td class="kana">ファースト・プランティング</td><td class="tr">初耕祭</td><td>蒔種の月 7日</td></tr>
+  <tr><td>Jester's Day</td><td class="kana">ジェスターズ・デイ</td><td class="tr">道化師祭り</td><td>恵雨の月 28日</td></tr>
+  <tr><td>Second Planting</td><td class="kana">セカンド・プランティング</td><td class="tr">次耕祭</td><td>栽培の月 7日</td></tr>
+  <tr><td>Mid-Year Celebration</td><td class="kana">ミッド・イヤー・セレブレーション</td><td class="tr">真央の祝典</td><td>真央の月 16日</td></tr>
+  <tr><td>Merchants Festival</td><td class="kana">マーチャンツ・フェスティバル</td><td class="tr">商人祭</td><td>南中の月 10日</td></tr>
+  <tr><td>Sun's Rest</td><td class="kana">サンズ・レスト</td><td class="tr">日の休息祭</td><td>南中の月 20日</td></tr>
+  <tr><td>Harvest End</td><td class="kana">ハーヴェスト・エンド</td><td class="tr">収穫終いの祭</td><td>収穫の月 27日</td></tr>
+  <tr><td>Tales and Tallow</td><td class="kana">テイルズ・アンド・タロー</td><td class="tr">物語と蝋燭の祭</td><td>薪木の月 3日</td></tr>
+  <tr><td>Witches Festival</td><td class="kana">ウィッチズ・フェスティバル</td><td class="tr">魔女祭り</td><td>降霜の月 13日</td></tr>
+  <tr><td>Emperor's Day</td><td class="kana">エンペラーズ・デイ</td><td class="tr">皇帝の日</td><td>降霜の月 30日</td></tr>
+  <tr><td>Warriors Festival</td><td class="kana">ウォリアーズ・フェスティバル</td><td class="tr">戦士の祭</td><td>黄昏の月 20日</td></tr>
+  <tr><td>North Wind's Prayer</td><td class="kana">ノース・ウィンズ・プレイヤー</td><td class="tr">北風の祈り</td><td>星霜の月 1日</td></tr>
+</table>
+
+<h2>日付の表示形式</h2>
+<p>世界での日付は「（曜日）、（月）の（日）日、（年）」の形式です。</p>
+<div class="note">
+原文例：<b>Tirdas, 5th day of Hearthfire, 3E 389</b><br>
+読み：ティルダス、薪木の月 5日、第3時代389年<br>
+意味：火曜・収穫期の秋の月の5日・第3時代389年
+</div>
+
+</body>
+</html>

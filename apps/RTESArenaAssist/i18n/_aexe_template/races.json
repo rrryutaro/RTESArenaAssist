@@ -1,0 +1,154 @@
+{
+  "races.0.0": {
+    "src_table": "races.singular",
+    "src_index": 0,
+    "src_hash": "cba59149",
+    "data": {
+      "equipment_restrictions": null
+    },
+    "_meta": {
+      "notes": "Arena では種族による装備制限は基本的に存在しない（OpenTESArena CharacterRaceDefinition.cpp 参照）。種族はステータス補正のみ影響する。",
+      "verified_official": true,
+      "official_sources": [
+        "TES5 ja",
+        "ESO ja"
+      ]
+    },
+    "terms": [
+      "glossary.race_breton.0"
+    ]
+  },
+  "races.1.0": {
+    "src_table": "races.singular",
+    "src_index": 1,
+    "src_hash": "6663e298",
+    "data": {
+      "equipment_restrictions": null
+    },
+    "_meta": {
+      "notes": "Arena では種族による装備制限は基本的に存在しない（OpenTESArena CharacterRaceDefinition.cpp 参照）。種族はステータス補正のみ影響する。",
+      "verified_official": true,
+      "official_sources": [
+        "TES5 ja",
+        "ESO ja"
+      ]
+    },
+    "terms": [
+      "glossary.race_redguard.0"
+    ]
+  },
+  "races.2.0": {
+    "src_table": "races.singular",
+    "src_index": 2,
+    "src_hash": "dc64d109",
+    "data": {
+      "equipment_restrictions": null
+    },
+    "_meta": {
+      "notes": "Arena では種族による装備制限は基本的に存在しない（OpenTESArena CharacterRaceDefinition.cpp 参照）。種族はステータス補正のみ影響する。",
+      "verified_official": true,
+      "official_sources": [
+        "TES5 ja",
+        "ESO ja"
+      ]
+    },
+    "terms": [
+      "glossary.race_nord.0"
+    ]
+  },
+  "races.3.0": {
+    "src_table": "races.singular",
+    "src_index": 3,
+    "src_hash": "65cc28d0",
+    "data": {
+      "equipment_restrictions": null
+    },
+    "_meta": {
+      "notes": "Arena では種族による装備制限は基本的に存在しない（OpenTESArena CharacterRaceDefinition.cpp 参照）。種族はステータス補正のみ影響する。",
+      "verified_official": true,
+      "official_sources": [
+        "TES5 ja",
+        "ESO ja"
+      ]
+    },
+    "terms": [
+      "glossary.race_dark_elf.0"
+    ]
+  },
+  "races.4.0": {
+    "src_table": "races.singular",
+    "src_index": 4,
+    "src_hash": "bf39e553",
+    "data": {
+      "equipment_restrictions": null
+    },
+    "_meta": {
+      "notes": "Arena では種族による装備制限は基本的に存在しない（OpenTESArena CharacterRaceDefinition.cpp 参照）。種族はステータス補正のみ影響する。",
+      "verified_official": true,
+      "official_sources": [
+        "TES5 ja",
+        "ESO ja"
+      ]
+    },
+    "terms": [
+      "glossary.race_high_elf.0"
+    ]
+  },
+  "races.5.0": {
+    "src_table": "races.singular",
+    "src_index": 5,
+    "src_hash": "0942c1b5",
+    "data": {
+      "equipment_restrictions": null
+    },
+    "_meta": {
+      "notes": "Arena では種族による装備制限は基本的に存在しない（OpenTESArena CharacterRaceDefinition.cpp 参照）。種族はステータス補正のみ影響する。",
+      "verified_official": true,
+      "official_sources": [
+        "TES5 ja",
+        "ESO ja"
+      ]
+    },
+    "terms": [
+      "glossary.race_wood_elf.0"
+    ]
+  },
+  "races.6.0": {
+    "src_table": "races.singular",
+    "src_index": 6,
+    "src_hash": "3061f7ee",
+    "data": {
+      "equipment_restrictions": null
+    },
+    "_meta": {
+      "notes": "Arena では種族による装備制限は基本的に存在しない（OpenTESArena CharacterRaceDefinition.cpp 参照）。種族はステータス補正のみ影響する。",
+      "verified_official": true,
+      "official_sources": [
+        "TES5 ja",
+        "ESO ja"
+      ]
+    },
+    "terms": [
+      "glossary.race_khajiit.0"
+    ]
+  },
+  "races.7.0": {
+    "src_table": "races.singular",
+    "src_index": 7,
+    "src_hash": "8c001473",
+    "data": {
+      "equipment_restrictions": null
+    },
+    "_meta": {
+      "notes": "Arena では種族による装備制限は基本的に存在しない（OpenTESArena CharacterRaceDefinition.cpp 参照）。種族はステータス補正のみ影響する。",
+      "verified_official": true,
+      "official_sources": [
+        "TES5 ja",
+        "ESO ja"
+      ]
+    },
+    "terms": [
+      "glossary.race_argonian.0"
+    ]
+  }
+}

@@ -1,0 +1,242 @@
+{
+  "item_enchantments.strength.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 0,
+    "src_hash": "64152566"
+  },
+  "item_enchantments.intelligence.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 1,
+    "src_hash": "81b68fd2"
+  },
+  "item_enchantments.willpower.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 2,
+    "src_hash": "595f540f"
+  },
+  "item_enchantments.will.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 2,
+    "src_hash": "0cdece8a"
+  },
+  "item_enchantments.agility.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 3,
+    "src_hash": "3e80610c"
+  },
+  "item_enchantments.speed.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 4,
+    "src_hash": "669b5466"
+  },
+  "item_enchantments.endurance.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 5,
+    "src_hash": "9c2dd416"
+  },
+  "item_enchantments.personality.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 6,
+    "src_hash": "22e8411b"
+  },
+  "item_enchantments.luck.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 7,
+    "src_hash": "bc475c17"
+  },
+  "item_enchantments.jumping.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 8,
+    "src_hash": "42d78ee4"
+  },
+  "item_enchantments.levitation.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 9,
+    "src_hash": "17ae88c1"
+  },
+  "item_enchantments.passwall.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 10,
+    "src_hash": "c72c2046"
+  },
+  "item_enchantments.invisibility.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 11,
+    "src_hash": "be12691e"
+  },
+  "item_enchantments.spell_reflection.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 12,
+    "src_hash": "d1288dbd"
+  },
+  "item_enchantments.regeneration.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 13,
+    "src_hash": "1ccf2421"
+  },
+  "item_enchantments.shock_resistance.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 1,
+    "src_hash": "08f56f4c"
+  },
+  "item_enchantments.fire_resistance.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 6,
+    "src_hash": "7f3e44c5"
+  },
+  "item_enchantments.lightning.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 8,
+    "src_hash": "51001903"
+  },
+  "item_enchantments.frost_resistance.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 9,
+    "src_hash": "a3e7ad79"
+  },
+  "item_enchantments.life_steal.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 11,
+    "src_hash": "2f9efafb"
+  },
+  "item_enchantments.paralyzation.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 12,
+    "src_hash": "88b0c900"
+  },
+  "item_enchantments.firestorm.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 13,
+    "src_hash": "93d7c8de"
+  },
+  "item_enchantments.spell_wizards_fire.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 0,
+    "src_hash": "f3289ca2"
+  },
+  "item_enchantments.spell_shocking.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 1,
+    "src_hash": "c3b8b99d"
+  },
+  "item_enchantments.spell_curse.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 2,
+    "src_hash": "7dad3b77"
+  },
+  "item_enchantments.spell_far_silence.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 3,
+    "src_hash": "badb640c"
+  },
+  "item_enchantments.spell_poison_dart.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 4,
+    "src_hash": "b4cdf1ff"
+  },
+  "item_enchantments.spell_fireball.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 5,
+    "src_hash": "200a1baf"
+  },
+  "item_enchantments.spell_ice_storm.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 6,
+    "src_hash": "85630db1"
+  },
+  "item_enchantments.spell_pitfall.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 8,
+    "src_hash": "51672d6f"
+  },
+  "item_enchantments.spell_fire_storm.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 9,
+    "src_hash": "0ee1f8ca"
+  },
+  "item_enchantments.spell_toxic_cloud.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 11,
+    "src_hash": "f8debca0"
+  },
+  "item_enchantments.spell_wildfire.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 13,
+    "src_hash": "ba4d6453"
+  },
+  "item_enchantments.spell_free_action.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 14,
+    "src_hash": "b8a9a28c"
+  },
+  "item_enchantments.spell_stamina.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 0,
+    "src_hash": "98e4a9a3"
+  },
+  "item_enchantments.spell_sanctuary.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 1,
+    "src_hash": "a0a5115b"
+  },
+  "item_enchantments.spell_shielding.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 2,
+    "src_hash": "c0101acc"
+  },
+  "item_enchantments.spell_healing.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 3,
+    "src_hash": "1e45649a"
+  },
+  "item_enchantments.spell_force_bolt.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 5,
+    "src_hash": "5739129b"
+  },
+  "item_enchantments.spell_force_wall.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 6,
+    "src_hash": "f8083d5a"
+  },
+  "item_enchantments.spell_silence.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 7,
+    "src_hash": "a04ee013"
+  },
+  "item_enchantments.spell_light.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 0,
+    "src_hash": "f187f66d"
+  },
+  "item_enchantments.spell_wanderlight.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 1,
+    "src_hash": "76c7fac8"
+  },
+  "item_enchantments.spell_wizard_lock.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 2,
+    "src_hash": "b88b2e8f"
+  },
+  "item_enchantments.spell_opening.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 3,
+    "src_hash": "2857f575"
+  },
+  "item_enchantments.spell_cure_poison.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 5,
+    "src_hash": "4dd622d2"
+  },
+  "item_enchantments.spell_heal_true.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 6,
+    "src_hash": "d36c0782"
+  },
+  "item_enchantments.spell_purification.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 7,
+    "src_hash": "d8162e06"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "settlement_types.0.0": {
+    "src_table": "locations.location_types",
+    "src_index": 2,
+    "src_hash": "9b98e9b9ff1e6d43",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "settlement_types.1.0": {
+    "src_table": "locations.location_types",
+    "src_index": 1,
+    "src_hash": "390f25134ba04a8e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "settlement_types.3.0": {
+    "src_table": "locations.location_types",
+    "src_index": 0,
+    "src_hash": "700299566dd77410",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  }
+}

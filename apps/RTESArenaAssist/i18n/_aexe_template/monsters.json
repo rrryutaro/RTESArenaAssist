@@ -1,0 +1,290 @@
+{
+  "monsters.rat.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 0,
+    "src_hash": "d606ae3e2f4a7d0e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.goblin.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 1,
+    "src_hash": "47b56f5cc6399dfb",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.orc.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 5,
+    "src_hash": "3907af2e3409c873",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.wraith.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 14,
+    "src_hash": "c781316c9ff4beaa",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.skeleton.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 6,
+    "src_hash": "ea5f6bdc79b884c3",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.zombie.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 12,
+    "src_hash": "4c876e938c74ff4d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.troll.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 13,
+    "src_hash": "9bac25686c53aa85",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.ghoul.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 9,
+    "src_hash": "2deb15182283b478",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.fire_daemon.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 19,
+    "src_hash": "8fc17812317fd7d5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.lizard_man.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 2,
+    "src_hash": "496d0d893c8abd22",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.medusa.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 20,
+    "src_hash": "7def2d5ca100992e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.minotaur.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 7,
+    "src_hash": "8b60504d140cee2e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.vampire.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 21,
+    "src_hash": "ef177717b2d61a6a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.lich.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 22,
+    "src_hash": "7caf523f691be468",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.ghost.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 11,
+    "src_hash": "df1bc4984a055e10",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.wolf.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 3,
+    "src_hash": "ea858afbf837aae7",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.snow_wolf.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 4,
+    "src_hash": "d33817114d7e3b75",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.spider.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 8,
+    "src_hash": "2964c4cc2db4b4fb",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.hell_hound.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 10,
+    "src_hash": "1be4b441a9499874",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.homonculus.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 15,
+    "src_hash": "f37b0d78c1e1b024",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.ice_golem.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 16,
+    "src_hash": "7cdd3828fc6b53e7",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.stone_golem.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 17,
+    "src_hash": "1a234744f50cea32",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.iron_golem.0": {
+    "src_table": "entities.creature_names",
+    "src_index": 18,
+    "src_hash": "15bcdcc513acc66c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.thief.0": {
+    "src_table": "classes.names",
+    "src_index": 10,
+    "src_hash": "2fd478c88ca0e81b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.archer.0": {
+    "src_table": "classes.names",
+    "src_index": 13,
+    "src_hash": "71f2149b5982e467",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.warrior.0": {
+    "src_table": "classes.names",
+    "src_index": 16,
+    "src_hash": "eaf0fe0a362b5849",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.knight.0": {
+    "src_table": "classes.names",
+    "src_index": 17,
+    "src_hash": "f24b52468bfaef30",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.mage.0": {
+    "src_table": "classes.names",
+    "src_index": 0,
+    "src_hash": "e181bc015be0fe01",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.battlemage.0": {
+    "src_table": "classes.names",
+    "src_index": 2,
+    "src_hash": "64cac947ace9f519",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.assassin.0": {
+    "src_table": "classes.names",
+    "src_index": 11,
+    "src_hash": "c2d31bc82e366f1f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.barbarian.0": {
+    "src_table": "classes.names",
+    "src_index": 15,
+    "src_hash": "3a303970a53b0626",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.ranger.0": {
+    "src_table": "classes.names",
+    "src_index": 14,
+    "src_hash": "e6cd637f954b5af5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  }
+}

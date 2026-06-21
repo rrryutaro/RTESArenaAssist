@@ -1,0 +1,20 @@
+{
+  "status_terms.0.0": {
+    "src_table": "status.war_peace",
+    "src_index": 1,
+    "src_hash": "c2e10c20bf46daf0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_terms.1.0": {
+    "src_table": "status.war_peace",
+    "src_index": 0,
+    "src_hash": "a2d8daa4281b8865",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  }
+}

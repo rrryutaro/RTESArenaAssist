@@ -1,0 +1,19 @@
+{
+  "_meta": {
+    "lang_code": "REPLACE_ME",
+    "display_name": "REPLACE_ME",
+    "direction": "ltr",
+    "fallback_chain": ["REPLACE_ME", "en"],
+    "font_hint": null,
+    "plural_form": "en_like_2",
+    "decimal_separator": ".",
+    "thousands_separator": ",",
+    "quote_open": "“",
+    "quote_close": "”",
+    "secondary_quote_open": "‘",
+    "secondary_quote_close": "’"
+  },
+  "strings": {
+    "app.title": "RTESArenaAssist"
+  }
+}

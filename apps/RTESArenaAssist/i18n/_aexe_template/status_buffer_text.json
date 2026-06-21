@@ -1,0 +1,218 @@
+{
+  "status_buffer_text.day.0": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 6,
+    "src_hash": "714aad3d00eb0352",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.day.1": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 0,
+    "src_hash": "03cb4d1d326ee2dc",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.day.2": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 1,
+    "src_hash": "d8dc80263cb729d6",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.day.3": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 2,
+    "src_hash": "c3a742822ee2a4fa",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.day.4": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 3,
+    "src_hash": "3214460ebe7b588d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.day.5": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 4,
+    "src_hash": "8f0a234823ea639c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.day.6": {
+    "src_table": "calendar.weekday_names",
+    "src_index": 5,
+    "src_hash": "af12dae0b1fee2d6",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.month.0": {
+    "src_table": "calendar.month_names",
+    "src_index": 0,
+    "src_hash": "ca949ab43e76d70b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.month.1": {
+    "src_table": "calendar.month_names",
+    "src_index": 1,
+    "src_hash": "215eb5aa05cfc0bb",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.month.2": {
+    "src_table": "calendar.month_names",
+    "src_index": 2,
+    "src_hash": "982466cca8b9e17d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.month.3": {
+    "src_table": "calendar.month_names",
+    "src_index": 3,
+    "src_hash": "5765249945e6b154",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.month.4": {
+    "src_table": "calendar.month_names",
+    "src_index": 4,
+    "src_hash": "e3c0a813e55db4e2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.month.5": {
+    "src_table": "calendar.month_names",
+    "src_index": 5,
+    "src_hash": "7b17ac9fd8bc8955",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.month.6": {
+    "src_table": "calendar.month_names",
+    "src_index": 6,
+    "src_hash": "53bd6400e056e7bb",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.month.7": {
+    "src_table": "calendar.month_names",
+    "src_index": 7,
+    "src_hash": "7169e46fb53e1302",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.month.8": {
+    "src_table": "calendar.month_names",
+    "src_index": 8,
+    "src_hash": "d6875992fb6a33a5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.month.9": {
+    "src_table": "calendar.month_names",
+    "src_index": 9,
+    "src_hash": "245b366daa7146e7",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.month.10": {
+    "src_table": "calendar.month_names",
+    "src_index": 10,
+    "src_hash": "4fb23b3234b34694",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.month.11": {
+    "src_table": "calendar.month_names",
+    "src_index": 11,
+    "src_hash": "86f618b19879580a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.0": {
+    "src_table": "status.effects_list",
+    "src_index": 0,
+    "src_hash": "87695fdac81728b9",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.1": {
+    "src_table": "status.effects_list",
+    "src_index": 1,
+    "src_hash": "0bf2b75b3752eeb3",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.2": {
+    "src_table": "status.effects_list",
+    "src_index": 2,
+    "src_hash": "754a7b453d97b648",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.3": {
+    "src_table": "status.effects_list",
+    "src_index": 21,
+    "src_hash": "fa3765663b75dd11",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.5": {
+    "src_table": "status.effects_list",
+    "src_index": 20,
+    "src_hash": "5d8c80c09ab0b89c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  }
+}

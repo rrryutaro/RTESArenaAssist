@@ -1,0 +1,589 @@
+{
+  "_comment": "言語別処理ルール(翻訳でない)。翻訳ローダは _ 接頭辞ファイルを無視する。",
+  "text_corrections": [
+    {
+      "id": "title_postposition_singleword",
+      "description": "敬称後置: 「卿・〇〇」「夫人・〇〇」「伯爵・〇〇」「男爵・〇〇」を「〇〇卿」等に変換",
+      "rationale": "日本語の敬称は名前後置が自然（公式 TES5 翻訳『ハーコン卿』等に準拠）。Arena オリジナル英語の前置 'Lord Name' を直訳すると不自然になるため、最終出力で語順補正する",
+      "pattern": "(卿|夫人|伯爵|男爵)・([^\\sぁ-ん、。？！「」]+)",
+      "replace": "\\2\\1"
+    }
+  ],
+  "placeholder_preprocessing": {
+    "placeholders": {
+      "nk": [
+        {
+          "id": "strip_english_indefinite_article",
+          "description": "英語不定冠詞 a/an を剥がして items.json/key_materials を正しく引けるようにする",
+          "pattern": "^(?:a|an) (?=[A-Z])",
+          "replace": ""
+        }
+      ],
+      "ni": [
+        {
+          "id": "strip_english_indefinite_article",
+          "description": "英語不定冠詞 a/an を剥がして items.json を正しく引けるようにする (汎用アイテム名)",
+          "pattern": "^(?:a|an) (?=[A-Z])",
+          "replace": ""
+        }
+      ]
+    }
+  },
+  "dynamic_places": {
+    "tavern": {
+      "combination_rule": "{prefix}{suffix}亭",
+      "prefixes": [
+        {
+          "en": "Green",
+          "value": "緑の"
+        },
+        {
+          "en": "Black",
+          "value": "黒の"
+        },
+        {
+          "en": "Red",
+          "value": "赤の"
+        },
+        {
+          "en": "Blue",
+          "value": "青の"
+        },
+        {
+          "en": "Gold",
+          "value": "金の"
+        },
+        {
+          "en": "White",
+          "value": "白の"
+        },
+        {
+          "en": "Silver",
+          "value": "銀の"
+        },
+        {
+          "en": "Crimson",
+          "value": "紅の"
+        },
+        {
+          "en": "Dirty",
+          "value": "汚れた"
+        },
+        {
+          "en": "Haunted",
+          "value": "呪われた"
+        },
+        {
+          "en": "Flying",
+          "value": "飛ぶ"
+        },
+        {
+          "en": "Dancing",
+          "value": "踊る"
+        },
+        {
+          "en": "Laughing",
+          "value": "笑う"
+        },
+        {
+          "en": "Restless",
+          "value": "落ち着かぬ"
+        },
+        {
+          "en": "King's",
+          "value": "王の"
+        },
+        {
+          "en": "Queen's",
+          "value": "女王の"
+        },
+        {
+          "en": "Thirsty",
+          "value": "渇いた"
+        },
+        {
+          "en": "Unfortunate",
+          "value": "不運な"
+        },
+        {
+          "en": "Lucky",
+          "value": "幸運の"
+        },
+        {
+          "en": "Devil's",
+          "value": "悪魔の"
+        },
+        {
+          "en": "Rusty",
+          "value": "錆びた"
+        },
+        {
+          "en": "Howling",
+          "value": "吠える"
+        },
+        {
+          "en": "Screaming",
+          "value": "叫ぶ"
+        }
+      ],
+      "suffixes": [
+        {
+          "en": "Griffin",
+          "value": "グリフォン"
+        },
+        {
+          "en": "Dragon",
+          "value": "竜"
+        },
+        {
+          "en": "Golem",
+          "value": "ゴーレム"
+        },
+        {
+          "en": "Goblin",
+          "value": "ゴブリン"
+        },
+        {
+          "en": "Ogre",
+          "value": "オーガ"
+        },
+        {
+          "en": "Giants",
+          "value": "巨人"
+        },
+        {
+          "en": "Djinn",
+          "value": "ジン"
+        },
+        {
+          "en": "Wolf",
+          "value": "狼"
+        },
+        {
+          "en": "Huntsman",
+          "value": "狩人"
+        },
+        {
+          "en": "Mug",
+          "value": "マグ"
+        },
+        {
+          "en": "Cup",
+          "value": "杯"
+        },
+        {
+          "en": "Dagger",
+          "value": "ダガー"
+        },
+        {
+          "en": "Skull",
+          "value": "頭蓋"
+        },
+        {
+          "en": "Sword",
+          "value": "剣"
+        },
+        {
+          "en": "Guard",
+          "value": "衛兵"
+        },
+        {
+          "en": "Dungeon",
+          "value": "ダンジョン"
+        },
+        {
+          "en": "Pit",
+          "value": "穴"
+        },
+        {
+          "en": "Helm",
+          "value": "兜"
+        },
+        {
+          "en": "Chasm",
+          "value": "裂け目"
+        },
+        {
+          "en": "Castle",
+          "value": "城"
+        },
+        {
+          "en": "Jug",
+          "value": "水差し"
+        },
+        {
+          "en": "Eagle",
+          "value": "鷲"
+        },
+        {
+          "en": "Bird",
+          "value": "鳥"
+        }
+      ],
+      "marine_suffixes": [
+        {
+          "en": "Sailor's",
+          "value": "船乗り"
+        },
+        {
+          "en": "Ship",
+          "value": "船"
+        },
+        {
+          "en": "Galley",
+          "value": "ガレー船"
+        },
+        {
+          "en": "Wharf",
+          "value": "波止場"
+        },
+        {
+          "en": "Pier",
+          "value": "桟橋"
+        },
+        {
+          "en": "Serpent",
+          "value": "海蛇"
+        },
+        {
+          "en": "Anchor",
+          "value": "錨"
+        },
+        {
+          "en": "Crow's Nest",
+          "value": "物見台"
+        },
+        {
+          "en": "Tide",
+          "value": "潮"
+        },
+        {
+          "en": "Mug",
+          "value": "マグ"
+        },
+        {
+          "en": "Cup",
+          "value": "杯"
+        },
+        {
+          "en": "Dagger",
+          "value": "ダガー"
+        },
+        {
+          "en": "Skull",
+          "value": "頭蓋"
+        },
+        {
+          "en": "Cutlass",
+          "value": "カトラス"
+        },
+        {
+          "en": "Saber",
+          "value": "サーベル"
+        },
+        {
+          "en": "Treasure",
+          "value": "財宝"
+        },
+        {
+          "en": "Locker",
+          "value": "棺"
+        },
+        {
+          "en": "Chest",
+          "value": "宝箱"
+        },
+        {
+          "en": "Port",
+          "value": "港"
+        },
+        {
+          "en": "Noose",
+          "value": "縄"
+        },
+        {
+          "en": "Gibbet",
+          "value": "絞首台"
+        },
+        {
+          "en": "Gull",
+          "value": "カモメ"
+        },
+        {
+          "en": "Albatross",
+          "value": "アホウドリ"
+        }
+      ]
+    },
+    "temple": {
+      "models": [
+        {
+          "prefix_en": "Order of the ",
+          "combination_rule": "{suffix}騎士団",
+          "suffixes": [
+            {
+              "en": "Red Rose",
+              "value": "赤薔薇"
+            },
+            {
+              "en": "One Prophet",
+              "value": "唯一の預言者"
+            },
+            {
+              "en": "Golden Tomb",
+              "value": "黄金の墓"
+            },
+            {
+              "en": "Knights of Hope",
+              "value": "希望の騎士"
+            },
+            {
+              "en": "Gentle Hand",
+              "value": "優しき手"
+            }
+          ]
+        },
+        {
+          "prefix_en": "Brotherhood of ",
+          "combination_rule": "{suffix}の同胞団",
+          "suffixes": [
+            {
+              "en": "Mercy",
+              "value": "慈悲"
+            },
+            {
+              "en": "Faith",
+              "value": "信仰"
+            },
+            {
+              "en": "Charity",
+              "value": "慈愛"
+            },
+            {
+              "en": "War",
+              "value": "戦"
+            },
+            {
+              "en": "Justice",
+              "value": "正義"
+            },
+            {
+              "en": "Temperance",
+              "value": "節制"
+            },
+            {
+              "en": "the One",
+              "value": "唯一神"
+            },
+            {
+              "en": "Seth",
+              "value": "セス"
+            },
+            {
+              "en": "Gideon",
+              "value": "ギデオン"
+            }
+          ]
+        },
+        {
+          "prefix_en": "Conclave of ",
+          "combination_rule": "{suffix}の聖殿",
+          "suffixes": [
+            {
+              "en": "Mercy",
+              "value": "慈悲"
+            },
+            {
+              "en": "Faith",
+              "value": "信仰"
+            },
+            {
+              "en": "Charity",
+              "value": "慈愛"
+            },
+            {
+              "en": "Justice",
+              "value": "正義"
+            },
+            {
+              "en": "Temperance",
+              "value": "節制"
+            },
+            {
+              "en": "the One",
+              "value": "唯一神"
+            },
+            {
+              "en": "Truth",
+              "value": "真理"
+            },
+            {
+              "en": "Solitude",
+              "value": "孤独"
+            },
+            {
+              "en": "Baal",
+              "value": "バアル"
+            },
+            {
+              "en": "Riana",
+              "value": "リアナ"
+            }
+          ]
+        }
+      ]
+    },
+    "equipment_store": {
+      "combination_rule": "{prefix}{suffix}",
+      "prefixes": [
+        {
+          "en": "%ef's Quality",
+          "value": "{ef}の高品質",
+          "variables": [
+            "ef"
+          ]
+        },
+        {
+          "en": "%ef's Professional",
+          "value": "{ef}の専門",
+          "variables": [
+            "ef"
+          ]
+        },
+        {
+          "en": "%ef's General",
+          "value": "{ef}の総合",
+          "variables": [
+            "ef"
+          ]
+        },
+        {
+          "en": "%ef's Finest",
+          "value": "{ef}の最高級",
+          "variables": [
+            "ef"
+          ]
+        },
+        {
+          "en": "%ef's",
+          "value": "{ef}の",
+          "variables": [
+            "ef"
+          ]
+        },
+        {
+          "en": "%n's",
+          "value": "{n}の",
+          "variables": [
+            "n"
+          ]
+        },
+        {
+          "en": "The Adventurer's",
+          "value": "冒険者の"
+        },
+        {
+          "en": "The Practical",
+          "value": "実用の"
+        },
+        {
+          "en": "The Essential",
+          "value": "必需品の"
+        },
+        {
+          "en": "The Emperor's",
+          "value": "皇帝の"
+        },
+        {
+          "en": "The Wyrm's",
+          "value": "竜の"
+        },
+        {
+          "en": "The Basic",
+          "value": "基本の"
+        },
+        {
+          "en": "The %ct",
+          "value": "{ct}の",
+          "variables": [
+            "ct"
+          ]
+        },
+        {
+          "en": "Unearthed",
+          "value": "発掘の"
+        },
+        {
+          "en": "Vintage",
+          "value": "由緒ある"
+        },
+        {
+          "en": "Bargain",
+          "value": "格安の"
+        },
+        {
+          "en": "Rare",
+          "value": "希少な"
+        },
+        {
+          "en": "New",
+          "value": "新装の"
+        },
+        {
+          "en": "Elite",
+          "value": "上等な"
+        },
+        {
+          "en": "Used",
+          "value": "中古の"
+        }
+      ],
+      "suffixes": [
+        {
+          "en": "Supply Store",
+          "value": "補給店"
+        },
+        {
+          "en": "Gear Store",
+          "value": "装備店"
+        },
+        {
+          "en": "Equipment Store",
+          "value": "装備店"
+        },
+        {
+          "en": "Sundries",
+          "value": "雑貨店"
+        },
+        {
+          "en": "Weaponry Store",
+          "value": "武器店"
+        },
+        {
+          "en": "Tool Store",
+          "value": "道具店"
+        },
+        {
+          "en": "Accouterments",
+          "value": "装身具店"
+        },
+        {
+          "en": "Provisions",
+          "value": "食糧店"
+        },
+        {
+          "en": "Merchandise",
+          "value": "商品店"
+        },
+        {
+          "en": "Armaments",
+          "value": "武具店"
+        }
+      ]
+    },
+    "mages_guild": {
+      "static_name_en": "Mages Guild",
+      "static_name_value": "魔術師ギルド"
+    }
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "equipment_suffixes.0.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 2,
+    "src_hash": "0cdece8a"
+  },
+  "equipment_suffixes.1.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 1,
+    "src_hash": "08f56f4c"
+  },
+  "equipment_suffixes.2.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 6,
+    "src_hash": "7f3e44c5"
+  },
+  "equipment_suffixes.3.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 9,
+    "src_hash": "a3e7ad79"
+  },
+  "equipment_suffixes.4.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 8,
+    "src_hash": "51001903"
+  },
+  "equipment_suffixes.5.0": {
+    "src_table": "equipment.armor_enchantment_names",
+    "src_index": 10,
+    "src_hash": "c72c2046"
+  },
+  "equipment_suffixes.6.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 11,
+    "src_hash": "2f9efafb"
+  },
+  "equipment_suffixes.7.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 12,
+    "src_hash": "88b0c900"
+  },
+  "equipment_suffixes.8.0": {
+    "src_table": "equipment.weapon_enchantment_names",
+    "src_index": 13,
+    "src_hash": "93d7c8de"
+  },
+  "equipment_suffixes.9.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 9,
+    "src_hash": "0ee1f8ca"
+  }
+}

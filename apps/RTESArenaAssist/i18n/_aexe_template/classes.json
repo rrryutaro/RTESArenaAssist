@@ -1,0 +1,976 @@
+{
+  "classes.0.0": {
+    "src_table": "classes.names",
+    "src_index": 0,
+    "src_hash": "d14e0b7b",
+    "alternative_ja": [
+      "魔法使い",
+      "魔術師"
+    ],
+    "data": {
+      "category": "mage",
+      "category_translations": {
+        "en": "Mage",
+        "ja": "魔法"
+      },
+      "health_die": 6,
+      "casts_magic": true,
+      "allowed_armors": [],
+      "allowed_shields": [],
+      "allowed_weapons": [
+        0,
+        1,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": "純魔法職: 杖・短剣・弓のみ。防具シールドは原則不可（Arena lore通説）",
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ],
+      "verified_official": true,
+      "official_sources": [
+        "TES5 ja (Mage archetype)",
+        "arena_classes.json"
+      ]
+    },
+    "terms": [
+      "glossary.mage_context_dependent.0"
+    ]
+  },
+  "classes.1.0": {
+    "src_table": "classes.names",
+    "src_index": 1,
+    "src_hash": "0300050c",
+    "alternative_ja": [
+      "呪文剣士"
+    ],
+    "data": {
+      "category": "mage",
+      "category_translations": {
+        "en": "Mage",
+        "ja": "魔法"
+      },
+      "health_die": 12,
+      "casts_magic": true,
+      "allowed_armors": [
+        0,
+        1
+      ],
+      "allowed_shields": [
+        7,
+        8
+      ],
+      "allowed_weapons": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": "魔法戦士: レザー〜チェイン、剣系・弓 (鈍器除外仮説)",
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ]
+    }
+  },
+  "classes.2.0": {
+    "src_table": "classes.names",
+    "src_index": 2,
+    "src_hash": "d10d0a14",
+    "alternative_ja": [
+      "戦闘魔術師"
+    ],
+    "data": {
+      "category": "mage",
+      "category_translations": {
+        "en": "Mage",
+        "ja": "魔法"
+      },
+      "health_die": 10,
+      "casts_magic": true,
+      "allowed_armors": [
+        0,
+        1
+      ],
+      "allowed_shields": [
+        7,
+        8
+      ],
+      "allowed_weapons": [
+        0,
+        1,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": "戦闘魔法使い: レザー〜チェイン、鈍器・斧系・弓",
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ],
+      "verified_official": true,
+      "official_sources": [
+        "TES5 ja",
+        "Oblivion ja",
+        "ESO ja"
+      ]
+    }
+  },
+  "classes.3.0": {
+    "src_table": "classes.names",
+    "src_index": 3,
+    "src_hash": "3e0a051e",
+    "alternative_ja": [
+      "魔法使い"
+    ],
+    "data": {
+      "category": "mage",
+      "category_translations": {
+        "en": "Mage",
+        "ja": "魔法"
+      },
+      "health_die": 6,
+      "casts_magic": true,
+      "allowed_armors": [],
+      "allowed_shields": [],
+      "allowed_weapons": [
+        0,
+        1,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": "純魔法職、Mage と同等の制限",
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ],
+      "verified_official": true,
+      "official_sources": [
+        "ESO ja (class name)"
+      ]
+    }
+  },
+  "classes.4.0": {
+    "src_table": "classes.names",
+    "src_index": 4,
+    "src_hash": "6cad85d7",
+    "alternative_ja": [
+      "回復者"
+    ],
+    "data": {
+      "category": "mage",
+      "category_translations": {
+        "en": "Mage",
+        "ja": "魔法"
+      },
+      "health_die": 8,
+      "casts_magic": true,
+      "allowed_armors": [
+        0
+      ],
+      "allowed_shields": [
+        7,
+        8
+      ],
+      "allowed_weapons": [
+        0,
+        1,
+        11
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": "回復職、革鎧。シールド: Buckler+Round Shield 確認。武器: Staff/Dagger/Mace。Short Bow 装備不可確認。Long Bow は未確認のため除外",
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ]
+    }
+  },
+  "classes.5.0": {
+    "src_table": "classes.names",
+    "src_index": 5,
+    "src_hash": "81d386e2",
+    "alternative_ja": [
+      "ナイトブレード"
+    ],
+    "data": {
+      "category": "thief",
+      "category_translations": {
+        "en": "Thief",
+        "ja": "盗賊"
+      },
+      "health_die": 8,
+      "casts_magic": true,
+      "allowed_armors": [
+        0,
+        1
+      ],
+      "allowed_shields": [
+        7,
+        8
+      ],
+      "allowed_weapons": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        9,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": "暗殺魔法使い: 軽鎧+短剣・刀系",
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ],
+      "verified_official": true,
+      "official_sources": [
+        "ESO ja (class name)",
+        "gaming.net Oblivion Remastered ja"
+      ]
+    }
+  },
+  "classes.6.0": {
+    "src_table": "classes.names",
+    "src_index": 6,
+    "src_hash": "fa4fe5be",
+    "alternative_ja": [
+      "吟遊詩人"
+    ],
+    "data": {
+      "category": "thief",
+      "category_translations": {
+        "en": "Thief",
+        "ja": "盗賊"
+      },
+      "health_die": 10,
+      "casts_magic": false,
+      "allowed_armors": [
+        0,
+        1
+      ],
+      "allowed_shields": [
+        7,
+        8,
+        9
+      ],
+      "allowed_weapons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        7,
+        8,
+        9,
+        11,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": null,
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ]
+    }
+  },
+  "classes.7.0": {
+    "src_table": "classes.names",
+    "src_index": 7,
+    "src_hash": "4383933d",
+    "alternative_ja": [
+      "侵入者"
+    ],
+    "data": {
+      "category": "thief",
+      "category_translations": {
+        "en": "Thief",
+        "ja": "盗賊"
+      },
+      "health_die": 10,
+      "casts_magic": false,
+      "allowed_armors": [
+        0,
+        1
+      ],
+      "allowed_shields": [
+        7
+      ],
+      "allowed_weapons": [
+        1,
+        7,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": "侵入特化: 軽武装",
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ]
+    }
+  },
+  "classes.8.0": {
+    "src_table": "classes.names",
+    "src_index": 8,
+    "src_hash": "bb71deb2",
+    "alternative_ja": [],
+    "data": {
+      "category": "thief",
+      "category_translations": {
+        "en": "Thief",
+        "ja": "盗賊"
+      },
+      "health_die": 8,
+      "casts_magic": false,
+      "allowed_armors": [
+        0,
+        1
+      ],
+      "allowed_shields": [
+        7,
+        8
+      ],
+      "allowed_weapons": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        7,
+        8,
+        9,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": null,
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ]
+    }
+  },
+  "classes.9.0": {
+    "src_table": "classes.names",
+    "src_index": 9,
+    "src_hash": "6c3f7af9",
+    "alternative_ja": [],
+    "data": {
+      "category": "thief",
+      "category_translations": {
+        "en": "Thief",
+        "ja": "盗賊"
+      },
+      "health_die": 12,
+      "casts_magic": false,
+      "allowed_armors": [
+        0,
+        1
+      ],
+      "allowed_shields": [
+        7
+      ],
+      "allowed_weapons": [
+        1,
+        2,
+        7,
+        8,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": null,
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ]
+    }
+  },
+  "classes.10.0": {
+    "src_table": "classes.names",
+    "src_index": 10,
+    "src_hash": "8ac2de7b",
+    "alternative_ja": [
+      "盗賊"
+    ],
+    "data": {
+      "category": "thief",
+      "category_translations": {
+        "en": "Thief",
+        "ja": "盗賊"
+      },
+      "health_die": 14,
+      "casts_magic": false,
+      "allowed_armors": [
+        0
+      ],
+      "allowed_shields": [
+        7
+      ],
+      "allowed_weapons": [
+        1,
+        7,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": null,
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ],
+      "verified_official": true,
+      "official_sources": [
+        "arena_classes.json",
+        "TES5 Thieves Guild ja"
+      ]
+    }
+  },
+  "classes.11.0": {
+    "src_table": "classes.names",
+    "src_index": 11,
+    "src_hash": "8940d664",
+    "alternative_ja": [
+      "暗殺者"
+    ],
+    "data": {
+      "category": "thief",
+      "category_translations": {
+        "en": "Thief",
+        "ja": "盗賊"
+      },
+      "health_die": 8,
+      "casts_magic": false,
+      "allowed_armors": [
+        0,
+        1
+      ],
+      "allowed_shields": [
+        7,
+        8
+      ],
+      "allowed_weapons": [
+        1,
+        2,
+        4,
+        7,
+        8,
+        9,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": null,
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ],
+      "verified_official": true,
+      "official_sources": [
+        "TES5 ja",
+        "ESO ja",
+        "arena_classes.json"
+      ]
+    }
+  },
+  "classes.12.0": {
+    "src_table": "classes.names",
+    "src_index": 12,
+    "src_hash": "b0fa4818",
+    "alternative_ja": [
+      "修道士"
+    ],
+    "data": {
+      "category": "warrior",
+      "category_translations": {
+        "en": "Warrior",
+        "ja": "戦士"
+      },
+      "health_die": 14,
+      "casts_magic": false,
+      "allowed_armors": [
+        0
+      ],
+      "allowed_shields": [],
+      "allowed_weapons": [
+        0,
+        1,
+        2,
+        7,
+        8,
+        11,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": "武術修行者: 軽鎧のみ・盾なし",
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ]
+    }
+  },
+  "classes.13.0": {
+    "src_table": "classes.names",
+    "src_index": 13,
+    "src_hash": "f75aedc1",
+    "alternative_ja": [
+      "弓使い"
+    ],
+    "data": {
+      "category": "warrior",
+      "category_translations": {
+        "en": "Warrior",
+        "ja": "戦士"
+      },
+      "health_die": 16,
+      "casts_magic": false,
+      "allowed_armors": [
+        0,
+        1,
+        2
+      ],
+      "allowed_shields": [
+        7,
+        8,
+        9
+      ],
+      "allowed_weapons": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": "弓主体だが各種武器・全鎧使用可",
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ]
+    }
+  },
+  "classes.14.0": {
+    "src_table": "classes.names",
+    "src_index": 14,
+    "src_hash": "6eb9532f",
+    "alternative_ja": [],
+    "data": {
+      "category": "warrior",
+      "category_translations": {
+        "en": "Warrior",
+        "ja": "戦士"
+      },
+      "health_die": 18,
+      "casts_magic": false,
+      "allowed_armors": [
+        0,
+        1,
+        2
+      ],
+      "allowed_shields": [
+        7,
+        8,
+        9
+      ],
+      "allowed_weapons": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        7,
+        8,
+        9,
+        10,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": null,
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ]
+    }
+  },
+  "classes.15.0": {
+    "src_table": "classes.names",
+    "src_index": 15,
+    "src_hash": "110239ff",
+    "alternative_ja": [
+      "野蛮人"
+    ],
+    "data": {
+      "category": "warrior",
+      "category_translations": {
+        "en": "Warrior",
+        "ja": "戦士"
+      },
+      "health_die": 30,
+      "casts_magic": false,
+      "allowed_armors": [
+        0,
+        1,
+        2
+      ],
+      "allowed_shields": [
+        7,
+        8,
+        9,
+        10
+      ],
+      "allowed_weapons": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": null,
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ]
+    }
+  },
+  "classes.16.0": {
+    "src_table": "classes.names",
+    "src_index": 16,
+    "src_hash": "945eda39",
+    "alternative_ja": [
+      "戦士"
+    ],
+    "data": {
+      "category": "warrior",
+      "category_translations": {
+        "en": "Warrior",
+        "ja": "戦士"
+      },
+      "health_die": 20,
+      "casts_magic": false,
+      "allowed_armors": [
+        0,
+        1,
+        2
+      ],
+      "allowed_shields": [
+        7,
+        8,
+        9,
+        10
+      ],
+      "allowed_weapons": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": null,
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ]
+    }
+  },
+  "classes.17.0": {
+    "src_table": "classes.names",
+    "src_index": 17,
+    "src_hash": "2352a22b",
+    "alternative_ja": [
+      "騎士"
+    ],
+    "data": {
+      "category": "warrior",
+      "category_translations": {
+        "en": "Warrior",
+        "ja": "戦士"
+      },
+      "health_die": 18,
+      "casts_magic": false,
+      "allowed_armors": [
+        0,
+        1,
+        2
+      ],
+      "allowed_shields": [
+        7,
+        8,
+        9,
+        10
+      ],
+      "allowed_weapons": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17
+      ]
+    },
+    "_meta": {
+      "hypothesis_note": null,
+      "verified_fields": [
+        "id",
+        "en",
+        "ja",
+        "category",
+        "health_die",
+        "casts_magic"
+      ],
+      "hypothesis_fields": [
+        "allowed_armors",
+        "allowed_shields",
+        "allowed_weapons"
+      ],
+      "verified_official": true,
+      "official_sources": [
+        "arena_classes.json",
+        "TES5 ja"
+      ]
+    }
+  }
+}

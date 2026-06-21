@@ -1,0 +1,16 @@
+{
+  "relations.0.0": "父",
+  "relations.1.0": "母",
+  "relations.2.0": "息子",
+  "relations.3.0": "娘",
+  "relations.4.0": "兄",
+  "relations.5.0": "姉",
+  "relations.6.0": "叔父",
+  "relations.7.0": "叔母",
+  "relations.8.0": "甥",
+  "relations.9.0": "姪",
+  "relations.10.0": "従兄弟",
+  "relations.11.0": "夫",
+  "relations.12.0": "妻",
+  "relations.13.0": "友人"
+}

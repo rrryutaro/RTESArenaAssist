@@ -1,0 +1,194 @@
+{
+  "spells.spell_item_wizards_fire.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 0,
+    "src_hash": "48119ce9",
+    "category": "attack"
+  },
+  "spells.spell_item_shocking.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 1,
+    "src_hash": "f222bbad",
+    "category": "attack"
+  },
+  "spells.spell_item_curse.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 2,
+    "src_hash": "0681d3ea",
+    "category": "attack"
+  },
+  "spells.spell_item_far_silence.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 3,
+    "src_hash": "389e6908",
+    "category": "attack"
+  },
+  "spells.spell_item_poison_dart.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 4,
+    "src_hash": "60feed1b",
+    "category": "attack"
+  },
+  "spells.spell_item_fireball.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 5,
+    "src_hash": "5c92d3bd",
+    "category": "attack"
+  },
+  "spells.spell_item_ice_storm.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 6,
+    "src_hash": "df7daa2a",
+    "category": "attack"
+  },
+  "spells.spell_item_lightning.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 7,
+    "src_hash": "87d18c09",
+    "category": "attack"
+  },
+  "spells.spell_item_pitfall.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 8,
+    "src_hash": "bfdeca0b",
+    "category": "attack"
+  },
+  "spells.spell_item_fire_storm.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 9,
+    "src_hash": "d122cb86",
+    "category": "attack"
+  },
+  "spells.spell_item_life_steal.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 10,
+    "src_hash": "81916f9d",
+    "category": "attack"
+  },
+  "spells.spell_item_toxic_cloud.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 11,
+    "src_hash": "525e25ee",
+    "category": "attack"
+  },
+  "spells.spell_item_paralyzation.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 12,
+    "src_hash": "eeba7ac1",
+    "category": "attack"
+  },
+  "spells.spell_item_wildfire.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 13,
+    "src_hash": "50728675",
+    "category": "attack"
+  },
+  "spells.spell_item_free_action_a.0": {
+    "src_table": "equipment.attack_spell_names",
+    "src_index": 14,
+    "src_hash": "57b5cfff",
+    "category": "attack"
+  },
+  "spells.spell_item_stamina.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 0,
+    "src_hash": "91f2655a",
+    "category": "defensive"
+  },
+  "spells.spell_item_sanctuary.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 1,
+    "src_hash": "fc291760",
+    "category": "defensive"
+  },
+  "spells.spell_item_shielding.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 2,
+    "src_hash": "e6fd6850",
+    "category": "defensive"
+  },
+  "spells.spell_item_healing_d.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 3,
+    "src_hash": "2d3fd408",
+    "category": "defensive"
+  },
+  "spells.spell_item_levitation.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 4,
+    "src_hash": "04966b9c",
+    "category": "defensive"
+  },
+  "spells.spell_item_force_bolt.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 5,
+    "src_hash": "8f4c5e23",
+    "category": "defensive"
+  },
+  "spells.spell_item_force_wall.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 6,
+    "src_hash": "9511578d",
+    "category": "defensive"
+  },
+  "spells.spell_item_silence.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 7,
+    "src_hash": "f6b80496",
+    "category": "defensive"
+  },
+  "spells.spell_item_passwall.0": {
+    "src_table": "equipment.defensive_spell_names",
+    "src_index": 8,
+    "src_hash": "0a04c169",
+    "category": "defensive"
+  },
+  "spells.spell_item_light.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 0,
+    "src_hash": "8c460f05",
+    "category": "misc"
+  },
+  "spells.spell_item_wanderlight.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 1,
+    "src_hash": "80ac9e67",
+    "category": "misc"
+  },
+  "spells.spell_item_wizard_lock.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 2,
+    "src_hash": "3abcb333",
+    "category": "misc"
+  },
+  "spells.spell_item_opening.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 3,
+    "src_hash": "e3f599fa",
+    "category": "misc"
+  },
+  "spells.spell_item_healing_m.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 4,
+    "src_hash": "2d3fd408",
+    "category": "misc"
+  },
+  "spells.spell_item_cure_poison.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 5,
+    "src_hash": "92e9862b",
+    "category": "misc"
+  },
+  "spells.spell_item_heal_true.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 6,
+    "src_hash": "12e4068a",
+    "category": "misc"
+  },
+  "spells.spell_item_purification.0": {
+    "src_table": "equipment.misc_spell_names",
+    "src_index": 7,
+    "src_hash": "96146222",
+    "category": "misc"
+  }
+}

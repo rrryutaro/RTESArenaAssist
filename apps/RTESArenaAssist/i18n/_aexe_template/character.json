@@ -1,0 +1,398 @@
+{
+  "character.mage.0": {
+    "src_table": "classes.names",
+    "src_index": 0,
+    "src_hash": "e181bc015be0fe01",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.spellsword.0": {
+    "src_table": "classes.names",
+    "src_index": 1,
+    "src_hash": "919ed8936582b799",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.battlemage.0": {
+    "src_table": "classes.names",
+    "src_index": 2,
+    "src_hash": "64cac947ace9f519",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.healer.0": {
+    "src_table": "classes.names",
+    "src_index": 4,
+    "src_hash": "a491a33c72cd4d18",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.nightblade.0": {
+    "src_table": "classes.names",
+    "src_index": 5,
+    "src_hash": "9ef0f3005e4f3388",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.bard.0": {
+    "src_table": "classes.names",
+    "src_index": 6,
+    "src_hash": "fbef39c347a54191",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.burglar.0": {
+    "src_table": "classes.names",
+    "src_index": 7,
+    "src_hash": "880b8e64c1d5d8cd",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.rogue.0": {
+    "src_table": "classes.names",
+    "src_index": 8,
+    "src_hash": "0b8cdd9ec4e4cbca",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.acrobat.0": {
+    "src_table": "classes.names",
+    "src_index": 9,
+    "src_hash": "246b4a77c4fc6aa2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.thief.0": {
+    "src_table": "classes.names",
+    "src_index": 10,
+    "src_hash": "2fd478c88ca0e81b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.assassin.0": {
+    "src_table": "classes.names",
+    "src_index": 11,
+    "src_hash": "c2d31bc82e366f1f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.monk.0": {
+    "src_table": "classes.names",
+    "src_index": 12,
+    "src_hash": "a670c8d297ce4dec",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.archer.0": {
+    "src_table": "classes.names",
+    "src_index": 13,
+    "src_hash": "71f2149b5982e467",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.ranger.0": {
+    "src_table": "classes.names",
+    "src_index": 14,
+    "src_hash": "e6cd637f954b5af5",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.barbarian.0": {
+    "src_table": "classes.names",
+    "src_index": 15,
+    "src_hash": "3a303970a53b0626",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.warrior.0": {
+    "src_table": "classes.names",
+    "src_index": 16,
+    "src_hash": "eaf0fe0a362b5849",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.knight.0": {
+    "src_table": "classes.names",
+    "src_index": 17,
+    "src_hash": "f24b52468bfaef30",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.breton.0": {
+    "src_table": "races.singular",
+    "src_index": 0,
+    "src_hash": "c1901828a222e3a2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.redguard.0": {
+    "src_table": "races.singular",
+    "src_index": 1,
+    "src_hash": "b3fb8324c0ce7634",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.nord.0": {
+    "src_table": "races.singular",
+    "src_index": 2,
+    "src_hash": "85fb49e051915a77",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.dark_elf.0": {
+    "src_table": "races.singular",
+    "src_index": 3,
+    "src_hash": "85985c8c3a772172",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.high_elf.0": {
+    "src_table": "races.singular",
+    "src_index": 4,
+    "src_hash": "2a8e80c97798a59a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.wood_elf.0": {
+    "src_table": "races.singular",
+    "src_index": 5,
+    "src_hash": "d6748071c4f3f01e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.khajiit.0": {
+    "src_table": "races.singular",
+    "src_index": 6,
+    "src_hash": "42d3e3c0227e59f0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.argonian.0": {
+    "src_table": "races.singular",
+    "src_index": 7,
+    "src_hash": "856a8081ca116253",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.strength.0": {
+    "src_table": "entities.attribute_names",
+    "src_index": 0,
+    "src_hash": "63ee3a1b965a7bd2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.intelligence.0": {
+    "src_table": "entities.attribute_names",
+    "src_index": 1,
+    "src_hash": "78ea5ef30f1e6270",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.willpower.0": {
+    "src_table": "entities.attribute_names",
+    "src_index": 2,
+    "src_hash": "9a60a076b5624eb1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.agility.0": {
+    "src_table": "entities.attribute_names",
+    "src_index": 3,
+    "src_hash": "49796694dc677011",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.speed.0": {
+    "src_table": "entities.attribute_names",
+    "src_index": 4,
+    "src_hash": "c372fee9b4566b85",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.endurance.0": {
+    "src_table": "entities.attribute_names",
+    "src_index": 5,
+    "src_hash": "98c8abf84e23ff3f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.personality.0": {
+    "src_table": "entities.attribute_names",
+    "src_index": 6,
+    "src_hash": "95a295627e54e34a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.luck.0": {
+    "src_table": "entities.attribute_names",
+    "src_index": 7,
+    "src_hash": "382e766581df7c49",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.gold.0": {
+    "src_table": "city_generation.tavern_prefixes",
+    "src_index": 4,
+    "src_hash": "6249df4367d0a2e0",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.guard.0": {
+    "src_table": "city_generation.tavern_suffixes",
+    "src_index": 14,
+    "src_hash": "c8d3fc567bbcbf38",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.healer_1.0": {
+    "src_table": "classes.names",
+    "src_index": 4,
+    "src_hash": "a491a33c72cd4d18",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "character.health.0": {
+    "src_table": "character.stat_labels",
+    "src_index": 0,
+    "src_hash": "55898449eb74fb2e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "character.fatigue.0": {
+    "src_table": "character.stat_labels",
+    "src_index": 1,
+    "src_hash": "c83bec1f02849a09",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "character.spell_points.0": {
+    "src_table": "character.stat_labels",
+    "src_index": 2,
+    "src_hash": "9db44be953b0230c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "character.diseased.0": {
+    "src_table": "character.status_effects",
+    "src_index": 0,
+    "src_hash": "ebac393d44b1ddbf",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "character.poisoned.0": {
+    "src_table": "character.status_effects",
+    "src_index": 1,
+    "src_hash": "6dc21afe4edec3c1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "character.cursed.0": {
+    "src_table": "character.status_effects",
+    "src_index": 2,
+    "src_hash": "05816dcff51e5d1f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "character.blessed.0": {
+    "src_table": "character.status_effects",
+    "src_index": 3,
+    "src_hash": "67927b5fa959c7b4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "character.paralyzed.0": {
+    "src_table": "character.status_effects",
+    "src_index": 6,
+    "src_hash": "6cc4eb473ade8b46",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  }
+}
