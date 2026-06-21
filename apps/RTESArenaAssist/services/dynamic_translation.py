@@ -50,13 +50,49 @@ def _load() -> dict:
     return _data_cache
 
 
+def _read_public_city_generation() -> Optional[dict]:
+    """公開 v2 localpack の city_generation 生成資産（data）を読む（無ければ None）。
+
+    公開版は aexe_strings.json を同梱しないため、建物名パーツ（prefix/suffix）は
+    ユーザー環境で採取して localpack へ収録した city_generation.json から読む。
+    """
+    try:
+        if _ASSIST_DIR not in sys.path:
+            sys.path.insert(0, _ASSIST_DIR)
+        import i18n_helper as i18n
+        blob = i18n.v2_generated_asset("city_generation.json")
+        if blob is None:
+            return None
+        data = json.loads(blob.decode("utf-8")).get("data")
+        return data if isinstance(data, dict) else None
+    except Exception:  # noqa: BLE001 - 読込失敗は名称解決のみ諦める（地図描画は継続）
+        return None
+
+
 def _load_aexe_city_generation() -> dict:
+    """建物名パーツ（tavern/temple/equipment の prefix/suffix）を得る。
+
+    dev は aexe_strings.json（正本・Arena 原文含む）から、公開版はそれが非同梱のため
+    v2 localpack の city_generation.json（生成資産・名称パーツ収録）から読む。どちらも
+    得られなければ空 dict を返す（= 名称は未解決でも、施設検出・mif_name 解決・地図描画は
+    巻き込まれずに継続させる＝表示と名称の分離）。
+    """
     global _aexe_city_gen_cache
     if _aexe_city_gen_cache is not None:
         return _aexe_city_gen_cache
-    with open(_AEXE_STRINGS_PATH, encoding="utf-8") as f:
-        raw = json.load(f)
-    _aexe_city_gen_cache = raw.get("city_generation", {})
+    out: dict = {}
+    # dev: aexe_strings.json（正本）。公開版は非同梱で FileNotFoundError → 公開経路へ。
+    try:
+        with open(_AEXE_STRINGS_PATH, encoding="utf-8") as f:
+            out = json.load(f).get("city_generation", {}) or {}
+    except (OSError, ValueError):
+        out = {}
+    # 公開: localpack の city_generation 生成資産（名称パーツ収録）。
+    if not out.get("tavern_prefixes"):
+        pub = _read_public_city_generation()
+        if pub:
+            out = pub
+    _aexe_city_gen_cache = out
     return _aexe_city_gen_cache
 
 

@@ -58,6 +58,8 @@ class InteriorMapSession(MapSessionBase):
         self._hidden_door_ids: frozenset[int] = frozenset()
         self._menu_texture_indices: frozenset[int] = frozenset()
         self._entrance_cells: tuple[tuple[int, int], ...] = ()
+        # 入店メッセージ中など実座標が使えない間の仮中心（出入口隣接の床）。
+        self._entry_center: Optional[tuple[int, int]] = None
         # 表示
         self._place_text: Optional[str] = None
         self._player_x: Optional[float] = None
@@ -104,15 +106,26 @@ class InteriorMapSession(MapSessionBase):
             self._diag_last = "loaded"
 
     def get_canvas_data(self) -> CanvasData:
+        px = int(self._player_x) if self._player_x is not None else None
+        py = int(self._player_y) if self._player_y is not None else None
+        angle = self._angle
+        # 入店メッセージ中などは座標が抑止され、屋外の held 座標（屋内マップの範囲外）の
+        # まま渡るためマップが中心化されず上端に寄る。実座標がこの屋内マップの範囲に
+        # 収まらない間は、出入口隣接の床へ仮のプレイヤー位置を置き、マップ中心と現在地
+        # マーカーを出入口付近に出す（実座標が確定したら自動的に実位置へ戻る）。
+        if not self._coord_in_bounds(px, py) and self._entry_center is not None:
+            # 位置のみ仮配置（出入口隣接床）。方角はダイアログ中も破損しないため
+            # 上で取得した self._angle をそのまま使い、現在の向きを表示する。
+            px, py = self._entry_center
         return CanvasData(
             walkable=self._walkable,
             map1=self._map1,
             flor=self._flor,
             bitmap_grid=self._bitmap,
             notes=[],
-            player_x=int(self._player_x) if self._player_x is not None else None,
-            player_y=int(self._player_y) if self._player_y is not None else None,
-            player_angle_deg=self._angle,
+            player_x=px,
+            player_y=py,
+            player_angle_deg=angle,
             level_up_index=self._level_up_index,
             level_down_index=self._level_down_index,
             entrance_cells=self._entrance_cells,
@@ -140,6 +153,7 @@ class InteriorMapSession(MapSessionBase):
         self._hidden_door_ids = frozenset()
         self._menu_texture_indices = frozenset()
         self._entrance_cells = ()
+        self._entry_center = None
 
     def _load_mif(self, mif_name: str, player_floor: int = 0) -> None:
         # loose dir → install VFS（GLOBAL.BSA・
@@ -206,6 +220,34 @@ class InteriorMapSession(MapSessionBase):
                 self._entrance_cells = ()
         else:
             self._entrance_cells = ()
+
+        # 入店メッセージ中（座標抑止）の仮中心を確定する。
+        self._entry_center = self._compute_entry_center()
+
+    def _coord_in_bounds(self, px: Optional[int], py: Optional[int]) -> bool:
+        """座標がこの屋内マップの範囲内か（None/未ロード/範囲外は False）。"""
+        if px is None or py is None or self._walkable is None:
+            return False
+        h, w = self._walkable.shape
+        return 0 <= px < w and 0 <= py < h
+
+    def _compute_entry_center(self) -> Optional[tuple[int, int]]:
+        """出入口に隣接する歩行可能な床セルを仮中心として返す。
+
+        出入口セル自体は壁/扉テクスチャのため、その隣接の床（歩行可能）を優先する。
+        隣接床が無ければ出入口セル、いずれも範囲外なら None。
+        """
+        if self._walkable is None or not self._entrance_cells:
+            return None
+        h, w = self._walkable.shape
+        ex, ey = self._entrance_cells[0]
+        for dx, dy in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+            nx, ny = ex + dx, ey + dy
+            if 0 <= nx < w and 0 <= ny < h and bool(self._walkable[ny][nx]):
+                return (nx, ny)
+        if 0 <= ex < w and 0 <= ey < h:
+            return (ex, ey)
+        return None
 
 
 __all__ = ["InteriorMapSession"]

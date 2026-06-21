@@ -596,12 +596,30 @@ def harvest_city_generation(analyzer) -> Optional[tuple[str, dict]]:
             p += 1
         p += 1
         reserved.append(lst)
-    return version, {
+    data = {
         "coastal_city_list": coastal,
         "city_template_filenames": templates,
         "starting_positions": starting,
         "reserved_block_lists": reserved,
     }
+    # 建物名パーツ（tavern/temple/equipment の prefix/suffix）も同じ city_generation 表から
+    # 採取し data へ含める。公開版は施設名解決にこれを localpack 経由で参照する
+    # （dynamic_translation）。dev は aexe_strings.json を正本に使うため挙動不変。
+    # オフセットは AEXE_TABLES の同表エントリ（原文はメモリ由来・コード非埋込）。
+    _name_keys = (
+        "tavern_prefixes", "tavern_marine_suffixes", "tavern_suffixes",
+        "temple_prefixes", "temple1_suffixes", "temple2_suffixes",
+        "temple3_suffixes", "equipment_prefixes", "equipment_suffixes",
+    )
+    for k in _name_keys:
+        rec = AEXE_TABLES.get(f"city_generation.{k}")
+        if rec is None:
+            continue
+        try:
+            data[k] = _read_table(analyzer, image_base, rec[idx], rec[2], rec[3])
+        except OSError:
+            pass
+    return version, data
 
 
 __all__ = [

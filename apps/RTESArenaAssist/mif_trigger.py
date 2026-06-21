@@ -27,13 +27,10 @@ import struct
 import sys
 
 
-def parse_mif_trigs(path: str) -> list[tuple[int, int, int, int]]:
-    """
-    MIFファイルをパースして TRIG レコードを返す。
+def parse_mif_trigs_bytes(data: bytes) -> list[tuple[int, int, int, int]]:
+    """MIF バイト列をパースして TRIG レコードを返す。
     戻り値: [(x, y, textIndex, soundIndex), ...]
     """
-    with open(path, "rb") as f:
-        data = f.read()
     i = 0
     while i < len(data) - 6:
         if data[i:i+4] == b"TRIG":
@@ -46,6 +43,31 @@ def parse_mif_trigs(path: str) -> list[tuple[int, int, int, int]]:
             ]
         i += 1
     return []
+
+
+def parse_mif_trigs(path: str) -> list[tuple[int, int, int, int]]:
+    """
+    MIFファイルをパースして TRIG レコードを返す。
+    戻り値: [(x, y, textIndex, soundIndex), ...]
+
+    loose ファイルが在ればそれを、無ければユーザー Arena install の VFS（GLOBAL.BSA・
+    MIF 非暗号）から読む（公開版対応・dev では loose を読み挙動不変）。施設/宮殿の
+    TRIG MIF は loose に無く GLOBAL.BSA 内のため、この fallback が無いと公開版で
+    屋内トリガーが照合できない。どこにも無ければ空リスト。
+    """
+    data = None
+    try:
+        from services.mif_loader import read_mif_bytes
+        data = read_mif_bytes(path)
+    except ImportError:  # pragma: no cover - 直接スクリプト実行時の保険
+        data = None
+    if data is None:
+        try:
+            with open(path, "rb") as f:
+                data = f.read()
+        except OSError:
+            return []
+    return parse_mif_trigs_bytes(data)
 
 
 def extract_trigger_texts(raw_block: bytes) -> list[str]:
@@ -163,22 +185,12 @@ class MifTriggerMatcher:
             self._last_status = "unknown"
             return True
 
-        if not self._mif_dir:
-            self._loaded_mif = mif_name
-            self._trigs = []
-            self._source = "none"
-            self._last_status = "mif_not_loaded"
-            return False
-        path = os.path.join(self._mif_dir, key)
-        if not os.path.isfile(path):
-            self._loaded_mif = mif_name
-            self._trigs = []
-            self._source = "none"
-            self._last_status = "mif_not_loaded"
-            return False
+        # loose（mif_dir）→ GLOBAL.BSA fallback で TRIG を読む（parse_mif_trigs が解決）。
+        # mif_dir が空でも basename で VFS から読めるため早期 return しない。
+        path = os.path.join(self._mif_dir, key) if self._mif_dir else key
         self._trigs      = parse_mif_trigs(path)
         self._loaded_mif = mif_name
-        self._source = "mif_file"
+        self._source = "mif_file" if self._trigs else "none"
         self._last_status = "mif_trig_not_found" if not self._trigs else "unknown"
         return bool(self._trigs)
 

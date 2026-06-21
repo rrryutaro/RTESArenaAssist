@@ -1798,7 +1798,10 @@ def _poll_map_update(
         )
         _show_player_x = _map_safe.player_x
         _show_player_y = _map_safe.player_y
-        _show_angle = _map_safe.angle_deg
+        # 方角はダイアログ表示中も破損しない（座標と異なり抑止不要）。raw 方角が
+        # 読めていれば常にそれを使い、未取得時のみ safe 判定値へフォールバックする。
+        # これにより入店メッセージ中など座標抑止時でも現在地マーカーの向きを出せる。
+        _show_angle = _angle_deg if _angle_deg is not None else _map_safe.angle_deg
         _coord_source = _map_safe.source
         _unsafe_reasons = _map_safe.unsafe_reasons
         # loading 中/post-load settle 中は last を seed しない

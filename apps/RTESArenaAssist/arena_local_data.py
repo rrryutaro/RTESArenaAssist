@@ -104,7 +104,7 @@ _BASE_CONTENT_VERSION = "be+npcd+atrade+atradeshop+akeyrepair+inf+nnc+chrgnq2+wm
 #   askchrome29: ask_about_menu の見出し/選択肢（chrome）を anchor+0x8525 の固定常駐テンプレ
 #     から採取し source-back。従来は place_* のみ採取で chrome が公開 pak に未登録のため
 #     ASK ABOUT?/Who are you? 等が英語のままだった。新採取を反映するため content_version を上げる。
-_AEXE_CONTENT_VERSION = "be+npcd+atrade+atradeshop+akeyrepair+inf+nnc+chrgnq2+aexe4+chargenui+akeyui2+aexeman+wmap+chgnprov+loc+citygen+itemmat+monsters+partial2+items+reclass+srcback27+v2pak28+askchrome29+keymat30/30"
+_AEXE_CONTENT_VERSION = "be+npcd+atrade+atradeshop+akeyrepair+inf+nnc+chrgnq2+aexe4+chargenui+akeyui2+aexeman+wmap+chgnprov+loc+citygen+itemmat+monsters+partial2+items+reclass+srcback27+v2pak28+askchrome29+keymat30+citygennames31/31"
 _META_CONTENT_VERSION = "content_version"
 
 # EXE 由来 curation テンプレート（i18n/_aexe_template/<cat>.json・Arena 原文を含まない）。
