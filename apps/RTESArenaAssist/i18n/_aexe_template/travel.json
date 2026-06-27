@@ -1,0 +1,79 @@
+{
+  "location_format_texts.0": {
+    "src_table": "travel.location_format_texts",
+    "src_index": 0,
+    "src_hash": "3802060ff432dc0f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_fixed_offset",
+      "note": "dungeon location format: name, province"
+    }
+  },
+  "location_format_texts.1": {
+    "src_table": "travel.location_format_texts",
+    "src_index": 1,
+    "src_hash": "b67900cde9ab38ec",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_fixed_offset",
+      "note": "center province location format: city, province"
+    }
+  },
+  "location_format_texts.2": {
+    "src_table": "travel.location_format_texts",
+    "src_index": 2,
+    "src_hash": "39edf971c8108d75",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_fixed_offset",
+      "note": "city location format: type, name, province"
+    }
+  },
+  "day_prediction.0": {
+    "src_table": "travel.day_prediction",
+    "src_index": 0,
+    "src_hash": "f3d73a32316bce6a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_fixed_offset",
+      "note": "day prediction prefix"
+    }
+  },
+  "day_prediction.1": {
+    "src_table": "travel.day_prediction",
+    "src_index": 1,
+    "src_hash": "a10faf522e7b8466",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_fixed_offset",
+      "note": "day prediction body: days"
+    }
+  },
+  "distance_prediction.0": {
+    "src_table": "travel.distance_prediction",
+    "src_hash": "4e46ac907e80ad84",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_fixed_offset",
+      "note": "distance: km"
+    }
+  },
+  "arrival_date_prediction.0": {
+    "src_table": "travel.arrival_date_prediction",
+    "src_hash": "04e8470b73989600",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_fixed_offset",
+      "note": "arrival date prefix"
+    }
+  },
+  "arrival_popup_date.0": {
+    "src_table": "travel.arrival_popup_date",
+    "src_hash": "b165d5ce00225b2e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_fixed_offset",
+      "note": "current date prefix (shared with arrival popup)"
+    }
+  }
+}

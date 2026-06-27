@@ -1,16 +1,12 @@
 from __future__ import annotations
-
 from typing import List, Optional
-
 from .session_base import SessionBase, SessionContext
-
 
 class SessionManager:
 
     def __init__(self) -> None:
         self._sessions: List[SessionBase] = []
         self._active: Optional[SessionBase] = None
-
 
     def register(self, session: SessionBase) -> None:
         if session in self._sessions:
@@ -26,7 +22,6 @@ class SessionManager:
     def is_any_active(self) -> bool:
         return self._active is not None
 
-
     def poll(self, ctx: SessionContext) -> None:
         stopped_this_poll: Optional[SessionBase] = None
         if self._active is not None:
@@ -36,7 +31,6 @@ class SessionManager:
             else:
                 self._active.poll(ctx)
                 return
-
         for s in self._sessions:
             if s is stopped_this_poll:
                 continue
@@ -47,8 +41,5 @@ class SessionManager:
                 self._active = s
                 s.poll(ctx)
                 return
-
         return None
-
-
-__all__ = ["SessionManager"]
+__all__ = ['SessionManager']

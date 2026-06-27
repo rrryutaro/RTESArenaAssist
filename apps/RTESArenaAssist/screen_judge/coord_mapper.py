@@ -1,7 +1,4 @@
-
-
 class ArenaCoordMapper:
-
     ARENA_W = 320
     ARENA_H = 200
 
@@ -22,9 +19,7 @@ class ArenaCoordMapper:
     def arena_to_client(self, ax: int, ay: int) -> tuple[int, int]:
         return (round(ax * self._sx), round(ay * self._sy))
 
-    def arena_rect_to_client(
-        self, ax: int, ay: int, aw: int, ah: int
-    ) -> tuple[int, int, int, int]:
+    def arena_rect_to_client(self, ax: int, ay: int, aw: int, ah: int) -> tuple[int, int, int, int]:
         cx, cy = self.arena_to_client(ax, ay)
         cw = round(aw * self._sx)
         ch = round(ah * self._sy)

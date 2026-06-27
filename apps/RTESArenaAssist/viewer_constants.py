@@ -1,217 +1,53 @@
-
-C_BG     = "#1a1a2e"
-C_BG2    = "#16213e"
-C_BG3    = "#0f3460"
-C_ACCENT = "#e94560"
-C_TEXT   = "#e0e0e0"
-C_DIM    = "#888888"
-C_OK     = "#4caf50"
-C_WARN   = "#ff9800"
-C_ERROR  = "#f44336"
-C_EVEN   = "#1e2a3a"
-C_ODD    = "#162030"
-
-GAMESTATE_OFFSET = 2_450_583
-
-GS_DEFS = [
-    ("WeatherFlags", 1,    "u8",    "天気フラグ"),
-    ("PlayerFloor",  2,    "u8",    "現在フロア"),
-    ("OldFloor",     3,    "u8",    "直前フロア"),
-    ("LevelName",    1934, "str33", "レベル名"),
-    ("InfName",      1967, "str13", "INFファイル"),
-    ("MifName",      2169, "str13", "マップファイル"),
-    ("Flags4",       2196, "u16",   "Flags4"),
-    ("PlayerX",      2250, "u16",   "X座標"),
-    ("PlayerZ",      2252, "u16",   "Z座標"),
-    ("PlayerY",      2254, "u16",   "Y座標"),
-    ("PlayerAngle",  2260, "u16",   "向き（0-511）"),
-]
-
-LIVE_BUFFERS = [
-    ("マップ名",    2594,   64,  "現在のマップ名（常時）"),
-    ("実効MIF候補", 2614,   16,  "現在ロード中の実効MIF候補"),
-    ("マップ名(副)", 5839,   64,  "マップ名コピー"),
-    ("NPC会話",     4164,  512,  "NPC会話テキスト（会話時に書き込み・残留）"),
-    ("メッセージ",  39582,  512,  "入店・Where is回答・イベントメッセージ"),
-    ("エリア名 1",  38870,   64,  "エリア連番1（ギルド内では商品リストに上書きされる）"),
-    ("エリア名 2",  38918,   64,  "エリア連番2"),
-    ("エリア名 3",  38966,   64,  "エリア連番3"),
-]
-
+C_BG = '#1a1a2e'
+C_BG2 = '#16213e'
+C_BG3 = '#0f3460'
+C_ACCENT = '#e94560'
+C_TEXT = '#e0e0e0'
+C_DIM = '#888888'
+C_OK = '#4caf50'
+C_WARN = '#ff9800'
+C_ERROR = '#f44336'
+C_EVEN = '#1e2a3a'
+C_ODD = '#162030'
+GAMESTATE_OFFSET = 2450583
+GS_DEFS = [('WeatherFlags', 1, 'u8', '天気フラグ'), ('PlayerFloor', 2, 'u8', '現在フロア'), ('OldFloor', 3, 'u8', '直前フロア'), ('LevelName', 1934, 'str33', 'レベル名'), ('InfName', 1967, 'str13', 'INFファイル'), ('MifName', 2169, 'str13', 'マップファイル'), ('Flags4', 2196, 'u16', 'Flags4'), ('PlayerX', 2250, 'u16', 'X座標'), ('PlayerZ', 2252, 'u16', 'Z座標'), ('PlayerY', 2254, 'u16', 'Y座標'), ('PlayerAngle', 2260, 'u16', '向き（0-511）')]
+LIVE_BUFFERS = [('マップ名', 2594, 64, '現在のマップ名（常時）'), ('実効MIF候補', 2614, 16, '現在ロード中の実効MIF候補'), ('マップ名(副)', 5839, 64, 'マップ名コピー'), ('NPC会話', 4164, 512, 'NPC会話テキスト（会話時に書き込み・残留）'), ('メッセージ', 39582, 512, '入店・Where is回答・イベントメッセージ'), ('エリア名 1', 38870, 64, 'エリア連番1（ギルド内では商品リストに上書きされる）'), ('エリア名 2', 38918, 64, 'エリア連番2'), ('エリア名 3', 38966, 64, 'エリア連番3')]
 NPC_DIALOG_OFFSET = 4164
 NPC_DIALOG_MAXLEN = 512
-
-CHARGEN_DONE_OFFSET = 4_760
-
-EXPERIENCE_OFFSET = 0x5AD
-
-CHARGEN_STATE_OFFSET = 19_343
-
-CHARGEN_Q_SEQ_OFFSET = 16_583
-
-CHARGEN_Q_ARRAY_OFFSET = 16_587
-
-TRIGGER_BLOCK_OFFSET = 1_420_240
-TRIGGER_BLOCK_READ   = 2048
-
-TRIGGER_FLAG_OFFSET  = 15_490
-
-TRIGGER_INDEX_OFFSET = 31_302
-
-RT_COORD_X_OFFSET = 43_092
-RT_COORD_Z_OFFSET = 43_094
-
-RT_ANGLE_OFFSET = 0xC3DA
+CHARGEN_DONE_OFFSET = 4760
+EXPERIENCE_OFFSET = 1453
+CHARGEN_STATE_OFFSET = 19343
+CHARGEN_Q_SEQ_OFFSET = 16583
+CHARGEN_Q_ARRAY_OFFSET = 16587
+TRIGGER_BLOCK_OFFSET = 1420240
+TRIGGER_BLOCK_READ = 2048
+TRIGGER_FLAG_OFFSET = 15490
+TRIGGER_INDEX_OFFSET = 31302
+RT_COORD_X_OFFSET = 43092
+RT_COORD_Z_OFFSET = 43094
+RT_ANGLE_OFFSET = 50138
 RT_ANGLE_BYTE_SIZE = 2
-RT_ANGLE_MASK = 0x01FF
+RT_ANGLE_MASK = 511
 RT_ANGLE_RANGE = 512
 RT_ANGLE_NORTH_RAW = 256
-
-LIVE_MIF_OFFSET = 2_614
+LIVE_MIF_OFFSET = 2614
 LIVE_MIF_MAXLEN = 16
-
-SCREEN_IMG_OFFSET = 0x9176
+SCREEN_IMG_OFFSET = 37238
 SCREEN_IMG_MAXLEN = 32
-
-MAP_NAME_OFFSET = 2_594
+MAP_NAME_OFFSET = 2594
 MAP_NAME_MAXLEN = 64
-
-JOURNAL_BUFFER_OFFSET = 0x2E2BD1
+JOURNAL_BUFFER_OFFSET = 3025873
 JOURNAL_BUFFER_MAXLEN = 512
-
-SCREEN_IMG_OFFSET = 0x9176
+SCREEN_IMG_OFFSET = 37238
 SCREEN_IMG_MAXLEN = 32
-
-FLAGS4_BITS  = {0x0200: "ワイルダネス（野外）"}
-INF_PREFIXES = {
-    "MN": "民家", "MR": "民家", "MS": "民家", "MW": "民家",
-    "DN": "ダンジョン", "DR": "ダンジョン", "DS": "ダンジョン", "DW": "ダンジョン",
-    "TC": "寺院",  "TN": "寺院",  "TR": "寺院",  "TS": "寺院",  "TW": "寺院",
-}
-
-
-NPC_PHASE_IDLE          = 0x00
-NPC_PHASE_RESPONDING    = 0x10
-NPC_PHASE_ASKING        = 0x85
-NPC_PHASE_BUILDING_ENTRY = 0x9A
-
-NPC_PHASE_OFFSET = 0x0000A845
-
-INTERIOR_FLAG_OFFSET = 0x0000BC8E
-
-NPC_DIALOG_FLAG_CANDIDATES = [
-
-    (0x0000A845, "主判定 / フェーズバイト",     "primary", None,
-        "確定: 0x00=待機 / 0x85=質問中 / 0x10=応答中。全状況で正確に動作"),
-
-    (0x0000A846, "主判定 上位バイト",            "observe", None,
-        "ASKING時 0x43 観測 (旧 city_npc_active=0x4385 = u16 LE 展開)。"
-        "死体クリック・bonus_screen など非NPC文脈で値が変わるかを観測"),
-    (0x0000B7C4, "NEWPOP ゲートバイト",          "observe", None,
-        "0x00 かつ NEWPOP.IMG 表示 = 死体loot popup中。"
-        "loot popup段階の区別根拠候補（赤文字段階の区別は別途要観測）"),
-    (0x0000ADB6, "神殿 Heal/Cure 補助候補",     "observe", None,
-        "仮説: 神殿結果静止サンプルで Heal系=0x85 / Cure系=0xF3 を観測。"
-        "サービスNPC画面の分岐補助候補として継続観測"),
-
-    (0x0000A84D, "補助 / 会話中バイト",         "talking", 0x40,
-        "B=D=0x40 / A=C=0x00。b21 検証で店入店・ダンジョン鍵取得など"
-        "メッセージ表示一般でも発火（NPC 限定ではない）"),
-    (0x00001966, "補助 / 会話中ビット",         "talking", 0x0D,
-        "B=D=0x0D / A=C=0x0E。b21 検証で会話終了後も残留、移動で初めてクリア（遅延クリア）"),
-    (0x0000A847, "補助 / 会話中バイト",         "talking", 0x3D,
-        "B=D=0x3D / A=C=0x00。+6502 と同様に遅延クリアあり"),
-    (0x0000A849, "補助 / 会話中バイト（逆論理）","talking", 0x00,
-        "B=D=0x00 / A=C=0xE0。+6502 と同様に遅延クリアあり"),
-
-    (0x00008F6E, "ASK ABOUT? 中のみ",          "asking", 0x0D,
-        "A=D=C=0x3A / B=0x0D"),
-    (0x00008F74, "ASK ABOUT? 中のみ",          "asking", 0x5A,
-        "A=D=C=0x00 / B=0x5A"),
-    (0x00008F7A, "ASK ABOUT? 中のみ",          "asking", 0xA4,
-        "A=D=C=0xC7 / B=0xA4"),
-
-    (0x0000137B, "NPC 応答中のみ",             "responding", 0x01,
-        "A=B=C=0x00 / D=0x01"),
-    (0x0000A83B, "NPC 応答中のみ",             "responding", 0x01,
-        "A=B=C=0x00 / D=0x01"),
-
-    (0x00003C8B, "持続変化（カウンタ風）",     "persist", None,
-        "A=0x94 → C=0x97 (+3 カウンタ風)"),
-    (0x0000884B, "持続変化（カウンタ風）",     "persist", None,
-        "A=0x7C → C=0x7D (+1 カウンタ風)"),
-
-    (0x000005E0, "再現性なし（参考）",         "weak", None,
-        "前回 A=0x00/B=0x40/C=0x00 に対しほぼ常時 0x40。挙動不安定"),
-    (0x0000A902, "再現性なし（参考）",         "weak", None,
-        "前回 A=0x18/B=0x19/C=0x18。4状態 diff では検出されず"),
-    (0x00007A4C, "再現性なし（参考）",         "weak", None,
-        "観測セッション間で C 側の挙動が一致しない"),
-    (0x00007A4E, "再現性なし（参考）",         "weak", None,
-        "観測セッション間で C 側の挙動が一致しない"),
-    (0x00007A50, "再現性なし（参考）",         "weak", None,
-        "観測セッション間で C 側の挙動が一致しない"),
-    (0x0000CCBD, "再現性なし（参考）",         "weak", None,
-        "前回 A=0x00→B=0x01→C=0x01 の sticky 仮説。再現せず"),
-]
-
-NPC_TALKING_CANDIDATES = [
-    (off, label, active)
-    for (off, label, kind, active, _note) in NPC_DIALOG_FLAG_CANDIDATES
-    if kind == "talking"
-]
-
-
-INVESTIGATION_CANDIDATES = [
-    (0x0000B7C4, "ダイアログフラグ",
-        "0x01=ダイアログ表示中 / 0x04=能力値配分通常 / 0x00=その他 "
-        "(通常プレイの NEWPOP 文脈では別意味)"),
-    (0x0000A845, "状態バイト0 (画面ごとに特徴値)",
-        "種族確認=0x4B / 能力値分配=0x37 / BONUS/Save_Reroll=0x3F / "
-        "外見=0x38 / 種族確認閉幕観測 0x72"),
-    (0x0000A846, "状態バイト1",
-        "GoYeNow/能力値分配/外見=0x19 / それ以外=0x43 が観測"),
-    (0x0000A847, "状態バイト2",
-        "種族確認閉幕観測 0x02 / 能力値分配=0x34 / BONUS=0x3D"),
-    (0x00008F6E, "補助観測 (transient 候補)",
-        "能力値配分中に瞬間的に変化する観測例あり"),
-    (0x00008F74, "補助観測 (ボーナスエラー検出候補)",
-        "ボーナス警告ダイアログ表示時に変化する観測例あり"),
-    (0x00008F7A, "補助観測 (ボーナスエラー検出候補)",
-        "ボーナス警告ダイアログ表示時に変化する観測例あり"),
-
-    (0x0000EC24, "能力値配分説明閉幕候補 (画像バッファ系の可能性)",
-        "両ファイル一致: 説明中=0x00 / 閉幕後=0xFD"),
-    (0x0000EC54, "能力値配分説明閉幕候補 (画像バッファ系の可能性)",
-        "両ファイル一致: 説明中=0x00 / 閉幕後=0xFD"),
-    (0x0000FAEA, "能力値配分説明閉幕候補 (フラグ最有力)",
-        "両ファイル一致: 説明中=0x91 / 閉幕後=0x94 (単バイト変化、周辺ノイズ少)"),
-
-
-    (0x0000A902, "chunk_y index 最有力候補 (= 観測 4 回、未確定)",
-        "4 chunk 隅観測で south=25 / north=24、Δ=-1 per chunk_y 北方向。"
-        "rt_z (+0xA856) との対応で絶対 voxel_y 復元可能性"),
-
-    (0x0000A900, "chunk_x 候補 (= +0xA902 隣接、未観測)",
-        "chunk_y 隣接で chunk_x が居る可能性大。東西 chunk 境界跨ぎ観測待ち"),
-    (0x0000A901, "chunk_x 候補 (= +0xA902 隣接、未観測)",
-        "u16 ペアの可能性 (= +0xA900 と組合せ chunk_x u16)"),
-    (0x0000A903, "chunk_y 上位 byte 候補 (= +0xA902 隣接、未観測)",
-        "u16 ペアの可能性 (= chunk_y u16 の上位 byte)"),
-    (0x0000A904, "chunk_x 候補 (= +0xA902 隣接、未観測)",
-        "次の field 候補 byte。chunk_x / その他 field 状態"),
-    (0x0000ADB6, "神殿 Heal/Cure 結果補助候補 (= 仮説)",
-        "2026-06-04 神殿静止観測: Heal系=0x85 / Cure系=0xF3。"
-        "他状況で変化する恐れがあるため継続観測用"),
-
-    (0x0000A880, "rt_x ミラー候補 (= 観測 4 回、Δ=+63 cycle 確認)",
-        "4 chunk 観測で SW=2/SE=65/NE=65/NW=2 (= rt_x と同 chunk_x cycle、"
-        "ただし base value 2/65 で rt_x の 32/95 と +30 オフセット)"),
-
-    (0x00000AB4, "heightmap 系? chunk_x 同期配列 代表 (= 観測 9 回)",
-        "東 1 chunk で +32 increment、+0x0AB4..+0x0D1C 領域に同様の "
-        "配列状 byte 多数。chunk_x の補助情報 or 可視範囲 voxel data の可能性"),
-    (0x00000D1C, "heightmap 系? chunk_x 同期配列 代表 (= 観測 9 回)",
-        "SW/NW=0、SE/NE=32 の clean な chunk_x parity 値"),
-]
-
+FLAGS4_BITS = {512: 'ワイルダネス（野外）'}
+INF_PREFIXES = {'MN': '民家', 'MR': '民家', 'MS': '民家', 'MW': '民家', 'DN': 'ダンジョン', 'DR': 'ダンジョン', 'DS': 'ダンジョン', 'DW': 'ダンジョン', 'TC': '寺院', 'TN': '寺院', 'TR': '寺院', 'TS': '寺院', 'TW': '寺院'}
+NPC_PHASE_IDLE = 0
+NPC_PHASE_RESPONDING = 16
+NPC_PHASE_ASKING = 133
+NPC_PHASE_BUILDING_ENTRY = 154
+NPC_PHASE_OFFSET = 43077
+INTERIOR_FLAG_OFFSET = 48270
+NPC_DIALOG_FLAG_CANDIDATES = [(43077, '主判定 / フェーズバイト', 'primary', None, '確定: 0x00=待機 / 0x85=質問中 / 0x10=応答中。全状況で正確に動作'), (43078, '主判定 上位バイト', 'observe', None, 'ASKING時 0x43 観測 (旧 city_npc_active=0x4385 = u16 LE 展開)。死体クリック・bonus_screen など非NPC文脈で値が変わるかを観測'), (47044, 'NEWPOP ゲートバイト', 'observe', None, '0x00 かつ NEWPOP.IMG 表示 = 死体loot popup中。loot popup段階の区別根拠候補（赤文字段階の区別は別途要観測）'), (44470, '神殿 Heal/Cure 補助候補', 'observe', None, '仮説: 神殿結果静止サンプルで Heal系=0x85 / Cure系=0xF3 を観測。サービスNPC画面の分岐補助候補として継続観測'), (43085, '補助 / 会話中バイト', 'talking', 64, 'B=D=0x40 / A=C=0x00。b21 検証で店入店・ダンジョン鍵取得などメッセージ表示一般でも発火（NPC 限定ではない）'), (6502, '補助 / 会話中ビット', 'talking', 13, 'B=D=0x0D / A=C=0x0E。b21 検証で会話終了後も残留、移動で初めてクリア（遅延クリア）'), (43079, '補助 / 会話中バイト', 'talking', 61, 'B=D=0x3D / A=C=0x00。+6502 と同様に遅延クリアあり'), (43081, '補助 / 会話中バイト（逆論理）', 'talking', 0, 'B=D=0x00 / A=C=0xE0。+6502 と同様に遅延クリアあり'), (36718, 'ASK ABOUT? 中のみ', 'asking', 13, 'A=D=C=0x3A / B=0x0D'), (36724, 'ASK ABOUT? 中のみ', 'asking', 90, 'A=D=C=0x00 / B=0x5A'), (36730, 'ASK ABOUT? 中のみ', 'asking', 164, 'A=D=C=0xC7 / B=0xA4'), (4987, 'NPC 応答中のみ', 'responding', 1, 'A=B=C=0x00 / D=0x01'), (43067, 'NPC 応答中のみ', 'responding', 1, 'A=B=C=0x00 / D=0x01'), (15499, '持続変化（カウンタ風）', 'persist', None, 'A=0x94 → C=0x97 (+3 カウンタ風)'), (34891, '持続変化（カウンタ風）', 'persist', None, 'A=0x7C → C=0x7D (+1 カウンタ風)'), (1504, '再現性なし（参考）', 'weak', None, '前回 A=0x00/B=0x40/C=0x00 に対しほぼ常時 0x40。挙動不安定'), (43266, '再現性なし（参考）', 'weak', None, '前回 A=0x18/B=0x19/C=0x18。4状態 diff では検出されず'), (31308, '再現性なし（参考）', 'weak', None, '観測セッション間で C 側の挙動が一致しない'), (31310, '再現性なし（参考）', 'weak', None, '観測セッション間で C 側の挙動が一致しない'), (31312, '再現性なし（参考）', 'weak', None, '観測セッション間で C 側の挙動が一致しない'), (52413, '再現性なし（参考）', 'weak', None, '前回 A=0x00→B=0x01→C=0x01 の sticky 仮説。再現せず')]
+NPC_TALKING_CANDIDATES = [(off, label, active) for off, label, kind, active, _note in NPC_DIALOG_FLAG_CANDIDATES if kind == 'talking']
+INVESTIGATION_CANDIDATES = [(47044, 'ダイアログフラグ', '0x01=ダイアログ表示中 / 0x04=能力値配分通常 / 0x00=その他 (通常プレイの NEWPOP 文脈では別意味)'), (43077, '状態バイト0 (画面ごとに特徴値)', '種族確認=0x4B / 能力値分配=0x37 / BONUS/Save_Reroll=0x3F / 外見=0x38 / 種族確認閉幕観測 0x72'), (43078, '状態バイト1', 'GoYeNow/能力値分配/外見=0x19 / それ以外=0x43 が観測'), (43079, '状態バイト2', '種族確認閉幕観測 0x02 / 能力値分配=0x34 / BONUS=0x3D'), (36718, '補助観測 (transient 候補)', '能力値配分中に瞬間的に変化する観測例あり'), (36724, '補助観測 (ボーナスエラー検出候補)', 'ボーナス警告ダイアログ表示時に変化する観測例あり'), (36730, '補助観測 (ボーナスエラー検出候補)', 'ボーナス警告ダイアログ表示時に変化する観測例あり'), (60452, '能力値配分説明閉幕候補 (画像バッファ系の可能性)', '両ファイル一致: 説明中=0x00 / 閉幕後=0xFD'), (60500, '能力値配分説明閉幕候補 (画像バッファ系の可能性)', '両ファイル一致: 説明中=0x00 / 閉幕後=0xFD'), (64234, '能力値配分説明閉幕候補 (フラグ最有力)', '両ファイル一致: 説明中=0x91 / 閉幕後=0x94 (単バイト変化、周辺ノイズ少)'), (43266, 'chunk_y index 最有力候補 (= 観測 4 回、未確定)', '4 chunk 隅観測で south=25 / north=24、Δ=-1 per chunk_y 北方向。rt_z (+0xA856) との対応で絶対 voxel_y 復元可能性'), (43264, 'chunk_x 候補 (= +0xA902 隣接、未観測)', 'chunk_y 隣接で chunk_x が居る可能性大。東西 chunk 境界跨ぎ観測待ち'), (43265, 'chunk_x 候補 (= +0xA902 隣接、未観測)', 'u16 ペアの可能性 (= +0xA900 と組合せ chunk_x u16)'), (43267, 'chunk_y 上位 byte 候補 (= +0xA902 隣接、未観測)', 'u16 ペアの可能性 (= chunk_y u16 の上位 byte)'), (43268, 'chunk_x 候補 (= +0xA902 隣接、未観測)', '次の field 候補 byte。chunk_x / その他 field 状態'), (44470, '神殿 Heal/Cure 結果補助候補 (= 仮説)', '2026-06-04 神殿静止観測: Heal系=0x85 / Cure系=0xF3。他状況で変化する恐れがあるため継続観測用'), (43136, 'rt_x ミラー候補 (= 観測 4 回、Δ=+63 cycle 確認)', '4 chunk 観測で SW=2/SE=65/NE=65/NW=2 (= rt_x と同 chunk_x cycle、ただし base value 2/65 で rt_x の 32/95 と +30 オフセット)'), (2740, 'heightmap 系? chunk_x 同期配列 代表 (= 観測 9 回)', '東 1 chunk で +32 increment、+0x0AB4..+0x0D1C 領域に同様の 配列状 byte 多数。chunk_x の補助情報 or 可視範囲 voxel data の可能性'), (3356, 'heightmap 系? chunk_x 同期配列 代表 (= 観測 9 回)', 'SW/NW=0、SE/NE=32 の clean な chunk_x parity 値')]

@@ -1,21 +1,24 @@
-
 from __future__ import annotations
-
 import json
 import re
 from typing import Optional
-
 import i18n_helper as i18n
-
 _RULES: dict[str, list[tuple[re.Pattern, str]]] = {}
 _LOADED_KEY: tuple | None = None
+_SPACELESS_LANGS = frozenset({'ja'})
+_SPACE_AFTER_NON_ASCII = re.compile('(?<=[^\\x00-\\x7F]) +')
+_SPACE_BEFORE_NON_ASCII = re.compile(' +(?=[^\\x00-\\x7F])')
 
+def _strip_unneeded_spaces(text: str) -> str:
+    text = _SPACE_AFTER_NON_ASCII.sub('', text)
+    text = _SPACE_BEFORE_NON_ASCII.sub('', text)
+    return text
 
 def _compile(rules: list) -> list[tuple[re.Pattern, str]]:
     compiled_list = []
     for rule in rules:
-        pattern = rule.get("pattern")
-        replace = rule.get("replace", "")
+        pattern = rule.get('pattern')
+        replace = rule.get('replace', '')
         if not pattern:
             continue
         try:
@@ -25,48 +28,39 @@ def _compile(rules: list) -> list[tuple[re.Pattern, str]]:
         compiled_list.append((compiled, replace))
     return compiled_list
 
-
-def _load_rules(lang: str, paths: Optional[list[str]] = None) -> None:
+def _load_rules(lang: str, paths: Optional[list[str]]=None) -> None:
     global _RULES, _LOADED_KEY
     key = (lang, tuple(paths) if paths is not None else None)
     if _LOADED_KEY == key:
         return
     if paths is None:
-        rules = i18n.rules(lang).get("text_corrections", [])
+        rules = i18n.rules(lang).get('text_corrections', [])
         _RULES = {lang: _compile(rules)}
     else:
         _RULES = {}
         for path in paths:
             try:
-                with open(path, encoding="utf-8") as f:
+                with open(path, encoding='utf-8') as f:
                     data = json.load(f)
             except (OSError, json.JSONDecodeError):
                 continue
-            for lg, rules in data.get("corrections", {}).items():
+            for lg, rules in data.get('corrections', {}).items():
                 _RULES.setdefault(lg, []).extend(_compile(rules))
     _LOADED_KEY = key
 
-
-def apply_text_corrections(text: str, lang: str, paths: Optional[list[str]] = None) -> str:
+def apply_text_corrections(text: str, lang: str, paths: Optional[list[str]]=None) -> str:
     if not text or not lang:
         return text
     _load_rules(lang, paths)
-    rules = _RULES.get(lang, [])
-    if not rules:
-        return text
-    for compiled, replace in rules:
+    for compiled, replace in _RULES.get(lang, []):
         text = compiled.sub(replace, text)
+    if lang in _SPACELESS_LANGS:
+        text = _strip_unneeded_spaces(text)
     return text
-
-
-if __name__ == "__main__":
-    samples = [
-        ("非常に攻撃的な上流貴族の卿・Barbyrrya のために何かを回収してみる気は？", "ja"),
-        ("There's a Lord Barbyrrya here.", "en"),
-        ("夫人・エリザベスに会いたい。", "ja"),
-    ]
+if __name__ == '__main__':
+    samples = [('非常に攻撃的な上流貴族の卿・Barbyrrya のために何かを回収してみる気は？', 'ja'), ("There's a Lord Barbyrrya here.", 'en'), ('夫人・エリザベスに会いたい。', 'ja')]
     for text, lang in samples:
         result = apply_text_corrections(text, lang)
-        print(f"[{lang}] {text!r}")
-        print(f"   => {result!r}")
+        print(f'[{lang}] {text!r}')
+        print(f'   => {result!r}')
         print()

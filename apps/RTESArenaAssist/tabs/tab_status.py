@@ -1,14 +1,11 @@
-
 from __future__ import annotations
-
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QLabel, QSizePolicy, QVBoxLayout, QWidget
-
 import i18n_helper as i18n
 from attributes_panel import AttributesPanel
 
-
 class TabStatus(QWidget):
+
     def __init__(self, panel=None, parent=None):
         super().__init__(parent)
         self._connected: bool = False
@@ -21,21 +18,16 @@ class TabStatus(QWidget):
         root = QVBoxLayout(self)
         root.setContentsMargins(10, 10, 10, 10)
         root.setSpacing(8)
-
-        self._no_conn_lbl = QLabel(i18n.tr("status.no_connection"))
+        self._no_conn_lbl = QLabel(i18n.tr('status.no_connection'))
         self._no_conn_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._no_conn_lbl.setWordWrap(True)
-        self._no_conn_lbl.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
+        self._no_conn_lbl.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         root.addWidget(self._no_conn_lbl)
-
         self._attr_slot = QWidget()
         _slot_lay = QVBoxLayout(self._attr_slot)
         _slot_lay.setContentsMargins(0, 0, 0, 0)
         _slot_lay.addWidget(self._panel, 1)
         root.addWidget(self._attr_slot, 1)
-
 
     def _refresh_visibility(self) -> None:
         if not self._connected:

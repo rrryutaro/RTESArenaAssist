@@ -1,75 +1,55 @@
-
 from __future__ import annotations
-
 from typing import TYPE_CHECKING
-
 if TYPE_CHECKING:
     from tabs.tab_translate import TabTranslate
-
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import (
-    QFrame, QGroupBox, QHeaderView, QHBoxLayout, QLabel, QPushButton, QScrollArea,
-    QSizePolicy, QStackedWidget, QTableWidget, QVBoxLayout, QWidget,
-)
-
+from PySide6.QtWidgets import QFrame, QGroupBox, QHeaderView, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QStackedWidget, QTableWidget, QVBoxLayout, QWidget
 import assist_settings as settings
 import i18n_helper as i18n
-
 from class_list_panel import ClassListPanel
 from race_list_panel import RaceListPanel
 from appearance_faces_panel import AppearanceFacesPanel
 from tabs.tab_map import TabMap
 
-
-def build_ui(tab: "TabTranslate") -> None:
+def build_ui(tab: 'TabTranslate') -> None:
     root = QVBoxLayout(tab)
     root.setContentsMargins(10, 10, 10, 10)
     root.setSpacing(8)
-
-    tab._no_conn = QLabel(i18n.tr("translate.no_connection"))
+    tab._no_conn = QLabel(i18n.tr('translate.no_connection'))
     tab._no_conn.setAlignment(Qt.AlignmentFlag.AlignCenter)
     tab._no_conn.setWordWrap(True)
-    tab._no_conn.setSizePolicy(
-        QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-    )
+    tab._no_conn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
     root.addWidget(tab._no_conn)
-
     tab._conn_widget = QWidget()
     cl = QVBoxLayout(tab._conn_widget)
     cl.setContentsMargins(0, 0, 0, 0)
     cl.setSpacing(8)
-
     tab._stack = QStackedWidget()
-
     translate_page = QWidget()
     tp_lay = QVBoxLayout(translate_page)
     tp_lay.setContentsMargins(0, 0, 0, 0)
     tp_lay.setSpacing(8)
-
-    trans_group = QGroupBox(i18n.tr("translate.translation"))
+    trans_group = QGroupBox(i18n.tr('translate.translation'))
     trans_lay = QVBoxLayout(trans_group)
-
-    tab._trans_val = QLabel(i18n.tr("translate.no_data"))
+    tab._trans_val = QLabel(i18n.tr('translate.no_data'))
     tab._trans_val.setWordWrap(True)
     tab._trans_val.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
-    tab._trans_val.setSizePolicy(
-        QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding
-    )
+    tab._trans_val.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.MinimumExpanding)
     tab._trans_val.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
     from tts_read_aloud import attach_read_aloud as _attach_ra
-    _attach_ra(tab._trans_val, tab._trans_val.text)
+    import reading_highlight as _rh
+    _attach_ra(tab._trans_val, lambda: _rh.plain_of(tab._trans_val))
     tab._trans_scroll = QScrollArea()
     tab._trans_scroll.setWidget(tab._trans_val)
     tab._trans_scroll.setWidgetResizable(True)
     tab._trans_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
     tab._trans_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
     trans_lay.addWidget(tab._trans_scroll, 1)
-
-    orig_lbl = QLabel(i18n.tr("translate.original") + ":")
-    orig_lbl.setObjectName("subLabel")
-    tab._orig_val = QLabel(i18n.tr("translate.no_data"))
+    orig_lbl = QLabel(i18n.tr('translate.original') + ':')
+    orig_lbl.setObjectName('subLabel')
+    tab._orig_val = QLabel(i18n.tr('translate.no_data'))
     tab._orig_val.setWordWrap(True)
-    tab._orig_val.setObjectName("dimLabel")
+    tab._orig_val.setObjectName('dimLabel')
     tab._orig_val.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
     tab._orig_val.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
     _attach_ra(tab._orig_val, tab._orig_val.text)
@@ -82,100 +62,65 @@ def build_ui(tab: "TabTranslate") -> None:
     tab._orig_scroll.setMaximumHeight(180)
     trans_lay.addWidget(orig_lbl)
     trans_lay.addWidget(tab._orig_scroll)
-
     tp_lay.addWidget(trans_group, 1)
-
     tab._class_list_panel = ClassListPanel()
-
     tab._race_list_panel = RaceListPanel()
-
     tab._attr_slot = QWidget()
     _attr_slot_lay = QVBoxLayout(tab._attr_slot)
     _attr_slot_lay.setContentsMargins(0, 0, 0, 0)
-
     tab._appearance_faces_panel = AppearanceFacesPanel()
-
     load_page = QWidget()
     lp_lay = QVBoxLayout(load_page)
     lp_lay.setContentsMargins(0, 0, 0, 0)
     lp_lay.setSpacing(4)
-
-    load_group = QGroupBox(i18n.tr("save.col_slots"))
+    load_group = QGroupBox(i18n.tr('save.col_slots'))
     lg_lay = QVBoxLayout(load_group)
     lg_lay.setContentsMargins(4, 4, 4, 4)
-
     tab._load_table = QTableWidget(0, 4)
-    tab._load_table.setHorizontalHeaderLabels([
-        i18n.tr("save.col_slot"),
-        i18n.tr("save.col_name"),
-        i18n.tr("save.col_label"),
-        i18n.tr("save.col_date"),
-    ])
+    tab._load_table.setHorizontalHeaderLabels([i18n.tr('save.col_slot'), i18n.tr('save.col_name'), i18n.tr('save.col_label'), i18n.tr('save.col_date')])
     tab._load_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
     tab._load_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
     tab._load_table.verticalHeader().setVisible(False)
     tab._load_table.horizontalHeader().setStretchLastSection(True)
-    tab._load_table.horizontalHeader().setSectionResizeMode(
-        0, QHeaderView.ResizeMode.ResizeToContents)
-    tab._load_table.horizontalHeader().setSectionResizeMode(
-        1, QHeaderView.ResizeMode.Stretch)
-    tab._load_table.horizontalHeader().setSectionResizeMode(
-        2, QHeaderView.ResizeMode.Stretch)
+    tab._load_table.horizontalHeader().setSectionResizeMode(0, QHeaderView.ResizeMode.ResizeToContents)
+    tab._load_table.horizontalHeader().setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+    tab._load_table.horizontalHeader().setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
     lg_lay.addWidget(tab._load_table)
     lp_lay.addWidget(load_group, 1)
-
     pickup_page = QWidget()
     pp_lay = QVBoxLayout(pickup_page)
     pp_lay.setContentsMargins(0, 0, 0, 0)
     pp_lay.setSpacing(4)
-
-    pickup_group = QGroupBox("アイテム取得")
+    pickup_group = QGroupBox('アイテム取得')
     pg_lay = QVBoxLayout(pickup_group)
     pg_lay.setContentsMargins(4, 4, 4, 4)
     pg_lay.setSpacing(2)
-
     tab._pickup_rows_widget = QWidget()
     tab._pickup_rows_layout = QVBoxLayout(tab._pickup_rows_widget)
     tab._pickup_rows_layout.setContentsMargins(0, 0, 0, 0)
     tab._pickup_rows_layout.setSpacing(2)
     tab._pickup_rows_layout.addStretch(1)
-
     pickup_scroll = QScrollArea()
     pickup_scroll.setWidget(tab._pickup_rows_widget)
     pickup_scroll.setWidgetResizable(True)
     pickup_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
     pickup_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
     pg_lay.addWidget(pickup_scroll, 1)
-
-    tab._pickup_remaining = QLabel("")
-    tab._pickup_remaining.setObjectName("dimLabel")
+    tab._pickup_remaining = QLabel('')
+    tab._pickup_remaining.setObjectName('dimLabel')
     pg_lay.addWidget(tab._pickup_remaining)
-
     pp_lay.addWidget(pickup_group, 1)
-
     equip_page = QWidget()
     ep_lay = QVBoxLayout(equip_page)
     ep_lay.setContentsMargins(0, 0, 0, 0)
     ep_lay.setSpacing(4)
-
-    tab._equip_group = QGroupBox("装備品一覧")
+    tab._equip_group = QGroupBox('装備品一覧')
     eg_lay = QVBoxLayout(tab._equip_group)
     eg_lay.setContentsMargins(4, 4, 4, 4)
     eg_lay.setSpacing(2)
-
-    _TOGGLE_DEFS = [
-        ("equipped_mark", "装",    0),
-        ("identified",    "鑑",    1),
-        ("slot",          "部位",  2),
-        ("en",            "原文名", 3),
-        ("ja",            "翻訳名", 4),
-        ("weight",        "重量",  5),
-        ("condition",     "状態",  6),
-        ("effect",        "性能",  7),
-    ]
+    _TOGGLE_DEFS = [('equipped_mark', '装', 0), ('identified', '鑑', 1), ('slot', '部位', 2), ('en', '原文名', 3), ('ja', '翻訳名', 4), ('weight', '重量', 5), ('condition', '状態', 6), ('effect', '性能', 7)]
     tab._equip_col_btns: dict = {}
-    equip_cols = settings.get("equipment_columns", {})
-
+    equip_cols = settings.get('equipment_columns', {})
     toggle_row = QHBoxLayout()
     toggle_row.setSpacing(2)
     toggle_row.setContentsMargins(0, 0, 0, 0)
@@ -184,23 +129,14 @@ def build_ui(tab: "TabTranslate") -> None:
         btn.setCheckable(True)
         btn.setChecked(bool(equip_cols.get(key, True)))
         btn.setFixedHeight(20)
-        btn.setStyleSheet(
-            "QPushButton { font-size: 10px; padding: 1px 4px;"
-            " background: #1a2635; color: #7ab8d4;"
-            " border: 1px solid #2a4258; border-radius: 2px; }"
-            "QPushButton:checked { background: #1f3d5a; color: #c9d1e0; }"
-            "QPushButton:!checked { background: #0e161e; color: #4a5a6a; }"
-        )
-        btn.toggled.connect(
-            lambda checked, k=key, c=col_idx: tab._on_equip_toggle(k, c, checked))
+        btn.setStyleSheet('QPushButton { font-size: 10px; padding: 1px 4px; background: #1a2635; color: #7ab8d4; border: 1px solid #2a4258; border-radius: 2px; }QPushButton:checked { background: #1f3d5a; color: #c9d1e0; }QPushButton:!checked { background: #0e161e; color: #4a5a6a; }')
+        btn.toggled.connect(lambda checked, k=key, c=col_idx: tab._on_equip_toggle(k, c, checked))
         toggle_row.addWidget(btn)
         tab._equip_col_btns[key] = (col_idx, btn)
     toggle_row.addStretch(1)
     eg_lay.addLayout(toggle_row)
-
     tab._equip_table = QTableWidget(0, 8)
-    tab._equip_table.setHorizontalHeaderLabels(
-        ["装", "鑑", "部位", "原文名", "翻訳名", "重量", "状態", "性能"])
+    tab._equip_table.setHorizontalHeaderLabels(['装', '鑑', '部位', '原文名', '翻訳名', '重量', '状態', '性能'])
     tab._equip_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
     tab._equip_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
     tab._equip_table.setAlternatingRowColors(True)
@@ -216,43 +152,23 @@ def build_ui(tab: "TabTranslate") -> None:
     hdr.setSectionResizeMode(7, QHeaderView.ResizeMode.ResizeToContents)
     tab._equip_table.setColumnWidth(0, 22)
     tab._equip_table.setColumnWidth(1, 22)
-    tab._equip_table.setStyleSheet(
-        "QTableWidget {"
-        "  background: #131c24;"
-        "  alternate-background-color: #1a2635;"
-        "  gridline-color: #2a4258;"
-        "  color: #c9d1e0;"
-        "  border: none;"
-        "}"
-        "QTableWidget::item:selected { background: #1f3d5a; }"
-        "QHeaderView::section {"
-        "  background: #0e161e;"
-        "  color: #7ab8d4;"
-        "  border: 1px solid #2a4258;"
-        "  padding: 3px 6px;"
-        "  font-size: 10px;"
-        "}"
-    )
+    tab._equip_table.setStyleSheet('QTableWidget {  background: #131c24;  alternate-background-color: #1a2635;  gridline-color: #2a4258;  color: #c9d1e0;  border: none;}QTableWidget::item:selected { background: #1f3d5a; }QHeaderView::section {  background: #0e161e;  color: #7ab8d4;  border: 1px solid #2a4258;  padding: 3px 6px;  font-size: 10px;}')
     for key, (col_idx, btn) in tab._equip_col_btns.items():
         if not btn.isChecked():
             tab._equip_table.setColumnHidden(col_idx, True)
     eg_lay.addWidget(tab._equip_table, 1)
-
     ep_lay.addWidget(tab._equip_group, 1)
-
     spell_detail_page = QWidget()
     sd_lay = QVBoxLayout(spell_detail_page)
     sd_lay.setContentsMargins(0, 0, 0, 0)
     sd_lay.setSpacing(4)
-
-    tab._spell_detail_group = QGroupBox("呪文詳細 (SPELLBOOK)")
+    tab._spell_detail_group = QGroupBox('呪文詳細 (SPELLBOOK)')
     sdg_lay = QVBoxLayout(tab._spell_detail_group)
     sdg_lay.setContentsMargins(8, 8, 8, 8)
     sdg_lay.setSpacing(4)
-
-    _LBL_HEAD = "QLabel { color: #7ab8d4; font-size: 11px; font-weight: bold; }"
-    _LBL_VAL  = "QLabel { color: #c9d1e0; font-size: 12px; }"
-    _LBL_VAL_JA = "QLabel { color: #a0c4d8; font-size: 12px; }"
+    _LBL_HEAD = 'QLabel { color: #7ab8d4; font-size: 11px; font-weight: bold; }'
+    _LBL_VAL = 'QLabel { color: #c9d1e0; font-size: 12px; }'
+    _LBL_VAL_JA = 'QLabel { color: #a0c4d8; font-size: 12px; }'
 
     def _make_row():
         row = QHBoxLayout()
@@ -266,185 +182,132 @@ def build_ui(tab: "TabTranslate") -> None:
         head.setMaximumWidth(220)
         row.addWidget(head)
         row.addWidget(val_widget, 1)
-
     row1 = _make_row()
-    tab._sd_player_name = QLabel("")
+    tab._sd_player_name = QLabel('')
     tab._sd_player_name.setStyleSheet(_LBL_VAL)
-    _add_field(row1, "Name / 名前:", tab._sd_player_name)
-    tab._sd_player_balance = QLabel("")
+    _add_field(row1, 'Name / 名前:', tab._sd_player_name)
+    tab._sd_player_balance = QLabel('')
     tab._sd_player_balance.setStyleSheet(_LBL_VAL)
-    _add_field(row1, "Balance / 残高:", tab._sd_player_balance)
+    _add_field(row1, 'Balance / 残高:', tab._sd_player_balance)
     sdg_lay.addLayout(row1)
-
     row2 = _make_row()
-    tab._sd_player_level = QLabel("")
+    tab._sd_player_level = QLabel('')
     tab._sd_player_level.setStyleSheet(_LBL_VAL)
-    _add_field(row2, "Level / レベル:", tab._sd_player_level)
-    tab._sd_spell_cost = QLabel("")
+    _add_field(row2, 'Level / レベル:', tab._sd_player_level)
+    tab._sd_spell_cost = QLabel('')
     tab._sd_spell_cost.setStyleSheet(_LBL_VAL)
-    _add_field(row2, "Spell Cost / 呪文コスト:", tab._sd_spell_cost)
+    _add_field(row2, 'Spell Cost / 呪文コスト:', tab._sd_spell_cost)
     sdg_lay.addLayout(row2)
-
     sep1 = QFrame()
     sep1.setFrameShape(QFrame.Shape.HLine)
-    sep1.setStyleSheet("QFrame { color: #2a4258; }")
+    sep1.setStyleSheet('QFrame { color: #2a4258; }')
     sdg_lay.addWidget(sep1)
-
     row3 = _make_row()
-    tab._sd_name_en = QLabel("")
-    tab._sd_name_en.setStyleSheet(
-        "QLabel { color: #c9d1e0; font-size: 14px; font-weight: bold; }")
-    tab._sd_name_ja = QLabel("")
-    tab._sd_name_ja.setStyleSheet(
-        "QLabel { color: #a0c4d8; font-size: 13px; }")
+    tab._sd_name_en = QLabel('')
+    tab._sd_name_en.setStyleSheet('QLabel { color: #c9d1e0; font-size: 14px; font-weight: bold; }')
+    tab._sd_name_ja = QLabel('')
+    tab._sd_name_ja.setStyleSheet('QLabel { color: #a0c4d8; font-size: 13px; }')
     name_box = QHBoxLayout()
     name_box.setSpacing(8)
     name_box.addWidget(tab._sd_name_en)
     name_box.addWidget(tab._sd_name_ja, 1)
     name_wrapper = QWidget()
     name_wrapper.setLayout(name_box)
-    _add_field(row3, "Spell Name / 呪文名:", name_wrapper)
-    tab._sd_save_vs = QLabel("")
+    _add_field(row3, 'Spell Name / 呪文名:', name_wrapper)
+    tab._sd_save_vs = QLabel('')
     tab._sd_save_vs.setStyleSheet(_LBL_VAL)
-    _add_field(row3, "Save Vs. / セーブ:", tab._sd_save_vs)
+    _add_field(row3, 'Save Vs. / セーブ:', tab._sd_save_vs)
     sdg_lay.addLayout(row3)
-
     row4 = _make_row()
-    tab._sd_target = QLabel("")
+    tab._sd_target = QLabel('')
     tab._sd_target.setStyleSheet(_LBL_VAL)
-    _add_field(row4, "Target / 対象:", tab._sd_target)
-    tab._sd_cost_lbl = QLabel("")
+    _add_field(row4, 'Target / 対象:', tab._sd_target)
+    tab._sd_cost_lbl = QLabel('')
     tab._sd_cost_lbl.setStyleSheet(_LBL_VAL)
-    _add_field(row4, "Casting Cost / 詠唱コスト:", tab._sd_cost_lbl)
+    _add_field(row4, 'Casting Cost / 詠唱コスト:', tab._sd_cost_lbl)
     sdg_lay.addLayout(row4)
-
     sep2 = QFrame()
     sep2.setFrameShape(QFrame.Shape.HLine)
-    sep2.setStyleSheet("QFrame { color: #2a4258; }")
+    sep2.setStyleSheet('QFrame { color: #2a4258; }')
     sdg_lay.addWidget(sep2)
-
-    eff_caption = QLabel("Effects / 効果:")
+    eff_caption = QLabel('Effects / 効果:')
     eff_caption.setStyleSheet(_LBL_HEAD)
     sdg_lay.addWidget(eff_caption)
-
     tab._sd_effect_cards_widget = QWidget()
     tab._sd_effect_cards_layout = QVBoxLayout(tab._sd_effect_cards_widget)
     tab._sd_effect_cards_layout.setContentsMargins(0, 0, 0, 0)
     tab._sd_effect_cards_layout.setSpacing(6)
     sdg_lay.addWidget(tab._sd_effect_cards_widget)
-
     sdg_lay.addStretch(1)
     sd_lay.addWidget(tab._spell_detail_group, 1)
-
     place_page = QWidget()
     plp_lay = QVBoxLayout(place_page)
     plp_lay.setContentsMargins(0, 0, 0, 0)
     plp_lay.setSpacing(4)
-
-    tab._place_list_group = QGroupBox("")
+    tab._place_list_group = QGroupBox('')
     plg_lay = QVBoxLayout(tab._place_list_group)
     plg_lay.setContentsMargins(4, 4, 4, 4)
     plg_lay.setSpacing(2)
-
     tab._place_rows_widget = QWidget()
     tab._place_rows_layout = QVBoxLayout(tab._place_rows_widget)
     tab._place_rows_layout.setContentsMargins(0, 0, 0, 0)
     tab._place_rows_layout.setSpacing(2)
     tab._place_rows_layout.addStretch(1)
-
     place_scroll = QScrollArea()
     place_scroll.setWidget(tab._place_rows_widget)
     place_scroll.setWidgetResizable(True)
     place_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
     place_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
     plg_lay.addWidget(place_scroll, 1)
-
     plp_lay.addWidget(tab._place_list_group, 1)
-
     shop_buy_page = QWidget()
     sb_lay = QVBoxLayout(shop_buy_page)
     sb_lay.setContentsMargins(0, 0, 0, 0)
     sb_lay.setSpacing(4)
-
-    tab._shop_buy_group = QGroupBox("")
+    tab._shop_buy_group = QGroupBox('')
     sbg_lay = QVBoxLayout(tab._shop_buy_group)
     sbg_lay.setContentsMargins(4, 4, 4, 4)
     sbg_lay.setSpacing(2)
-
-
     tab._shop_buy_rows_widget = QWidget()
     tab._shop_buy_rows_layout = QVBoxLayout(tab._shop_buy_rows_widget)
     tab._shop_buy_rows_layout.setContentsMargins(0, 0, 0, 0)
     tab._shop_buy_rows_layout.setSpacing(2)
     tab._shop_buy_rows_layout.addStretch(1)
-
     shop_buy_scroll = QScrollArea()
     shop_buy_scroll.setWidget(tab._shop_buy_rows_widget)
     shop_buy_scroll.setWidgetResizable(True)
     shop_buy_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
-    shop_buy_scroll.setHorizontalScrollBarPolicy(
-        Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+    shop_buy_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
     sbg_lay.addWidget(shop_buy_scroll, 1)
-
     sb_lay.addWidget(tab._shop_buy_group, 1)
-
     facility_list_page = QWidget()
     fl_lay = QVBoxLayout(facility_list_page)
     fl_lay.setContentsMargins(0, 0, 0, 0)
     fl_lay.setSpacing(4)
-    tab._facility_list_group = QGroupBox("")
+    tab._facility_list_group = QGroupBox('')
     flg_lay = QVBoxLayout(tab._facility_list_group)
     flg_lay.setContentsMargins(4, 4, 4, 4)
     flg_lay.setSpacing(2)
-
     tab._facility_list_header = QFrame()
-    tab._facility_list_header.setObjectName("shopItemHeader")
+    tab._facility_list_header.setObjectName('shopItemHeader')
     flh_lay = QHBoxLayout(tab._facility_list_header)
     flh_lay.setContentsMargins(8, 2, 8, 2)
     flh_lay.setSpacing(8)
-    tab._facility_header_mark = QLabel("")
+    tab._facility_header_mark = QLabel('')
     tab._facility_header_mark.setFixedWidth(16)
-    tab._facility_header_en = QLabel("原文名")
-    tab._facility_header_ja = QLabel("翻訳名")
-    tab._facility_header_hands = QLabel("持ち手")
-    tab._facility_header_weight = QLabel("重量")
-    tab._facility_header_price = QLabel("価格")
-    for lbl, stretch, align in (
-            (tab._facility_header_mark, 0,
-             Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter),
-            (tab._facility_header_en, 2,
-             Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter),
-            (tab._facility_header_ja, 2,
-             Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter),
-            (tab._facility_header_hands, 1,
-             Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter),
-            (tab._facility_header_weight, 1,
-             Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter),
-            (tab._facility_header_price, 1,
-             Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter),
-    ):
+    tab._facility_header_en = QLabel('原文名')
+    tab._facility_header_ja = QLabel('翻訳名')
+    tab._facility_header_hands = QLabel('持ち手')
+    tab._facility_header_weight = QLabel('重量')
+    tab._facility_header_price = QLabel('価格')
+    for lbl, stretch, align in ((tab._facility_header_mark, 0, Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter), (tab._facility_header_en, 2, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter), (tab._facility_header_ja, 2, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter), (tab._facility_header_hands, 1, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter), (tab._facility_header_weight, 1, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter), (tab._facility_header_price, 1, Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)):
         lbl.setAlignment(align)
-        lbl.setObjectName("shopItemHeaderLabel")
+        lbl.setObjectName('shopItemHeaderLabel')
         flh_lay.addWidget(lbl, stretch)
-    tab._facility_list_header.setStyleSheet(
-        "QFrame#shopItemHeader {"
-        "  background: #0e161e;"
-        "  border: 1px solid #2a4258;"
-        "  border-radius: 3px;"
-        "}"
-        "QFrame#shopItemHeader QLabel#shopItemHeaderLabel {"
-        "  color: #7ab8d4;"
-        "  background: transparent;"
-        "  border: none;"
-        "  font-size: 10px;"
-        "  font-weight: bold;"
-        "}"
-    )
+    tab._facility_list_header.setStyleSheet('QFrame#shopItemHeader {  background: #0e161e;  border: 1px solid #2a4258;  border-radius: 3px;}QFrame#shopItemHeader QLabel#shopItemHeaderLabel {  color: #7ab8d4;  background: transparent;  border: none;  font-size: 10px;  font-weight: bold;}')
     flg_lay.addWidget(tab._facility_list_header)
-
     tab._facility_list_rows_widget = QWidget()
-    tab._facility_list_rows_layout = QVBoxLayout(
-        tab._facility_list_rows_widget)
+    tab._facility_list_rows_layout = QVBoxLayout(tab._facility_list_rows_widget)
     tab._facility_list_rows_layout.setContentsMargins(0, 0, 0, 0)
     tab._facility_list_rows_layout.setSpacing(2)
     tab._facility_list_rows_layout.addStretch(1)
@@ -452,13 +315,40 @@ def build_ui(tab: "TabTranslate") -> None:
     facility_list_scroll.setWidget(tab._facility_list_rows_widget)
     facility_list_scroll.setWidgetResizable(True)
     facility_list_scroll.setFrameShape(QScrollArea.Shape.NoFrame)
-    facility_list_scroll.setHorizontalScrollBarPolicy(
-        Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+    facility_list_scroll.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
     flg_lay.addWidget(facility_list_scroll, 1)
     fl_lay.addWidget(tab._facility_list_group, 1)
+    travel_table_page = QWidget()
+    tt_lay = QVBoxLayout(travel_table_page)
+    tt_lay.setContentsMargins(0, 0, 0, 0)
+    tt_lay.setSpacing(14)
 
-    tab._fallback_map_tab = TabMap(name="fallback_map")
-
+    def _mk_travel_table():
+        t = QTableWidget(0, 3)
+        t.horizontalHeader().setVisible(False)
+        t.verticalHeader().setVisible(False)
+        t.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
+        t.setSelectionMode(QTableWidget.SelectionMode.NoSelection)
+        t.setWordWrap(True)
+        t.setShowGrid(True)
+        t.setSizeAdjustPolicy(QTableWidget.SizeAdjustPolicy.AdjustToContents)
+        t.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        t.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        t.setFrameShape(QTableWidget.Shape.NoFrame)
+        _hdr = t.horizontalHeader()
+        _hdr.setSectionResizeMode(0, QHeaderView.ResizeMode.Fixed)
+        t.setColumnWidth(0, 104)
+        _hdr.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
+        _hdr.setSectionResizeMode(2, QHeaderView.ResizeMode.Stretch)
+        t.setStyleSheet('QTableWidget {  background: #131c24;  gridline-color: #3a5a78;  color: #c9d1e0;  border: 1px solid #3a5a78;  font-size: 12px;}QTableWidget::item {  padding: 5px 8px;  border-right: 1px solid #2a4258;  border-bottom: 1px solid #2a4258;}')
+        t.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        return t
+    tab._travel_tables = [_mk_travel_table() for _ in range(3)]
+    tab._travel_group_sizes = (2, 3, 1)
+    for _t in tab._travel_tables:
+        tt_lay.addWidget(_t, 0)
+    tt_lay.addStretch(1)
+    tab._fallback_map_tab = TabMap(name='fallback_map')
     tab._stack.addWidget(translate_page)
     tab._stack.addWidget(tab._class_list_panel)
     tab._stack.addWidget(tab._attr_slot)
@@ -472,6 +362,6 @@ def build_ui(tab: "TabTranslate") -> None:
     tab._stack.addWidget(tab._appearance_faces_panel)
     tab._stack.addWidget(tab._fallback_map_tab)
     tab._stack.addWidget(facility_list_page)
-
+    tab._stack.addWidget(travel_table_page)
     cl.addWidget(tab._stack, 1)
     root.addWidget(tab._conn_widget)

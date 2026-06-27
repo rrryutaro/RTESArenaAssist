@@ -1,38 +1,23 @@
 from __future__ import annotations
-
 from pathlib import Path
 from typing import Optional
-
 import numpy as np
-
 from services.mif_loader import DEFAULT_INF_DIR, parse_inf_wall_texture_names
-
-EDGE_FENCE = "fence"
-EDGE_HEDGE = "hedge"
-EDGE_GARDEN = "garden"
-
-_NAME_RULES: tuple[tuple[tuple[str, ...], str], ...] = (
-    (("fence",), EDGE_FENCE),
-    (("hedge",), EDGE_HEDGE),
-    (("garden",), EDGE_GARDEN),
-)
-
-CROP_CORN = "corn"
-CROP_FARM = "farm"
-_CROP_NAME_RULES: tuple[tuple[tuple[str, ...], str], ...] = (
-    (("corn",), CROP_CORN),
-)
-
-_WILD_INF_CANDIDATES = ("TWN.INF", "MWN.INF", "DWN.INF")
-
+EDGE_FENCE = 'fence'
+EDGE_HEDGE = 'hedge'
+EDGE_GARDEN = 'garden'
+_NAME_RULES: tuple[tuple[tuple[str, ...], str], ...] = ((('fence',), EDGE_FENCE), (('hedge',), EDGE_HEDGE), (('garden',), EDGE_GARDEN))
+CROP_CORN = 'corn'
+CROP_FARM = 'farm'
+_CROP_NAME_RULES: tuple[tuple[tuple[str, ...], str], ...] = ((('corn',), CROP_CORN),)
+_WILD_INF_CANDIDATES = ('TWN.INF', 'MWN.INF', 'DWN.INF')
 
 def classify_wall_name(name: str) -> Optional[str]:
     low = name.lower()
     for needles, cat in _NAME_RULES:
-        if any(n in low for n in needles):
+        if any((n in low for n in needles)):
             return cat
     return None
-
 
 def build_edge_category_map(inf_path: str | Path) -> dict[int, str]:
     cat_map: dict[int, str] = {}
@@ -41,10 +26,7 @@ def build_edge_category_map(inf_path: str | Path) -> dict[int, str]:
         if cat is not None:
             cat_map[idx] = cat
     return cat_map
-
-
 _cached_category_map: Optional[dict[int, str]] = None
-
 
 def get_wild_edge_category_map() -> dict[int, str]:
     global _cached_category_map
@@ -60,16 +42,14 @@ def get_wild_edge_category_map() -> dict[int, str]:
     _cached_category_map = cat_map
     return cat_map
 
-
 def classify_crop_name(name: str) -> Optional[str]:
     low = name.lower()
-    if "dfarm" in low:
+    if 'dfarm' in low:
         return None
     for needles, cat in _CROP_NAME_RULES:
-        if any(n in low for n in needles):
+        if any((n in low for n in needles)):
             return cat
     return None
-
 
 def build_crop_category_map(inf_path: str | Path) -> dict[int, str]:
     cat_map: dict[int, str] = {}
@@ -78,10 +58,7 @@ def build_crop_category_map(inf_path: str | Path) -> dict[int, str]:
         if cat is not None:
             cat_map[idx] = cat
     return cat_map
-
-
 _cached_crop_map: Optional[dict[int, str]] = None
-
 
 def get_wild_crop_category_map() -> dict[int, str]:
     global _cached_crop_map
@@ -97,24 +74,19 @@ def get_wild_crop_category_map() -> dict[int, str]:
     _cached_crop_map = cat_map
     return cat_map
 
-
 def _wall_texture_index(v: int) -> Optional[int]:
     if v == 0:
         return None
-    if (v & 0x8000) == 0:
+    if v & 32768 == 0:
         return None
-    high = (v >> 12) & 0x0F
-    if high == 0x9:
-        return (v & 0x00FF) - 1
-    if high == 0xA:
-        return (v & 0x003F) - 1
+    high = v >> 12 & 15
+    if high == 9:
+        return (v & 255) - 1
+    if high == 10:
+        return (v & 63) - 1
     return None
 
-
-def extract_edge_marks(
-    map1: np.ndarray,
-    category_map: dict[int, str],
-) -> tuple[tuple[int, int, str], ...]:
+def extract_edge_marks(map1: np.ndarray, category_map: dict[int, str]) -> tuple[tuple[int, int, str], ...]:
     if not category_map:
         return ()
     ys, xs = np.where(map1 != 0)
@@ -130,19 +102,6 @@ def extract_edge_marks(
             marks.append((int(x), int(y), cat))
     return tuple(marks)
 
-
-def extract_crop_marks(
-    map1: np.ndarray,
-    category_map: dict[int, str],
-) -> tuple[tuple[int, int, str], ...]:
+def extract_crop_marks(map1: np.ndarray, category_map: dict[int, str]) -> tuple[tuple[int, int, str], ...]:
     return extract_edge_marks(map1, category_map)
-
-
-__all__ = [
-    "EDGE_FENCE", "EDGE_HEDGE", "EDGE_GARDEN",
-    "CROP_CORN", "CROP_FARM",
-    "classify_wall_name", "build_edge_category_map",
-    "get_wild_edge_category_map", "extract_edge_marks",
-    "classify_crop_name", "build_crop_category_map",
-    "get_wild_crop_category_map", "extract_crop_marks",
-]
+__all__ = ['EDGE_FENCE', 'EDGE_HEDGE', 'EDGE_GARDEN', 'CROP_CORN', 'CROP_FARM', 'classify_wall_name', 'build_edge_category_map', 'get_wild_edge_category_map', 'extract_edge_marks', 'classify_crop_name', 'build_crop_category_map', 'get_wild_crop_category_map', 'extract_crop_marks']

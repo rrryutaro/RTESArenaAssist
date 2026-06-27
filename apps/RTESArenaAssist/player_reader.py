@@ -1,9 +1,7 @@
 from __future__ import annotations
-
-LEVEL_OFFSET      = 0x01AA
-EXPERIENCE_OFFSET = 0x05AD
-BONUS_PTS_OFFSET  = 0x129C
-
+LEVEL_OFFSET = 426
+EXPERIENCE_OFFSET = 1453
+BONUS_PTS_OFFSET = 4764
 
 def read_level(analyzer, anchor: int) -> int | None:
     try:
@@ -12,14 +10,12 @@ def read_level(analyzer, anchor: int) -> int | None:
     except (OSError, AttributeError):
         return None
 
-
 def read_experience(analyzer, anchor: int) -> int | None:
     try:
         raw = analyzer.read_bytes(anchor + EXPERIENCE_OFFSET, 4)
-        return int.from_bytes(raw, "little")
+        return int.from_bytes(raw, 'little')
     except (OSError, AttributeError):
         return None
-
 
 def read_bonus_pts(analyzer, anchor: int) -> int | None:
     try:
@@ -27,10 +23,5 @@ def read_bonus_pts(analyzer, anchor: int) -> int | None:
     except (OSError, AttributeError):
         return None
 
-
 def read_all(analyzer, anchor: int) -> dict:
-    return {
-        "level":      read_level(analyzer, anchor),
-        "experience": read_experience(analyzer, anchor),
-        "bonus_pts":  read_bonus_pts(analyzer, anchor),
-    }
+    return {'level': read_level(analyzer, anchor), 'experience': read_experience(analyzer, anchor), 'bonus_pts': read_bonus_pts(analyzer, anchor)}

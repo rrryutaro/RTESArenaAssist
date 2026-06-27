@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:deb5b31592ec45f1ad92c9b3ef3ce4914ea0561483801b999a0e43b9790fec11",
+  "registry_hash": "sha256:f2fd3d7b1097a6d8449c958ac13caf6aff2e8543886176fd9a2927ff2112e558",
   "categories": [
     {
       "category": "assist_ui",
@@ -2991,6 +2991,81 @@
           "id": 900595,
           "kind": "label",
           "debug_name": "dict.cat.titles"
+        },
+        {
+          "id": 900596,
+          "kind": "label",
+          "debug_name": "recognition.travel_detail"
+        },
+        {
+          "id": 900597,
+          "kind": "label",
+          "debug_name": "recognition.travel_estimate"
+        },
+        {
+          "id": 900598,
+          "kind": "label",
+          "debug_name": "recognition.travel_hover"
+        },
+        {
+          "id": 900599,
+          "kind": "label",
+          "debug_name": "recognition.travel_input"
+        },
+        {
+          "id": 900600,
+          "kind": "label",
+          "debug_name": "recognition.travel_list"
+        },
+        {
+          "id": 900601,
+          "kind": "label",
+          "debug_name": "recognition.travel_region"
+        },
+        {
+          "id": 900602,
+          "kind": "label",
+          "debug_name": "settings.tts_cancel_on_close"
+        },
+        {
+          "id": 900603,
+          "kind": "label",
+          "debug_name": "settings.tts_cancel_on_close_label"
+        },
+        {
+          "id": 900604,
+          "kind": "label",
+          "debug_name": "settings.tts_suppress_repeat"
+        },
+        {
+          "id": 900605,
+          "kind": "label",
+          "debug_name": "settings.tts_suppress_repeat_label"
+        },
+        {
+          "id": 900606,
+          "kind": "label",
+          "debug_name": "settings.tts_highlight_reading"
+        },
+        {
+          "id": 900607,
+          "kind": "label",
+          "debug_name": "settings.tts_highlight_reading_label"
+        },
+        {
+          "id": 900608,
+          "kind": "label",
+          "debug_name": "tts.pause_tooltip"
+        },
+        {
+          "id": 900609,
+          "kind": "label",
+          "debug_name": "tts.resume_tooltip"
+        },
+        {
+          "id": 900610,
+          "kind": "label",
+          "debug_name": "tts.stop_tooltip"
         }
       ]
     },
@@ -46337,7 +46412,7 @@
         },
         {
           "id": 900310,
-          "text": "Exploring"
+          "text": "[Exploring]"
         },
         {
           "id": 900311,
@@ -47478,6 +47553,66 @@
         {
           "id": 900595,
           "text": "Titles"
+        },
+        {
+          "id": 900596,
+          "text": "[Region Map]"
+        },
+        {
+          "id": 900597,
+          "text": "[Travel Estimate]"
+        },
+        {
+          "id": 900598,
+          "text": "[Destination Hover]"
+        },
+        {
+          "id": 900599,
+          "text": "[Destination Input]"
+        },
+        {
+          "id": 900600,
+          "text": "[Candidate List]"
+        },
+        {
+          "id": 900601,
+          "text": "[Region Select]"
+        },
+        {
+          "id": 900602,
+          "text": "Cancel speech when a dialog or conversation is closed"
+        },
+        {
+          "id": 900603,
+          "text": "Cancel on close"
+        },
+        {
+          "id": 900604,
+          "text": "Do not read the same content repeatedly (e.g. recurring dungeon messages; still kept in the log)"
+        },
+        {
+          "id": 900605,
+          "text": "Suppress repeats"
+        },
+        {
+          "id": 900606,
+          "text": "Highlight the sentence being read (translation panel, tab, log)"
+        },
+        {
+          "id": 900607,
+          "text": "Highlight reading"
+        },
+        {
+          "id": 900608,
+          "text": "Pause speech"
+        },
+        {
+          "id": 900609,
+          "text": "Resume speech"
+        },
+        {
+          "id": 900610,
+          "text": "Stop speech"
         },
         {
           "id": 902000,
@@ -73054,7 +73189,7 @@
         },
         {
           "id": 900310,
-          "text": "探索中"
+          "text": "[探索中]"
         },
         {
           "id": 900311,
@@ -74195,6 +74330,66 @@
         {
           "id": 900595,
           "text": "称号"
+        },
+        {
+          "id": 900596,
+          "text": "[地域詳細]"
+        },
+        {
+          "id": 900597,
+          "text": "[移動見積表示中]"
+        },
+        {
+          "id": 900598,
+          "text": "[移動先ホバー中]"
+        },
+        {
+          "id": 900599,
+          "text": "[目的地入力中]"
+        },
+        {
+          "id": 900600,
+          "text": "[候補一覧表示]"
+        },
+        {
+          "id": 900601,
+          "text": "[地域選択中]"
+        },
+        {
+          "id": 900602,
+          "text": "ダイアログ・会話を閉じたら読み上げを中断する"
+        },
+        {
+          "id": 900603,
+          "text": "閉じたら中断"
+        },
+        {
+          "id": 900604,
+          "text": "同じ内容を繰り返し読み上げない（ダンジョンの反復メッセージ等・ログには残します）"
+        },
+        {
+          "id": 900605,
+          "text": "重複の抑止"
+        },
+        {
+          "id": 900606,
+          "text": "読み上げ中の文に色を付ける（翻訳パネル・タブ・ログ）"
+        },
+        {
+          "id": 900607,
+          "text": "読み上げ箇所の強調"
+        },
+        {
+          "id": 900608,
+          "text": "読み上げを一時停止"
+        },
+        {
+          "id": 900609,
+          "text": "読み上げを再開"
+        },
+        {
+          "id": 900610,
+          "text": "読み上げを停止"
         },
         {
           "id": 902000,
@@ -98011,7 +98206,7 @@
         },
         {
           "id": 900310,
-          "text": "Explorando"
+          "text": "[Explorando]"
         },
         {
           "id": 900311,
@@ -98712,6 +98907,42 @@
         {
           "id": 900553,
           "text": "Sí"
+        },
+        {
+          "id": 900596,
+          "text": "[Mapa de Región]"
+        },
+        {
+          "id": 900597,
+          "text": "[Estimación de Viaje]"
+        },
+        {
+          "id": 900598,
+          "text": "[Destino Resaltado]"
+        },
+        {
+          "id": 900599,
+          "text": "[Entrada de Destino]"
+        },
+        {
+          "id": 900600,
+          "text": "[Lista de Candidatos]"
+        },
+        {
+          "id": 900601,
+          "text": "[Selección de Región]"
+        },
+        {
+          "id": 900608,
+          "text": "Pausar lectura"
+        },
+        {
+          "id": 900609,
+          "text": "Reanudar lectura"
+        },
+        {
+          "id": 900610,
+          "text": "Detener lectura"
         },
         {
           "id": 902000,

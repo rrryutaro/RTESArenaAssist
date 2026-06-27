@@ -1,22 +1,17 @@
 from __future__ import annotations
-
 import json
 import os
-
 _FILE_VERSION = 1
-_SECTION = "hidden_doors"
-
+_SECTION = 'hidden_doors'
 
 def ext_data_dir() -> str:
     from assist_settings import _settings_path
     if _settings_path:
-        return os.path.join(os.path.dirname(_settings_path), "ext_data")
-    return os.path.join(os.path.expanduser("~"), "RTESArenaAssist_ext_data")
-
+        return os.path.join(os.path.dirname(_settings_path), 'ext_data')
+    return os.path.join(os.path.expanduser('~'), 'RTESArenaAssist_ext_data')
 
 def slot_filename(slot: int) -> str:
-    return f"map_ext.0{int(slot)}"
-
+    return f'map_ext.0{int(slot)}'
 
 def _loc_dict_to_sets(raw: dict) -> dict[str, set[tuple[int, int]]]:
     out: dict[str, set[tuple[int, int]]] = {}
@@ -34,17 +29,12 @@ def _loc_dict_to_sets(raw: dict) -> dict[str, set[tuple[int, int]]]:
         out[str(loc)] = s
     return out
 
-
 def _loc_sets_to_dict(data: dict[str, set[tuple[int, int]]]) -> dict:
-    return {
-        loc: sorted([list(c) for c in cells])
-        for loc, cells in data.items() if cells
-    }
-
+    return {loc: sorted([list(c) for c in cells]) for loc, cells in data.items() if cells}
 
 class MapExtStore:
 
-    def __init__(self, ext_dir: str | None = None) -> None:
+    def __init__(self, ext_dir: str | None=None) -> None:
         self._ext_dir_override = ext_dir
         self._active: dict[str, set[tuple[int, int]]] = {}
         self._persist: dict[str, set[tuple[int, int]]] = {}
@@ -60,24 +50,19 @@ class MapExtStore:
     def _read_slot_file(self, slot: int) -> tuple[str | None, dict[str, set[tuple[int, int]]]]:
         path = self._slot_path(slot)
         try:
-            with open(path, encoding="utf-8") as f:
+            with open(path, encoding='utf-8') as f:
                 obj = json.load(f)
         except (FileNotFoundError, json.JSONDecodeError, OSError):
-            return None, {}
-        save_id = obj.get("save_id") if isinstance(obj, dict) else None
+            return (None, {})
+        save_id = obj.get('save_id') if isinstance(obj, dict) else None
         raw = obj.get(_SECTION, {}) if isinstance(obj, dict) else {}
-        return save_id, _loc_dict_to_sets(raw)
+        return (save_id, _loc_dict_to_sets(raw))
 
-    def _write_slot_file(self, slot: int, save_id: str | None,
-                         data: dict[str, set[tuple[int, int]]]) -> None:
+    def _write_slot_file(self, slot: int, save_id: str | None, data: dict[str, set[tuple[int, int]]]) -> None:
         os.makedirs(self.ext_dir(), exist_ok=True)
-        obj = {
-            "version": _FILE_VERSION,
-            "save_id": save_id,
-            _SECTION: _loc_sets_to_dict(data),
-        }
+        obj = {'version': _FILE_VERSION, 'save_id': save_id, _SECTION: _loc_sets_to_dict(data)}
         path = self._slot_path(slot)
-        with open(path, "w", encoding="utf-8") as f:
+        with open(path, 'w', encoding='utf-8') as f:
             json.dump(obj, f, ensure_ascii=False, indent=2)
 
     def bind_slot(self, slot: int | None, save_id: str | None) -> None:
@@ -89,7 +74,7 @@ class MapExtStore:
         if slot == self._current_slot and save_id == self._current_save_id:
             return
         file_save_id, data = self._read_slot_file(slot)
-        if save_id is not None and file_save_id is not None and file_save_id != save_id:
+        if save_id is not None and file_save_id is not None and (file_save_id != save_id):
             data = {}
         self._current_slot = slot
         self._current_save_id = save_id
@@ -112,16 +97,14 @@ class MapExtStore:
         return frozenset(out)
 
     def commit_to_slot(self, slot: int, save_id: str | None) -> None:
-        file_save_id, data = self._read_slot_file(slot)
-        if save_id is not None and file_save_id is not None and file_save_id != save_id:
-            data = {}
+        merged: dict[str, set[tuple[int, int]]] = {loc: set(cells) for loc, cells in self._persist.items()}
         for loc, cells in self._active.items():
-            data.setdefault(loc, set()).update(cells)
-        self._write_slot_file(slot, save_id, data)
+            merged.setdefault(loc, set()).update(cells)
+        self._write_slot_file(slot, save_id, merged)
         self._active.clear()
         self._current_slot = slot
         self._current_save_id = save_id
-        self._persist = data
+        self._persist = merged
 
     def reset_active(self) -> None:
         self._active.clear()
@@ -134,16 +117,11 @@ class MapExtStore:
             pass
         if slot == self._current_slot:
             self._persist = {}
-
-
 _SHARED: MapExtStore | None = None
-
 
 def get_store() -> MapExtStore:
     global _SHARED
     if _SHARED is None:
         _SHARED = MapExtStore()
     return _SHARED
-
-
-__all__ = ["MapExtStore", "ext_data_dir", "slot_filename", "get_store"]
+__all__ = ['MapExtStore', 'ext_data_dir', 'slot_filename', 'get_store']

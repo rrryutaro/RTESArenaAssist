@@ -1,54 +1,38 @@
-
 import os
-
 from PySide6.QtCore import QUrl, Qt
-from PySide6.QtWidgets import (
-    QButtonGroup, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem,
-    QPushButton, QSizePolicy, QSplitter, QTextBrowser, QVBoxLayout, QWidget,
-)
-
+from PySide6.QtWidgets import QButtonGroup, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem, QPushButton, QSizePolicy, QSplitter, QTextBrowser, QVBoxLayout, QWidget
 import i18n_helper as i18n
-
-_MODE_SIMPLE = "simple"
-_MODE_FULL = "full"
-
-
+_MODE_SIMPLE = 'simple'
+_MODE_FULL = 'full'
 
 def _manual_subdir(mode: str) -> str:
     import app_resources
     lang = i18n.current_lang()
-    rel = f"manual/{mode}/{lang}"
-    if app_resources.is_dir(rel) and any(
-            f.endswith(".html") for f in app_resources.listdir(rel)):
+    rel = f'manual/{mode}/{lang}'
+    if app_resources.is_dir(rel) and any((f.endswith('.html') for f in app_resources.listdir(rel))):
         return rel
     if mode == _MODE_FULL:
-        en_rel = f"manual/{mode}/en"
+        en_rel = f'manual/{mode}/en'
         if app_resources.is_dir(en_rel):
             return en_rel
-    return f"manual/{mode}/ja"
-
+    return f'manual/{mode}/ja'
 
 def _list_docs(mode: str) -> list[tuple[str, str]]:
     import app_resources
     d = _manual_subdir(mode)
-    return sorted(
-        (os.path.splitext(f)[0], f"{d}/{f}")
-        for f in app_resources.listdir(d)
-        if f.lower().endswith(".html")
-    )
-
+    return sorted(((os.path.splitext(f)[0], f'{d}/{f}') for f in app_resources.listdir(d) if f.lower().endswith('.html')))
 
 def _doc_label(stem: str, mode: str) -> str:
-    key = f"manual.doc.{mode}.{stem}"
+    key = f'manual.doc.{mode}.{stem}'
     label = i18n.tr(key)
     if label == key:
-        key2 = f"manual.doc.{stem}"
+        key2 = f'manual.doc.{stem}'
         label2 = i18n.tr(key2)
         return stem if label2 == key2 else label2
     return label
 
-
 class TabManual(QWidget):
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self._mode: str = _MODE_SIMPLE
@@ -62,15 +46,13 @@ class TabManual(QWidget):
         root = QVBoxLayout(self)
         root.setContentsMargins(6, 6, 6, 6)
         root.setSpacing(4)
-
         toolbar = QWidget()
         toolbar.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Fixed)
         toolbar_row = QHBoxLayout(toolbar)
         toolbar_row.setContentsMargins(0, 0, 0, 0)
         toolbar_row.setSpacing(4)
-
-        self._btn_simple = QPushButton(i18n.tr("manual.mode.simple"))
-        self._btn_full = QPushButton(i18n.tr("manual.mode.full"))
+        self._btn_simple = QPushButton(i18n.tr('manual.mode.simple'))
+        self._btn_full = QPushButton(i18n.tr('manual.mode.full'))
         for btn in (self._btn_simple, self._btn_full):
             btn.setCheckable(True)
             btn.setFixedWidth(56)
@@ -81,21 +63,19 @@ class TabManual(QWidget):
         self._mode_group.addButton(self._btn_full)
         self._btn_simple.clicked.connect(lambda: self._switch_mode(_MODE_SIMPLE))
         self._btn_full.clicked.connect(lambda: self._switch_mode(_MODE_FULL))
-
         self._search_edit = QLineEdit()
-        self._search_edit.setPlaceholderText(i18n.tr("manual.search_placeholder"))
+        self._search_edit.setPlaceholderText(i18n.tr('manual.search_placeholder'))
         self._search_edit.setMaximumWidth(180)
         self._search_edit.returnPressed.connect(self._search)
-        self._prev_btn = QPushButton(i18n.tr("manual.prev"))
-        self._next_btn = QPushButton(i18n.tr("manual.next"))
+        self._prev_btn = QPushButton(i18n.tr('manual.prev'))
+        self._next_btn = QPushButton(i18n.tr('manual.next'))
         self._prev_btn.setFixedWidth(60)
         self._next_btn.setFixedWidth(60)
         self._prev_btn.clicked.connect(self._prev_match)
         self._next_btn.clicked.connect(self._next_match)
-        self._match_lbl = QLabel("")
+        self._match_lbl = QLabel('')
         self._match_lbl.setMinimumWidth(56)
         self._match_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
         toolbar_row.addWidget(self._btn_simple)
         toolbar_row.addWidget(self._btn_full)
         toolbar_row.addSpacing(8)
@@ -105,25 +85,20 @@ class TabManual(QWidget):
         toolbar_row.addWidget(self._match_lbl)
         toolbar_row.addStretch()
         root.addWidget(toolbar)
-
         splitter = QSplitter(Qt.Orientation.Horizontal)
-
         self._nav = QListWidget()
-        self._nav.setObjectName("manualNav")
+        self._nav.setObjectName('manualNav')
         self._nav.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self._nav.setWordWrap(True)
         self._nav.currentRowChanged.connect(self._on_nav_changed)
         splitter.addWidget(self._nav)
-
         self._browser = QTextBrowser()
         self._browser.setOpenExternalLinks(True)
         splitter.addWidget(self._browser)
-
         splitter.setSizes([140, 360])
         splitter.setStretchFactor(0, 0)
         splitter.setStretchFactor(1, 1)
         root.addWidget(splitter, 1)
-
         self._prev_btn.setEnabled(False)
         self._next_btn.setEnabled(False)
 
@@ -140,7 +115,7 @@ class TabManual(QWidget):
         self._docs = _list_docs(self._mode)
         self._nav.clear()
         if not self._docs:
-            self._browser.setPlainText(i18n.tr("manual.no_manual"))
+            self._browser.setPlainText(i18n.tr('manual.no_manual'))
             return
         for stem, _ in self._docs:
             self._nav.addItem(QListWidgetItem(_doc_label(stem, self._mode)))
@@ -199,10 +174,6 @@ class TabManual(QWidget):
     def _update_match_label(self):
         if not self._matches:
             kw = self._search_edit.text().strip()
-            self._match_lbl.setText(i18n.tr("manual.no_match") if kw else "")
+            self._match_lbl.setText(i18n.tr('manual.no_match') if kw else '')
         else:
-            self._match_lbl.setText(
-                i18n.tr("manual.match_count",
-                        current=self._match_idx + 1,
-                        total=len(self._matches))
-            )
+            self._match_lbl.setText(i18n.tr('manual.match_count', current=self._match_idx + 1, total=len(self._matches)))

@@ -1,32 +1,44 @@
 from __future__ import annotations
-
 import sys
 from pathlib import Path
 
-
 def app_resource_root() -> Path:
-    if getattr(sys, "frozen", False):
-        return Path(getattr(sys, "_MEIPASS", Path(sys.executable).resolve().parent))
+    if getattr(sys, 'frozen', False):
+        return Path(getattr(sys, '_MEIPASS', Path(sys.executable).resolve().parent))
     return Path(__file__).resolve().parent
-
 
 def repo_root() -> Path:
     return Path(__file__).resolve().parents[2]
 
-
 def resource_path(*parts: str) -> Path:
     return app_resource_root().joinpath(*parts)
 
+def _source_arena_data_candidates() -> list[Path]:
+    root = repo_root()
+    candidates = [root / 'docs' / 'ARENA-data']
+    parts = root.parts
+    if '.claude' in parts:
+        idx = parts.index('.claude')
+        if idx > 0:
+            candidates.append(Path(*parts[:idx]) / 'docs' / 'ARENA-data')
+    return candidates
 
 def resolve_arena_data_dir() -> Path:
-    return resource_path("ARENA-data")
-
+    candidates = [resource_path('ARENA-data')]
+    candidates.extend(_source_arena_data_candidates())
+    for candidate in candidates:
+        try:
+            if candidate.is_dir():
+                return candidate
+        except OSError:
+            continue
+    return candidates[0]
 
 def resolve_arena_install_dir() -> Path | None:
     try:
         import assist_settings
-        raw = (assist_settings.get("save_dir") or "").strip()
-    except Exception:  # noqa: BLE001
+        raw = (assist_settings.get('save_dir') or '').strip()
+    except Exception:
         return None
     if not raw:
         return None
@@ -35,11 +47,8 @@ def resolve_arena_install_dir() -> Path | None:
         return p if p.is_dir() else None
     except OSError:
         return None
-
-
 _install_vfs_cache = None
 _install_vfs_dir: str | None = None
-
 
 def install_vfs():
     global _install_vfs_cache, _install_vfs_dir
@@ -53,16 +62,7 @@ def install_vfs():
             try:
                 from arena_vfs import Vfs
                 _install_vfs_cache = Vfs(str(install))
-            except Exception:  # noqa: BLE001
+            except Exception:
                 _install_vfs_cache = None
     return _install_vfs_cache
-
-
-__all__ = [
-    "app_resource_root",
-    "repo_root",
-    "resource_path",
-    "resolve_arena_data_dir",
-    "resolve_arena_install_dir",
-    "install_vfs",
-]
+__all__ = ['app_resource_root', 'repo_root', 'resource_path', 'resolve_arena_data_dir', 'resolve_arena_install_dir', 'install_vfs']

@@ -1,23 +1,13 @@
-
 from __future__ import annotations
-
 import io
 from typing import TYPE_CHECKING, Optional
-
 from PySide6.QtCore import QPoint, QTimer, Qt
 from PySide6.QtGui import QColor, QImage, QPainter, QPen, QPixmap
-from PySide6.QtWidgets import (
-    QCheckBox, QGroupBox, QHBoxLayout, QLabel, QPushButton,
-    QSizePolicy, QSplitter, QTableWidget, QTableWidgetItem,
-    QVBoxLayout, QWidget,
-)
-
+from PySide6.QtWidgets import QCheckBox, QGroupBox, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSplitter, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 if TYPE_CHECKING:
     from controllers.screen_judge_controller import ScreenJudgeController
-
 _LIVE_INTERVAL_MS = 1500
 _DOT_RADIUS = 4
-
 
 class _ClickableLabel(QLabel):
 
@@ -34,7 +24,6 @@ class _ClickableLabel(QLabel):
             self._click_cb(ev.pos())
         super().mousePressEvent(ev)
 
-
 class TabScreenJudge(QWidget):
 
     def __init__(self, window, parent=None):
@@ -48,110 +37,84 @@ class TabScreenJudge(QWidget):
         self._pending_point: Optional[dict] = None
         self._build_ui()
 
-
     def _build_ui(self) -> None:
         root = QVBoxLayout(self)
         root.setContentsMargins(6, 6, 6, 6)
         root.setSpacing(6)
-
         toolbar = QHBoxLayout()
-        self._cap_btn = QPushButton("キャプチャ")
+        self._cap_btn = QPushButton('キャプチャ')
         self._cap_btn.clicked.connect(self._do_capture)
         toolbar.addWidget(self._cap_btn)
-
-        self._live_chk = QCheckBox("ライブ")
+        self._live_chk = QCheckBox('ライブ')
         self._live_chk.toggled.connect(self._on_live_toggled)
         toolbar.addWidget(self._live_chk)
-
         toolbar.addStretch()
-
-        self._info_lbl = QLabel("—")
-        self._info_lbl.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred
-        )
+        self._info_lbl = QLabel('—')
+        self._info_lbl.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Preferred)
         toolbar.addWidget(self._info_lbl)
-
         root.addLayout(toolbar)
-
         splitter = QSplitter(Qt.Orientation.Horizontal)
-
         img_widget = QWidget()
         img_layout = QVBoxLayout(img_widget)
         img_layout.setContentsMargins(0, 0, 0, 0)
-
         self._img_lbl = _ClickableLabel()
         self._img_lbl.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         self._img_lbl.setMinimumSize(200, 100)
-        self._img_lbl.setSizePolicy(
-            QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding
-        )
+        self._img_lbl.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         self._img_lbl.set_click_callback(self._on_image_click)
         img_layout.addWidget(self._img_lbl)
-
-        self._save_obs_btn = QPushButton("観測点として保存")
+        self._save_obs_btn = QPushButton('観測点として保存')
         self._save_obs_btn.setEnabled(False)
         self._save_obs_btn.clicked.connect(self._save_pending_point)
         img_layout.addWidget(self._save_obs_btn)
-
         splitter.addWidget(img_widget)
-
-        obs_group = QGroupBox("観測点リスト")
+        obs_group = QGroupBox('観測点リスト')
         obs_layout = QVBoxLayout(obs_group)
-
         self._obs_table = QTableWidget(0, 4)
-        self._obs_table.setHorizontalHeaderLabels(["名前", "Arena座標", "RGB", "許容"])
+        self._obs_table.setHorizontalHeaderLabels(['名前', 'Arena座標', 'RGB', '許容'])
         self._obs_table.horizontalHeader().setStretchLastSection(True)
-        self._obs_table.setSelectionBehavior(
-            QTableWidget.SelectionBehavior.SelectRows
-        )
+        self._obs_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
         self._obs_table.itemSelectionChanged.connect(self._on_obs_selection)
         obs_layout.addWidget(self._obs_table)
-
         obs_btn_row = QHBoxLayout()
-        self._del_obs_btn = QPushButton("削除")
+        self._del_obs_btn = QPushButton('削除')
         self._del_obs_btn.setEnabled(False)
         self._del_obs_btn.clicked.connect(self._delete_selected_obs)
         obs_btn_row.addWidget(self._del_obs_btn)
         obs_btn_row.addStretch()
         obs_layout.addLayout(obs_btn_row)
-
         splitter.addWidget(obs_group)
         splitter.setStretchFactor(0, 3)
         splitter.setStretchFactor(1, 2)
-
         root.addWidget(splitter, 1)
-
         self._set_placeholder()
 
-
-    def _controller(self) -> Optional["ScreenJudgeController"]:
-        return getattr(self._window, "_screen_judge", None)
+    def _controller(self) -> Optional['ScreenJudgeController']:
+        return getattr(self._window, '_screen_judge', None)
 
     def _do_capture(self) -> None:
         ctrl = self._controller()
         if ctrl is None:
-            self._info_lbl.setText("screen_judge 無効")
+            self._info_lbl.setText('screen_judge 無効')
             return
         img = ctrl.capture_now()
         if img is None:
-            self._info_lbl.setText("キャプチャ失敗（DOSBox が見つかりません）")
+            self._info_lbl.setText('キャプチャ失敗（DOSBox が見つかりません）')
             return
-
         buf = io.BytesIO()
-        img.save(buf, format="PNG")
+        img.save(buf, format='PNG')
         qimg = QImage.fromData(buf.getvalue())
         pix = QPixmap.fromImage(qimg)
         self._last_pixmap = pix
         self._pending_point = None
         self._save_obs_btn.setEnabled(False)
         self._refresh_image()
-        self._info_lbl.setText(f"{img.width}×{img.height} px")
+        self._info_lbl.setText(f'{img.width}×{img.height} px')
 
     def _refresh_image(self) -> None:
         if self._last_pixmap is None:
             return
         pix = self._last_pixmap.copy()
-
         selected = self._selected_obs()
         ctrl = self._controller()
         if ctrl and selected:
@@ -159,40 +122,28 @@ class TabScreenJudge(QWidget):
             if mapper:
                 painter = QPainter(pix)
                 for obs in selected:
-                    ax, ay = obs["arena_xy"]
+                    ax, ay = obs['arena_xy']
                     cx, cy = mapper.arena_to_client(ax, ay)
                     painter.setPen(QPen(QColor(255, 255, 0), 2))
-                    painter.drawEllipse(
-                        QPoint(cx, cy), _DOT_RADIUS, _DOT_RADIUS
-                    )
-                    painter.drawText(cx + _DOT_RADIUS + 2, cy, obs.get("name", ""))
+                    painter.drawEllipse(QPoint(cx, cy), _DOT_RADIUS, _DOT_RADIUS)
+                    painter.drawText(cx + _DOT_RADIUS + 2, cy, obs.get('name', ''))
                 painter.end()
-
         if self._pending_point:
             ctrl = self._controller()
             if ctrl:
                 mapper = ctrl.get_last_mapper()
                 if mapper:
-                    ax, ay = self._pending_point["arena_xy"]
+                    ax, ay = self._pending_point['arena_xy']
                     cx, cy = mapper.arena_to_client(ax, ay)
                     painter = QPainter(pix)
                     painter.setPen(QPen(QColor(255, 100, 100), 2))
-                    painter.drawEllipse(
-                        QPoint(cx, cy), _DOT_RADIUS, _DOT_RADIUS
-                    )
+                    painter.drawEllipse(QPoint(cx, cy), _DOT_RADIUS, _DOT_RADIUS)
                     painter.end()
-
-        scaled = pix.scaled(
-            self._img_lbl.width(),
-            self._img_lbl.height(),
-            Qt.AspectRatioMode.KeepAspectRatio,
-            Qt.TransformationMode.SmoothTransformation,
-        )
+        scaled = pix.scaled(self._img_lbl.width(), self._img_lbl.height(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
         self._img_lbl.setPixmap(scaled)
 
     def _set_placeholder(self) -> None:
-        self._img_lbl.setText("「キャプチャ」ボタンを押すと画像が表示されます")
-
+        self._img_lbl.setText('「キャプチャ」ボタンを押すと画像が表示されます')
 
     def _on_image_click(self, label_pos: QPoint) -> None:
         if self._last_pixmap is None:
@@ -203,7 +154,6 @@ class TabScreenJudge(QWidget):
         mapper = ctrl.get_last_mapper()
         if mapper is None:
             return
-
         pix = self._last_pixmap
         lw = self._img_lbl.width()
         lh = self._img_lbl.height()
@@ -220,35 +170,23 @@ class TabScreenJudge(QWidget):
         oy = (lh - disp_h) // 2
         rx = label_pos.x() - ox
         ry = label_pos.y() - oy
-        if rx < 0 or ry < 0 or rx >= disp_w or ry >= disp_h:
+        if rx < 0 or ry < 0 or rx >= disp_w or (ry >= disp_h):
             return
         cx = round(rx * pw / disp_w)
         cy = round(ry * ph / disp_h)
-
         img = ctrl.get_last_capture()
         if img is None:
             return
         r, g, b = img.getpixel((min(cx, pw - 1), min(cy, ph - 1)))
-
         ax, ay = mapper.client_to_arena(cx, cy)
-
-        existing_names = {p.get("name", "") for p in self._obs_points}
+        existing_names = {p.get('name', '') for p in self._obs_points}
         i = len(self._obs_points) + 1
-        while f"obs_{i}" in existing_names:
+        while f'obs_{i}' in existing_names:
             i += 1
-        self._pending_point = {
-            "name": f"obs_{i}",
-            "arena_xy": [ax, ay],
-            "expected_rgb": [r, g, b],
-            "tolerance": 20,
-            "purpose": "",
-        }
+        self._pending_point = {'name': f'obs_{i}', 'arena_xy': [ax, ay], 'expected_rgb': [r, g, b], 'tolerance': 20, 'purpose': ''}
         self._save_obs_btn.setEnabled(True)
-        self._info_lbl.setText(
-            f"Arena({ax},{ay})  RGB({r},{g},{b})  クライアント({cx},{cy})"
-        )
+        self._info_lbl.setText(f'Arena({ax},{ay})  RGB({r},{g},{b})  クライアント({cx},{cy})')
         self._refresh_image()
-
 
     def _save_pending_point(self) -> None:
         if self._pending_point is None:
@@ -270,12 +208,12 @@ class TabScreenJudge(QWidget):
         for obs in self._obs_points:
             row = self._obs_table.rowCount()
             self._obs_table.insertRow(row)
-            ax, ay = obs["arena_xy"]
-            r, g, b = obs["expected_rgb"]
-            self._obs_table.setItem(row, 0, QTableWidgetItem(obs.get("name", "")))
-            self._obs_table.setItem(row, 1, QTableWidgetItem(f"({ax},{ay})"))
-            self._obs_table.setItem(row, 2, QTableWidgetItem(f"({r},{g},{b})"))
-            self._obs_table.setItem(row, 3, QTableWidgetItem(str(obs.get("tolerance", 20))))
+            ax, ay = obs['arena_xy']
+            r, g, b = obs['expected_rgb']
+            self._obs_table.setItem(row, 0, QTableWidgetItem(obs.get('name', '')))
+            self._obs_table.setItem(row, 1, QTableWidgetItem(f'({ax},{ay})'))
+            self._obs_table.setItem(row, 2, QTableWidgetItem(f'({r},{g},{b})'))
+            self._obs_table.setItem(row, 3, QTableWidgetItem(str(obs.get('tolerance', 20))))
 
     def _selected_obs(self) -> list[dict]:
         rows = {idx.row() for idx in self._obs_table.selectedIndexes()}
@@ -290,17 +228,14 @@ class TabScreenJudge(QWidget):
         ctrl = self._controller()
         if ctrl is None:
             return
-        rows = sorted(
-            {idx.row() for idx in self._obs_table.selectedIndexes()}, reverse=True
-        )
+        rows = sorted({idx.row() for idx in self._obs_table.selectedIndexes()}, reverse=True)
         for r in rows:
             if r < len(self._obs_points):
-                name = self._obs_points[r].get("name", "")
+                name = self._obs_points[r].get('name', '')
                 ctrl.get_registry().delete(name)
         self._obs_points = ctrl.get_registry().all()
         self._rebuild_obs_table()
         self._refresh_image()
-
 
     def _on_live_toggled(self, checked: bool) -> None:
         if checked:
@@ -309,12 +244,10 @@ class TabScreenJudge(QWidget):
         else:
             self._live_timer.stop()
 
-
     def resizeEvent(self, ev) -> None:
         super().resizeEvent(ev)
         if self._last_pixmap is not None:
             self._refresh_image()
-
 
     def get_obs_points(self) -> list[dict]:
         return list(self._obs_points)

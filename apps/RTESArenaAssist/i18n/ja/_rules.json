@@ -1,5 +1,50 @@
 {
   "_comment": "言語別処理ルール(翻訳でない)。翻訳ローダは _ 接頭辞ファイルを無視する。",
+  "npc_desc_nouns": [
+    {"en": "figure", "value": "人物"},
+    {"en": "character", "value": "人物"},
+    {"en": "individual", "value": "人物"},
+    {"en": "person", "value": "人"},
+    {"en": "aristocrat", "value": "上流貴族"},
+    {"en": "fellow", "value": "男"},
+    {"en": "man", "value": "男"},
+    {"en": "woman", "value": "女"},
+    {"en": "lady", "value": "婦人"}
+  ],
+  "npc_desc_advs": [
+    {"en": "rather", "value": "いくぶん"},
+    {"en": "very", "value": "とても"},
+    {"en": "slightly", "value": "わずかに"},
+    {"en": "highly", "value": "非常に"},
+    {"en": "notably", "value": "著しく"},
+    {"en": "remarkably", "value": "驚くほど"},
+    {"en": "surpassingly", "value": "並外れて"},
+    {"en": "singularly", "value": "とりわけ"}
+  ],
+  "npc_desc_adjs": [
+    {"en": "mysterious", "value": "謎めいた"},
+    {"en": "influential", "value": "影響力のある"},
+    {"en": "impatient", "value": "短気な"},
+    {"en": "aggressive", "value": "攻撃的な"},
+    {"en": "peculiar", "value": "風変わりな"},
+    {"en": "enigmatic", "value": "不可解な"},
+    {"en": "wealthy", "value": "裕福な"},
+    {"en": "well-known", "value": "有名な"}
+  ],
+  "npc_desc_titles": [
+    {"en": "Rogue", "value": "ならず者"},
+    {"en": "Old", "value": "老"},
+    {"en": "Mad", "value": "狂える"},
+    {"en": "Lord", "value": "卿"},
+    {"en": "Sir", "value": "卿"},
+    {"en": "Master", "value": "師"},
+    {"en": "Brother", "value": "修道士"},
+    {"en": "Father", "value": "神父"},
+    {"en": "Lady", "value": "夫人"},
+    {"en": "Mistress", "value": "女主人"},
+    {"en": "Sister", "value": "修道女"},
+    {"en": "Mother", "value": "修道院長"}
+  ],
   "text_corrections": [
     {
       "id": "title_postposition_singleword",
