@@ -851,11 +851,21 @@ def _translate_travel_estimate(text: str, lang: str='ja') -> str | None:
         km = g['km']
         return f'{prov_ja}地方の{loc_ja}。日付は{date1_ja}。現在の天候から、移動に{days}日かかる。総距離は{km} km。到着予定は{date2_ja}。'
     return None
+_TRAVEL_ESTIMATE_SHAPE_RE = re.compile('^\\s*(?:The\\s+.+?\\s+of\\s+.+?\\s+in\\s+.+?\\s+Province\\.|.+?\\s+in\\s+.+?\\s+Province\\.|The\\s+.+?\\s+in\\s+the\\s+.+?\\.)\\s+The\\s+date\\s+is\\s+.+?\\s+Based\\s+on\\s+the\\s+current\\s+weather,\\s+it\\s+will\\s+take\\s+\\d+\\s+days?\\s+to\\s+travel\\s+here\\.\\s+The\\s+total\\s+distance\\s+is\\s+[\\d,]+\\s*km\\.\\s+You\\s+should\\s+arrive\\s+by\\s+.+\\s*$', re.IGNORECASE)
+
+def _looks_like_travel_estimate(text: str) -> bool:
+    if not text:
+        return False
+    flat = ' '.join(text.replace('\r', ' ').split())
+    return bool(_TRAVEL_ESTIMATE_SHAPE_RE.match(flat))
 
 def is_travel_estimate(text: str) -> bool:
     if not text:
         return False
-    return _translate_travel_estimate(' '.join(text.split()), 'ja') is not None
+    flat = ' '.join(text.replace('\r', ' ').split())
+    if _looks_like_travel_estimate(flat):
+        return True
+    return _translate_travel_estimate(flat, 'ja') is not None
 _TRAVEL_LOC_RE_CACHE: dict[str, object] = {}
 
 def _build_travel_loc_res() -> list[tuple]:
