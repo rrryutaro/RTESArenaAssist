@@ -1,7 +1,7 @@
 {
   "schema": "rtesaa.source_id_map",
   "schema_version": 2,
-  "registry_hash": "sha256:f2fd3d7b1097a6d8449c958ac13caf6aff2e8543886176fd9a2927ff2112e558",
+  "registry_hash": "sha256:2faec655bbaaf303e05b7a01cd48ec0b680368790ac3bfa43b7e010e3a11d4b8",
   "map": {
     "aexe:akey:A001.0": [
       111871
@@ -1916,6 +1916,117 @@
     "aexe:menu:travel_places:8": [
       400012
     ],
+    "aexe:quests:delivery_quest_item_names:0": [
+      106187
+    ],
+    "aexe:quests:delivery_quest_item_names:1": [
+      106189
+    ],
+    "aexe:quests:delivery_quest_item_names:10": [
+      106159
+    ],
+    "aexe:quests:delivery_quest_item_names:11": [
+      106160
+    ],
+    "aexe:quests:delivery_quest_item_names:12": [
+      106161
+    ],
+    "aexe:quests:delivery_quest_item_names:13": [
+      106162
+    ],
+    "aexe:quests:delivery_quest_item_names:14": [
+      106163
+    ],
+    "aexe:quests:delivery_quest_item_names:15": [
+      106164
+    ],
+    "aexe:quests:delivery_quest_item_names:16": [
+      106165
+    ],
+    "aexe:quests:delivery_quest_item_names:18": [
+      106166
+    ],
+    "aexe:quests:delivery_quest_item_names:19": [
+      106167
+    ],
+    "aexe:quests:delivery_quest_item_names:2": [
+      106190
+    ],
+    "aexe:quests:delivery_quest_item_names:23": [
+      106168
+    ],
+    "aexe:quests:delivery_quest_item_names:24": [
+      106169
+    ],
+    "aexe:quests:delivery_quest_item_names:25": [
+      106170
+    ],
+    "aexe:quests:delivery_quest_item_names:26": [
+      106171
+    ],
+    "aexe:quests:delivery_quest_item_names:27": [
+      106172
+    ],
+    "aexe:quests:delivery_quest_item_names:28": [
+      106173
+    ],
+    "aexe:quests:delivery_quest_item_names:29": [
+      106174
+    ],
+    "aexe:quests:delivery_quest_item_names:3": [
+      106191
+    ],
+    "aexe:quests:delivery_quest_item_names:31": [
+      106175
+    ],
+    "aexe:quests:delivery_quest_item_names:32": [
+      106176
+    ],
+    "aexe:quests:delivery_quest_item_names:33": [
+      106177
+    ],
+    "aexe:quests:delivery_quest_item_names:34": [
+      106178
+    ],
+    "aexe:quests:delivery_quest_item_names:35": [
+      106179
+    ],
+    "aexe:quests:delivery_quest_item_names:36": [
+      106180
+    ],
+    "aexe:quests:delivery_quest_item_names:37": [
+      106181
+    ],
+    "aexe:quests:delivery_quest_item_names:38": [
+      106182
+    ],
+    "aexe:quests:delivery_quest_item_names:39": [
+      106183
+    ],
+    "aexe:quests:delivery_quest_item_names:41": [
+      106184
+    ],
+    "aexe:quests:delivery_quest_item_names:42": [
+      106185
+    ],
+    "aexe:quests:delivery_quest_item_names:43": [
+      106186
+    ],
+    "aexe:quests:delivery_quest_item_names:44": [
+      106188
+    ],
+    "aexe:quests:delivery_quest_item_names:5": [
+      106192
+    ],
+    "aexe:quests:delivery_quest_item_names:6": [
+      106193
+    ],
+    "aexe:quests:delivery_quest_item_names:8": [
+      106157
+    ],
+    "aexe:quests:delivery_quest_item_names:9": [
+      106158
+    ],
     "aexe:quests:main_quest_item_names:0": [
       106118
     ],
@@ -2015,6 +2126,30 @@
     ],
     "aexe:status:war_peace:1": [
       412000
+    ],
+    "aexe:travel:arrival_date_prediction:0": [
+      211000
+    ],
+    "aexe:travel:arrival_popup_date:0": [
+      211001
+    ],
+    "aexe:travel:day_prediction:0": [
+      211002
+    ],
+    "aexe:travel:day_prediction:1": [
+      211003
+    ],
+    "aexe:travel:distance_prediction:0": [
+      211004
+    ],
+    "aexe:travel:location_format_texts:0": [
+      211005
+    ],
+    "aexe:travel:location_format_texts:1": [
+      211006
+    ],
+    "aexe:travel:location_format_texts:2": [
+      211007
     ],
     "armor_prefix:chain": [
       105001

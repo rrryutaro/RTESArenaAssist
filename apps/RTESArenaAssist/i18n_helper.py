@@ -16,6 +16,8 @@ _rules_cache: dict[str, dict[str, Any]] = {}
 _original_merged: dict[str, str] = {}
 _originals_by_cat: dict[str, dict[str, Any]] = {}
 _value_index: dict[str, dict[str, str]] = {}
+_PUBLIC_RUNTIME = False
+_PUBLIC_RUNTIME_EN_FILES = frozenset({'ui_app.json', 'ui.json', 'setup.json'})
 try:
     from PySide6.QtCore import QObject, Signal
 
@@ -36,7 +38,7 @@ _V2_SECTION_INDEX: dict = {}
 _V2_DEGRADED_ACCEPTED: dict = {}
 _V2_LOCALE_TAG = {'ja': 'ja-JP', 'en': 'en-US', 'es': 'es-ES'}
 _PHASE5_VALUE_SAFE = frozenset({'calendar', 'chargen_race_descriptions', 'classes', 'equipment_suffixes', 'item_enchantments', 'location_types', 'protect_locations', 'races', 'spells', 'titles', 'template_dat_building_entry'})
-_PHASE5_ITERATOR_SAFE = frozenset({'npc_dialog', 'npc_name_chunks'})
+_PHASE5_ITERATOR_SAFE = frozenset({'npc_dialog', 'npc_name_chunks', 'travel'})
 _PHASE5_DEGRADED_COMPLETE = frozenset({'pronouns', 'npc_traits', 'relations', 'descriptors', 'status_terms'})
 _PHASE5_MIXED_COMPLETE = frozenset({'mages', 'item_materials'})
 _PHASE5_LIVE_SURFACE_PENDING = frozenset({'ask_about_menu', 'dungeon_messages', 'eras', 'gods', 'placeholder_values', 'pregame_intro', 'status_buffer_text', 'ui'})
@@ -351,9 +353,11 @@ def merge_user_observations(user_dir: str) -> int:
         _v2_clear_surface_caches()
     return len(obs)
 
-def init(base_dir: str, lang: str | None=None) -> None:
+def init(base_dir: str, lang: str | None=None, *, public_runtime: bool=False) -> None:
+    global _PUBLIC_RUNTIME
     global _BASE_DIR, _I18N_DIR, _lang_cache, _lang_raw_cache, _rules_cache
     global _originals_by_cat, _value_index
+    _PUBLIC_RUNTIME = bool(public_runtime)
     _BASE_DIR = base_dir
     _I18N_DIR = os.path.join(base_dir, 'i18n')
     _lang_cache = {}
@@ -366,7 +370,22 @@ def init(base_dir: str, lang: str | None=None) -> None:
     resolved = _resolve_initial_lang(lang)
     _set_active(resolved)
 
+def public_runtime_enabled() -> bool:
+    return _PUBLIC_RUNTIME
+
+def _public_runtime_allows_i18n_path(parts: tuple[str, ...]) -> bool:
+    if not _PUBLIC_RUNTIME or not parts:
+        return True
+    head = parts[0]
+    if head == '_original':
+        return False
+    if head == 'en' and len(parts) >= 2:
+        return parts[1] in _PUBLIC_RUNTIME_EN_FILES
+    return True
+
 def _i18n_read_text(*parts: str) -> 'str | None':
+    if not _public_runtime_allows_i18n_path(tuple(parts)):
+        return None
     try:
         with open(os.path.join(_I18N_DIR, *parts), encoding='utf-8') as f:
             return f.read()
@@ -379,16 +398,27 @@ def _i18n_read_text(*parts: str) -> 'str | None':
         return None
 
 def _i18n_listdir(*parts: str) -> list[str]:
+    if not _public_runtime_allows_i18n_path(tuple(parts)):
+        return []
     d = os.path.join(_I18N_DIR, *parts) if parts else _I18N_DIR
     if os.path.isdir(d):
-        return sorted(os.listdir(d))
-    try:
-        import app_resources
-        return app_resources.listdir('/'.join(('i18n',) + parts))
-    except Exception:
-        return []
+        try:
+            names = sorted(os.listdir(d))
+        except OSError:
+            names = []
+    else:
+        try:
+            import app_resources
+            names = app_resources.listdir('/'.join(('i18n',) + parts))
+        except Exception:
+            names = []
+    if _PUBLIC_RUNTIME and len(parts) == 1 and (parts[0] == 'en'):
+        return [name for name in names if name in _PUBLIC_RUNTIME_EN_FILES]
+    return names
 
 def _i18n_isdir(*parts: str) -> bool:
+    if not _public_runtime_allows_i18n_path(tuple(parts)):
+        return False
     if os.path.isdir(os.path.join(_I18N_DIR, *parts) if parts else _I18N_DIR):
         return True
     try:
@@ -426,6 +456,8 @@ def _load_originals() -> None:
     global _original_merged, _originals_by_cat
     _original_merged = {}
     _originals_by_cat = {}
+    if _PUBLIC_RUNTIME:
+        return
     _load_originals_from_disk()
 
 def _load_originals_from_disk() -> None:

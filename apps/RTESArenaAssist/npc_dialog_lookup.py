@@ -19,6 +19,9 @@ def _ph_direct_id(name: str, value: str) -> str | None:
     import i18n_helper as i18n
     return i18n.text_opt(f'placeholder_values.%{name}.{_ph_slug(value)}.0')
 
+def _clean_placeholder_value(value: str) -> str:
+    return (value or '').strip().rstrip(',.;:')
+
 def _load_closed_ph() -> None:
     global _CLOSED_PH_LOADED
     if _CLOSED_PH_LOADED:
@@ -142,6 +145,23 @@ def _lookup_key_material(value: str) -> str | None:
             return translated
     folded = {k.casefold(): v for k, v in _KEY_MATERIALS.items()}
     return folded.get(material.casefold()) or folded.get(value.strip().casefold())
+
+def _translate_quest_item(value: str, lang: str) -> str | None:
+    if lang == 'en':
+        return value
+    clean = _clean_placeholder_value(value)
+    if not clean:
+        return None
+    import i18n_helper as i18n
+    candidates = []
+    for candidate in (clean, clean.title(), clean.capitalize()):
+        if candidate not in candidates:
+            candidates.append(candidate)
+    for candidate in candidates:
+        translated = i18n.value_by_surface('items', candidate, section='quest_items')
+        if translated is not None:
+            return translated
+    return None
 _PP_RULES: dict[str, dict[str, list[tuple[re.Pattern, str]]]] = {}
 _I18N_RUNTIME_SIGNATURE: tuple | None = None
 
@@ -170,7 +190,8 @@ def _reset_i18n_bound_caches() -> None:
     global _TRAIT_VALUES, _TRAITS_LOADED, _DRINKS_VALUES, _DRINKS_LOADED
     global _ROOMS_VALUES, _ROOMS_LOADED, _ITEMS_FLAT, _ITEMS_FLAT_LOADED
     global _KEY_MATERIALS, _KEY_MATERIALS_LOADED, _PP_RULES
-    global _EXACT_ORIGINALS, _CALENDAR_WEEKDAYS, _CALENDAR_MONTHS, _CALENDAR_LOADED
+    global _EXACT_ORIGINALS, _CALENDAR_WEEKDAYS, _CALENDAR_MONTHS
+    global _CALENDAR_HOLIDAYS, _CALENDAR_LOADED
     global _TRAVEL_RE_CACHE, _TRAVEL_LOC_RE_CACHE
     _COMPILED = []
     _LOADED = False
@@ -195,6 +216,7 @@ def _reset_i18n_bound_caches() -> None:
     _EXACT_ORIGINALS = []
     _CALENDAR_WEEKDAYS = {}
     _CALENDAR_MONTHS = {}
+    _CALENDAR_HOLIDAYS = {}
     _CALENDAR_LOADED = False
     _TRAVEL_RE_CACHE = {}
     _TRAVEL_LOC_RE_CACHE = {}
@@ -443,6 +465,7 @@ def _load_traits() -> None:
     _TRAITS_LOADED = True
 _CALENDAR_WEEKDAYS: dict[str, dict[str, str]] = {}
 _CALENDAR_MONTHS: dict[str, dict[str, str]] = {}
+_CALENDAR_HOLIDAYS: dict[str, dict[str, str]] = {}
 _CALENDAR_LOADED = False
 
 def _load_calendar() -> None:
@@ -452,20 +475,37 @@ def _load_calendar() -> None:
     import i18n_helper as i18n
     lang = i18n.current_lang()
     try:
-        for id_, e in i18n.originals('calendar').items():
-            if not isinstance(e, dict):
-                continue
-            cat = e.get('category', '')
-            en = e.get('original', '')
+        entries: list[tuple[str, str, str, str | None]] = []
+        if i18n.v2_public_enabled('calendar'):
+            for entry in i18n.v2_category_entries('calendar'):
+                en = (entry.get('original') or '').strip()
+                ja = entry.get('text') or ''
+                sid = entry.get('source_id') or ''
+                if 'weekday_names' in sid:
+                    entries.append(('weekday', en, ja, None))
+                elif 'month_names' in sid:
+                    entries.append(('month', en, ja, None))
+                elif 'holiday_names' in sid:
+                    entries.append(('holiday', en, ja, None))
+        else:
+            for id_, e in i18n.originals('calendar').items():
+                if not isinstance(e, dict):
+                    continue
+                cat = e.get('category', '')
+                en = e.get('original', '')
+                ja = i18n.text(id_)
+                entries.append((cat, en, ja, id_))
+        for cat, en, ja, id_ in entries:
             if not en:
                 continue
-            ja = i18n.text(id_)
-            if not ja or ja == id_:
+            if not ja or (id_ is not None and ja == id_):
                 continue
             if cat == 'weekday':
                 _CALENDAR_WEEKDAYS[en] = {lang: ja}
             elif cat == 'month':
                 _CALENDAR_MONTHS[en] = {lang: ja}
+            elif cat == 'holiday':
+                _CALENDAR_HOLIDAYS[en] = {lang: ja}
     except (OSError, json.JSONDecodeError):
         pass
     _CALENDAR_LOADED = True
@@ -496,6 +536,23 @@ def _translate_date(value: str, lang: str) -> str:
         month_ja = _CALENDAR_MONTHS.get(month_en, {}).get(lang, month_en)
         return f'{weekday_ja}、{month_ja} {day_str} 日'
     return value
+
+def _translate_calendar_label(value: str, lang: str) -> str:
+    if lang == 'en':
+        return value
+    _load_calendar()
+    text = value.strip()
+    return _CALENDAR_HOLIDAYS.get(text, {}).get(lang, value)
+
+def _translate_nested_npc_dialog(value: str, lang: str) -> str:
+    if lang == 'en':
+        return value
+    normalized = ' '.join(value.split())
+    result = lookup(normalized)
+    if result is None:
+        return value
+    ja_template, placeholders = result
+    return format_japanese(ja_template, placeholders, lang)
 
 def _translate_static_place(value: str, lang: str) -> str:
     if lang == 'en':
@@ -673,8 +730,19 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
                 if translated:
                     return translated
         return value
-    if name in ('cp', 'cll', 'ccs', 'rcn'):
+    if name in ('cp', 'cll', 'ccs', 'rcn', 'cn2'):
         return _translate_static_place(value, lang)
+    if name == 'st':
+        if lang == 'en':
+            return value
+        import i18n_helper as i18n
+        return i18n.value_in('status_terms', value.lower(), lang) or i18n.value_in('status_terms', value, lang) or value
+    if name == 'nh':
+        return _translate_calendar_label(value, lang)
+    if name == 'nhd':
+        return _translate_date(value, lang)
+    if name == 'hod':
+        return _translate_nested_npc_dialog(value, lang)
     if name == 'nt':
         return _translate_nt(value, lang)
     if name == 'ds':
@@ -686,10 +754,20 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
             return value
         return _translate_date(value, lang)
     if name == 'omq':
-        return value
+        translated = _translate_quest_item(value, lang)
+        return translated if translated is not None else value
     if name == 'r':
         import i18n_helper as i18n
-        return i18n.value_in('relations', value.lower(), lang) or value
+        key = _clean_placeholder_value(value).lower()
+        direct = i18n.value_in('relations', key, lang)
+        if direct is not None:
+            return direct
+        parts = key.split()
+        if parts:
+            base = i18n.value_in('relations', parts[-1], lang)
+            if base is not None:
+                return base
+        return value
     if name in ('g', 'g2', 'g3'):
         _load_ph()
         result = _PH_VALUES.get((name, value), {}).get(lang)
@@ -702,7 +780,7 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
         return i18n.value_in('pronouns', value.lower(), lang) or value
     if name in ('fq', 'ne'):
         if lang != 'en':
-            return translate_generated_name(value, lang)
+            return translate_generated_name(_clean_placeholder_value(value), lang)
         return value
     if name == 'o':
         return value
@@ -745,6 +823,7 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
     return value
 _ARRIVAL_RE = re.compile('^You have arrived in (?P<loc>.+?) in (?P<prov>.+?) Province\\.\\s*The date is (?P<date>.+?)\\s+It took (?P<days>\\d+) days? to reach your goal\\.\\s*(?P<flavor>.*)$', re.DOTALL)
 _SETTLEMENT_RE = re.compile('^The (?P<type>Village|Town|City-State|City) of (?P<name>.+)$')
+_SETTLEMENT_TYPE_IDS = {'Village': 'settlement_types.0.0', 'Town': 'settlement_types.1.0', 'City': 'settlement_types.2.0', 'City-State': 'settlement_types.3.0'}
 
 def _translate_settlement_location(loc: str, lang: str) -> str:
     if lang == 'en':
@@ -753,7 +832,8 @@ def _translate_settlement_location(loc: str, lang: str) -> str:
     m = _SETTLEMENT_RE.match(loc.strip())
     if not m:
         return _translate_static_place(loc.strip(), lang)
-    type_ja = i18n.value_in('settlement_types', m.group('type'), lang) or m.group('type')
+    loc_type = m.group('type')
+    type_ja = i18n.value_in('location_types', loc_type, lang) or i18n.value_in('settlement_types', loc_type, lang) or i18n.lang_value_in(_SETTLEMENT_TYPE_IDS.get(loc_type, ''), lang) or loc_type
     name_ja = _translate_static_place(m.group('name').strip(), lang)
     return f'{type_ja}「{name_ja}」'
 
@@ -795,9 +875,26 @@ def _frag_to_regex(norm_fmt: str, groups: list[str]) -> str:
 def _norm_fmt(s: str) -> str:
     return ' '.join(s.replace('\r', ' ').split())
 
-def _build_travel_res() -> list[tuple]:
+def _load_travel_originals() -> dict:
     import i18n_helper as i18n
-    orig = i18n.originals('travel')
+    if i18n.v2_public_enabled('travel'):
+        out: dict[str, dict[str, str]] = {}
+        prefix = 'aexe:travel:'
+        for entry in i18n.v2_category_entries('travel'):
+            sid = entry.get('source_id') or ''
+            original = entry.get('original') or ''
+            if not sid.startswith(prefix) or not original:
+                continue
+            parts = sid[len(prefix):].split(':')
+            if len(parts) != 2 or not parts[1].isdigit():
+                continue
+            out[f'{parts[0]}.{parts[1]}'] = {'original': original}
+        if out:
+            return out
+    return i18n.originals('travel')
+
+def _build_travel_res() -> list[tuple]:
+    orig = _load_travel_originals()
     if not orig:
         return []
 
@@ -869,8 +966,7 @@ def is_travel_estimate(text: str) -> bool:
 _TRAVEL_LOC_RE_CACHE: dict[str, object] = {}
 
 def _build_travel_loc_res() -> list[tuple]:
-    import i18n_helper as i18n
-    orig = i18n.originals('travel')
+    orig = _load_travel_originals()
     if not orig:
         return []
 

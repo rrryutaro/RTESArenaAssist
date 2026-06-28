@@ -1,12 +1,6 @@
 from __future__ import annotations
-import os
-from cif_decoder import decode_cif_frames_with_offsets, load_col
-from img_decoder import decode_img
-_HERE = os.path.dirname(os.path.abspath(__file__))
-_CIF_DIR = os.path.normpath(os.path.join(_HERE, '..', '..', 'docs', 'ARENA-data', 'CIF'))
-_OTHER_CIF_DIR = os.path.normpath(os.path.join(_HERE, '..', '..', 'docs', 'ARENA-data', 'Other', 'CIF'))
-_IMG_DIR = os.path.normpath(os.path.join(_HERE, '..', '..', 'docs', 'ARENA-data', 'IMG'))
-_CHAR_COL = os.path.normpath(os.path.join(_HERE, '..', '..', 'docs', 'ARENA-data', 'Other', 'CHARSHT.COL'))
+from cif_decoder import decode_cif_frames_with_offsets_bytes, load_col_bytes
+from img_decoder import decode_img_bytes
 W, H = (320, 200)
 BODY_X = 170
 BODY_Y = 0
@@ -34,13 +28,27 @@ def _equip_frame_index(item: dict) -> int | None:
 def _equip_render_priority(item: dict) -> int:
     return _EQUIP_Z.get(item.get('item_type', ''), 99)
 
+def _read_asset_bytes(name: str) -> bytes | None:
+    try:
+        from runtime_paths import install_vfs
+        vfs = install_vfs()
+        if vfs is not None:
+            return vfs.read(name)
+    except Exception:
+        pass
+    return None
+
+def _require_asset_bytes(name: str) -> bytes:
+    data = _read_asset_bytes(name)
+    if data is None:
+        raise FileNotFoundError(name)
+    return data
+
 def _img_with_header(filename: str) -> tuple[int, int, int, int, bytes]:
-    path = os.path.join(_IMG_DIR, filename)
-    with open(path, 'rb') as f:
-        data = f.read()
+    data = _require_asset_bytes(filename)
     x_off = data[0] | data[1] << 8
     y_off = data[2] | data[3] << 8
-    w, h, pixels, _pal = decode_img(path)
+    w, h, pixels, _pal = decode_img_bytes(data, filename)
     return (w, h, x_off, y_off, pixels)
 
 def _blit(dst: bytearray, dst_w: int, dst_h: int, src: bytes, src_w: int, src_h: int, x: int, y: int, transparent: int=0) -> None:
@@ -59,14 +67,15 @@ def _blit(dst: bytearray, dst_w: int, dst_h: int, src: bytes, src_w: int, src_h:
 
 def build_status_composite(race: int, is_female: bool, face_idx: int, is_magic_class: bool=False, equipped_items: list[dict] | None=None) -> tuple[bytes, list[tuple[int, int, int]]]:
     prefix_bk = 'CHRBKF' if is_female else 'CHARBK'
-    bk_path = os.path.join(_IMG_DIR, f'{prefix_bk}0{race}.IMG')
-    bk_w, bk_h, bk_pix, bk_pal = decode_img(bk_path)
+    bk_name = f'{prefix_bk}0{race}.IMG'
+    bk_w, bk_h, bk_pix, bk_pal = decode_img_bytes(_require_asset_bytes(bk_name), bk_name)
     assert bk_w == W and bk_h == H, f'unexpected CHARBK size {bk_w}×{bk_h}'
     canvas = bytearray(bk_pix)
-    palette = bk_pal if bk_pal else load_col(_CHAR_COL)
-    head_cif = os.path.join(_CIF_DIR, f"FACES{('F' if is_female else '')}1{race}.CIF")
-    if os.path.isfile(head_cif):
-        head_frames = decode_cif_frames_with_offsets(head_cif)
+    palette = bk_pal if bk_pal else load_col_bytes(_require_asset_bytes('CHARSHT.COL'))
+    head_name = f"FACES{('F' if is_female else '')}1{race}.CIF"
+    head_data = _read_asset_bytes(head_name)
+    if head_data is not None:
+        head_frames = decode_cif_frames_with_offsets_bytes(head_data)
         if 0 <= face_idx < len(head_frames):
             hw, hh, hx, hy, hp = head_frames[face_idx]
             _blit(canvas, W, H, hp, hw, hh, hx, hy)
@@ -80,9 +89,10 @@ def build_status_composite(race: int, is_female: bool, face_idx: int, is_magic_c
     sw, sh, sx, sy, sp = _img_with_header(s_name)
     _blit(canvas, W, H, sp, sw, sh, sx, sy)
     if equipped_items:
-        equip_cif = os.path.join(_CIF_DIR, '1EQUIP.CIF') if is_female else os.path.join(_OTHER_CIF_DIR, '0EQUIP.CIF')
-        if os.path.isfile(equip_cif):
-            equip_frames = decode_cif_frames_with_offsets(equip_cif)
+        equip_name = '1EQUIP.CIF' if is_female else '0EQUIP.CIF'
+        equip_data = _read_asset_bytes(equip_name)
+        if equip_data is not None:
+            equip_frames = decode_cif_frames_with_offsets_bytes(equip_data)
             sorted_items = sorted((it for it in equipped_items if it.get('equipped')), key=_equip_render_priority)
             for item in sorted_items:
                 frame_idx = _equip_frame_index(item)

@@ -1,5 +1,4 @@
 from __future__ import annotations
-import os
 import re
 
 def _template_ja(idx: int) -> str | None:
@@ -14,15 +13,6 @@ def _parse_spellmkr(data: str) -> dict[int, str]:
     return out
 
 def _en_templates() -> dict[int, str]:
-    loose = os.path.join(os.path.dirname(__file__), '..', '..', 'docs', 'ARENA-data', 'TXT', 'SPELLMKR.TXT')
-    try:
-        if os.path.isfile(loose):
-            with open(loose, 'r', encoding='latin-1') as f:
-                out = _parse_spellmkr(f.read())
-            if out:
-                return out
-    except OSError:
-        pass
     try:
         from runtime_paths import install_vfs
         vfs = install_vfs()

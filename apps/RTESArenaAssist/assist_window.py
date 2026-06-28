@@ -128,7 +128,7 @@ class AssistWindow(QMainWindow):
             self._reading_highlighter = ReadingHighlighter(self)
 
             def _hl_target(full, cur, prefetched, _w=self):
-                for _attr in ('_tab_translate', '_layout_translate_panel', '_tab_log'):
+                for _attr in ('_tab_translate', '_layout_translate_panel', '_tab_log', '_tab_journal'):
                     _wid = getattr(_w, _attr, None)
                     if _wid is not None and hasattr(_wid, 'highlight_reading'):
                         try:

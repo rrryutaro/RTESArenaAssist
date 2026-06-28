@@ -1,8 +1,14 @@
 from __future__ import annotations
 from collections import OrderedDict
+import re
 import assist_settings as settings
 import i18n_helper as i18n
 _ROLE_SETTING = {'situation': 'tts_target_situation', 'conversation': 'tts_target_conversation'}
+_LOG_MEANINGFUL_RE = re.compile('[0-9A-Za-z\\u3040-\\u30ff\\u3400-\\u9fff]')
+
+def _is_loggable_text(text: str) -> bool:
+    s = (text or '').strip()
+    return bool(s and _LOG_MEANINGFUL_RE.search(s))
 
 class TranslationFeed:
 
@@ -15,14 +21,14 @@ class TranslationFeed:
         self._spoken_keys: 'OrderedDict[tuple[str | None, str], None]' = OrderedDict()
         self._speaking_owner: str | None = None
 
-    def on_translation(self, panel_owner: str, original: str, text: str, speech_role: str | None=None, speech_text: str | None=None) -> None:
+    def on_translation(self, panel_owner: str, original: str, text: str, speech_role: str | None=None, speech_text: str | None=None, log_enabled: bool=True) -> None:
         self._reset_guard_on_context_change()
         if speech_role is None:
             return
         read_text = speech_text if speech_text is not None else text
         if not read_text:
             return
-        if self._log_store is not None:
+        if log_enabled and self._log_store is not None:
             self._append_log(speech_role, read_text, original)
         if not settings.get('tts_enabled', False):
             return
@@ -119,6 +125,8 @@ class TranslationFeed:
         return getattr(w, '_log_location_hint', '') or ''
 
     def _append_log(self, category: str, text: str, original: str) -> None:
+        if not _is_loggable_text(text):
+            return
         try:
             from datetime import datetime
             ts = datetime.now().timestamp()

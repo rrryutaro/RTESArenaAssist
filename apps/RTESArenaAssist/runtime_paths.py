@@ -13,26 +13,8 @@ def repo_root() -> Path:
 def resource_path(*parts: str) -> Path:
     return app_resource_root().joinpath(*parts)
 
-def _source_arena_data_candidates() -> list[Path]:
-    root = repo_root()
-    candidates = [root / 'docs' / 'ARENA-data']
-    parts = root.parts
-    if '.claude' in parts:
-        idx = parts.index('.claude')
-        if idx > 0:
-            candidates.append(Path(*parts[:idx]) / 'docs' / 'ARENA-data')
-    return candidates
-
 def resolve_arena_data_dir() -> Path:
-    candidates = [resource_path('ARENA-data')]
-    candidates.extend(_source_arena_data_candidates())
-    for candidate in candidates:
-        try:
-            if candidate.is_dir():
-                return candidate
-        except OSError:
-            continue
-    return candidates[0]
+    return resource_path('ARENA-data')
 
 def resolve_arena_install_dir() -> Path | None:
     try:

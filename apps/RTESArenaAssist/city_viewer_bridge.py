@@ -52,20 +52,7 @@ def lookup_interior_mif(location_name: Optional[str], door_x: Optional[int], doo
 _MIF_LEVEL_COUNT_CACHE: dict[str, int] = {}
 
 def _resolve_mif_dir() -> str:
-    here = os.path.dirname(os.path.abspath(__file__))
-    repo_root = os.path.normpath(os.path.join(here, '..', '..'))
-    candidates = [os.fspath(resolve_arena_data_dir() / 'MIF')]
-    candidates.append(os.path.join(repo_root, 'docs', 'ARENA-data', 'MIF'))
-    if '.claude' in repo_root:
-        parts = repo_root.replace('\\', '/').split('/')
-        if '.claude' in parts:
-            idx = parts.index('.claude')
-            main_root = '/'.join(parts[:idx]) if not parts[0].endswith(':') else parts[0] + '/' + '/'.join(parts[1:idx])
-            candidates.append(os.path.normpath(os.path.join(main_root, 'docs', 'ARENA-data', 'MIF')))
-    for c in candidates:
-        if os.path.isdir(c):
-            return c
-    return candidates[0]
+    return os.fspath(resolve_arena_data_dir() / 'MIF')
 
 def get_mif_level_count(mif_name: Optional[str]) -> Optional[int]:
     if not mif_name:

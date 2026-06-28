@@ -440,11 +440,6 @@ def _install_vfs():
 
 def read_inf_bytes(path: str | Path) -> bytes | None:
     inf_path = Path(path)
-    try:
-        if inf_path.is_file():
-            return inf_path.read_bytes()
-    except OSError:
-        pass
     vfs = _install_vfs()
     if vfs is not None:
         data = vfs.read_inf(inf_path.name)
@@ -460,11 +455,6 @@ def _read_inf_lines(path: str | Path) -> list[str]:
 
 def read_mif_bytes(path: str | Path) -> bytes | None:
     mif_path = Path(path)
-    try:
-        if mif_path.is_file():
-            return mif_path.read_bytes()
-    except OSError:
-        pass
     vfs = _install_vfs()
     if vfs is not None:
         return vfs.read(mif_path.name)
@@ -497,11 +487,6 @@ def load_mif(mif_name: str, mif_dirs, *, player_floor: int=0, level_index_overri
 def _inf_available(name: str) -> bool:
     if not name:
         return False
-    try:
-        if (DEFAULT_INF_DIR / name).is_file():
-            return True
-    except OSError:
-        pass
     vfs = _install_vfs()
     return bool(vfs is not None and vfs.exists(name))
 

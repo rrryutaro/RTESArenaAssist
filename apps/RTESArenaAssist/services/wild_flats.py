@@ -36,10 +36,9 @@ def get_wild_flat_category_map() -> dict[int, str]:
     cat_map: dict[int, str] = {}
     for name in _WILD_INF_CANDIDATES:
         path = DEFAULT_INF_DIR / name
-        if path.is_file():
-            cat_map = build_flat_category_map(path)
-            if cat_map:
-                break
+        cat_map = build_flat_category_map(path)
+        if cat_map:
+            break
     _cached_category_map = cat_map
     return cat_map
 

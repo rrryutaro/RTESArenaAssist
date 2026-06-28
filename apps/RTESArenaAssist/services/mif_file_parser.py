@@ -207,8 +207,7 @@ def load_mif(path: str) -> MIFFile:
     except ImportError:
         data = None
     if data is None:
-        with open(path, 'rb') as f:
-            data = f.read()
+        raise FileNotFoundError(path)
     if data[0:4] != b'MHDR':
         raise ValueError(f'Not a MIF file: {path}')
     header_size = int.from_bytes(data[4:6], 'little')

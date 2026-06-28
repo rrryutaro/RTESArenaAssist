@@ -1,25 +1,15 @@
 from __future__ import annotations
 import ctypes
-import os
 import sys
 from typing import Optional
 from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QImage, QPixmap
 from PySide6.QtWidgets import QGridLayout, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QVBoxLayout, QWidget
 import i18n_helper as i18n
-_HERE = os.path.dirname(os.path.abspath(__file__))
 import cif_decoder
 import body_composite
-_CIF_DIR = os.path.normpath(os.path.join(_HERE, '..', '..', 'docs', 'ARENA-data', 'CIF'))
-_PAL_PATH = os.path.normpath(os.path.join(_HERE, '..', '..', 'docs', 'ARENA-data', 'Other', 'PAL.COL'))
 
-def _read_asset_bytes(loose_path: str, vfs_name: str) -> bytes | None:
-    try:
-        if os.path.isfile(loose_path):
-            with open(loose_path, 'rb') as f:
-                return f.read()
-    except OSError:
-        pass
+def _read_asset_bytes(vfs_name: str) -> bytes | None:
     try:
         from runtime_paths import install_vfs
         vfs = install_vfs()
@@ -67,7 +57,7 @@ class AppearanceFacesPanel(QWidget):
         self._window = None
         self._palette: list[tuple[int, int, int]] = []
         try:
-            pal_data = _read_asset_bytes(_PAL_PATH, 'PAL.COL')
+            pal_data = _read_asset_bytes('PAL.COL')
             self._palette = cif_decoder.load_col_bytes(pal_data) if pal_data else [(0, 0, 0)] * 256
         except Exception:
             self._palette = [(0, 0, 0)] * 256
@@ -210,8 +200,7 @@ class AppearanceFacesPanel(QWidget):
             return
         prefix = 'F' if is_female else ''
         cif_name = f'FACES{prefix}0{race}.CIF'
-        cif_path = os.path.join(_CIF_DIR, cif_name)
-        cif_data = _read_asset_bytes(cif_path, cif_name)
+        cif_data = _read_asset_bytes(cif_name)
         if cif_data is None:
             self._frames = []
             self._rebuild_grid()

@@ -170,7 +170,7 @@ class UiRouter:
             if not intent.keep_owner:
                 self._window._panel_owner = intent.panel_owner
             return
-        if intent.kind in ('clear', 'claim_owner', 'shop_buy_list', 'facility_list', 'item_pickup_list', 'load_screen_slots', 'equipment_list', 'spell_detail', 'place_list', 'travel_table'):
+        if intent.kind in ('clear', 'claim_owner', 'shop_buy_list', 'facility_list', 'item_pickup_list', 'load_screen_slots', 'equipment_list', 'spell_detail', 'place_list', 'travel_table', 'journal_entries'):
             self._window._panel_owner = intent.panel_owner
 
     def update_translation(self, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None) -> None:
@@ -289,7 +289,25 @@ class UiRouter:
                 if self._obs_last_key != _obs_key:
                     self._obs_last_key = _obs_key
                     try:
-                        self._translation_observer(_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text)
+                        self._translation_observer(_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.log_enabled)
+                    except Exception:
+                        _log.exception('translation_observer failed')
+            return
+        if intent.kind == 'journal_entries':
+            try:
+                w._tab_translate.update_journal_entries(intent.items or [])
+            except AttributeError:
+                pass
+            if w._layout_translate_panel is not None:
+                w._layout_translate_panel.update_translation(intent.panel_en or '', intent.panel_ja or '')
+            w._panel_owner = intent.panel_owner
+            if self._translation_observer is not None and intent.speech_role:
+                _obs_owner = intent.panel_owner or self.current_owner()
+                _obs_key = (_obs_owner, intent.panel_en or '', intent.panel_ja or '')
+                if self._obs_last_key != _obs_key:
+                    self._obs_last_key = _obs_key
+                    try:
+                        self._translation_observer(_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.log_enabled)
                     except Exception:
                         _log.exception('translation_observer failed')
             return
@@ -325,7 +343,7 @@ class UiRouter:
             if self._obs_last_key != _obs_key:
                 self._obs_last_key = _obs_key
                 try:
-                    self._translation_observer(_obs_owner, _obs_en, _obs_ja, intent.speech_role, intent.speech_text)
+                    self._translation_observer(_obs_owner, _obs_en, _obs_ja, intent.speech_role, intent.speech_text, intent.log_enabled)
                 except Exception:
                     _log.exception('translation_observer failed')
 
@@ -360,8 +378,8 @@ class UiRouter:
             self._notify_clear(_cur)
         self.propose_display(DisplayIntent.clear(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, allowed_current_owners=allowed_current_owners))
 
-    def update_panel_translation(self, panel_en: str, panel_ja: str, *, speech_role: Optional[str]=None, speech_text: Optional[str]=None, priority: int=0) -> None:
-        self.propose_display(DisplayIntent.panel_translation(panel_en, panel_ja, priority=priority, speech_role=speech_role, speech_text=speech_text))
+    def update_panel_translation(self, panel_en: str, panel_ja: str, *, speech_role: Optional[str]=None, speech_text: Optional[str]=None, log_enabled: bool=True, priority: int=0) -> None:
+        self.propose_display(DisplayIntent.panel_translation(panel_en, panel_ja, priority=priority, speech_role=speech_role, speech_text=speech_text, log_enabled=log_enabled))
 
     def release_if_owner(self, panel_owner: str) -> None:
         if self.current_owner() == panel_owner:
@@ -404,6 +422,9 @@ class UiRouter:
     def update_place_list(self, panel_owner: str, items: list, *, title: str='', panel_en: str='', panel_ja: str='') -> None:
         self.propose_display(DisplayIntent.place_list(panel_owner, items, title=title, panel_en=panel_en, panel_ja=panel_ja))
 
-    def update_travel_table(self, panel_owner: str, rows: list, *, title: str='', panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, priority: int=0, reason: str='') -> None:
-        self.propose_display(DisplayIntent.travel_table(panel_owner, rows, title=title, panel_en=panel_en, panel_ja=panel_ja, speech_role=speech_role, speech_text=speech_text, priority=priority, reason=reason))
+    def update_travel_table(self, panel_owner: str, rows: list, *, title: str='', panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, log_enabled: bool=True, priority: int=0, reason: str='') -> None:
+        self.propose_display(DisplayIntent.travel_table(panel_owner, rows, title=title, panel_en=panel_en, panel_ja=panel_ja, speech_role=speech_role, speech_text=speech_text, log_enabled=log_enabled, priority=priority, reason=reason))
+
+    def propose_journal_entries(self, panel_owner: str, entries: list, *, panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, log_enabled: bool=True, priority: int=0, reason: str='') -> None:
+        self.propose_display(DisplayIntent.journal_entries(panel_owner, entries, panel_en=panel_en, panel_ja=panel_ja, speech_role=speech_role, speech_text=speech_text, log_enabled=log_enabled, priority=priority, reason=reason))
 __all__ = ['UiRouter']

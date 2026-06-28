@@ -156,6 +156,15 @@ def read_response_candidate(analyzer, anchor: int) -> ResponseCandidate | None:
     candidates = read_response_candidates_all(analyzer, anchor)
     if not candidates:
         return None
+    ptr = read_current_text_pointer(analyzer, anchor)
+    pointer_hits = [c for c in candidates if candidate_contains_pointer(c, ptr)]
+    valid_pointer_hits = [c for c in pointer_hits if not _has_unrendered_c_placeholder(c.text)]
+    if valid_pointer_hits:
+        lookup_pointer_hits = [c for c in valid_pointer_hits if c.lookup_hit]
+        selectable = lookup_pointer_hits or valid_pointer_hits
+        if ptr is not None:
+            return min(selectable, key=lambda c: (ptr - c.source_offset if c.source_offset <= ptr else RESPONSE_READ_LEN, -len(c.text)))
+        return selectable[0]
     hits = [c for c in candidates if c.lookup_hit]
     if hits:
         return hits[0]

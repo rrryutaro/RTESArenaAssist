@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:f2fd3d7b1097a6d8449c958ac13caf6aff2e8543886176fd9a2927ff2112e558",
+  "registry_hash": "sha256:2faec655bbaaf303e05b7a01cd48ec0b680368790ac3bfa43b7e010e3a11d4b8",
   "categories": [
     {
       "category": "assist_ui",
@@ -11505,6 +11505,376 @@
           },
           "context": {
             "section": "key_materials"
+          }
+        },
+        {
+          "id": 106157,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:8"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106158,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:9"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106159,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:10"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106160,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:11"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106161,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:12"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106162,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:13"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106163,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:14"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106164,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:15"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106165,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:16"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106166,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:18"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106167,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:19"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106168,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:23"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106169,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:24"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106170,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:25"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106171,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:26"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106172,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:27"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106173,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:28"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106174,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:29"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106175,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:31"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106176,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:32"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106177,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:33"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106178,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:34"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106179,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:35"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106180,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:36"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106181,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:37"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106182,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:38"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106183,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:39"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106184,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:41"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106185,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:42"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106186,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:43"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106187,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:0"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106188,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:44"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106189,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:1"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106190,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:2"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106191,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:3"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106192,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:5"
+          },
+          "context": {
+            "section": "quest_items"
+          }
+        },
+        {
+          "id": 106193,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:quests:delivery_quest_item_names:6"
+          },
+          "context": {
+            "section": "quest_items"
           }
         }
       ]
@@ -44756,6 +45126,72 @@
       ]
     },
     {
+      "category": "travel",
+      "source_policy": "arena_generated",
+      "id_range": [
+        211000,
+        211999
+      ],
+      "entries": [
+        {
+          "id": 211000,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:travel:arrival_date_prediction:0"
+          }
+        },
+        {
+          "id": 211001,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:travel:arrival_popup_date:0"
+          }
+        },
+        {
+          "id": 211002,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:travel:day_prediction:0"
+          }
+        },
+        {
+          "id": 211003,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:travel:day_prediction:1"
+          }
+        },
+        {
+          "id": 211004,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:travel:distance_prediction:0"
+          }
+        },
+        {
+          "id": 211005,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:travel:location_format_texts:0"
+          }
+        },
+        {
+          "id": 211006,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:travel:location_format_texts:1"
+          }
+        },
+        {
+          "id": 211007,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:travel:location_format_texts:2"
+          }
+        }
+      ]
+    },
+    {
       "category": "ui",
       "source_policy": "live_surface",
       "id_range": [
@@ -51142,6 +51578,154 @@
         {
           "id": 106156,
           "text": "サファイア"
+        },
+        {
+          "id": 106157,
+          "text": "黒曜石の頭蓋骨"
+        },
+        {
+          "id": 106158,
+          "text": "宝石"
+        },
+        {
+          "id": 106159,
+          "text": "金塊"
+        },
+        {
+          "id": 106160,
+          "text": "招待状"
+        },
+        {
+          "id": 106161,
+          "text": "包み"
+        },
+        {
+          "id": 106162,
+          "text": "短剣"
+        },
+        {
+          "id": 106163,
+          "text": "ワインの瓶"
+        },
+        {
+          "id": 106164,
+          "text": "領収書"
+        },
+        {
+          "id": 106165,
+          "text": "契約書"
+        },
+        {
+          "id": 106166,
+          "text": "歪んだ盾"
+        },
+        {
+          "id": 106167,
+          "text": "折れた剣"
+        },
+        {
+          "id": 106168,
+          "text": "裂けた杖"
+        },
+        {
+          "id": 106169,
+          "text": "重要な手紙"
+        },
+        {
+          "id": 106170,
+          "text": "グールの髪束"
+        },
+        {
+          "id": 106171,
+          "text": "薬草の袋"
+        },
+        {
+          "id": 106172,
+          "text": "黒檜の枝"
+        },
+        {
+          "id": 106173,
+          "text": "香辛料の小袋"
+        },
+        {
+          "id": 106174,
+          "text": "古い本"
+        },
+        {
+          "id": 106175,
+          "text": "バルログの皮片"
+        },
+        {
+          "id": 106176,
+          "text": "硫黄"
+        },
+        {
+          "id": 106177,
+          "text": "哲学書"
+        },
+        {
+          "id": 106178,
+          "text": "薬品の試験管"
+        },
+        {
+          "id": 106179,
+          "text": "聖遺物"
+        },
+        {
+          "id": 106180,
+          "text": "聖水の小瓶"
+        },
+        {
+          "id": 106181,
+          "text": "数珠"
+        },
+        {
+          "id": 106182,
+          "text": "宗教書"
+        },
+        {
+          "id": 106183,
+          "text": "聖像"
+        },
+        {
+          "id": 106184,
+          "text": "祈祷書"
+        },
+        {
+          "id": 106185,
+          "text": "手紙"
+        },
+        {
+          "id": 106186,
+          "text": "霊薬"
+        },
+        {
+          "id": 106187,
+          "text": "書き付け"
+        },
+        {
+          "id": 106188,
+          "text": "護符"
+        },
+        {
+          "id": 106189,
+          "text": "巻物"
+        },
+        {
+          "id": 106190,
+          "text": "令状"
+        },
+        {
+          "id": 106191,
+          "text": "旗"
+        },
+        {
+          "id": 106192,
+          "text": "白いバラ"
+        },
+        {
+          "id": 106193,
+          "text": "紹介状"
         },
         {
           "id": 107000,

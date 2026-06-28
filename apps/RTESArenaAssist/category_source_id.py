@@ -98,7 +98,7 @@ def npc_dialog_source_id(legacy_id: str) -> str | None:
 def _akey_source_id(akey: str) -> str | None:
     import arena_regen
     return arena_regen.akey_structural_source_id(akey, set(_aexe_template('akey')))
-_AEXE_CATEGORIES = frozenset({'calendar', 'chargen_provinces', 'classes', 'location_types', 'protect_locations', 'races', 'titles', 'spells', 'equipment_suffixes', 'item_enchantments', 'item_materials', 'monsters', 'equipment', 'character', 'mages', 'dungeon', 'items', 'settlement_types', 'chargen_race_descriptions', 'pronouns', 'relations', 'ask_about_menu', 'status_buffer_text', 'descriptors', 'status_terms', 'npc_traits'})
+_AEXE_CATEGORIES = frozenset({'calendar', 'chargen_provinces', 'classes', 'location_types', 'protect_locations', 'races', 'titles', 'travel', 'spells', 'equipment_suffixes', 'item_enchantments', 'item_materials', 'monsters', 'equipment', 'character', 'mages', 'dungeon', 'items', 'settlement_types', 'chargen_race_descriptions', 'pronouns', 'relations', 'ask_about_menu', 'status_buffer_text', 'descriptors', 'status_terms', 'npc_traits'})
 _aexe_cache: dict[str, dict] = {}
 
 def _owned_i18n_json(disk_path: str, seed_rel: str) -> dict:

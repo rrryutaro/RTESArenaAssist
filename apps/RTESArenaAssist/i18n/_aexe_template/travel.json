@@ -51,6 +51,7 @@
   },
   "distance_prediction.0": {
     "src_table": "travel.distance_prediction",
+    "src_index": 0,
     "src_hash": "4e46ac907e80ad84",
     "_meta": {
       "verified_official": true,
@@ -60,6 +61,7 @@
   },
   "arrival_date_prediction.0": {
     "src_table": "travel.arrival_date_prediction",
+    "src_index": 0,
     "src_hash": "04e8470b73989600",
     "_meta": {
       "verified_official": true,
@@ -69,6 +71,7 @@
   },
   "arrival_popup_date.0": {
     "src_table": "travel.arrival_popup_date",
+    "src_index": 0,
     "src_hash": "b165d5ce00225b2e",
     "_meta": {
       "verified_official": true,

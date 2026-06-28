@@ -23,6 +23,32 @@ _ASK_ABOUT_MAIN_STATE = 'ask_about_main'
 _ASK_ABOUT_MAIN_RECOVERY_STATE = 'ask_about_main_recovery'
 _PLACE_RESPONSE_LIST_STATES = frozenset({'where_is_list', 'dynamic_place_list'})
 _DIRECTION_WORDS = ('northwest', 'northeast', 'southwest', 'southeast', 'north', 'south', 'east', 'west')
+_WHERE_RESPONSE_DIRECTION_TEMPLATES = ("Oh, you'll find that {direction} of here.", "Now, I might be wrong but I'd look {direction} of here.", "I'm pretty sure it's {direction} of here...", "That's a bit {direction} of here, I'm sure of it.", 'I would check to the {direction} if I were you.', "I'm not really sure. Go {direction} for a while and ask there.", "That's easy - it's {direction} of here.", "That's {direction} of here, last time I checked.")
+_WHERE_RESPONSE_UNKNOWN_EXACT = ("You're asking the wrong person. Try someone else.", "I wish I could help you, but I haven't any idea.", 'Sorry, I wish I could help you. You should ask someone else.', "I'm certain someone else could give directions, but not I.")
+_WHERE_RESPONSE_UNKNOWN_PARTS = (('Sorry, ', "I'm afraid I don't know where that is."), ('Wish I could help you, ', 'You ought to ask someone else.'), ('I thought I knew ', 'but I have no idea where that is.'))
+
+def _normalize_popup11_response_text(text: str) -> str:
+    return ' '.join((text or '').split())
+
+def _is_popup11_where_is_map_response_text(text: str) -> bool:
+    t = _normalize_popup11_response_text(text)
+    if not t:
+        return False
+    if t.startswith('Without hesitation ') and t.endswith(' asks for your map to inscribe the exact location.'):
+        return True
+    if t.startswith("It'd be easy if I just showed you, ") and t.endswith(' says and inscribes the precise location on your map.'):
+        return True
+    if t.startswith('Let me see your map, ') and t.endswith(" says. It's so nearby, it's easier just to show you."):
+        return True
+    if t.startswith("Why don't I just inscribe the exact location on your map? ") and t.endswith(' says, pulling out a feather pen.'):
+        return True
+    if t.startswith("If I could see your map, I'll show you just how close you are. ") and ' takes a pen from ' in t and t.endswith(' pocket.'):
+        return True
+    if t.startswith("It's very near, ") and t.endswith(' says, reaching for your map. Let me show you how close you are.'):
+        return True
+    if t.startswith('Here, give me your map, ') and t.endswith(" says. I'll show you how close you are."):
+        return True
+    return t.startswith("Give me just a moment and I'll show right on your map how close you are, ") and t.endswith(' says.')
 
 def blocks_ask_about_main(list_state: str) -> bool:
     return list_state in _ASK_ABOUT_MAIN_BLOCKING_LIST_STATES
@@ -62,18 +88,20 @@ def _set_popup11_place_response_lock(w, prev_list_state: str, item_dyn_now, resp
     w._popup11_place_response_lock = {'item_dyn': item_dyn, 'text': response_text}
 
 def _is_popup11_where_is_response_text(text: str) -> bool:
-    t = (text or '').strip()
+    t = _normalize_popup11_response_text(text)
     if not t:
         return False
     for direction in _DIRECTION_WORDS:
-        if t == f"I'm pretty sure it's {direction} of here...":
+        for tmpl in _WHERE_RESPONSE_DIRECTION_TEMPLATES:
+            if t == tmpl.format(direction=direction):
+                return True
+    if t in _WHERE_RESPONSE_UNKNOWN_EXACT:
+        return True
+    for prefix, suffix in _WHERE_RESPONSE_UNKNOWN_PARTS:
+        if t.startswith(prefix) and t.endswith(suffix):
             return True
-        if t == f'I would check to the {direction} if I were you.':
-            return True
-        if t == f"I'm not really sure. Go {direction} for a while and ask there.":
-            return True
-        if t == f"That's {direction} of here, last time I checked.":
-            return True
+    if _is_popup11_where_is_map_response_text(t):
+        return True
     return False
 
 def _popup11_place_response_lock_matches(w, list_state: str, item_dyn_now) -> tuple[bool, str]:
@@ -162,35 +190,17 @@ def _classify_popup11_substate(w, _img_name, _list_state_eligible):
         _response_pointer_hit = False
     _fresh_response_text = _resp_cand.text if _resp_cand else ''
     _response_lookup_hit = bool(_resp_cand and _resp_cand.lookup_hit)
-    _place_response_lock_hit, _place_response_lock_text = _popup11_place_response_lock_matches(w, _list_state, _item_dyn_now)
-    if _place_response_lock_hit and (not _fresh_response_text):
-        _fresh_response_text = _place_response_lock_text
     _prev_list_state = getattr(w, '_popup11_list_state_prev', '')
     _response_is_new = _fresh_response_text and _fresh_response_text != w._npc_dialog_text_prev
     _state_transition_to_response = _list_state == 'npc_response' and _prev_list_state in ('where_is_list', 'dynamic_place_list')
     _diag_resp_off = _resp_cand.source_offset if _resp_cand else -1
     _diag_resp_text = _resp_cand.text[:48] if _resp_cand else ''
-    _diag_key = (_img_name, _list_state, _response_lookup_hit, _prev_list_state, _diag_resp_off, _diag_resp_text, _place_response_lock_hit)
+    _diag_key = (_img_name, _list_state, _response_lookup_hit, _prev_list_state, _diag_resp_off, _diag_resp_text)
     _diag_prev_key = getattr(w, '_cap159_diag_prev', None)
     _diag_changed = _diag_prev_key != _diag_key
     if _diag_changed:
         w._cap159_diag_prev = _diag_key
-    _stale_list_override = False
-    if _place_response_lock_hit and _fresh_response_text:
-        _stale_list_override = True
-    elif _response_lookup_hit and _list_state in ('where_is_list', 'dynamic_place_list'):
-        _dyn_count = _item_dyn_now[1] if _item_dyn_now else -1
-        _unnatural_dyn = _dyn_count > 32 or _dyn_count < 0
-        _response_text_changed = _fresh_response_text != getattr(w, '_npc_dialog_text_prev', '')
-        _fresh_at_npcd = _diag_resp_off == 4164 and bool(_fresh_response_text) and _response_text_changed
-        _stale_where_is_after_response = _list_state == 'where_is_list' and _prev_list_state == 'npc_response' and (not _item_dyn_changed) and _response_pointer_hit and bool(_fresh_response_text) and (_fresh_response_text == getattr(w, '_npc_dialog_text_prev', ''))
-        if _unnatural_dyn or _fresh_at_npcd or _stale_where_is_after_response:
-            _stale_list_override = True
-    if _stale_list_override:
-        if _diag_changed:
-            _log.info('cap159 diag: branch=RESPONSE_OVERRIDE_STALE_LIST img=%r prev_list=%r stale=%r dyn_count=%d resp_off=0x%X resp_ptr=%s ptr_hit=%s lock_hit=%s resp_text=%r', _img_name, _prev_list_state, _list_state, _item_dyn_now[1] if _item_dyn_now else -1, _diag_resp_off if _diag_resp_off >= 0 else 0, f'0x{_resp_ptr:04X}' if _resp_ptr is not None else '?', _response_pointer_hit, _place_response_lock_hit, _diag_resp_text)
-        _list_state = 'npc_response'
-    return SimpleNamespace(list_state=_list_state, prev_list_state=_prev_list_state, item_dyn_now=_item_dyn_now, diag_resp_off=_diag_resp_off, diag_resp_text=_diag_resp_text, diag_changed=_diag_changed, fresh_response_text=_fresh_response_text, response_lookup_hit=_response_lookup_hit, response_is_new=_response_is_new, state_transition_to_response=_state_transition_to_response, place_response_lock_hit=_place_response_lock_hit)
+    return SimpleNamespace(list_state=_list_state, prev_list_state=_prev_list_state, item_dyn_now=_item_dyn_now, diag_resp_off=_diag_resp_off, diag_resp_text=_diag_resp_text, diag_changed=_diag_changed, fresh_response_text=_fresh_response_text, response_lookup_hit=_response_lookup_hit, response_is_new=_response_is_new, state_transition_to_response=_state_transition_to_response)
 
 def _render_popup11_substate(w, _img_name, sub):
     _list_state = sub.list_state
@@ -265,6 +275,23 @@ def _render_popup11_substate(w, _img_name, sub):
             _log.info('cap159 diag: branch=FALLBACK_NPC_RESPONSE img=%r list_state=%r prev_list=%r resp_off=0x%X resp_text=%r', _img_name, _list_state, _prev_list_state, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
         w._popup11_list_state_prev = 'npc_response'
 
+def _cif_response_pointer_active(analyzer, anchor) -> bool:
+    try:
+        from popup11_response_reader import read_current_text_pointer, RESPONSE_OFFSETS, RESPONSE_READ_LEN
+        ptr = read_current_text_pointer(analyzer, anchor)
+    except Exception:
+        return False
+    if ptr is None:
+        return False
+    return any((off <= ptr < off + RESPONSE_READ_LEN for off in RESPONSE_OFFSETS))
+
+def _npc_response_continuation_active(w, img_name, top_level) -> bool:
+    if top_level != 'normal-play':
+        return False
+    if img_name.endswith('.CIF') and getattr(w, '_popup11_list_state_prev', ''):
+        return True
+    return _cif_response_pointer_active(w._analyzer, w._anchor)
+
 def _poll_npc_conversation_foreground(w, _img_name, _shop_menu_visible, _shop_buy_active, _npc_popup_active, _list_state_eligible, _npc_detection_allowed):
     _sub = _classify_popup11_substate(w, _img_name, _list_state_eligible) if _npc_popup_active else None
     _predicted_lsp = _sub.list_state if _sub is not None else getattr(w, '_popup11_list_state_prev', '')
@@ -322,7 +349,7 @@ def _poll_npc_popup_display(w, _img_name, _shop_menu_visible, _shop_buy_active):
     _NPC_DIALOG_INCOMPATIBLE_SCREENS = frozenset({'system_menu', 'equipment', 'spellbook', 'spell_detail', 'automap', 'logbook', 'status_page', 'bonus_screen', 'loading'})
     _prev_sid = getattr(w, '_screen_id_prev', None)
     _npc_detection_allowed = _current_top_level(w) == 'normal-play' and _prev_sid not in _NPC_DIALOG_INCOMPATIBLE_SCREENS and w._npc_conversation_active
-    _cif_continuation = _img_name.endswith('.CIF') and _current_top_level(w) == 'normal-play' and bool(getattr(w, '_popup11_list_state_prev', ''))
+    _cif_continuation = _npc_response_continuation_active(w, _img_name, _current_top_level(w))
     _npc_popup_active = _npc_detection_allowed and (_img_name == 'POPUP11.IMG' or _cif_continuation)
     try:
         if w._npc_conversation_active and (not _npc_popup_active):

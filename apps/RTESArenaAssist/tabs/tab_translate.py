@@ -23,6 +23,7 @@ _MODE_PLACE_LIST = 'place_list'
 _MODE_SHOP_BUY = 'shop_buy'
 _MODE_FACILITY_LIST = 'facility_list'
 _MODE_TRAVEL_TABLE = 'travel_table'
+_MODE_JOURNAL = 'journal'
 _MODE_APPEARANCE_FACES = 'appearance_faces'
 _MODE_FALLBACK_STATUS = 'fallback_status'
 _MODE_FALLBACK_MAP = 'fallback_map'
@@ -64,6 +65,23 @@ class TabTranslate(QWidget):
     def highlight_reading(self, full_text, current_segment, prefetched_segments=None) -> None:
         import reading_highlight as _rh
         _rh.apply_reading(self._trans_val, current_segment, prefetched_segments)
+        self._highlight_journal_entries(current_segment, prefetched_segments)
+
+    def _highlight_journal_entries(self, current_segment, prefetched_segments=None) -> None:
+        widgets = getattr(self, '_journal_entry_widgets', None) or []
+        probe = current_segment
+        if probe is None and prefetched_segments:
+            probe = prefetched_segments[0]
+        matched = False
+        for w in widgets:
+            if not w.isVisible():
+                w.clear_reading_highlight()
+                continue
+            if not matched and w.contains_reading_probe(probe):
+                w.highlight_reading(current_segment, prefetched_segments)
+                matched = True
+            else:
+                w.clear_reading_highlight()
 
     def fallback_map_tab(self) -> TabMap:
         return self._fallback_map_tab
@@ -104,6 +122,8 @@ class TabTranslate(QWidget):
             self._stack.setCurrentIndex(12)
         elif mode == _MODE_TRAVEL_TABLE:
             self._stack.setCurrentIndex(13)
+        elif mode == _MODE_JOURNAL:
+            self._stack.setCurrentIndex(14)
         elif mode == _MODE_APPEARANCE_FACES:
             self._stack.setCurrentIndex(10)
         elif mode == _MODE_FALLBACK_STATUS:
@@ -212,6 +232,24 @@ class TabTranslate(QWidget):
 
     def set_travel_table_title(self, title: str) -> None:
         return
+
+    def update_journal_entries(self, entries: list) -> None:
+        from tabs.tab_journal import JournalEntryWidget
+        widgets = getattr(self, '_journal_entry_widgets', None)
+        layout = getattr(self, '_journal_entries_layout', None)
+        if widgets is None or layout is None:
+            return
+        while len(widgets) < len(entries):
+            w = JournalEntryWidget()
+            widgets.append(w)
+            layout.addWidget(w)
+        for i, w in enumerate(widgets):
+            if i < len(entries):
+                w.show()
+                e = entries[i]
+                w.set_entry(e.get('date_ja', '') or '', e.get('body_ja', '') or '')
+            else:
+                w.hide()
 
     def set_shop_buy_title(self, title: str) -> None:
         self._shop_buy_group.setTitle(title)

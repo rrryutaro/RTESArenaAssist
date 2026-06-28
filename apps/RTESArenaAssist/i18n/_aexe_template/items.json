@@ -674,6 +674,302 @@
       "provenance": "live_harvest_content_match"
     }
   },
+  "items.quest_items.4.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 0,
+    "src_hash": "edb465624291e405",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.5.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 1,
+    "src_hash": "e16a9d4d1cf9ead8",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.6.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 2,
+    "src_hash": "bd998adfd46eaff9",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.7.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 3,
+    "src_hash": "8c7ed2d9be59e21c",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.8.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 5,
+    "src_hash": "2fbcf1c785126c7a",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.9.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 6,
+    "src_hash": "09ac2a688a7d26f2",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.10.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 8,
+    "src_hash": "6d3afc5a473b5bf8",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.11.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 9,
+    "src_hash": "851cfc3d60d379af",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.12.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 10,
+    "src_hash": "c0dbd6b2bdd43010",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.13.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 11,
+    "src_hash": "a3013c082c75edc9",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.14.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 12,
+    "src_hash": "bc4a71180870f794",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.15.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 13,
+    "src_hash": "6415fae65a2b6778",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.16.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 14,
+    "src_hash": "c8acea1b61c27b99",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.17.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 15,
+    "src_hash": "6f32860910ca0fb2",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.18.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 16,
+    "src_hash": "cc8321d6375c494d",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.19.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 18,
+    "src_hash": "8740e5e4127970b0",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.20.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 19,
+    "src_hash": "3d548049d1ab6082",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.21.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 23,
+    "src_hash": "9b613a48914ed24e",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.22.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 24,
+    "src_hash": "f1425497f6715137",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.23.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 25,
+    "src_hash": "22743533689e49e7",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.24.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 26,
+    "src_hash": "6b5c91fd3e9a0a74",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.25.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 27,
+    "src_hash": "56dbfc8aa9b09d13",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.26.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 28,
+    "src_hash": "d26d14543866e263",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.27.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 29,
+    "src_hash": "875b8006294ff5c7",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.28.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 31,
+    "src_hash": "3eab8ad2b43c2467",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.29.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 32,
+    "src_hash": "a6fd94999bb0c73f",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.30.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 33,
+    "src_hash": "5f8f85778275ddeb",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.31.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 34,
+    "src_hash": "7132fd994417d58d",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.32.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 35,
+    "src_hash": "cfde644fada6573b",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.33.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 36,
+    "src_hash": "d4cd59656816852b",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.34.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 37,
+    "src_hash": "a2f30cbddafa7d68",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.35.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 38,
+    "src_hash": "7aafc75bfb79661f",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.36.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 39,
+    "src_hash": "d287eb02dfcb9c7d",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.37.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 41,
+    "src_hash": "f0f65403c9c9cc2b",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.38.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 42,
+    "src_hash": "f80105efab6d863f",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.39.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 43,
+    "src_hash": "60c6abbfd0f146f9",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
+  "items.quest_items.40.0": {
+    "src_table": "quests.delivery_quest_item_names",
+    "src_index": 44,
+    "src_hash": "a0f9ef9e841e1acf",
+    "_meta": {
+      "provenance": "acd_delivery_quest_item_names"
+    }
+  },
   "items.drinks.5.0": {
     "src_table": "inn.drinks_common",
     "src_index": 8,

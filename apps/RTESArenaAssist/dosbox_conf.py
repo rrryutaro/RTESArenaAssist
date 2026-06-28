@@ -2,7 +2,7 @@ import os
 import re
 import shutil
 from datetime import datetime
-DEFAULT_CONF_PATH = 'D:\\SteamLibrary\\steamapps\\common\\The Elder Scrolls Arena\\DOSBox-0.74\\arena.conf'
+DEFAULT_CONF_PATH = 'C:\\Program Files (x86)\\Steam\\steamapps\\common\\The Elder Scrolls Arena\\DOSBox-0.74\\arena.conf'
 
 def read_conf(path: str) -> tuple:
     with open(path, 'r', encoding='utf-8') as f:

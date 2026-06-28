@@ -232,7 +232,7 @@ class FirstRunWizard(QDialog):
         self._strings = self._load_setup(code)
         try:
             settings.set_val('ui_language', code)
-            i18n.init(self._resource_dir, code)
+            i18n.init(self._resource_dir, code, public_runtime=True)
         except Exception:
             pass
         self._retranslate()

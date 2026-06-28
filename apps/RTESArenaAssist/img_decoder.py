@@ -4,17 +4,15 @@ import struct
 from cif_decoder import _decode_type04, _decode_type08
 _RAW_IMG_OVERRIDE = {'ARENARW.IMG': (16, 16), 'CITY.IMG': (16, 11), 'DITHER.IMG': (8, 100), 'DITHER2.IMG': (8, 100), 'DUNGEON.IMG': (14, 8), 'DZTTAV.IMG': (32, 34), 'NOCAMP.IMG': (25, 19), 'NOSPELL.IMG': (25, 19), 'P1.IMG': (320, 53), 'POPTALK.IMG': (320, 77), 'S2.IMG': (320, 36), 'SLIDER.IMG': (289, 7), 'TOWN.IMG': (9, 10), 'UPDOWN.IMG': (8, 16), 'VILLAGE.IMG': (8, 8)}
 
-def decode_img(img_path: str) -> tuple[int, int, bytes, list[tuple[int, int, int]] | None]:
-    with open(img_path, 'rb') as f:
-        data = f.read()
-    filename = os.path.basename(img_path).upper()
+def decode_img_bytes(data: bytes, filename: str) -> tuple[int, int, bytes, list[tuple[int, int, int]] | None]:
+    filename = os.path.basename(filename).upper()
     if filename in _RAW_IMG_OVERRIDE:
         w, h = _RAW_IMG_OVERRIDE[filename]
         return (w, h, data[:w * h], None)
     if len(data) == 4096:
         return (64, 64, data, None)
     if len(data) < 12:
-        raise ValueError(f'IMG too short: {img_path}')
+        raise ValueError(f'IMG too short: {filename}')
     x_off = data[0] | data[1] << 8
     y_off = data[2] | data[3] << 8
     width = data[4] | data[5] << 8
@@ -33,7 +31,7 @@ def decode_img(img_path: str) -> tuple[int, int, bytes, list[tuple[int, int, int
     elif compression == 8:
         pixels = _decode_type08(data[payload_start + 2:payload_end], out_size)
     else:
-        raise ValueError(f'unknown IMG compression: flags=0x{flags:04X} ({img_path})')
+        raise ValueError(f'unknown IMG compression: flags=0x{flags:04X} ({filename})')
     embedded_palette = None
     if has_palette:
         pal_data = data[payload_end:payload_end + 768]
@@ -45,3 +43,7 @@ def decode_img(img_path: str) -> tuple[int, int, bytes, list[tuple[int, int, int
                 b = min(pal_data[i * 3 + 2], 63) * 255 // 63
                 embedded_palette.append((r, g, b))
     return (width, height, bytes(pixels), embedded_palette)
+
+def decode_img(img_path: str) -> tuple[int, int, bytes, list[tuple[int, int, int]] | None]:
+    with open(img_path, 'rb') as f:
+        return decode_img_bytes(f.read(), os.path.basename(img_path))
