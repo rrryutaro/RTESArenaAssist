@@ -50,7 +50,7 @@ class TempleSession(SessionBase):
         if not ctx.in_interior:
             return ('none', '')
         try:
-            state = detect_shop_popup_state(ctx.analyzer, ctx.anchor, top_level_state=ctx.top_level_state, img_name=ctx.img_name, in_interior=ctx.in_interior, screen_id=ctx.screen_id, interior_mif_name=ctx.interior_mif_name or '', active_facility_name='temple' if self._active or self._is_temple_context(ctx) else '')
+            state = detect_shop_popup_state(ctx.analyzer, ctx.anchor, top_level_state=ctx.top_level_state, img_name=ctx.img_name, in_interior=ctx.in_interior, screen_id=ctx.screen_id, interior_mif_name=ctx.interior_mif_name or '', area=ctx.area, active_facility_name='temple' if self._active or self._is_temple_context(ctx) else '')
             return (state.kind or 'none', state.owner_kind or '')
         except Exception:
             return ('none', '')

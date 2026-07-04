@@ -125,5 +125,8 @@
   "mages.Resist Cold": "Resistencia al frío",
   "mages.Resist Shock": "Resistencia al rayo",
   "mages.Sanctuary": "Santuario",
-  "mages.Wizard Lock": "Cerrojo del mago"
+  "mages.Wizard Lock": "Cerrojo del mago",
+  "mages.Disintegrate": "Desintegrar",
+  "mages.Dispel": "Disipar",
+  "mages.Imprison": "Encarcelar"
 }

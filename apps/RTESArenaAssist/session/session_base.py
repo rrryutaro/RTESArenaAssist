@@ -15,6 +15,7 @@ class SessionContext:
     mif_name: str = ''
     interior_mif_name: Optional[str] = None
     facility_kind: str = ''
+    area: str = ''
     hierarchy: Optional[SeparationHierarchy] = None
     extras: dict = None
 

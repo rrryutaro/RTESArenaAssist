@@ -1,0 +1,22 @@
+{
+  "ask_about_menu.title_ask_about.0": "WORÜBER MÖCHTEST DU FRAGEN?",
+  "ask_about_menu.opt_who_are_you.0": "Wer bist du?",
+  "ask_about_menu.opt_where_is.0": "Wo ist...",
+  "ask_about_menu.opt_rumors.0": "Gerüchte",
+  "ask_about_menu.opt_exit.0": "Verlassen",
+  "ask_about_menu.title_rumor_type.0": "Art des Gerüchts",
+  "ask_about_menu.opt_general.0": "Allgemein",
+  "ask_about_menu.opt_work.0": "Arbeit",
+  "ask_about_menu.place_inn.0": "Gasthaus",
+  "ask_about_menu.place_temple.0": "Tempel",
+  "ask_about_menu.place_equipment_store.0": "Ausrüstungsladen",
+  "ask_about_menu.place_mages_guild.0": "Magiergilde",
+  "ask_about_menu.place_palace.0": "Palast",
+  "ask_about_menu.place_city_gates.0": "Stadttore",
+  "ask_about_menu.place_nearest_inn.0": "Nächstes Gasthaus",
+  "ask_about_menu.place_nearest_temple.0": "Nächster Tempel",
+  "ask_about_menu.place_nearest_store.0": "Nächster Laden",
+  "ask_about_menu.place_nearest_dungeon.0": "Nächstes Verlies",
+  "ask_about_menu.fallback_no_rumor.0": "Ich befasse mich nicht mit Gerüchten...",
+  "ask_about_menu.fallback_not_sure.0": "Ich bin mir nicht sicher. Frag doch jemanden draußen."
+}

@@ -52,6 +52,8 @@ _C1_DIALOG_BUFFER_RANGES = {'runtime_msg': ((31097, 68),), 'corpse_gold': ((3753
 
 def classify_c1_dialog_substate(w, b30, *, npc_dialog_changed: bool=False) -> str:
     axis = b30.get('c1_dialog_axis') if isinstance(b30, dict) else None
+    if axis is not None and (not getattr(axis, 'active', True)):
+        return 'c1_runtime_dialog' if npc_dialog_changed else ''
     a845 = getattr(axis, 'a845', 0) if axis is not None else 0
     ptr = getattr(axis, 'current_ptr', None) if axis is not None else None
     slot = _C1_DIALOG_A845_TO_SLOT.get(a845, '')
@@ -231,12 +233,16 @@ def poll_dialog_close(w, *, b30: dict, npc_dialog_changed: bool, instore_resp_ha
             return False
         try:
             from active_template_reader import is_response_text_buffer_pointer, is_runtime_message_buffer_pointer
-            if owner in ('c1_runtime_dialog', 'gold_drop'):
+            if owner == 'c1_runtime_dialog':
+                return False
+            if owner == 'gold_drop':
                 return is_response_text_buffer_pointer(_fg_ptr)
             if owner == 'red_text_dialog':
                 return is_runtime_message_buffer_pointer(_fg_ptr)
         except Exception:
-            if owner in ('c1_runtime_dialog', 'gold_drop'):
+            if owner == 'c1_runtime_dialog':
+                return False
+            if owner == 'gold_drop':
                 return any((start <= _fg_ptr < start + length for start, length in ((4164, 512), (37534, 512), (39582, 512))))
             if owner == 'red_text_dialog':
                 return 31097 <= _fg_ptr < 31097 + 68

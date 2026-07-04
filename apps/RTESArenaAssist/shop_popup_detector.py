@@ -95,7 +95,7 @@ def _read_u8(analyzer, addr) -> Optional[int]:
     except (OSError, AttributeError):
         return None
 
-def detect_shop_popup_state(analyzer: 'ArenaMemoryAnalyzer', anchor: int, *, top_level_state: str, img_name: str, in_interior: bool, screen_id: str='', allow_yesno_menu_recovery: bool=False, interior_mif_name: str='', active_facility_name: str='') -> ShopPopupState:
+def detect_shop_popup_state(analyzer: 'ArenaMemoryAnalyzer', anchor: int, *, top_level_state: str, img_name: str, in_interior: bool, screen_id: str='', allow_yesno_menu_recovery: bool=False, interior_mif_name: str='', active_facility_name: str='', area: Optional[str]=None) -> ShopPopupState:
     state = ShopPopupState(kind='none', img_name=img_name, top_level_state=top_level_state, screen_id=screen_id, in_interior=in_interior)
     if top_level_state in _SHOP_BLOCKED_TOP_LEVELS:
         state.reason = f'blocked top_level={top_level_state}'
@@ -108,6 +108,9 @@ def detect_shop_popup_state(analyzer: 'ArenaMemoryAnalyzer', anchor: int, *, top
         return state
     if not in_interior:
         state.reason = 'not in_interior'
+        return state
+    if area is not None and area != 'city':
+        state.reason = f'blocked area={area!r} (facility/shop is city-only)'
         return state
     state.b7c4 = _read_u8(analyzer, anchor + NEWPOP_GATE_OFFSET)
     state.ff2 = _read_u8(analyzer, anchor + NEWPOP_COUNT_OFFSET)

@@ -264,7 +264,7 @@ def _preprocess_placeholder_value(name: str, value: str, lang: str) -> str:
         value = compiled.sub(replace, value)
     return value
 _DS_PATTERN = re.compile('^(.+?)\\s+(\\w+)\\s+called\\s+(\\w+)\\s+(.+)$')
-_PLACEHOLDER_NAMES: frozenset[str] = frozenset(['a', 'a2', 'an', 'ccs', 'cll', 'cn', 'cn2', 'cp', 'ct', 'da', 'di', 'doc', 'ds', 'en', 'fn', 'fq', 'g', 'g2', 'g3', 'hc', 'hod', 'jok', 'lp', 'mi', 'mn', 'mt', 'n', 'nc', 'nc2', 'nd', 'ne', 'nh', 'nhd', 'ni', 'nk', 'nr', 'nt', 'o', 'oap', 'oc', 'omq', 'oth', 'pcf', 'pcn', 'qc', 'qt', 'r', 'ra', 'rcn', 'rf', 'sn', 'st', 't', 'tan', 'tem', 'tg', 'tl', 'tq', 'tt'])
+_PLACEHOLDER_NAMES: frozenset[str] = frozenset(['a', 'a2', 'an', 'ccs', 'cll', 'cn', 'cn2', 'cp', 'ct', 'da', 'di', 'doc', 'ds', 'en', 'fn', 'fq', 'g', 'g2', 'g3', 'hc', 'hod', 'i', 'jok', 'lp', 'mi', 'mn', 'mt', 'n', 'nc', 'nc2', 'nd', 'ne', 'nh', 'nhd', 'ni', 'nk', 'nr', 'nt', 'o', 'oap', 'oc', 'omq', 'oth', 'pcf', 'pcn', 'qc', 'qt', 'r', 'ra', 'rcn', 'rf', 'sn', 'st', 't', 'tan', 'tem', 'tg', 'tl', 'tq', 'tt'])
 
 def _template_to_regex(en_template: str) -> re.Pattern | None:
     seen: set[str] = set()
@@ -695,6 +695,11 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
                         result = result.replace(f'%{ph_name}', translated_val)
                 return result
         return value
+    if name == 'mn':
+        if lang == 'en':
+            return value
+        from dungeon_msg_lookup import lookup_monster_name
+        return lookup_monster_name(value) or value
     if name in ('ra', 't', 'oc', 'ct', 'oth', 'di', 'lp', 'cn', 'tem'):
         _load_ph()
         result = _PH_VALUES.get((name, value), {}).get(lang)
@@ -779,9 +784,10 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
         import i18n_helper as i18n
         return i18n.value_in('pronouns', value.lower(), lang) or value
     if name in ('fq', 'ne'):
+        cleaned = _clean_placeholder_value(value).rstrip('-~')
         if lang != 'en':
-            return translate_generated_name(_clean_placeholder_value(value), lang)
-        return value
+            return translate_generated_name(cleaned, lang)
+        return cleaned
     if name == 'o':
         return value
     if name == 'tl':
@@ -800,7 +806,7 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
             return value
         _load_rooms()
         return _ROOMS_VALUES.get(value, value)
-    if name == 'ni':
+    if name in ('ni', 'i'):
         if lang == 'en':
             return value
         _load_items_flat()

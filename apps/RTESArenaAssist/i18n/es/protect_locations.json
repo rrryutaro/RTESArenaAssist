@@ -1,0 +1,9 @@
+{
+  "protect_locations.0.0": "General",
+  "protect_locations.1.0": "Manos",
+  "protect_locations.2.0": "Hombro",
+  "protect_locations.3.0": "Pie",
+  "protect_locations.4.0": "Piernas",
+  "protect_locations.5.0": "Cabeza",
+  "protect_locations.6.0": "Pecho"
+}

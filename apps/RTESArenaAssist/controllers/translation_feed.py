@@ -37,6 +37,10 @@ class TranslationFeed:
             return
         if read_text == self._last_spoken:
             return
+        if self._last_spoken and read_text.startswith(self._last_spoken):
+            self._last_spoken = read_text
+            self._remember_spoken((speech_role, read_text))
+            return
         repeat_key = (speech_role, read_text)
         if settings.get('tts_suppress_repeat', False) and repeat_key in self._spoken_keys:
             return

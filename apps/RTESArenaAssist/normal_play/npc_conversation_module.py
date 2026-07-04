@@ -4,9 +4,9 @@ from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 NPC_CONVERSATION_OWNER = 'npc_conversation'
 
-def poll_npc_conversation(w, ctx, *, npc_dialog: str, npc_dialog_changed: bool, dialog_just_opened: bool, in_interior: bool, facility_active_now: bool, npc_translated: bool) -> None:
+def poll_npc_conversation(w, ctx, *, npc_dialog: str, npc_dialog_changed: bool, dialog_just_opened: bool, in_interior: bool, facility_active_now: bool, npc_translated: bool, c_area: str='') -> None:
     _response_surface_active = bool(getattr(ctx, 'response_text_on_screen', False) or getattr(ctx, 'panel_only_interior_message', False))
-    _route4_eligible = not npc_translated and bool(npc_dialog) and (npc_dialog_changed or dialog_just_opened) and (w._npc_conversation_active or in_interior) and (not facility_active_now) and _response_surface_active
+    _route4_eligible = not npc_translated and bool(npc_dialog) and (c_area != 'dungeon') and (npc_dialog_changed or dialog_just_opened) and (w._npc_conversation_active or in_interior) and (not facility_active_now) and _response_surface_active
     if _route4_eligible:
         try:
             import npc_dialog_lookup as _ndl

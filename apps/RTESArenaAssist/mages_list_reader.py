@@ -206,6 +206,16 @@ def enrich_unidentified_by_index(analyzer, anchor: int, items: list[dict]) -> li
         out.append(copied)
     return out
 
+def _item_base_ja(base: str) -> str | None:
+    r = i18n.value('items', base) or i18n.value('mages', base)
+    if r:
+        return r
+    for sec in ('accessories', 'spellcasting_items', 'armor_slots', 'weapons', 'shields'):
+        r = i18n.value_by_surface('items', base, section=sec)
+        if r:
+            return r
+    return None
+
 def translate_name(en: str) -> str:
     key = (en or '').strip()
     direct = i18n.value('mages', key) or i18n.value('items', key)
@@ -222,7 +232,7 @@ def translate_name(en: str) -> str:
     parts = key.split()
     if len(parts) >= 2:
         base = parts[-1]
-        base_ja = i18n.value('items', base) or i18n.value('mages', base)
+        base_ja = _item_base_ja(base)
         if base_ja:
             prefix_ja = ''.join((i18n.value('item_materials', p) or p for p in parts[:-1]))
             return f'{prefix_ja}{base_ja}'

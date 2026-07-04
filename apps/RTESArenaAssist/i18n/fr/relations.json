@@ -1,0 +1,16 @@
+{
+  "relations.0.0": "père",
+  "relations.1.0": "mère",
+  "relations.2.0": "fils",
+  "relations.3.0": "fille",
+  "relations.4.0": "frère",
+  "relations.5.0": "sœur",
+  "relations.6.0": "oncle",
+  "relations.7.0": "tante",
+  "relations.8.0": "neveu",
+  "relations.9.0": "nièce",
+  "relations.10.0": "cousin",
+  "relations.11.0": "mari",
+  "relations.12.0": "épouse",
+  "relations.13.0": "ami"
+}

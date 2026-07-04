@@ -1,0 +1,34 @@
+{
+  "races.0.0": {
+    "value": "Breton",
+    "plural": "Bretons"
+  },
+  "races.1.0": {
+    "value": "Rougegarde",
+    "plural": "Rougegardes"
+  },
+  "races.2.0": {
+    "value": "Nordique",
+    "plural": "Nordiques"
+  },
+  "races.3.0": {
+    "value": "Elfe noir",
+    "plural": "Elfes noirs"
+  },
+  "races.4.0": {
+    "value": "Haut-Elfe",
+    "plural": "Hauts-Elfes"
+  },
+  "races.5.0": {
+    "value": "Elfe des bois",
+    "plural": "Elfes des bois"
+  },
+  "races.6.0": {
+    "value": "Khajiit",
+    "plural": "Khajiits"
+  },
+  "races.7.0": {
+    "value": "Argonien",
+    "plural": "Argoniens"
+  }
+}

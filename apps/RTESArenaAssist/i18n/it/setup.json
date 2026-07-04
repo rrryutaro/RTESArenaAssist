@@ -1,0 +1,22 @@
+{
+  "setup.window_title": "RTESArenaAssist — Configurazione iniziale",
+  "setup.lang.title": "Scegli la lingua dell'interfaccia",
+  "setup.lang.prompt": "Seleziona la lingua per questo strumento di supporto. Potrai cambiarla in seguito nelle Impostazioni.",
+  "setup.lang.system": "Lingua di sistema (automatica)",
+  "setup.arena.title": "Individua il gioco",
+  "setup.arena.intro": "Prepariamo le traduzioni. Avvia The Elder Scrolls: Arena e lascialo in esecuzione. I file di traduzione vengono creati a partire dai dati del tuo gioco.",
+  "setup.arena.running_required": "Avvia il gioco (Arena), poi continua. Una volta avviato, premi «Ricontrolla».",
+  "setup.arena.detected": "Rilevato il gioco in esecuzione. La cartella di installazione è stata compilata automaticamente.",
+  "setup.arena.folder_label": "Cartella di installazione del gioco",
+  "setup.arena.ok": "✓ Cartella di gioco valida.",
+  "setup.arena.invalid": "✗ Questa non è una cartella di gioco valida. Seleziona la cartella di installazione del gioco.",
+  "setup.arena.browse": "Sfoglia…",
+  "setup.arena.refresh": "Ricontrolla",
+  "setup.btn.next": "Avanti",
+  "setup.btn.back": "Indietro",
+  "setup.btn.generate": "Crea i file di traduzione",
+  "setup.btn.skip": "Configura più tardi",
+  "setup.gen.running": "Creazione in corso. L'operazione può richiedere fino a un minuto…",
+  "setup.gen.done": "✓ I file di traduzione sono stati creati.",
+  "setup.gen.failed": "✗ Creazione non riuscita: {msg}"
+}

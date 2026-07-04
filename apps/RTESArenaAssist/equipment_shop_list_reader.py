@@ -160,6 +160,8 @@ def parse_sell_repair_item_list(raw: bytes) -> list[dict]:
             if out:
                 break
             continue
+        if not any((c.isalnum() for c in en)):
+            break
         out.append({'en': en, 'ja': translate_equipment_shop_name(en), 'price_raw': '', 'price_display': ''})
     return out
 
@@ -182,7 +184,16 @@ def read_sell_repair_item_list(analyzer, anchor: int) -> list[dict]:
         raw = analyzer.read_bytes(anchor + SELL_REPAIR_ITEM_LIST_OFFSET, SELL_REPAIR_ITEM_LIST_MAXLEN)
     except (OSError, AttributeError):
         return []
-    return parse_sell_repair_item_list(raw)
+    items = parse_sell_repair_item_list(raw)
+    if items:
+        try:
+            from inventory_reader import read_equipment_items
+            bound = len(read_equipment_items(analyzer, anchor))
+            if bound > 0 and len(items) > bound:
+                items = items[:bound]
+        except Exception:
+            pass
+    return items
 
 def _normalize_decimal(text: str) -> str:
     return f'0{text}' if text.startswith('.') else text

@@ -1,0 +1,34 @@
+{
+  "races.0.0": {
+    "value": "Bretone",
+    "plural": "Bretoni"
+  },
+  "races.1.0": {
+    "value": "Redguard",
+    "plural": "Redguard"
+  },
+  "races.2.0": {
+    "value": "Nord",
+    "plural": "Nord"
+  },
+  "races.3.0": {
+    "value": "Elfo Oscuro",
+    "plural": "Elfi Oscuri"
+  },
+  "races.4.0": {
+    "value": "Alto Elfo",
+    "plural": "Alti Elfi"
+  },
+  "races.5.0": {
+    "value": "Elfo dei Boschi",
+    "plural": "Elfi dei Boschi"
+  },
+  "races.6.0": {
+    "value": "Khajiit",
+    "plural": "Khajiit"
+  },
+  "races.7.0": {
+    "value": "Argoniano",
+    "plural": "Argoniani"
+  }
+}

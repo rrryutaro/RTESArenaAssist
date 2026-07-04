@@ -13,6 +13,9 @@ MATERIAL_NAMES_OFFSET = 9791
 BASE_ARMOR_NAMES_OFFSET = 9252
 ARMOR_ENCHANT_NAMES_OFFSET = 9549
 WEAPON_ENCHANT_NAMES_OFFSET = 8991
+POTION_NAMES_OFFSET = 10445
+POTION_NAMES_SIZE = 772
+POTION_COUNT = 15
 SPELL_ATTACK_NAMES_OFFSET = 7683
 SPELL_DEFENSE_NAMES_OFFSET = 7946
 SPELL_MISC_NAMES_OFFSET = 8095
@@ -94,7 +97,15 @@ def _slot_label(item: dict) -> str:
         return '盾'
     return _ACCESSORY_SLOT_LABELS.get(sid, '装身')
 
+def _is_potion(item: dict) -> bool:
+    return item['hands'] == 0 and item['param1'] == 0 and (item['price'] == 0) and (0 <= item['slot_id'] < POTION_COUNT)
+
+def _potion_count(item: dict) -> int:
+    return item['weight'] + 1
+
 def _classify_item(item: dict) -> tuple[str, int]:
+    if _is_potion(item):
+        return ('potion', -1)
     sid = item['slot_id']
     hands = item['hands']
     p1 = item['param1']
@@ -130,13 +141,16 @@ def _ench_index(item: dict) -> int | None:
         return None
     return x
 
-def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], chain_names: list[str], leather_names: list[str], jewelry_names: list[str], spellcasting_names: list[str], material_names: list[str], base_armor_names: list[str], armor_enchant_names: list[str], weapon_enchant_names: list[str], spell_attack_names: list[str], spell_defense_names: list[str], spell_misc_names: list[str]) -> str:
+def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], chain_names: list[str], leather_names: list[str], jewelry_names: list[str], spellcasting_names: list[str], material_names: list[str], base_armor_names: list[str], armor_enchant_names: list[str], weapon_enchant_names: list[str], spell_attack_names: list[str], spell_defense_names: list[str], spell_misc_names: list[str], potion_names: list[str] | None=None) -> str:
     sid = item['slot_id']
     hands = item['hands']
     p1 = item['param1']
     mat_id = item['material']
     is_magic = bool(item['flags'] & FLAG_MAGIC)
     is_identified = not item['flags'] & FLAG_UNIDENTIFIED
+    if _is_potion(item):
+        _pn = potion_names or []
+        return _pn[sid] if 0 <= sid < len(_pn) else f'Potion#{sid}'
     if hands in (1, 2):
         if 0 <= sid < len(weapon_names):
             base = weapon_names[sid]
@@ -210,6 +224,7 @@ def read_equipment_items(analyzer, anchor: int) -> list[dict]:
     spell_attack_names = _safe_read_strings(SPELL_ATTACK_NAMES_OFFSET, 400, SPELL_ATTACK_COUNT)
     spell_defense_names = _safe_read_strings(SPELL_DEFENSE_NAMES_OFFSET, 300, SPELL_DEFENSE_COUNT)
     spell_misc_names = _safe_read_strings(SPELL_MISC_NAMES_OFFSET, 300, SPELL_MISC_COUNT)
+    potion_names = _safe_read_strings(POTION_NAMES_OFFSET, POTION_NAMES_SIZE, POTION_COUNT)
     try:
         inv_raw = analyzer.read_bytes(anchor + INV_OFFSET, ITEM_SIZE * INV_SLOTS)
     except OSError:
@@ -219,7 +234,7 @@ def read_equipment_items(analyzer, anchor: int) -> list[dict]:
         item = _parse_item(inv_raw, i * ITEM_SIZE)
         if item is None or _is_empty(item):
             continue
-        en = _get_item_name(item, weapon_names, plate_names, chain_names, leather_names, jewelry_names, spellcasting_names, material_names, base_armor_names, armor_enchant_names, weapon_enchant_names, spell_attack_names, spell_defense_names, spell_misc_names)
+        en = _get_item_name(item, weapon_names, plate_names, chain_names, leather_names, jewelry_names, spellcasting_names, material_names, base_armor_names, armor_enchant_names, weapon_enchant_names, spell_attack_names, spell_defense_names, spell_misc_names, potion_names)
         item_type, armor_material_id = _classify_item(item)
-        items.append({'en': en, 'slot_id': item['slot_id'], 'hands': item['hands'], 'health': item['health'], 'max_hp': item['max_hp'], 'price': item['price'], 'equipped': bool(item['flags'] & 128), 'is_unidentified': bool(item['flags'] & 2), 'item_type': item_type, 'armor_material_id': armor_material_id, 'slot_label': _slot_label(item), 'weight': _weight_str(item['weight']), 'condition': _condition_str(item), 'effect': _effect_str(item)})
+        items.append({'en': en, 'slot_id': item['slot_id'], 'hands': item['hands'], 'health': item['health'], 'max_hp': item['max_hp'], 'price': item['price'], 'equipped': bool(item['flags'] & 128), 'is_unidentified': bool(item['flags'] & 2), 'item_type': item_type, 'armor_material_id': armor_material_id, 'slot_label': _slot_label(item), 'weight': '' if item_type == 'potion' else _weight_str(item['weight']), 'condition': _condition_str(item), 'effect': _effect_str(item), 'count': _potion_count(item) if item_type == 'potion' else None})
     return items

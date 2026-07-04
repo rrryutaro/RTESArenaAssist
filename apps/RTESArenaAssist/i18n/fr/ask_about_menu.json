@@ -1,0 +1,22 @@
+{
+  "ask_about_menu.title_ask_about.0": "DEMANDER ?",
+  "ask_about_menu.opt_who_are_you.0": "Qui êtes-vous ?",
+  "ask_about_menu.opt_where_is.0": "Où se trouve...",
+  "ask_about_menu.opt_rumors.0": "Rumeurs",
+  "ask_about_menu.opt_exit.0": "Quitter",
+  "ask_about_menu.title_rumor_type.0": "Type de rumeur",
+  "ask_about_menu.opt_general.0": "Général",
+  "ask_about_menu.opt_work.0": "Travail",
+  "ask_about_menu.place_inn.0": "Auberge",
+  "ask_about_menu.place_temple.0": "Temple",
+  "ask_about_menu.place_equipment_store.0": "Magasin d'équipement",
+  "ask_about_menu.place_mages_guild.0": "Guilde des mages",
+  "ask_about_menu.place_palace.0": "Palais",
+  "ask_about_menu.place_city_gates.0": "Portes de la ville",
+  "ask_about_menu.place_nearest_inn.0": "Auberge la plus proche",
+  "ask_about_menu.place_nearest_temple.0": "Temple le plus proche",
+  "ask_about_menu.place_nearest_store.0": "Boutique la plus proche",
+  "ask_about_menu.place_nearest_dungeon.0": "Donjon le plus proche",
+  "ask_about_menu.fallback_no_rumor.0": "Je ne m'occupe pas des rumeurs...",
+  "ask_about_menu.fallback_not_sure.0": "Je ne suis pas sûr. Essayez de demander à quelqu'un dehors."
+}

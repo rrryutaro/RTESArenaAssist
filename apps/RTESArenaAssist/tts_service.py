@@ -1,9 +1,7 @@
 from __future__ import annotations
 import logging
-import os
 import queue
 import re
-import tempfile
 import threading
 import time
 import traceback
@@ -217,8 +215,8 @@ class TTSService:
 
     def _stop_playback(self) -> None:
         try:
-            import winsound
-            winsound.PlaySound(None, winsound.SND_PURGE)
+            from services import audio_player
+            audio_player.get_client().stop_tts()
         except Exception:
             pass
 
@@ -505,53 +503,11 @@ class TTSService:
         return -1
 
     def _play_wav(self, data: bytes, generation: int) -> None:
-        if os.name != 'nt':
-            _log_tts('VOICEVOX playback unsupported on this OS (winsound 無し)')
-            return
-        import winsound
-        path = ''
         try:
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.wav') as fp:
-                fp.write(data)
-                path = fp.name
-            duration = self._wav_duration_seconds(data)
-            while True:
-                if not self._wait_if_paused(generation):
-                    return
-                winsound.PlaySound(path, winsound.SND_FILENAME | winsound.SND_ASYNC)
-                deadline = time.perf_counter() + max(0.1, duration + 0.1)
-                restart = False
-                while time.perf_counter() < deadline:
-                    if not self._is_generation_current(generation):
-                        winsound.PlaySound(None, winsound.SND_PURGE)
-                        return
-                    if self._is_paused():
-                        winsound.PlaySound(None, winsound.SND_PURGE)
-                        restart = True
-                        break
-                    time.sleep(0.03)
-                if not restart:
-                    break
-        finally:
-            if path:
-                try:
-                    os.unlink(path)
-                except OSError:
-                    pass
-
-    @staticmethod
-    def _wav_duration_seconds(data: bytes) -> float:
-        try:
-            import io
-            import wave
-            with wave.open(io.BytesIO(data), 'rb') as wav:
-                frames = wav.getnframes()
-                rate = wav.getframerate()
-                if rate > 0:
-                    return frames / float(rate)
+            from services import audio_player
+            audio_player.get_client().play_tts_and_wait(data, should_continue=lambda: self._is_generation_current(generation), is_paused=self._is_paused)
         except Exception:
-            pass
-        return max(0.3, min(30.0, len(data) / 88200.0))
+            _log_tts('VOICEVOX playback error:\n' + traceback.format_exc())
 
     def _run_prewarm(self) -> None:
         while True:

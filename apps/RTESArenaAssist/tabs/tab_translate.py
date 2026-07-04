@@ -64,7 +64,7 @@ class TabTranslate(QWidget):
 
     def highlight_reading(self, full_text, current_segment, prefetched_segments=None) -> None:
         import reading_highlight as _rh
-        _rh.apply_reading(self._trans_val, current_segment, prefetched_segments)
+        _rh.apply_reading(self._trans_val, current_segment, prefetched_segments, full_text=full_text)
         self._highlight_journal_entries(current_segment, prefetched_segments)
 
     def _highlight_journal_entries(self, current_segment, prefetched_segments=None) -> None:

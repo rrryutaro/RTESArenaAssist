@@ -164,7 +164,7 @@ class ImgScreenController:
                     return arena_data.can_class_use_shield(json_class_id, it['slot_id'])
                 return True
             items_raw = read_equipment_items(self._w._analyzer, self._w._anchor)
-            item_data = [{'en': it['en'], 'ja': dml.lookup_item(it['en']), 'equipped': it['equipped'], 'is_unidentified': it['is_unidentified'], 'can_equip': _can_equip(it), 'slot_label': it['slot_label'], 'weight': it['weight'], 'condition': it['condition'], 'effect': it['effect']} for it in items_raw]
+            item_data = [{'en': it['en'], 'ja': dml.lookup_item(it['en']), 'equipped': it['equipped'], 'is_unidentified': it['is_unidentified'], 'can_equip': _can_equip(it), 'slot_label': it['slot_label'], 'weight': it['weight'], 'condition': it['condition'], 'effect': f"{it['count']} 個" if it.get('count') is not None else it['effect']} for it in items_raw]
             title = '装備品一覧'
         except Exception:
             _log.exception('equipment read failed')

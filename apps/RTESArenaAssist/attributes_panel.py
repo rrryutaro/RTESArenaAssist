@@ -337,12 +337,8 @@ class AttributesPanel(QWidget):
                 class_en = resolve_class_en_from_label(self._class_lbl.text())
             if not class_en:
                 return None
-            import arena_data
-            cls_data = arena_data.get_class_by_name(class_en)
-            if not cls_data:
-                return None
-            from experience_calc import exp_threshold_for_next_level
-            return exp_threshold_for_next_level(cls_data['id'], current_level)
+            from experience_calc import exp_threshold_for_next_level_by_name
+            return exp_threshold_for_next_level_by_name(class_en, current_level)
         except (OSError, AttributeError, ImportError):
             return None
 

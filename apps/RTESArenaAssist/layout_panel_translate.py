@@ -83,7 +83,7 @@ class LayoutPanelTranslate(QWidget):
 
     def highlight_reading(self, full_text, current_segment, prefetched_segments=None) -> None:
         import reading_highlight as _rh
-        _rh.apply_reading(self._ja_lbl, current_segment, prefetched_segments)
+        _rh.apply_reading(self._ja_lbl, current_segment, prefetched_segments, full_text=full_text)
 
     def apply_font_direct(self, family_ja: str, size_ja: int, family_en: str, size_en: int) -> None:
         for lbl, family, size in ((self._ja_lbl, family_ja, size_ja), (self._en_lbl, family_en, size_en)):

@@ -5,6 +5,9 @@
     "en": {
       "lang_code": "en",
       "display_name": "English",
+      "locale": "en-US",
+      "status": "public_enabled",
+      "public_enabled": true,
       "direction": "ltr",
       "fallback_chain": [
         "en"
@@ -21,6 +24,9 @@
     "ja": {
       "lang_code": "ja",
       "display_name": "日本語",
+      "locale": "ja-JP",
+      "status": "public_enabled",
+      "public_enabled": true,
       "direction": "ltr",
       "fallback_chain": [
         "ja",
@@ -38,6 +44,9 @@
     "es": {
       "lang_code": "es",
       "display_name": "Español",
+      "locale": "es-ES",
+      "status": "public_enabled",
+      "public_enabled": true,
       "direction": "ltr",
       "fallback_chain": [
         "es",
@@ -51,6 +60,66 @@
       "quote_close": "”",
       "secondary_quote_open": "‘",
       "secondary_quote_close": "’"
+    },
+    "de": {
+      "lang_code": "de",
+      "display_name": "Deutsch",
+      "locale": "de-DE",
+      "status": "public_enabled",
+      "public_enabled": true,
+      "direction": "ltr",
+      "fallback_chain": [
+        "de",
+        "en"
+      ],
+      "font_hint": "Segoe UI, Arial, sans-serif",
+      "plural_form": "en_like_2",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "quote_open": "„",
+      "quote_close": "“",
+      "secondary_quote_open": "‚",
+      "secondary_quote_close": "‘"
+    },
+    "fr": {
+      "lang_code": "fr",
+      "display_name": "Français",
+      "locale": "fr-FR",
+      "status": "public_enabled",
+      "public_enabled": true,
+      "direction": "ltr",
+      "fallback_chain": [
+        "fr",
+        "en"
+      ],
+      "font_hint": "Segoe UI, Arial, sans-serif",
+      "plural_form": "en_like_2",
+      "decimal_separator": ",",
+      "thousands_separator": " ",
+      "quote_open": "«",
+      "quote_close": "»",
+      "secondary_quote_open": "‹",
+      "secondary_quote_close": "›"
+    },
+    "it": {
+      "lang_code": "it",
+      "display_name": "Italiano",
+      "locale": "it-IT",
+      "status": "public_enabled",
+      "public_enabled": true,
+      "direction": "ltr",
+      "fallback_chain": [
+        "it",
+        "en"
+      ],
+      "font_hint": "Segoe UI, Arial, sans-serif",
+      "plural_form": "en_like_2",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "quote_open": "«",
+      "quote_close": "»",
+      "secondary_quote_open": "“",
+      "secondary_quote_close": "”"
     }
   }
 }

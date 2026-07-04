@@ -70,11 +70,36 @@ def highlight_marked(label, marks) -> bool:
     label.setText(''.join(out))
     return True
 
-def apply_reading(label, current_segment, prefetched_segments) -> None:
+def _to_display_segments(label, full_text, current_segment, prefetched):
+    try:
+        from tts_service import TTSService
+        plain = plain_of(label)
+        spoken = TTSService._split_sentences(full_text or '')
+        display = TTSService._split_sentences(plain or '')
+        if not spoken or len(spoken) != len(display):
+            return (current_segment, prefetched)
+        index_of = {}
+        for i, seg in enumerate(spoken):
+            index_of.setdefault(seg, i)
+
+        def conv(seg):
+            i = index_of.get(seg)
+            return display[i] if i is not None else seg
+        cur = conv(current_segment) if current_segment is not None else None
+        pre = [conv(p) for p in prefetched]
+        return (cur, pre)
+    except Exception:
+        return (current_segment, prefetched)
+
+def apply_reading(label, current_segment, prefetched_segments, full_text=None) -> None:
+    cur = current_segment
+    pre = list(prefetched_segments or [])
+    if full_text:
+        cur, pre = _to_display_segments(label, full_text, current_segment, pre)
     marks: list = []
-    if current_segment is not None:
-        marks.append((current_segment, _HL_COLOR_CURRENT))
-    marks += [(p, _HL_COLOR_PREFETCH) for p in prefetched_segments or []]
+    if cur is not None:
+        marks.append((cur, _HL_COLOR_CURRENT))
+    marks += [(p, _HL_COLOR_PREFETCH) for p in pre]
     if not marks:
         clear_highlight(label)
         return

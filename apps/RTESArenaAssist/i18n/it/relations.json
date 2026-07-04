@@ -1,0 +1,16 @@
+{
+  "relations.0.0": "padre",
+  "relations.1.0": "madre",
+  "relations.2.0": "figlio",
+  "relations.3.0": "figlia",
+  "relations.4.0": "fratello",
+  "relations.5.0": "sorella",
+  "relations.6.0": "zio",
+  "relations.7.0": "zia",
+  "relations.8.0": "nipote",
+  "relations.9.0": "nipote",
+  "relations.10.0": "cugino",
+  "relations.11.0": "marito",
+  "relations.12.0": "moglie",
+  "relations.13.0": "amico"
+}

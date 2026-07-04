@@ -51,12 +51,6 @@ def read_c1_dialog_axis(w, *, c_area: str | None, in_gameplay: bool=True, update
     current_ptr = _read_ptr(w)
     ptr_is_runtime = _is_runtime_ptr(current_ptr)
     in_c1 = c_area == 'dungeon'
-    owner = ''
-    try:
-        owner = w._ui_router.current_owner() or ''
-    except (AttributeError, RuntimeError):
-        owner = getattr(w, '_panel_owner', '') or ''
-    runtime_owner = owner in ('red_text_dialog', 'c1_runtime_dialog', 'gold_drop')
     reason_parts: list[str] = []
     if ptr_is_runtime:
         reason_parts.append('ptr')
@@ -65,9 +59,9 @@ def read_c1_dialog_axis(w, *, c_area: str | None, in_gameplay: bool=True, update
     if a84d in KNOWN_C1_A84D_VALUES:
         reason_parts.append('a84d')
     strong_signal = bool(reason_parts)
-    if a847 != 0 and (strong_signal or runtime_owner):
+    if a847 != 0 and strong_signal:
         reason_parts.append('a847')
-    active = in_c1 and in_gameplay and (not bool(getattr(w, '_npc_conversation_active', False))) and (strong_signal or (runtime_owner and a847 != 0))
+    active = in_c1 and in_gameplay and (not bool(getattr(w, '_npc_conversation_active', False))) and strong_signal
     prev_active = bool(getattr(w, '_c1_dialog_axis_active_prev', False))
     opened = active and (not prev_active)
     closed = prev_active and (not active)

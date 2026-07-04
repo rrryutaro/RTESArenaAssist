@@ -448,10 +448,10 @@ def build_tts_tab(dlg: '_SettingsDialog') -> QWidget:
         def _work() -> None:
             try:
                 import voicevox_client as _vv3
-                import winsound
+                from services import audio_player
                 data = _vv3.synthesize(_txt, int(sid))
                 if data:
-                    winsound.PlaySound(data, winsound.SND_MEMORY)
+                    audio_player.get_client().play_effect(data)
             except Exception:
                 pass
         import threading

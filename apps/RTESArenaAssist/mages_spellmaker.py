@@ -1,6 +1,5 @@
 from __future__ import annotations
 import logging
-import html
 import re
 _log = logging.getLogger('RTESArenaAssist')
 SPELLDATA_OFFSET = 22502
@@ -124,37 +123,28 @@ def _html_label(label: str) -> str:
         return label
     return f'{m.group(1)} / {m.group(2)}'
 
-def _value_html(value: str) -> str:
-    parts: list[str] = []
-    for part in re.split('(\\d+|—)', value):
-        if not part:
-            continue
-        esc = html.escape(part)
-        if re.fullmatch('\\d+|—', part):
-            parts.append(f"<span style='background-color:#1c2e3f;border:1px solid #2a4258;border-radius:3px;padding:1px 5px;color:#ffffff;font-weight:bold;'>{esc}</span>")
-        else:
-            parts.append(esc)
-    return ''.join(parts)
-
-def format_form_display_html(form: str, values: dict, *, cost: int | None=None, title_en: str='', title_ja: str='') -> str:
+def format_form_display_text(form: str, values: dict, *, cost: int | None=None, title_en: str='', title_ja: str='') -> str:
     lines = list(format_form_display(form, values))
     if cost is not None:
         lines.append(f'Spell Cost（呪文コスト）: {cost}')
-    title = ''
-    if title_en or title_ja:
-        if title_en and title_ja and (title_en != title_ja):
-            title = f"{html.escape(title_en)} <span style='color:#a0c4d8;'>{html.escape(title_ja)}</span>"
-        else:
-            title = html.escape(title_ja or title_en)
     rows: list[str] = []
     for line in lines:
         if ': ' in line:
             label, value = line.split(': ', 1)
         else:
             label, value = (line, '')
-        rows.append(f"<tr><td style='color:#7ab8d4;font-weight:bold;padding:2px 18px 2px 0;white-space:nowrap;vertical-align:top;'>{html.escape(_html_label(label))}</td><td style='color:#c9d1e0;padding:2px 0;vertical-align:top;'>{_value_html(value)}</td></tr>")
-    title_html = f"<div style='color:#c9d1e0;font-weight:bold;margin-bottom:6px;'>{title}</div>" if title else ''
-    return f"<div style='line-height:1.35;'>{title_html}<table style='border-collapse:collapse;margin-top:2px;'>" + ''.join(rows) + '</table></div>'
+        label = _html_label(label)
+        rows.append(f'{label}: {value}' if value else label)
+    body = '\n'.join(rows)
+    title = ''
+    if title_en or title_ja:
+        if title_en and title_ja and (title_en != title_ja):
+            title = f'{title_en} {title_ja}'
+        else:
+            title = title_ja or title_en
+    if title and body:
+        return f'{title}\n{body}'
+    return title or body
 
 def _line_form1(values: dict) -> list[str]:
     return [_line('Range', '射程', f"{_fmt_value(values, 'Range min')}〜{_fmt_value(values, 'Range max')}"), _line('Increase', '増加', f"{_fmt_value(values, 'Increase min')}〜{_fmt_value(values, 'Increase max')} / {_fmt_value(values, 'Levels')}レベルごと")]
@@ -207,4 +197,4 @@ def resolve_effect_title_from_record(analyzer, anchor: int, form: str='') -> str
         if effect and effect != '(none)':
             return effect
     return ''
-__all__ = ['SPELLDATA_OFFSET', 'EFFECT_TO_FORM', 'FORM_FIELDS', 'FORM_ALIASES', 'resolve_form', 'read_form_values', 'all_form_labels', 'format_form_layout', 'format_form_display', 'format_form_display_html', 'FORM_LAYOUT_EN', 'FORM_LAYOUT_JA', 'resolve_edit_slot', 'resolve_effect_title_from_record']
+__all__ = ['SPELLDATA_OFFSET', 'EFFECT_TO_FORM', 'FORM_FIELDS', 'FORM_ALIASES', 'resolve_form', 'read_form_values', 'all_form_labels', 'format_form_layout', 'format_form_display', 'format_form_display_text', 'FORM_LAYOUT_EN', 'FORM_LAYOUT_JA', 'resolve_edit_slot', 'resolve_effect_title_from_record']

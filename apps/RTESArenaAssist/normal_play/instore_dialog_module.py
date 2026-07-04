@@ -3,7 +3,9 @@ import logging
 _log = logging.getLogger('RTESArenaAssist')
 _SHOP_SURFACE_KINDS = ('shop_menu', 'shop_buy', 'shop_rooms', 'shop_rumor_type')
 
-def _poll_route1_instore_response(w, ctx, *, entry_handled: bool, npc_overlay_active: bool, in_interior: bool, npc_phase_raw, facility_active_now: bool, instore_resp_handled: bool, internalized_facility_active: bool=False, shop_menu_visible: bool=False, shop_buy_active: bool=False, shop_state_kind: str='none', negot_handled: bool=False, active_tmpl_handled: bool=False):
+def _poll_route1_instore_response(w, ctx, *, entry_handled: bool, npc_overlay_active: bool, in_interior: bool, npc_phase_raw, facility_active_now: bool, instore_resp_handled: bool, internalized_facility_active: bool=False, shop_menu_visible: bool=False, shop_buy_active: bool=False, shop_state_kind: str='none', negot_handled: bool=False, active_tmpl_handled: bool=False, c_area: str=''):
+    if c_area == 'dungeon':
+        return (instore_resp_handled, entry_handled)
     _l4_surface_now = internalized_facility_active or shop_menu_visible or shop_buy_active or (shop_state_kind in _SHOP_SURFACE_KINDS) or negot_handled or active_tmpl_handled
     _response_probe_done = False
     _response_cands = []

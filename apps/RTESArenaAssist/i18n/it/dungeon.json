@@ -1,0 +1,23 @@
+{
+  "dungeon.imperial_city.0": "Città Imperiale",
+  "dungeon.dungeon.0": "dungeon",
+  "dungeon.wilderness.0": "landa selvaggia",
+  "dungeon.city.0": "città",
+  "dungeon.town.0": "cittadina",
+  "dungeon.north.0": "nord",
+  "dungeon.northeast.0": "nordest",
+  "dungeon.east.0": "est",
+  "dungeon.southeast.0": "sudest",
+  "dungeon.south.0": "sud",
+  "dungeon.southwest.0": "sudovest",
+  "dungeon.west.0": "ovest",
+  "dungeon.northwest.0": "nordovest",
+  "dungeon.iron.0": "Ferro",
+  "dungeon.steel.0": "Acciaio",
+  "dungeon.silver.0": "Argento",
+  "dungeon.elven.0": "Elfico",
+  "dungeon.dwarven.0": "Nanico",
+  "dungeon.mithril.0": "Mithril",
+  "dungeon.adamantium.0": "Adamantio",
+  "dungeon.ebony.0": "Ebano"
+}

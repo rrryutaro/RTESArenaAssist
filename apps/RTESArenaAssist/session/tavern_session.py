@@ -51,7 +51,7 @@ class TavernSession(SessionBase):
         w = ctx.extras.get('window') if ctx.extras else None
         _allow_recovery = bool(getattr(w, '_yesno_menu_recovery_last', False)) if w else False
         try:
-            state = detect_shop_popup_state(ctx.analyzer, ctx.anchor, top_level_state=ctx.top_level_state, img_name=ctx.img_name, in_interior=ctx.in_interior, screen_id=ctx.screen_id, allow_yesno_menu_recovery=_allow_recovery, interior_mif_name=ctx.interior_mif_name or '', active_facility_name='tavern' if self._active or self._is_tavern_context(ctx) else '')
+            state = detect_shop_popup_state(ctx.analyzer, ctx.anchor, top_level_state=ctx.top_level_state, img_name=ctx.img_name, in_interior=ctx.in_interior, screen_id=ctx.screen_id, allow_yesno_menu_recovery=_allow_recovery, interior_mif_name=ctx.interior_mif_name or '', area=ctx.area, active_facility_name='tavern' if self._active or self._is_tavern_context(ctx) else '')
             kind = state.kind or 'none'
             owner = state.owner_kind or ''
             if _allow_recovery and (not owner) and (kind in _TAVERN_OWNER_KINDS):

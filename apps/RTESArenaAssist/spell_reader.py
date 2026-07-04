@@ -9,6 +9,8 @@ SPELL_DATA_SIZE = 85
 SPELL_NAME_OFFSET = 52
 SPELL_NAME_LEN = 33
 MAX_KNOWN_SPELLS = 160
+CUSTOM_SPELL_ID_BASE = 128
+MAX_CUSTOM_SPELLS = 32
 
 def load_spellsg(game_dir: str) -> dict[int, str]:
     if not game_dir:
@@ -30,6 +32,31 @@ def load_spellsg(game_dir: str) -> dict[int, str]:
                 name = name_bytes.split(b'\x00')[0].decode('ascii', errors='replace').strip()
                 if name:
                     result[i] = name
+            return result
+        except OSError:
+            continue
+    return {}
+
+def load_custom_spells(game_dir: str) -> dict[int, str]:
+    if not game_dir:
+        return {}
+    for nn in ('00', '01', '02', '03', '04', '05', '06', '07', '08', '09'):
+        path = os.path.join(game_dir, f'SPELLS.{nn}')
+        if not os.path.exists(path):
+            continue
+        try:
+            with open(path, 'rb') as f:
+                data = f.read()
+            result: dict[int, str] = {}
+            max_records = min(MAX_CUSTOM_SPELLS, len(data) // SPELL_DATA_SIZE)
+            for i in range(max_records):
+                base = i * SPELL_DATA_SIZE
+                if base + SPELL_DATA_SIZE > len(data):
+                    break
+                name_bytes = data[base + SPELL_NAME_OFFSET:base + SPELL_NAME_OFFSET + SPELL_NAME_LEN]
+                name = name_bytes.split(b'\x00')[0].decode('ascii', errors='replace').strip()
+                if name:
+                    result[CUSTOM_SPELL_ID_BASE + i] = name
             return result
         except OSError:
             continue
@@ -88,7 +115,6 @@ def read_spell_detail(analyzer, anchor: int) -> dict:
     name = _str(SPELL_DETAIL_NAME_OFFSET, SPELL_NAME_LEN)
     cost = _u16(SPELL_DETAIL_COST_OFFSET)
     spell_cost = cost * 2 if cost else 0
-    casting_cost = spell_cost // 4 if spell_cost else 0
     target_id = _u8(SPELL_DETAIL_TARGET_OFFSET)
     element_id = _u8(SPELL_DETAIL_ELEMENT_OFFSET)
     effects = _u8_array(SPELL_DETAIL_EFFECTS_OFFSET, 3, 255)
@@ -114,6 +140,7 @@ def read_spell_detail(analyzer, anchor: int) -> dict:
     level_raw = _u8_opt(PLAYER_LEVEL_OFFSET)
     player_level = level_raw + 1 if level_raw is not None else 0
     player_gold = _u16(PLAYER_GOLD_OFFSET)
+    casting_cost = cost // player_level if cost and player_level > 0 else 0
     effect_details = _attach_effect_texts(text_en, effect_details, text_segments)
     effect_details = _fill_missing_spellmaker_effect_texts(effect_details, analyzer, anchor)
     if effect_details:
@@ -130,6 +157,7 @@ def read_spellbook_items(analyzer, anchor: int) -> list[dict]:
     import assist_settings as settings
     game_dir = settings.get('save_dir', '')
     spell_table = load_spellsg(game_dir)
+    spell_table.update(load_custom_spells(game_dir))
     try:
         count = analyzer.read_bytes(anchor + SPELL_COUNT_OFFSET, 1)[0]
     except OSError:

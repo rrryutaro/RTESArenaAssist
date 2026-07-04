@@ -25,3 +25,10 @@ def exp_threshold_for_level(class_id: int, level: int) -> Optional[int]:
 
 def exp_threshold_for_next_level(class_id: int, current_level: int) -> Optional[int]:
     return exp_threshold_for_level(class_id, current_level + 1)
+_CLASS_NAME_TO_ID: dict[str, int] = {'Mage': 0, 'Spellsword': 1, 'Battlemage': 2, 'Sorceror': 3, 'Healer': 4, 'Nightblade': 5, 'Bard': 6, 'Burglar': 7, 'Rogue': 8, 'Acrobat': 9, 'Thief': 10, 'Assassin': 11, 'Monk': 12, 'Archer': 13, 'Ranger': 14, 'Barbarian': 15, 'Warrior': 16, 'Knight': 17}
+
+def exp_threshold_for_next_level_by_name(class_en: str, current_level: int) -> Optional[int]:
+    cid = _CLASS_NAME_TO_ID.get((class_en or '').strip())
+    if cid is None:
+        return None
+    return exp_threshold_for_next_level(cid, current_level)

@@ -8,18 +8,19 @@ _MONSTER_PHRASES: dict[str, str] | None = None
 _ITEM_NAMES: dict[str, str] | None = None
 
 def _iter_monsters():
-    if i18n.v2_public_enabled('monsters'):
+    originals = i18n.originals('monsters')
+    if i18n.v2_public_enabled('monsters') or (not originals and i18n.v2_public_enabled(None)):
         for e in i18n.v2_category_entries('monsters'):
             eng = e.get('original') or ''
             ja = e.get('text')
             if eng and ja:
                 yield (eng, ja)
-    else:
-        for _id, e in i18n.originals('monsters').items():
-            eng = e.get('original', '') if isinstance(e, dict) else ''
-            ja = i18n.text(_id)
-            if eng and ja and (ja != _id):
-                yield (eng, ja)
+        return
+    for _id, e in originals.items():
+        eng = e.get('original', '') if isinstance(e, dict) else ''
+        ja = i18n.text(_id)
+        if eng and ja and (ja != _id):
+            yield (eng, ja)
 
 def _monster_names() -> dict[str, str]:
     global _MONSTER_NAMES
@@ -30,6 +31,11 @@ def _monster_names() -> dict[str, str]:
                 result[eng] = ja
         _MONSTER_NAMES = result
     return _MONSTER_NAMES
+
+def lookup_monster_name(name_en: str) -> str | None:
+    if not name_en:
+        return None
+    return _monster_names().get(name_en.strip())
 
 def _monster_phrases() -> dict[str, str]:
     global _MONSTER_PHRASES

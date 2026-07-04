@@ -324,7 +324,7 @@ def _render_spellmaker_detail(w, *, panel_en: str='', panel_ja: str='', reason: 
 def _spellmaker_display(w, sig: dict, form_img: str='') -> tuple[str, str, str, str]:
     if form_img:
         try:
-            from mages_spellmaker import read_form_values, field_label_ja, format_form_layout, format_form_display_html, resolve_edit_slot, resolve_effect_title_from_record
+            from mages_spellmaker import read_form_values, field_label_ja, format_form_layout, format_form_display_text, resolve_edit_slot, resolve_effect_title_from_record
             form = form_img[:-4] if form_img.endswith('.IMG') else form_img
             title = _read_effect_title(w)
             if not title:
@@ -349,7 +349,7 @@ def _spellmaker_display(w, sig: dict, form_img: str='') -> tuple[str, str, str, 
                 en_lines = list(en_lines) + [f'Spell Cost: {cost}']
             tab_en = head_en + ('\n' + '\n'.join(en_lines) if en_lines else '')
             if ja_only_lines or cost is not None:
-                tab_ja = format_form_display_html(form, vals, cost=cost, title_en=head_en, title_ja=head_ja)
+                tab_ja = format_form_display_text(form, vals, cost=cost, title_en=head_en, title_ja=head_ja)
             else:
                 head_display_ja = f'{head_en} {head_ja}' if head_en and head_ja and (head_en != head_ja) else head_ja or head_en
                 tab_ja = head_display_ja

@@ -1,0 +1,16 @@
+{
+  "relations.0.0": "padre",
+  "relations.1.0": "madre",
+  "relations.2.0": "hijo",
+  "relations.3.0": "hija",
+  "relations.4.0": "hermano",
+  "relations.5.0": "hermana",
+  "relations.6.0": "tío",
+  "relations.7.0": "tía",
+  "relations.8.0": "sobrino",
+  "relations.9.0": "sobrina",
+  "relations.10.0": "primo",
+  "relations.11.0": "esposo",
+  "relations.12.0": "esposa",
+  "relations.13.0": "amigo"
+}

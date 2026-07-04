@@ -3,6 +3,12 @@ import os
 import sys
 if hasattr(sys.stdout, 'reconfigure'):
     sys.stdout.reconfigure(encoding='utf-8')
+if '--audio-player' in sys.argv:
+    _here = os.path.dirname(os.path.abspath(__file__))
+    if _here not in sys.path:
+        sys.path.insert(0, _here)
+    from services import audio_player
+    sys.exit(audio_player.run_player())
 _HERE = os.path.dirname(os.path.abspath(__file__))
 
 def _runtime_user_dir() -> str:

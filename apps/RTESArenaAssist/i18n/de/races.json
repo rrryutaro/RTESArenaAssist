@@ -1,0 +1,34 @@
+{
+  "races.0.0": {
+    "value": "Bretone",
+    "plural": "Bretonen"
+  },
+  "races.1.0": {
+    "value": "Rothwardone",
+    "plural": "Rothwardonen"
+  },
+  "races.2.0": {
+    "value": "Nord",
+    "plural": "Nord"
+  },
+  "races.3.0": {
+    "value": "Dunkelelf",
+    "plural": "Dunkelelfen"
+  },
+  "races.4.0": {
+    "value": "Hochelf",
+    "plural": "Hochelfen"
+  },
+  "races.5.0": {
+    "value": "Waldelf",
+    "plural": "Waldelfen"
+  },
+  "races.6.0": {
+    "value": "Khajiit",
+    "plural": "Khajiit"
+  },
+  "races.7.0": {
+    "value": "Argonier",
+    "plural": "Argonier"
+  }
+}

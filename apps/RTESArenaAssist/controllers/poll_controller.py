@@ -99,8 +99,12 @@ def _release_completed_load_screen_owner(w, *, img_name: str, save_detected: boo
     if _current_top_level(w) != 'normal-play':
         return
     if (getattr(w, '_panel_owner', '') or '') != 'load_screen':
+        w._loadscreen_release_pending = False
         return
-    if (img_name or '').upper() == 'LOADSAVE.IMG' and (not save_detected):
+    if save_detected:
+        w._loadscreen_release_pending = True
+    pending = bool(getattr(w, '_loadscreen_release_pending', False))
+    if (img_name or '').upper() == 'LOADSAVE.IMG' and (not (save_detected or pending)):
         return
     if loading_active or loading_post_settle:
         return
@@ -295,11 +299,11 @@ def _poll_resolve_yesno_menu_recovery(w, *, _shop_img_name, _temple_active_now):
     w._yesno_menu_recovery_last = _allow_yesno_menu_recovery
     return _allow_yesno_menu_recovery
 
-def _poll_detect_shop_state(w, *, _shop_img_name, in_interior, _active_facility_name, _allow_yesno_menu_recovery):
+def _poll_detect_shop_state(w, *, _shop_img_name, in_interior, _active_facility_name, _allow_yesno_menu_recovery, area=None):
     try:
         from shop_popup_detector import detect_shop_popup_state
         _active_facility_for_shop = _active_facility_name if _active_facility_name in ('equipment', 'mages_guild', 'temple', 'tavern') else ''
-        _shop_state = detect_shop_popup_state(w._analyzer, w._anchor, top_level_state=_current_top_level(w), img_name=_shop_img_name, in_interior=in_interior, screen_id=w._screen_id_prev, allow_yesno_menu_recovery=_allow_yesno_menu_recovery, interior_mif_name=getattr(w, '_interior_mif_name', '') or '', active_facility_name=_active_facility_for_shop)
+        _shop_state = detect_shop_popup_state(w._analyzer, w._anchor, top_level_state=_current_top_level(w), img_name=_shop_img_name, in_interior=in_interior, screen_id=w._screen_id_prev, allow_yesno_menu_recovery=_allow_yesno_menu_recovery, interior_mif_name=getattr(w, '_interior_mif_name', '') or '', active_facility_name=_active_facility_for_shop, area=area)
     except Exception:
         _log.exception('shop_popup_detector failed')
         _shop_state = None
@@ -917,7 +921,7 @@ def _poll_screen_detect_and_label(w, _img_name, mif_name, _resolved_area, player
                 _kind = known_facility_kind(_active_session_name_for_label, _shop_owner_for_label)
                 if _kind:
                     w._interior_facility_kind = _kind
-            _facility_key = facility_recognition_key(getattr(w, '_interior_mif_name', None) or '', in_interior, active_session_name=_active_session_name_for_label, shop_owner_kind=_shop_owner_for_label, persisted_facility_kind=getattr(w, '_interior_facility_kind', '') or '')
+            _facility_key = facility_recognition_key(getattr(w, '_interior_mif_name', None) or '', in_interior, active_session_name=_active_session_name_for_label, shop_owner_kind=_shop_owner_for_label, persisted_facility_kind=getattr(w, '_interior_facility_kind', '') or '', area=_area or '')
             if _facility_key:
                 _facility_label = i18n.tr(_facility_key)
         except (AttributeError, ImportError):
@@ -1307,7 +1311,7 @@ class PollController:
                 _allow_yesno_menu_recovery = _poll_resolve_yesno_menu_recovery(w, _shop_img_name=_shop_img_name, _temple_active_now=_temple_active_now)
             else:
                 _allow_yesno_menu_recovery = False
-            _shop_state = _poll_detect_shop_state(w, _shop_img_name=_shop_img_name, in_interior=in_interior, _active_facility_name=_active_facility_name, _allow_yesno_menu_recovery=_allow_yesno_menu_recovery)
+            _shop_state = _poll_detect_shop_state(w, _shop_img_name=_shop_img_name, in_interior=in_interior, _active_facility_name=_active_facility_name, _allow_yesno_menu_recovery=_allow_yesno_menu_recovery, area=_poll_hierarchy_area)
             if _top_is_normal_play:
                 _tview, _tavern_l4_kind, _facility_tavern = _poll_classify_tavern_view_and_log(w, _shop_state=_shop_state, _shop_img_name=_shop_img_name, in_interior=in_interior, _tavern_active_now=_tavern_active_now)
             else:
@@ -1393,7 +1397,7 @@ class PollController:
             _b30_dialog_active_prev = _b30['dialog_active_prev']
             _b30_img_name = _b30['img_name']
             _b30_in_gameplay = _b30['in_gameplay']
-            _poll_c1_surface_dispatch(w, _b30, npc_dialog_changed=_npc_dialog_changed, inf_name=inf_name, mif_name=mif_name, instore_resp_handled=_instore_resp_handled)
+            _poll_c1_surface_dispatch(w, _b30, npc_dialog_changed=_npc_dialog_changed, inf_name=inf_name, mif_name=mif_name, instore_resp_handled=_instore_resp_handled, c_area=_poll_hierarchy_area)
             from normal_play.level_up_module import produce_level_up_state as _produce_level_up_state
             _level_up_continue = _produce_level_up_state(w, loading_active=w._loading_state_active, load_edge_start=_load_edge_start, loading_post_settle=_loading_post_settle)
             from normal_play.item_pickup_module import poll_item_pickup as _poll_item_pickup

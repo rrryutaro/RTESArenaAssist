@@ -4,6 +4,10 @@ import locale
 import logging
 import os
 from typing import Any
+try:
+    import i18n_language_config as _langcfg
+except ImportError:
+    from . import i18n_language_config as _langcfg
 logger = logging.getLogger(__name__)
 _BASE_DIR: str = ''
 _I18N_DIR: str = ''
@@ -36,9 +40,9 @@ _V2_SURFACE_WARNINGS: dict = {}
 _V2_SLOT_INDEX: dict = {}
 _V2_SECTION_INDEX: dict = {}
 _V2_DEGRADED_ACCEPTED: dict = {}
-_V2_LOCALE_TAG = {'ja': 'ja-JP', 'en': 'en-US', 'es': 'es-ES'}
-_PHASE5_VALUE_SAFE = frozenset({'calendar', 'chargen_race_descriptions', 'classes', 'equipment_suffixes', 'item_enchantments', 'location_types', 'protect_locations', 'races', 'spells', 'titles', 'template_dat_building_entry'})
-_PHASE5_ITERATOR_SAFE = frozenset({'npc_dialog', 'npc_name_chunks', 'travel'})
+_V2_LOCALE_TAG = dict(_langcfg.DEFAULT_LOCALE_TAGS)
+_PHASE5_VALUE_SAFE = frozenset({'calendar', 'chargen_race_descriptions', 'classes', 'equipment_suffixes', 'item_enchantments', 'location_types', 'protect_locations', 'races', 'spells', 'titles', 'template_dat_building_entry', 'travel'})
+_PHASE5_ITERATOR_SAFE = frozenset({'npc_dialog', 'npc_name_chunks'})
 _PHASE5_DEGRADED_COMPLETE = frozenset({'pronouns', 'npc_traits', 'relations', 'descriptors', 'status_terms'})
 _PHASE5_MIXED_COMPLETE = frozenset({'mages', 'item_materials'})
 _PHASE5_LIVE_SURFACE_PENDING = frozenset({'ask_about_menu', 'dungeon_messages', 'eras', 'gods', 'placeholder_values', 'pregame_intro', 'status_buffer_text', 'ui'})
@@ -46,7 +50,8 @@ PHASE5_ENABLE_SET = _PHASE5_VALUE_SAFE | _PHASE5_ITERATOR_SAFE | _PHASE5_DEGRADE
 _PHASE5_PARTIAL_OBS_ALLOWLIST = frozenset({'items', 'equipment', 'mages', 'character', 'dungeon', 'monsters', 'item_materials', 'pronouns', 'relations', 'ask_about_menu', 'status_buffer_text', 'descriptors', 'status_terms', 'npc_traits'})
 
 def _v2_locale_tag(lang: str) -> str:
-    return _V2_LOCALE_TAG.get((lang or '').lower(), lang)
+    code = (lang or '').lower()
+    return _langcfg.locale_tag_for(code, _meta_all.get(code) or None)
 
 def enable_v2(*, bundle_path: str, legacy_map_path: str, localpack_path: str | None=None, mods_dir: str | None=None) -> None:
     global _V2_COMPAT
@@ -481,8 +486,18 @@ def available_languages() -> list[dict[str, str]]:
         if name.startswith('_') or not _i18n_isdir(name):
             continue
         meta = _meta_all.get(name, {})
+        if not _language_selectable(meta):
+            continue
         results.append({'code': name, 'display_name': meta.get('display_name', name), 'direction': meta.get('direction', 'ltr')})
     return results
+
+def _language_selectable(meta: dict[str, Any]) -> bool:
+    status = meta.get('status') if isinstance(meta, dict) else None
+    if status == _langcfg.DRAFT_STATUS:
+        return False
+    if _PUBLIC_RUNTIME:
+        return _langcfg.is_public_enabled(meta, default=True)
+    return True
 
 def _available_codes() -> set[str]:
     return {entry['code'] for entry in available_languages()}

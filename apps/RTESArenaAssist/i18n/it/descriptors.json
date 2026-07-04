@@ -1,0 +1,10 @@
+{
+  "descriptors.0.0": "uomo",
+  "descriptors.1.0": "donna",
+  "descriptors.2.0": "vecchio",
+  "descriptors.3.0": "vecchia",
+  "descriptors.4.0": "giovane uomo",
+  "descriptors.5.0": "giovane donna",
+  "descriptors.6.0": "ragazzo",
+  "descriptors.7.0": "ragazza"
+}

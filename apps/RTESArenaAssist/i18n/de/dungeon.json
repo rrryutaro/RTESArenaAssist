@@ -1,0 +1,23 @@
+{
+  "dungeon.imperial_city.0": "Kaiserstadt",
+  "dungeon.dungeon.0": "Verlies",
+  "dungeon.wilderness.0": "Wildnis",
+  "dungeon.city.0": "Stadt",
+  "dungeon.town.0": "Ort",
+  "dungeon.north.0": "Norden",
+  "dungeon.northeast.0": "Nordosten",
+  "dungeon.east.0": "Osten",
+  "dungeon.southeast.0": "Südosten",
+  "dungeon.south.0": "Süden",
+  "dungeon.southwest.0": "Südwesten",
+  "dungeon.west.0": "Westen",
+  "dungeon.northwest.0": "Nordwesten",
+  "dungeon.iron.0": "Eisen",
+  "dungeon.steel.0": "Stahl",
+  "dungeon.silver.0": "Silber",
+  "dungeon.elven.0": "Elfen",
+  "dungeon.dwarven.0": "Zwergen",
+  "dungeon.mithril.0": "Mithril",
+  "dungeon.adamantium.0": "Adamantium",
+  "dungeon.ebony.0": "Ebenerz"
+}

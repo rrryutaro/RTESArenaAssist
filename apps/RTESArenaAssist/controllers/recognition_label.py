@@ -129,13 +129,15 @@ def known_facility_kind(*hints: str) -> str:
             return h
     return ''
 
-def facility_recognition_key(interior_mif_name: str, in_interior: bool, *, active_session_name: str='', shop_owner_kind: str='', persisted_facility_kind: str='') -> str:
+def facility_recognition_key(interior_mif_name: str, in_interior: bool, *, active_session_name: str='', shop_owner_kind: str='', persisted_facility_kind: str='', area: str='') -> str:
     if not in_interior:
         return ''
     u = (interior_mif_name or '').upper()
     for prefix, key in _FACILITY_PREFIX_KEYS:
         if u.startswith(prefix):
             return key
+    if area == 'dungeon':
+        return ''
     for hint in (active_session_name, shop_owner_kind, persisted_facility_kind):
         key = _SESSION_FACILITY_KEYS.get(hint or '')
         if key:
