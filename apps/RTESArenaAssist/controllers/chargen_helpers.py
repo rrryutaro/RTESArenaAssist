@@ -74,8 +74,21 @@ def _looks_like_cinematic(text: str) -> bool:
     return printable / max(len(text), 1) >= 0.85
 _CHARGEN_NAME_RE = re.compile('will be thy name,\\s+(\\w+)\\?', re.IGNORECASE)
 _CHARGEN_CLASS_JA: dict[str, str] = _LazyClassJaMap()
-_CHARGEN_PEOPLE_JA: dict[str, str] = {'Bretons': 'ブレトン', 'Redguards': 'レッドガード', 'Nords': 'ノルド', 'Dark Elves': 'ダークエルフ', 'High Elves': 'ハイエルフ', 'Wood Elves': 'ウッドエルフ', 'Khajiit': 'カジート', 'Argonians': 'アルゴニアン', 'Imperials': 'インペリアル'}
-_CHARGEN_RACE_INF_TO_JA: dict[str, str] = {'BRETON': 'ブレトン', 'REDGUARD': 'レッドガード', 'NORD': 'ノルド', 'DARK_ELF': 'ダークエルフ', 'HIGH_ELF': 'ハイエルフ', 'WOOD_ELF': 'ウッドエルフ', 'KHAJIIT': 'カジート', 'ARGONIAN': 'アルゴニアン'}
+
+def _translate_race_plural(en_plural: str) -> str:
+    import arena_data
+    idx = arena_data.race_index_from_en(en_plural)
+    if idx is None:
+        return en_plural
+    return arena_data.race_display_name(idx) or en_plural
+
+def race_display_from_inf_key(race_key: str) -> str | None:
+    import arena_data
+    canonical = (race_key or '').replace('_', ' ').title()
+    idx = arena_data.race_index_from_en(canonical)
+    if idx is None:
+        return None
+    return arena_data.race_display_name(idx)
 _PROVINCE_ALIASES = {'summerset isle': 'glossary.summerset_isle.0'}
 
 def _translate_province(en: str) -> str:
@@ -91,4 +104,4 @@ def _translate_province(en: str) -> str:
         if ja:
             return ja
     return en
-_CHARGEN_DYNAMIC_PATTERNS: list[tuple] = [(re.compile('From where dost thou hail', re.IGNORECASE), '_CHARGEN_PROVINCE_', re.compile('From where dost thou hail,\\s+(.+?)\\s+the\\s+(\\w+)\\?', re.IGNORECASE), lambda m: {'[name]': m.group(1), '[クラス]': _CHARGEN_CLASS_JA.get(m.group(2), m.group(2))}, None), (re.compile('Thou hast chosen .+?, land of the', re.IGNORECASE), '_CHARGEN_PROVINCE_CONFIRM_', re.compile('Thou hast chosen (.+?), land of the (.+?)\\.', re.IGNORECASE), lambda m: {'[プロヴィンス]': _translate_province(m.group(1)), '[種族]': _CHARGEN_PEOPLE_JA.get(m.group(2), m.group(2))}, '\n\nYes\nNo'), (re.compile('Then thou wilt be known as the', re.IGNORECASE), '_CHARGEN_COMPLETE_', re.compile('Then thou wilt be known as the (\\w+) (.+?), who wouldst call (.+?), land of the (.+?), h(?:er|is) home\\.', re.IGNORECASE), lambda m: {'[クラス]': _CHARGEN_CLASS_JA.get(m.group(1), m.group(1)), '[name]': m.group(2), '[プロヴィンス]': _translate_province(m.group(3)), '[種族]': _CHARGEN_PEOPLE_JA.get(m.group(4), m.group(4))}, None)]
+_CHARGEN_DYNAMIC_PATTERNS: list[tuple] = [(re.compile('From where dost thou hail', re.IGNORECASE), '_CHARGEN_PROVINCE_', re.compile('From where dost thou hail,\\s+(.+?)\\s+the\\s+(\\w+)\\?', re.IGNORECASE), lambda m: {'[name]': m.group(1), '[クラス]': _CHARGEN_CLASS_JA.get(m.group(2), m.group(2))}, None), (re.compile('Thou hast chosen .+?, land of the', re.IGNORECASE), '_CHARGEN_PROVINCE_CONFIRM_', re.compile('Thou hast chosen (.+?), land of the (.+?)\\.', re.IGNORECASE), lambda m: {'[プロヴィンス]': _translate_province(m.group(1)), '[種族]': _translate_race_plural(m.group(2))}, '\n\nYes\nNo'), (re.compile('Then thou wilt be known as the', re.IGNORECASE), '_CHARGEN_COMPLETE_', re.compile('Then thou wilt be known as the (\\w+) (.+?), who wouldst call (.+?), land of the (.+?), h(?:er|is) home\\.', re.IGNORECASE), lambda m: {'[クラス]': _CHARGEN_CLASS_JA.get(m.group(1), m.group(1)), '[name]': m.group(2), '[プロヴィンス]': _translate_province(m.group(3)), '[種族]': _translate_race_plural(m.group(4))}, None)]

@@ -1,0 +1,18 @@
+{
+  "lock_messages.difficulty.0": "Questa serratura non ha nulla da temere da te...",
+  "lock_messages.difficulty.1": "Sarebbe un miracolo se scassinassi questa serratura...",
+  "lock_messages.difficulty.2": "Questa serratura sembra superiore alle tue capacità...",
+  "lock_messages.difficulty.3": "Dubiti di riuscire ad aprire questa serratura...",
+  "lock_messages.difficulty.4": "Questa serratura sembra difficile...",
+  "lock_messages.difficulty.5": "Questa serratura sarebbe una sfida per te...",
+  "lock_messages.difficulty.6": "Questa serratura sarebbe una buona sfida...",
+  "lock_messages.difficulty.7": "Pensi di riuscire a scassinare questa serratura...",
+  "lock_messages.difficulty.8": "Questa serratura sembra relativamente facile...",
+  "lock_messages.difficulty.9": "Questa serratura ti diverte...",
+  "lock_messages.difficulty.10": "Ridi della qualità dilettantesca di questa serratura...",
+  "lock_messages.difficulty.11": "Vedi una patetica imitazione di serratura...",
+  "lock_messages.difficulty.12": "Questa serratura è un insulto alle tue capacità...",
+  "lock_messages.difficulty.13": "Questa è una serratura sigillata dalla magia...",
+  "lock_messages.key_picked_up.0": "Hai trovato una chiave di %s.",
+  "lock_messages.door_unlocked_with_key.0": "Apri la porta con una chiave di %s."
+}

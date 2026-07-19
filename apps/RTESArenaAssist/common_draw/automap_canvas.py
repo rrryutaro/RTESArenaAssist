@@ -1,10 +1,13 @@
 from __future__ import annotations
+import logging
 import math
 from dataclasses import dataclass
 import numpy as np
 from PySide6.QtCore import QPoint, QPointF, QRect, Qt
 from PySide6.QtGui import QColor, QFont, QMouseEvent, QPainter, QPen, QPolygon, QWheelEvent
 from PySide6.QtWidgets import QWidget
+from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
+_log = logging.getLogger('common_draw.automap_canvas')
 _BG_DARK = QColor(26, 26, 46)
 _PARCHMENT = QColor(170, 130, 81)
 _NOTE_COLOR = QColor(233, 69, 96)
@@ -52,6 +55,10 @@ class CanvasData:
     menu_texture_indices: frozenset[int] = frozenset()
     hidden_door_gating: bool = False
     discovered_hidden_door_cells: frozenset[tuple[int, int]] = frozenset()
+    map_key: str | None = None
+    cache_index: int | None = None
+    suppress_map: bool = False
+    suppress_reason: str = ''
     chunk_origin: tuple[int, int] | None = None
 
 def _map1_kind(value: int) -> str:
@@ -175,13 +182,24 @@ class AutomapCanvas(QWidget):
         self._pan: QPointF = QPointF(0, 0)
         self._drag_last: QPointF | None = None
         self._user_panned = False
+        self._data_view_key: tuple | None = None
+        self._diag_prev_paint: tuple = ()
         self.setMouseTracking(True)
         self.setMinimumSize(420, 420)
         self.setStyleSheet('background-color: #1a1a2e;')
 
     def set_data(self, data: CanvasData) -> None:
         prev_x, prev_y = (self._data.player_x, self._data.player_y)
+        prev_key = self._canvas_data_view_key(self._data)
+        next_key = self._canvas_data_view_key(data)
+        data_changed = prev_key != next_key
         self._data = data
+        if data_changed:
+            self._data_view_key = next_key
+            if self._center_on_player:
+                self._user_panned = False
+                if data.player_x is None or data.player_y is None:
+                    self._pan = QPointF(0, 0)
         if data.hidden_door_ids:
             self._hidden_door_ids = set(data.hidden_door_ids)
         else:
@@ -193,6 +211,11 @@ class AutomapCanvas(QWidget):
         if data.player_x is not None and data.player_y is not None and (data.player_x != prev_x or data.player_y != prev_y):
             self._user_panned = False
         self.update()
+
+    def _canvas_data_view_key(self, data: CanvasData) -> tuple:
+        shape = None if data.walkable is None else tuple(data.walkable.shape)
+        bitmap_shape = None if data.bitmap_grid is None else tuple(data.bitmap_grid.shape)
+        return (data.map_key, shape, bitmap_shape, data.is_wilderness, data.chunk_origin, id(data.walkable), id(data.map1), id(data.flor), id(data.bitmap_grid))
 
     def set_hidden_door_ids(self, ids: set[int]) -> None:
         self._hidden_door_ids = set(ids) if ids else set()
@@ -290,6 +313,39 @@ class AutomapCanvas(QWidget):
         target_pan_x = canvas_w / 2 - (px + 0.5) * self._zoom
         target_pan_y = canvas_h / 2 - (py + 0.5) * self._zoom
         self._pan = QPointF(target_pan_x, target_pan_y)
+
+    def _view_center_cell(self, W: int, H: int) -> tuple[float, float]:
+        canvas_w = W * self._zoom
+        canvas_h = H * self._zoom
+        ox = (self.width() - canvas_w) / 2 + self._pan.x()
+        oy = (self.height() - canvas_h) / 2 + self._pan.y()
+        screen_x = (self.width() / 2 - ox) / self._zoom - 0.5
+        screen_y = (self.height() / 2 - oy) / self._zoom - 0.5
+        data_x = W - 1 - screen_x if self._x_flip else screen_x
+        return (data_x, screen_y)
+
+    def _log_paint_diag(self, W: int, H: int, *, suppressed: bool=False, suppress_reason: str='') -> None:
+        if not _log.isEnabledFor(_RECOG_LEVEL):
+            return
+        d = self._data
+        reason = suppress_reason or (d.suppress_reason if d.suppress_map else '')
+        vcx, vcy = self._view_center_cell(W, H)
+        diag = (self.objectName(), d.map_key, d.cache_index, W, H, d.player_x, d.player_y, round(self._pan.x(), 1), round(self._pan.y(), 1), round(vcx, 2), round(vcy, 2), self._center_on_player, self._user_panned, suppressed, reason, self.isVisible(), self.width(), self.height())
+        if diag == self._diag_prev_paint:
+            return
+        self._diag_prev_paint = diag
+        _log.log(_RECOG_LEVEL, 'canvas paint[%s]: map_key=%r cache=#%s walkable=(%d,%d) player=(%s,%s) pan=(%.1f,%.1f) view_center=(%.2f,%.2f) center_on=%s user_panned=%s suppressed=%s reason=%r visible=%s size=(%d,%d)', diag[0], d.map_key, d.cache_index, W, H, d.player_x, d.player_y, self._pan.x(), self._pan.y(), vcx, vcy, self._center_on_player, self._user_panned, suppressed, reason, self.isVisible(), self.width(), self.height())
+
+    def _map_suppression_reason(self) -> str:
+        d = self._data
+        if d.suppress_map:
+            return d.suppress_reason or 'upstream'
+        if self._center_on_player and (not self._user_panned) and (d.player_x is None or d.player_y is None):
+            return 'unpositioned_center_follow'
+        return ''
+
+    def _should_suppress_unpositioned_map(self) -> bool:
+        return self._map_suppression_reason() == 'unpositioned_center_follow'
 
     def _palette(self) -> dict[str, QColor]:
         return _CELL_COLORS_MAPVIEWER if self._reveal_all else _CELL_COLORS_ARENA
@@ -418,7 +474,12 @@ class AutomapCanvas(QWidget):
         if d.walkable is None:
             return
         H, W = d.walkable.shape
+        _suppress_reason = self._map_suppression_reason()
+        if _suppress_reason:
+            self._log_paint_diag(W, H, suppressed=True, suppress_reason=_suppress_reason)
+            return
         self._apply_player_centering(W, H)
+        self._log_paint_diag(W, H)
         canvas_w = W * self._zoom
         canvas_h = H * self._zoom
         ox = (self.width() - canvas_w) / 2 + self._pan.x()

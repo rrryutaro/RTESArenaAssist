@@ -24,14 +24,14 @@ OFF_EXP_U32 = 1453
 OFF_FATIGUE_U16 = 513
 OFF_FATIGUE_MAX = None
 OFF_BONUS_PTS = None
-RACE_INDEX_TO_DISPLAY: dict[int, tuple[str, str]] = {0: ('Breton', 'ブレトン'), 1: ('Redguard', 'レッドガード'), 2: ('Nord', 'ノルド'), 3: ('Dark Elf', 'ダークエルフ'), 4: ('High Elf', 'ハイエルフ'), 5: ('Wood Elf', 'ウッドエルフ'), 6: ('Khajiit', 'カジート'), 7: ('Argonian', 'アルゴニアン')}
 ATTR_KEYS = ('STR', 'INT', 'WIL', 'AGI', 'SPD', 'END', 'PER', 'LUC')
-ATTR_DISPLAY_EN = ('Str', 'Int', 'Wil', 'Agi', 'Spd', 'End', 'Per', 'Luc')
-ATTR_DISPLAY_JA = ('筋力', '知性', '意志力', '敏捷', '速度', '持久力', '個性', '幸運')
+
+def attr_label(attr_key: str) -> str:
+    return i18n.text(f'status.attr.{attr_key}')
 DERIVED_COL2_BY_ATTR: dict[int, str] = {0: 'damage', 1: 'spell_pts', 2: 'magic_def', 3: 'to_hit', 5: 'health', 6: 'charisma'}
 DERIVED_COL3_BY_ATTR: dict[int, str] = {0: 'max_kilos', 3: 'to_defend', 5: 'heal_mod'}
-DERIVED_LABELS: dict[str, tuple[str, str]] = {'damage': ('Damage', 'ダメージ'), 'spell_pts': ('Spell Pts', '呪文ポイント'), 'magic_def': ('Magic Def', '魔法防御'), 'to_hit': ('to Hit', '命中'), 'to_defend': ('to Defend', '防御'), 'health': ('Health', '体力'), 'charisma': ('Charisma', '魅力'), 'heal_mod': ('Heal Mod', '回復補正'), 'max_kilos': ('Max Kilos', '最大重量'), 'bonus_pts': ('BONUS PTS', 'ボーナスPTS')}
-STAT_LABELS: dict[str, tuple[str, str]] = {'hp': ('Health', '体力'), 'fatigue': ('Fatigue', '疲労'), 'gold': ('Gold', 'ゴールド'), 'experience': ('Experience', '経験値'), 'level': ('Level', 'レベル')}
+DERIVED_LABEL_KEYS: dict[str, str] = {'damage': 'status.derived.damage', 'spell_pts': 'status.derived.spell_pts', 'magic_def': 'status.derived.magic_def', 'to_hit': 'status.derived.to_hit', 'to_defend': 'status.derived.to_defend', 'health': 'status.derived.health', 'charisma': 'status.derived.charisma', 'heal_mod': 'status.derived.heal_mod', 'max_kilos': 'status.derived.max_kilos', 'bonus_pts': 'status.derived.bonus_pts'}
+STAT_LABEL_KEYS: dict[str, str] = {'hp': 'status.stat.health', 'fatigue': 'status.stat.fatigue', 'gold': 'status.stat.gold', 'experience': 'status.stat.experience', 'level': 'status.stat.level'}
 
 def resolve_class_en_from_label(label: Optional[str]) -> Optional[str]:
     text = (label or '').strip()
@@ -42,7 +42,7 @@ def resolve_class_en_from_label(label: Optional[str]) -> Optional[str]:
         value_norm = value.strip().lower()
         try:
             from class_list_panel import CLASS_LIST_ORDER
-            for canonical, _kana, _kanji in CLASS_LIST_ORDER:
+            for canonical in CLASS_LIST_ORDER:
                 if value_norm == canonical.lower():
                     return canonical
         except ImportError:
@@ -57,19 +57,10 @@ def resolve_class_en_from_label(label: Optional[str]) -> Optional[str]:
         if from_paren:
             return from_paren
     try:
-        from class_list_panel import CLASS_LIST_ORDER
-        for canonical, kana, kanji in CLASS_LIST_ORDER:
-            if text == kana or (kanji and text == kanji):
-                return canonical
-            if kanji and text == f'{kana}（{kanji}）':
-                return canonical
-    except ImportError:
-        pass
-    try:
-        from controllers.chargen_helpers import _CHARGEN_CLASS_JA
-        for en_name, ja_name in _CHARGEN_CLASS_JA.items():
-            if text == ja_name:
-                return en_name
+        from class_list_panel import resolve_class_from_display_name
+        resolved = resolve_class_from_display_name(text)
+        if resolved:
+            return resolved
     except ImportError:
         pass
     return None
@@ -108,8 +99,12 @@ ROW_GOLD_EXP_GAP = 18
 ROW_EXP = 19
 ROW_LEVEL = 20
 
-def _bilingual(en: str, ja: str) -> str:
-    return f'{en} ({ja})'
+def _bilingual(label_id: str) -> str:
+    en = i18n.lang_value_in(label_id, 'en') or ''
+    translated = i18n.text(label_id)
+    if not en or en == translated:
+        return translated or en
+    return f'{en} ({translated})'
 
 class AttributesPanel(QWidget):
 
@@ -347,13 +342,9 @@ class AttributesPanel(QWidget):
         en = mapping.get(str(cls_idx))
         if not en:
             return None
-        try:
-            from class_list_panel import CLASS_LIST_ORDER
-            for canonical, kana, kanji in CLASS_LIST_ORDER:
-                if canonical == en:
-                    return f'{kana} ({en})'
-        except ImportError:
-            pass
+        name = i18n.value('classes', en)
+        if name and name != en:
+            return f'{name} ({en})'
         return en
 
     def _on_attr_changed(self, value: int) -> None:

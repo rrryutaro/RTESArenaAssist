@@ -6,9 +6,11 @@ OWNER_FACILITY_OR_NEGOT: frozenset = frozenset({'tavern_yesno', 'tavern_rumor_ty
 INVALID_HELD_COORDS: frozenset = frozenset({(0, 0), (3, 3)})
 POST_EXIT_GUARD_MAX_POLLS = 60
 
-def resolve_post_exit_coord(*, guard_active: bool, guard_remaining: int, stale_rt: Optional[tuple], door: Optional[tuple], raw_xy: tuple, show_xy: tuple):
+def resolve_post_exit_coord(*, guard_active: bool, guard_remaining: int, stale_rt: Optional[tuple], door: Optional[tuple], raw_xy: tuple, show_xy: tuple, is_loading: bool=False):
     if not guard_active or door is None or stale_rt is None:
         return (False, guard_remaining, show_xy[0], show_xy[1], False)
+    if is_loading:
+        return (True, guard_remaining, show_xy[0], show_xy[1], False)
     new_remaining = guard_remaining - 1
     if raw_xy == stale_rt and new_remaining > 0:
         return (True, new_remaining, door[0], door[1], True)
@@ -23,9 +25,11 @@ class MapSafeCoord:
     unsafe_reasons: list = field(default_factory=list)
 _NPC_PHASE_IDLE = 0
 
-def compute_map_safe_coord(*, img_name: str, npc_phase: Optional[int], is_building_entry_msg: bool, facility_active: bool, owner: str, raw_x: Optional[int], raw_y: Optional[int], raw_angle: Optional[float], last_x: Optional[int], last_y: Optional[int], last_angle: Optional[float], npc_phase_idle_value: int=_NPC_PHASE_IDLE) -> MapSafeCoord:
+def compute_map_safe_coord(*, img_name: str, npc_phase: Optional[int], is_building_entry_msg: bool, facility_active: bool, owner: str, raw_x: Optional[int], raw_y: Optional[int], raw_angle: Optional[float], last_x: Optional[int], last_y: Optional[int], last_angle: Optional[float], is_loading: bool=False, npc_phase_idle_value: int=_NPC_PHASE_IDLE) -> MapSafeCoord:
     img_upper = (img_name or '').upper()
     unsafe_reasons: list = []
+    if is_loading:
+        unsafe_reasons.append('loading')
     if is_building_entry_msg:
         unsafe_reasons.append('building_entry')
     if npc_phase is not None and npc_phase != npc_phase_idle_value:

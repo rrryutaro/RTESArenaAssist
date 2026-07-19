@@ -53,6 +53,7 @@ class TabCapture(QWidget):
         super().__init__(parent)
         self._cap_dir = ''
         self._caps: list[int] = []
+        self._items: list[QListWidgetItem] = []
         self._locks: set[int] = set()
         self._build_ui()
 
@@ -154,6 +155,7 @@ class TabCapture(QWidget):
 
     def refresh(self) -> None:
         self._list.clear()
+        self._items = []
         self._caps = []
         self._img_game.set_text(i18n.tr('capture.no_image'))
         self._img_viewer.set_text(i18n.tr('capture.no_image'))
@@ -182,7 +184,9 @@ class TabCapture(QWidget):
             return
         self._set_empty(False)
         for n in self._caps:
-            self._list.addItem(self._make_item(n))
+            item = self._make_item(n)
+            self._list.addItem(item)
+            self._items.append(item)
         self._list.setCurrentRow(0)
         self._del_all_btn.setEnabled(any((n not in self._locks for n in self._caps)))
 
@@ -217,7 +221,10 @@ class TabCapture(QWidget):
             self._locks.add(n)
         self._save_locks()
         self._list.takeItem(row)
-        self._list.insertItem(row, self._make_item(n))
+        item = self._make_item(n)
+        self._list.insertItem(row, item)
+        if 0 <= row < len(self._items):
+            self._items[row] = item
         self._list.setCurrentRow(row)
         self._update_buttons(n)
 

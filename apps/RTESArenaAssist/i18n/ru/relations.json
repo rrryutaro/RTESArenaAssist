@@ -1,0 +1,16 @@
+{
+  "relations.0.0": "отец",
+  "relations.1.0": "мать",
+  "relations.2.0": "сын",
+  "relations.3.0": "дочь",
+  "relations.4.0": "брат",
+  "relations.5.0": "сестра",
+  "relations.6.0": "дядя",
+  "relations.7.0": "тётя",
+  "relations.8.0": "племянник",
+  "relations.9.0": "племянница",
+  "relations.10.0": "кузен",
+  "relations.11.0": "муж",
+  "relations.12.0": "жена",
+  "relations.13.0": "друг"
+}

@@ -29,11 +29,6 @@ def read_journal_raw(analyzer: 'ArenaMemoryAnalyzer', anchor: int) -> Optional[s
     if not text or len(text.strip()) < 5:
         return None
     return text
-_DATE_LINE_PREFIX_RE = None
-
-def _looks_like_date_line(line: str) -> bool:
-    import re
-    return bool(re.match('^[A-Z][a-z]+,\\s+\\d+', line.strip()))
 
 def _clean_journal_line(line: str) -> str:
     line = (line or '').strip()
@@ -50,36 +45,19 @@ def _clean_body_text(lines: list[str]) -> str:
 def parse_journal_entries(text: str) -> list[tuple[Optional[str], Optional[str]]]:
     if not text:
         return []
-    normalized = text.replace('\r\n', '\n').replace('\r', '\n')
-    lines = [_clean_journal_line(ln) for ln in normalized.split('\n') if _clean_journal_line(ln)]
-    if not lines:
-        return []
     entries: list[tuple[Optional[str], Optional[str]]] = []
-    date_line: Optional[str] = None
-    body_lines: list[str] = []
-
-    def flush() -> None:
-        nonlocal date_line, body_lines
-        if date_line is None:
-            return
-        body_text = _clean_body_text(body_lines)
+    for chunk in text.split('&'):
+        normalized = chunk.replace('\r\n', '\n').replace('\r', '\n')
+        lines: list[str] = []
+        for raw_line in normalized.split('\n'):
+            cleaned = _clean_journal_line(raw_line)
+            if cleaned and cleaned not in {'Back', 'More', 'Exit'}:
+                lines.append(cleaned)
+        if not lines:
+            continue
+        date_line = lines[0]
+        body_text = _clean_body_text(lines[1:])
         entries.append((date_line or None, body_text or None))
-        date_line = None
-        body_lines = []
-    for line in lines:
-        if _looks_like_date_line(line):
-            flush()
-            date_line = line
-            body_lines = []
-            continue
-        if date_line is None:
-            date_line = line
-            body_lines = []
-            continue
-        if line in {'Back', 'More', 'Exit'}:
-            continue
-        body_lines.append(line)
-    flush()
     return entries
 
 def split_journal_lines(text: str) -> tuple[Optional[str], Optional[str]]:

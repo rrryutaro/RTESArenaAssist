@@ -502,6 +502,10 @@ def _poll_l4_dialog_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog
     w._temple_dialog_context_prev = _temple_dialog_context
     if _facility_reply_handled:
         _entry_handled = True
+    if not _entry_handled:
+        from normal_play.camp_rest_module import poll_camp_rest as _poll_camp_rest
+        if _poll_camp_rest(w):
+            _entry_handled = True
     from normal_play.npc_dialog_module import poll_npc_dialog as _poll_npc_dialog
     _instore_resp_handled = False
     if not _entry_handled:

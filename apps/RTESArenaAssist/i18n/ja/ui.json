@@ -21,6 +21,9 @@
   "ui.automap.0": "オートマップ",
   "ui.rest.0": "休息",
   "ui.camp.0": "キャンプ",
+  "ui.camp_options_title.0": "キャンプメニュー",
+  "ui.camp_for_a_while.0": "しばらくキャンプする…",
+  "ui.camp_until_healed.0": "完全に回復するまで",
   "ui.talk.0": "話す",
   "ui.steal.0": "盗む",
   "ui.grab.0": "取る",
@@ -98,5 +101,9 @@
   "ui.mages_spell_cost.0": "呪文コスト",
   "ui.mages_new_spell.0": "新規呪文",
   "ui.mages_buy_spell.0": "呪文購入",
-  "ui.mages_spellmaker_menu.0": "呪文作成"
+  "ui.mages_spellmaker_menu.0": "呪文作成",
+  "ui.cure_all.0": "すべて治療",
+  "ui.diseased.0": "病気",
+  "ui.poisoned.0": "毒",
+  "ui.cursed.0": "呪い"
 }

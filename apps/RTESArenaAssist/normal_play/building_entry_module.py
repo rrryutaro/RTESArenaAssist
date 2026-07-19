@@ -160,7 +160,10 @@ def poll_building_entry(w, *, building_entry_active: bool, entry_phase_prev: boo
                 except Exception:
                     pass
                 w._building_entry_pending = False
-                _log.info('panel_owner -> building_entry (src=%s key=%s en=%r)', _src, _entry_meta.get('matched_key'), _txt[:40])
+                _entry_log_key = (_src, _entry_meta.get('matched_key'), _txt[:40])
+                if getattr(w, '_building_entry_log_key', None) != _entry_log_key:
+                    w._building_entry_log_key = _entry_log_key
+                    _log.info('panel_owner -> building_entry (src=%s key=%s en=%r)', _src, _entry_meta.get('matched_key'), _txt[:40])
                 entry_handled = True
                 break
         except Exception:
@@ -169,6 +172,7 @@ def poll_building_entry(w, *, building_entry_active: bool, entry_phase_prev: boo
             _diag_dump_memory(w, msg_buf, npc_dialog)
     elif entry_phase_prev or getattr(w, '_building_entry_pending', False):
         w._building_entry_pending = False
+        w._building_entry_log_key = None
         if w._ui_router.is_owner('building_entry'):
             w._ui_router.release_if_owner('building_entry')
             _log.info("panel_owner -> '' (entry phase exited)")

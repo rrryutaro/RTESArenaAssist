@@ -513,6 +513,8 @@ _DATE_PATTERN_SHORT = re.compile("^([A-Z][a-z]+),\\s+(\\d+)(?:st|nd|rd|th)\\s+of
 _DATE_PATTERN_FULL = re.compile("^([A-Z][a-z]+),\\s+(\\d+)(?:st|nd|rd|th)\\s+of\\s+([A-Z][A-Za-z'\\s]+?)\\s+in\\s+the\\s+year\\s+([0-9]+E)\\s+(\\d+)$")
 
 def _translate_date(value: str, lang: str) -> str:
+    if lang == 'en':
+        return value
     import i18n_helper as i18n
     _load_calendar()
     text = value.strip()
@@ -526,7 +528,7 @@ def _translate_date(value: str, lang: str) -> str:
         weekday_ja = _CALENDAR_WEEKDAYS.get(weekday_en, {}).get(lang, weekday_en)
         month_ja = _CALENDAR_MONTHS.get(month_en, {}).get(lang, month_en)
         era_ja = i18n.value_in('eras', era_en, lang) or era_en
-        return f'{weekday_ja}、{month_ja} {day_str} 日、{era_ja} {year_str} 年'
+        return i18n.text('status_buffer_text.date_format_dialog_full').replace('{weekday}', weekday_ja).replace('{month}', month_ja).replace('{day}', day_str).replace('{era}', era_ja).replace('{year}', year_str)
     m_short = _DATE_PATTERN_SHORT.match(text)
     if m_short:
         weekday_en = m_short.group(1)
@@ -534,7 +536,7 @@ def _translate_date(value: str, lang: str) -> str:
         month_en = m_short.group(3).strip()
         weekday_ja = _CALENDAR_WEEKDAYS.get(weekday_en, {}).get(lang, weekday_en)
         month_ja = _CALENDAR_MONTHS.get(month_en, {}).get(lang, month_en)
-        return f'{weekday_ja}、{month_ja} {day_str} 日'
+        return i18n.text('status_buffer_text.date_format_dialog_short').replace('{weekday}', weekday_ja).replace('{month}', month_ja).replace('{day}', day_str)
     return value
 
 def _translate_calendar_label(value: str, lang: str) -> str:
@@ -621,7 +623,7 @@ def _translate_ds(value: str, lang: str) -> str:
         occupation_ja = _npc_desc_noun(occupation_en, lang) or i18n.value('descriptors', occupation_en.lower()) or translate_placeholder('oc', occupation_en, lang) or occupation_en
         title_ja = _npc_desc_title(title_en, lang) or translate_placeholder('t', title_en, lang) or title_en
         name_ja = translate_generated_name(name_en, lang)
-        return f'{trait_ja}{occupation_ja}の{title_ja}・{name_ja}'
+        return i18n.text('status_buffer_text.ds_format_ask_about').replace('{trait}', trait_ja).replace('{occupation}', occupation_ja).replace('{title}', title_ja).replace('{name}', name_ja)
     m = _DS_TAVERN_QUEST_PATTERN.match(value)
     if m:
         import i18n_helper as i18n
@@ -637,7 +639,7 @@ def _translate_ds(value: str, lang: str) -> str:
             trait_ja_local = _TRAIT_VALUES.get(maybe_trait) or _npc_desc_title(maybe_trait, lang)
             if trait_ja_local:
                 name_ja_local = translate_generated_name(maybe_name, lang)
-                named_ja = f'{trait_ja_local}{name_ja_local}'
+                named_ja = i18n.text('status_buffer_text.ds_format_trait_name').replace('{trait}', trait_ja_local).replace('{name}', name_ja_local)
         if named_ja == named_en:
             translated_name = translate_generated_name(named_en, lang)
             if translated_name and translated_name != named_en:
@@ -657,7 +659,7 @@ def _translate_ds(value: str, lang: str) -> str:
                     locale_ja = place_result
             except Exception:
                 pass
-        return f'{locale_ja} の {named_ja} という {descriptor_ja}'
+        return i18n.text('status_buffer_text.ds_format_tavern_quest').replace('{locale}', locale_ja).replace('{named}', named_ja).replace('{descriptor}', descriptor_ja)
     return value
 
 def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
@@ -734,6 +736,10 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
                 translated = _place_lookup(value)
                 if translated:
                     return translated
+        if name == 'cn' and lang != 'en':
+            _static = _translate_static_place(value, lang)
+            if _static != value:
+                return _static
         return value
     if name in ('cp', 'cll', 'ccs', 'rcn', 'cn2'):
         return _translate_static_place(value, lang)
@@ -755,8 +761,6 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
     if name in ('a', 'a2'):
         return value
     if name == 'da':
-        if lang == 'en':
-            return value
         return _translate_date(value, lang)
     if name == 'omq':
         translated = _translate_quest_item(value, lang)
@@ -841,7 +845,7 @@ def _translate_settlement_location(loc: str, lang: str) -> str:
     loc_type = m.group('type')
     type_ja = i18n.value_in('location_types', loc_type, lang) or i18n.value_in('settlement_types', loc_type, lang) or i18n.lang_value_in(_SETTLEMENT_TYPE_IDS.get(loc_type, ''), lang) or loc_type
     name_ja = _translate_static_place(m.group('name').strip(), lang)
-    return f'{type_ja}「{name_ja}」'
+    return i18n.text('status_buffer_text.settlement_format').replace('{type}', type_ja).replace('{name}', name_ja)
 
 def _translate_arrival(text: str, lang: str='ja') -> str | None:
     if lang == 'en':
@@ -849,6 +853,7 @@ def _translate_arrival(text: str, lang: str='ja') -> str | None:
     m = _ARRIVAL_RE.match(text)
     if not m:
         return None
+    import i18n_helper as i18n
     loc_ja = _translate_settlement_location(m.group('loc'), lang)
     prov_ja = _translate_static_place(m.group('prov'), lang)
     date_ja = _translate_date(m.group('date'), lang)
@@ -858,7 +863,7 @@ def _translate_arrival(text: str, lang: str='ja') -> str | None:
     if flavor:
         r = lookup(flavor)
         flavor_ja = format_japanese(r[0], r[1], lang) if r is not None else flavor
-    result = f'{prov_ja}地方の{loc_ja}に到着した。日付は{date_ja}。目的地まで{days}日かかった。'
+    result = i18n.text('status_buffer_text.travel_arrival_format').replace('{province}', prov_ja).replace('{location}', loc_ja).replace('{date}', date_ja).replace('{days}', days)
     if flavor_ja:
         result += ' ' + flavor_ja
     return result
@@ -931,7 +936,6 @@ def _translate_travel_estimate(text: str, lang: str='ja') -> str | None:
     _ensure_i18n_bound_caches_current()
     if lang == 'en':
         return None
-    cache_key = lang
     res = _TRAVEL_RE_CACHE.get('res')
     if res is None:
         res = _build_travel_res()
@@ -952,7 +956,8 @@ def _translate_travel_estimate(text: str, lang: str='ja') -> str | None:
         date2_ja = _translate_date(g['date2'], lang)
         days = g['days']
         km = g['km']
-        return f'{prov_ja}地方の{loc_ja}。日付は{date1_ja}。現在の天候から、移動に{days}日かかる。総距離は{km} km。到着予定は{date2_ja}。'
+        import i18n_helper as i18n
+        return i18n.text('status_buffer_text.travel_estimate_format').replace('{province}', prov_ja).replace('{location}', loc_ja).replace('{date1}', date1_ja).replace('{days}', days).replace('{km}', km).replace('{date2}', date2_ja)
     return None
 _TRAVEL_ESTIMATE_SHAPE_RE = re.compile('^\\s*(?:The\\s+.+?\\s+of\\s+.+?\\s+in\\s+.+?\\s+Province\\.|.+?\\s+in\\s+.+?\\s+Province\\.|The\\s+.+?\\s+in\\s+the\\s+.+?\\.)\\s+The\\s+date\\s+is\\s+.+?\\s+Based\\s+on\\s+the\\s+current\\s+weather,\\s+it\\s+will\\s+take\\s+\\d+\\s+days?\\s+to\\s+travel\\s+here\\.\\s+The\\s+total\\s+distance\\s+is\\s+[\\d,]+\\s*km\\.\\s+You\\s+should\\s+arrive\\s+by\\s+.+\\s*$', re.IGNORECASE)
 
@@ -1017,19 +1022,30 @@ def travel_location_name(text: str, lang: str='ja') -> tuple[str, str] | None:
         else:
             en = f"The {g['lname']} in the {g['prov']}."
             loc_ja = _translate_static_place(g['lname'], lang)
-        return (en, f'{prov_ja}地方の{loc_ja}')
+        import i18n_helper as i18n
+        return (en, i18n.text('status_buffer_text.travel_location_format').replace('{province}', prov_ja).replace('{location}', loc_ja))
     return None
 _ALREADY_IN_RE = re.compile('^You are already in (.+?)\\.?\\s*$')
 
 def _translate_already_in(text: str, lang: str='ja') -> str | None:
-    if lang != 'ja':
+    if lang == 'en':
         return None
     m = _ALREADY_IN_RE.match(' '.join(text.split()))
     if not m:
         return None
     place = m.group(1).strip()
     place_ja = _translate_static_place(place, lang) or place
-    return f'あなたは既に{place_ja}にいます。'
+    import i18n_helper as i18n
+    return i18n.text('status_buffer_text.already_in_format').replace('{place}', place_ja)
+_CONDITION_WARNING_RE = re.compile('Considering your condition.*attempt the journey', re.S)
+
+def _translate_condition_warning(text: str, lang: str='ja') -> str | None:
+    if lang == 'en':
+        return None
+    if not _CONDITION_WARNING_RE.search(' '.join(text.split())):
+        return None
+    import i18n_helper as i18n
+    return i18n.text('status_buffer_text.travel_condition_warning') or None
 
 def lookup(text: str) -> tuple[str, dict] | None:
     if not text:
@@ -1043,6 +1059,9 @@ def lookup(text: str) -> tuple[str, dict] | None:
     already = _translate_already_in(text, 'ja')
     if already is not None:
         return (already, {})
+    condition = _translate_condition_warning(text, 'ja')
+    if condition is not None:
+        return (condition, {})
     travel = _translate_travel_estimate(text, 'ja')
     if travel is not None:
         return (travel, {})

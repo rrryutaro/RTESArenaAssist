@@ -1,6 +1,7 @@
 from __future__ import annotations
 import logging
 import re
+import i18n_helper as i18n
 from normal_play.mages_render_common import _SPELLDETAIL_KEY, _NPC_DIALOG_OFFSET, _PROMPT_EXTRA_SCAN_OFFSETS, _read_cost_string, _casting_cost_from_spell_cost, _buy_price_for
 from normal_play.mages_spellmaker_render import _SPELL_KEY, _SPELLMAKER_LIST_TITLES, _SPELLMAKER_PROMPT_LITERALS, _SPELLMAKER_PROMPT_FRAGMENT_LITERALS, _SPELLMAKER_REFRESH_DETAIL_PROMPTS, _read_spellmaker_live_spell_cost, _resolve_spellmaker_spell_cost, _resolve_spellmaker_prompt
 _log = logging.getLogger('RTESArenaAssist')
@@ -243,7 +244,7 @@ def _render_list(w, sig: dict, img: str) -> bool:
         title_en, title_ja, items = _select_list_source(w, sig, img)
     except Exception:
         _log.exception('mages_list source select failed')
-        title_en, title_ja, items = ('Items', '一覧', [])
+        title_en, title_ja, items = ('Items', i18n.text('mages_list.title_items'), [])
     setattr(w, _LIST_TITLE_ATTR, title_en)
     items = _stabilize_list(w, title_en, items)
     try:
@@ -258,7 +259,7 @@ def _render_list(w, sig: dict, img: str) -> bool:
             key_now = ('unparsed', img)
             if key_now != getattr(w, _LIST_KEY, None) or owner_taken:
                 setattr(w, _LIST_KEY, key_now)
-                w._ui_router.update_translation(LIST_OWNER, f'{title_en} (list parsing...)', f'{title_ja} (解析中)', priority=90, reason=f'mages_list_unparsed:{title_en}')
+                w._ui_router.update_translation(LIST_OWNER, f'{title_en} (list parsing...)', i18n.text('mages_list.parsing_format').replace('{title}', title_ja), priority=90, reason=f'mages_list_unparsed:{title_en}')
                 _log.info('mages_list unparsed placeholder (img=%r)', img)
     except Exception:
         _log.exception('mages_list update failed')

@@ -1,15 +1,20 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
+from normal_play.equipment_l4_state import EQUIPMENT_OWNERS
 L1_TO_CODE_NAME = {'pregame': ('A', '起動中'), 'chargen': ('B', 'キャラクター作成中'), 'normal-play': ('C', '通常ゲーム中')}
 AREA_TO_BASE_KEY = {'dungeon': 'dungeon', 'city': 'city', 'wilderness': 'wilderness'}
 BASE_KEY_TO_AREA = {'dungeon': 'dungeon', 'city': 'city', 'wilderness': 'wilderness'}
 AREA_TO_C_CODE_NAME = {'dungeon': ('C1', 'ダンジョン'), 'city': ('C2', '街'), 'wilderness': ('C3', 'フィールド')}
 CONVERSATION_SESSION_NAMES = frozenset({'npc_chat', 'tavern', 'temple', 'equipment', 'mages_guild'})
 FACILITY_CONVERSATION_SESSION_NAMES = frozenset({'tavern', 'temple', 'equipment', 'mages_guild'})
-CONVERSATION_PANEL_OWNERS = frozenset({'npc_dialog', 'npc_conversation', 'npc_message', 'active_template', 'temple_active_template', 'temple_menu', 'temple_cost', 'temple_prompt', 'temple_priest_reply', 'negotiation', 'tavern_yesno', 'tavern_rumor_type', 'tavern_negotiation', 'shop_menu', 'shop_rumor_type', 'shop_buy', 'shop_rooms', 'equipment_menu', 'equipment_list', 'equipment_negotiation', 'equipment_reply', 'mages_menu', 'mages_list', 'mages_spellmaker', 'mages_effect_menu', 'mages_spelldetail', 'mages_prompt', 'mages_confirm', 'mages_negotiation', 'mages_reply', 'travel_hover_location', 'travel_estimate', 'travel_table', 'travel_search'})
+FACILITY_SESSION_BLOCKED_AREAS = frozenset({'dungeon', 'wilderness'})
+
+def is_facility_session_area_blocked(area: Optional[str]) -> bool:
+    return (area or '') in FACILITY_SESSION_BLOCKED_AREAS
+CONVERSATION_PANEL_OWNERS = frozenset({'npc_dialog', 'npc_conversation', 'npc_message', 'active_template', 'temple_active_template', 'temple_menu', 'temple_cost', 'temple_prompt', 'temple_priest_reply', 'temple_cure', 'negotiation', 'tavern_yesno', 'tavern_rumor_type', 'tavern_negotiation', 'shop_menu', 'shop_rumor_type', 'shop_buy', 'shop_rooms', 'equipment_menu', 'equipment_list', 'equipment_negotiation', 'equipment_reply', 'equipment_repair', 'mages_menu', 'mages_list', 'mages_spellmaker', 'mages_effect_menu', 'mages_spelldetail', 'mages_prompt', 'mages_confirm', 'mages_negotiation', 'mages_reply', 'travel_hover_location', 'travel_estimate', 'travel_table', 'travel_search', 'camp_menu', 'camp_prompt'})
 _TAVERN_L4_MODULE_OWNERS = frozenset({'negotiation', 'active_template', 'npc_dialog'})
-FACILITY_OWNER_SETS_BY_SESSION = {'tavern': frozenset({'shop_menu', 'shop_rumor_type', 'shop_buy', 'shop_rooms', 'tavern_yesno', 'tavern_rumor_type', 'tavern_negotiation'}) | _TAVERN_L4_MODULE_OWNERS, 'temple': frozenset({'temple_menu', 'temple_active_template', 'temple_priest_reply', 'temple_cost', 'temple_prompt'}), 'equipment': frozenset({'equipment_menu', 'equipment_list', 'equipment_negotiation', 'equipment_reply'}), 'mages_guild': frozenset({'mages_menu', 'mages_list', 'mages_spellmaker', 'mages_effect_menu', 'mages_spelldetail', 'mages_prompt', 'mages_confirm', 'mages_negotiation', 'mages_reply'})}
+FACILITY_OWNER_SETS_BY_SESSION = {'tavern': frozenset({'shop_menu', 'shop_rumor_type', 'shop_buy', 'shop_rooms', 'tavern_yesno', 'tavern_rumor_type', 'tavern_negotiation'}) | _TAVERN_L4_MODULE_OWNERS, 'temple': frozenset({'temple_menu', 'temple_active_template', 'temple_priest_reply', 'temple_cost', 'temple_prompt', 'temple_cure'}), 'equipment': EQUIPMENT_OWNERS, 'mages_guild': frozenset({'mages_menu', 'mages_list', 'mages_spellmaker', 'mages_effect_menu', 'mages_spelldetail', 'mages_prompt', 'mages_confirm', 'mages_negotiation', 'mages_reply'})}
 FACILITY_CONVERSATION_PANEL_OWNERS = frozenset().union(*FACILITY_OWNER_SETS_BY_SESSION.values())
 
 def facility_owners_for_session(session_name: str) -> frozenset:
@@ -135,4 +140,4 @@ class HierarchyRecognitionInput:
 
     def values_for_log(self) -> dict:
         return {'top': self.top_level_state, 'area': self.c_area or '', 'interior': self.in_interior, 'npc_active': self.npc_active, 'npc_phase': self.npc_phase, 'mif': self.mif_name or '', 'img': self.img_name or '', 'screen': self.screen_id or '', 'owner': self.panel_owner or '', 'session': self.active_session or '', 'interior_mif': self.interior_mif_name or '', 'interior_raw': self.interior_raw}
-__all__ = ['AREA_TO_C_CODE_NAME', 'BASE_KEY_TO_AREA', 'CONVERSATION_PANEL_OWNERS', 'CONVERSATION_SESSION_NAMES', 'FACILITY_CONVERSATION_PANEL_OWNERS', 'FACILITY_CONVERSATION_SESSION_NAMES', 'FACILITY_OWNER_SETS_BY_SESSION', 'facility_owners_for_session', 'HierarchyRecognitionInput', 'L1_TO_CODE_NAME', 'SeparationHierarchy', 'active_facility_session_name', 'active_session_name', 'area_from_base_location_key', 'base_location_key_from_area', 'is_facility_conversation_owner']
+__all__ = ['AREA_TO_C_CODE_NAME', 'BASE_KEY_TO_AREA', 'CONVERSATION_PANEL_OWNERS', 'CONVERSATION_SESSION_NAMES', 'FACILITY_CONVERSATION_PANEL_OWNERS', 'FACILITY_CONVERSATION_SESSION_NAMES', 'FACILITY_OWNER_SETS_BY_SESSION', 'FACILITY_SESSION_BLOCKED_AREAS', 'facility_owners_for_session', 'is_facility_session_area_blocked', 'HierarchyRecognitionInput', 'L1_TO_CODE_NAME', 'SeparationHierarchy', 'active_facility_session_name', 'active_session_name', 'area_from_base_location_key', 'base_location_key_from_area', 'is_facility_conversation_owner']

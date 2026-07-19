@@ -9,6 +9,7 @@ from services.arena_reveal_stencil import apply_reveal_stencil, apply_reveal_ste
 from runtime_paths import resolve_arena_install_dir
 from services.mif_loader import DEFAULT_INF_DIR, DEFAULT_MIF_DIR, load_mif, parse_inf_level_transitions, parse_inf_menu_indices, parse_inf_walls_hidden_door_ids, resolve_inf_for_mif
 from normal_play.map.base import MapContext, MapSessionBase
+from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
 _log = logging.getLogger('base_location.dungeon')
 
 class DungeonMapSession(MapSessionBase):
@@ -114,7 +115,7 @@ class DungeonMapSession(MapSessionBase):
             self._discovered_hd = frozenset()
 
     def get_canvas_data(self) -> CanvasData:
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, hidden_door_gating=True, discovered_hidden_door_cells=self._discovered_hd)
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, hidden_door_gating=True, discovered_hidden_door_cells=self._discovered_hd, map_key=f'dungeon:{self._location_key}' if self._location_key else 'dungeon:<unknown>', cache_index=self._active_cache_index)
 
     def _note_hidden_door_if_any(self, ix: int, iy: int) -> None:
         if self._ext_store is None or not self._location_key:
@@ -199,7 +200,7 @@ class DungeonMapSession(MapSessionBase):
     def _diag_log_skip(self, reason: str) -> None:
         if reason != self._diag_prev_merge_reason:
             self._diag_prev_merge_reason = reason
-            _log.info('dungeon_diag[id=%x]: merge skip reason=%s', id(self), reason)
+            _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: merge skip reason=%s', id(self), reason)
 
     def _maybe_merge_automap(self, ctx: MapContext) -> bool:
         save_dir = ctx.save_dir
@@ -258,6 +259,9 @@ class DungeonMapSession(MapSessionBase):
         if active is None or active.bitmap_grid is None:
             self._diag_log_skip('no_active_cache')
             return False
+        if int((active.bitmap_grid != 0).sum()) >= int(active.bitmap_grid.size):
+            self._diag_log_skip('degenerate_full_bitmap')
+            return False
         self._bitmap[:] = active.bitmap_grid
         self._seen_cells = rebuild_seen_cells_from_bitmap(self._bitmap)
         self._notes = [(n.x, n.y, n.text) for n in active.valid_notes]
@@ -266,7 +270,7 @@ class DungeonMapSession(MapSessionBase):
         self._last_automap_size = st_before.st_size
         self._active_cache_index = new_active_index
         nz = int((self._bitmap != 0).sum())
-        _log.info('dungeon_diag[id=%x]: merge OK cache=#%s cur_hash=0x%08X bitmap_nz=%d', id(self), new_active_index, cur_hash if cur_hash else 0, nz)
+        _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: merge OK cache=#%s cur_hash=0x%08X bitmap_nz=%d', id(self), new_active_index, cur_hash if cur_hash else 0, nz)
         self._diag_prev_merge_reason = 'ok'
         return True
 __all__ = ['DungeonMapSession']

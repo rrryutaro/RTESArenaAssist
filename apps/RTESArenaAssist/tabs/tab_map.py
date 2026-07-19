@@ -6,6 +6,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 LocationType = Literal['dungeon', 'city', 'interior', 'wilderness', 'unknown']
 import assist_settings as settings
+from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
 from common_draw.automap_canvas import AutomapCanvas, CanvasData
 from controllers.map_ext_lifecycle import get_lifecycle
 from normal_play.map import MapContext
@@ -23,7 +24,7 @@ class TabMap(QWidget):
         self._place_label.setObjectName('mapPlaceLabel')
         self._place_label.setStyleSheet('QLabel#mapPlaceLabel {  padding: 4px 8px;  color: #c9d1e0;  font-weight: bold;  background: #1a2635;  border-bottom: 1px solid #2a4258;}')
         self._canvas = AutomapCanvas(self)
-        self._canvas.setObjectName('AssistMapCanvas')
+        self._canvas.setObjectName(f'AssistMapCanvas:{name}')
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
@@ -56,7 +57,7 @@ class TabMap(QWidget):
     def poll_automap_file(self) -> bool:
         return self._dispatcher.poll_automap_file()
 
-    def update_map_state(self, mif_name: Optional[str], player_tile_x: Optional[float], player_tile_y: Optional[float], angle_deg: Optional[float], player_floor: int=0, place_text: Optional[str]=None, location_name: Optional[str]=None, analyzer=None, anchor: Optional[int]=None, interior_mif_name: Optional[str]=None, in_interior: Optional[bool]=None, area: Optional[str]=None) -> None:
+    def update_map_state(self, mif_name: Optional[str], player_tile_x: Optional[float], player_tile_y: Optional[float], angle_deg: Optional[float], player_floor: int=0, place_text: Optional[str]=None, location_name: Optional[str]=None, analyzer=None, anchor: Optional[int]=None, interior_mif_name: Optional[str]=None, in_interior: Optional[bool]=None, area: Optional[str]=None, suppress_map: bool=False, suppress_reason: str='') -> None:
         _save_dir = str(settings.get('save_dir', ''))
         try:
             get_lifecycle().poll(analyzer, anchor, _save_dir)
@@ -71,12 +72,16 @@ class TabMap(QWidget):
         if place_text is not None:
             self._place_label.setText(place_text)
         _cd = self._dispatcher.get_canvas_data()
+        _cd.suppress_map = bool(suppress_map)
+        _cd.suppress_reason = suppress_reason if suppress_map else ''
         self._canvas.set_data(_cd)
         _w = None if _cd.walkable is None else _cd.walkable.shape
-        _diag = (self._dispatcher.active_key(), _w, self.isVisible(), self._canvas.isVisible(), (self._canvas.width(), self._canvas.height()))
+        _base_active = self._dispatcher.base_location.active_key()
+        _base_suspended = self._dispatcher.base_location.suspended_key()
+        _diag = (self._dispatcher.active_key(), _base_active, _base_suspended, _cd.map_key, _cd.cache_index, _cd.player_x, _cd.player_y, _w, _cd.suppress_map, _cd.suppress_reason, self.isVisible(), self._canvas.isVisible(), (self._canvas.width(), self._canvas.height()))
         if getattr(self, '_diag_prev', None) != _diag:
             self._diag_prev = _diag
-            _log.warning('tabmap[%s]: active=%s walkable=%s tab_visible=%s canvas_visible=%s canvas_size=%s', self._name, _diag[0], _w, _diag[2], _diag[3], _diag[4])
+            _log.log(_RECOG_LEVEL, 'tabmap[%s]: active=%s base_active=%s base_suspended=%s map_key=%r cache=#%s player=(%s,%s) walkable=%s suppress=%s reason=%r tab_visible=%s canvas_visible=%s canvas_size=%s', self._name, _diag[0], _base_active, _base_suspended, _cd.map_key, _cd.cache_index, _cd.player_x, _cd.player_y, _w, _cd.suppress_map, _cd.suppress_reason, _diag[10], _diag[11], _diag[12])
 
     def clear_map(self) -> None:
         try:

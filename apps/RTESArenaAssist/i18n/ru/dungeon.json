@@ -1,0 +1,23 @@
+{
+  "dungeon.imperial_city.0": "Имперский город",
+  "dungeon.dungeon.0": "подземелье",
+  "dungeon.wilderness.0": "дикая местность",
+  "dungeon.city.0": "город",
+  "dungeon.town.0": "городок",
+  "dungeon.north.0": "север",
+  "dungeon.northeast.0": "северо-восток",
+  "dungeon.east.0": "восток",
+  "dungeon.southeast.0": "юго-восток",
+  "dungeon.south.0": "юг",
+  "dungeon.southwest.0": "юго-запад",
+  "dungeon.west.0": "запад",
+  "dungeon.northwest.0": "северо-запад",
+  "dungeon.iron.0": "Железный",
+  "dungeon.steel.0": "Стальной",
+  "dungeon.silver.0": "Серебряный",
+  "dungeon.elven.0": "Эльфийский",
+  "dungeon.dwarven.0": "Двемерский",
+  "dungeon.mithril.0": "Мифриловый",
+  "dungeon.adamantium.0": "Адамантитовый",
+  "dungeon.ebony.0": "Эбонитовый"
+}

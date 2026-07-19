@@ -1,0 +1,64 @@
+{
+  "lock_messages.difficulty.0": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 0
+  },
+  "lock_messages.difficulty.1": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 1
+  },
+  "lock_messages.difficulty.2": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 2
+  },
+  "lock_messages.difficulty.3": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 3
+  },
+  "lock_messages.difficulty.4": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 4
+  },
+  "lock_messages.difficulty.5": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 5
+  },
+  "lock_messages.difficulty.6": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 6
+  },
+  "lock_messages.difficulty.7": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 7
+  },
+  "lock_messages.difficulty.8": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 8
+  },
+  "lock_messages.difficulty.9": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 9
+  },
+  "lock_messages.difficulty.10": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 10
+  },
+  "lock_messages.difficulty.11": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 11
+  },
+  "lock_messages.difficulty.12": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 12
+  },
+  "lock_messages.difficulty.13": {
+    "src_table": "status.lock_difficulty_messages",
+    "src_index": 13
+  },
+  "lock_messages.key_picked_up.0": {
+    "src_table": "status.key_picked_up"
+  },
+  "lock_messages.door_unlocked_with_key.0": {
+    "src_table": "status.door_unlocked_with_key"
+  }
+}

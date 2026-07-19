@@ -17,6 +17,7 @@ _OFF_ADB6 = 44470
 _OFF_DIALOG_ACTIVE = 43077
 _OFF_TEXT_PTR = 43076
 _OFF_DIALOG_FLAG = 27688
+_OFF_POPUP_BODY_PTR = 63976
 _DIALOG_DEBOUNCE_N = 2
 _OFF_LIST_FLAG = 47044
 _OFF_POPUP_ACTIVE = 47046
@@ -304,7 +305,7 @@ def _compose_estimate_fallback_ja(est, dep_en, arr_en) -> str:
         parts.append(f'到着: {arr_en}')
     return '\u3000'.join(parts)
 
-def _render_state(w, state: str, *, hover, full_text: str, list_key=None, dest_loc=None) -> None:
+def _render_state(w, state: str, *, hover, full_text: str, list_key=None, dest_loc=None, dialog_panel=None) -> None:
     if state == STATE_INPUT:
         if state != getattr(w, '_travel_l4_render_key', None):
             w._img_screen._show_travel_search_prompt()
@@ -335,6 +336,8 @@ def _render_state(w, state: str, *, hover, full_text: str, list_key=None, dest_l
         _store_travel_selected(w, est=est, dep=dep, arr=arr, dep_en=dep_en, arr_en=arr_en)
     elif state == STATE_HOVER_NAME and hover:
         panel_en, panel_ja = hover
+    if dialog_panel is not None:
+        panel_en, panel_ja, speech_role = dialog_panel
     rows = _build_travel_rows(w, state=state, dest_loc=dest_loc)
     key = (state, tuple(rows), panel_ja)
     if key == getattr(w, '_travel_l4_render_key', None):
@@ -357,6 +360,17 @@ def _read_estimate_text(w):
     except Exception:
         is_est = False
     return (is_est, buf)
+
+def _read_popup_body_text(w) -> str:
+    try:
+        from arena_logic import read_live_buffer
+        from viewer_constants import NPC_DIALOG_MAXLEN
+        off = _read_u16(w, _OFF_POPUP_BODY_PTR)
+        if not off:
+            return ''
+        return read_live_buffer(w._analyzer, w._anchor + off, NPC_DIALOG_MAXLEN) or ''
+    except Exception:
+        return ''
 _ICON_DESC = {'input': ('Input destination', '目的地を名前で入力'), 'execute': ('Travel to selected destination', '選択中の移動先へ移動'), 'exit': ('Exit fast travel', 'ファストトラベルを終了')}
 
 def _resolve_location_only(w):
@@ -444,6 +458,10 @@ def poll_travel_map(w, img_name: str) -> bool:
     _search_prompt_open = bool(_is_search and (not search_closed_stale) and (hover_location_candidate is None))
     _estimate_candidate_allowed = not (search_open or search_closed_stale or _search_prompt_open)
     _modal_candidate = _estimate_candidate_allowed and _on_modal and (_is_est or _is_already)
+    _popup_body = _read_popup_body_text(w)
+    _pflat = ' '.join((_popup_body or '').split())
+    _is_condition_warning = 'Considering your condition' in _pflat or ('you may not survive' in _pflat and 'attempt the journey' in _pflat)
+    _condition_dialog = _estimate_candidate_allowed and _is_condition_warning
     _cursor_xy = (_read_u16(w, _OFF_HOVER_X), _read_u16(w, _OFF_HOVER_Y))
     _text_key = ' '.join((full_text or '').split())[:160]
     _active_prev = bool(getattr(w, '_travel_estimate_active', False))
@@ -502,7 +520,12 @@ def poll_travel_map(w, img_name: str) -> bool:
         w._travel_l4_render_key = None
     w._travel_l4_state = state
     dest_loc = _resolve_location_only(w) if state == STATE_HOVER_NAME else None
+    dialog_panel = None
+    if _condition_dialog and state in _TABLE_STATES:
+        _cond_ja, _cond_role = _lookup_estimate(_popup_body)
+        if _cond_ja:
+            dialog_panel = (_popup_body, _cond_ja, _cond_role)
     if state != STATE_NONE:
-        _render_state(w, state, hover=hover, full_text=full_text, list_key=list_key, dest_loc=dest_loc)
+        _render_state(w, state, hover=hover, full_text=full_text, list_key=list_key, dest_loc=dest_loc, dialog_panel=dialog_panel)
     return state != STATE_NONE
 __all__ = ['STATE_NONE', 'STATE_REGION_SELECT', 'STATE_DETAIL', 'STATE_HOVER_NAME', 'STATE_ESTIMATE', 'STATE_INPUT', 'STATE_LIST', 'TRAVEL_HOVER_OWNER', 'TRAVEL_ESTIMATE_OWNER', 'TRAVEL_TABLE_OWNER', 'TRAVEL_SEARCH_OWNER', 'in_travel_session', 'classify_travel_map_state', 'poll_travel_map']

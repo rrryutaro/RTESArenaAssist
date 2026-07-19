@@ -1,0 +1,18 @@
+{
+  "lock_messages.difficulty.0": "Этот замок нисколько вас не боится…",
+  "lock_messages.difficulty.1": "Взломать этот замок было бы настоящим чудом…",
+  "lock_messages.difficulty.2": "Этот замок, похоже, вам не по силам…",
+  "lock_messages.difficulty.3": "Вы сомневаетесь, что сможете открыть этот замок…",
+  "lock_messages.difficulty.4": "Этот замок выглядит сложным…",
+  "lock_messages.difficulty.5": "Этот замок стал бы для вас настоящим испытанием…",
+  "lock_messages.difficulty.6": "Этот замок оказался бы неплохим испытанием…",
+  "lock_messages.difficulty.7": "Вам кажется, что вы сможете взломать этот замок…",
+  "lock_messages.difficulty.8": "Этот замок кажется довольно простым…",
+  "lock_messages.difficulty.9": "Этот замок вас забавляет…",
+  "lock_messages.difficulty.10": "Вы смеётесь над дилетантским качеством этого замка…",
+  "lock_messages.difficulty.11": "Перед вами жалкое подобие замка…",
+  "lock_messages.difficulty.12": "Этот замок — оскорбление ваших способностей…",
+  "lock_messages.difficulty.13": "Этот замок удерживается магией…",
+  "lock_messages.key_picked_up.0": "Вы нашли ключ: %s.",
+  "lock_messages.door_unlocked_with_key.0": "Вы открыли дверь ключом: %s."
+}

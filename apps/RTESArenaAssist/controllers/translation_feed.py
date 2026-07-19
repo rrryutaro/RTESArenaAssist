@@ -93,6 +93,13 @@ class TranslationFeed:
         self._spoken_keys.clear()
         self._speaking_owner = None
 
+    def on_load(self) -> None:
+        try:
+            self._tts.stop_speaking()
+        except Exception:
+            pass
+        self.reset_spoken()
+
     def _apply_name_reading(self, text: str) -> str:
         reading = settings.get('tts_name_reading', '') or ''
         if not reading:

@@ -1,4 +1,5 @@
 from __future__ import annotations
+from normal_play.equipment_l4_state import EQUIPMENT_OWNERS, EquipmentL4State, REPLY_STATES, get_equipment_l4_state
 from .session_base import SessionBase, SessionContext
 
 def _norm_facility_kind(fk: str) -> str:
@@ -6,9 +7,8 @@ def _norm_facility_kind(fk: str) -> str:
 _EQUIPMENT_MIF_PREFIXES = ('EQUIP', 'ARMOR')
 _OTHER_FACILITY_MIF_PREFIXES = ('TAVERN', 'TEMPLE', 'MAGE', 'PALACE')
 _EQUIPMENT_OWNER_KINDS = frozenset({'shop_menu', 'equipment_list'})
-_EQUIPMENT_PANEL_OWNERS = frozenset({'equipment_menu', 'equipment_list', 'equipment_negotiation', 'equipment_reply'})
-_EQUIPMENT_REPLY_START_IMGS = frozenset({'YESNO.IMG', 'NEWPOP.IMG', 'FACES00.CIF'})
-_EQUIPMENT_REPLY_PREFIXES = ('Your ', 'Fixing that ', 'Sure I could fix that ', 'Fine. I can get it done in ', "Fine, I'll charge you ", "Then I'll get started", "Good, I'll get to it", 'I understand. You might consider', 'Well, if you change your mind', "Can't you afford it?", "Can't you wait that long?", "Maybe you're not interested?", 'I can cut down the time', 'I can cut the cost')
+_EQUIPMENT_PANEL_OWNERS = EQUIPMENT_OWNERS
+_EQUIPMENT_MIDFLOW_START_STATES = frozenset(REPLY_STATES) | frozenset({EquipmentL4State.REPAIR_JOBS})
 _EQUIPMENT_NONE_HYSTERESIS_POLLS = 3
 
 class EquipmentSession(SessionBase):
@@ -60,50 +60,29 @@ class EquipmentSession(SessionBase):
             return ('none', '')
 
     @staticmethod
-    def _is_yesno_active(ctx: SessionContext) -> bool:
-        return (ctx.img_name or '').upper() == 'YESNO.IMG'
-
-    @staticmethod
-    def _is_negotiation_active(ctx: SessionContext) -> bool:
-        img = (ctx.img_name or '').upper()
-        if not img:
-            return False
+    def _resolve_l4_state(ctx: SessionContext):
+        extras_state = ctx.extras.get('equipment_l4_state') if ctx.extras else None
+        if extras_state is not None:
+            try:
+                return EquipmentL4State(extras_state)
+            except ValueError:
+                return EquipmentL4State.NONE
+        w = ctx.extras.get('window') if ctx.extras else None
+        if w is None or getattr(w, '_analyzer', None) is None:
+            return EquipmentL4State.NONE
         try:
-            from negotiation_reader import get_negotiation_profile
-        except ImportError:
-            return False
-        return get_negotiation_profile(img) is not None
+            snap = get_equipment_l4_state(w, img=(ctx.img_name or '').upper())
+            return snap.state
+        except Exception:
+            return EquipmentL4State.NONE
 
-    def _is_equipment_panel_owned(self, ctx: SessionContext) -> bool:
-        extras_owner = ctx.extras.get('equipment_panel_owner') if ctx.extras else None
-        if extras_owner is not None:
-            return extras_owner in _EQUIPMENT_PANEL_OWNERS
+    def _is_confirmed_equipment_facility(self, ctx: SessionContext) -> bool:
+        if self._is_equipment_context(ctx):
+            return True
         w = ctx.extras.get('window') if ctx.extras else None
         if w is None:
             return False
-        owner = getattr(w, '_panel_owner', '') or ''
-        return owner in _EQUIPMENT_PANEL_OWNERS
-
-    @staticmethod
-    def _has_equipment_reply_signal(ctx: SessionContext) -> bool:
-        if (ctx.img_name or '').upper() not in _EQUIPMENT_REPLY_START_IMGS:
-            return False
-        if ctx.analyzer is None:
-            return False
-        try:
-            from popup11_response_reader import read_response_candidates_all
-            cands = read_response_candidates_all(ctx.analyzer, ctx.anchor)
-        except Exception:
-            return False
-        for cand in cands:
-            if not cand.lookup_hit:
-                continue
-            text = cand.text or ''
-            if text.startswith('Your ') and 'repair' not in text:
-                continue
-            if text.startswith(_EQUIPMENT_REPLY_PREFIXES):
-                return True
-        return False
+        return (getattr(w, '_interior_facility_kind', '') or '') == 'equipment'
 
     @property
     def last_img(self) -> str:
@@ -126,7 +105,7 @@ class EquipmentSession(SessionBase):
             self._last_img = ctx.img_name or ''
             self._set_active(True)
             return True
-        if not self._known_non_equipment_context(ctx) and self._has_equipment_reply_signal(ctx):
+        if not self._known_non_equipment_context(ctx) and self._is_confirmed_equipment_facility(ctx) and (self._resolve_l4_state(ctx) in _EQUIPMENT_MIDFLOW_START_STATES):
             self._none_shop_polls = 0
             self._last_img = ctx.img_name or ''
             self._set_active(True)
@@ -140,20 +119,8 @@ class EquipmentSession(SessionBase):
             return self._stop()
         if self._known_non_equipment_context(ctx):
             return self._stop()
-        kind, owner = self._detect_shop_state(ctx)
-        if owner == 'equipment' and kind in _EQUIPMENT_OWNER_KINDS:
-            self._none_shop_polls = 0
-            self._last_img = ctx.img_name or ''
-            return False
-        if self._is_yesno_active(ctx):
-            self._none_shop_polls = 0
-            self._last_img = ctx.img_name or ''
-            return False
-        if self._is_negotiation_active(ctx):
-            self._none_shop_polls = 0
-            self._last_img = ctx.img_name or ''
-            return False
-        if self._is_equipment_panel_owned(ctx):
+        state = self._resolve_l4_state(ctx)
+        if state is not EquipmentL4State.NONE:
             self._none_shop_polls = 0
             self._last_img = ctx.img_name or ''
             return False

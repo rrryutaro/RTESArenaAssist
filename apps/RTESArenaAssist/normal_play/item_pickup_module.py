@@ -60,7 +60,7 @@ def _clear_item_pickup_owner(w, *, restore_trigger: bool=False) -> None:
 def _claim_item_pickup_owner(w) -> None:
     w._ui_router.claim_owner('item_pickup', mode='item_pickup')
 
-def poll_item_pickup(w, *, newpop_gate: bool, b30_img_name: str, npc_dialog: str, shop_buy_active: bool, shop_menu_visible: bool, screen_id: str | None=None) -> None:
+def poll_item_pickup(w, *, newpop_gate: bool, b30_img_name: str, npc_dialog: str, shop_buy_active: bool, shop_menu_visible: bool, screen_id: str | None=None, facility_active: bool=False) -> None:
     from controllers.chargen_helpers import _is_garbage_npc_buffer
     _screen_id = screen_id if screen_id is not None else getattr(w, '_screen_id_prev', None)
     if _current_top_level(w) != 'normal-play':
@@ -81,7 +81,7 @@ def poll_item_pickup(w, *, newpop_gate: bool, b30_img_name: str, npc_dialog: str
         _count = 0
     _was_open = getattr(w, '_b32_newpop_open', False)
     _cnt_prev = getattr(w, '_b32_count_prev', 0)
-    _blocked = _screen_id in _BLOCKED_SCREENS or b30_img_name in _BLOCKED_IMGS or shop_buy_active or shop_menu_visible
+    _blocked = _screen_id in _BLOCKED_SCREENS or b30_img_name in _BLOCKED_IMGS or shop_buy_active or shop_menu_visible or facility_active
     try:
         _first = w._analyzer.read_bytes(w._anchor + 37634, 1)[0]
         _names_present = 65 <= _first <= 90

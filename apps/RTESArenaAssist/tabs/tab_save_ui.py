@@ -28,6 +28,7 @@ def build_ui(tab: 'TabSave') -> None:
     left_lay.addWidget(tab._left_list)
     left_w.setMinimumWidth(150)
     left_w.setMaximumWidth(270)
+    tab._left_pane = left_w
     tab._main_split.addWidget(left_w)
     tab._right_split = QSplitter(Qt.Orientation.Vertical)
     tab._right_split.setHandleWidth(4)
@@ -37,6 +38,10 @@ def build_ui(tab: 'TabSave') -> None:
     top_lay.setSpacing(4)
     tab._action_row = QHBoxLayout()
     tab._action_row.setSpacing(3)
+    tab._btn_toggle_left = QPushButton('◀')
+    tab._btn_toggle_left.setFixedWidth(24)
+    tab._btn_toggle_left.setToolTip(i18n.tr('save.toggle_backup_pane'))
+    tab._action_row.addWidget(tab._btn_toggle_left)
     tab._btn_backup_all = QPushButton(i18n.tr('save.backup_all'))
     tab._btn_backup_checked = QPushButton(i18n.tr('save.backup_checked'))
     tab._btn_backup_selected = QPushButton(i18n.tr('save.backup_selected'))

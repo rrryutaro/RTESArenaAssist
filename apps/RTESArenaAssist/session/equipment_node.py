@@ -21,11 +21,25 @@ class EquipmentNode(FacilityNode):
         return read_sell_repair_item_list(analyzer, anchor)
 
     def on_exit(self, w) -> None:
-        from normal_play.equipment_render_module import MENU_OWNER, LIST_OWNER, NEGOTIATION_OWNER
-        for owner in (MENU_OWNER, LIST_OWNER, NEGOTIATION_OWNER):
+        from normal_play.equipment_l4_state import EQUIPMENT_OWNERS, reset_equipment_l4_state
+        try:
+            from normal_play.equipment_reply_module import reset_equipment_reply_state
+            reset_equipment_reply_state(w)
+        except Exception:
+            pass
+        try:
+            from normal_play.equipment_render_module import reset_equipment_render_keys
+            reset_equipment_render_keys(w)
+        except Exception:
+            pass
+        try:
+            reset_equipment_l4_state(w)
+        except Exception:
+            pass
+        for owner in EQUIPMENT_OWNERS:
             try:
                 if w._panel_owner == owner:
-                    w._ui_router.clear_if_owner(owner)
+                    w._ui_router.clear_if_owner(owner, mode='translate')
             except AttributeError:
                 pass
 EQUIPMENT_NODE = EquipmentNode()

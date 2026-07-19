@@ -66,7 +66,7 @@ class InteriorMapSession(MapSessionBase):
         angle = self._angle
         if not self._coord_in_bounds(px, py) and self._entry_center is not None:
             px, py = self._entry_center
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=px, player_y=py, player_angle_deg=angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=self._entrance_cells, is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices)
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=px, player_y=py, player_angle_deg=angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=self._entrance_cells, is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, map_key=f'interior:{self._mif_name}#{self._floor}' if self._mif_name else 'interior:<unknown>')
 
     def reset_progress(self) -> None:
         if self._walkable is not None:

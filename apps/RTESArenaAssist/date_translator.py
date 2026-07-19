@@ -5,7 +5,9 @@ DATE_PATTERN = re.compile('^\\s*(\\w+)\\s*,\\s*(\\d+)(?:st|nd|rd|th)?\\s+of\\s+(
 _DAY_EN = ('Sundas', 'Morndas', 'Tirdas', 'Middas', 'Turdas', 'Fredas', 'Loredas')
 _MONTH_EN = ('Morning Star', "Sun's Dawn", 'First Seed', "Rain's Hand", 'Second Seed', 'Mid Year', "Sun's Height", 'Last Seed', 'Hearthfire', 'Frostfall', "Sun's Dusk", 'Evening Star')
 _PART_EN = ('morning', 'afternoon', 'evening', 'night')
-_HEALTH_EN = ('healthy', 'diseased', 'poisoned', 'cursed', 'blessed', 'paralyzed', 'wounded', 'bleeding')
+_HEALTH_EN = ('healthy', 'diseased', 'poisoned', 'in critical condition', 'drunk', 'invisible', 'a non-target', 'resistant to fire', 'resistant to cold', 'resistant to shock', 'resistant to acid', 'resistant to poison', 'levitating', '', 'silenced', 'able to absorb spells', 'able to reflect spells', 'resistant to spells', 'shielded', 'regenerating', 'paralyzed', 'cursed', 'being drained')
+_DISEASE_EN = ('Witch Pox', 'Plague', 'Yellow Fever', 'Stomach Rot', 'Consumption', 'Brain Fever', 'Swamp Rot', 'Calirons Curse', 'Cholera', 'Leprosy', 'Wound Rot', 'Red Death', 'Blood Rot', 'Typhoid Fever', 'Dementia', 'Chrondiasis', 'Wizard Fever')
+_ATTRIBUTE_EN = ('Strength', 'Intelligence', 'Willpower', 'Agility', 'Speed', 'Endurance', 'Personality', 'Luck')
 
 def _sbt_value(group: str, surface: str, en_list: tuple) -> Optional[str]:
     import i18n_helper as i18n
@@ -42,7 +44,36 @@ LOCATION_PATTERN = re.compile('^You are in\\s+(.+?)\\.?\\s*$')
 TIME_PATTERN = re.compile('^It is\\s+(\\d+):(\\d+)\\s+in the\\s+(\\w+)\\.?\\s*$')
 DATE_HEADER_PATTERN = re.compile('^The date is\\s+(.+?)\\s*$')
 LOAD_PATTERN = re.compile('^You are currently carrying\\s+([\\d.]+)\\s*kg\\s+out of\\s+([\\d.]+)\\s*kg\\.?\\s*$')
-HEALTH_PATTERN = re.compile('^You are\\s+(\\w+)\\.?\\s*$')
+DISEASE_PATTERN = re.compile('^You have\\s+(.+?)\\.?\\s*$')
+FORTIFY_PATTERN = re.compile('^Your\\s+(.+?)\\s+is fortified\\.?\\s*$')
+HEALTH_PATTERN = re.compile('^You are\\s+(.+?)\\.?\\s*$')
+
+def is_status_state_line(line: str) -> bool:
+    if not line:
+        return False
+    s = line.strip()
+    return bool(DISEASE_PATTERN.match(s) or FORTIFY_PATTERN.match(s) or HEALTH_PATTERN.match(s))
+
+def _translate_state_line(line: str) -> Optional[str]:
+    import i18n_helper as i18n
+    if not line:
+        return None
+    m = DISEASE_PATTERN.match(line)
+    if m:
+        name = m.group(1).strip()
+        name_ja = _sbt_value('disease', name, _DISEASE_EN) or name
+        return i18n.text('status_buffer_text.line_disease').replace('{disease}', name_ja)
+    m = FORTIFY_PATTERN.match(line)
+    if m:
+        attr = m.group(1).strip()
+        attr_ja = _sbt_value('attribute', attr, _ATTRIBUTE_EN) or attr
+        return i18n.text('status_buffer_text.line_fortify').replace('{attribute}', attr_ja)
+    m = HEALTH_PATTERN.match(line)
+    if m:
+        state = m.group(1).strip().lower()
+        state_ja = _sbt_value('health', state, _HEALTH_EN) or state
+        return i18n.text('status_buffer_text.line_state').replace('{state}', state_ja)
+    return None
 
 def _translate_status_line(line: str) -> Optional[str]:
     import i18n_helper as i18n
@@ -78,12 +109,7 @@ def _translate_status_line(line: str) -> Optional[str]:
     if bare_date is not None:
         _, ja = bare_date
         return i18n.text('status_buffer_text.line_date').replace('{date}', ja)
-    m = HEALTH_PATTERN.match(line)
-    if m:
-        state = m.group(1).lower()
-        state_ja = _sbt_value('health', state, _HEALTH_EN) or state
-        return i18n.text('status_buffer_text.line_state').replace('{state}', state_ja)
-    return None
+    return _translate_state_line(line)
 if __name__ == '__main__':
     samples = ['Tirdas, 1st of Hearthfire in the year 3E 389', "Loredas, 23rd of Sun's Dusk in the year 3E 401", "Morndas, 2nd of Rain's Hand in the year 3E 389", 'Hello world', '', '1st of Hearthfire']
     print('=== parse_and_translate (single date line) ===')

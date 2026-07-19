@@ -173,19 +173,19 @@ def classify_spellmaker_name_items(items: list[dict]) -> tuple[str, str, list[di
     if first in SPELLMAKER_TARGET_NAMES:
         filtered = filter_known_items(items, SPELLMAKER_TARGET_NAMES)
         if filtered:
-            return ('Targets', '対象一覧', filtered)
+            return ('Targets', i18n.text('mages_list.title_targets'), filtered)
     if first in SPELLMAKER_EFFECT_CATEGORY_NAMES:
         filtered = filter_known_items(items, SPELLMAKER_EFFECT_CATEGORY_NAMES)
         if filtered:
-            return ('Effects', '効果一覧', filtered)
+            return ('Effects', i18n.text('mages_list.title_effects'), filtered)
     if first in SPELLMAKER_EFFECT_OPTION_NAMES:
         filtered = filter_known_items(items, SPELLMAKER_EFFECT_OPTION_NAMES)
         if filtered:
-            return ('Effect Options', '効果オプション', filtered)
+            return ('Effect Options', i18n.text('mages_list.title_effect_options'), filtered)
     if first in SPELLMAKER_EFFECT_FULL_NAMES:
         filtered = filter_known_items(items, SPELLMAKER_EFFECT_FULL_NAMES)
         if filtered:
-            return ('Effects', '効果一覧', filtered)
+            return ('Effects', i18n.text('mages_list.title_effects'), filtered)
     return None
 
 def enrich_unidentified_by_index(analyzer, anchor: int, items: list[dict]) -> list[dict]:
@@ -216,25 +216,35 @@ def _item_base_ja(base: str) -> str | None:
             return r
     return None
 
-def translate_name(en: str) -> str:
+def _translate_name_opt(en: str) -> str | None:
     key = (en or '').strip()
     direct = i18n.value('mages', key) or i18n.value('items', key)
     if direct:
         return direct
     m = re.match('^(.+?) (of .+)$', key)
     if m:
-        ench_ja = i18n.value('item_enchantments', m.group(2))
-        if ench_ja:
+        ench_tr = i18n.value('item_enchantments', m.group(2))
+        if ench_tr:
             base = m.group(1).strip()
-            base_ja = translate_name(base)
-            if base_ja and base_ja != base:
-                return f'{ench_ja}の{base_ja}'
+            base_tr = _translate_name_opt(base)
+            if base_tr is None:
+                base_tr = _item_base_ja(base)
+            if base_tr is not None:
+                return i18n.text('item.name.enchant_format').replace('{enchant}', ench_tr).replace('{base}', base_tr)
     parts = key.split()
     if len(parts) >= 2:
-        base = parts[-1]
-        base_ja = _item_base_ja(base)
-        if base_ja:
-            prefix_ja = ''.join((i18n.value('item_materials', p) or p for p in parts[:-1]))
-            return f'{prefix_ja}{base_ja}'
-    return key
+        base_tr = _item_base_ja(parts[-1])
+        if base_tr:
+            fmt = i18n.text('item.name.material_format')
+            out = base_tr
+            for p in reversed(parts[:-1]):
+                mat_tr = i18n.value('item_materials', p) or p
+                out = fmt.replace('{material}', mat_tr).replace('{base}', out)
+            return out
+    return None
+
+def translate_name(en: str) -> str:
+    key = (en or '').strip()
+    translated = _translate_name_opt(key)
+    return translated if translated is not None else key
 __all__ = ['POTION_LIST_OFFSET', 'SPELL_LIST_OFFSET', 'INVENTORY_LIST_OFFSET', 'SPELLMAKER_TARGET_OFFSET', 'SPELLMAKER_EFFECT_OFFSET', 'SPELLMAKER_SUBLIST_OFFSET', 'EFFECT_PICK_OFFSET', 'read_priced_list', 'read_name_list', 'read_magic_item_list', 'read_active_priced_list', 'read_active_list_offset', 'looks_like_potion_list', 'ACTIVE_LIST_PTR_OFFSET', 'translate_name', 'enrich_unidentified_by_index', 'filter_known_items', 'classify_spellmaker_name_items', 'SPELLMAKER_TARGET_NAMES', 'SPELLMAKER_EFFECT_CATEGORY_NAMES', 'SPELLMAKER_EFFECT_OPTION_NAMES', 'SPELLMAKER_EFFECT_FULL_NAMES']

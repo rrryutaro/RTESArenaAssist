@@ -13,6 +13,25 @@ _BI_RGB = 0
 class _BITMAPINFOHEADER(ctypes.Structure):
     _fields_ = [('biSize', ctypes.c_uint32), ('biWidth', ctypes.c_int32), ('biHeight', ctypes.c_int32), ('biPlanes', ctypes.c_uint16), ('biBitCount', ctypes.c_uint16), ('biCompression', ctypes.c_uint32), ('biSizeImage', ctypes.c_uint32), ('biXPelsPerMeter', ctypes.c_int32), ('biYPelsPerMeter', ctypes.c_int32), ('biClrUsed', ctypes.c_uint32), ('biClrImportant', ctypes.c_uint32)]
 
+def _setup_win32_signatures() -> None:
+    if os.name != 'nt':
+        return
+    c_void_p = ctypes.c_void_p
+    c_int = ctypes.c_int
+    c_uint = ctypes.c_uint
+    c_bool = ctypes.c_bool
+    RECT_P = ctypes.POINTER(ctypes.wintypes.RECT)
+    u = ctypes.windll.user32
+    g = ctypes.windll.gdi32
+    for fn, res, args in ((u.GetWindowDC, c_void_p, [c_void_p]), (u.GetDC, c_void_p, [c_void_p]), (u.ReleaseDC, c_int, [c_void_p, c_void_p]), (u.GetAncestor, c_void_p, [c_void_p, c_uint]), (u.PrintWindow, c_bool, [c_void_p, c_void_p, c_uint]), (u.GetWindowRect, c_bool, [c_void_p, RECT_P]), (u.IsWindowVisible, c_bool, [c_void_p]), (u.GetWindowTextLengthW, c_int, [c_void_p]), (u.GetWindowTextW, c_int, [c_void_p, ctypes.c_wchar_p, c_int]), (u.GetWindowThreadProcessId, ctypes.c_ulong, [c_void_p, ctypes.POINTER(ctypes.c_ulong)]), (g.CreateCompatibleDC, c_void_p, [c_void_p]), (g.CreateCompatibleBitmap, c_void_p, [c_void_p, c_int, c_int]), (g.SelectObject, c_void_p, [c_void_p, c_void_p]), (g.BitBlt, c_bool, [c_void_p, c_int, c_int, c_int, c_int, c_void_p, c_int, c_int, c_uint]), (g.GetDIBits, c_int, [c_void_p, c_void_p, c_uint, c_uint, c_void_p, ctypes.POINTER(_BITMAPINFOHEADER), c_uint]), (g.DeleteObject, c_bool, [c_void_p]), (g.DeleteDC, c_bool, [c_void_p])):
+        fn.restype = res
+        fn.argtypes = args
+if os.name == 'nt':
+    try:
+        _setup_win32_signatures()
+    except Exception:
+        pass
+
 def _find_hwnds_by_prefix(prefix: str) -> list:
     result = []
     _EnumWindowsProc = ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p)

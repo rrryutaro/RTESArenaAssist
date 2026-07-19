@@ -1,0 +1,22 @@
+{
+  "ask_about_menu.title_ask_about.0": "СПРОСИТЬ О ?",
+  "ask_about_menu.opt_who_are_you.0": "Кто вы?",
+  "ask_about_menu.opt_where_is.0": "Где находится...",
+  "ask_about_menu.opt_rumors.0": "Слухи",
+  "ask_about_menu.opt_exit.0": "Выход",
+  "ask_about_menu.title_rumor_type.0": "Тип слухов",
+  "ask_about_menu.opt_general.0": "Общее",
+  "ask_about_menu.opt_work.0": "Работа",
+  "ask_about_menu.place_inn.0": "Таверна",
+  "ask_about_menu.place_temple.0": "Храм",
+  "ask_about_menu.place_equipment_store.0": "Магазин снаряжения",
+  "ask_about_menu.place_mages_guild.0": "Гильдия магов",
+  "ask_about_menu.place_palace.0": "Дворец",
+  "ask_about_menu.place_city_gates.0": "Городские ворота",
+  "ask_about_menu.place_nearest_inn.0": "Ближайшая таверна",
+  "ask_about_menu.place_nearest_temple.0": "Ближайший храм",
+  "ask_about_menu.place_nearest_store.0": "Ближайший магазин",
+  "ask_about_menu.place_nearest_dungeon.0": "Ближайшее подземелье",
+  "ask_about_menu.fallback_no_rumor.0": "Слухами я не занимаюсь...",
+  "ask_about_menu.fallback_not_sure.0": "Точно не скажу. Попробуйте спросить кого-нибудь снаружи."
+}

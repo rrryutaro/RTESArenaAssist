@@ -59,7 +59,7 @@ _POLL_MS = 100
 _RESIZE_BORDER = 6
 _APP_DIR = os.path.dirname(os.path.abspath(__file__))
 _USER_DIR = os.path.dirname(os.path.abspath(sys.executable)) if getattr(sys, 'frozen', False) else _APP_DIR
-from controllers.chargen_helpers import _CHARGEN_OPENING_HINT_ADDR, _CHARGEN_OPENING_MAXLEN, _CHARGEN_OPENING_FULLREAD, _CHARGEN_OPENING_SCAN_START, _CHARGEN_OPENING_SCAN_END, _CHARGEN_OPENING_PREFIXES, _CHARGEN_GOYENOW_HINT_ADDR, _CHARGEN_GOYENOW_HINT_CHECKLEN, _CHARGEN_GOYENOW_PREFIX, _CHARGEN_GOYENOW_SCAN_START, _CHARGEN_GOYENOW_SCAN_END, _GARBAGE_NPC_PATTERNS, _is_garbage_npc_buffer, _looks_like_cinematic, _CHARGEN_NAME_RE, _CHARGEN_CLASS_JA, _CHARGEN_PEOPLE_JA, _CHARGEN_RACE_INF_TO_JA, _CHARGEN_DYNAMIC_PATTERNS
+from controllers.chargen_helpers import _CHARGEN_OPENING_HINT_ADDR, _CHARGEN_OPENING_MAXLEN, _CHARGEN_OPENING_FULLREAD, _CHARGEN_OPENING_SCAN_START, _CHARGEN_OPENING_SCAN_END, _CHARGEN_OPENING_PREFIXES, _CHARGEN_GOYENOW_HINT_ADDR, _CHARGEN_GOYENOW_HINT_CHECKLEN, _CHARGEN_GOYENOW_PREFIX, _CHARGEN_GOYENOW_SCAN_START, _CHARGEN_GOYENOW_SCAN_END, _GARBAGE_NPC_PATTERNS, _is_garbage_npc_buffer, _looks_like_cinematic, _CHARGEN_NAME_RE, _CHARGEN_CLASS_JA, race_display_from_inf_key, _CHARGEN_DYNAMIC_PATTERNS
 
 class _ConnectWorker(QThread):
     done = Signal(int, int)
@@ -120,7 +120,7 @@ class AssistWindow(QMainWindow):
         try:
             from controllers.map_ext_lifecycle import get_lifecycle
             get_lifecycle().add_store(self._log_store)
-            get_lifecycle().add_on_load(self._translation_feed.reset_spoken)
+            get_lifecycle().add_on_load(self._translation_feed.on_load)
         except Exception:
             pass
         try:
@@ -164,9 +164,6 @@ class AssistWindow(QMainWindow):
         self._is_embed_active: bool = False
         self._embed_old_central = None
         self._embed_saved_geo = None
-        self._cursor_unlock_timer = QTimer(self)
-        self._cursor_unlock_timer.setInterval(100)
-        self._cursor_unlock_timer.timeout.connect(self._layout.unlock_cursor)
         self._img_name_prev: str = ''
         self._newgame_layout_pushed: bool = False
         self._startup_layout_pushed: bool = False
@@ -274,8 +271,6 @@ class AssistWindow(QMainWindow):
         self._char_screen_flag_prev: int = 0
         self._char_screen_settling: bool = False
         self._char_screen_budget: int = 0
-        self._spell_screen_active: bool = False
-        self._spell_view_base: int | None = None
         self._build_ui()
         self._restore_geometry()
         self._apply_theme()
@@ -518,7 +513,7 @@ class AssistWindow(QMainWindow):
             except (AttributeError, RuntimeError):
                 pass
             try:
-                self._ui_router.release_if_owner('load_screen')
+                self._ui_router.release_if_owner('load_screen', mode='translate', reason='enter_normal_play')
             except (AttributeError, RuntimeError):
                 pass
         if new_state == 'normal-play':
@@ -558,6 +553,17 @@ class AssistWindow(QMainWindow):
                 self._tab_translate.mount_attributes_panel()
             else:
                 self._tab_status.mount_attributes_panel()
+        except (AttributeError, RuntimeError):
+            pass
+
+    def _update_save_tab_placement(self) -> None:
+        try:
+            want_translate = self._tabs.currentWidget() is self._tab_translate and self._tab_translate.panel_mode() == 'load_screen'
+            if want_translate:
+                self._tab_translate.mount_save_tab(self._tab_save)
+                self._tab_save.public_refresh()
+            elif self._tab_save.parent() is not self._save_tab_host:
+                self._save_tab_host.layout().addWidget(self._tab_save)
         except (AttributeError, RuntimeError):
             pass
 
@@ -657,7 +663,7 @@ class AssistWindow(QMainWindow):
     def _track_chargen_race_class(self, inf_key: str) -> None:
         if inf_key.startswith('_CHARGEN_RACE_'):
             race_key = inf_key[len('_CHARGEN_RACE_'):].rstrip('_')
-            ja = _CHARGEN_RACE_INF_TO_JA.get(race_key)
+            ja = race_display_from_inf_key(race_key)
             if ja:
                 self._chargen_race_ja = ja
                 self._sync_attributes_race_class()

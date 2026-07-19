@@ -1,7 +1,7 @@
 {
   "schema": "rtesaa.source_id_map",
   "schema_version": 2,
-  "registry_hash": "sha256:2faec655bbaaf303e05b7a01cd48ec0b680368790ac3bfa43b7e010e3a11d4b8",
+  "registry_hash": "sha256:dc50e000c5f948f1a23afebd83ed5cb6e845bab2174199ba4fa6983424789597",
   "map": {
     "aexe:akey:A001.0": [
       111871
@@ -879,35 +879,43 @@
     ],
     "aexe:entities:attribute_names:0": [
       100062,
-      107115
+      107115,
+      452042
     ],
     "aexe:entities:attribute_names:1": [
       100033,
-      107067
+      107067,
+      452043
     ],
     "aexe:entities:attribute_names:2": [
       100069,
-      107122
+      107122,
+      452044
     ],
     "aexe:entities:attribute_names:3": [
       100001,
-      107003
+      107003,
+      452045
     ],
     "aexe:entities:attribute_names:4": [
       100057,
-      107108
+      107108,
+      452046
     ],
     "aexe:entities:attribute_names:5": [
       100021,
-      107047
+      107047,
+      452047
     ],
     "aexe:entities:attribute_names:6": [
       100048,
-      107082
+      107082,
+      452048
     ],
     "aexe:entities:attribute_names:7": [
       100039,
-      107072
+      107072,
+      452049
     ],
     "aexe:entities:creature_names:0": [
       109038
@@ -2070,20 +2078,122 @@
       207007,
       401007
     ],
+    "aexe:status:disease_names:0": [
+      452050
+    ],
+    "aexe:status:disease_names:1": [
+      452051
+    ],
+    "aexe:status:disease_names:10": [
+      452052
+    ],
+    "aexe:status:disease_names:11": [
+      452053
+    ],
+    "aexe:status:disease_names:12": [
+      452054
+    ],
+    "aexe:status:disease_names:13": [
+      452055
+    ],
+    "aexe:status:disease_names:14": [
+      452056
+    ],
+    "aexe:status:disease_names:15": [
+      452057
+    ],
+    "aexe:status:disease_names:16": [
+      452058
+    ],
+    "aexe:status:disease_names:2": [
+      452059
+    ],
+    "aexe:status:disease_names:3": [
+      452060
+    ],
+    "aexe:status:disease_names:4": [
+      452061
+    ],
+    "aexe:status:disease_names:5": [
+      452062
+    ],
+    "aexe:status:disease_names:6": [
+      452063
+    ],
+    "aexe:status:disease_names:7": [
+      452064
+    ],
+    "aexe:status:disease_names:8": [
+      452065
+    ],
+    "aexe:status:disease_names:9": [
+      452066
+    ],
     "aexe:status:effects_list:0": [
       452013
     ],
     "aexe:status:effects_list:1": [
       452014
     ],
+    "aexe:status:effects_list:10": [
+      452067
+    ],
+    "aexe:status:effects_list:11": [
+      452068
+    ],
+    "aexe:status:effects_list:12": [
+      452069
+    ],
+    "aexe:status:effects_list:14": [
+      452070
+    ],
+    "aexe:status:effects_list:15": [
+      452071
+    ],
+    "aexe:status:effects_list:16": [
+      452072
+    ],
+    "aexe:status:effects_list:17": [
+      452073
+    ],
+    "aexe:status:effects_list:18": [
+      452074
+    ],
+    "aexe:status:effects_list:19": [
+      452075
+    ],
     "aexe:status:effects_list:2": [
       452015
     ],
     "aexe:status:effects_list:20": [
-      452018
+      452076
     ],
     "aexe:status:effects_list:21": [
+      452077
+    ],
+    "aexe:status:effects_list:22": [
+      452078
+    ],
+    "aexe:status:effects_list:3": [
       452016
+    ],
+    "aexe:status:effects_list:4": [
+      452017
+    ],
+    "aexe:status:effects_list:5": [
+      452018
+    ],
+    "aexe:status:effects_list:6": [
+      452019
+    ],
+    "aexe:status:effects_list:7": [
+      452020
+    ],
+    "aexe:status:effects_list:8": [
+      452079
+    ],
+    "aexe:status:effects_list:9": [
+      452080
     ],
     "aexe:status:key_names:0": [
       106153
@@ -2120,6 +2230,48 @@
     ],
     "aexe:status:key_names:9": [
       106074
+    ],
+    "aexe:status:lock_difficulty_messages:0": [
+      212000
+    ],
+    "aexe:status:lock_difficulty_messages:1": [
+      212001
+    ],
+    "aexe:status:lock_difficulty_messages:10": [
+      212002
+    ],
+    "aexe:status:lock_difficulty_messages:11": [
+      212003
+    ],
+    "aexe:status:lock_difficulty_messages:12": [
+      212004
+    ],
+    "aexe:status:lock_difficulty_messages:13": [
+      212005
+    ],
+    "aexe:status:lock_difficulty_messages:2": [
+      212006
+    ],
+    "aexe:status:lock_difficulty_messages:3": [
+      212007
+    ],
+    "aexe:status:lock_difficulty_messages:4": [
+      212008
+    ],
+    "aexe:status:lock_difficulty_messages:5": [
+      212009
+    ],
+    "aexe:status:lock_difficulty_messages:6": [
+      212010
+    ],
+    "aexe:status:lock_difficulty_messages:7": [
+      212011
+    ],
+    "aexe:status:lock_difficulty_messages:8": [
+      212012
+    ],
+    "aexe:status:lock_difficulty_messages:9": [
+      212013
     ],
     "aexe:status:war_peace:0": [
       412001

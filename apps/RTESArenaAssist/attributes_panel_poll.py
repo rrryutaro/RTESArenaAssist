@@ -1,7 +1,8 @@
 from __future__ import annotations
 from typing import Optional
+import arena_data
 import i18n_helper as i18n
-from attributes_panel import OFF_BONUS_PTS_U8, OFF_CLASS_INDEX, OFF_DAMAGE_I16, OFF_EXP_U32, OFF_FATIGUE_U16, OFF_GOLD_U16, OFF_HEALTH_CURR_U16, OFF_HEALTH_MAX_U16, OFF_LEVEL_U8, OFF_NAME, OFF_PRIMARY_1, OFF_RACE_INDEX, OFF_SPELL_PTS_CURR, OFF_SPELL_PTS_MAX, PRIMARY_LEN, RACE_INDEX_TO_DISPLAY, UNKNOWN, _signed
+from attributes_panel import OFF_BONUS_PTS_U8, OFF_CLASS_INDEX, OFF_DAMAGE_I16, OFF_EXP_U32, OFF_FATIGUE_U16, OFF_GOLD_U16, OFF_HEALTH_CURR_U16, OFF_HEALTH_MAX_U16, OFF_LEVEL_U8, OFF_NAME, OFF_PRIMARY_1, OFF_RACE_INDEX, OFF_SPELL_PTS_CURR, OFF_SPELL_PTS_MAX, PRIMARY_LEN, UNKNOWN, _signed
 from attribute_formulas import calc_bonus_to_health, calc_bonus_to_hit, calc_damage_bonus, calc_magic_defense, calc_max_kilos, calc_max_stamina
 
 def poll_attributes(panel) -> None:
@@ -21,10 +22,10 @@ def poll_attributes(panel) -> None:
         if panel._chargen_mode and panel._race_label:
             panel._race_lbl.setText(panel._race_label)
         else:
-            disp = RACE_INDEX_TO_DISPLAY.get(race_idx)
-            if disp:
-                en, ja = disp
-                panel._race_lbl.setText(f'{ja} ({en})')
+            en = arena_data.race_en(race_idx)
+            disp = arena_data.race_display_name(race_idx)
+            if en and disp:
+                panel._race_lbl.setText(f'{disp} ({en})' if disp != en else en)
             elif panel._race_label:
                 panel._race_lbl.setText(panel._race_label)
     except OSError:

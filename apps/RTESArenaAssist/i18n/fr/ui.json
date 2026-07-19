@@ -21,6 +21,9 @@
   "ui.automap.0": "Carte automatique",
   "ui.rest.0": "Repos",
   "ui.camp.0": "Camper",
+  "ui.camp_options_title.0": "OPTIONS DE CAMPEMENT",
+  "ui.camp_for_a_while.0": "Camper un moment...",
+  "ui.camp_until_healed.0": "Jusqu'à guérison complète",
   "ui.talk.0": "Parler",
   "ui.steal.0": "Voler",
   "ui.grab.0": "Prendre",
@@ -98,5 +101,9 @@
   "ui.mages_spell_cost.0": "Coût du sort",
   "ui.mages_new_spell.0": "Nouveau sort",
   "ui.mages_buy_spell.0": "Acheter un sort",
-  "ui.mages_spellmaker_menu.0": "Créateur de sorts"
+  "ui.mages_spellmaker_menu.0": "Créateur de sorts",
+  "ui.cure_all.0": "Tout soigner",
+  "ui.diseased.0": "Malade",
+  "ui.poisoned.0": "Empoisonné",
+  "ui.cursed.0": "Maudit"
 }

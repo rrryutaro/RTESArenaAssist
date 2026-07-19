@@ -5,9 +5,16 @@ MODE_FALLBACK_MAP = 'fallback_map'
 MODE_FALLBACK_STATUS = 'fallback_status'
 FOREGROUND_MODES = frozenset({'item_pickup', 'shop_buy', 'facility_list', 'equipment', 'spell_detail', 'place_list', 'travel_table', 'journal', 'load_screen', 'choose_attributes', 'class_list', 'race_list', 'appearance_faces'})
 _TRANSLATE_FAMILY = frozenset({MODE_TRANSLATE, MODE_FALLBACK_MAP, MODE_FALLBACK_STATUS})
+OWNER_BOUND_MODES: dict[str, str] = {'load_screen': 'load_screen'}
+
+def required_owner_for_mode(mode: Optional[str]) -> Optional[str]:
+    return OWNER_BOUND_MODES.get(mode or '')
 _FALLBACK_SETTING_TO_MODE = {'map': MODE_FALLBACK_MAP, 'status': MODE_FALLBACK_STATUS}
 
-def resolve_flush_mode(*, winner_mode: Optional[str], top_level: str, emulate: bool, winner_has_content: bool, winner_is_tab_owner: bool, fallback_setting: str) -> str:
+def resolve_flush_mode(*, winner_mode: Optional[str], top_level: str, emulate: bool, winner_has_content: bool, winner_is_tab_owner: bool, fallback_setting: str, current_owner: str) -> str:
+    _required_owner = required_owner_for_mode(winner_mode)
+    if _required_owner is not None and _required_owner != (current_owner or ''):
+        winner_mode = None
     if winner_mode in FOREGROUND_MODES:
         return winner_mode
     if top_level != 'normal-play':
@@ -17,4 +24,4 @@ def resolve_flush_mode(*, winner_mode: Optional[str], top_level: str, emulate: b
     if emulate and winner_has_content:
         return MODE_TRANSLATE
     return _FALLBACK_SETTING_TO_MODE.get(fallback_setting, MODE_TRANSLATE)
-__all__ = ['resolve_flush_mode', 'FOREGROUND_MODES', 'MODE_TRANSLATE', 'MODE_FALLBACK_MAP', 'MODE_FALLBACK_STATUS']
+__all__ = ['resolve_flush_mode', 'required_owner_for_mode', 'FOREGROUND_MODES', 'OWNER_BOUND_MODES', 'MODE_TRANSLATE', 'MODE_FALLBACK_MAP', 'MODE_FALLBACK_STATUS']

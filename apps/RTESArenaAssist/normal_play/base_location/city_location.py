@@ -42,7 +42,7 @@ class CityMapSession(MapSessionBase):
             self._city_name = ctx.location_name
 
     def get_canvas_data(self) -> CanvasData:
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=None, level_down_index=None, entrance_cells=self._entrance_cells, is_wilderness=False, hidden_door_ids=frozenset(), menu_texture_indices=frozenset())
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=None, level_down_index=None, entrance_cells=self._entrance_cells, is_wilderness=False, hidden_door_ids=frozenset(), menu_texture_indices=frozenset(), map_key=f'city:{self._city_name}' if self._city_name else 'city:<unknown>')
 
     def reset_progress(self) -> None:
         if self._walkable is not None:

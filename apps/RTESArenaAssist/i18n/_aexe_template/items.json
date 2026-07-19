@@ -1476,5 +1476,13 @@
       "verified_official": true,
       "provenance": "acd_table_content_match"
     }
+  },
+  "items.unidentified_potion.0.0": {
+    "src_table": "equipment.unidentified_potion_name",
+    "src_hash": "41e4ae984c221ad6",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
   }
 }

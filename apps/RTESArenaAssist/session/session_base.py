@@ -49,6 +49,9 @@ class SessionBase:
     def on_other_session_started(self, ctx: SessionContext) -> None:
         self._active = False
 
+    def force_stop(self, ctx: SessionContext) -> None:
+        self.on_other_session_started(ctx)
+
     def __repr__(self) -> str:
         return f'<{self.__class__.__name__} name={self.name!r} active={self._active}>'
 __all__ = ['SessionBase', 'SessionContext']

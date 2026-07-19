@@ -21,6 +21,9 @@
   "ui.automap.0": "Automap",
   "ui.rest.0": "Rest",
   "ui.camp.0": "Camp",
+  "ui.camp_options_title.0": "CAMP OPTIONS",
+  "ui.camp_for_a_while.0": "Camp for a while...",
+  "ui.camp_until_healed.0": "Until fully  healed",
   "ui.talk.0": "Talk",
   "ui.steal.0": "Steal",
   "ui.grab.0": "Grab",
@@ -98,5 +101,9 @@
   "ui.mages_spell_cost.0": "Spell Cost",
   "ui.mages_new_spell.0": "New Spell",
   "ui.mages_buy_spell.0": "Buy Spell",
-  "ui.mages_spellmaker_menu.0": "Spellmaker"
+  "ui.mages_spellmaker_menu.0": "Spellmaker",
+  "ui.cure_all.0": "Cure all",
+  "ui.diseased.0": "Diseased",
+  "ui.poisoned.0": "Poisoned",
+  "ui.cursed.0": "Cursed"
 }

@@ -21,6 +21,9 @@
   "ui.automap.0": "Mapa automático",
   "ui.rest.0": "Descansar",
   "ui.camp.0": "Acampar",
+  "ui.camp_options_title.0": "OPCIONES DE ACAMPADA",
+  "ui.camp_for_a_while.0": "Acampar un rato...",
+  "ui.camp_until_healed.0": "Hasta curarse por completo",
   "ui.talk.0": "Hablar",
   "ui.steal.0": "Robar",
   "ui.grab.0": "Tomar",
@@ -98,5 +101,9 @@
   "ui.mages_spell_cost.0": "Costo de hechizo",
   "ui.mages_new_spell.0": "Nuevo hechizo",
   "ui.mages_buy_spell.0": "Comprar hechizo",
-  "ui.mages_spellmaker_menu.0": "Creador de hechizos"
+  "ui.mages_spellmaker_menu.0": "Creador de hechizos",
+  "ui.cure_all.0": "Curar todo",
+  "ui.diseased.0": "Enfermo",
+  "ui.poisoned.0": "Envenenado",
+  "ui.cursed.0": "Maldito"
 }

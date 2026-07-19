@@ -437,7 +437,7 @@ class WildernessMapSession(MapSessionBase):
                     local_x = lx
                     local_y = ly
         self._update_field_entrance_hint(local_x, local_y)
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=local_x, player_y=local_y, player_angle_deg=self._angle, level_up_index=None, level_down_index=None, entrance_cells=self._wild_entrance_cells(), flat_marks=self._wild_flat_marks(), edge_marks=self._wild_edge_marks(), crop_marks=self._wild_crop_marks(), wild_show_crops=self._show_crops, is_wilderness=True, chunk_origin=self._origin_chunk, wilderness_compact_view=self._compact_view, wild_distinguish_road=self._distinguish_road, wild_show_edge=self._show_edge, hidden_door_ids=frozenset(), menu_texture_indices=frozenset())
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=local_x, player_y=local_y, player_angle_deg=self._angle, level_up_index=None, level_down_index=None, entrance_cells=self._wild_entrance_cells(), flat_marks=self._wild_flat_marks(), edge_marks=self._wild_edge_marks(), crop_marks=self._wild_crop_marks(), wild_show_crops=self._show_crops, is_wilderness=True, chunk_origin=self._origin_chunk, wilderness_compact_view=self._compact_view, wild_distinguish_road=self._distinguish_road, wild_show_edge=self._show_edge, hidden_door_ids=frozenset(), menu_texture_indices=frozenset(), map_key='wilderness:%s:%s:%s' % (self._wild_seed if self._wild_seed is not None else '?', self._origin_chunk, self._grid_size))
 
     def reset_progress(self) -> None:
         if self._walkable is not None:

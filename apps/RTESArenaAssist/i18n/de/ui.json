@@ -21,6 +21,9 @@
   "ui.automap.0": "Automap",
   "ui.rest.0": "Rasten",
   "ui.camp.0": "Lager",
+  "ui.camp_options_title.0": "LAGEROPTIONEN",
+  "ui.camp_for_a_while.0": "Eine Weile lagern...",
+  "ui.camp_until_healed.0": "Bis zur vollständigen Heilung",
   "ui.talk.0": "Sprechen",
   "ui.steal.0": "Stehlen",
   "ui.grab.0": "Nehmen",
@@ -98,5 +101,9 @@
   "ui.mages_spell_cost.0": "Zauberkosten",
   "ui.mages_new_spell.0": "Neuer Zauber",
   "ui.mages_buy_spell.0": "Zauber kaufen",
-  "ui.mages_spellmaker_menu.0": "Zauberschmiede"
+  "ui.mages_spellmaker_menu.0": "Zauberschmiede",
+  "ui.cure_all.0": "Alles heilen",
+  "ui.diseased.0": "Krank",
+  "ui.poisoned.0": "Vergiftet",
+  "ui.cursed.0": "Verflucht"
 }

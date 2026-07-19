@@ -23,6 +23,13 @@ def _runtime_resource_dir() -> str:
 _USER_DIR = _runtime_user_dir()
 _RESOURCE_DIR = _runtime_resource_dir()
 _PUBLIC_RUNTIME_I18N = True
+_crash_log_fp = None
+try:
+    import faulthandler as _faulthandler
+    _crash_log_fp = open(os.path.join(_USER_DIR, 'assist_crash.log'), 'a', encoding='utf-8')
+    _faulthandler.enable(file=_crash_log_fp)
+except Exception:
+    _crash_log_fp = None
 
 def _owned_i18n_path(rel: str) -> str:
     disk = os.path.join(_RESOURCE_DIR, *rel.split('/'))

@@ -10,7 +10,6 @@ from tabs.tab_map import TabMap
 from tabs.translate_panels.item_row import ItemRow
 from tabs.translate_panels.shop_item_row import ShopItemRow
 from tabs.translate_panels.equipment_list import render_equipment_list
-from tabs.translate_panels.load_screen import render_load_screen_slots
 _MODE_TRANSLATE = 'translate'
 _MODE_CLASS_LIST = 'class_list'
 _MODE_RACE_LIST = 'race_list'
@@ -358,7 +357,13 @@ class TabTranslate(QWidget):
         self._render_spell_effect_cards(self._spell_effect_details_for_display(data))
 
     def update_load_screen_slots(self, slots: list) -> None:
-        render_load_screen_slots(self._load_table, slots)
+        return
+
+    def mount_save_tab(self, save_tab) -> None:
+        if save_tab is None:
+            return
+        if save_tab.parent() is not self._save_slot:
+            self._save_slot.layout().addWidget(save_tab)
 
     def panel_mode(self) -> str:
         return self._panel_mode

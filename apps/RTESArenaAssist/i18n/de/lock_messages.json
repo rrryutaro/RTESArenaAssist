@@ -1,0 +1,18 @@
+{
+  "lock_messages.difficulty.0": "Dieses Schloss hat nichts von dir zu befürchten...",
+  "lock_messages.difficulty.1": "Es wäre ein Wunder, wenn du dieses Schloss knacken würdest...",
+  "lock_messages.difficulty.2": "Dieses Schloss scheint deine Fähigkeiten zu übersteigen...",
+  "lock_messages.difficulty.3": "Du zweifelst an deiner Fähigkeit, dieses Schloss zu öffnen...",
+  "lock_messages.difficulty.4": "Dieses Schloss sieht schwierig aus...",
+  "lock_messages.difficulty.5": "Dieses Schloss wäre eine Herausforderung für dich...",
+  "lock_messages.difficulty.6": "Dieses Schloss wäre eine gute Herausforderung...",
+  "lock_messages.difficulty.7": "Du glaubst, dieses Schloss knacken zu können...",
+  "lock_messages.difficulty.8": "Dieses Schloss scheint relativ einfach zu sein...",
+  "lock_messages.difficulty.9": "Dieses Schloss amüsiert dich...",
+  "lock_messages.difficulty.10": "Du lachst über die stümperhafte Qualität dieses Schlosses...",
+  "lock_messages.difficulty.11": "Du siehst eine erbärmliche Ausrede von einem Schloss...",
+  "lock_messages.difficulty.12": "Dieses Schloss ist eine Beleidigung für deine Fähigkeiten...",
+  "lock_messages.difficulty.13": "Dies ist ein magisch verschlossenes Schloss...",
+  "lock_messages.key_picked_up.0": "Du hast einen Schlüssel aus %s gefunden.",
+  "lock_messages.door_unlocked_with_key.0": "Du öffnest die Tür mit einem Schlüssel aus %s."
+}

@@ -5,6 +5,7 @@ from session.facility_node import FacilityView
 _log = logging.getLogger('RTESArenaAssist')
 MENU_OWNER = 'temple_menu'
 MENU_KEY = '_temple_menu_key_prev'
+from normal_play.temple_cure_module import CURE_OWNER, cure_foreground_view
 
 @dataclass(frozen=True)
 class TempleView(FacilityView):
@@ -14,6 +15,8 @@ class TempleView(FacilityView):
     has_menu: bool = False
     reply_foreground: bool = False
     cost_eligible: bool = False
+    cure_foreground: bool = False
+    cure_view: object = None
 
 def classify_temple_view(w, *, shop_state=None, shop_img_name: str='', **_ignored) -> 'TempleView':
     img = (shop_img_name or '').upper()
@@ -21,15 +24,23 @@ def classify_temple_view(w, *, shop_state=None, shop_img_name: str='', **_ignore
     has_menu = shop_state is not None and shop_state.kind == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'temple')
     reply_foreground = int(getattr(w, '_temple_dialog_hold_polls', 0) or 0) > 0
     cost_eligible = not menu_fg and (not reply_foreground)
-    if menu_fg and has_menu:
+    cure_view = cure_foreground_view(w, img=img, shop_state=shop_state)
+    cure_foreground = cure_view is not None
+    if cure_foreground:
+        l4_kind, owner, reason = ('cure', CURE_OWNER, 'temple_cure')
+    elif menu_fg and has_menu:
         l4_kind, owner, reason = ('menu', MENU_OWNER, 'temple_menu')
     else:
         l4_kind, owner, reason = ('none', '', 'temple:seam')
-    return TempleView(l4_kind=l4_kind, render_owner=owner, l4_visible=l4_kind != 'none', reason=reason, img=img, shop_state=shop_state, menu_fg=menu_fg, has_menu=has_menu, reply_foreground=reply_foreground, cost_eligible=cost_eligible)
+    return TempleView(l4_kind=l4_kind, render_owner=owner, l4_visible=l4_kind != 'none', reason=reason, img=img, shop_state=shop_state, menu_fg=menu_fg, has_menu=has_menu, reply_foreground=reply_foreground, cost_eligible=cost_eligible, cure_foreground=cure_foreground, cure_view=cure_view)
 
 def render_temple_view(w, *, view, shop_state=None, shop_img_name: str='', **_ignored) -> tuple[bool, bool, bool, bool]:
     img = view.img
     shop_state = view.shop_state
+    if view.cure_foreground:
+        from normal_play.temple_cure_module import poll_temple_cure
+        list_visible = poll_temple_cure(w, cure=view.cure_view)
+        return (False, False, False, list_visible)
     from normal_play.temple_cost_module import poll_temple_cost
     active_tmpl_handled = False
     if view.cost_eligible:

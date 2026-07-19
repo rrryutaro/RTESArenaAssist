@@ -200,8 +200,8 @@ def _normalize_decimal(text: str) -> str:
 
 def _format_hands(text: str) -> str:
     if text == '1':
-        return '片手'
+        return i18n.text('item.slot.one_handed')
     if text == '2':
-        return '両手'
+        return i18n.text('item.slot.two_handed')
     return text
 __all__ = ['BUY_WEAPON_LIST_OFFSET', 'BUY_ARMOR_LIST_OFFSET', 'BUY_LIST_MAXLEN', 'SELL_REPAIR_ITEM_LIST_OFFSET', 'SELL_REPAIR_ITEM_LIST_MAXLEN', 'parse_buy_armor_list', 'parse_buy_weapon_list', 'parse_sell_repair_item_list', 'read_buy_armor_list', 'read_buy_weapon_list', 'read_sell_repair_item_list', 'translate_equipment_shop_name']

@@ -59,9 +59,11 @@ def classify_map_axis(analyzer, anchor: Optional[int], *, mif_name: Optional[str
 
 def resolve_area_with_indoor_fallback(analyzer, anchor: Optional[int], mif_name: Optional[str], in_interior: bool, last_non_interior_area: str) -> Tuple[str, str]:
     if in_interior:
+        area = detect_play_area(analyzer, anchor, mif_name)
+        if area == 'dungeon' and (not _looks_like_interior_mif(mif_name)):
+            return ('dungeon', last_non_interior_area)
         if last_non_interior_area:
             return (last_non_interior_area, last_non_interior_area)
-        area = detect_play_area(analyzer, anchor, mif_name)
         if area == 'unknown' or (area == 'dungeon' and _looks_like_interior_mif(mif_name)):
             return ('city', last_non_interior_area)
         return (area, last_non_interior_area)

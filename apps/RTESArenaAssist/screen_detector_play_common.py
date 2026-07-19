@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional, Tuple
-from screen_detector import _tr, FLAG_STATUS_POPUP_OFFSET, FLAG_EQUIPMENT_OPEN_OFFSET, POPUP_OPEN_OFFSET, _read_u8
+from screen_detector import _tr, FLAG_STATUS_POPUP_OFFSET, FLAG_EQUIPMENT_OPEN_OFFSET, POPUP_OPEN_OFFSET, SPELL_DETAIL_ACTIVE_OFFSET, _read_u8
 
 def detect_common_play_screen(analyzer, anchor: int, img_name: str) -> Optional[Tuple[str, str]]:
     img_upper = (img_name or '').upper()
@@ -14,6 +14,9 @@ def detect_common_play_screen(analyzer, anchor: int, img_name: str) -> Optional[
             return ('bonus_screen', _tr('bonus_screen'))
         if flag_equipment == 1:
             return ('equipment', _tr('equipment'))
+        spell_detail_active = _read_u8(analyzer, anchor + SPELL_DETAIL_ACTIVE_OFFSET)
+        if spell_detail_active != 0:
+            return ('spell_detail', _tr('spell_detail'))
         return ('spellbook', _tr('spellbook'))
     if popup_open == 1:
         if img_upper == 'LOGBOOK.IMG':

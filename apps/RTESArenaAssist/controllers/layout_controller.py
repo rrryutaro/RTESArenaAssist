@@ -120,10 +120,6 @@ class LayoutController:
         else:
             w._sb.showMessage(f'配置形式: {form.value}', 2000)
 
-    def unlock_cursor(self):
-        import ctypes
-        ctypes.windll.user32.ClipCursor(None)
-
     def arrange_layout(self):
         _log.info('arrange_layout called')
         w = self._w
@@ -294,7 +290,6 @@ class LayoutController:
         w._layout_dos_size = (dos_w_phys, dos_h_phys)
         w._is_layout_active = True
         w._layout_btn.setChecked(True)
-        w._cursor_unlock_timer.start()
         _log.info('layout mode active: window(log)=(%d,%d)%dx%d  dosbox(phys)=(%d,%d)%dx%d  dpr=%.4f', sx, sy, lw_log, lh_log, dos_phys_x, dos_phys_y, dos_w_phys, dos_h_phys, actual_dpr)
         w._sb.showMessage(f'レイアウトモード: {lw_log}×{lh_log}(log)  DOSBox {dos_w_phys}×{dos_h_phys}(phys)  [{corner.value}]', 5000)
 
@@ -306,8 +301,6 @@ class LayoutController:
             return
         w._is_layout_active = False
         w._layout_btn.setChecked(False)
-        w._cursor_unlock_timer.stop()
-        ctypes.windll.user32.ClipCursor(None)
         w.clearMask()
         w._layout_translate_panel = None
         w._layout_zone_widgets.clear()
@@ -400,7 +393,6 @@ class LayoutController:
             QMessageBox.warning(w, i18n.tr('common.warning'), 'DOSBox の埋め込みに失敗しました。')
             return
         w._is_embed_active = True
-        w._cursor_unlock_timer.start()
         _log.info('embed layout mode active: %dx%d  dosbox=(%d,%d)%dx%d', lw, lh, dos_x, dos_y, dos_w, dos_h)
         w._sb.showMessage(f'埋め込みレイアウトモード: {lw}×{lh}  DOSBox {dos_w}×{dos_h}  [{corner.value}]', 5000)
 
@@ -420,9 +412,6 @@ class LayoutController:
         if w._embed_saved_geo is not None:
             w.setGeometry(w._embed_saved_geo)
             w._embed_saved_geo = None
-        w._cursor_unlock_timer.stop()
-        import ctypes
-        ctypes.windll.user32.ClipCursor(None)
         w._is_embed_active = False
         w._sb.showMessage('埋め込みレイアウトモード終了', 3000)
 

@@ -100,6 +100,36 @@ def get_race_by_id(race_id: int) -> Optional[dict]:
 def all_races() -> list[dict]:
     _load()
     return list(_races_data.get('races', []))
+RACE_CANONICAL_EN: tuple[tuple[str, str], ...] = (('Breton', 'Bretons'), ('Redguard', 'Redguards'), ('Nord', 'Nords'), ('Dark Elf', 'Dark Elves'), ('High Elf', 'High Elves'), ('Wood Elf', 'Wood Elves'), ('Khajiit', 'Khajiit'), ('Argonian', 'Argonians'))
+
+def race_index_from_en(name: str) -> Optional[int]:
+    key = (name or '').strip().lower()
+    if not key:
+        return None
+    for idx, (singular, plural) in enumerate(RACE_CANONICAL_EN):
+        if key in (singular.lower(), plural.lower()):
+            return idx
+    return None
+
+def race_en(race_index: int) -> Optional[str]:
+    if 0 <= race_index < len(RACE_CANONICAL_EN):
+        return RACE_CANONICAL_EN[race_index][0]
+    return None
+
+def race_en_plural(race_index: int) -> Optional[str]:
+    if 0 <= race_index < len(RACE_CANONICAL_EN):
+        return RACE_CANONICAL_EN[race_index][1]
+    return None
+
+def race_display_name(race_index: int, lang: str | None=None) -> Optional[str]:
+    singular = race_en(race_index)
+    if singular is None:
+        return None
+    if lang is None:
+        translated = i18n.value('races', singular)
+    else:
+        translated = i18n.value_in('races', singular, lang)
+    return translated or i18n.lang_value_in(f'races.{race_index}.0', lang or i18n.current_lang()) or singular
 
 def can_class_use_armor(class_id: int, material_id: int) -> bool | None:
     cls = get_class_by_id(class_id)

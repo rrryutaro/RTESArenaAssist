@@ -42,6 +42,7 @@ class TabSave(QWidget):
         self._save_watcher.fileChanged.connect(self._on_names_dat_changed)
         self._save_watcher.directoryChanged.connect(self._on_save_dir_changed)
         self._watched_names_path: str | None = None
+        self._left_items: list[QListWidgetItem] = []
         self._setup_ui()
         self._connect_signals()
         self._rebuild_save_watcher()
@@ -53,6 +54,7 @@ class TabSave(QWidget):
 
     def _connect_signals(self):
         self._btn_refresh.clicked.connect(self._refresh)
+        self._btn_toggle_left.clicked.connect(self._toggle_left_pane)
         self._left_list.currentRowChanged.connect(self._on_left_changed)
         self._table.currentCellChanged.connect(self._on_table_changed)
         self._btn_backup_all.clicked.connect(self._do_backup_all)
@@ -80,6 +82,16 @@ class TabSave(QWidget):
         sizes_v = cfg.get('save_tab_split_v')
         if isinstance(sizes_v, list) and len(sizes_v) == 2:
             self._right_split.setSizes(sizes_v)
+        self._apply_left_pane_collapsed(bool(cfg.get('save_tab_left_collapsed', False)))
+
+    def _toggle_left_pane(self):
+        collapsed = self._left_pane.isVisible()
+        self._apply_left_pane_collapsed(collapsed)
+        cfg.set_val('save_tab_left_collapsed', collapsed)
+
+    def _apply_left_pane_collapsed(self, collapsed: bool):
+        self._left_pane.setVisible(not collapsed)
+        self._btn_toggle_left.setText('▶' if collapsed else '◀')
 
     def _update_action_bar(self, source_type: str):
         is_game = source_type == self._SOURCE_GAME
@@ -88,12 +100,17 @@ class TabSave(QWidget):
         for btn in self._backup_btns:
             btn.setVisible(not is_game)
 
+    def public_refresh(self) -> None:
+        self._refresh()
+
     def _refresh(self, keep_backup_id: str | None=None):
         self._left_list.blockSignals(True)
         self._left_list.clear()
+        self._left_items = []
         game_item = QListWidgetItem(i18n.tr('save.source_game'))
         game_item.setData(Qt.ItemDataRole.UserRole, {'type': 'game'})
         self._left_list.addItem(game_item)
+        self._left_items.append(game_item)
         backup_dir = _effective_backup_dir()
         backups = save_manager.list_backups(backup_dir)
         for meta in backups:
@@ -103,6 +120,7 @@ class TabSave(QWidget):
             bk_item = QListWidgetItem(label)
             bk_item.setData(Qt.ItemDataRole.UserRole, {'type': 'backup', 'meta': meta})
             self._left_list.addItem(bk_item)
+            self._left_items.append(bk_item)
         self._left_list.blockSignals(False)
         if keep_backup_id:
             for row in range(1, self._left_list.count()):

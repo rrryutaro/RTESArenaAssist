@@ -120,6 +120,26 @@
       "quote_close": "»",
       "secondary_quote_open": "“",
       "secondary_quote_close": "”"
+    },
+    "ru": {
+      "lang_code": "ru",
+      "display_name": "Русский",
+      "locale": "ru-RU",
+      "status": "public_enabled",
+      "public_enabled": true,
+      "direction": "ltr",
+      "fallback_chain": [
+        "ru",
+        "en"
+      ],
+      "font_hint": "Segoe UI, Arial, sans-serif",
+      "plural_form": "en_like_2",
+      "decimal_separator": ",",
+      "thousands_separator": " ",
+      "quote_open": "«",
+      "quote_close": "»",
+      "secondary_quote_open": "„",
+      "secondary_quote_close": "“"
     }
   }
 }

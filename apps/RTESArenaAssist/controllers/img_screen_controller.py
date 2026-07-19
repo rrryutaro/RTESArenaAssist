@@ -134,38 +134,12 @@ class ImgScreenController:
         item_data: list = []
         title = '装備品一覧'
         try:
-            import arena_data
-            import assist_settings as settings
+            from class_equip_reader import can_equip_item, read_class_equip_rules
             from inventory_reader import read_equipment_items
             import dungeon_msg_lookup as dml
-            json_class_id: int | None = None
-            is_hypothesis = True
-            try:
-                play_cls_id = self._w._analyzer.read_bytes(self._w._anchor + 425, 1)[0]
-                play_cls_map = settings.get('arena_play_class_id_map', {}) or {}
-                class_en = play_cls_map.get(str(play_cls_id))
-                if class_en:
-                    cls_data = arena_data.get_class_by_name(class_en)
-                    if cls_data:
-                        json_class_id = cls_data['id']
-                        is_hypothesis = bool(cls_data.get('_hypothesis_note'))
-            except Exception:
-                pass
-
-            def _can_equip(it: dict) -> bool | None:
-                if json_class_id is None:
-                    return None
-                t = it['item_type']
-                if t == 'weapon':
-                    return arena_data.can_class_use_weapon(json_class_id, it['slot_id'])
-                if t == 'armor':
-                    return arena_data.can_class_use_armor(json_class_id, it['armor_material_id'])
-                if t == 'shield':
-                    return arena_data.can_class_use_shield(json_class_id, it['slot_id'])
-                return True
+            rules = read_class_equip_rules(self._w._analyzer, self._w._anchor)
             items_raw = read_equipment_items(self._w._analyzer, self._w._anchor)
-            item_data = [{'en': it['en'], 'ja': dml.lookup_item(it['en']), 'equipped': it['equipped'], 'is_unidentified': it['is_unidentified'], 'can_equip': _can_equip(it), 'slot_label': it['slot_label'], 'weight': it['weight'], 'condition': it['condition'], 'effect': f"{it['count']} 個" if it.get('count') is not None else it['effect']} for it in items_raw]
-            title = '装備品一覧'
+            item_data = [{'en': it['en'], 'ja': dml.lookup_item(it['en']), 'equipped': it['equipped'], 'is_unidentified': it['is_unidentified'], 'can_equip': can_equip_item(it, rules), 'slot_label': it['slot_label'], 'weight': it['weight'], 'condition': it['condition'], 'effect': f"{it['count']} 個" if it.get('count') is not None else it['effect']} for it in items_raw]
         except Exception:
             _log.exception('equipment read failed')
         self._w._ui_router.propose_equipment_list('equipment', title, item_data, priority=30, reason='screen:equipment')

@@ -21,6 +21,9 @@
   "ui.automap.0": "Mappa Automatica",
   "ui.rest.0": "Riposa",
   "ui.camp.0": "Accampati",
+  "ui.camp_options_title.0": "OPZIONI ACCAMPAMENTO",
+  "ui.camp_for_a_while.0": "Accampati per un po'...",
+  "ui.camp_until_healed.0": "Fino a completa guarigione",
   "ui.talk.0": "Parla",
   "ui.steal.0": "Ruba",
   "ui.grab.0": "Prendi",
@@ -98,5 +101,9 @@
   "ui.mages_spell_cost.0": "Costo dell'incantesimo",
   "ui.mages_new_spell.0": "Nuovo incantesimo",
   "ui.mages_buy_spell.0": "Acquista incantesimo",
-  "ui.mages_spellmaker_menu.0": "Creatore di incantesimi"
+  "ui.mages_spellmaker_menu.0": "Creatore di incantesimi",
+  "ui.cure_all.0": "Cura tutto",
+  "ui.diseased.0": "Malato",
+  "ui.poisoned.0": "Avvelenato",
+  "ui.cursed.0": "Maledetto"
 }

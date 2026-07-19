@@ -5,7 +5,7 @@ if TYPE_CHECKING:
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QGridLayout, QGroupBox, QHBoxLayout, QLabel, QPushButton, QSpinBox, QWidget
 import i18n_helper as i18n
-from attributes_panel import UNKNOWN, COL_PRIMARY_LABEL, COL_PRIMARY_VALUE, COL_DERIVED_LABEL, COL_DERIVED_VALUE, COL_KILOS_LABEL, COL_KILOS_VALUE, ROW_NAME, ROW_RACE, ROW_CLASS, ROW_HEADER_GAP, ROW_PRIMARY_FIRST, ROW_PRE_BONUS_GAP, ROW_BONUS_PTS, ROW_POST_BONUS_GAP, ROW_HP, ROW_FATIGUE, ROW_GOLD, ROW_GOLD_EXP_GAP, ROW_EXP, ROW_LEVEL, ATTR_DISPLAY_EN, ATTR_DISPLAY_JA, DERIVED_COL2_BY_ATTR, DERIVED_COL3_BY_ATTR, DERIVED_LABELS, STAT_LABELS, _bilingual
+from attributes_panel import UNKNOWN, COL_PRIMARY_LABEL, COL_PRIMARY_VALUE, COL_DERIVED_LABEL, COL_DERIVED_VALUE, COL_KILOS_LABEL, COL_KILOS_VALUE, ROW_NAME, ROW_RACE, ROW_CLASS, ROW_HEADER_GAP, ROW_PRIMARY_FIRST, ROW_PRE_BONUS_GAP, ROW_BONUS_PTS, ROW_POST_BONUS_GAP, ROW_HP, ROW_FATIGUE, ROW_GOLD, ROW_GOLD_EXP_GAP, ROW_EXP, ROW_LEVEL, ATTR_KEYS, DERIVED_COL2_BY_ATTR, DERIVED_COL3_BY_ATTR, DERIVED_LABEL_KEYS, STAT_LABEL_KEYS, _bilingual, attr_label
 
 def build_main_grid(panel: 'AttributesPanel') -> QWidget:
     w = QWidget()
@@ -20,7 +20,7 @@ def build_main_grid(panel: 'AttributesPanel') -> QWidget:
     g.setRowMinimumHeight(ROW_HEADER_GAP, 8)
     for idx in range(8):
         row = ROW_PRIMARY_FIRST + idx
-        primary_lbl = QLabel(_bilingual(ATTR_DISPLAY_EN[idx], ATTR_DISPLAY_JA[idx]) + ':')
+        primary_lbl = QLabel(attr_label(ATTR_KEYS[idx]) + ':')
         primary_lbl.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         g.addWidget(primary_lbl, row, COL_PRIMARY_LABEL, alignment=Qt.AlignmentFlag.AlignLeft)
         sb = QSpinBox()
@@ -34,8 +34,7 @@ def build_main_grid(panel: 'AttributesPanel') -> QWidget:
         g.addWidget(sb, row, COL_PRIMARY_VALUE, alignment=Qt.AlignmentFlag.AlignLeft)
         d_key = DERIVED_COL2_BY_ATTR.get(idx)
         if d_key:
-            en, ja = DERIVED_LABELS[d_key]
-            d_label = QLabel(_bilingual(en, ja) + ':')
+            d_label = QLabel(_bilingual(DERIVED_LABEL_KEYS[d_key]) + ':')
             d_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
             g.addWidget(d_label, row, COL_DERIVED_LABEL, alignment=Qt.AlignmentFlag.AlignLeft)
             d_value = QLabel(UNKNOWN)
@@ -46,8 +45,7 @@ def build_main_grid(panel: 'AttributesPanel') -> QWidget:
             panel._derived[d_key] = d_value
         k_key = DERIVED_COL3_BY_ATTR.get(idx)
         if k_key:
-            en, ja = DERIVED_LABELS[k_key]
-            k_label = QLabel(_bilingual(en, ja) + ':')
+            k_label = QLabel(_bilingual(DERIVED_LABEL_KEYS[k_key]) + ':')
             k_label.setAlignment(Qt.AlignmentFlag.AlignLeft)
             g.addWidget(k_label, row, COL_KILOS_LABEL, alignment=Qt.AlignmentFlag.AlignLeft)
             k_value = QLabel(UNKNOWN)
@@ -57,8 +55,7 @@ def build_main_grid(panel: 'AttributesPanel') -> QWidget:
             g.addWidget(k_value, row, COL_KILOS_VALUE, alignment=Qt.AlignmentFlag.AlignLeft)
             panel._derived[k_key] = k_value
     g.setRowMinimumHeight(ROW_PRE_BONUS_GAP, 16)
-    en, ja = DERIVED_LABELS['bonus_pts']
-    bp_label = QLabel(_bilingual(en, ja) + ':')
+    bp_label = QLabel(_bilingual(DERIVED_LABEL_KEYS['bonus_pts']) + ':')
     panel._bp_spin = QSpinBox()
     panel._bp_spin.setRange(0, 255)
     panel._bp_spin.setMinimumWidth(80)
@@ -78,8 +75,7 @@ def build_main_grid(panel: 'AttributesPanel') -> QWidget:
     g.setRowMinimumHeight(ROW_POST_BONUS_GAP, 16)
     stat_rows = [(ROW_HP, 'hp'), (ROW_FATIGUE, 'fatigue'), (ROW_GOLD, 'gold'), (ROW_EXP, 'experience'), (ROW_LEVEL, 'level')]
     for row, key in stat_rows:
-        en, ja = STAT_LABELS[key]
-        label = QLabel(_bilingual(en, ja) + ':')
+        label = QLabel(_bilingual(STAT_LABEL_KEYS[key]) + ':')
         label.setAlignment(Qt.AlignmentFlag.AlignLeft)
         g.addWidget(label, row, 0, alignment=Qt.AlignmentFlag.AlignLeft)
         v_lbl = QLabel(UNKNOWN)

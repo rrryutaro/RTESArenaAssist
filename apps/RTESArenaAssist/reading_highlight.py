@@ -1,7 +1,7 @@
 from __future__ import annotations
 import html as _html
 import threading
-from PySide6.QtCore import QObject, Qt, Signal
+from PySide6.QtCore import QObject, QTimer, Qt
 import assist_settings as settings
 _HL_COLOR_CURRENT = '#ffd479'
 _HL_COLOR_PREFETCH = '#82aaff'
@@ -105,16 +105,20 @@ def apply_reading(label, current_segment, prefetched_segments, full_text=None) -
         return
     if not highlight_marked(label, marks):
         clear_highlight(label)
+_PULL_INTERVAL_MS = 50
 
 class ReadingHighlighter(QObject):
-    _sig = Signal()
 
     def __init__(self, parent=None) -> None:
         super().__init__(parent)
         self._targets: list = []
         self._latest: tuple = (None, None, [])
+        self._pending = False
         self._lock = threading.Lock()
-        self._sig.connect(self._apply, Qt.ConnectionType.QueuedConnection)
+        self._timer = QTimer(self)
+        self._timer.setInterval(_PULL_INTERVAL_MS)
+        self._timer.timeout.connect(self._drain)
+        self._timer.start()
 
     def register(self, target) -> None:
         if target not in self._targets:
@@ -123,7 +127,14 @@ class ReadingHighlighter(QObject):
     def on_segment(self, full_text, current_segment, prefetched_segments=None):
         with self._lock:
             self._latest = (full_text, current_segment, list(prefetched_segments or []))
-        self._sig.emit()
+            self._pending = True
+
+    def _drain(self) -> None:
+        with self._lock:
+            if not self._pending:
+                return
+            self._pending = False
+        self._apply()
 
     def _apply(self) -> None:
         with self._lock:

@@ -48,6 +48,8 @@ def temple_sub_state_key(active_template_surface: str, panel_owner: str, img_nam
     text = ' '.join((current_text or '').split())
     if owner == 'temple_menu':
         return 'recognition.temple_sub_menu'
+    if owner == 'temple_cure':
+        return 'recognition.temple_sub_curing'
     if owner == 'temple_prompt':
         return 'recognition.temple_sub_donate_amount'
     if owner == 'temple_cost':
@@ -67,24 +69,19 @@ def temple_sub_state_key(active_template_surface: str, panel_owner: str, img_nam
     if owner == 'active_template':
         return _TEMPLE_SURFACE_SUB_KEYS.get(surface, '')
     return ''
+_EQUIPMENT_STATE_SUB_KEYS = {'menu': 'recognition.equipment_sub_menu', 'buy_list': 'recognition.equipment_sub_list', 'item_select': 'recognition.equipment_sub_list', 'repair_entry': 'recognition.equipment_sub_repair_entry', 'repair_jobs': 'recognition.equipment_sub_repair_jobs', 'repair_status_reply': 'recognition.equipment_sub_repair_status', 'repair_done_reply': 'recognition.equipment_sub_repair_done', 'repair_estimate': 'recognition.equipment_sub_repair_estimate', 'reply': 'recognition.equipment_sub_response'}
 
-def equipment_sub_state_key(active_template_surface: str, panel_owner: str, img_name: str='', negot_counter_active: bool=False) -> str:
-    owner = panel_owner or ''
+def equipment_sub_state_key(l4_state, *, active_template_surface: str='', img_name: str='', negot_counter_active: bool=False) -> str:
+    state = str(getattr(l4_state, 'value', l4_state) or '')
     img = (img_name or '').upper()
     surface = active_template_surface or ''
     if negot_counter_active or surface == 'negotiation_counter':
         return 'recognition.equipment_sub_amount_counter'
-    if owner == 'equipment_menu':
-        return 'recognition.equipment_sub_menu'
-    if owner == 'equipment_list':
-        return 'recognition.equipment_sub_list'
-    if owner == 'equipment_negotiation':
+    if state == 'negotiation':
         if img == 'YESNO.IMG':
             return 'recognition.equipment_sub_final_confirm'
         return 'recognition.equipment_sub_amount_present'
-    if owner == 'equipment_reply':
-        return 'recognition.equipment_sub_response'
-    return ''
+    return _EQUIPMENT_STATE_SUB_KEYS.get(state, '')
 
 def mages_sub_state_key(panel_owner: str, img_name: str='', list_title: str='') -> str:
     owner = panel_owner or ''

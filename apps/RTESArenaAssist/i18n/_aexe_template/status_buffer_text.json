@@ -199,8 +199,17 @@
   },
   "status_buffer_text.health.3": {
     "src_table": "status.effects_list",
-    "src_index": 21,
-    "src_hash": "fa3765663b75dd11",
+    "src_index": 3,
+    "src_hash": "f7c0c3231d7d7ac9",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.4": {
+    "src_table": "status.effects_list",
+    "src_index": 4,
+    "src_hash": "05b8b79eea508848",
     "_meta": {
       "verified_official": true,
       "provenance": "acd_table_content_match"
@@ -208,8 +217,377 @@
   },
   "status_buffer_text.health.5": {
     "src_table": "status.effects_list",
+    "src_index": 5,
+    "src_hash": "b75af7ef6c4de2b9",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.6": {
+    "src_table": "status.effects_list",
+    "src_index": 6,
+    "src_hash": "7c1269f9e2f02eca",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.7": {
+    "src_table": "status.effects_list",
+    "src_index": 7,
+    "src_hash": "0c9c941c1a6f9c0e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.8": {
+    "src_table": "status.effects_list",
+    "src_index": 8,
+    "src_hash": "8ad92772f0196ec6",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.9": {
+    "src_table": "status.effects_list",
+    "src_index": 9,
+    "src_hash": "1738eba6d9e63633",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.10": {
+    "src_table": "status.effects_list",
+    "src_index": 10,
+    "src_hash": "a28436afbd272e63",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.11": {
+    "src_table": "status.effects_list",
+    "src_index": 11,
+    "src_hash": "eea7e0e59aa79130",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.12": {
+    "src_table": "status.effects_list",
+    "src_index": 12,
+    "src_hash": "c8b00c2e4681bbdb",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.14": {
+    "src_table": "status.effects_list",
+    "src_index": 14,
+    "src_hash": "54753b18d291efd4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.15": {
+    "src_table": "status.effects_list",
+    "src_index": 15,
+    "src_hash": "a8e39f4b0d5e7669",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.16": {
+    "src_table": "status.effects_list",
+    "src_index": 16,
+    "src_hash": "b0468a0ea82bbde6",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.17": {
+    "src_table": "status.effects_list",
+    "src_index": 17,
+    "src_hash": "843ec72cf95c197d",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.18": {
+    "src_table": "status.effects_list",
+    "src_index": 18,
+    "src_hash": "55f7054b32f91745",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.19": {
+    "src_table": "status.effects_list",
+    "src_index": 19,
+    "src_hash": "4081cad7f8b33868",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.20": {
+    "src_table": "status.effects_list",
     "src_index": 20,
     "src_hash": "5d8c80c09ab0b89c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.21": {
+    "src_table": "status.effects_list",
+    "src_index": 21,
+    "src_hash": "fa3765663b75dd11",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.health.22": {
+    "src_table": "status.effects_list",
+    "src_index": 22,
+    "src_hash": "36fa69e040fdb60c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.0": {
+    "src_table": "status.disease_names",
+    "src_index": 0,
+    "src_hash": "a02995d544571b5c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.1": {
+    "src_table": "status.disease_names",
+    "src_index": 1,
+    "src_hash": "78f02188f5c08180",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.2": {
+    "src_table": "status.disease_names",
+    "src_index": 2,
+    "src_hash": "898eaf5757ed0915",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.3": {
+    "src_table": "status.disease_names",
+    "src_index": 3,
+    "src_hash": "4e629f42e586d373",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.4": {
+    "src_table": "status.disease_names",
+    "src_index": 4,
+    "src_hash": "36fad7931ef8cf03",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.5": {
+    "src_table": "status.disease_names",
+    "src_index": 5,
+    "src_hash": "d26623d498266c97",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.6": {
+    "src_table": "status.disease_names",
+    "src_index": 6,
+    "src_hash": "6ad4fc5317685fdd",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.7": {
+    "src_table": "status.disease_names",
+    "src_index": 7,
+    "src_hash": "7bf35a4708555974",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.8": {
+    "src_table": "status.disease_names",
+    "src_index": 8,
+    "src_hash": "ef246162350535d4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.9": {
+    "src_table": "status.disease_names",
+    "src_index": 9,
+    "src_hash": "c163cc6c2f83d04a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.10": {
+    "src_table": "status.disease_names",
+    "src_index": 10,
+    "src_hash": "15745f181bb28513",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.11": {
+    "src_table": "status.disease_names",
+    "src_index": 11,
+    "src_hash": "fc67069c186ec040",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.12": {
+    "src_table": "status.disease_names",
+    "src_index": 12,
+    "src_hash": "91088e5beaf1cf2b",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.13": {
+    "src_table": "status.disease_names",
+    "src_index": 13,
+    "src_hash": "6d7564c13198e8df",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.14": {
+    "src_table": "status.disease_names",
+    "src_index": 14,
+    "src_hash": "eb403cad8269bf3f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.15": {
+    "src_table": "status.disease_names",
+    "src_index": 15,
+    "src_hash": "cf6c7f95ab9fde61",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.disease.16": {
+    "src_table": "status.disease_names",
+    "src_index": 16,
+    "src_hash": "f2b43fdd448f2f8c",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.attribute.0": {
+    "src_table": "entities.attribute_names",
+    "src_index": 0,
+    "src_hash": "63ee3a1b965a7bd2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.attribute.1": {
+    "src_table": "entities.attribute_names",
+    "src_index": 1,
+    "src_hash": "78ea5ef30f1e6270",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.attribute.2": {
+    "src_table": "entities.attribute_names",
+    "src_index": 2,
+    "src_hash": "9a60a076b5624eb1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.attribute.3": {
+    "src_table": "entities.attribute_names",
+    "src_index": 3,
+    "src_hash": "49796694dc677011",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.attribute.4": {
+    "src_table": "entities.attribute_names",
+    "src_index": 4,
+    "src_hash": "c372fee9b4566b85",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.attribute.5": {
+    "src_table": "entities.attribute_names",
+    "src_index": 5,
+    "src_hash": "98c8abf84e23ff3f",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.attribute.6": {
+    "src_table": "entities.attribute_names",
+    "src_index": 6,
+    "src_hash": "95a295627e54e34a",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "status_buffer_text.attribute.7": {
+    "src_table": "entities.attribute_names",
+    "src_index": 7,
+    "src_hash": "382e766581df7c49",
     "_meta": {
       "verified_official": true,
       "provenance": "acd_table_content_match"

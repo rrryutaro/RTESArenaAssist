@@ -1,0 +1,18 @@
+{
+  "lock_messages.difficulty.0": "Cette serrure n'a rien à craindre de toi...",
+  "lock_messages.difficulty.1": "Ce serait un miracle si tu crochetais cette serrure...",
+  "lock_messages.difficulty.2": "Cette serrure semble dépasser tes compétences...",
+  "lock_messages.difficulty.3": "Tu doutes de ta capacité à ouvrir cette serrure...",
+  "lock_messages.difficulty.4": "Cette serrure a l'air difficile...",
+  "lock_messages.difficulty.5": "Cette serrure représenterait un défi pour toi...",
+  "lock_messages.difficulty.6": "Cette serrure serait un bon défi...",
+  "lock_messages.difficulty.7": "Tu penses pouvoir crocheter cette serrure...",
+  "lock_messages.difficulty.8": "Cette serrure semble relativement facile...",
+  "lock_messages.difficulty.9": "Cette serrure t'amuse...",
+  "lock_messages.difficulty.10": "Tu ris de la qualité amateur de cette serrure...",
+  "lock_messages.difficulty.11": "Tu vois une piètre imitation de serrure...",
+  "lock_messages.difficulty.12": "Cette serrure est une insulte à tes talents...",
+  "lock_messages.difficulty.13": "Ceci est une serrure scellée par la magie...",
+  "lock_messages.key_picked_up.0": "Tu as trouvé une clé en %s.",
+  "lock_messages.door_unlocked_with_key.0": "Tu ouvres la porte avec une clé en %s."
+}

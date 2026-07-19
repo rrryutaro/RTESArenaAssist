@@ -1,0 +1,18 @@
+{
+  "lock_messages.difficulty.0": "Esta cerradura no tiene nada que temer de ti...",
+  "lock_messages.difficulty.1": "Sería un milagro que abrieras esta cerradura...",
+  "lock_messages.difficulty.2": "Esta cerradura parece estar más allá de tu habilidad...",
+  "lock_messages.difficulty.3": "Dudas de tu capacidad para abrir esta cerradura...",
+  "lock_messages.difficulty.4": "Esta cerradura parece difícil...",
+  "lock_messages.difficulty.5": "Esta cerradura te supondría un reto...",
+  "lock_messages.difficulty.6": "Esta cerradura sería un buen desafío...",
+  "lock_messages.difficulty.7": "Crees que deberías poder abrir esta cerradura...",
+  "lock_messages.difficulty.8": "Esta cerradura parece relativamente fácil...",
+  "lock_messages.difficulty.9": "Esta cerradura te divierte...",
+  "lock_messages.difficulty.10": "Te ríes de la calidad de aficionado de esta cerradura...",
+  "lock_messages.difficulty.11": "Ves una patética excusa de cerradura...",
+  "lock_messages.difficulty.12": "Esta cerradura es un insulto a tus habilidades...",
+  "lock_messages.difficulty.13": "Esta es una cerradura sellada por arte de magia...",
+  "lock_messages.key_picked_up.0": "Has encontrado una llave de %s.",
+  "lock_messages.door_unlocked_with_key.0": "Abres la puerta con una llave de %s."
+}

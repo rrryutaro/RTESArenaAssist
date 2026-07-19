@@ -1,0 +1,18 @@
+{
+  "lock_messages.difficulty.0": "この錠前は君を恐れてなどいないようだ…",
+  "lock_messages.difficulty.1": "この錠前を開けられたら奇跡だ…",
+  "lock_messages.difficulty.2": "この錠前は君の技量を超えているようだ…",
+  "lock_messages.difficulty.3": "この錠前を開けられるか自信が持てない…",
+  "lock_messages.difficulty.4": "この錠前は難しそうだ…",
+  "lock_messages.difficulty.5": "この錠前は手強そうだ…",
+  "lock_messages.difficulty.6": "この錠前はよい挑戦になりそうだ…",
+  "lock_messages.difficulty.7": "この錠前なら開けられそうだ…",
+  "lock_messages.difficulty.8": "この錠前は比較的簡単そうだ…",
+  "lock_messages.difficulty.9": "この錠前が面白く思えてくる…",
+  "lock_messages.difficulty.10": "この錠前の素人くさい造りに笑ってしまう…",
+  "lock_messages.difficulty.11": "なんとも情けない錠前だ…",
+  "lock_messages.difficulty.12": "この錠前は君の腕前への侮辱だ…",
+  "lock_messages.difficulty.13": "これは魔法で施錠されている…",
+  "lock_messages.key_picked_up.0": "%sの鍵を見つけた。",
+  "lock_messages.door_unlocked_with_key.0": "%sの鍵で扉を開けた。"
+}

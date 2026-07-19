@@ -4,6 +4,7 @@ import re
 from typing import Optional
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QFrame, QGridLayout, QHBoxLayout, QLabel, QSizePolicy, QSplitter, QTextBrowser, QVBoxLayout, QWidget
+import arena_data
 import i18n_helper as i18n
 _MANUAL_SIMPLE = os.path.join(os.path.dirname(__file__), 'manual', 'simple')
 _MANUAL_FULL = os.path.join(os.path.dirname(__file__), 'manual', 'full')
@@ -11,12 +12,34 @@ _RACE_DOC = '04_races.html'
 _MANUAL_BASE = _MANUAL_SIMPLE
 _IMPERIAL_TITLE_KEY = 'race.imperial_unavailable.title'
 _IMPERIAL_BODY_KEY = 'race.imperial_unavailable.body'
-RACE_LIST_ORDER: list[tuple[str, str, str, str, str, bool]] = [('nord', 'Skyrim', 'スカイリム', 'Nords', 'ノルド', False), ('redguard', 'Hammerfell', 'ハンマーフェル', 'Redguards', 'レッドガード', False), ('breton', 'High Rock', 'ハイロック', 'Bretons', 'ブレトン', False), ('dark_elf', 'Morrowind', 'モロウウィンド', 'Dark Elves', 'ダークエルフ', False), ('imperial', 'Cyrodiil', 'シロディール', 'Imperials', 'インペリアル', True), ('wood_elf', 'Valenwood', 'ヴァレンウッド', 'Wood Elves', 'ウッドエルフ', False), ('khajiit', 'Elsweyr', 'エルスウェア', 'Khajiit', 'カジート', False), ('argonian', 'Black Marsh', 'ブラックマーシュ', 'Argonians', 'アルゴニアン', False), ('high_elf', 'Summerset Isle', 'サマーセット', 'High Elves', 'ハイエルフ', False)]
+_IMPERIAL_RACE_NAME_KEY = 'race.imperial_name'
+RACE_LIST_ORDER: list[tuple[str, str, int, str, bool]] = [('nord', 'Skyrim', 2, 'Nords', False), ('redguard', 'Hammerfell', 1, 'Redguards', False), ('breton', 'High Rock', 0, 'Bretons', False), ('dark_elf', 'Morrowind', 3, 'Dark Elves', False), ('imperial', 'Cyrodiil', 4, 'Imperials', True), ('wood_elf', 'Valenwood', 5, 'Wood Elves', False), ('khajiit', 'Elsweyr', 6, 'Khajiit', False), ('argonian', 'Black Marsh', 7, 'Argonians', False), ('high_elf', 'Summerset Isle', 8, 'High Elves', False)]
+
+def province_display_name(province_en: str, province_idx: int) -> str:
+    return i18n.value('chargen_provinces', province_en) or i18n.lang_value_in(f'chargen_provinces.{province_idx}.0', i18n.current_lang()) or province_en
+
+def race_display_name(race_en: str) -> str:
+    idx = arena_data.race_index_from_en(race_en)
+    if idx is None:
+        return i18n.text(_IMPERIAL_RACE_NAME_KEY)
+    return arena_data.race_display_name(idx) or race_en
+
+def _race_name_candidates(race_en: str) -> list[str]:
+    out: list[str] = []
+    idx = arena_data.race_index_from_en(race_en)
+    if idx is None:
+        cands = (i18n.text(_IMPERIAL_RACE_NAME_KEY), i18n.lang_value_in(_IMPERIAL_RACE_NAME_KEY, 'ja'))
+    else:
+        cands = (arena_data.race_display_name(idx), arena_data.race_display_name(idx, 'ja'))
+    for name in cands:
+        if name and name != race_en and (name not in out):
+            out.append(name)
+    return out
 
 class _RaceRow(QFrame):
     clicked = Signal(str)
 
-    def __init__(self, race_id: str, province_en: str, province_ja: str, race_en: str, race_ja: str, disabled: bool=False, parent=None):
+    def __init__(self, race_id: str, province_en: str, province_tr: str, race_en: str, race_tr: str, disabled: bool=False, parent=None):
         super().__init__(parent)
         self._race_id = race_id
         self._disabled = disabled
@@ -32,7 +55,7 @@ class _RaceRow(QFrame):
         self._province_en_lbl.setMinimumWidth(120)
         self._province_en_lbl.setMaximumWidth(140)
         self._province_en_lbl.setObjectName('raceRowProvinceEn')
-        self._province_ja_lbl = QLabel(province_ja)
+        self._province_ja_lbl = QLabel(province_tr)
         self._province_ja_lbl.setMinimumWidth(140)
         self._province_ja_lbl.setWordWrap(True)
         self._province_ja_lbl.setObjectName('raceRowProvinceJa')
@@ -40,7 +63,7 @@ class _RaceRow(QFrame):
         self._race_en_lbl.setMinimumWidth(96)
         self._race_en_lbl.setMaximumWidth(120)
         self._race_en_lbl.setObjectName('raceRowRaceEn')
-        self._race_ja_lbl = QLabel(race_ja)
+        self._race_ja_lbl = QLabel(race_tr)
         self._race_ja_lbl.setObjectName('raceRowRaceJa')
         for lbl in (self._province_en_lbl, self._province_ja_lbl, self._race_en_lbl, self._race_ja_lbl):
             lbl.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
@@ -50,6 +73,10 @@ class _RaceRow(QFrame):
 
     def race_id(self) -> str:
         return self._race_id
+
+    def set_translations(self, province_tr: str, race_tr: str) -> None:
+        self._province_ja_lbl.setText(province_tr)
+        self._race_ja_lbl.setText(race_tr)
 
     def is_disabled(self) -> bool:
         return self._disabled
@@ -76,7 +103,7 @@ class _RaceRow(QFrame):
             self.clicked.emit(self._race_id)
         super().mousePressEvent(event)
 _RACE_EN_TO_ID: dict[str, str] = {}
-for _race_id, _pen, _pja, _ren, _rja, _dis in RACE_LIST_ORDER:
+for _race_id, _pen, _pidx, _ren, _dis in RACE_LIST_ORDER:
     _key = _ren.lower()
     _RACE_EN_TO_ID[_key] = _race_id
     if _key.endswith('s'):
@@ -93,9 +120,10 @@ def _resolve_race_id_from_heading(heading_text: str) -> Optional[str]:
         if en_in in _RACE_EN_TO_ID:
             return _RACE_EN_TO_ID[en_in]
     candidates: list[tuple[int, str]] = []
-    for race_id, _pen, _pja, _ren, race_ja, _dis in RACE_LIST_ORDER:
-        if race_ja and race_ja in plain:
-            candidates.append((len(race_ja), race_id))
+    for race_id, _pen, _pidx, race_en, _dis in RACE_LIST_ORDER:
+        for cand in _race_name_candidates(race_en):
+            if cand in plain:
+                candidates.append((len(cand), race_id))
     if not candidates:
         return None
     candidates.sort(key=lambda x: -x[0])
@@ -186,8 +214,8 @@ class RaceListPanel(QWidget):
         grid.setContentsMargins(4, 4, 4, 4)
         grid.setHorizontalSpacing(8)
         grid.setVerticalSpacing(2)
-        for idx, (race_id, province_en, province_ja, race_en, race_ja, disabled) in enumerate(RACE_LIST_ORDER):
-            row_widget = _RaceRow(race_id, province_en, province_ja, race_en, race_ja, disabled=disabled)
+        for idx, (race_id, province_en, province_idx, race_en, disabled) in enumerate(RACE_LIST_ORDER):
+            row_widget = _RaceRow(race_id, province_en, province_display_name(province_en, province_idx), race_en, race_display_name(race_en), disabled=disabled)
             row_widget.clicked.connect(self._on_row_clicked)
             grid.addWidget(row_widget, idx, 0)
             self._rows.append(row_widget)
@@ -205,6 +233,10 @@ class RaceListPanel(QWidget):
 
     def reload_for_language(self) -> None:
         self._reload_descriptions()
+        for race_id, province_en, province_idx, race_en, _dis in RACE_LIST_ORDER:
+            row = self._rows_by_id.get(race_id)
+            if row is not None:
+                row.set_translations(province_display_name(province_en, province_idx), race_display_name(race_en))
         if self._current_id:
             self._show_description(self._current_id)
 
@@ -216,11 +248,12 @@ class RaceListPanel(QWidget):
         simple_sections = _parse_race_sections_simple(simple_html) if simple_html else {}
         full_sections = _parse_race_sections_full(full_html) if full_html else {}
         combined: dict[str, str] = {}
+        detail_title = i18n.text('manual.detail_section_title')
         for race_id in set(simple_sections) | set(full_sections):
             s = simple_sections.get(race_id, '')
             f = full_sections.get(race_id, '')
             if s and f:
-                combined[race_id] = s + '\n<h3>詳細解説</h3>\n' + f
+                combined[race_id] = s + f'\n<h3>{detail_title}</h3>\n' + f
             else:
                 combined[race_id] = s or f
         self._sections = combined
@@ -249,7 +282,8 @@ class RaceListPanel(QWidget):
             return
         fragment = self._sections.get(race_id, '')
         if not fragment:
-            self._desc.setHtml(f'<p>{race_id} の説明が見つかりませんでした。</p>')
+            msg = i18n.text('common.description_not_found').replace('{name}', race_id)
+            self._desc.setHtml(f'<p>{msg}</p>')
             return
         html = _wrap_html_fragment(fragment, self._base_html)
         self._desc.setHtml(html)

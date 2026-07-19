@@ -9,7 +9,7 @@ FILLED_DELTA = 14499
 EXPECTED_TEMPLATE_PREFIX = b'You are in %s.'
 _TEMPLATE_ADDR_CACHE: Optional[int] = None
 _FILLED_ADDR_CACHE: Optional[int] = None
-STATUS_PATTERN = re.compile('You are in (?P<location>.+?)\\.\\rIt is (?P<time>.+?)\\.\\rThe date is (?P<date>.+?)\\rYou are currently carrying (?P<weight>\\d+) kg out of (?P<weight_max>\\d+) kg\\.\\r(?:You are (?P<health>.+?)\\.\\r)?')
+STATUS_HEADER_PATTERN = re.compile('You are in (?P<location>.+?)\\.\\rIt is (?P<time>.+?)\\.\\rThe date is (?P<date>.+?)\\rYou are currently carrying (?P<weight>\\d+) kg out of (?P<weight_max>\\d+) kg\\.\\r')
 _SCAN_BELOW = 4194304
 _SCAN_ABOVE = 6291456
 _SCAN_CHUNK = 65536
@@ -75,7 +75,7 @@ def _resolve_addrs(analyzer, anchor: Optional[int]) -> Optional[Tuple[int, int]]
     _TEMPLATE_ADDR_CACHE, _FILLED_ADDR_CACHE = result
     return result
 
-def parse_filled(analyzer, anchor: int=None) -> Optional[Dict[str, str]]:
+def parse_filled(analyzer, anchor: int=None) -> Optional[Dict]:
     if analyzer is None:
         return None
     addrs = _resolve_addrs(analyzer, anchor)
@@ -85,10 +85,12 @@ def parse_filled(analyzer, anchor: int=None) -> Optional[Dict[str, str]]:
     text = _read_string(analyzer, filled_addr, 512)
     if not text:
         return None
-    m = STATUS_PATTERN.search(text)
+    m = STATUS_HEADER_PATTERN.search(text)
     if m is None:
         return None
-    parsed = {k: v if v is not None else '' for k, v in m.groupdict().items()}
+    parsed: Dict = {k: v if v is not None else '' for k, v in m.groupdict().items()}
+    from date_translator import is_status_state_line
+    parsed['states'] = tuple((ln for ln in text[m.end():].split('\r') if ln.strip() and is_status_state_line(ln)))
     return parsed
 
 def reset_cache() -> None:
@@ -96,14 +98,14 @@ def reset_cache() -> None:
     _TEMPLATE_ADDR_CACHE = None
     _FILLED_ADDR_CACHE = None
 
-def render_status(parsed: Dict[str, str]) -> Tuple[str, str, str]:
-    from date_translator import _translate_status_line
+def render_status(parsed: Dict) -> Tuple[str, str, str]:
+    from date_translator import _translate_state_line, _translate_status_line
     location = parsed.get('location', '')
     time_str = parsed.get('time', '')
     date_str = parsed.get('date', '')
     weight = parsed.get('weight', '')
     weight_max = parsed.get('weight_max', '')
-    health = parsed.get('health', '')
+    states = parsed.get('states', ())
     en_lines: list = []
     ja_lines: list = []
 
@@ -119,6 +121,8 @@ def render_status(parsed: Dict[str, str]) -> Tuple[str, str, str]:
         _add(f'The date is {date_str}')
     if weight and weight_max:
         _add(f'You are currently carrying {weight} kg out of {weight_max} kg.')
-    if health:
-        _add(f'You are {health}.')
+    for state_line in states:
+        ja = _translate_state_line(state_line)
+        en_lines.append(state_line)
+        ja_lines.append(ja if ja is not None else state_line)
     return ('\n'.join(en_lines), '\n'.join(ja_lines), '')

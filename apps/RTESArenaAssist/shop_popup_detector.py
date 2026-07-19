@@ -138,7 +138,8 @@ def detect_shop_popup_state(analyzer: 'ArenaMemoryAnalyzer', anchor: int, *, top
     active_title_en = ''
     if ptr is not None and ptr not in _RESPONSE_BUFFER_PTRS:
         active_group = select_menu_group_by_ptr(menu_groups, ptr)
-        if active_group is None and (not _in_span(ptr, _MENU_SPAN)) and (ptr >= _PTR_MENU_WINDOW_BACK):
+        from camp_rest_reader import ptr_in_camp_block as _ptr_in_camp_block
+        if active_group is None and (not _in_span(ptr, _MENU_SPAN)) and (not _ptr_in_camp_block(ptr)) and (ptr >= _PTR_MENU_WINDOW_BACK):
             near_groups, _near_base = _parse_menu_groups_near_ptr(analyzer, anchor, ptr)
             near_active = select_menu_group_by_ptr(near_groups, ptr)
             if near_active is not None:
@@ -181,10 +182,11 @@ def detect_shop_popup_state(analyzer: 'ArenaMemoryAnalyzer', anchor: int, *, top
             state.owner_kind = 'tavern'
             state.reason = f'NEWPOP fg + no drinks_sig (cache=%r) + rooms=%d' % (state.price_cache, len(room_items_raw))
             return state
-        state.kind = 'none'
-        state.owner_kind = ''
-        state.reason = f'NEWPOP fg + no drinks_sig but non-tavern interior (mif={_mif_u!r} active={_active_facility!r}); facility list unimplemented'
-        return state
+        if active_owner != 'temple':
+            state.kind = 'none'
+            state.owner_kind = ''
+            state.reason = f'NEWPOP fg + no drinks_sig but non-tavern interior (mif={_mif_u!r} active={_active_facility!r}); facility list unimplemented'
+            return state
     if ptr is None:
         state.reason = 'ptr read failed'
         return state

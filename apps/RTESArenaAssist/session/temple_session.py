@@ -1,7 +1,7 @@
 from __future__ import annotations
 from .session_base import SessionBase, SessionContext
 _TEMPLE_OWNER_KINDS = frozenset({'shop_menu'})
-_TEMPLE_PANEL_OWNERS = frozenset({'temple_menu', 'temple_priest_reply', 'temple_cost', 'temple_prompt'})
+_TEMPLE_PANEL_OWNERS = frozenset({'temple_menu', 'temple_priest_reply', 'temple_cost', 'temple_prompt', 'temple_cure'})
 _TEMPLE_NONE_HYSTERESIS_POLLS = 3
 
 class TempleSession(SessionBase):

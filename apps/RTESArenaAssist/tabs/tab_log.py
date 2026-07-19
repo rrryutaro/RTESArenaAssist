@@ -68,6 +68,7 @@ class TabLog(QWidget):
     def __init__(self, parent: Optional[QWidget]=None) -> None:
         super().__init__(parent)
         self._store = None
+        self._cards: list[LogCard] = []
         outer = QVBoxLayout(self)
         outer.setContentsMargins(6, 6, 6, 6)
         outer.setSpacing(4)
@@ -150,8 +151,10 @@ class TabLog(QWidget):
         card = LogCard(entry)
         if self._newest_first():
             self._vbox.insertWidget(0, card)
+            self._cards.insert(0, card)
         else:
             self._vbox.insertWidget(self._vbox.count() - 1, card)
+            self._cards.append(card)
         self._update_count()
 
     def _on_clear(self) -> None:
@@ -162,15 +165,16 @@ class TabLog(QWidget):
 
     def refresh(self) -> None:
         self._rebuild_location_filter()
-        for i in reversed(range(self._vbox.count())):
-            w = self._vbox.itemAt(i).widget()
-            if isinstance(w, LogCard):
-                w.setParent(None)
+        for card in self._cards:
+            card.setParent(None)
+        self._cards = []
         entries = []
         if self._store is not None:
             entries = self._store.entries(newest_first=self._newest_first(), category=self._filter_category(), location=self._filter_location())
         for idx, entry in enumerate(entries):
-            self._vbox.insertWidget(idx, LogCard(entry))
+            card = LogCard(entry)
+            self._vbox.insertWidget(idx, card)
+            self._cards.append(card)
         self._empty_lbl.setVisible(not entries)
         self._update_count()
 
@@ -180,11 +184,8 @@ class TabLog(QWidget):
         if probe is None and prefetched_segments:
             probe = prefetched_segments[0]
         matched = False
-        for i in range(self._vbox.count()):
-            w = self._vbox.itemAt(i).widget()
-            if not isinstance(w, LogCard):
-                continue
-            body = getattr(w, '_body_lbl', None)
+        for card in self._cards:
+            body = getattr(card, '_body_lbl', None)
             if body is None:
                 continue
             if not matched and probe is not None and probe.strip() and (probe in _rh.plain_of(body)):

@@ -24,6 +24,7 @@ class DisplayIntent:
     ja: str = ''
     panel_en: Optional[str] = None
     panel_ja: Optional[str] = None
+    list_title_ja: Optional[str] = None
     items: Any = None
     remaining: Optional[int] = None
     title: str = ''
@@ -56,8 +57,8 @@ class DisplayIntent:
         return cls(kind='clear_if_owner', panel_owner=panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, priority=priority, reason=reason)
 
     @classmethod
-    def release_if_owner(cls, panel_owner: str, *, priority: int=0, reason: str='') -> 'DisplayIntent':
-        return cls(kind='release_if_owner', panel_owner=panel_owner, priority=priority, reason=reason)
+    def release_if_owner(cls, panel_owner: str, *, mode: Optional[str]=None, priority: int=0, reason: str='') -> 'DisplayIntent':
+        return cls(kind='release_if_owner', panel_owner=panel_owner, mode=mode, priority=priority, reason=reason)
 
     @classmethod
     def claim_owner(cls, panel_owner: str, *, mode: Optional[str]=None, priority: int=0, reason: str='') -> 'DisplayIntent':
@@ -72,8 +73,8 @@ class DisplayIntent:
         return cls(kind='shop_buy_list', panel_owner=panel_owner, mode='shop_buy', items=items, panel_en=panel_en, panel_ja=panel_ja, priority=priority, reason=reason)
 
     @classmethod
-    def facility_list(cls, panel_owner: str, items: list, panel_en: str, panel_ja: str, *, priority: int=0, reason: str='') -> 'DisplayIntent':
-        return cls(kind='facility_list', panel_owner=panel_owner, mode='facility_list', items=items, panel_en=panel_en, panel_ja=panel_ja, priority=priority, reason=reason)
+    def facility_list(cls, panel_owner: str, items: list, panel_en: str, panel_ja: str, *, list_title_ja: Optional[str]=None, priority: int=0, reason: str='') -> 'DisplayIntent':
+        return cls(kind='facility_list', panel_owner=panel_owner, mode='facility_list', items=items, panel_en=panel_en, panel_ja=panel_ja, list_title_ja=list_title_ja, priority=priority, reason=reason)
 
     @classmethod
     def item_pickup_list(cls, panel_owner: str, items: list, remaining: int, *, priority: int=0, reason: str='') -> 'DisplayIntent':

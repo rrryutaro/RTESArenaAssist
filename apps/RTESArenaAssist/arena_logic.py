@@ -4,13 +4,14 @@ import struct
 import ctypes
 import zlib
 _ROOT = os.path.dirname(os.path.abspath(__file__))
+import i18n_helper as i18n
+import location_lookup
 from memory_core import ArenaMemoryAnalyzer, MEMORY_BASIC_INFORMATION, MEM_COMMIT, PAGE_NOACCESS, PAGE_GUARD
 from viewer_constants import GAMESTATE_OFFSET, GS_DEFS, TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, TRIGGER_FLAG_OFFSET, TRIGGER_INDEX_OFFSET, FLAGS4_BITS, INF_PREFIXES, LIVE_MIF_OFFSET, LIVE_MIF_MAXLEN, MAP_NAME_OFFSET, MAP_NAME_MAXLEN, CHARGEN_STATE_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW
 _LOG_BASE = os.path.dirname(os.path.abspath(sys.executable)) if getattr(sys, 'frozen', False) else _ROOT
 LOG_DIR = os.path.join(_LOG_BASE, 'output')
 os.makedirs(LOG_DIR, exist_ok=True)
 ANCHOR_PATTERN = b'BethesdaSoftworkRun-TimeLibrary'
-_LOCATION_JP: dict[str, str] = {'Imperial Dungeons': '帝都牢獄', 'Imperial City': 'インペリアル・シティ', 'North Point': 'ノースポイント', 'Daggerfall': 'ダガーフォール', 'Camlorn': 'キャムルーン', 'Shornhelm': 'ショーンヘルム', 'Wayrest': 'ウェイレスト', 'Evermore': 'エバモア', 'Farrun': 'ファーラン', 'Jehanna': 'ジェハンナ', 'Old Gate': 'オールドゲート', 'Meir Darguard': 'メイル・ダーガード', 'Kings Guard': 'キングスガード', 'Ilessen Hills': 'イレッセン丘陵', 'Portdun Creek': 'ポートダン・クリーク', 'Vermeir Wastes': 'ヴェルメイル荒野', 'Raven Spring': 'レイヴン・スプリング', 'Cloud Spring': 'クラウド・スプリング', 'Reich Gradkeep': 'ライヒ・グラドキープ', 'Glenpoint': 'グレンポイント', 'Ebon Wastes': 'エボン荒野', 'Moonguard': 'ムーンガード', 'Eagle Brook': 'イーグル・ブルック', 'Meir Thorvale': 'メイル・ソルヴェイル', 'White Haven': 'ホワイト・ヘイヴン', 'Normar Heights': 'ノルマー高地', 'Thorkan Park': 'ソーカン・パーク', 'Markwasten Moor': 'マークワステン・ムーア', 'Norvulk Hills': 'ノーヴルク丘陵', 'Wind Keep': 'ウィンド・キープ', 'Black Wastes': 'ブラック荒野', 'Dunkarn Haven': 'ダンカーン・ヘイヴン', 'Karthgran Vale': 'カースグラン渓谷', 'Dunlain Falls': 'ダンレイン滝', 'Mines of Khuras': 'クーラスの鉱山', 'Crypt of Hearts': 'ハーツの地下墓地', 'Sentinel': 'センティネル', 'Hegathe': 'ヘガス', 'Gilane': 'ジレイン', 'Taneth': 'タネス', 'Rihad': 'リハド', 'Dragonstar': 'ドラゴンスター', 'Elinhir': 'エリンヒル', 'Skaven': 'スカーヴェン', 'Sunkeep': 'サン・キープ', 'Lainebon Place': 'レインボン集落', 'Vulnim Gate': 'ヴルニム門', 'Heldorn Mount': 'ヘルドーン山', 'Riverpoint': 'リバーポイント', 'Roseguard': 'ローズガード', 'North Hall': 'ノース・ホール', 'Belkarth Guard': 'ベルカース・ガード', 'Dragon Grove': 'ドラゴン・グローヴ', 'Chasetown': 'チェイス・タウン', 'Shadymarch': 'シェイディ・マーチ', 'Lainlyn': 'レインリン', 'Riverview': 'リバービュー', 'Thorstad Place': 'ソルスタッド集落', 'Verkarth City': 'ヴェルカース市', 'Karnver Falls': 'カーンヴェル滝', 'Corten Mont': 'コルテン・モン', 'Chaseguard': 'チェイス・ガード', 'Stonemoor': 'ストーン・ムーア', 'Vulkneu Town': 'ヴルクニュー町', 'Stonedale': 'ストーンデイル', 'Nimbel Moor': 'ニンベル・ムーア', 'Dragon Gate': 'ドラゴン門', 'Cliff Keep': '崖の砦', 'Stonekeep': 'ストーンキープ', 'Fang Lair': 'ファング・レア', 'Solitude': 'ソリチュード', 'Dawnstar': 'ドーンスター', 'Winterhold': 'ウィンターホールド', 'Snowhawk': 'スノーホーク', 'Riften': 'リフテン', 'Falcrenth': 'ファルクレンス', 'Whiterun': 'ホワイトラン', 'Windhelm': 'ウィンドヘルム', 'Karthwasten Hall': 'カーズウェステン館', 'Dragon Bridge': 'ドラゴン橋', 'Granitehall': 'グラナイト館', 'Oakwood': 'オークウッド', 'Stonehills': 'ストーン丘陵', 'Amol': 'アモル', 'Sunguard': 'サン・ガード', 'Vernim Wood': 'ヴェルニム森', 'Amber Guard': 'アンバー・ガード', 'Markarth Side': 'マルカルス辺境', 'Lainalten': 'レインアルテン', 'North Keep': 'ノース・キープ', 'Dunstad Grove': 'ダンスタッド森', 'Neugrad Watch': 'ノイグラード見張所', 'Black Moor': 'ブラック・ムーア', 'Greenwall': 'グリーンウォール', 'Dunpar Wall': 'ダンパー城壁', 'Riverwood': 'リヴァーウッド', 'Helarchen Creek': 'ヘラーケン・クリーク', 'Nimalten City': 'ニマルテン市', 'Laintar Dale': 'レインタール渓谷', 'Pargran Village': 'パーグラン村', 'Reich Corigate': 'ライヒ・コリゲート', 'Dragon Wood': 'ドラゴン森', 'Fortress of Ice': '氷の要塞', 'Labyrinthian': 'ラビリンシアン', 'Ebonheart': 'エボンハート', 'Narsis': 'ナーシス', 'Blacklight': 'ブラックライト', 'Firewatch': 'ファイアウォッチ', 'Necrom': 'ネクロム', 'Mournhold': 'モーンホールド', 'Tear': 'ティア', 'Kragenmoor': 'クラーゲンムーア', 'Silgrad Tower': 'シルグラッド塔', 'Stoneforest': 'ストーン森', 'Karththor Dale': 'カースソル渓谷', 'Oaktown': 'オーク町', 'Eagle Moor': 'イーグル・ムーア', 'Silnim Dale': 'シルニム渓谷', 'Dragon Glade': 'ドラゴン林', 'Glen Haven': 'グレン・ヘイヴン', 'Cormar View': 'コルマール眺望', 'Reich Parkeep': 'ライヒ・パーキープ', 'Markgran Forest': 'マークグラン森', 'Verarchen Hall': 'ヴェラーケン館', 'Riverbridge': 'リバーブリッジ', 'Stonefalls': 'ストーンフォールズ', 'Old Run': 'オールドラン', 'Old Keep': 'オールド・キープ', 'Heimlyn Keep': 'ハイムリン・キープ', 'Darnim Watch': 'ダーニム見張所', 'Corkarth Run': 'コルカース小道', 'Amber Forest': 'アンバー森', 'Sailen Vulgate': 'サイレン・ヴルゲート', 'Greenheights': 'グリーン高地', 'Helnim Wall': 'ヘルニム城壁', 'Karththor Heights': 'カースソル高地', 'Black Gate': '黒門', 'Dagoth-Ur': 'ダゴス・ウル', 'Dusk': 'ダスク', 'Sunhold': 'サンホールド', 'Alinor': 'アリノール', 'Shimmerene': 'シマレーン', 'Lillandril': 'リランドリル', 'Firsthold': 'ファーストホールド', 'Skywatch': 'スカイウォッチ', 'Cloudrest': 'クラウドレスト', 'Sea Keep': '海の砦', 'Corgrad Wastes': 'コルグラッド荒野', 'Riverfield': 'リバーフィールド', 'Marnor Keep': 'マーノル・キープ', 'Archen Grangrove': 'アーケン・グラングローヴ', 'Vulkhel Guard': 'ヴルケル・ガード', 'Belport Run': 'ベルポート小道', 'West Guard': 'ウェスト・ガード', 'Karnwasten Moor': 'カーンワステン・ムーア', 'Wasten Coridale': 'ワステン・コリデイル', 'White Guard': 'ホワイト・ガード', 'Marbruk Brook': 'マーブルック小川', 'Graddun Spring': 'グラダン泉', 'Ebon Stadmont': 'エボン・スタッドモン', 'Glenview': 'グレンビュー', 'Holly Falls': 'ホリー滝', 'Rosefield': 'ローズフィールド', 'Old Falls': 'オールド滝', 'Kings Haven': 'キングス・ヘイヴン', 'Karndar Watch': 'カーンダル見張所', 'Thorheim Guard': 'ソーハイム・ガード', 'Silsailen Point': 'シルサイレン岬', 'Silver Wood': 'シルバー森', 'Riverwatch': 'リバー見張所', 'Temple of Mad God': '狂神の神殿', 'Crystal Tower': 'クリスタルの塔', 'Eldenroot': 'エルデンルート', 'Silvenar': 'シルヴェナール', 'Woodhearth': 'ウッドハース', 'Falinesti': 'ファリネスティ', 'Greenheart': 'グリーンハート', 'Arenthia': 'アレンシア', 'Haven': 'ヘイヴン', 'Southpoint': 'サウスポイント', 'Thormar Keep': 'ソーマル・キープ', 'Vulkwasten Wood': 'ヴルクワステン森', 'Emperors Run': '皇帝の道', 'Longvale': 'ロング渓谷', 'Longhaven': 'ロング・ヘイヴン', 'Karthdar Square': 'カースダル広場', 'Wasten Brukbrook': 'ワステン・ブルックブルック', 'Eagle Vale': 'イーグル渓谷', 'Vullain Haven': 'ヴラン・ヘイヴン', 'Cori Silmoor': 'コリ・シルムーア', 'Marbruk Field': 'マーブルック野原', 'Black Park': 'ブラック・パーク', 'Meadow Run': 'メドウ小道', 'Tarlain Heights': 'タールレイン高地', 'Archen Cormount': 'アーケン・コーモン', 'Moonmont': 'ムーンモン', 'Stone Fell': 'ストーン・フェル', 'Ebon Ro': 'エボン・ロ', 'Lynpar March': 'リンパル・マーチ', 'Stonesquare': 'ストーン広場', 'Green Hall': 'グリーン館', 'Heimdar City': 'ハイムダル市', 'Cormeir Spring': 'コルメイル泉', "Selene's Web": 'セレーネの巣', 'Elden Grove': 'エルデン森', 'Corinth': 'コリンス', 'Alabaster': 'アラバスター', 'Senchal': 'センシャル', 'Rimmen': 'リメン', 'Torval': 'トルヴァル', 'Dune': 'デューン', 'Orcrest': 'オークレスト', 'Riverhold': 'リバーホールド', 'Seaplace': 'シー集落', 'Meir Lynmount': 'メイル・リンマウント', 'Ein Meirvale': 'アイン・メイルヴェイル', 'Greenhall': 'グリーン館', 'Brukreich Bridge': 'ブルックライヒ橋', 'Portneu View': 'ポートニュー眺望', 'Tenmar Forest': 'テンマール森', 'Darvulk Haven': 'ダーヴルク・ヘイヴン', 'Verkarth Hills': 'ヴェルカース丘陵', 'Cori Darglade': 'コリ・ダーグレイド', 'Tardorn Wood': 'タードーン森', 'Kings Walk': 'キングスウォーク', 'Chasemoor': 'チェイス・ムーア', 'Neumar Walk': 'ノイマール小道', 'Heimthor Mount': 'ハイムソル山', 'Helkarn Land': 'ヘルカーン地方', 'River Keep': 'リバー・キープ', 'Valley Guard': '渓谷の守備隊', 'Darkarn Place': 'ダーカーン集落', 'Duncori Walk': 'ダンコリ小道', 'Chasegrove': 'チェイス・グローヴ', 'Black Heights': 'ブラック高地', 'Markgran Brook': 'マークグラン小川', 'South Guard': 'サウス・ガード', 'Temple of Agamanus': 'アガマヌスの神殿', 'Halls of Colossus': 'コロッサスの大廊', 'Stormhold': 'ストームホールド', 'Thorn': 'ソーン', 'Helstrom': 'ヘルストロム', 'Gideon': 'ギデオン', 'Soulrest': 'ソウルレスト', 'Blackrose': 'ブラックローズ', 'Lilmoth': 'リルモス', 'Archon': 'アーコン', 'Riverwalk': 'リバーウォーク', 'Tenmar Wall': 'テンマール城壁', 'Greenglade': 'グリーン林', 'Greenspring': 'グリーン泉', 'Rockgrove': 'ロック・グローヴ', 'Moonmarch': 'ムーン・マーチ', 'Seaspring': 'シー泉', 'Rockpark': 'ロック・パーク', 'Chasecreek': 'チェイス・クリーク', 'Alten Corimont': 'アルテン・コリモン', 'Branchmont': 'ブランチ・モン', 'Rockguard': 'ロック・ガード', 'Rockpoint': 'ロックポイント', 'Alten Markmont': 'アルテン・マークモン', 'Glenbridge': 'グレン橋', 'Stonewastes': 'ストーン荒野', 'Rockspring': 'ロック泉', 'Portdun Mont': 'ポートダン・モン', 'Branchgrove': 'ブランチ・グローヴ', 'Seafalls': 'シー滝', 'Longmont': 'ロング・モン', 'Alten Meirhall': 'アルテン・メイル館', 'Chasepoint': 'チェイスポイント', 'Vaults of Gemin': 'ジェミンの保管庫', 'Murkwood': 'マーク森'}
 STARTUP_TEXT_QUERIES = ['The Elder Scrolls', 'Chapter One', 'The Arena', 'The best techniques', 'Gaiden Shinji', 'For centuries', 'different factions', 'Start new game', 'Load game', 'Drop to Dos', 'Load Saved Game', 'Start New Game', 'Exit']
 
 def find_anchor(analyzer: ArenaMemoryAnalyzer) -> int | None:
@@ -181,6 +182,18 @@ def check_trigger_flag(analyzer, anchor: int, prev_flag: int, trigger_indices: l
             slot = 0
             body = texts[0]
     return (body, curr_flag, trig_idx, n, slot)
+_LOC_DISPLAY_MEMO: dict[tuple[str, str, str], str] = {}
+
+def _location_display_name(name_key: str) -> str:
+    lang = i18n.current_lang()
+    if lang == 'en':
+        return name_key
+    memo_key = (getattr(i18n, '_I18N_DIR', ''), lang, name_key)
+    cached = _LOC_DISPLAY_MEMO.get(memo_key)
+    if cached is None:
+        cached = location_lookup.lookup(name_key) or name_key
+        _LOC_DISPLAY_MEMO[memo_key] = cached
+    return cached
 
 def interpret_location(gs: dict) -> dict:
     mif = gs.get('LiveMifName') or gs.get('MifName') or ''
@@ -190,21 +203,21 @@ def interpret_location(gs: dict) -> dict:
     map_name = (gs.get('MapName') or '').strip()
     name_key = level_name or map_name
     if name_key:
-        loc = _LOCATION_JP.get(name_key, name_key)
+        loc = _location_display_name(name_key)
     else:
         mu = mif.upper()
         if mu == 'IMPERIAL.MIF':
-            loc = '帝都 (Imperial City)'
-        elif mu.startswith('CITY'):
-            loc = f'都市 ({mif})'
-        elif mu.startswith('TOWN'):
-            loc = f'町 ({mif})'
+            loc = i18n.text('place.kind.imperial_city').replace('{mif}', mif)
+        elif mu.startswith('CITY') or mu.startswith('TOWN'):
+            type_en, type_id = ('City', 'settlement_types.2.0') if mu.startswith('CITY') else ('Town', 'settlement_types.1.0')
+            type_tr = i18n.value('settlement_types', type_en) or i18n.lang_value_in(type_id, i18n.current_lang()) or type_en
+            loc = i18n.text('place.kind.settlement_format').replace('{type}', type_tr).replace('{mif}', mif)
         elif 'WILD' in mu:
-            loc = f'ワイルダネス ({mif})'
+            loc = i18n.text('place.kind.field_format').replace('{mif}', mif)
         elif mif:
-            loc = f'ダンジョン/建物 ({mif})'
+            loc = i18n.text('place.kind.dungeon_format').replace('{mif}', mif)
         else:
-            loc = '不明'
+            loc = i18n.text('place.kind.unknown')
     interior = INF_PREFIXES.get(inf[:2].upper(), '')
     if not interior:
         if 'palace' in inf.lower() or 'imppal' in inf.lower():
@@ -214,9 +227,10 @@ def interpret_location(gs: dict) -> dict:
     direction = dirs[round(angle / 64) % 8] if angle is not None else '不明'
     wf = gs.get('WeatherFlags') or 0
     if wf & 128:
-        weather = '雨' if wf & 1 else '雪' if wf & 2 else '降水'
+        weather_key = 'weather.rain' if wf & 1 else 'weather.snow' if wf & 2 else 'weather.precipitation'
     else:
-        weather = '晴れ'
+        weather_key = 'weather.clear'
+    weather = i18n.text(weather_key)
     flags = [desc for bit, desc in FLAGS4_BITS.items() if f4 & bit]
     return {'location': loc, 'interior': interior, 'mif_name': mif, 'inf_name': inf, 'level': gs.get('LevelName') or '', 'floor': gs.get('PlayerFloor') or 0, 'x': gs.get('PlayerX'), 'z': gs.get('PlayerZ'), 'y': gs.get('PlayerY'), 'angle': angle, 'direction': direction, 'weather': weather, 'flags': flags}
 

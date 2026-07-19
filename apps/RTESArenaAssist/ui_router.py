@@ -7,7 +7,7 @@ import i18n_helper as i18n
 from assist_log import recog as _recog
 from display_intent import DisplayIntent, PollFrame
 from hierarchy_state import active_facility_session_name, facility_owners_for_session, CONVERSATION_PANEL_OWNERS
-from panel_mode_resolver import resolve_flush_mode
+from panel_mode_resolver import required_owner_for_mode, resolve_flush_mode
 _log = logging.getLogger('RTESArenaAssist')
 _CONVERSATION_TAB_OWNERS = CONVERSATION_PANEL_OWNERS
 
@@ -104,27 +104,39 @@ class UiRouter:
             nd = ''
         return bool(en) and en not in ('—', nd)
 
+    @staticmethod
+    def _flush_mode_settings() -> tuple[bool, str]:
+        try:
+            emulate = bool(settings.get('translate_tab_emulate_panel_hidden', False))
+            fb = settings.get('translate_fallback_screen', 'map')
+        except Exception:
+            emulate, fb = (False, 'map')
+        return (emulate, fb)
+
     def _apply_flush_panel_mode(self, intent: Optional[DisplayIntent]) -> None:
-        if intent is None or intent.kind == 'release_if_owner':
-            return
-        w = self._window
-        tab = getattr(w, '_tab_translate', None)
+        tab = getattr(self._window, '_tab_translate', None)
         if tab is None:
             return
         try:
             cur = tab.panel_mode()
         except AttributeError:
             return
-        winner_mode = intent.mode if intent.mode is not None else cur
-        is_tab_owner = bool(intent.kind == 'translation' and (intent.panel_owner or '') in _CONVERSATION_TAB_OWNERS)
-        try:
-            emulate = bool(settings.get('translate_tab_emulate_panel_hidden', False))
-            fb = settings.get('translate_fallback_screen', 'map')
-        except Exception:
-            emulate, fb = (False, 'map')
-        target = resolve_flush_mode(winner_mode=winner_mode, top_level=getattr(w, '_top_level_state', 'pregame'), emulate=emulate, winner_has_content=self._winner_has_content(intent), winner_is_tab_owner=is_tab_owner, fallback_setting=fb)
-        if target is not None and target != cur:
-            tab.set_panel_mode(target)
+        owner_now = self.current_owner()
+        target = self._resolve_flush_target(intent, cur, owner_now)
+        if target is None or target == cur:
+            return
+        if required_owner_for_mode(cur) is not None:
+            _recog(_log, 'owner-bound panel mode released: mode=%r owner=%r → %r', cur, owner_now, target)
+        tab.set_panel_mode(target)
+
+    def _resolve_flush_target(self, intent: Optional[DisplayIntent], cur: str, owner_now: str) -> Optional[str]:
+        emulate, fb = self._flush_mode_settings()
+        top_level = getattr(self._window, '_top_level_state', 'pregame')
+        if intent is None or intent.kind == 'release_if_owner':
+            if required_owner_for_mode(cur) is None:
+                return None
+            return resolve_flush_mode(winner_mode=cur, top_level=top_level, emulate=emulate, winner_has_content=False, winner_is_tab_owner=False, fallback_setting=fb, current_owner=owner_now)
+        return resolve_flush_mode(winner_mode=intent.mode if intent.mode is not None else cur, top_level=top_level, emulate=emulate, winner_has_content=self._winner_has_content(intent), winner_is_tab_owner=bool(intent.kind == 'translation' and (intent.panel_owner or '') in _CONVERSATION_TAB_OWNERS), fallback_setting=fb, current_owner=owner_now)
 
     def _log_flush_winner(self, intent: Optional[DisplayIntent], frame: Optional[PollFrame]) -> None:
         if intent is None:
@@ -162,7 +174,7 @@ class UiRouter:
         if intent.kind == 'release_if_owner':
             if current != intent.panel_owner:
                 return None
-            return DisplayIntent.claim_owner('', priority=intent.priority, reason=intent.reason)
+            return DisplayIntent.claim_owner('', mode=intent.mode, priority=intent.priority, reason=intent.reason)
         return intent
 
     def _apply_logical_display(self, intent: DisplayIntent) -> None:
@@ -241,7 +253,7 @@ class UiRouter:
             return
         if intent.kind == 'facility_list':
             try:
-                w._tab_translate.set_facility_list_title(intent.panel_ja or intent.panel_en or '')
+                w._tab_translate.set_facility_list_title(intent.list_title_ja or intent.panel_ja or intent.panel_en or '')
             except AttributeError:
                 pass
             w._tab_translate.update_facility_list(intent.items)
@@ -381,13 +393,13 @@ class UiRouter:
     def update_panel_translation(self, panel_en: str, panel_ja: str, *, speech_role: Optional[str]=None, speech_text: Optional[str]=None, log_enabled: bool=True, priority: int=0) -> None:
         self.propose_display(DisplayIntent.panel_translation(panel_en, panel_ja, priority=priority, speech_role=speech_role, speech_text=speech_text, log_enabled=log_enabled))
 
-    def release_if_owner(self, panel_owner: str) -> None:
+    def release_if_owner(self, panel_owner: str, *, mode: Optional[str]=None, priority: int=0, reason: str='') -> None:
         if self.current_owner() == panel_owner:
             self._notify_clear(panel_owner)
-        self.propose_display(DisplayIntent.release_if_owner(panel_owner))
+        self.propose_display(DisplayIntent.release_if_owner(panel_owner, mode=mode, priority=priority, reason=reason))
 
-    def claim_owner(self, panel_owner: str, *, mode: Optional[str]=None) -> None:
-        self.propose_display(DisplayIntent.claim_owner(panel_owner, mode=mode))
+    def claim_owner(self, panel_owner: str, *, mode: Optional[str]=None, priority: int=0, reason: str='') -> None:
+        self.propose_display(DisplayIntent.claim_owner(panel_owner, mode=mode, priority=priority, reason=reason))
 
     def set_panel_mode(self, mode: str, *, priority: int=0, reason: str='') -> None:
         self.propose_display(DisplayIntent.panel_mode(mode, priority=priority, reason=reason))
@@ -395,8 +407,8 @@ class UiRouter:
     def update_shop_buy_list(self, panel_owner: str, items: list, panel_en: str, panel_ja: str) -> None:
         self.propose_display(DisplayIntent.shop_buy_list(panel_owner, items, panel_en, panel_ja))
 
-    def update_facility_list(self, panel_owner: str, items: list, panel_en: str, panel_ja: str, *, priority: int=0, reason: str='') -> None:
-        self.propose_display(DisplayIntent.facility_list(panel_owner, items, panel_en, panel_ja, priority=priority, reason=reason))
+    def update_facility_list(self, panel_owner: str, items: list, panel_en: str, panel_ja: str, *, list_title_ja: str=None, priority: int=0, reason: str='') -> None:
+        self.propose_display(DisplayIntent.facility_list(panel_owner, items, panel_en, panel_ja, list_title_ja=list_title_ja, priority=priority, reason=reason))
 
     def update_item_pickup_list(self, panel_owner: str, items: list, remaining: int) -> None:
         self.propose_display(DisplayIntent.item_pickup_list(panel_owner, items, remaining))

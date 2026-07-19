@@ -9,15 +9,52 @@ _MANUAL_SIMPLE = os.path.join(os.path.dirname(__file__), 'manual', 'simple')
 _MANUAL_FULL = os.path.join(os.path.dirname(__file__), 'manual', 'full')
 _CLASS_DOC = '05_classes.html'
 _MANUAL_BASE = _MANUAL_SIMPLE
-CLASS_LIST_ORDER: list[tuple[str, str, Optional[str]]] = [('Acrobat', 'アクロバット', '軽業師'), ('Archer', 'アーチャー', '弓使い'), ('Assassin', 'アサシン', '暗殺者'), ('Barbarian', 'バーバリアン', '野蛮人'), ('Bard', 'バード', '吟遊詩人'), ('Battlemage', 'バトルメイジ', '戦闘魔術師'), ('Burglar', 'バーグラー', '侵入者'), ('Healer', 'ヒーラー', '治癒師'), ('Knight', 'ナイト', '騎士'), ('Mage', 'メイジ', '魔法使い'), ('Monk', 'モンク', '修道士'), ('Nightblade', 'ナイトブレード', '夜刃使い'), ('Ranger', 'レンジャー', '放浪戦士'), ('Rogue', 'ローグ', '無法者'), ('Sorceror', 'ソーサラー', '妖術師'), ('Spellsword', 'スペルソード', '呪文剣士'), ('Thief', 'シーフ', '盗賊'), ('Warrior', 'ウォーリアー', '戦士')]
+CLASS_LIST_ORDER: list[str] = ['Acrobat', 'Archer', 'Assassin', 'Barbarian', 'Bard', 'Battlemage', 'Burglar', 'Healer', 'Knight', 'Mage', 'Monk', 'Nightblade', 'Ranger', 'Rogue', 'Sorceror', 'Spellsword', 'Thief', 'Warrior']
 
-def _format_ja(kana: str, kanji: Optional[str]) -> str:
-    return f'{kana}（{kanji}）' if kanji else kana
+def _gloss_key(canonical: str) -> str:
+    return f'class.gloss.{canonical.lower()}'
+
+def class_display_name(canonical: str) -> str:
+    name = i18n.value('classes', canonical) or canonical
+    gloss = i18n.text_opt(_gloss_key(canonical)) or ''
+    if gloss:
+        return i18n.text('class_list.name_with_gloss_format').replace('{name}', name).replace('{gloss}', gloss)
+    return name
+
+def _class_name_candidates(canonical: str) -> list[str]:
+    out: list[str] = []
+    for name in (i18n.value('classes', canonical), i18n.value_in('classes', canonical, 'ja')):
+        if name and name not in out:
+            out.append(name)
+    gloss = i18n.lang_value_in(_gloss_key(canonical), 'ja')
+    if gloss and gloss not in out:
+        out.append(gloss)
+    return out
+_NAME_GLOSS_RE = re.compile('^(.*?)\\s*[（(]([^（）()]+)[）)]$')
+
+def resolve_class_from_display_name(text: str) -> Optional[str]:
+    cleaned = (text or '').strip()
+    if not cleaned:
+        return None
+    base = gloss = None
+    m = _NAME_GLOSS_RE.match(cleaned)
+    if m:
+        base = m.group(1).strip()
+        gloss = m.group(2).strip()
+    for canonical in CLASS_LIST_ORDER:
+        names = _class_name_candidates(canonical)
+        if cleaned in names:
+            return canonical
+        if base and base in names:
+            return canonical
+        if gloss and gloss in names:
+            return canonical
+    return None
 
 class _ClassRow(QFrame):
     clicked = Signal(str)
 
-    def __init__(self, en: str, kana: str, kanji: Optional[str], parent=None):
+    def __init__(self, en: str, display_name: str, parent=None):
         super().__init__(parent)
         self._en = en
         self._highlighted = False
@@ -34,14 +71,17 @@ class _ClassRow(QFrame):
         self._en_lbl.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
         self._en_lbl.setObjectName('classRowEn')
         layout.addWidget(self._en_lbl)
-        self._ja_lbl = QLabel(_format_ja(kana, kanji))
-        self._ja_lbl.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
-        self._ja_lbl.setObjectName('classRowJa')
-        layout.addWidget(self._ja_lbl, 1)
+        self._name_lbl = QLabel(display_name)
+        self._name_lbl.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        self._name_lbl.setObjectName('classRowJa')
+        layout.addWidget(self._name_lbl, 1)
         self._apply_style()
 
     def class_en(self) -> str:
         return self._en
+
+    def set_display_name(self, display_name: str) -> None:
+        self._name_lbl.setText(display_name)
 
     def is_highlighted(self) -> bool:
         return self._highlighted
@@ -62,7 +102,7 @@ class _ClassRow(QFrame):
         if event.button() == Qt.MouseButton.LeftButton:
             self.clicked.emit(self._en)
         super().mousePressEvent(event)
-_NPC_CLASS_NAME_LOOKUP: dict[str, str] = {name.lower(): name for name, _, _ in CLASS_LIST_ORDER}
+_NPC_CLASS_NAME_LOOKUP: dict[str, str] = {name.lower(): name for name in CLASS_LIST_ORDER}
 _NPC_CLASS_NAME_LOOKUP.update({'battle mage': 'Battlemage', 'sorcerer': 'Sorceror'})
 
 def resolve_npc_class_name(text: str) -> Optional[str]:
@@ -73,7 +113,7 @@ def resolve_npc_class_name(text: str) -> Optional[str]:
         return None
     return _NPC_CLASS_NAME_LOOKUP.get(cleaned.lower())
 _CLASS_NAME_ALIASES: dict[str, str] = {'battle mage': 'Battlemage', 'sorcerer': 'Sorceror'}
-for _canonical, _, _ in CLASS_LIST_ORDER:
+for _canonical in CLASS_LIST_ORDER:
     _CLASS_NAME_ALIASES[_canonical.lower() + 's'] = _canonical
 _CLASS_NAME_ALIASES.update({'thieves': 'Thief', 'sorcerors': 'Sorceror', 'sorcerers': 'Sorceror'})
 
@@ -90,7 +130,7 @@ def _resolve_canonical_class(name: str) -> str | None:
     key = name.lower()
     if key in _CLASS_NAME_ALIASES:
         return _CLASS_NAME_ALIASES[key]
-    for canonical, _, _ in CLASS_LIST_ORDER:
+    for canonical in CLASS_LIST_ORDER:
         if canonical.lower() == key:
             return canonical
     return None
@@ -105,11 +145,10 @@ def _resolve_class_from_heading(heading_text: str) -> Optional[str]:
         if canonical:
             return canonical
     candidates: list[tuple[int, str]] = []
-    for canonical, kana, kanji in CLASS_LIST_ORDER:
-        if kana and kana in plain:
-            candidates.append((len(kana), canonical))
-        if kanji and kanji in plain:
-            candidates.append((len(kanji), canonical))
+    for canonical in CLASS_LIST_ORDER:
+        for cand in _class_name_candidates(canonical):
+            if cand in plain:
+                candidates.append((len(cand), canonical))
     if not candidates:
         return None
     candidates.sort(key=lambda x: -x[0])
@@ -190,11 +229,12 @@ def _load_class_descriptions(lang: str) -> dict[str, str]:
     simple_sections = _parse_class_sections_simple(simple_html) if simple_html else {}
     full_sections = _parse_class_sections_full(full_html) if full_html else {}
     combined: dict[str, str] = {}
+    detail_title = i18n.text('manual.detail_section_title')
     for canonical in set(simple_sections) | set(full_sections):
         s = simple_sections.get(canonical, '')
         f = full_sections.get(canonical, '')
         if s and f:
-            combined[canonical] = s + '\n<h3>詳細解説</h3>\n' + f
+            combined[canonical] = s + f'\n<h3>{detail_title}</h3>\n' + f
         else:
             combined[canonical] = s or f
     return combined
@@ -231,10 +271,10 @@ class ClassListPanel(QWidget):
         grid.setContentsMargins(4, 4, 4, 4)
         grid.setHorizontalSpacing(8)
         grid.setVerticalSpacing(2)
-        for idx, (en, kana, kanji) in enumerate(CLASS_LIST_ORDER):
+        for idx, en in enumerate(CLASS_LIST_ORDER):
             row = idx % 9
             col = idx // 9
-            row_widget = _ClassRow(en, kana, kanji)
+            row_widget = _ClassRow(en, class_display_name(en))
             row_widget.clicked.connect(self._on_row_clicked)
             grid.addWidget(row_widget, row, col)
             self._rows.append(row_widget)
@@ -253,6 +293,8 @@ class ClassListPanel(QWidget):
 
     def reload_for_language(self) -> None:
         self._reload_descriptions()
+        for en, row in self._rows_by_en.items():
+            row.set_display_name(class_display_name(en))
         if self._current_en:
             self._show_description(self._current_en)
 
@@ -281,7 +323,8 @@ class ClassListPanel(QWidget):
     def _show_description(self, en_name: str) -> None:
         fragment = self._sections.get(en_name, '')
         if not fragment:
-            self._desc.setHtml(f'<p>{en_name} の説明が見つかりませんでした。</p>')
+            msg = i18n.text('common.description_not_found').replace('{name}', en_name)
+            self._desc.setHtml(f'<p>{msg}</p>')
             return
         html = _wrap_html_fragment(fragment, self._base_html)
         self._desc.setHtml(html)
