@@ -493,7 +493,7 @@ def _inf_available(name: str) -> bool:
 def resolve_inf_for_mif(mif_name: str, info_name: str, inf_dir: str | Path) -> Path | None:
     base = Path(inf_dir)
     stem = Path(mif_name).stem
-    for name in (f'{stem}.INF', info_name):
+    for name in (info_name, f'{stem}.INF'):
         if name and _inf_available(name):
             return base / name
     return None
@@ -535,33 +535,49 @@ def parse_inf_walls_hidden_door_ids(path: str | Path) -> set[int]:
     lines = _read_inf_lines(path)
     if not lines:
         return set()
-    hidden_ids: set[int] = set()
-    in_walls = False
-    idx = 0
-    door_type: int | None = None
+
+    def _entry_count(text: str) -> tuple[str, int]:
+        parts = [t.strip() for t in text.split('#')]
+        name = parts[0].split()[0]
+        count = 1
+        if len(parts) >= 2 and name.lower().endswith('.set'):
+            try:
+                count = int(parts[1].split()[0])
+            except (ValueError, IndexError):
+                count = 1
+        return (name, count)
+    section = 'floors'
+    floor_count = 0
+    wall_is_wall_texture: list[bool] = []
+    pending: list[str] = []
     for line in lines:
         s = line.strip()
         if not s:
             continue
         up = s.upper()
-        if up == '@WALLS':
-            in_walls = True
+        if up.startswith('@'):
+            if up.startswith('@FLOORS'):
+                section = 'floors'
+            elif up.startswith('@WALLS'):
+                section = 'walls'
+            else:
+                section = None
+            pending = []
             continue
-        if s.startswith('@') and in_walls:
-            break
-        if not in_walls:
+        if section is None:
             continue
-        if up.startswith('*DOOR'):
-            parts = s.split()
-            door_type = int(parts[1]) if len(parts) >= 2 and parts[1].isdigit() else None
-        elif up.startswith(('*BOXCAP', '*BOXSIDE', '*LEVELDOWN', '*LEVELUP', '*LAVACHASM', '*WETCHASM', '*DRYCHASM', '*TRANS')):
-            pass
-        elif not s.startswith(('*', '@')):
-            if door_type == 2:
-                hidden_ids.add(idx)
-            idx += 1
-            door_type = None
-    return hidden_ids
+        if s.startswith('*'):
+            pending.append(up)
+            continue
+        _name, count = _entry_count(s)
+        if section == 'floors':
+            floor_count += count
+        else:
+            is_wall = any((d.startswith(('*BOXSIDE', '*BOXCAP')) for d in pending))
+            wall_is_wall_texture.extend([is_wall] * count)
+        pending = []
+    offset = floor_count + 1
+    return {idx + offset for idx, is_wall in enumerate(wall_is_wall_texture) if is_wall}
 
 def parse_inf_menu_indices(path: str | Path) -> set[int]:
     lines = _read_inf_lines(path)
@@ -569,7 +585,7 @@ def parse_inf_menu_indices(path: str | Path) -> set[int]:
         return set()
     voxel_count = 0
     menu_indices: set[int] = set()
-    section: str | None = None
+    section: str | None = '@FLOORS'
     pending_menu = False
     for line in lines:
         s = line.strip()
@@ -601,7 +617,7 @@ def parse_inf_menu_texture_map(path: str | Path) -> dict[int, int]:
         return {}
     voxel_count = 0
     menu_map: dict[int, int] = {}
-    section: str | None = None
+    section: str | None = '@FLOORS'
     pending_menu_id: int | None = None
     for line in lines:
         s = line.strip()
@@ -633,7 +649,7 @@ def parse_inf_wall_texture_names(path: str | Path) -> dict[int, str]:
         return {}
     voxel_count = 0
     names: dict[int, str] = {}
-    section: str | None = None
+    section: str | None = '@FLOORS'
     for line in lines:
         s = line.strip()
         if not s:
@@ -660,7 +676,7 @@ def parse_inf_level_transitions(path: str | Path) -> tuple[int | None, int | Non
     voxel_count = 0
     level_up_index: int | None = None
     level_down_index: int | None = None
-    section: str | None = None
+    section: str | None = '@FLOORS'
     pending_mode: str | None = None
     for line in lines:
         s = line.strip()

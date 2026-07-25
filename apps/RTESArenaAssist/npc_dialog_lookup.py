@@ -4,6 +4,8 @@ import re
 from npc_name_translator import translate_generated_name
 _COMPILED: list[tuple[re.Pattern, str, int, bool, int]] = []
 _LOADED = False
+_TRAVEL_EVENT_KEYS: frozenset[int] = frozenset({1274, 1275})
+_TRAVEL_EVENT_COMPILED: list[tuple[re.Pattern, str, int, bool, int]] = []
 _CLOSED_PH_ALT: dict[str, str] = {}
 _CLOSED_PH_LOADED = False
 _CLOSED_PLACEHOLDERS: frozenset[str] = frozenset({'di'})
@@ -193,8 +195,10 @@ def _reset_i18n_bound_caches() -> None:
     global _EXACT_ORIGINALS, _CALENDAR_WEEKDAYS, _CALENDAR_MONTHS
     global _CALENDAR_HOLIDAYS, _CALENDAR_LOADED
     global _TRAVEL_RE_CACHE, _TRAVEL_LOC_RE_CACHE
+    global _TRAVEL_EVENT_COMPILED
     _COMPILED = []
     _LOADED = False
+    _TRAVEL_EVENT_COMPILED = []
     _CLOSED_PH_ALT = {}
     _CLOSED_PH_LOADED = False
     _DOC_VALUES = {}
@@ -351,11 +355,13 @@ _EXACT_ORIGINALS: list[tuple[str, str]] = []
 
 def _load() -> None:
     global _COMPILED, _LOADED, _DOC_VALUES, _DOC_COMPILED, _EXACT_ORIGINALS
+    global _TRAVEL_EVENT_COMPILED
     if _LOADED:
         return
     _load_closed_ph()
     entries: list[tuple[re.Pattern, str, int, bool, int]] = []
     doc_entries: list[tuple[re.Pattern, str, int]] = []
+    travel_event_entries: list[tuple[re.Pattern, str, int, bool, int]] = []
     exact_originals: list[tuple[str, str]] = []
     for en_raw, tmpl, ph_list, key_int, ref in _iter_npcd():
         en = ' '.join(en_raw.split())
@@ -368,6 +374,8 @@ def _load() -> None:
         entries.append((compiled, tmpl, ph_count, is_exact, literal_len))
         if is_exact and en:
             exact_originals.append((en, tmpl))
+        if key_int in _TRAVEL_EVENT_KEYS:
+            travel_event_entries.append((compiled, tmpl, ph_count, is_exact, literal_len))
         if 262 <= key_int <= 362:
             if not ph_list:
                 _DOC_VALUES[en] = {'ref': ref}
@@ -377,6 +385,8 @@ def _load() -> None:
     _COMPILED = entries
     doc_entries.sort(key=lambda x: -x[2])
     _DOC_COMPILED = doc_entries
+    travel_event_entries.sort(key=lambda x: (not x[3], -x[4], -x[2]))
+    _TRAVEL_EVENT_COMPILED = travel_event_entries
     _EXACT_ORIGINALS = exact_originals
     _LOADED = True
 
@@ -1070,6 +1080,41 @@ def lookup(text: str) -> tuple[str, dict] | None:
         if m:
             placeholders = m.groupdict()
             return (ja, placeholders)
+    composite = lookup_composite(text)
+    if composite is not None:
+        return (composite[1], {})
+    return None
+_COMPOSITE_SPLIT_RE = re.compile('(?=`)')
+
+def lookup_composite(text: str) -> tuple[str, str] | None:
+    if not text:
+        return None
+    _ensure_i18n_bound_caches_current()
+    norm = ' '.join(text.split())
+    frags = [f.strip() for f in _COMPOSITE_SPLIT_RE.split(norm) if f.strip()]
+    if len(frags) < 2 or not all((f.startswith('`') for f in frags)):
+        return None
+    en_lines: list[str] = []
+    ja_lines: list[str] = []
+    for frag in frags:
+        result = lookup(frag)
+        if result is None:
+            return None
+        ja_tmpl, placeholders = result
+        ja_lines.append(format_japanese(ja_tmpl, placeholders))
+        en_lines.append(frag.lstrip('`').strip())
+    return ('\n'.join(en_lines), '\n'.join(ja_lines))
+
+def lookup_travel_event(text: str) -> tuple[str, dict] | None:
+    if not text:
+        return None
+    _ensure_i18n_bound_caches_current()
+    text = ' '.join(text.split())
+    _load()
+    for compiled, ja, _ph_count, _is_exact, _literal_len in _TRAVEL_EVENT_COMPILED:
+        m = compiled.match(text)
+        if m:
+            return (ja, m.groupdict())
     return None
 
 def format_japanese(ja_template: str, placeholders: dict, lang: str='ja') -> str:

@@ -12,6 +12,15 @@ except ImportError:
 class INFData:
     menus: Dict[int, int] = field(default_factory=dict)
     menu_ranges: Dict[int, tuple] = field(default_factory=dict)
+    flat_items: Dict[int, int] = field(default_factory=dict)
+_ITEM_TREASURE_PILE_MIN = 2
+_ITEM_TREASURE_PILE_MAX = 6
+
+def is_treasure_pile_item(item_index: int) -> bool:
+    return _ITEM_TREASURE_PILE_MIN <= int(item_index) <= _ITEM_TREASURE_PILE_MAX
+
+def treasure_pile_flat_indices(inf: INFData) -> frozenset:
+    return frozenset((fi for fi, item in inf.flat_items.items() if is_treasure_pile_item(item)))
 _DIRECTIVES_NO_TEXTURE = {'*BOXCAP', '*BOXSIDE', '*DOOR', '*TRANS', '*TRANSWALKTHRU', '*WALKTHRU', '*DRYCHASM', '*LAVACHASM', '*WETCHASM', '*LEVELDOWN', '*LEVELUP'}
 
 def parse_inf(path: str) -> INFData:
@@ -29,8 +38,11 @@ def parse_inf(path: str) -> INFData:
     text = raw.decode('ascii', errors='replace')
     result = INFData()
     in_walls = False
+    in_flats = False
     texture_id = 0
     pending_menu_id: Optional[int] = None
+    flat_id = 0
+    current_item_id: Optional[int] = None
     for raw_line in text.splitlines():
         line = raw_line.strip()
         if not line:
@@ -38,6 +50,21 @@ def parse_inf(path: str) -> INFData:
         upper = line.upper()
         if upper.startswith('@'):
             in_walls = upper == '@WALLS'
+            in_flats = upper.startswith('@FLATS')
+            continue
+        if in_flats:
+            if line.startswith('*'):
+                tokens = line.split()
+                if tokens[0].upper() == '*ITEM' and len(tokens) >= 2:
+                    try:
+                        current_item_id = int(tokens[1])
+                    except ValueError:
+                        current_item_id = None
+                continue
+            if current_item_id is not None:
+                result.flat_items[flat_id] = current_item_id
+            flat_id += 1
+            current_item_id = None
             continue
         if not in_walls:
             continue

@@ -8,8 +8,12 @@ CAMP_HOURS_TEMPLATE_OFFSET = 18820
 CAMP_INPUT_SLOT_OFFSET = 64184
 CAMP_RESPONSE_OFFSET = 37534
 CAMP_RESPONSE_READ_LEN = 64
-VIEW_FLAG_OFFSET = 36724
-CAMP_CONFIRM_VIEW_FLAG = 20
+POPUP_FRAME_LEFT_OFFSET = 36724
+POPUP_FRAME_RIGHT_OFFSET = 36726
+POPUP_FRAME_TOP_OFFSET = 36728
+POPUP_FRAME_BOTTOM_OFFSET = 36730
+SCREEN_FRAME_RIGHT = 308
+SCREEN_FRAME_BOTTOM = 199
 CAMP_CONFIRM_OFFSET = 4164
 CAMP_CONFIRM_READ_LEN = 96
 CAMP_CONFIRM_MARKER = 'remaining hours'
@@ -112,6 +116,26 @@ def ptr_in_camp_block(ptr: Optional[int]) -> bool:
     lo, hi = CAMP_BLOCK_SPAN
     return lo <= ptr < hi
 
+def _popup_frame_shown(analyzer, anchor: int) -> bool:
+    left = _read_u16(analyzer, anchor, POPUP_FRAME_LEFT_OFFSET)
+    right = _read_u16(analyzer, anchor, POPUP_FRAME_RIGHT_OFFSET)
+    top = _read_u16(analyzer, anchor, POPUP_FRAME_TOP_OFFSET)
+    bottom = _read_u16(analyzer, anchor, POPUP_FRAME_BOTTOM_OFFSET)
+    if None in (left, right, top, bottom):
+        return False
+    if not 0 < left < right <= SCREEN_FRAME_RIGHT:
+        return False
+    if not 0 < top < bottom <= SCREEN_FRAME_BOTTOM:
+        return False
+    return right < SCREEN_FRAME_RIGHT or bottom < SCREEN_FRAME_BOTTOM
+
+def _confirm_record_live(analyzer, anchor: int) -> bool:
+    try:
+        head = analyzer.read_bytes(anchor + CAMP_CONFIRM_OFFSET, 2)
+    except (OSError, AttributeError):
+        return False
+    return bool(head) and len(head) >= 2 and (head[0] == 9) and (head[1] == 96)
+
 def classify_camp_view(analyzer, anchor: int) -> CampView:
     try:
         raw = analyzer.read_bytes(anchor + CAMP_BLOCK_OFFSET, CAMP_BLOCK_LEN)
@@ -135,10 +159,10 @@ def classify_camp_view(analyzer, anchor: int) -> CampView:
     slot = _read_u16(analyzer, anchor, CAMP_INPUT_SLOT_OFFSET)
     if resp == CAMP_HOURS_PROMPT_TEXT and slot == CAMP_HOURS_ECHO_OFFSET:
         return CampView(kind='hours_prompt', title=CAMP_TITLE_TEXT, items=items, prompt_text=resp, reason='response matches hours prompt + input slot on echo')
-    view_flag = _read_u8(analyzer, anchor, VIEW_FLAG_OFFSET)
-    if view_flag == CAMP_CONFIRM_VIEW_FLAG:
+    if _popup_frame_shown(analyzer, anchor) and _confirm_record_live(analyzer, anchor):
         confirm = _read_confirm_text(analyzer, anchor)
         if CAMP_CONFIRM_MARKER in confirm:
-            return CampView(kind='rest_confirm', title=CAMP_TITLE_TEXT, items=items, prompt_text=confirm, reason=f'view_flag=0x{view_flag:02X} + confirm text')
+            left = _read_u16(analyzer, anchor, POPUP_FRAME_LEFT_OFFSET)
+            return CampView(kind='rest_confirm', title=CAMP_TITLE_TEXT, items=items, prompt_text=confirm, reason=f'popup frame (left={left}) + confirm text')
     return CampView(kind='none', reason='no camp foreground signal')
 __all__ = ['CAMP_BLOCK_OFFSET', 'CAMP_BLOCK_LEN', 'CAMP_BLOCK_SPAN', 'CAMP_HOURS_ECHO_OFFSET', 'CAMP_HOURS_TEMPLATE_OFFSET', 'CAMP_INPUT_SLOT_OFFSET', 'CAMP_RESPONSE_OFFSET', 'CAMP_TITLE_TEXT', 'CAMP_MENU_ITEM_TEXTS', 'CAMP_MENU_ITEM_HOTKEYS', 'CAMP_HOURS_PROMPT_TEXT', 'CampMenuItem', 'CampView', 'classify_camp_view', 'ptr_in_camp_block']

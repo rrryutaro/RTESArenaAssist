@@ -66,9 +66,4 @@ class MapDispatcher:
                 self.interior.reset_progress()
         elif self._active_path == 'base_location':
             self.base_location.reset_progress()
-
-    def poll_automap_file(self) -> bool:
-        if self._active_path == 'base_location' and self.base_location.active_key() == 'dungeon':
-            return self.base_location.dungeon.poll_automap_file()
-        return False
 __all__ = ['MapDispatcher']

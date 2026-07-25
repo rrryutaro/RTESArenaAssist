@@ -1,11 +1,13 @@
 from __future__ import annotations
+import io
 import logging
 import queue
 import re
 import threading
 import time
 import traceback
-from collections import OrderedDict
+import wave
+from collections import OrderedDict, deque
 from dataclasses import dataclass
 _SVSF_ASYNC = 1
 _SVSF_PURGE_BEFORE_SPEAK = 2
@@ -13,7 +15,21 @@ _URL_RE = re.compile('https?://\\S+')
 _APOSTROPHES = ("'", '’', '‘', '`')
 _TRAILING_SILENT_CHARS = frozenset('」』”’"\')）〕］】｝〉》〙〗〟〞>＞、，,・:：;；…‥ー―-!?！？')
 _VOICEVOX_CACHE_MAX = 128
-_VOICEVOX_PREFETCH_QUEUE_SIZE = 4
+_VOICEVOX_READY_AUDIO_MAX_SECONDS = 30.0
+_VOICEVOX_SCHEDULING_MARGIN_SECONDS = 0.5
+_VOICEVOX_TIMEOUT_MIN_SECONDS = 15.0
+_VOICEVOX_TIMEOUT_MAX_SECONDS = 120.0
+_VOICEVOX_TIMEOUT_MULTIPLIER = 2.0
+_VOICEVOX_TIMEOUT_PADDING_SECONDS = 3.0
+_VOICEVOX_FALLBACK_SYNTH_SECONDS_PER_CHAR = 0.08
+_VOICEVOX_FALLBACK_SYNTH_BASE_SECONDS = 0.5
+_VOICEVOX_FALLBACK_AUDIO_SECONDS_PER_CHAR = 0.12
+_VOICEVOX_TIMING_HISTORY_SIZE = 32
+_VOICEVOX_RETRY_FAST_FAIL_SECONDS = 2.0
+_VOICEVOX_PREFETCH_DONE = object()
+_SPEECH_NAME_MIDDLE_DOT_RE = re.compile('(?<=[\\wぁ-んァ-ヶ一-龯々ー])\\s*[・･]\\s*(?=[\\wぁ-んァ-ヶ一-龯々ー])')
+_SPEECH_MIDDLE_DOT_RE = re.compile('\\s*[・･]\\s*')
+_SPEECH_COMMA_RE = re.compile('、{2,}')
 
 def _log_tts(message: str) -> None:
     try:
@@ -28,6 +44,60 @@ class _VVResult:
     error: str | None
     speaker: int
     chars: int
+    duration_seconds: float = 0.0
+    starts_segment: bool = True
+    ends_segment: bool = True
+
+class _VoicevoxBufferState:
+
+    def __init__(self) -> None:
+        self._condition = threading.Condition()
+        self._ready_seconds = 0.0
+        self._playing_started = 0.0
+        self._playing_seconds = 0.0
+        self._closed = False
+
+    def available_seconds(self) -> float:
+        with self._condition:
+            return self._available_seconds_locked()
+
+    def add_ready(self, duration_seconds: float) -> None:
+        with self._condition:
+            self._ready_seconds += max(0.0, float(duration_seconds))
+            self._condition.notify_all()
+
+    def start_playback(self, duration_seconds: float) -> None:
+        duration = max(0.0, float(duration_seconds))
+        with self._condition:
+            self._ready_seconds = max(0.0, self._ready_seconds - duration)
+            self._playing_started = time.perf_counter()
+            self._playing_seconds = duration
+            self._condition.notify_all()
+
+    def finish_playback(self) -> None:
+        with self._condition:
+            self._playing_started = 0.0
+            self._playing_seconds = 0.0
+            self._condition.notify_all()
+
+    def wait(self, timeout: float=0.05) -> bool:
+        with self._condition:
+            if self._closed:
+                return False
+            self._condition.wait(timeout=max(0.01, float(timeout)))
+            return not self._closed
+
+    def close(self) -> None:
+        with self._condition:
+            self._closed = True
+            self._condition.notify_all()
+
+    def _available_seconds_locked(self) -> float:
+        playback_remaining = 0.0
+        if self._playing_started > 0.0 and self._playing_seconds > 0.0:
+            elapsed = max(0.0, time.perf_counter() - self._playing_started)
+            playback_remaining = max(0.0, self._playing_seconds - elapsed)
+        return self._ready_seconds + playback_remaining
 
 @dataclass(frozen=True)
 class _TTSRequest:
@@ -52,6 +122,7 @@ class TTSService:
         self._stopping = False
         self._segment_observer = None
         self._voicevox_cache: OrderedDict[tuple[str, int, int, int], bytes] = OrderedDict()
+        self._voicevox_timing_history: dict[tuple[int, int], 'deque[tuple[int, float, float]]'] = {}
         self._queue: queue.Queue = queue.Queue()
         self._worker = None
         self._prewarm_queue: queue.Queue = queue.Queue()
@@ -169,7 +240,7 @@ class TTSService:
             for segment in self._split_sentences(value):
                 if not segment:
                     continue
-                key = (segment, speaker, rate, volume)
+                key = (self._normalize_speech_text(segment), speaker, rate, volume)
                 with self._lock:
                     if key in self._prewarm_seen or key in self._voicevox_cache:
                         continue
@@ -228,6 +299,13 @@ class TTSService:
         for ap in _APOSTROPHES:
             value = value.replace(ap, '')
         return value.strip()
+
+    @staticmethod
+    def _normalize_speech_text(text: str) -> str:
+        value = str(text or '')
+        value = _SPEECH_NAME_MIDDLE_DOT_RE.sub('', value)
+        value = _SPEECH_MIDDLE_DOT_RE.sub('、', value)
+        return _SPEECH_COMMA_RE.sub('、', value)
 
     @staticmethod
     def _split_sentences(text: str) -> list[str]:
@@ -338,13 +416,14 @@ class TTSService:
 
     def _speak_sapi5_blocking(self, speaker, text: str) -> None:
         try:
+            speech_text = self._normalize_speech_text(text)
             with self._lock:
                 volume = self._volume
                 rate = self._rate
             speaker.Volume = volume
             speaker.Rate = rate
             self._apply_voice(speaker)
-            speaker.Speak(text)
+            speaker.Speak(speech_text)
         except Exception:
             _log_tts('SAPI5 speak error:\n' + traceback.format_exc())
 
@@ -381,119 +460,254 @@ class TTSService:
         if index < 0:
             return
         ctx = {'full': full_text, 'segments': segments, 'playing': None, 'requested': set(), 'lock': threading.Lock(), 'generation': generation}
-        result_queue = self._start_voicevox_prefetch(segments, index, generation, ctx)
-        prefetched: dict[int, _VVResult] = {}
-        while index >= 0:
-            if not self._is_generation_current(generation):
-                return
-            if not self._wait_if_paused(generation):
-                return
-            result = self._get_voicevox_prefetch_result(result_queue, prefetched, index, generation, consume=True)
-            if result is None:
-                return
-            if result.error:
-                _log_tts(f'VOICEVOX synthesize error: speaker={result.speaker} chars={result.chars}\n{result.error}')
-                return
-            if not result.data:
-                _log_tts(f'VOICEVOX synthesize returned no audio: speaker={result.speaker} chars={result.chars}')
-                return
-            if not self._wait_if_paused(generation):
-                return
-            next_index = self._next_segment_index(segments, index + 1)
-            try:
-                ctx['playing'] = index
-                self._emit_reading(ctx)
-                self._play_wav(result.data, generation)
-            except Exception:
-                _log_tts('VOICEVOX playback error:\n' + traceback.format_exc())
-                return
-            if not self._is_generation_current(generation):
-                return
-            gap_end = next_index if next_index >= 0 else len(segments)
-            for gap in segments[index + 1:gap_end]:
-                if not self._is_generation_current(generation):
+        result_queue, buffer_state = self._start_voicevox_prefetch(segments, index, generation, ctx)
+        try:
+            while self._is_generation_current(generation):
+                if not self._wait_if_paused(generation):
+                    return
+                try:
+                    item = result_queue.get(timeout=0.05)
+                except queue.Empty:
+                    continue
+                if item is _VOICEVOX_PREFETCH_DONE:
+                    return
+                result = item
+                if result.error:
+                    _log_tts(f'VOICEVOX synthesize error: speaker={result.speaker} chars={result.chars}\n{result.error}')
+                    return
+                if not result.data:
+                    _log_tts(f'VOICEVOX synthesize returned no audio: speaker={result.speaker} chars={result.chars}')
                     return
                 if not self._wait_if_paused(generation):
                     return
-                if not gap:
-                    time.sleep(0.25)
-            index = next_index
+                try:
+                    if result.starts_segment:
+                        ctx['playing'] = result.index
+                        self._emit_reading(ctx)
+                    buffer_state.start_playback(result.duration_seconds)
+                    try:
+                        self._play_wav(result.data, generation)
+                    finally:
+                        buffer_state.finish_playback()
+                except Exception:
+                    _log_tts('VOICEVOX playback error:\n' + traceback.format_exc())
+                    return
+                if not self._is_generation_current(generation):
+                    return
+                if not result.ends_segment:
+                    continue
+                next_index = self._next_segment_index(segments, result.index + 1)
+                gap_end = next_index if next_index >= 0 else len(segments)
+                for gap in segments[result.index + 1:gap_end]:
+                    if not self._is_generation_current(generation):
+                        return
+                    if not self._wait_if_paused(generation):
+                        return
+                    if not gap:
+                        time.sleep(0.25)
+        finally:
+            buffer_state.close()
 
-    def _start_voicevox_prefetch(self, segments: list[str], start_index: int, generation: int, ctx: dict | None=None) -> 'queue.Queue':
-        result_queue: queue.Queue = queue.Queue(maxsize=_VOICEVOX_PREFETCH_QUEUE_SIZE)
+    def _start_voicevox_prefetch(self, segments: list[str], start_index: int, generation: int, ctx: dict | None=None) -> tuple['queue.Queue', '_VoicevoxBufferState']:
+        result_queue: queue.Queue = queue.Queue()
+        buffer_state = _VoicevoxBufferState()
         segment_list = list(segments)
 
-        def worker() -> None:
+        def produce() -> None:
             index = start_index
+            sequence = 0
             while index >= 0 and self._is_generation_current(generation):
-                segment = segment_list[index]
-                speaker = -1
-                chars = len(segment)
-                if ctx is not None:
-                    with ctx['lock']:
-                        ctx['requested'].add(index)
-                    self._emit_reading(ctx)
-                try:
-                    data, speaker = self._synthesize_voicevox_segment(segment)
-                    result = _VVResult(index, data, None, speaker, chars)
-                except Exception:
-                    result = _VVResult(index, None, traceback.format_exc(), speaker, chars)
-                if not self._put_voicevox_prefetch_result(result_queue, result, generation):
-                    return
-                if result.error or not result.data:
-                    return
+                source_segment = str(segment_list[index] or '').strip()
+                offset = 0
+                while offset < len(source_segment) and self._is_generation_current(generation):
+                    with self._lock:
+                        speaker = self._vv_speaker
+                        rate = self._rate
+                    remaining = source_segment[offset:]
+                    predicted_full = self._estimate_voicevox_synthesis_seconds(remaining, speaker, rate)
+                    while sequence > 0 and self._is_generation_current(generation):
+                        if not self._wait_if_paused(generation):
+                            buffer_state.close()
+                            return
+                        available = buffer_state.available_seconds()
+                        if available < _VOICEVOX_READY_AUDIO_MAX_SECONDS and available < predicted_full + _VOICEVOX_SCHEDULING_MARGIN_SECONDS:
+                            break
+                        if not buffer_state.wait():
+                            return
+                    available = buffer_state.available_seconds()
+                    if offset == 0 and self._voicevox_cache_contains(remaining):
+                        chunk, end = (remaining, len(source_segment))
+                    else:
+                        chunk, end = self._select_voicevox_chunk(source_segment, offset, available, speaker, rate, startup=sequence == 0)
+                    if not chunk or end <= offset:
+                        chunk, end = (remaining, len(source_segment))
+                    chars = len(chunk)
+                    if ctx is not None and offset == 0:
+                        with ctx['lock']:
+                            ctx['requested'].add(index)
+                        self._emit_reading(ctx)
+                    started = time.perf_counter()
+                    error = None
+                    cache_hit = False
+                    try:
+                        data, speaker, cache_hit = self._synthesize_voicevox_segment(chunk)
+                    except Exception:
+                        data = None
+                        error = traceback.format_exc()
+                    elapsed = time.perf_counter() - started
+                    if data is None and error is None and (elapsed < _VOICEVOX_RETRY_FAST_FAIL_SECONDS) and self._is_generation_current(generation):
+                        _log_tts(f'VOICEVOX synthesize fast-fail retry: speaker={speaker} chars={chars}')
+                        time.sleep(0.25)
+                        try:
+                            data, speaker, cache_hit = self._synthesize_voicevox_segment(chunk)
+                        except Exception:
+                            data = None
+                            error = traceback.format_exc()
+                        elapsed = time.perf_counter() - started
+                    duration = self._wav_duration_seconds(data) if data else 0.0
+                    if data and (not cache_hit):
+                        self._record_voicevox_timing(speaker, rate, chars, elapsed, duration)
+                    result = _VVResult(index, data, error, speaker, chars, duration_seconds=duration, starts_segment=offset == 0, ends_segment=end >= len(source_segment))
+                    if not self._is_generation_current(generation):
+                        buffer_state.close()
+                        return
+                    if data:
+                        buffer_state.add_ready(duration)
+                    result_queue.put(result)
+                    if error or not data:
+                        buffer_state.close()
+                        return
+                    sequence += 1
+                    offset = end
                 index = self._next_segment_index(segment_list, index + 1)
+            if self._is_generation_current(generation):
+                result_queue.put(_VOICEVOX_PREFETCH_DONE)
+
+        def worker() -> None:
+            try:
+                produce()
+            except Exception:
+                _log_tts('VOICEVOX prefetch worker error:\n' + traceback.format_exc())
+                buffer_state.close()
+                result_queue.put(_VVResult(start_index, None, 'prefetch worker error', -1, 0))
         threading.Thread(target=worker, daemon=True, name='RTESAssistVoicevoxPrefetch').start()
-        return result_queue
+        return (result_queue, buffer_state)
 
-    def _put_voicevox_prefetch_result(self, result_queue: 'queue.Queue', result: '_VVResult', generation: int) -> bool:
-        while self._is_generation_current(generation):
-            try:
-                result_queue.put(result, timeout=0.05)
-                return True
-            except queue.Full:
+    def _select_voicevox_chunk(self, text: str, start: int, available_seconds: float, speaker: int, rate: int, *, startup: bool) -> tuple[str, int]:
+        endpoints = self._voicevox_chunk_endpoints(text, start)
+        if not endpoints:
+            return (text[start:].strip(), len(text))
+        full_end = endpoints[-1]
+        full = text[start:full_end].strip()
+        comma_endpoints = endpoints[:-1]
+        if not comma_endpoints:
+            return (full, full_end)
+        if startup:
+            first_end = comma_endpoints[0]
+            return (text[start:first_end].strip(), first_end)
+        available_for_synthesis = max(0.0, float(available_seconds) - _VOICEVOX_SCHEDULING_MARGIN_SECONDS)
+        remaining_audio_capacity = max(0.0, _VOICEVOX_READY_AUDIO_MAX_SECONDS - max(0.0, float(available_seconds)))
+        if self._estimate_voicevox_synthesis_seconds(full, speaker, rate) <= available_for_synthesis and self._estimate_voicevox_audio_seconds(full, speaker, rate) <= remaining_audio_capacity:
+            return (full, full_end)
+        selected_end = -1
+        for end in comma_endpoints:
+            chunk = text[start:end].strip()
+            if not chunk:
                 continue
-        return False
+            if self._estimate_voicevox_synthesis_seconds(chunk, speaker, rate) <= available_for_synthesis and self._estimate_voicevox_audio_seconds(chunk, speaker, rate) <= remaining_audio_capacity:
+                selected_end = end
+                continue
+            break
+        if selected_end >= 0:
+            return (text[start:selected_end].strip(), selected_end)
+        first_end = comma_endpoints[0]
+        return (text[start:first_end].strip(), first_end)
 
-    def _get_voicevox_prefetch_result(self, result_queue: 'queue.Queue', prefetched: dict, index: int, generation: int, *, consume: bool):
-        result = prefetched.get(index)
-        if result is not None:
-            if consume:
-                prefetched.pop(index, None)
-            return result
-        while self._is_generation_current(generation):
-            try:
-                result = result_queue.get(timeout=0.05)
-            except queue.Empty:
-                continue
-            prefetched[result.index] = result
-            if result.index == index:
-                if consume:
-                    prefetched.pop(index, None)
-                return result
-        return None
+    @staticmethod
+    def _voicevox_chunk_endpoints(text: str, start: int) -> list[int]:
+        endpoints = [m.end() for m in re.finditer('、+', text[start:])]
+        absolute = [start + end for end in endpoints]
+        if not absolute or absolute[-1] != len(text):
+            absolute.append(len(text))
+        return absolute
+
+    def _estimate_voicevox_synthesis_seconds(self, text: str, speaker: int, rate: int) -> float:
+        chars = max(1, len(self._normalize_speech_text(text).strip()))
+        with self._lock:
+            samples = list(self._voicevox_timing_history.get((int(speaker), int(rate)), ()))
+        if not samples:
+            return _VOICEVOX_FALLBACK_SYNTH_BASE_SECONDS + chars * _VOICEVOX_FALLBACK_SYNTH_SECONDS_PER_CHAR
+        ratios = sorted((seconds / max(1, sample_chars) for sample_chars, seconds, _audio in samples))
+        percentile_index = min(len(ratios) - 1, max(0, int(len(ratios) * 0.9)))
+        return max(0.2, ratios[percentile_index] * chars + 0.2)
+
+    def _estimate_voicevox_audio_seconds(self, text: str, speaker: int, rate: int) -> float:
+        chars = max(1, len(self._normalize_speech_text(text).strip()))
+        with self._lock:
+            samples = list(self._voicevox_timing_history.get((int(speaker), int(rate)), ()))
+        audio_samples = [audio / max(1, sample_chars) for sample_chars, _seconds, audio in samples if audio > 0.0]
+        if audio_samples:
+            audio_samples.sort()
+            return max(0.2, audio_samples[len(audio_samples) // 2] * chars)
+        speed = max(0.5, min(2.0, 1.0 + int(rate) / 20.0))
+        return max(0.2, chars * _VOICEVOX_FALLBACK_AUDIO_SECONDS_PER_CHAR / speed)
+
+    def _record_voicevox_timing(self, speaker: int, rate: int, chars: int, synthesis_seconds: float, audio_seconds: float) -> None:
+        if chars <= 0 or synthesis_seconds <= 0.0:
+            return
+        key = (int(speaker), int(rate))
+        with self._lock:
+            history = self._voicevox_timing_history.get(key)
+            if history is None:
+                history = deque(maxlen=_VOICEVOX_TIMING_HISTORY_SIZE)
+                self._voicevox_timing_history[key] = history
+            history.append((int(chars), float(synthesis_seconds), max(0.0, float(audio_seconds))))
+
+    def _voicevox_timeout_seconds(self, text: str, speaker: int, rate: int) -> float:
+        predicted = self._estimate_voicevox_synthesis_seconds(text, speaker, rate)
+        return max(_VOICEVOX_TIMEOUT_MIN_SECONDS, min(_VOICEVOX_TIMEOUT_MAX_SECONDS, predicted * _VOICEVOX_TIMEOUT_MULTIPLIER + _VOICEVOX_TIMEOUT_PADDING_SECONDS))
+
+    @staticmethod
+    def _wav_duration_seconds(data: bytes) -> float:
+        try:
+            with wave.open(io.BytesIO(data), 'rb') as wav_file:
+                frames = wav_file.getnframes()
+                rate = wav_file.getframerate()
+                if rate > 0:
+                    return frames / float(rate)
+        except Exception:
+            pass
+        return max(0.3, min(30.0, len(data) / 88200.0))
+
+    def _voicevox_cache_contains(self, segment: str) -> bool:
+        speech_segment = self._normalize_speech_text(segment)
+        with self._lock:
+            key = (speech_segment, self._vv_speaker, self._rate, self._volume)
+            return key in self._voicevox_cache
 
     def _synthesize_voicevox_segment(self, segment: str):
         import voicevox_client as vv
+        speech_segment = self._normalize_speech_text(segment)
         with self._lock:
             rate = self._rate
             volume_value = self._volume
             speaker = self._vv_speaker
-            cache_key = (segment, speaker, rate, volume_value)
+            cache_key = (speech_segment, speaker, rate, volume_value)
             cached = self._voicevox_cache.get(cache_key)
             if cached is not None:
                 self._voicevox_cache.move_to_end(cache_key)
-                return (cached, speaker)
+                return (cached, speaker, True)
         speed = max(0.5, min(2.0, 1.0 + rate / 20.0))
         volume = max(0.0, min(2.0, volume_value / 100.0))
-        data = vv.synthesize(segment, speaker, speed=speed, volume=volume)
+        timeout = self._voicevox_timeout_seconds(speech_segment, speaker, rate)
+        data = vv.synthesize(speech_segment, speaker, speed=speed, volume=volume, timeout=timeout)
         if data:
             with self._lock:
                 self._voicevox_cache[cache_key] = data
                 self._voicevox_cache.move_to_end(cache_key)
                 while len(self._voicevox_cache) > _VOICEVOX_CACHE_MAX:
                     self._voicevox_cache.popitem(last=False)
-        return (data, speaker)
+        return (data, speaker, False)
 
     @staticmethod
     def _next_segment_index(segments: list[str], start: int) -> int:

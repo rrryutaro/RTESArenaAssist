@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:dc50e000c5f948f1a23afebd83ed5cb6e845bab2174199ba4fa6983424789597",
+  "registry_hash": "sha256:ab888e8f0123cfa01da892d6d8d565903e714b9e2622fe3f4c89dc15a6a791f9",
   "categories": [
     {
       "category": "assist_ui",
@@ -3456,6 +3456,131 @@
           "id": 900688,
           "kind": "label",
           "debug_name": "save.toggle_backup_pane"
+        },
+        {
+          "id": 900689,
+          "kind": "label",
+          "debug_name": "settings.map_distinguish_wall_chasm"
+        },
+        {
+          "id": 900690,
+          "kind": "label",
+          "debug_name": "settings.map_distinguish_wall_chasm_tip"
+        },
+        {
+          "id": 900691,
+          "kind": "label",
+          "debug_name": "settings.map_show_treasure_piles"
+        },
+        {
+          "id": 900692,
+          "kind": "label",
+          "debug_name": "settings.map_show_treasure_piles_tip"
+        },
+        {
+          "id": 900693,
+          "kind": "label",
+          "debug_name": "settings.group_map_expression"
+        },
+        {
+          "id": 900694,
+          "kind": "label",
+          "debug_name": "settings.map_base_colors_note"
+        },
+        {
+          "id": 900695,
+          "kind": "label",
+          "debug_name": "settings.map_color_door"
+        },
+        {
+          "id": 900696,
+          "kind": "label",
+          "debug_name": "settings.map_color_dry_chasm"
+        },
+        {
+          "id": 900697,
+          "kind": "label",
+          "debug_name": "settings.map_color_lava_chasm"
+        },
+        {
+          "id": 900698,
+          "kind": "label",
+          "debug_name": "settings.map_color_level_down"
+        },
+        {
+          "id": 900699,
+          "kind": "label",
+          "debug_name": "settings.map_color_level_up"
+        },
+        {
+          "id": 900700,
+          "kind": "label",
+          "debug_name": "settings.map_color_pick_tip"
+        },
+        {
+          "id": 900701,
+          "kind": "label",
+          "debug_name": "settings.map_color_pick_title"
+        },
+        {
+          "id": 900702,
+          "kind": "label",
+          "debug_name": "settings.map_color_raised"
+        },
+        {
+          "id": 900703,
+          "kind": "label",
+          "debug_name": "settings.map_color_reset"
+        },
+        {
+          "id": 900704,
+          "kind": "label",
+          "debug_name": "settings.map_color_wall"
+        },
+        {
+          "id": 900705,
+          "kind": "label",
+          "debug_name": "settings.map_color_wet_chasm"
+        },
+        {
+          "id": 900706,
+          "kind": "label",
+          "debug_name": "settings.map_express_hidden_door"
+        },
+        {
+          "id": 900707,
+          "kind": "label",
+          "debug_name": "settings.map_express_on"
+        },
+        {
+          "id": 900708,
+          "kind": "label",
+          "debug_name": "settings.map_express_treasure"
+        },
+        {
+          "id": 900709,
+          "kind": "label",
+          "debug_name": "settings.map_express_wall_chasm"
+        },
+        {
+          "id": 900710,
+          "kind": "label",
+          "debug_name": "settings.map_express_wall_lava"
+        },
+        {
+          "id": 900711,
+          "kind": "label",
+          "debug_name": "settings.map_express_wall_passage"
+        },
+        {
+          "id": 900712,
+          "kind": "label",
+          "debug_name": "settings.map_expression_note"
+        },
+        {
+          "id": 900713,
+          "kind": "label",
+          "debug_name": "settings.map_treasure_mark"
         }
       ]
     },
@@ -49238,6 +49363,106 @@
           "text": "Show/hide backup list"
         },
         {
+          "id": 900689,
+          "text": "Distinguish water under walls"
+        },
+        {
+          "id": 900690,
+          "text": "When ON (default), water channels running under walls are drawn in their own colour instead of the raised-platform grey the game uses, so they can be told apart. OFF matches the game's automap."
+        },
+        {
+          "id": 900691,
+          "text": "Show treasure locations"
+        },
+        {
+          "id": 900692,
+          "text": "When ON (default), a marker is drawn on cells where a treasure pile is known to appear. Piles come back when you leave and re-enter the dungeon, so the marker means treasure is there, not that it was already taken. Quest items and keys are never marked."
+        },
+        {
+          "id": 900693,
+          "text": "Map expression and colours"
+        },
+        {
+          "id": 900694,
+          "text": "Colours of the game's own map elements. Defaults match the game."
+        },
+        {
+          "id": 900695,
+          "text": "Door and entrances"
+        },
+        {
+          "id": 900696,
+          "text": "Dry chasm"
+        },
+        {
+          "id": 900697,
+          "text": "Lava"
+        },
+        {
+          "id": 900698,
+          "text": "Stairs down"
+        },
+        {
+          "id": 900699,
+          "text": "Stairs up"
+        },
+        {
+          "id": 900700,
+          "text": "Click to choose any colour"
+        },
+        {
+          "id": 900701,
+          "text": "Choose a colour"
+        },
+        {
+          "id": 900702,
+          "text": "Raised platform"
+        },
+        {
+          "id": 900703,
+          "text": "Default"
+        },
+        {
+          "id": 900704,
+          "text": "Wall"
+        },
+        {
+          "id": 900705,
+          "text": "Water"
+        },
+        {
+          "id": 900706,
+          "text": "Hidden doors"
+        },
+        {
+          "id": 900707,
+          "text": "Express"
+        },
+        {
+          "id": 900708,
+          "text": "Treasure"
+        },
+        {
+          "id": 900709,
+          "text": "Water under walls"
+        },
+        {
+          "id": 900710,
+          "text": "Lava under walls"
+        },
+        {
+          "id": 900711,
+          "text": "Passages under walls"
+        },
+        {
+          "id": 900712,
+          "text": "When a toggle is OFF the map follows the game's own display. Treasure shows nothing when OFF. Each colour can be set from the presets or with the colour picker."
+        },
+        {
+          "id": 900713,
+          "text": "Mark"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -52184,35 +52409,35 @@
         },
         {
           "id": 106006,
-          "text": "（剛力）"
+          "text": "筋力"
         },
         {
           "id": 106007,
-          "text": "（知性）"
+          "text": "知性"
         },
         {
           "id": 106008,
-          "text": "（精神）"
+          "text": "意志力"
         },
         {
           "id": 106009,
-          "text": "（敏捷）"
+          "text": "敏捷"
         },
         {
           "id": 106010,
-          "text": "（速度）"
+          "text": "速度"
         },
         {
           "id": 106011,
-          "text": "（耐久）"
+          "text": "持久力"
         },
         {
           "id": 106012,
-          "text": "（魅力）"
+          "text": "個性"
         },
         {
           "id": 106013,
-          "text": "（幸運）"
+          "text": "幸運"
         },
         {
           "id": 106014,
@@ -52476,7 +52701,7 @@
         },
         {
           "id": 106082,
-          "text": "金"
+          "text": "ゴールド"
         },
         {
           "id": 106083,
@@ -52548,7 +52773,7 @@
         },
         {
           "id": 106102,
-          "text": "剛力のポーション"
+          "text": "筋力のポーション"
         },
         {
           "id": 106103,
@@ -53224,7 +53449,7 @@
         },
         {
           "id": 107084,
-          "text": "病気治療のポーション"
+          "text": "病気治癒のポーション"
         },
         {
           "id": 107085,
@@ -53232,7 +53457,7 @@
         },
         {
           "id": 107086,
-          "text": "行動自由のポーション"
+          "text": "自由行動のポーション"
         },
         {
           "id": 107087,
@@ -53256,19 +53481,19 @@
         },
         {
           "id": 107092,
-          "text": "冷気耐性のポーション"
+          "text": "耐冷のポーション"
         },
         {
           "id": 107093,
-          "text": "火炎耐性のポーション"
+          "text": "耐火のポーション"
         },
         {
           "id": 107094,
-          "text": "毒耐性のポーション"
+          "text": "耐毒のポーション"
         },
         {
           "id": 107095,
-          "text": "電撃耐性のポーション"
+          "text": "耐雷のポーション"
         },
         {
           "id": 107096,
@@ -61504,7 +61729,7 @@
         },
         {
           "id": 111932,
-          "text": "%ni を装備しました。"
+          "text": "あなたの %ni は装備中です。"
         },
         {
           "id": 111933,
@@ -68732,43 +68957,43 @@
         },
         {
           "id": 203000,
-          "text": "（精神）"
+          "text": "意志"
         },
         {
           "id": 203001,
-          "text": "（ショック耐性）"
+          "text": "電撃耐性"
         },
         {
           "id": 203002,
-          "text": "（火炎耐性）"
+          "text": "火炎耐性"
         },
         {
           "id": 203003,
-          "text": "（冷気耐性）"
+          "text": "冷気耐性"
         },
         {
           "id": 203004,
-          "text": "（ライトニング）"
+          "text": "稲妻"
         },
         {
           "id": 203005,
-          "text": "（パスウォール）"
+          "text": "パスウォール"
         },
         {
           "id": 203006,
-          "text": "（ライフスティール）"
+          "text": "生命吸収"
         },
         {
           "id": 203007,
-          "text": "（麻痺）"
+          "text": "麻痺"
         },
         {
           "id": 203008,
-          "text": "（ファイアストーム）"
+          "text": "ファイアストーム"
         },
         {
           "id": 203009,
-          "text": "（ファイアストーム）"
+          "text": "ファイアストーム"
         },
         {
           "id": 204000,
@@ -68776,7 +69001,7 @@
         },
         {
           "id": 204001,
-          "text": "耐久力"
+          "text": "持久力"
         },
         {
           "id": 204002,
@@ -68784,7 +69009,7 @@
         },
         {
           "id": 204003,
-          "text": "火炎嵐"
+          "text": "ファイアストーム"
         },
         {
           "id": 204004,
@@ -68792,7 +69017,7 @@
         },
         {
           "id": 204005,
-          "text": "知力"
+          "text": "知性"
         },
         {
           "id": 204006,
@@ -68824,11 +69049,11 @@
         },
         {
           "id": 204013,
-          "text": "壁抜け"
+          "text": "パスウォール"
         },
         {
           "id": 204014,
-          "text": "人格"
+          "text": "個性"
         },
         {
           "id": 204015,
@@ -76777,6 +77002,106 @@
         {
           "id": 900688,
           "text": "バックアップ一覧の表示/非表示"
+        },
+        {
+          "id": 900689,
+          "text": "壁の下の水路を区別"
+        },
+        {
+          "id": 900690,
+          "text": "ON (既定) で壁の下を通る水路を専用色で表示し、高台と区別できるようにします。ゲームは水路も高台も同じ灰色で描くため区別できません。OFF でゲームのマップ表示に準拠します。"
+        },
+        {
+          "id": 900691,
+          "text": "宝の場所を表示"
+        },
+        {
+          "id": 900692,
+          "text": "ON (既定) で、宝の山があると分かったセルに印を表示します。宝の山はダンジョンを出て入り直すと復活するため、印は「取得済み」ではなく「その場に宝が出る」ことを示します。クエストアイテムや鍵は印の対象になりません。"
+        },
+        {
+          "id": 900693,
+          "text": "マップの表現と色"
+        },
+        {
+          "id": 900694,
+          "text": "ゲームのマップ要素の色です。既定はゲームと同じ色です。"
+        },
+        {
+          "id": 900695,
+          "text": "扉・出入口"
+        },
+        {
+          "id": 900696,
+          "text": "乾いた谷"
+        },
+        {
+          "id": 900697,
+          "text": "溶岩"
+        },
+        {
+          "id": 900698,
+          "text": "階段（下）"
+        },
+        {
+          "id": 900699,
+          "text": "階段（上）"
+        },
+        {
+          "id": 900700,
+          "text": "クリックで任意の色を選びます"
+        },
+        {
+          "id": 900701,
+          "text": "色を選ぶ"
+        },
+        {
+          "id": 900702,
+          "text": "高台"
+        },
+        {
+          "id": 900703,
+          "text": "既定"
+        },
+        {
+          "id": 900704,
+          "text": "壁"
+        },
+        {
+          "id": 900705,
+          "text": "水路"
+        },
+        {
+          "id": 900706,
+          "text": "隠し扉"
+        },
+        {
+          "id": 900707,
+          "text": "表現する"
+        },
+        {
+          "id": 900708,
+          "text": "お宝"
+        },
+        {
+          "id": 900709,
+          "text": "壁の下の水路"
+        },
+        {
+          "id": 900710,
+          "text": "壁の下の溶岩"
+        },
+        {
+          "id": 900711,
+          "text": "壁の下の通路"
+        },
+        {
+          "id": 900712,
+          "text": "トグルが OFF のときはゲームのマップ表示に準拠します（お宝のみ OFF で何も表示しません）。色は候補から選ぶか、カラーピッカーで任意に指定できます。"
+        },
+        {
+          "id": 900713,
+          "text": "マーク"
         },
         {
           "id": 902000,
@@ -96945,7 +97270,7 @@
         },
         {
           "id": 203000,
-          "text": "de Voluntad"
+          "text": "de Determinación"
         },
         {
           "id": 203001,
@@ -96957,11 +97282,11 @@
         },
         {
           "id": 203003,
-          "text": "de Resistencia al frío"
+          "text": "de Resistencia a la escarcha"
         },
         {
           "id": 203004,
-          "text": "de Rayo"
+          "text": "de Relámpago"
         },
         {
           "id": 203005,
@@ -105128,6 +105453,106 @@
           "text": "Mostrar/ocultar lista de copias de seguridad"
         },
         {
+          "id": 900689,
+          "text": "Distinguir el agua bajo los muros"
+        },
+        {
+          "id": 900690,
+          "text": "Cuando está activado (predeterminado), los canales de agua que discurren bajo los muros se dibujan con su propio color en lugar del gris de las plataformas elevadas, para poder distinguirlos. Desactivado se ajusta al mapa del juego."
+        },
+        {
+          "id": 900691,
+          "text": "Mostrar ubicaciones de tesoros"
+        },
+        {
+          "id": 900692,
+          "text": "Cuando está activado (predeterminado), se dibuja una marca en las casillas donde se sabe que aparece un montón de tesoro. Los montones reaparecen al salir y volver a entrar en la mazmorra, así que la marca indica que allí hay tesoro, no que ya se haya recogido. Los objetos de misión y las llaves nunca se marcan."
+        },
+        {
+          "id": 900693,
+          "text": "Representación y colores del mapa"
+        },
+        {
+          "id": 900694,
+          "text": "Colores de los elementos del mapa del juego. Los valores predeterminados coinciden con el juego."
+        },
+        {
+          "id": 900695,
+          "text": "Puerta y entradas"
+        },
+        {
+          "id": 900696,
+          "text": "Sima seca"
+        },
+        {
+          "id": 900697,
+          "text": "Lava"
+        },
+        {
+          "id": 900698,
+          "text": "Escaleras abajo"
+        },
+        {
+          "id": 900699,
+          "text": "Escaleras arriba"
+        },
+        {
+          "id": 900700,
+          "text": "Haz clic para elegir cualquier color"
+        },
+        {
+          "id": 900701,
+          "text": "Elegir un color"
+        },
+        {
+          "id": 900702,
+          "text": "Plataforma elevada"
+        },
+        {
+          "id": 900703,
+          "text": "Predet."
+        },
+        {
+          "id": 900704,
+          "text": "Muro"
+        },
+        {
+          "id": 900705,
+          "text": "Agua"
+        },
+        {
+          "id": 900706,
+          "text": "Puertas secretas"
+        },
+        {
+          "id": 900707,
+          "text": "Representar"
+        },
+        {
+          "id": 900708,
+          "text": "Tesoros"
+        },
+        {
+          "id": 900709,
+          "text": "Agua bajo los muros"
+        },
+        {
+          "id": 900710,
+          "text": "Lava bajo los muros"
+        },
+        {
+          "id": 900711,
+          "text": "Pasajes bajo los muros"
+        },
+        {
+          "id": 900712,
+          "text": "Cuando un interruptor está desactivado, el mapa sigue la presentación del propio juego. Los tesoros no se muestran al desactivarlos. Cada color puede elegirse entre las propuestas o con el selector de color."
+        },
+        {
+          "id": 900713,
+          "text": "Marca"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -108498,7 +108923,7 @@
         },
         {
           "id": 106117,
-          "text": "Torques"
+          "text": "Torc"
         },
         {
           "id": 106118,
@@ -109122,11 +109547,11 @@
         },
         {
           "id": 107086,
-          "text": "Trank der freien Aktion"
+          "text": "Trank der Freien Handlung"
         },
         {
           "id": 107087,
-          "text": "Trank der wahren Heilung"
+          "text": "Trank der Wahren Heilung"
         },
         {
           "id": 107088,
@@ -109166,7 +109591,7 @@
         },
         {
           "id": 107097,
-          "text": "Trank der Energie"
+          "text": "Trank der Ausdauer"
         },
         {
           "id": 107098,
@@ -132669,6 +133094,106 @@
           "text": "Backup-Liste ein-/ausblenden"
         },
         {
+          "id": 900689,
+          "text": "Wasser unter Mauern unterscheiden"
+        },
+        {
+          "id": 900690,
+          "text": "Wenn EIN (Standard), werden Wasserläufe unter Mauern in einer eigenen Farbe statt im Grau erhöhter Plattformen gezeichnet, sodass sie unterscheidbar sind. AUS entspricht der Spielkarte."
+        },
+        {
+          "id": 900691,
+          "text": "Schatzorte anzeigen"
+        },
+        {
+          "id": 900692,
+          "text": "Wenn EIN (Standard), wird auf Feldern, auf denen bekanntermaßen ein Schatzhaufen erscheint, eine Markierung gezeichnet. Haufen erscheinen erneut, wenn man den Dungeon verlässt und wieder betritt; die Markierung bedeutet also, dass dort ein Schatz ist, nicht dass er bereits genommen wurde. Questgegenstände und Schlüssel werden nie markiert."
+        },
+        {
+          "id": 900693,
+          "text": "Kartendarstellung und Farben"
+        },
+        {
+          "id": 900694,
+          "text": "Farben der Kartenelemente des Spiels. Die Vorgaben entsprechen dem Spiel."
+        },
+        {
+          "id": 900695,
+          "text": "Tür und Eingänge"
+        },
+        {
+          "id": 900696,
+          "text": "Trockener Abgrund"
+        },
+        {
+          "id": 900697,
+          "text": "Lava"
+        },
+        {
+          "id": 900698,
+          "text": "Treppe abwärts"
+        },
+        {
+          "id": 900699,
+          "text": "Treppe aufwärts"
+        },
+        {
+          "id": 900700,
+          "text": "Klicken, um eine beliebige Farbe zu wählen"
+        },
+        {
+          "id": 900701,
+          "text": "Farbe wählen"
+        },
+        {
+          "id": 900702,
+          "text": "Erhöhung"
+        },
+        {
+          "id": 900703,
+          "text": "Standard"
+        },
+        {
+          "id": 900704,
+          "text": "Mauer"
+        },
+        {
+          "id": 900705,
+          "text": "Wasser"
+        },
+        {
+          "id": 900706,
+          "text": "Geheimtüren"
+        },
+        {
+          "id": 900707,
+          "text": "Darstellen"
+        },
+        {
+          "id": 900708,
+          "text": "Schätze"
+        },
+        {
+          "id": 900709,
+          "text": "Wasser unter Mauern"
+        },
+        {
+          "id": 900710,
+          "text": "Lava unter Mauern"
+        },
+        {
+          "id": 900711,
+          "text": "Gänge unter Mauern"
+        },
+        {
+          "id": 900712,
+          "text": "Ist ein Schalter AUS, folgt die Karte der Anzeige des Spiels. Schätze werden bei AUS gar nicht angezeigt. Jede Farbe lässt sich aus den Vorschlägen oder mit dem Farbwähler festlegen."
+        },
+        {
+          "id": 900713,
+          "text": "Zeichen"
+        },
+        {
           "id": 902000,
           "text": "Magier"
         },
@@ -135631,19 +136156,19 @@
         },
         {
           "id": 106010,
-          "text": "de vitesse"
+          "text": "de Vitesse"
         },
         {
           "id": 106011,
-          "text": "d'endurance"
+          "text": "d'Endurance"
         },
         {
           "id": 106012,
-          "text": "de personnalité"
+          "text": "de Personnalité"
         },
         {
           "id": 106013,
-          "text": "de chance"
+          "text": "de Chance"
         },
         {
           "id": 106014,
@@ -136663,7 +137188,7 @@
         },
         {
           "id": 107086,
-          "text": "Potion d'action libre"
+          "text": "Potion de libre action"
         },
         {
           "id": 107087,
@@ -136671,7 +137196,7 @@
         },
         {
           "id": 107088,
-          "text": "Potion de guérison"
+          "text": "Potion de soins"
         },
         {
           "id": 107089,
@@ -136703,7 +137228,7 @@
         },
         {
           "id": 107096,
-          "text": "Potion de restauration de la magie"
+          "text": "Potion de restauration de magie"
         },
         {
           "id": 107097,
@@ -152175,7 +152700,7 @@
         },
         {
           "id": 203003,
-          "text": "de Résistance au gel"
+          "text": "de Résistance au froid"
         },
         {
           "id": 203004,
@@ -160210,6 +160735,106 @@
           "text": "Afficher/masquer la liste des sauvegardes"
         },
         {
+          "id": 900689,
+          "text": "Distinguer l'eau sous les murs"
+        },
+        {
+          "id": 900690,
+          "text": "Lorsque cette option est activée (par défaut), les canaux d'eau passant sous les murs sont dessinés dans leur propre couleur au lieu du gris des plateformes surélevées, afin de les distinguer. Désactivée, l'affichage suit la carte du jeu."
+        },
+        {
+          "id": 900691,
+          "text": "Afficher l'emplacement des trésors"
+        },
+        {
+          "id": 900692,
+          "text": "Lorsque cette option est activée (par défaut), une marque est dessinée sur les cases où un tas de trésor est connu pour apparaître. Les tas réapparaissent quand on quitte puis revient dans le donjon : la marque signifie donc qu'il y a un trésor, non qu'il a déjà été ramassé. Les objets de quête et les clés ne sont jamais marqués."
+        },
+        {
+          "id": 900693,
+          "text": "Représentation et couleurs de la carte"
+        },
+        {
+          "id": 900694,
+          "text": "Couleurs des éléments de la carte du jeu. Les valeurs par défaut correspondent au jeu."
+        },
+        {
+          "id": 900695,
+          "text": "Porte et entrées"
+        },
+        {
+          "id": 900696,
+          "text": "Gouffre sec"
+        },
+        {
+          "id": 900697,
+          "text": "Lave"
+        },
+        {
+          "id": 900698,
+          "text": "Escalier descendant"
+        },
+        {
+          "id": 900699,
+          "text": "Escalier montant"
+        },
+        {
+          "id": 900700,
+          "text": "Cliquez pour choisir une couleur quelconque"
+        },
+        {
+          "id": 900701,
+          "text": "Choisir une couleur"
+        },
+        {
+          "id": 900702,
+          "text": "Plateforme surélevée"
+        },
+        {
+          "id": 900703,
+          "text": "Défaut"
+        },
+        {
+          "id": 900704,
+          "text": "Mur"
+        },
+        {
+          "id": 900705,
+          "text": "Eau"
+        },
+        {
+          "id": 900706,
+          "text": "Portes secrètes"
+        },
+        {
+          "id": 900707,
+          "text": "Représenter"
+        },
+        {
+          "id": 900708,
+          "text": "Trésors"
+        },
+        {
+          "id": 900709,
+          "text": "Eau sous les murs"
+        },
+        {
+          "id": 900710,
+          "text": "Lave sous les murs"
+        },
+        {
+          "id": 900711,
+          "text": "Passages sous les murs"
+        },
+        {
+          "id": 900712,
+          "text": "Lorsqu'une option est désactivée, la carte suit l'affichage du jeu. Les trésors ne s'affichent pas du tout si l'option est désactivée. Chaque couleur se choisit parmi les propositions ou avec le sélecteur de couleur."
+        },
+        {
+          "id": 900713,
+          "text": "Marque"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -163580,7 +164205,7 @@
         },
         {
           "id": 106117,
-          "text": "Torc"
+          "text": "Torque"
         },
         {
           "id": 106118,
@@ -164196,63 +164821,63 @@
         },
         {
           "id": 107084,
-          "text": "Pozione di cura delle malattie"
+          "text": "Pozione di Cura Malattia"
         },
         {
           "id": 107085,
-          "text": "Pozione di cura del veleno"
+          "text": "Pozione di Cura Veleno"
         },
         {
           "id": 107086,
-          "text": "Pozione di azione libera"
+          "text": "Pozione di Azione Libera"
         },
         {
           "id": 107087,
-          "text": "Pozione di cura totale"
+          "text": "Pozione di Vera Guarigione"
         },
         {
           "id": 107088,
-          "text": "Pozione di cura"
+          "text": "Pozione di Cura"
         },
         {
           "id": 107089,
-          "text": "Pozione di invisibilità"
+          "text": "Pozione di Invisibilità"
         },
         {
           "id": 107090,
-          "text": "Pozione di levitazione"
+          "text": "Pozione di Levitazione"
         },
         {
           "id": 107091,
-          "text": "Pozione di purificazione"
+          "text": "Pozione di Purificazione"
         },
         {
           "id": 107092,
-          "text": "Pozione di resistenza al freddo"
+          "text": "Pozione di Resistenza al Freddo"
         },
         {
           "id": 107093,
-          "text": "Pozione di resistenza al fuoco"
+          "text": "Pozione di Resistenza al Fuoco"
         },
         {
           "id": 107094,
-          "text": "Pozione di resistenza al veleno"
+          "text": "Pozione di Resistenza al Veleno"
         },
         {
           "id": 107095,
-          "text": "Pozione di resistenza alle scariche"
+          "text": "Pozione di Resistenza allo Shock"
         },
         {
           "id": 107096,
-          "text": "Pozione di ripristino del potere"
+          "text": "Pozione di Ripristino del Potere"
         },
         {
           "id": 107097,
-          "text": "Pozione di vigore"
+          "text": "Pozione di Vigore"
         },
         {
           "id": 107098,
-          "text": "Pozione di forza"
+          "text": "Pozione di Forza"
         },
         {
           "id": 107100,
@@ -179704,7 +180329,7 @@
         },
         {
           "id": 203000,
-          "text": "di Volontà"
+          "text": "di Determinazione"
         },
         {
           "id": 203001,
@@ -187751,6 +188376,106 @@
           "text": "Mostra/nascondi elenco backup"
         },
         {
+          "id": 900689,
+          "text": "Distingui l'acqua sotto i muri"
+        },
+        {
+          "id": 900690,
+          "text": "Quando è attivo (predefinito), i canali d'acqua che scorrono sotto i muri sono disegnati con un colore proprio invece del grigio delle piattaforme rialzate, in modo da poterli distinguere. Disattivato segue la mappa del gioco."
+        },
+        {
+          "id": 900691,
+          "text": "Mostra le posizioni dei tesori"
+        },
+        {
+          "id": 900692,
+          "text": "Quando è attivo (predefinito), viene disegnato un contrassegno sulle celle in cui è noto che compare un mucchio di tesoro. I mucchi ricompaiono uscendo e rientrando nel dungeon, quindi il contrassegno indica che lì c'è un tesoro, non che sia già stato raccolto. Gli oggetti delle missioni e le chiavi non vengono mai contrassegnati."
+        },
+        {
+          "id": 900693,
+          "text": "Rappresentazione e colori della mappa"
+        },
+        {
+          "id": 900694,
+          "text": "Colori degli elementi della mappa del gioco. I valori predefiniti corrispondono al gioco."
+        },
+        {
+          "id": 900695,
+          "text": "Porta ed entrate"
+        },
+        {
+          "id": 900696,
+          "text": "Voragine asciutta"
+        },
+        {
+          "id": 900697,
+          "text": "Lava"
+        },
+        {
+          "id": 900698,
+          "text": "Scale giù"
+        },
+        {
+          "id": 900699,
+          "text": "Scale su"
+        },
+        {
+          "id": 900700,
+          "text": "Fai clic per scegliere un colore qualsiasi"
+        },
+        {
+          "id": 900701,
+          "text": "Scegli un colore"
+        },
+        {
+          "id": 900702,
+          "text": "Piattaforma rialzata"
+        },
+        {
+          "id": 900703,
+          "text": "Predef."
+        },
+        {
+          "id": 900704,
+          "text": "Muro"
+        },
+        {
+          "id": 900705,
+          "text": "Acqua"
+        },
+        {
+          "id": 900706,
+          "text": "Porte segrete"
+        },
+        {
+          "id": 900707,
+          "text": "Rappresenta"
+        },
+        {
+          "id": 900708,
+          "text": "Tesori"
+        },
+        {
+          "id": 900709,
+          "text": "Acqua sotto i muri"
+        },
+        {
+          "id": 900710,
+          "text": "Lava sotto i muri"
+        },
+        {
+          "id": 900711,
+          "text": "Passaggi sotto i muri"
+        },
+        {
+          "id": 900712,
+          "text": "Quando un interruttore è disattivato, la mappa segue la visualizzazione del gioco. I tesori non vengono mostrati affatto se disattivati. Ogni colore si può scegliere tra le proposte o con il selettore di colore."
+        },
+        {
+          "id": 900713,
+          "text": "Segno"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -191769,7 +192494,7 @@
         },
         {
           "id": 107092,
-          "text": "Зелье сопротивления холоду"
+          "text": "Зелье сопротивления морозу"
         },
         {
           "id": 107093,
@@ -191789,7 +192514,7 @@
         },
         {
           "id": 107097,
-          "text": "Зелье стамины"
+          "text": "Зелье бодрости"
         },
         {
           "id": 107098,
@@ -215290,6 +216015,106 @@
         {
           "id": 900688,
           "text": "Показать/скрыть список резервных копий"
+        },
+        {
+          "id": 900689,
+          "text": "Отличать воду под стенами"
+        },
+        {
+          "id": 900690,
+          "text": "Когда включено (по умолчанию), водные каналы под стенами отображаются собственным цветом вместо серого цвета возвышений, чтобы их можно было различить. Выключено — как на карте игры."
+        },
+        {
+          "id": 900691,
+          "text": "Показывать места с сокровищами"
+        },
+        {
+          "id": 900692,
+          "text": "Когда включено (по умолчанию), на клетках, где известно появление груды сокровищ, отображается метка. Груды появляются снова после выхода из подземелья и повторного входа, поэтому метка означает, что сокровище там есть, а не что оно уже забрано. Квестовые предметы и ключи никогда не отмечаются."
+        },
+        {
+          "id": 900693,
+          "text": "Отображение карты и цвета"
+        },
+        {
+          "id": 900694,
+          "text": "Цвета элементов карты игры. Значения по умолчанию совпадают с игрой."
+        },
+        {
+          "id": 900695,
+          "text": "Дверь и входы"
+        },
+        {
+          "id": 900696,
+          "text": "Сухая пропасть"
+        },
+        {
+          "id": 900697,
+          "text": "Лава"
+        },
+        {
+          "id": 900698,
+          "text": "Лестница вниз"
+        },
+        {
+          "id": 900699,
+          "text": "Лестница вверх"
+        },
+        {
+          "id": 900700,
+          "text": "Нажмите, чтобы выбрать любой цвет"
+        },
+        {
+          "id": 900701,
+          "text": "Выбор цвета"
+        },
+        {
+          "id": 900702,
+          "text": "Возвышение"
+        },
+        {
+          "id": 900703,
+          "text": "Сброс"
+        },
+        {
+          "id": 900704,
+          "text": "Стена"
+        },
+        {
+          "id": 900705,
+          "text": "Вода"
+        },
+        {
+          "id": 900706,
+          "text": "Потайные двери"
+        },
+        {
+          "id": 900707,
+          "text": "Отображать"
+        },
+        {
+          "id": 900708,
+          "text": "Сокровища"
+        },
+        {
+          "id": 900709,
+          "text": "Вода под стенами"
+        },
+        {
+          "id": 900710,
+          "text": "Лава под стенами"
+        },
+        {
+          "id": 900711,
+          "text": "Проходы под стенами"
+        },
+        {
+          "id": 900712,
+          "text": "Когда переключатель выключен, карта следует отображению самой игры. Сокровища при выключении не показываются вовсе. Каждый цвет выбирается из предложенных или через палитру."
+        },
+        {
+          "id": 900713,
+          "text": "Метка"
         },
         {
           "id": 902000,

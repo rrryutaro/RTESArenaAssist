@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSize
+from PySide6.QtGui import QColor, QIcon, QPixmap
 from PySide6.QtWidgets import QCheckBox, QComboBox, QFormLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QPushButton, QSlider, QSpinBox, QVBoxLayout, QWidget, QFontComboBox
 import i18n_helper as i18n
 import assist_settings as settings
@@ -350,8 +351,97 @@ def build_map_tab(dlg: '_SettingsDialog') -> QWidget:
     _sync_ext_enabled(dlg._map_extended_display_cb.isChecked())
     outer.addWidget(grp)
     outer.addWidget(ext_grp)
+    outer.addWidget(_build_map_expression_group(dlg))
     outer.addStretch()
     return page
+_MAP_EXPRESSION_ROWS = (('map_express_hidden_door', 'hidden_door', 'settings.map_express_hidden_door'), ('map_express_wall_chasm', 'wall_chasm', 'settings.map_express_wall_chasm'), ('map_express_wall_passage', 'wall_passage', 'settings.map_express_wall_passage'), ('map_express_wall_lava', 'wall_lava', 'settings.map_express_wall_lava'), ('map_express_treasure', 'treasure', 'settings.map_express_treasure'))
+_MAP_BASE_COLOR_ROWS = (('wall', 'settings.map_color_wall'), ('raised', 'settings.map_color_raised'), ('door', 'settings.map_color_door'), ('level_up', 'settings.map_color_level_up'), ('level_down', 'settings.map_color_level_down'), ('wet_chasm', 'settings.map_color_wet_chasm'), ('dry_chasm', 'settings.map_color_dry_chasm'), ('lava_chasm', 'settings.map_color_lava_chasm'))
+_MAP_COLOR_PRESETS = {'hidden_door': ('#8e44c0', '#b06fd8', '#7d5fa8'), 'wall_chasm': ('#3f5d70', '#5b7285', '#4f7370'), 'wall_passage': ('#3c5a54', '#405048', '#26403e'), 'wall_lava': ('#8c3f14', '#b25a22', '#96502a'), 'treasure': ('#f0b429', '#e8c35a', '#ffe9a0'), 'wall': ('#6d4520', '#96693a'), 'raised': ('#787870', '#554c36'), 'door': ('#b01010', '#7a0000'), 'level_up': ('#0a8a2a', '#00520a'), 'level_down': ('#2a4ad0', '#0a2a8a'), 'wet_chasm': ('#5f7ea4', '#7f9cbe'), 'dry_chasm': ('#22302f', '#0d1c1c'), 'lava_chasm': ('#e02010', '#ff5a20')}
+
+def _build_map_expression_group(dlg: '_SettingsDialog') -> QGroupBox:
+    from common_draw.automap_canvas import default_color_hex
+    grp = QGroupBox(i18n.tr('settings.group_map_expression'))
+    form = QFormLayout(grp)
+    form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    form.setSpacing(6)
+    note = QLabel(i18n.tr('settings.map_expression_note'))
+    note.setObjectName('dimLabel')
+    note.setWordWrap(True)
+    form.addRow(note)
+    saved = dict(settings.get('map_colors', {}) or {})
+    dlg._map_color_buttons = {}
+    dlg._map_express_cbs = {}
+    for setting_key, color_key, label_key in _MAP_EXPRESSION_ROWS:
+        row = QWidget()
+        lay = QHBoxLayout(row)
+        lay.setContentsMargins(0, 0, 0, 0)
+        cb = QCheckBox(i18n.tr('settings.map_express_on'))
+        cb.setChecked(bool(settings.get(setting_key, True)))
+        dlg._map_express_cbs[setting_key] = cb
+        lay.addWidget(cb)
+        lay.addSpacing(6)
+        lay.addWidget(_make_color_widget(dlg, color_key, saved, default_color_hex(color_key)))
+        if color_key == 'treasure':
+            lay.addSpacing(6)
+            lay.addWidget(QLabel(i18n.tr('settings.map_treasure_mark') + ':'))
+            dlg._map_treasure_mark_edit = QLineEdit(str(settings.get('map_treasure_mark', '') or ''))
+            dlg._map_treasure_mark_edit.setMaxLength(1)
+            dlg._map_treasure_mark_edit.setFixedWidth(36)
+            dlg._map_treasure_mark_edit.setAlignment(Qt.AlignmentFlag.AlignCenter)
+            lay.addWidget(dlg._map_treasure_mark_edit)
+        lay.addStretch()
+        form.addRow(i18n.tr(label_key) + ':', row)
+    sep = QLabel(i18n.tr('settings.map_base_colors_note'))
+    sep.setObjectName('dimLabel')
+    sep.setWordWrap(True)
+    form.addRow(sep)
+    for color_key, label_key in _MAP_BASE_COLOR_ROWS:
+        form.addRow(i18n.tr(label_key) + ':', _make_color_widget(dlg, color_key, saved, default_color_hex(color_key)))
+    return grp
+
+def _make_color_widget(dlg: '_SettingsDialog', color_key: str, saved: dict, default_hex: str) -> QWidget:
+    row = QWidget()
+    lay = QHBoxLayout(row)
+    lay.setContentsMargins(0, 0, 0, 0)
+    lay.setSpacing(4)
+    cur = str(saved.get(color_key) or default_hex)
+    swatch = QPushButton()
+    swatch.setFixedSize(46, 22)
+    swatch.setStyleSheet(_SWATCH_QSS)
+    swatch.setToolTip(i18n.tr('settings.map_color_pick_tip'))
+    dlg._map_color_buttons[color_key] = swatch
+    _apply_swatch(swatch, cur)
+    swatch.clicked.connect(lambda _=False, k=color_key: dlg._pick_map_color(k))
+    lay.addWidget(swatch)
+    for preset in _MAP_COLOR_PRESETS.get(color_key, ())[:4]:
+        b = QPushButton()
+        b.setFixedSize(22, 22)
+        b.setStyleSheet(_SWATCH_QSS)
+        b.setToolTip(preset)
+        b.setIcon(_fill_icon(preset, QSize(18, 18)))
+        b.setIconSize(QSize(18, 18))
+        b.clicked.connect(lambda _=False, k=color_key, c=preset: dlg._set_map_color(k, c))
+        lay.addWidget(b)
+    reset = QPushButton(i18n.tr('settings.map_color_reset'))
+    reset.setFixedWidth(64)
+    reset.clicked.connect(lambda _=False, k=color_key, c=default_hex: dlg._set_map_color(k, c))
+    lay.addWidget(reset)
+    lay.addStretch()
+    return row
+_SWATCH_ICON = QSize(42, 18)
+_SWATCH_QSS = 'QPushButton { padding: 0px; margin: 0px; border: 1px solid #00000080; border-radius: 3px; }'
+
+def _fill_icon(hexval: str, size: QSize=_SWATCH_ICON) -> QIcon:
+    pm = QPixmap(size)
+    pm.fill(QColor(hexval))
+    return QIcon(pm)
+
+def _apply_swatch(btn: QPushButton, hexval: str) -> None:
+    btn.setProperty('colorHex', hexval)
+    btn.setIcon(_fill_icon(hexval))
+    btn.setIconSize(_SWATCH_ICON)
+    btn.setToolTip(f"{i18n.tr('settings.map_color_pick_tip')} ({hexval})")
+    btn.update()
 _TTS_RATE_PRESETS = [('とても遅い', -6), ('遅い', -3), ('標準', 0), ('速い', 3), ('とても速い', 6)]
 
 def build_tts_tab(dlg: '_SettingsDialog') -> QWidget:

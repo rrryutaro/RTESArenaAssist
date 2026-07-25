@@ -135,10 +135,21 @@ def _render_repair_estimate(w, snapshot) -> bool:
     en_display, ja_display = _with_buttons_above(en, ja, btn_en, btn_ja)
     return _update(w, key=('repair_estimate', en, ja), en_display=en_display, ja_display=ja_display, speech_ja=ja, log_text=f'repair-estimate text={en[:60]!r}')
 
+def _lookup_composite(en: str):
+    try:
+        import npc_dialog_lookup as ndl
+        return ndl.lookup_composite(en)
+    except Exception:
+        return None
+
 def _render_generic_reply(w, snapshot) -> bool:
     en = snapshot.reply_text
     if not en:
         return False
+    composite = _lookup_composite(en)
+    if composite is not None:
+        en_display, ja_display = composite
+        return _update(w, key=('reply_composite', en_display, ja_display), en_display=en_display, ja_display=ja_display, speech_ja=ja_display, log_text=f'reply-composite {en_display[:60]!r}')
     choice_lines = _read_active_reply_choice_group(w._analyzer, w._anchor, snapshot.reply_source_offset)
     if choice_lines:
         rows = _format_reply_choice_rows(choice_lines)

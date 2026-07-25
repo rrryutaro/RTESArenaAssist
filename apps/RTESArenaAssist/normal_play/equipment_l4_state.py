@@ -45,6 +45,13 @@ def _is_no_repair_reply_text(text: str) -> bool:
     text = (text or '').strip()
     return text.startswith('Your ') and 'does not need any repairing' in text
 
+def _is_composite_reply_text(text: str) -> bool:
+    try:
+        import npc_dialog_lookup as ndl
+        return ndl.lookup_composite(text) is not None
+    except Exception:
+        return False
+
 def read_view_flag(w):
     try:
         raw = w._analyzer.read_bytes(w._anchor + VIEW_FLAG_OFFSET, 1)
@@ -196,7 +203,7 @@ def _update_and_select_reply(w, img: str):
     ptr_hits = [c for c in hits if candidate_contains_pointer(c, current_ptr)]
     presence_hits = []
     if img in ('NEWPOP.IMG', 'NEWOLD.IMG', 'YESNO.IMG'):
-        presence_hits = [c for c in hits if c.text.startswith(_PRESENCE_REPLY_PREFIXES) or _is_no_repair_reply_text(c.text)]
+        presence_hits = [c for c in hits if c.text.startswith(_PRESENCE_REPLY_PREFIXES) or _is_no_repair_reply_text(c.text) or _is_composite_reply_text(c.text)]
     changed_hits = [c for c in hits if baselined and prev_by_offset.get(c.source_offset) != c.text]
     now_by_offset = dict(prev_by_offset)
     for c in candidates:

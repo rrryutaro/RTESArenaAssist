@@ -34,4 +34,39 @@ def _poll_route4a_arrival(w, *, npc_dialog: str, npc_dialog_changed: bool, dialo
         except (ImportError, AttributeError):
             pass
     return False
-__all__ = ['NPC_MESSAGE_OWNER', '_poll_route3_dungeon_msg', '_poll_route4a_arrival']
+
+def _clear_travel_event_residue(w) -> None:
+    _keep = getattr(w, '_travel_event_keep_key', None)
+    if not _keep:
+        return
+    w._travel_event_keep_key = None
+    _en, _ja = _keep
+    try:
+        if not w._ui_router.is_displaying(NPC_MESSAGE_OWNER, _en, _ja):
+            return
+        w._ui_router.clear_if_owner(NPC_MESSAGE_OWNER, mode='translate')
+    except (AttributeError, RuntimeError):
+        pass
+
+def poll_travel_event_lifecycle(w, *, npc_dialog: str, screen_img: str, facility_active_now: bool) -> bool:
+    if screen_img != 'HORSE.DFA':
+        _clear_travel_event_residue(w)
+        return False
+    if not npc_dialog or facility_active_now:
+        return False
+    try:
+        import npc_dialog_lookup as _ndl_ev
+        _res = _ndl_ev.lookup_travel_event(npc_dialog)
+        if not _res:
+            return False
+        _tmpl, _ph = _res
+        _ja = _ndl_ev.format_japanese(_tmpl, _ph)
+        _keep = (npc_dialog, _ja)
+        if getattr(w, '_travel_event_keep_key', None) != _keep:
+            w._travel_event_keep_key = _keep
+            w._ui_router.update_translation(NPC_MESSAGE_OWNER, npc_dialog, _ja, speech_role='situation')
+            _log.info('npc_message displayed (route=travel_event text=%r)', npc_dialog[:80])
+        return True
+    except (ImportError, AttributeError):
+        return False
+__all__ = ['NPC_MESSAGE_OWNER', '_poll_route3_dungeon_msg', '_poll_route4a_arrival', 'poll_travel_event_lifecycle']

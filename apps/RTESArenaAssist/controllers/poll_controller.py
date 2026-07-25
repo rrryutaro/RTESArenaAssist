@@ -11,6 +11,7 @@ from display_intent import PollFrame
 from hierarchy_state import facility_owners_for_session, HierarchyRecognitionInput, SeparationHierarchy
 from normal_play.base_location.base_location_view import resolve_area_with_indoor_fallback as _resolve_area_with_indoor_fallback
 from controllers.chargen_helpers import _CHARGEN_GOYENOW_HINT_ADDR, _CHARGEN_GOYENOW_HINT_CHECKLEN, _CHARGEN_GOYENOW_PREFIX, _CHARGEN_GOYENOW_SCAN_START, _CHARGEN_GOYENOW_SCAN_END, _is_garbage_npc_buffer
+from controllers.coord_transition_gate import resolve_coord_transition as _resolve_coord_transition
 from controllers.map_fallback_suppression import arm_city_load_fallback_suppression as _arm_city_load_fallback_suppression, city_load_fallback_suppression as _city_load_fallback_suppression
 from top_level.normal_play_state import poll_sessions as _poll_normal_play_sessions
 from top_level.top_level_dispatcher import build_session_context as _build_session_context, current_state as _current_top_level
@@ -447,16 +448,6 @@ def _poll_detect_img_name(w):
             w._popup11_place_response_lock = None
     return _img_name
 
-def _poll_automap_files(w):
-    try:
-        w._tab_map.poll_automap_file()
-    except (AttributeError, RuntimeError):
-        pass
-    try:
-        w._tab_translate.poll_fallback_automap_file()
-    except (AttributeError, RuntimeError):
-        pass
-
 def _resolve_field_facility(w, interior_raw):
     try:
         from normal_play.base_location.base_location_view import resolve_field_facility_entry
@@ -491,9 +482,7 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
         _img_safe = _img_raw_safe.split(b'\x00')[0].decode('ascii', errors='ignore').upper()
     except Exception:
         _img_safe = ''
-    _dialog_imgs_for_safe = {'YESNO.IMG', 'NEGOTBUT.IMG', 'NEWPOP.IMG', 'POPUP11.IMG', 'FACES00.CIF'}
-    _safe_coord_gate = _img_safe in _dialog_imgs_for_safe
-    if not in_interior and rt_x is not None and (rt_z is not None) and (not _safe_coord_gate):
+    if not in_interior and rt_x is not None and (rt_z is not None):
         w._last_outside_rt = (rt_x, rt_z)
     prev_in_interior = getattr(w, '_in_interior_prev', False)
     _just_entered_interior = in_interior and (not prev_in_interior)
@@ -506,16 +495,6 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
         _log.info('interior entered, door_pos=%s map=%s entry_raw=%s', getattr(w, '_entry_door_pos', None), gs.get('MapName'), interior_raw)
     if not in_interior and prev_in_interior:
         _log.info('interior left')
-        from controllers.map_safe_coord import POST_EXIT_GUARD_MAX_POLLS
-        _exit_door = getattr(w, '_entry_door_pos', None)
-        _exit_stale = (rt_x, rt_z) if rt_x is not None and rt_z is not None else None
-        if _exit_door is not None and _exit_stale is not None:
-            w._post_exit_door = _exit_door
-            w._post_exit_stale_rt = _exit_stale
-            w._post_exit_guard = True
-            w._post_exit_guard_remaining = POST_EXIT_GUARD_MAX_POLLS
-        else:
-            w._post_exit_guard = False
         w._entry_door_pos = None
         w._interior_entry_raw = None
         w._interior_level_count = None
@@ -661,9 +640,6 @@ def _poll_resolve_loading_state(w, *, _img_name_early):
             w._tab_translate.fallback_map_tab().reset_progress()
         except (AttributeError, RuntimeError):
             pass
-        w._map_rt_x_last = None
-        w._map_rt_z_last = None
-        w._map_angle_last = None
     try:
         _a845_for_release = w._analyzer.read_bytes(w._anchor + 43077, 1)[0]
     except (OSError, AttributeError, IndexError):
@@ -756,8 +732,15 @@ def _log_hierarchy_recognition(w, *, stage: str, hierarchy: SeparationHierarchy,
         values = decision.values_for_log()
         _log.warning('hierarchy rejected stage=%s kind=%s path=%s names=%s top=%r area=%r interior=%s interior_raw=%s npc_active=%s npc_phase=%s mif=%r img=%r screen=%r owner=%r session=%r interior_mif=%r', stage, decision.anomaly_kind(), path, names, values['top'], values['area'], values['interior'], _fmt_hex_byte(values['interior_raw']), values['npc_active'], _fmt_hex_byte(values['npc_phase']), values['mif'], values['img'], values['screen'], values['owner'], values['session'], values['interior_mif'])
 
-def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _img_name_early_upper, _loading_post_settle, _facility_active_now):
-    from arena_bridge import read_npc_phase, NPC_PHASE_BUILDING_ENTRY, NPC_PHASE_IDLE, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_NORTH_RAW, RT_ANGLE_RANGE
+def _poll_file_lifecycle(w) -> None:
+    try:
+        from controllers.map_ext_lifecycle import get_lifecycle
+        get_lifecycle().poll(w._analyzer, getattr(w, '_anchor', None), str(settings.get('save_dir', '')))
+    except Exception:
+        _log.exception('map_ext lifecycle poll failed')
+
+def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _loading_post_settle):
+    from arena_bridge import RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_NORTH_RAW, RT_ANGLE_RANGE
     interior_floor_hyp: int | None = None
     if in_interior:
         try:
@@ -785,8 +768,6 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
         if getattr(w, '_map_cleared_for_chargen', False):
             w._map_cleared_for_chargen = False
             _restore_chargen_cleared_maps(w, tab_map)
-        npc_phase = read_npc_phase(w._analyzer, w._anchor)
-        is_building_entry_msg = npc_phase == NPC_PHASE_BUILDING_ENTRY
         try:
             _angle_bytes = w._analyzer.read_bytes(w._anchor + RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE)
             if _angle_bytes and len(_angle_bytes) == RT_ANGLE_BYTE_SIZE:
@@ -799,63 +780,23 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
         except OSError:
             _angle_raw = None
             _angle_deg = None
-        from controllers.map_safe_coord import compute_map_safe_coord as _compute_map_safe, INVALID_HELD_COORDS as _INVALID_MAP_HELD_COORDS
-        _current_img_for_map = _img_name_early_upper
         _is_loading_for_map = bool(w._loading_state_active or _loading_post_settle)
-        _map_loc_key = (_resolved_area, gs.get('MapName') or '', bool(in_interior))
-        _map_loc_key_prev = getattr(w, '_map_loc_key_prev', None)
-        if _map_loc_key_prev is not None and _map_loc_key != _map_loc_key_prev:
-            w._map_rt_x_last = None
-            w._map_rt_z_last = None
-            w._map_angle_last = None
-            w._map_loc_settle = True
-        w._map_loc_key_prev = _map_loc_key
-        if rt_x is not None and rt_z is not None and ((rt_x, rt_z) not in ((0, 0), (3, 3))) and (not getattr(w, '_map_loc_settle', False)):
-            _prev_last_x = getattr(w, '_map_rt_x_last', None)
-            _prev_last_y = getattr(w, '_map_rt_z_last', None)
-            if _prev_last_x is None and _prev_last_y is None:
-                w._map_rt_x_last = rt_x
-                w._map_rt_z_last = rt_z
-                w._map_angle_last = _angle_deg
-            elif _prev_last_x is not None and _prev_last_y is not None and (abs(rt_x - _prev_last_x) <= 2) and (abs(rt_z - _prev_last_y) <= 2):
-                w._map_rt_x_last = rt_x
-                w._map_rt_z_last = rt_z
-                w._map_angle_last = _angle_deg
+        _show_player_x = rt_x
+        _show_player_y = rt_z
+        _show_angle = _angle_deg
         _map_surface_owner = getattr(w, '_panel_owner', '') or ''
-        _map_safe = _compute_map_safe(img_name=_current_img_for_map, npc_phase=npc_phase, is_building_entry_msg=is_building_entry_msg, facility_active=_facility_active_now, owner=_map_surface_owner, raw_x=rt_x, raw_y=rt_z, raw_angle=_angle_deg, last_x=getattr(w, '_map_rt_x_last', None), last_y=getattr(w, '_map_rt_z_last', None), last_angle=getattr(w, '_map_angle_last', None), is_loading=_is_loading_for_map, npc_phase_idle_value=NPC_PHASE_IDLE)
-        _show_player_x = _map_safe.player_x
-        _show_player_y = _map_safe.player_y
-        _show_angle = _angle_deg if _angle_deg is not None else _map_safe.angle_deg
-        _coord_source = _map_safe.source
-        _unsafe_reasons = _map_safe.unsafe_reasons
-        if getattr(w, '_map_loc_settle', False) and _map_safe.source == 'raw':
-            w._map_loc_settle = False
-        if getattr(w, '_post_exit_guard', False) and (not in_interior) and (_coord_source == 'raw'):
-            from controllers.map_safe_coord import resolve_post_exit_coord
-            w._post_exit_guard, w._post_exit_guard_remaining, _show_player_x, _show_player_y, _used_exit_door = resolve_post_exit_coord(guard_active=True, guard_remaining=getattr(w, '_post_exit_guard_remaining', 0), stale_rt=getattr(w, '_post_exit_stale_rt', None), door=getattr(w, '_post_exit_door', None), raw_xy=(rt_x, rt_z), show_xy=(_show_player_x, _show_player_y), is_loading=_is_loading_for_map)
-            if _used_exit_door:
-                _coord_source = 'post_exit_door'
-        _show_pair = (_show_player_x, _show_player_y) if _show_player_x is not None and _show_player_y is not None else None
-        if _coord_source == 'raw' and (not _is_loading_for_map) and (_show_pair not in _INVALID_MAP_HELD_COORDS):
-            if _show_player_x is not None:
-                w._map_rt_x_last = _show_player_x
-            if _show_player_y is not None:
-                w._map_rt_z_last = _show_player_y
-            if _show_angle is not None:
-                w._map_angle_last = _show_angle
-        try:
-            _a845_byte = w._analyzer.read_bytes(w._anchor + 43077, 1)[0]
-        except (OSError, AttributeError):
-            _a845_byte = 0
-        _held_x_for_diag = getattr(w, '_map_rt_x_last', None)
-        _held_y_for_diag = getattr(w, '_map_rt_z_last', None)
-        _wild_origin_for_diag = getattr(w._wilderness_location, '_origin_chunk', None) if hasattr(w, '_wilderness_location') else None
-        _visible_surface_for_diag = _map_surface_owner if _map_surface_owner else 'facility' if _facility_active_now else 'none'
-        _map_safe_diag_key = (_coord_source, tuple(_unsafe_reasons), _current_img_for_map, _a845_byte, _facility_active_now, _map_surface_owner, rt_x, rt_z, _held_x_for_diag, _held_y_for_diag, _show_player_x, _show_player_y, _wild_origin_for_diag)
-        _map_safe_diag_prev = getattr(w, '_b271_map_safe_diag_prev', None)
-        if _map_safe_diag_key != _map_safe_diag_prev:
-            w._b271_map_safe_diag_prev = _map_safe_diag_key
-            _recog(_log, 'map coord: source=%s unsafe=%s img=%r a845=0x%02X surface=%r raw=(%s,%s) held=(%s,%s) final=(%s,%s) origin=%s', _coord_source, '|'.join(_unsafe_reasons) or 'none', _current_img_for_map, _a845_byte, _visible_surface_for_diag, rt_x, rt_z, _held_x_for_diag, _held_y_for_diag, _show_player_x, _show_player_y, _wild_origin_for_diag)
+        _gate_loc = (_resolved_area or '', gs.get('MapName') or '', interior_mif_name or '', int(player_floor or 0))
+        _gate = _resolve_coord_transition(loc=_gate_loc, prev_loc=getattr(w, '_coord_gate_loc_prev', None), in_transition=bool(getattr(w, '_coord_gate_active', False)), pre_coord=getattr(w, '_coord_gate_pre_coord', None), coord=(rt_x, rt_z))
+        w._coord_gate_loc_prev = _gate_loc
+        w._coord_gate_active = _gate.in_transition
+        w._coord_gate_pre_coord = _gate.pre_coord
+        if not _gate.shown:
+            _show_player_x = None
+            _show_player_y = None
+        _coord_log_key = (rt_x, rt_z, _gate.shown)
+        if _coord_log_key != getattr(w, '_map_coord_log_prev', None):
+            w._map_coord_log_prev = _coord_log_key
+            _recog(_log, 'map coord: raw=(%s,%s) shown=%s', rt_x, rt_z, _gate.shown)
         _map_area_eff = _resolved_area or None
         _map_mif_eff = display_mif_name or None
         _map_in_interior_eff = in_interior
@@ -865,7 +806,9 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
             _map_area_eff, _map_mif_eff, _map_in_interior_eff, _map_interior_mif_eff = _map_bg_last
         elif not _is_loading_for_map:
             w._map_bg_last = (_map_area_eff, _map_mif_eff, _map_in_interior_eff, _map_interior_mif_eff)
-        _fallback_suppress_map, _fallback_suppress_reason = _city_load_fallback_suppression(w, area=_resolved_area, coord_source=_coord_source, player_x=_show_player_x, player_y=_show_player_y, surface_owner=_map_surface_owner, is_loading=_is_loading_for_map)
+        _automap_open = getattr(w, '_screen_id_prev', None) == 'automap'
+        _treasure_pickup_open = bool(getattr(w, '_treasure_pickup_open_prev', False))
+        _fallback_suppress_map, _fallback_suppress_reason = _city_load_fallback_suppression(w, area=_resolved_area, coord_source='raw', player_x=_show_player_x, player_y=_show_player_y, surface_owner=_map_surface_owner, is_loading=_is_loading_for_map)
         try:
             place_text = _format_place_text(state, in_interior, interior_mif_name, _resolved_area, int(effective_floor), interior_facility_name=interior_facility_name)
             w._log_location_hint = _format_place_text(state, in_interior, interior_mif_name, _resolved_area, int(effective_floor), interior_facility_name=interior_facility_name, include_weather=False)
@@ -877,9 +820,9 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
                 except Exception:
                     _log.exception('wild_diag failed')
             wild_location_name = gs.get('MapName') or '' if diag_area in ('city', 'wilderness') else None
-            tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff)
+            tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, automap_open=_automap_open, treasure_pickup_open=_treasure_pickup_open)
             try:
-                w._tab_translate.update_fallback_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, suppress_map=_fallback_suppress_map, suppress_reason=_fallback_suppress_reason)
+                w._tab_translate.update_fallback_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, automap_open=_automap_open, treasure_pickup_open=_treasure_pickup_open, suppress_map=_fallback_suppress_map, suppress_reason=_fallback_suppress_reason)
             except AttributeError as _e:
                 if 'update_fallback_map_state' not in str(_e):
                     _log.warning('fallback_map update AttributeError: %s', _e)
@@ -1149,7 +1092,7 @@ def _poll_screen_detect_and_label(w, _img_name, mif_name, _resolved_area, player
         if settings.get('show_recognition_screen', True):
             _stable_screen_name = resolve_stable_screen_name(_screen_id_stable, _screen_id, _screen_name, i18n.tr)
             _label_top_normal = _current_top_level(w) == 'normal-play'
-            _recog_label = format_recognition_label(_stable_screen_name, _indicator, _facility_label if _label_top_normal else '', _conv_label if _label_top_normal else '')
+            _recog_label = format_recognition_label(_stable_screen_name, _indicator, _facility_label if _label_top_normal else '', _conv_label if _label_top_normal else '', screen_id_stable=_screen_id_stable)
             w._status_lbl.setText(i18n.tr('connection.status_connected', screen=_recog_label))
         else:
             w._status_lbl.setText(i18n.tr('connection.status_connected_no_screen'))
@@ -1264,6 +1207,7 @@ class PollController:
         w._poll_checkpoints = []
         w._poll_seq = int(getattr(w, '_poll_seq', 0)) + 1
         ui_router = getattr(w, '_ui_router', None)
+        _poll_file_lifecycle(w)
         try:
             from arena_bridge import read_game_state, interpret_location, check_trigger_flag, get_trigger_text_by_index, TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, RT_COORD_X_OFFSET, RT_COORD_Z_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW, read_live_buffer, NPC_DIALOG_OFFSET, NPC_DIALOG_MAXLEN, CHARGEN_STATE_OFFSET, CHARGEN_Q_SEQ_OFFSET, CHARGEN_Q_ARRAY_OFFSET, CHARGEN_DONE_OFFSET, NPC_PHASE_ASKING, NPC_PHASE_IDLE, NPC_PHASE_RESPONDING, NPC_PHASE_BUILDING_ENTRY, read_npc_phase, read_interior_flag, is_in_interior
             gs, rt_x, rt_z, in_interior, interior_raw, state, inf_name, mif_name, player_floor = _poll_read_game_state(w)
@@ -1287,7 +1231,7 @@ class PollController:
             else:
                 _active_facility_name, _tavern_active_now, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _facility_active_now, _facility_just_started = ('', False, False, False, False, False, False, False, False, False)
             _poll_log_hierarchy_recognition_post_session(w, _resolved_area=_resolved_area, in_interior=in_interior, _npc_phase_early=_npc_phase_early, mif_name=mif_name, _img_name_early=_img_name_early, interior_mif_name=interior_mif_name, interior_raw=interior_raw)
-            _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _img_name_early_upper, _loading_post_settle, _facility_active_now)
+            _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _loading_post_settle)
             _shop_state = None
             _shop_menu_visible = False
             _shop_buy_active = False
@@ -1334,6 +1278,7 @@ class PollController:
                 _newpop_gate, _is_corpse_loot = _poll_compute_newpop_gate(w, npc_dialog=npc_dialog)
             else:
                 _newpop_gate, _is_corpse_loot = (False, False)
+            w._treasure_pickup_open_prev = bool(_newpop_gate and (not _is_corpse_loot))
             try:
                 _npc_phase_raw = read_npc_phase(w._analyzer, w._anchor)
             except Exception:
@@ -1396,8 +1341,6 @@ class PollController:
             _poll_item_pickup(w, newpop_gate=_newpop_gate, b30_img_name=_b30_img_name, npc_dialog=npc_dialog, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, screen_id=getattr(w, '_screen_id_prev', None), facility_active=bool(_active_facility_name))
             _img_name = _poll_detect_img_name(w)
             pass
-            if _top_is_normal_play:
-                _poll_automap_files(w)
             _npc_phase = _npc_phase_early
             _poll_npc_popup_display(w, _img_name, _shop_menu_visible, _shop_buy_active)
             w._travel_l4_active = poll_travel_map(w, _img_name)

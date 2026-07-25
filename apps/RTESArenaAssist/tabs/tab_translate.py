@@ -88,9 +88,6 @@ class TabTranslate(QWidget):
     def update_fallback_map_state(self, *args, **kwargs) -> None:
         self._fallback_map_tab.update_map_state(*args, **kwargs)
 
-    def poll_fallback_automap_file(self) -> bool:
-        return self._fallback_map_tab.poll_automap_file()
-
     def apply_map_settings(self) -> None:
         self._fallback_map_tab.apply_settings()
 

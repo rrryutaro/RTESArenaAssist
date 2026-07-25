@@ -14,12 +14,12 @@ class LifecycleVerdict:
     commits: tuple[int, ...] = ()
     load_slot: int | None = None
 
-def classify_lifecycle_event(*, initialized: bool, prev_mtimes: dict[int, int], cur_mtimes: dict[int, int], live64_changed: bool, matched_slot: int | None) -> LifecycleVerdict:
+def classify_lifecycle_event(*, initialized: bool, prev_mtimes: dict[int, int], cur_mtimes: dict[int, int], live64_changed: bool, matched_slot: int | None, window_commits: tuple[int, ...]=()) -> LifecycleVerdict:
     if not initialized:
         return LifecycleVerdict(init_bind=matched_slot)
     commits = tuple((s for s, m in cur_mtimes.items() if m != prev_mtimes.get(s)))
     load_slot = None
-    if live64_changed and matched_slot is not None and (matched_slot not in commits):
+    if live64_changed and matched_slot is not None and (matched_slot not in commits) and (matched_slot not in window_commits):
         load_slot = matched_slot
     return LifecycleVerdict(commits=commits, load_slot=load_slot)
 
@@ -62,6 +62,9 @@ class MapExtLifecycle:
         self._slot_mtimes: dict[int, int] = {}
         self._live64_mtime: int | None = None
         self._initialized = False
+        self._live64_gate_open = False
+        self._live64_gate_hash: str | None = None
+        self._live64_gate_commits: set[int] = set()
 
     def add_store(self, store) -> None:
         if store in self._extra_stores or store is self._store:
@@ -90,12 +93,38 @@ class MapExtLifecycle:
         except OSError:
             live64_mtime = None
         first = not self._initialized
-        live64_changed = first or (live64_mtime is not None and live64_mtime != self._live64_mtime)
-        matched_slot = self._match_slot(save_dir, _hash_file(live64)) if live64_changed else None
-        verdict = classify_lifecycle_event(initialized=self._initialized, prev_mtimes=self._slot_mtimes, cur_mtimes=cur_mtimes, live64_changed=live64_changed, matched_slot=matched_slot)
+        if first:
+            live64_resolved = True
+            matched_slot = self._match_slot(save_dir, _hash_file(live64))
+        else:
+            if not self._live64_gate_open and live64_mtime is not None and (live64_mtime != self._live64_mtime):
+                self._live64_gate_open = True
+                self._live64_gate_hash = None
+                self._live64_gate_commits = set()
+            live64_resolved = False
+            matched_slot = None
+            if self._live64_gate_open:
+                live_hash = _hash_file(live64)
+                if live_hash is not None:
+                    candidate = self._match_slot(save_dir, live_hash)
+                    if candidate is not None:
+                        live64_resolved = True
+                        matched_slot = candidate
+                    elif live_hash == self._live64_gate_hash:
+                        live64_resolved = True
+                    else:
+                        self._live64_gate_hash = live_hash
+        verdict = classify_lifecycle_event(initialized=self._initialized, prev_mtimes=self._slot_mtimes, cur_mtimes=cur_mtimes, live64_changed=live64_resolved, matched_slot=matched_slot, window_commits=tuple(self._live64_gate_commits))
         self._slot_mtimes = cur_mtimes
         self._live64_mtime = live64_mtime
         self._initialized = True
+        if self._live64_gate_open:
+            if live64_resolved:
+                self._live64_gate_open = False
+                self._live64_gate_hash = None
+                self._live64_gate_commits = set()
+            else:
+                self._live64_gate_commits.update(verdict.commits)
         self._apply_verdict(verdict, save_dir)
 
     def _apply_verdict(self, verdict: LifecycleVerdict, save_dir: str) -> None:
@@ -105,7 +134,10 @@ class MapExtLifecycle:
         for s in verdict.commits:
             save_id = save_reader.read_save_name(save_dir, s)
             for st in self._all_stores():
-                st.commit_to_slot(s, save_id)
+                try:
+                    st.commit_to_slot(s, save_id)
+                except Exception:
+                    _log.warning('commit_to_slot failed: slot=#%d store=%r', s, st, exc_info=True)
             self._bound_slot = s
             self._bound_save_id = save_id
         if verdict.load_slot is not None:
@@ -113,8 +145,11 @@ class MapExtLifecycle:
             save_id = save_reader.read_save_name(save_dir, slot)
             _log.warning('LOAD: slot=#%d name=%r (SAVEGAME.0%d)', slot, save_id, slot)
             for st in self._all_stores():
-                st.reset_active()
-                st.bind_slot(slot, save_id)
+                try:
+                    st.reset_active()
+                    st.bind_slot(slot, save_id)
+                except Exception:
+                    _log.warning('load rebind failed: slot=#%d store=%r', slot, st, exc_info=True)
             for cb in self._on_load_callbacks:
                 try:
                     cb()
@@ -126,7 +161,10 @@ class MapExtLifecycle:
     def _bind_stores(self, slot: int, save_dir: str) -> None:
         save_id = save_reader.read_save_name(save_dir, slot)
         for st in self._all_stores():
-            st.bind_slot(slot, save_id)
+            try:
+                st.bind_slot(slot, save_id)
+            except Exception:
+                _log.warning('bind_slot failed: slot=#%d store=%r', slot, st, exc_info=True)
         self._bound_slot = slot
         self._bound_save_id = save_id
 

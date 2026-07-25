@@ -355,6 +355,10 @@ class AssistWindow(QMainWindow):
         settings.set_val('map_wall_line_of_sight', dlg.map_wall_line_of_sight)
         settings.set_val('map_show_unexplored_floor', dlg.map_show_unexplored_floor)
         settings.set_val('map_center_on_player', dlg.map_center_on_player)
+        for _k, _v in dlg.map_express_flags.items():
+            settings.set_val(_k, _v)
+        settings.set_val('map_colors', dlg.map_colors)
+        settings.set_val('map_treasure_mark', dlg.map_treasure_mark)
         settings.set_val('map_show_grid', dlg.map_show_grid)
         settings.set_val('map_show_chunk_grid', dlg.map_show_chunk_grid)
         settings.set_val('map_show_chunk_coords', dlg.map_show_chunk_coords)
@@ -522,10 +526,6 @@ class AssistWindow(QMainWindow):
                 self._save_play_class_id_mapping(getattr(self, '_chargen_class_en', None))
             except AttributeError:
                 pass
-            try:
-                self._reset_map_marker_for_normal_play_entry()
-            except AttributeError:
-                pass
         if new_state != 'chargen':
             self._chargen_status_display_armed = False
             self._chargen_attrs_state_anchor = None
@@ -593,11 +593,6 @@ class AssistWindow(QMainWindow):
             self._tab_journal.set_display_active(journal_active)
         except AttributeError:
             pass
-
-    def _reset_map_marker_for_normal_play_entry(self) -> None:
-        self._map_rt_x_last = None
-        self._map_rt_z_last = None
-        self._map_angle_last = None
 
     def _sync_attributes_chargen_mode(self) -> None:
         mode = self._top_level_state == 'chargen'

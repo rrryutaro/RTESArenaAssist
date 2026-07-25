@@ -22,6 +22,7 @@ class UiRouter:
         self._translation_observer = None
         self._obs_last_key = None
         self._clear_observer = None
+        self._displayed_translation: Optional[tuple[str, str, str]] = None
 
     def set_translation_observer(self, callback) -> None:
         self._translation_observer = callback
@@ -216,6 +217,7 @@ class UiRouter:
             if w._layout_translate_panel is not None:
                 w._layout_translate_panel.update_translation('', '')
             w._panel_owner = intent.panel_owner
+            self._displayed_translation = None
             return
         if intent.kind == 'clear_if_owner':
             current = self.current_owner()
@@ -235,6 +237,7 @@ class UiRouter:
             if w._layout_translate_panel is not None:
                 w._layout_translate_panel.update_translation('', '')
             w._panel_owner = ''
+            self._displayed_translation = None
             return
         if intent.kind == 'release_if_owner':
             if self.current_owner() == intent.panel_owner:
@@ -347,6 +350,7 @@ class UiRouter:
             w._layout_translate_panel.update_translation(_pen, _pja)
         if not intent.keep_owner:
             w._panel_owner = intent.panel_owner
+        self._displayed_translation = (self.current_owner(), intent.en, intent.ja)
         if self._translation_observer is not None:
             _obs_en = intent.en or (intent.panel_en or '')
             _obs_ja = intent.ja or (intent.panel_ja or '')
@@ -378,6 +382,11 @@ class UiRouter:
 
     def is_owner(self, panel_owner: str) -> bool:
         return self.current_owner() == panel_owner
+
+    def is_displaying(self, panel_owner: str, en: str, ja: str) -> bool:
+        if self.current_owner() != panel_owner:
+            return False
+        return self._displayed_translation == (panel_owner, en, ja)
 
     def clear_if_owner(self, panel_owner: str, *, mode: Optional[str]=None, clear_place_list: bool=False, clear_travel_table: bool=False) -> None:
         if self.current_owner() == panel_owner:

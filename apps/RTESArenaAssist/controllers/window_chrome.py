@@ -16,8 +16,7 @@ def _is_interactive(widget) -> bool:
     while w is not None:
         if isinstance(w, _INTERACTIVE_TYPES):
             return True
-        name = w.objectName()
-        if name and name.split(':', 1)[0] in _NAMED_INTERACTIVE:
+        if w.objectName() in _NAMED_INTERACTIVE:
             return True
         p = w.parent()
         if p is None or not isinstance(p, QWidget):

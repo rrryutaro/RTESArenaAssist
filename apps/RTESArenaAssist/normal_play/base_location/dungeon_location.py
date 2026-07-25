@@ -3,7 +3,8 @@ import logging
 from pathlib import Path
 from typing import Optional
 import numpy as np
-from common_draw.automap_canvas import CanvasData, _is_hidden_door_cell
+from common_draw.automap_canvas import CanvasData, _is_hidden_door_cell, facing_target_cell
+from services.map_ext_store import SECTION_TREASURE_PILES
 from services.automap_file import AutomapCache, CURRENT_LEVEL_HASH_OFFSET, EXPECTED_FILE_SIZE, find_active_cache, parse_automap_file
 from services.arena_reveal_stencil import apply_reveal_stencil, apply_reveal_stencil_with_los, rebuild_seen_cells_from_bitmap
 from runtime_paths import resolve_arena_install_dir
@@ -46,6 +47,9 @@ class DungeonMapSession(MapSessionBase):
         self._show_unexplored_floor = False
         self._center_on_player = True
         self._show_grid = True
+        self._treasure_pile_cells: frozenset = frozenset()
+        self._known_treasure: frozenset = frozenset()
+        self._treasure_pickup_was_open = False
         self._wall_los_enabled = False
         self._diag_prev_update: tuple = ()
         self._diag_prev_merge_reason: str | None = None
@@ -94,7 +98,8 @@ class DungeonMapSession(MapSessionBase):
             self._location_key = f'{self._mif_name.upper()}#{self._floor}'
         else:
             self._location_key = None
-        self._maybe_merge_automap(ctx)
+        if ctx.automap_open or self._reset_retry_remaining > 0:
+            self._maybe_merge_automap(ctx)
         if ctx.player_tile_x is not None and ctx.player_tile_y is not None and (self._bitmap is not None):
             ix = int(ctx.player_tile_x)
             iy = int(ctx.player_tile_y)
@@ -109,21 +114,37 @@ class DungeonMapSession(MapSessionBase):
                             apply_reveal_stencil_with_los(self._bitmap, self._map1, ix, iy)
                     self._note_hidden_door_if_any(ix, iy)
                     self._last_player_pos = pos
+        self._note_treasure_piles_if_any(ctx)
         if self._ext_store is not None and self._location_key:
             self._discovered_hd = self._ext_store.discovered_cells(self._location_key)
+            self._known_treasure = self._ext_store.discovered_cells(self._location_key, SECTION_TREASURE_PILES)
         else:
             self._discovered_hd = frozenset()
+            self._known_treasure = frozenset()
 
     def get_canvas_data(self) -> CanvasData:
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, hidden_door_gating=True, discovered_hidden_door_cells=self._discovered_hd, map_key=f'dungeon:{self._location_key}' if self._location_key else 'dungeon:<unknown>', cache_index=self._active_cache_index)
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, treasure_pile_cells=self._known_treasure, discovered_hidden_door_cells=self._discovered_hd, map_key=f'dungeon:{self._location_key}' if self._location_key else 'dungeon:<unknown>', cache_index=self._active_cache_index)
+
+    def _note_treasure_piles_if_any(self, ctx: MapContext) -> None:
+        opened = bool(ctx.treasure_pickup_open)
+        was_open = self._treasure_pickup_was_open
+        self._treasure_pickup_was_open = opened
+        if not opened or was_open:
+            return
+        if self._ext_store is None or not self._location_key or (not self._treasure_pile_cells):
+            return
+        cell = facing_target_cell(ctx.player_tile_x, ctx.player_tile_y, ctx.angle_deg, self._treasure_pile_cells)
+        if cell is None:
+            return
+        self._ext_store.note_discovery(self._location_key, cell[0], cell[1], SECTION_TREASURE_PILES)
 
     def _note_hidden_door_if_any(self, ix: int, iy: int) -> None:
         if self._ext_store is None or not self._location_key:
             return
         m = self._map1
-        if m is None or iy >= m.shape[0] or ix >= m.shape[1]:
+        if m is None or iy >= m.shape[0] or ix >= m.shape[1] or (ix < 0) or (iy < 0):
             return
-        if _is_hidden_door_cell(int(m[iy, ix])):
+        if _is_hidden_door_cell(int(m[iy, ix]), self._hidden_door_ids):
             self._ext_store.note_discovery(self._location_key, ix, iy)
 
     def reset_progress(self) -> None:
@@ -137,9 +158,6 @@ class DungeonMapSession(MapSessionBase):
         self._active_cache_index = None
         self._notes = []
         self._reset_retry_remaining = 20
-
-    def poll_automap_file(self) -> bool:
-        return False
 
     def _load_mif(self, mif_name: str, player_floor: int=0) -> None:
         try:
@@ -189,6 +207,14 @@ class DungeonMapSession(MapSessionBase):
                 pass
         self._hidden_door_ids = frozenset(hidden_door_ids)
         self._menu_texture_indices = frozenset(menu_indices)
+        self._treasure_pile_cells = frozenset()
+        if inf_path is not None:
+            try:
+                from services.inf_file_parser import parse_inf, treasure_pile_flat_indices
+                piles = treasure_pile_flat_indices(parse_inf(inf_path))
+                self._treasure_pile_cells = frozenset(((int(e.x), int(e.y)) for e in mif.entities or [] if int(e.flat_index) in piles))
+            except Exception:
+                self._treasure_pile_cells = frozenset()
         self._bitmap = np.zeros((128, 128), dtype=np.uint8)
         self._seen_cells.clear()
         self._last_player_pos = None

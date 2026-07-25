@@ -3,7 +3,7 @@ from typing import Optional
 import arena_data
 import i18n_helper as i18n
 from attributes_panel import OFF_BONUS_PTS_U8, OFF_CLASS_INDEX, OFF_DAMAGE_I16, OFF_EXP_U32, OFF_FATIGUE_U16, OFF_GOLD_U16, OFF_HEALTH_CURR_U16, OFF_HEALTH_MAX_U16, OFF_LEVEL_U8, OFF_NAME, OFF_PRIMARY_1, OFF_RACE_INDEX, OFF_SPELL_PTS_CURR, OFF_SPELL_PTS_MAX, PRIMARY_LEN, UNKNOWN, _signed
-from attribute_formulas import calc_bonus_to_health, calc_bonus_to_hit, calc_damage_bonus, calc_magic_defense, calc_max_kilos, calc_max_stamina
+from attribute_formulas import calc_bonus_to_health, calc_bonus_to_health_256, calc_bonus_to_hit, calc_damage_bonus, calc_magic_defense, calc_max_kilos, calc_max_stamina
 
 def poll_attributes(panel) -> None:
     if panel._analyzer is None or panel._anchor == 0:
@@ -73,7 +73,10 @@ def poll_attributes(panel) -> None:
     bth = calc_bonus_to_hit(AGI)
     panel._derived['to_hit'].setText(_signed(bth))
     panel._derived['to_defend'].setText(_signed(bth))
-    bh = calc_bonus_to_health(END)
+    if panel._chargen_mode or panel._is_bonus_screen:
+        bh = calc_bonus_to_health(END)
+    else:
+        bh = calc_bonus_to_health_256(raw_data[5])
     panel._derived['health'].setText(_signed(bh))
     panel._derived['heal_mod'].setText(_signed(bh))
     panel._derived['charisma'].setText(_signed(calc_bonus_to_hit(PER)))

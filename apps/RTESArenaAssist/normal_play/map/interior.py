@@ -3,7 +3,7 @@ import logging
 from pathlib import Path
 from typing import Optional
 import numpy as np
-from common_draw.automap_canvas import CanvasData
+from common_draw.automap_canvas import CanvasData, _is_hidden_door_cell
 from services.city_voxel_assembler import detect_menu_cells
 from runtime_paths import resolve_arena_install_dir
 from services.mif_loader import DEFAULT_INF_DIR, DEFAULT_MIF_DIR, load_mif, parse_inf_level_transitions, parse_inf_menu_indices, parse_inf_walls_hidden_door_ids, resolve_inf_for_mif
@@ -25,6 +25,10 @@ class InteriorMapSession(MapSessionBase):
         self._level_up_index: Optional[int] = None
         self._level_down_index: Optional[int] = None
         self._hidden_door_ids: frozenset[int] = frozenset()
+        self._ext_store = None
+        self._location_key: Optional[str] = None
+        self._discovered_hd: frozenset[tuple[int, int]] = frozenset()
+        self._last_player_pos: Optional[tuple[int, int]] = None
         self._menu_texture_indices: frozenset[int] = frozenset()
         self._entrance_cells: tuple[tuple[int, int], ...] = ()
         self._entry_center: Optional[tuple[int, int]] = None
@@ -46,6 +50,7 @@ class InteriorMapSession(MapSessionBase):
         self._player_x = ctx.player_tile_x
         self._player_y = ctx.player_tile_y
         self._angle = ctx.angle_deg
+        self._ext_store = ctx.ext_store
         target_mif = ctx.interior_mif_name
         if not target_mif:
             if getattr(self, '_diag_last', None) != 'no_mif':
@@ -59,6 +64,26 @@ class InteriorMapSession(MapSessionBase):
             wshape = None if self._walkable is None else self._walkable.shape
             _log.warning('interior loaded mif=%s floor=%s walkable=%s entrance=%s', target_mif, ctx.player_floor, wshape, self._entrance_cells)
             self._diag_last = 'loaded'
+        self._location_key = f'{self._mif_name.upper()}#{self._floor}' if self._mif_name else None
+        if ctx.player_tile_x is not None and ctx.player_tile_y is not None and (self._map1 is not None):
+            ix, iy = (int(ctx.player_tile_x), int(ctx.player_tile_y))
+            pos = (ix, iy)
+            if pos != self._last_player_pos:
+                self._last_player_pos = pos
+                self._note_hidden_door_if_any(ix, iy)
+        if self._ext_store is not None and self._location_key:
+            self._discovered_hd = self._ext_store.discovered_cells(self._location_key)
+        else:
+            self._discovered_hd = frozenset()
+
+    def _note_hidden_door_if_any(self, ix: int, iy: int) -> None:
+        if self._ext_store is None or not self._location_key:
+            return
+        m = self._map1
+        if m is None or iy >= m.shape[0] or ix >= m.shape[1] or (ix < 0) or (iy < 0):
+            return
+        if _is_hidden_door_cell(int(m[iy, ix]), self._hidden_door_ids):
+            self._ext_store.note_discovery(self._location_key, ix, iy)
 
     def get_canvas_data(self) -> CanvasData:
         px = int(self._player_x) if self._player_x is not None else None
@@ -66,7 +91,7 @@ class InteriorMapSession(MapSessionBase):
         angle = self._angle
         if not self._coord_in_bounds(px, py) and self._entry_center is not None:
             px, py = self._entry_center
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=px, player_y=py, player_angle_deg=angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=self._entrance_cells, is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, map_key=f'interior:{self._mif_name}#{self._floor}' if self._mif_name else 'interior:<unknown>')
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=px, player_y=py, player_angle_deg=angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=self._entrance_cells, is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, discovered_hidden_door_cells=self._discovered_hd, map_key=f'interior:{self._mif_name}#{self._floor}' if self._mif_name else 'interior:<unknown>')
 
     def reset_progress(self) -> None:
         if self._walkable is not None:

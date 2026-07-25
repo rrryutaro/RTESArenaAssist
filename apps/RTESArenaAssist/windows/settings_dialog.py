@@ -493,6 +493,41 @@ class _SettingsDialog(QDialog):
     def map_center_on_player(self) -> bool:
         return self._map_center_cb.isChecked()
 
+    def _set_map_color(self, color_key: str, hexval: str) -> None:
+        from windows.settings_dialog_tabs import _apply_swatch
+        btn = self._map_color_buttons.get(color_key)
+        if btn is not None:
+            _apply_swatch(btn, hexval)
+
+    def _pick_map_color(self, color_key: str) -> None:
+        from PySide6.QtGui import QColor
+        from PySide6.QtWidgets import QColorDialog
+        btn = self._map_color_buttons.get(color_key)
+        if btn is None:
+            return
+        cur = QColor(str(btn.property('colorHex') or ''))
+        picked = QColorDialog.getColor(cur if cur.isValid() else QColor('#ffffff'), self, i18n.tr('settings.map_color_pick_title'))
+        if picked.isValid():
+            self._set_map_color(color_key, picked.name())
+
+    @property
+    def map_express_flags(self) -> dict:
+        return {k: cb.isChecked() for k, cb in self._map_express_cbs.items()}
+
+    @property
+    def map_colors(self) -> dict:
+        from common_draw.automap_canvas import default_color_hex
+        out = {}
+        for key, btn in self._map_color_buttons.items():
+            hexval = str(btn.property('colorHex') or '')
+            if hexval and hexval.lower() != default_color_hex(key).lower():
+                out[key] = hexval
+        return out
+
+    @property
+    def map_treasure_mark(self) -> str:
+        return self._map_treasure_mark_edit.text()[:1]
+
     @property
     def map_show_grid(self) -> bool:
         return self._map_show_grid_cb.isChecked()

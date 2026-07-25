@@ -9,10 +9,14 @@ def resolve_stable_screen_name(stable_id: str, raw_id: str, raw_name: str, tr: C
     if stable_id == raw_id:
         return raw_name
     return tr(f'screen.{stable_id}')
+OVERLAY_SCREEN_IDS: frozenset[str] = frozenset({'status_page', 'bonus_screen', 'equipment', 'spellbook', 'spell_detail', 'automap', 'logbook', 'system_menu', 'loadsave_in_play'})
 
-def format_recognition_label(screen_name: str, indicator: str, facility_label: str, conv_label: str) -> str:
+def format_recognition_label(screen_name: str, indicator: str, facility_label: str, conv_label: str, screen_id_stable: str='') -> str:
     if facility_label:
-        return f'{indicator}{facility_label}{conv_label}' if indicator else f'{facility_label}{conv_label}'
+        base = f'{indicator}{facility_label}{conv_label}' if indicator else f'{facility_label}{conv_label}'
+        if (screen_id_stable or '') in OVERLAY_SCREEN_IDS and screen_name:
+            return f'{base} {screen_name}'
+        return base
     return f'{indicator} {screen_name}{conv_label}' if indicator else f'{screen_name}{conv_label}'
 _TAVERN_SURFACE_SUB_KEYS = {'tavern_stay_days': 'recognition.tavern_sub_stay_days', 'tavern_sneak_confirm': 'recognition.tavern_sub_sneak_confirm', 'tavern_sneak_result': 'recognition.tavern_sub_sneak_result', 'tavern_room_contract': 'recognition.tavern_sub_room_contract', 'tavern_cost_show': 'recognition.tavern_sub_cost_show', 'tavern_cost_confirm': 'recognition.tavern_sub_cost_confirm'}
 
@@ -140,4 +144,4 @@ def facility_recognition_key(interior_mif_name: str, in_interior: bool, *, activ
         if key:
             return key
     return 'recognition.facility_other'
-__all__ = ['resolve_stable_screen_name', 'format_recognition_label', 'equipment_sub_state_key', 'mages_sub_state_key', 'facility_recognition_key', 'known_facility_kind', 'temple_sub_state_key', 'tavern_sub_state_key']
+__all__ = ['OVERLAY_SCREEN_IDS', 'resolve_stable_screen_name', 'format_recognition_label', 'equipment_sub_state_key', 'mages_sub_state_key', 'facility_recognition_key', 'known_facility_kind', 'temple_sub_state_key', 'tavern_sub_state_key']

@@ -206,42 +206,13 @@ def enrich_unidentified_by_index(analyzer, anchor: int, items: list[dict]) -> li
         out.append(copied)
     return out
 
-def _item_base_ja(base: str) -> str | None:
-    r = i18n.value('items', base) or i18n.value('mages', base)
-    if r:
-        return r
-    for sec in ('accessories', 'spellcasting_items', 'armor_slots', 'weapons', 'shields'):
-        r = i18n.value_by_surface('items', base, section=sec)
-        if r:
-            return r
-    return None
-
 def _translate_name_opt(en: str) -> str | None:
     key = (en or '').strip()
-    direct = i18n.value('mages', key) or i18n.value('items', key)
+    direct = i18n.value('mages', key)
     if direct:
         return direct
-    m = re.match('^(.+?) (of .+)$', key)
-    if m:
-        ench_tr = i18n.value('item_enchantments', m.group(2))
-        if ench_tr:
-            base = m.group(1).strip()
-            base_tr = _translate_name_opt(base)
-            if base_tr is None:
-                base_tr = _item_base_ja(base)
-            if base_tr is not None:
-                return i18n.text('item.name.enchant_format').replace('{enchant}', ench_tr).replace('{base}', base_tr)
-    parts = key.split()
-    if len(parts) >= 2:
-        base_tr = _item_base_ja(parts[-1])
-        if base_tr:
-            fmt = i18n.text('item.name.material_format')
-            out = base_tr
-            for p in reversed(parts[:-1]):
-                mat_tr = i18n.value('item_materials', p) or p
-                out = fmt.replace('{material}', mat_tr).replace('{base}', out)
-            return out
-    return None
+    from item_name_lookup import translate_item_name_opt
+    return translate_item_name_opt(key)
 
 def translate_name(en: str) -> str:
     key = (en or '').strip()

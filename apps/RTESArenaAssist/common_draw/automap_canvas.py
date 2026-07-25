@@ -23,10 +23,18 @@ _RECENTER_LINE = QColor(58, 111, 174, 130)
 _EDGE_LINE_COLORS = {'fence': QColor(138, 90, 43), 'hedge': QColor(47, 122, 63), 'garden': QColor(157, 184, 85)}
 _CROP_FILL_COLORS = {'corn': QColor(181, 161, 58), 'farm': QColor(194, 164, 90)}
 _CROP_MARK_COLORS = {'corn': QColor(35, 77, 18), 'farm': QColor(94, 60, 24)}
-_CELL_COLORS_ARENA: dict[str, QColor] = {'wall': QColor(130, 89, 48), 'raised': QColor(97, 85, 60), 'door': QColor(146, 0, 0), 'level_up': QColor(0, 105, 0), 'level_down': QColor(0, 0, 255), 'wet_chasm': QColor(109, 138, 174), 'dry_chasm': QColor(20, 40, 40), 'lava_chasm': QColor(255, 0, 0), 'wild_wall': QColor(109, 69, 32), 'wild_door': QColor(255, 0, 0), 'wild_road': QColor(199, 154, 90), 'wild_corn': QColor(181, 161, 58), 'wild_farm': QColor(181, 161, 58), 'wild_field': QColor(181, 161, 58)}
+_CELL_COLORS_ARENA: dict[str, QColor] = {'wall': QColor(130, 89, 48), 'raised': QColor(97, 85, 60), 'door': QColor(146, 0, 0), 'hidden_door': QColor(168, 85, 212), 'wall_chasm': QColor(74, 107, 130), 'wall_passage': QColor(45, 74, 72), 'wall_lava': QColor(160, 74, 24), 'level_up': QColor(0, 105, 0), 'level_down': QColor(0, 0, 255), 'wet_chasm': QColor(109, 138, 174), 'dry_chasm': QColor(20, 40, 40), 'lava_chasm': QColor(255, 0, 0), 'wild_wall': QColor(109, 69, 32), 'wild_door': QColor(255, 0, 0), 'wild_road': QColor(199, 154, 90), 'wild_corn': QColor(181, 161, 58), 'wild_farm': QColor(181, 161, 58), 'wild_field': QColor(181, 161, 58)}
 _WILD_FIELD_FLOOR_ID = 2
-_CELL_COLORS_MAPVIEWER: dict[str, QColor] = {'wall': QColor(130, 89, 48), 'raised': QColor(120, 120, 112), 'door': QColor(146, 0, 0), 'hidden_door': QColor(168, 85, 212), 'exit_door': QColor(146, 0, 0), 'level_up': QColor(0, 105, 0), 'level_down': QColor(0, 0, 255), 'wet_chasm': QColor(109, 138, 174), 'wall_chasm': QColor(92, 200, 190), 'dry_chasm': QColor(20, 40, 40), 'lava_chasm': QColor(255, 0, 0), 'wild_wall': QColor(109, 69, 32), 'wild_door': QColor(255, 0, 0), 'wild_road': QColor(199, 154, 90)}
+_CELL_COLORS_MAPVIEWER: dict[str, QColor] = {'wall': QColor(130, 89, 48), 'raised': QColor(120, 120, 112), 'door': QColor(146, 0, 0), 'hidden_door': QColor(168, 85, 212), 'exit_door': QColor(146, 0, 0), 'level_up': QColor(0, 105, 0), 'level_down': QColor(0, 0, 255), 'wet_chasm': QColor(109, 138, 174), 'wall_chasm': QColor(74, 107, 130), 'wall_passage': QColor(45, 74, 72), 'wall_lava': QColor(160, 74, 24), 'dry_chasm': QColor(20, 40, 40), 'lava_chasm': QColor(255, 0, 0), 'wild_wall': QColor(109, 69, 32), 'wild_door': QColor(255, 0, 0), 'wild_road': QColor(199, 154, 90)}
 _CELL_COLOR_UNKNOWN = QColor(204, 68, 255)
+_TREASURE_MARK = QColor(255, 210, 74)
+_TREASURE_MARK_EDGE = QColor(74, 51, 0)
+
+def default_color_hex(key: str) -> str:
+    if key == 'treasure':
+        return _TREASURE_MARK.name()
+    col = _CELL_COLORS_ARENA.get(key)
+    return col.name() if col is not None else _CELL_COLOR_UNKNOWN.name()
 _VIS_ALPHA: dict[int, int] = {1: 100, 2: 180, 3: 255}
 _REVEAL_ALL_ALPHA = 255
 
@@ -51,9 +59,9 @@ class CanvasData:
     wilderness_compact_view: bool = False
     wild_distinguish_road: bool = True
     wild_show_edge: bool = True
+    treasure_pile_cells: frozenset = frozenset()
     hidden_door_ids: frozenset[int] = frozenset()
     menu_texture_indices: frozenset[int] = frozenset()
-    hidden_door_gating: bool = False
     discovered_hidden_door_cells: frozenset[tuple[int, int]] = frozenset()
     map_key: str | None = None
     cache_index: int | None = None
@@ -82,9 +90,39 @@ def _map1_kind(value: int) -> str:
     if high == 13:
         return 'diagonal'
     return 'wall'
+_DOOR_TEXTURE_MASK = 63
 
-def _is_hidden_door_cell(map1_val: int) -> bool:
-    return _map1_kind(map1_val) == 'door' and map1_val & 128 != 0
+def facing_delta(angle_deg: float) -> tuple[float, float]:
+    a = math.radians(angle_deg)
+    return (-math.sin(a), -math.cos(a))
+
+def facing_target_cell(player_x, player_y, angle_deg, candidates) -> tuple[int, int] | None:
+    if player_x is None or player_y is None or angle_deg is None:
+        return None
+    fx, fy = facing_delta(angle_deg)
+    ix, iy = (int(player_x), int(player_y))
+    best: tuple[int, int] | None = None
+    best_score = -2.0
+    for dy in (-1, 0, 1):
+        for dx in (-1, 0, 1):
+            cell = (ix + dx, iy + dy)
+            if cell not in candidates:
+                continue
+            if dx == 0 and dy == 0:
+                score = 0.35
+            else:
+                norm = math.hypot(dx, dy)
+                score = (dx * fx + dy * fy) / norm
+                if score < 0.5:
+                    continue
+            if score > best_score:
+                best, best_score = (cell, score)
+    return best
+
+def _is_hidden_door_cell(map1_val: int, hidden_door_ids: frozenset | set | None=None) -> bool:
+    if not hidden_door_ids:
+        return False
+    return _map1_kind(map1_val) == 'door' and map1_val & _DOOR_TEXTURE_MASK in hidden_door_ids
 
 def _floor_kind(floor: int) -> str:
     texture_id = floor >> 8 & 255
@@ -106,21 +144,23 @@ def _wall_texture_index(value: int, kind: str) -> int:
 def _is_wild_wall_colored_floor_id(floor_id: int) -> bool:
     return floor_id not in (0, 2, 3, 4)
 
-def _classify_cell(map1_val: int, flor_val: int, level_up_index: int | None=None, level_down_index: int | None=None, *, extended: bool=False, menu_texture_indices: set[int] | None=None, is_wilderness: bool=False, wilderness_compact: bool=False, wild_distinguish_road: bool=False, wild_show_field: bool=False) -> str:
+def _classify_cell(map1_val: int, flor_val: int, level_up_index: int | None=None, level_down_index: int | None=None, *, extended: bool=False, express_wall_chasm: bool=False, express_wall_passage: bool=False, express_wall_lava: bool=False, express_hidden_door: bool=True, hidden_door_ids: frozenset | set | None=None, hidden_door_discovered: bool=False, menu_texture_indices: set[int] | None=None, is_wilderness: bool=False, wilderness_compact: bool=False, wild_distinguish_road: bool=False, wild_show_field: bool=False) -> str:
     floor_kind = _floor_kind(flor_val)
     wall_kind = _map1_kind(map1_val)
     floor_id = flor_val >> 8 & 255
     if floor_kind == 'wet_chasm':
-        if wall_kind == 'wall':
-            return 'wall_chasm' if extended else 'raised'
         if wall_kind == 'raised':
             return 'raised'
+        if wall_kind == 'wall':
+            return 'wall_chasm' if express_wall_chasm else 'wet_chasm'
         return 'wet_chasm'
     if floor_kind == 'dry_chasm':
         if wall_kind == 'wall':
-            return 'raised'
+            return 'wall_passage' if express_wall_passage else 'raised'
         return 'dry_chasm'
     if floor_kind == 'lava_chasm':
+        if wall_kind == 'wall':
+            return 'wall_lava' if express_wall_lava else 'lava_chasm'
         if wall_kind == 'raised':
             return 'raised'
         return 'lava_chasm'
@@ -134,8 +174,8 @@ def _classify_cell(map1_val: int, flor_val: int, level_up_index: int | None=None
     if wall_kind == 'raised':
         return 'wild_wall' if is_wilderness else 'raised'
     if wall_kind == 'door':
-        if extended and map1_val & 128 != 0:
-            return 'hidden_door'
+        if express_hidden_door and _is_hidden_door_cell(map1_val, hidden_door_ids):
+            return 'hidden_door' if hidden_door_discovered else 'wall'
         return 'wild_door' if is_wilderness else 'door'
     if wall_kind == 'transparent':
         if map1_val & 256 == 0:
@@ -177,6 +217,13 @@ class AutomapCanvas(QWidget):
         self._show_unexplored_floor = False
         self._center_on_player = True
         self._hidden_door_ids: set[int] = set()
+        self._express_hidden_door = True
+        self._express_wall_chasm = True
+        self._express_wall_passage = True
+        self._express_wall_lava = True
+        self._express_treasure = True
+        self._color_overrides: dict = {}
+        self._treasure_mark: str = ''
         self._menu_texture_indices: set[int] = set()
         self._zoom: float = 12.0
         self._pan: QPointF = QPointF(0, 0)
@@ -216,14 +263,6 @@ class AutomapCanvas(QWidget):
         shape = None if data.walkable is None else tuple(data.walkable.shape)
         bitmap_shape = None if data.bitmap_grid is None else tuple(data.bitmap_grid.shape)
         return (data.map_key, shape, bitmap_shape, data.is_wilderness, data.chunk_origin, id(data.walkable), id(data.map1), id(data.flor), id(data.bitmap_grid))
-
-    def set_hidden_door_ids(self, ids: set[int]) -> None:
-        self._hidden_door_ids = set(ids) if ids else set()
-        self.update()
-
-    def set_menu_texture_indices(self, indices: set[int]) -> None:
-        self._menu_texture_indices = set(indices) if indices else set()
-        self.update()
 
     def set_x_flip(self, flip: bool) -> None:
         if flip == self._x_flip:
@@ -347,8 +386,39 @@ class AutomapCanvas(QWidget):
     def _should_suppress_unpositioned_map(self) -> bool:
         return self._map_suppression_reason() == 'unpositioned_center_follow'
 
+    def set_map_expression(self, *, hidden_door: bool, wall_chasm: bool, wall_passage: bool, wall_lava: bool, treasure: bool) -> None:
+        self._express_hidden_door = bool(hidden_door)
+        self._express_wall_chasm = bool(wall_chasm)
+        self._express_wall_passage = bool(wall_passage)
+        self._express_wall_lava = bool(wall_lava)
+        self._express_treasure = bool(treasure)
+        self.update()
+
+    def set_color_overrides(self, overrides: dict | None) -> None:
+        self._color_overrides = dict(overrides or {})
+        self.update()
+
+    def set_treasure_mark(self, mark: str) -> None:
+        self._treasure_mark = (mark or '')[:1]
+        self.update()
+
     def _palette(self) -> dict[str, QColor]:
-        return _CELL_COLORS_MAPVIEWER if self._reveal_all else _CELL_COLORS_ARENA
+        base = _CELL_COLORS_MAPVIEWER if self._reveal_all else _CELL_COLORS_ARENA
+        overrides = self._color_overrides
+        if not overrides:
+            return base
+        merged = dict(base)
+        for key, hexval in overrides.items():
+            if key == 'treasure' or not hexval:
+                continue
+            col = QColor(hexval)
+            if col.isValid():
+                merged[key] = col
+        return merged
+
+    def _treasure_color(self) -> QColor:
+        col = QColor(self._color_overrides.get('treasure', ''))
+        return col if col.isValid() else _TREASURE_MARK
 
     def _draw_edge_lines(self, painter: QPainter, d: CanvasData, ox: float, oy: float, W: int, H: int) -> None:
         z = self._zoom
@@ -512,7 +582,7 @@ class AutomapCanvas(QWidget):
                 if not self._show_unexplored_floor and (not self._reveal_all):
                     painter.fillRect(rect, _PARCHMENT)
                 if has_map1 and has_flor:
-                    cell_kind = _classify_cell(int(d.map1[y, x]), int(d.flor[y, x]), d.level_up_index, d.level_down_index, extended=self._reveal_all, menu_texture_indices=self._menu_texture_indices, is_wilderness=d.is_wilderness, wilderness_compact=not d.wild_show_edge, wild_distinguish_road=d.wild_distinguish_road, wild_show_field=d.wild_show_crops)
+                    cell_kind = _classify_cell(int(d.map1[y, x]), int(d.flor[y, x]), d.level_up_index, d.level_down_index, extended=self._reveal_all, express_wall_chasm=self._reveal_all or self._express_wall_chasm, express_wall_passage=self._reveal_all or self._express_wall_passage, express_wall_lava=self._reveal_all or self._express_wall_lava, express_hidden_door=self._express_hidden_door, hidden_door_ids=self._hidden_door_ids, hidden_door_discovered=self._reveal_all or (x, y) in discovered_hd, menu_texture_indices=self._menu_texture_indices, is_wilderness=d.is_wilderness, wilderness_compact=not d.wild_show_edge, wild_distinguish_road=d.wild_distinguish_road, wild_show_field=d.wild_show_crops)
                 else:
                     cell_kind = 'floor' if d.walkable[y, x] else 'wall'
                 if (x, y) in entrance_set:
@@ -522,17 +592,28 @@ class AutomapCanvas(QWidget):
                 ck = crop_kind.get((x, y))
                 if ck is not None:
                     cell_kind = ck
-                if d.hidden_door_gating and has_map1 and _is_hidden_door_cell(int(d.map1[y, x])):
-                    if self._reveal_all or (x, y) in discovered_hd:
-                        cell_kind = 'hidden_door'
-                    else:
-                        cell_kind = 'wall'
                 if cell_kind == 'floor':
                     cells_drawn.append((x, y, rect))
                     continue
                 base_color = palette.get(cell_kind, _CELL_COLOR_UNKNOWN)
                 painter.fillRect(rect, _blend_color(base_color, vis, self._reveal_all))
                 cells_drawn.append((x, y, rect))
+        treasure_cells = d.treasure_pile_cells or frozenset() if self._express_treasure else frozenset()
+        mark = self._treasure_mark[:1]
+        if treasure_cells and mark and (self._zoom >= 4):
+            font = QFont()
+            font.setPointSizeF(max(6.0, self._zoom * 0.72))
+            font.setBold(True)
+            painter.setFont(font)
+            mark_color = self._treasure_color()
+            for tx, ty, trect in cells_drawn:
+                if (tx, ty) not in treasure_cells:
+                    continue
+                painter.setPen(QPen(_TREASURE_MARK_EDGE))
+                for ox2, oy2 in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                    painter.drawText(trect.translated(ox2, oy2), Qt.AlignmentFlag.AlignCenter, mark)
+                painter.setPen(QPen(mark_color))
+                painter.drawText(trect, Qt.AlignmentFlag.AlignCenter, mark)
         if self._show_grid and self._zoom >= 6:
             painter.setPen(QPen(_GRID_LINE))
             if self._show_unexplored_floor or self._reveal_all:
