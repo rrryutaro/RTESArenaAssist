@@ -65,6 +65,8 @@ class MapExtLifecycle:
         self._live64_gate_open = False
         self._live64_gate_hash: str | None = None
         self._live64_gate_commits: set[int] = set()
+        self._load_arrival_seq: int = 0
+        self._load_arrival: dict | None = None
 
     def add_store(self, store) -> None:
         if store in self._extra_stores or store is self._store:
@@ -79,6 +81,11 @@ class MapExtLifecycle:
     def add_on_load(self, callback) -> None:
         if callback not in self._on_load_callbacks:
             self._on_load_callbacks.append(callback)
+
+    def last_load_arrival(self) -> tuple[int, dict] | None:
+        if self._load_arrival is None:
+            return None
+        return (self._load_arrival_seq, self._load_arrival)
 
     def _all_stores(self) -> list:
         return [self._store, *self._extra_stores]
@@ -144,6 +151,14 @@ class MapExtLifecycle:
             slot = verdict.load_slot
             save_id = save_reader.read_save_name(save_dir, slot)
             _log.warning('LOAD: slot=#%d name=%r (SAVEGAME.0%d)', slot, save_id, slot)
+            try:
+                arrival = save_reader.read_live_arrival(save_dir)
+            except Exception:
+                arrival = None
+            self._load_arrival_seq += 1
+            self._load_arrival = arrival
+            if arrival is not None:
+                _log.warning('LOAD arrival: tile=(%d,%d) floor=%d mif=%r', arrival['tile_x'], arrival['tile_y'], arrival['floor'], arrival['mif'])
             for st in self._all_stores():
                 try:
                     st.reset_active()

@@ -405,27 +405,42 @@ def _poll_handle_triggers(w, *, rt_x, rt_z, inf_name):
 
 def _poll_status_template_parse(w, *, _entry_handled):
     try:
-        from template_parser import parse_filled, render_status
+        from template_parser import parse_filled, render_status, status_popup_foreground
+        _status_fg = status_popup_foreground(w._analyzer, w._anchor)
+        _status_fg_was = getattr(w, '_b21_status_fg_was', False)
         try:
             _flag_popup = w._analyzer.read_bytes(w._anchor + 31012, 1)[0]
         except (OSError, AttributeError):
             _flag_popup = 0
         _popup_active = _flag_popup == 1
         _popup_was = getattr(w, '_b21_popup_was_open', False)
-        if _popup_was and (not _popup_active) and getattr(w, '_b21_owns_panel', False):
-            w._ui_router.clear_if_owner('status')
-            w._b21_owns_panel = False
-            w._last_status_vkey = None
+        if _status_fg_was and (not _status_fg) or (_popup_was and (not _popup_active)):
+            if getattr(w, '_b21_owns_panel', False):
+                w._ui_router.clear_if_owner('status')
+                w._b21_owns_panel = False
+                w._last_status_vkey = None
         w._b21_popup_was_open = _popup_active
+        w._b21_status_fg_was = _status_fg
         _parsed = parse_filled(w._analyzer, w._anchor)
         if _parsed is not None:
             _vkey = (_parsed.get('location', ''), _parsed.get('time', ''), _parsed.get('date', ''), _parsed.get('weight', ''), _parsed.get('weight_max', ''), _parsed.get('states', ()))
             _full_en, _full_ja, _ = render_status(_parsed)
-            if _popup_active and (not _entry_handled) and (_vkey != getattr(w, '_last_status_vkey', None)):
+            if _status_fg and (not _entry_handled) and (_vkey != getattr(w, '_last_status_vkey', None)):
                 w._last_status_vkey = _vkey
                 w._ui_router.update_translation('status', _full_en, _full_ja)
                 w._b21_owns_panel = w._ui_router.is_owner('status')
     except (ImportError, AttributeError, OSError):
+        pass
+
+def _propose_automap_screen_mode(w, *, screen_id_stable, top_level):
+    try:
+        if screen_id_stable == 'automap' and top_level == 'normal-play':
+            w._ui_router.set_panel_mode('map_screen', priority=_SCREEN_PANEL_PRIORITY, reason='screen:automap')
+            w._automap_mode_active = True
+        elif getattr(w, '_automap_mode_active', False):
+            w._ui_router.set_panel_mode('translate', reason='screen:automap_exit')
+            w._automap_mode_active = False
+    except (AttributeError, RuntimeError):
         pass
 
 def _poll_detect_img_name(w):
@@ -488,16 +503,12 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
     _just_entered_interior = in_interior and (not prev_in_interior)
     if _just_entered_interior:
         w._entry_door_pos = getattr(w, '_last_outside_rt', None)
-        w._interior_entry_raw = interior_raw
-        w._interior_level_count = None
         w._building_entry_pending = True
         w._b288_entry_diag_count = 0
-        _log.info('interior entered, door_pos=%s map=%s entry_raw=%s', getattr(w, '_entry_door_pos', None), gs.get('MapName'), interior_raw)
+        _log.info('interior entered, door_pos=%s map=%s interior_raw=%s', getattr(w, '_entry_door_pos', None), gs.get('MapName'), interior_raw)
     if not in_interior and prev_in_interior:
         _log.info('interior left')
         w._entry_door_pos = None
-        w._interior_entry_raw = None
-        w._interior_level_count = None
         w._instore_resp_prev = ''
         w._instore_resp_current_key = None
         w._instore_resp_text_by_offset = {}
@@ -511,7 +522,7 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
         location_name = gs.get('MapName') or ''
         if door_pos is not None and location_name:
             try:
-                from city_viewer_bridge import lookup_interior_facility, get_mif_level_count
+                from city_viewer_bridge import lookup_interior_facility
                 facility_info = lookup_interior_facility(location_name, door_pos[0], door_pos[1])
             except Exception:
                 _log.exception('city_viewer_bridge lookup failed')
@@ -520,14 +531,8 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
                 interior_mif_name = facility_info.mif_name
                 interior_facility_name = facility_info.name_ja or facility_info.name_en or None
                 display_mif_name = interior_mif_name
-                if getattr(w, '_interior_level_count', None) is None:
-                    try:
-                        w._interior_level_count = get_mif_level_count(interior_mif_name)
-                    except Exception:
-                        _log.exception('get_mif_level_count failed')
         if interior_mif_name is None and location_name and (_img_safe == 'PALACE.XMI'):
             try:
-                from city_viewer_bridge import get_mif_level_count
                 from services.city_lookup import get_palace_mif_for_location
                 _palace_mif = get_palace_mif_for_location(location_name)
             except Exception:
@@ -536,11 +541,6 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
             if _palace_mif:
                 interior_mif_name = _palace_mif
                 display_mif_name = _palace_mif
-                if getattr(w, '_interior_level_count', None) is None:
-                    try:
-                        w._interior_level_count = get_mif_level_count(_palace_mif)
-                    except Exception:
-                        pass
                 _log.info('palace mif resolved door-free: %s (img=PALACE.XMI)', _palace_mif)
     effective_in_interior = in_interior
     field_active, field_mif, _field_label, field_name = _resolve_field_facility(w, interior_raw)
@@ -742,10 +742,10 @@ def _poll_file_lifecycle(w) -> None:
 def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _loading_post_settle):
     from arena_bridge import RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_NORTH_RAW, RT_ANGLE_RANGE
     interior_floor_hyp: int | None = None
-    if in_interior:
+    if in_interior and interior_mif_name:
         try:
-            from interior_id import estimate_floor
-            interior_floor_hyp = estimate_floor(getattr(w, '_interior_entry_raw', None), interior_raw, getattr(w, '_interior_level_count', None))
+            from interior_floor import resolve_interior_floor
+            interior_floor_hyp = resolve_interior_floor(w._analyzer, w._anchor, interior_mif_name)
         except Exception:
             interior_floor_hyp = None
     w._interior_floor_hyp = interior_floor_hyp
@@ -786,10 +786,23 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
         _show_angle = _angle_deg
         _map_surface_owner = getattr(w, '_panel_owner', '') or ''
         _gate_loc = (_resolved_area or '', gs.get('MapName') or '', interior_mif_name or '', int(player_floor or 0))
-        _gate = _resolve_coord_transition(loc=_gate_loc, prev_loc=getattr(w, '_coord_gate_loc_prev', None), in_transition=bool(getattr(w, '_coord_gate_active', False)), pre_coord=getattr(w, '_coord_gate_pre_coord', None), coord=(rt_x, rt_z))
+        _load_arrival_coord = None
+        try:
+            from controllers.map_ext_lifecycle import get_lifecycle
+            _arr_entry = get_lifecycle().last_load_arrival()
+        except Exception:
+            _arr_entry = None
+        if _arr_entry is not None:
+            _arr_seq, _arr = _arr_entry
+            if getattr(w, '_load_arrival_consumed_seq', None) != _arr_seq:
+                _load_arrival_coord = (_arr['tile_x'], _arr['tile_y'])
+        _gate = _resolve_coord_transition(loc=_gate_loc, prev_loc=getattr(w, '_coord_gate_loc_prev', None), in_transition=bool(getattr(w, '_coord_gate_active', False)), pre_coord=getattr(w, '_coord_gate_pre_coord', None), coord=(rt_x, rt_z), prev_coord=getattr(w, '_coord_gate_coord_prev', None), is_loading=_is_loading_for_map, arrival_coord=_load_arrival_coord)
         w._coord_gate_loc_prev = _gate_loc
         w._coord_gate_active = _gate.in_transition
         w._coord_gate_pre_coord = _gate.pre_coord
+        w._coord_gate_coord_prev = (rt_x, rt_z)
+        if _load_arrival_coord is not None and (not _is_loading_for_map) and ((rt_x, rt_z) == _load_arrival_coord):
+            w._load_arrival_consumed_seq = _arr_seq
         if not _gate.shown:
             _show_player_x = None
             _show_player_y = None
@@ -1109,6 +1122,7 @@ def _poll_screen_detect_and_label(w, _img_name, mif_name, _resolved_area, player
                 w._b24_status_mode_active = False
         except (AttributeError, RuntimeError):
             pass
+        _propose_automap_screen_mode(w, screen_id_stable=_screen_id_stable, top_level=_current_top_level(w))
         from normal_play.status_overlay import classify_status_panel_state
         _status_panel_state = classify_status_panel_state(top_level=_current_top_level(w), screen_id_stable=_screen_id_stable)
         try:

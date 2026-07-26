@@ -14,6 +14,7 @@ POPUP_FRAME_TOP_OFFSET = 36728
 POPUP_FRAME_BOTTOM_OFFSET = 36730
 SCREEN_FRAME_RIGHT = 308
 SCREEN_FRAME_BOTTOM = 199
+MENU_RELEASE_FULLSCREEN_POLLS = 3
 CAMP_CONFIRM_OFFSET = 4164
 CAMP_CONFIRM_READ_LEN = 96
 CAMP_CONFIRM_MARKER = 'remaining hours'
@@ -35,6 +36,7 @@ class CampView(NamedTuple):
     items: tuple = ()
     prompt_text: str = ''
     reason: str = ''
+    menu_release_streak: int = 0
 
 def _norm(text: str) -> str:
     return ' '.join((text or '').split())
@@ -129,6 +131,13 @@ def _popup_frame_shown(analyzer, anchor: int) -> bool:
         return False
     return right < SCREEN_FRAME_RIGHT or bottom < SCREEN_FRAME_BOTTOM
 
+def _popup_frame_fullscreen(analyzer, anchor: int) -> bool:
+    left = _read_u16(analyzer, anchor, POPUP_FRAME_LEFT_OFFSET)
+    right = _read_u16(analyzer, anchor, POPUP_FRAME_RIGHT_OFFSET)
+    top = _read_u16(analyzer, anchor, POPUP_FRAME_TOP_OFFSET)
+    bottom = _read_u16(analyzer, anchor, POPUP_FRAME_BOTTOM_OFFSET)
+    return left == 0 and right == SCREEN_FRAME_RIGHT and (top == 0) and (bottom == SCREEN_FRAME_BOTTOM)
+
 def _confirm_record_live(analyzer, anchor: int) -> bool:
     try:
         head = analyzer.read_bytes(anchor + CAMP_CONFIRM_OFFSET, 2)
@@ -136,7 +145,7 @@ def _confirm_record_live(analyzer, anchor: int) -> bool:
         return False
     return bool(head) and len(head) >= 2 and (head[0] == 9) and (head[1] == 96)
 
-def classify_camp_view(analyzer, anchor: int) -> CampView:
+def classify_camp_view(analyzer, anchor: int, *, menu_release_streak: int=0) -> CampView:
     try:
         raw = analyzer.read_bytes(anchor + CAMP_BLOCK_OFFSET, CAMP_BLOCK_LEN)
     except (OSError, AttributeError):
@@ -153,8 +162,14 @@ def classify_camp_view(analyzer, anchor: int) -> CampView:
     if tmpl != CAMP_HOURS_PROMPT_TEXT:
         return CampView(kind='none', reason='hours template mismatch')
     ptr = _read_u16(analyzer, anchor, CURRENT_TEXT_PTR_OFFSET)
+    _released_streak = 0
     if ptr is not None and any((it.start <= ptr < it.end for it in items)):
-        return CampView(kind='menu', title=CAMP_TITLE_TEXT, items=items, reason=f'ptr=0x{ptr:04X} in camp item span')
+        if not _popup_frame_fullscreen(analyzer, anchor):
+            return CampView(kind='menu', title=CAMP_TITLE_TEXT, items=items, reason=f'ptr=0x{ptr:04X} in camp item span')
+        streak = min(max(int(menu_release_streak), 0) + 1, MENU_RELEASE_FULLSCREEN_POLLS)
+        if streak < MENU_RELEASE_FULLSCREEN_POLLS:
+            return CampView(kind='menu', title=CAMP_TITLE_TEXT, items=items, menu_release_streak=streak, reason=f'ptr=0x{ptr:04X} in span, fullscreen frame x{streak} (grace)')
+        _released_streak = streak
     resp = _norm(_read_text(analyzer, anchor, CAMP_RESPONSE_OFFSET, CAMP_RESPONSE_READ_LEN))
     slot = _read_u16(analyzer, anchor, CAMP_INPUT_SLOT_OFFSET)
     if resp == CAMP_HOURS_PROMPT_TEXT and slot == CAMP_HOURS_ECHO_OFFSET:
@@ -164,5 +179,7 @@ def classify_camp_view(analyzer, anchor: int) -> CampView:
         if CAMP_CONFIRM_MARKER in confirm:
             left = _read_u16(analyzer, anchor, POPUP_FRAME_LEFT_OFFSET)
             return CampView(kind='rest_confirm', title=CAMP_TITLE_TEXT, items=items, prompt_text=confirm, reason=f'popup frame (left={left}) + confirm text')
+    if _released_streak:
+        return CampView(kind='none', menu_release_streak=_released_streak, reason=f'menu released: stale ptr=0x{ptr:04X} + fullscreen frame x{_released_streak}')
     return CampView(kind='none', reason='no camp foreground signal')
-__all__ = ['CAMP_BLOCK_OFFSET', 'CAMP_BLOCK_LEN', 'CAMP_BLOCK_SPAN', 'CAMP_HOURS_ECHO_OFFSET', 'CAMP_HOURS_TEMPLATE_OFFSET', 'CAMP_INPUT_SLOT_OFFSET', 'CAMP_RESPONSE_OFFSET', 'CAMP_TITLE_TEXT', 'CAMP_MENU_ITEM_TEXTS', 'CAMP_MENU_ITEM_HOTKEYS', 'CAMP_HOURS_PROMPT_TEXT', 'CampMenuItem', 'CampView', 'classify_camp_view', 'ptr_in_camp_block']
+__all__ = ['CAMP_BLOCK_OFFSET', 'CAMP_BLOCK_LEN', 'CAMP_BLOCK_SPAN', 'CAMP_HOURS_ECHO_OFFSET', 'CAMP_HOURS_TEMPLATE_OFFSET', 'CAMP_INPUT_SLOT_OFFSET', 'CAMP_RESPONSE_OFFSET', 'CAMP_TITLE_TEXT', 'CAMP_MENU_ITEM_TEXTS', 'CAMP_MENU_ITEM_HOTKEYS', 'CAMP_HOURS_PROMPT_TEXT', 'MENU_RELEASE_FULLSCREEN_POLLS', 'CampMenuItem', 'CampView', 'classify_camp_view', 'ptr_in_camp_block']

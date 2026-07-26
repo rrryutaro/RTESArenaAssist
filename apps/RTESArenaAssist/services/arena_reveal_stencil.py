@@ -1,4 +1,5 @@
 from __future__ import annotations
+import math
 import numpy as np
 ARENA_REVEAL_STENCIL: tuple[str, ...] = ('1..111...', '11122211.', '11222221.', '112333211', '112333211', '112333211', '.1222221.', '.1111111.', '...111...')
 
@@ -98,6 +99,28 @@ def _bresenham(x0: int, y0: int, x1: int, y1: int) -> list[tuple[int, int]]:
             err += dx
             y += sy
     return cells
+
+def line_of_sight_blocked(map1: np.ndarray, px: int, py: int, tx: int, ty: int) -> bool:
+    return _line_of_sight_blocked(map1, px, py, tx, ty)
+VIEW_REVEAL_RADIUS = 6.0
+VIEW_REVEAL_HALF_ANGLE_DEG = 45.0
+_VIEW_COS_HALF_ANGLE = math.cos(math.radians(VIEW_REVEAL_HALF_ANGLE_DEG))
+
+def cell_visible_in_cone(map1: np.ndarray | None, px: int, py: int, facing_dx: float, facing_dy: float, tx: int, ty: int, *, ignore_walls: bool=False) -> bool:
+    ddx = tx - px
+    ddy = ty - py
+    dist = math.hypot(ddx, ddy)
+    if dist > VIEW_REVEAL_RADIUS:
+        return False
+    if dist <= 0:
+        return True
+    dot = (ddx * facing_dx + ddy * facing_dy) / dist
+    if dot < _VIEW_COS_HALF_ANGLE:
+        return False
+    if not ignore_walls and map1 is not None:
+        if _line_of_sight_blocked(map1, px, py, tx, ty):
+            return False
+    return True
 
 def _line_of_sight_blocked(map1: np.ndarray, px: int, py: int, tx: int, ty: int) -> bool:
     if (px, py) == (tx, ty):

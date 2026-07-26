@@ -4,7 +4,8 @@ import os
 _FILE_VERSION = 1
 SECTION_HIDDEN_DOORS = 'hidden_doors'
 SECTION_TREASURE_PILES = 'treasure_piles'
-_SECTIONS = (SECTION_HIDDEN_DOORS, SECTION_TREASURE_PILES)
+SECTION_WALL_PASSAGES = 'wall_passages'
+_SECTIONS = (SECTION_HIDDEN_DOORS, SECTION_TREASURE_PILES, SECTION_WALL_PASSAGES)
 _Cells = dict
 
 def ext_data_dir() -> str:
@@ -137,4 +138,4 @@ def get_store() -> MapExtStore:
     if _SHARED is None:
         _SHARED = MapExtStore()
     return _SHARED
-__all__ = ['MapExtStore', 'ext_data_dir', 'slot_filename', 'get_store', 'SECTION_HIDDEN_DOORS', 'SECTION_TREASURE_PILES']
+__all__ = ['MapExtStore', 'ext_data_dir', 'slot_filename', 'get_store', 'SECTION_HIDDEN_DOORS', 'SECTION_TREASURE_PILES', 'SECTION_WALL_PASSAGES']

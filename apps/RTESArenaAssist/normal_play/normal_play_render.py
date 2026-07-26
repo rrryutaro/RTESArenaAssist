@@ -464,7 +464,9 @@ def _poll_l4_dialog_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog
     from arena_bridge import NPC_PHASE_BUILDING_ENTRY, NPC_PHASE_RESPONDING, NPC_PHASE_IDLE, NPC_PHASE_ASKING
     from normal_play.building_entry_module import poll_building_entry as _poll_building_entry
     from normal_play.npc_message_module import poll_travel_event_lifecycle as _poll_travel_event_lifecycle
+    from normal_play.dungeon_splash_module import poll_dungeon_splash_lifecycle as _poll_dungeon_splash_lifecycle
     _travel_event_active = _poll_travel_event_lifecycle(w, npc_dialog=npc_dialog, screen_img=_img_name_now, facility_active_now=_facility_active_now)
+    _dungeon_splash_active = _poll_dungeon_splash_lifecycle(w, screen_img=_img_name_now, facility_active_now=_facility_active_now)
     _phase_overlay = _npc_phase_raw in (NPC_PHASE_BUILDING_ENTRY, NPC_PHASE_RESPONDING)
     _menu_overlay = in_interior and _img_name_now == 'MENU_RT.IMG' and (_npc_phase_raw not in (NPC_PHASE_IDLE, NPC_PHASE_ASKING))
     _npc_overlay_active = (_phase_overlay or _menu_overlay) and (not _building_entry_active) and (not _shop_buy_active) and (not _shop_menu_visible)
@@ -474,7 +476,7 @@ def _poll_l4_dialog_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog
         w._instore_resp_prev = ''
         w._instore_resp_current_key = None
     _entry_handled = _poll_building_entry(w, building_entry_active=_building_entry_active, entry_phase_prev=_entry_phase_prev, msg_buf=msg_buf, npc_dialog=npc_dialog)
-    if _travel_event_active:
+    if _travel_event_active or _dungeon_splash_active:
         _entry_handled = True
     if not _entry_handled:
         from normal_play.palace_dialog_module import poll_palace_dialog as _poll_palace_dialog, is_palace_interior_mif as _is_palace_interior_mif
@@ -518,7 +520,7 @@ def _poll_l4_dialog_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog
             _entry_handled = True
     if _poll_hierarchy_area == 'dungeon' and (not _entry_handled):
         from normal_play.c1_runtime_dialog_module import poll_c1_runtime_dialog as _poll_c1_runtime_dialog
-        if _poll_c1_runtime_dialog(w, npc_dialog=npc_dialog, npc_dialog_changed=_npc_dialog_changed, facility_active_now=_facility_active_now):
+        if _poll_c1_runtime_dialog(w, npc_dialog=npc_dialog, npc_dialog_changed=_npc_dialog_changed, facility_active_now=_facility_active_now, msg_buf=msg_buf):
             _instore_resp_handled = True
             _entry_handled = True
     return (_entry_handled, _instore_resp_handled)

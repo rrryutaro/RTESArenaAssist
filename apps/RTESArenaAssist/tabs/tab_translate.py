@@ -26,6 +26,7 @@ _MODE_JOURNAL = 'journal'
 _MODE_APPEARANCE_FACES = 'appearance_faces'
 _MODE_FALLBACK_STATUS = 'fallback_status'
 _MODE_FALLBACK_MAP = 'fallback_map'
+_MODE_MAP_SCREEN = 'map_screen'
 
 class TabTranslate(QWidget):
     panel_mode_changed = Signal(str)
@@ -125,6 +126,8 @@ class TabTranslate(QWidget):
         elif mode == _MODE_FALLBACK_STATUS:
             self._stack.setCurrentIndex(2)
         elif mode == _MODE_FALLBACK_MAP:
+            self._stack.setCurrentIndex(11)
+        elif mode == _MODE_MAP_SCREEN:
             self._stack.setCurrentIndex(11)
         else:
             mode = _MODE_TRANSLATE

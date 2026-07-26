@@ -40,7 +40,7 @@
   "glossary.month_suns_dawn.0": "Amanecer del sol",
   "glossary.month_first_seed.0": "Primera siembra",
   "glossary.month_rains_hand.0": "Mano de la lluvia",
-   "glossary.month_second_seed.0": "Segunda siembra",
+  "glossary.month_second_seed.0": "Segunda siembra",
   "glossary.month_midyear.0": "Mitad de año",
   "glossary.month_suns_height.0": "Pico del sol",
   "glossary.month_last_seed.0": "Última siembra",
@@ -62,5 +62,15 @@
   "glossary.app_translate_panel.0": "Panel de traducción",
   "glossary.app_dungeon_text.0": "Texto de mazmorra",
   "glossary.app_capture.0": "Capturar",
-  "glossary.mage_context_dependent.0": "Mago"
+  "glossary.mage_context_dependent.0": "Mago",
+  "glossary.halls_of_colossus.0": "Salones del Coloso",
+  "glossary.crypt_of_hearts.0": "Cripta de los Corazones",
+  "glossary.crystal_tower.0": "Torre de cristal",
+  "glossary.dagoth_ur.0": "Dagoth-Ur",
+  "glossary.elden_grove.0": "Arboleda de Elden",
+  "glossary.fang_lair.0": "Guarida del Colmillo",
+  "glossary.labyrinthian.0": "Labyrinthian",
+  "glossary.murkwood.0": "Murkwood",
+  "glossary.staff_of_chaos.0": "Bastón del Caos",
+  "glossary.shalidor.0": "Shalidor"
 }

@@ -3,7 +3,7 @@ from typing import Optional
 MODE_TRANSLATE = 'translate'
 MODE_FALLBACK_MAP = 'fallback_map'
 MODE_FALLBACK_STATUS = 'fallback_status'
-FOREGROUND_MODES = frozenset({'item_pickup', 'shop_buy', 'facility_list', 'equipment', 'spell_detail', 'place_list', 'travel_table', 'journal', 'load_screen', 'choose_attributes', 'class_list', 'race_list', 'appearance_faces'})
+FOREGROUND_MODES = frozenset({'item_pickup', 'shop_buy', 'facility_list', 'equipment', 'spell_detail', 'place_list', 'travel_table', 'journal', 'load_screen', 'choose_attributes', 'class_list', 'race_list', 'appearance_faces', 'map_screen'})
 _TRANSLATE_FAMILY = frozenset({MODE_TRANSLATE, MODE_FALLBACK_MAP, MODE_FALLBACK_STATUS})
 OWNER_BOUND_MODES: dict[str, str] = {'load_screen': 'load_screen'}
 

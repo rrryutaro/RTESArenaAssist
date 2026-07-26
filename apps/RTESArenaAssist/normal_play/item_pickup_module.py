@@ -3,6 +3,9 @@ import logging
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 
+def _display_count(count: int) -> int:
+    return max(count - 2, 0)
+
 def _read_names(w, count: int) -> list[str]:
     if count <= 0:
         return []
@@ -15,9 +18,13 @@ def _read_names(w, count: int) -> list[str]:
         end = raw.find(b'\x00', pos)
         if end == -1:
             break
-        nm = raw[pos:end].decode('ascii', errors='replace').strip()
-        if nm:
-            names.append(nm)
+        seg = raw[pos:end]
+        if not seg or not all((32 <= b <= 126 for b in seg)):
+            break
+        nm = seg.decode('ascii').strip()
+        if not nm or not any((c.isalnum() for c in nm)):
+            break
+        names.append(nm)
         pos = end + 1
     return names
 
@@ -82,13 +89,10 @@ def poll_item_pickup(w, *, newpop_gate: bool, b30_img_name: str, npc_dialog: str
     _was_open = getattr(w, '_b32_newpop_open', False)
     _cnt_prev = getattr(w, '_b32_count_prev', 0)
     _blocked = _screen_id in _BLOCKED_SCREENS or b30_img_name in _BLOCKED_IMGS or shop_buy_active or shop_menu_visible or facility_active
-    try:
-        _first = w._analyzer.read_bytes(w._anchor + 37634, 1)[0]
-        _names_present = 65 <= _first <= 90
-    except (OSError, AttributeError):
-        _names_present = False
+    _names_present = bool(_read_names(w, 1))
     _is_open = newpop_gate
-    _content_chest_ready = _count > 0 and _names_present
+    _display_n = _display_count(_count)
+    _content_chest_ready = _display_n > 0 and _names_present
     _corpse_item_name = False
     if _count == 0 and bool(npc_dialog) and (not _is_garbage_npc_buffer(npc_dialog)):
         try:
@@ -113,7 +117,7 @@ def poll_item_pickup(w, *, newpop_gate: bool, b30_img_name: str, npc_dialog: str
         import dungeon_msg_lookup as _dml
         _is_corpse = _content_corpse_ready and (not _content_chest_ready)
         if _content_chest_ready:
-            _raw_names = _read_names(w, _count)
+            _raw_names = _read_names(w, _display_n)
             _filtered_names = _filter_suffix_fragments(_raw_names)
             _ignored_fragments = [n for n in _raw_names if n not in _filtered_names]
             _existing = getattr(w, '_b32_seen_items', []) or []
@@ -182,14 +186,14 @@ def poll_item_pickup(w, *, newpop_gate: bool, b30_img_name: str, npc_dialog: str
             _claim_item_pickup_owner(w)
         if _is_open and (not w._b32_was_corpse) and (_count < _cnt_prev) and _content_chest_ready:
             _seen = getattr(w, '_b32_seen_items', [])
-            _names_now = set(_read_names(w, _count))
+            _names_now = set(_read_names(w, _display_n))
             _changed = False
             for _it in _seen:
                 if not _it['taken'] and _it['en'] not in _names_now:
                     _it['taken'] = True
                     _changed = True
             if _changed:
-                _show_item_pickup(w, _seen, _count)
+                _show_item_pickup(w, _seen, _display_n)
         elif _is_open and w._b32_was_corpse and _content_corpse_ready and (npc_dialog != (w._b32_seen_items[0]['en'] if w._b32_seen_items else '')):
             import dungeon_msg_lookup as _dml2
             _seen = [{'en': npc_dialog, 'ja': _dml2.lookup_item(npc_dialog) or '', 'taken': False}]

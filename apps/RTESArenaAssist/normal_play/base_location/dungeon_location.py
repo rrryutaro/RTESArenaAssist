@@ -3,10 +3,10 @@ import logging
 from pathlib import Path
 from typing import Optional
 import numpy as np
-from common_draw.automap_canvas import CanvasData, _is_hidden_door_cell, facing_target_cell
-from services.map_ext_store import SECTION_TREASURE_PILES
+from common_draw.automap_canvas import CanvasData, _is_hidden_door_cell, _is_wall_passage_cell, facing_delta, facing_target_cell
+from services.map_ext_store import SECTION_TREASURE_PILES, SECTION_WALL_PASSAGES
 from services.automap_file import AutomapCache, CURRENT_LEVEL_HASH_OFFSET, EXPECTED_FILE_SIZE, find_active_cache, parse_automap_file
-from services.arena_reveal_stencil import apply_reveal_stencil, apply_reveal_stencil_with_los, rebuild_seen_cells_from_bitmap
+from services.arena_reveal_stencil import apply_reveal_stencil, apply_reveal_stencil_with_los, cell_visible_in_cone, rebuild_seen_cells_from_bitmap
 from runtime_paths import resolve_arena_install_dir
 from services.mif_loader import DEFAULT_INF_DIR, DEFAULT_MIF_DIR, load_mif, parse_inf_level_transitions, parse_inf_menu_indices, parse_inf_walls_hidden_door_ids, resolve_inf_for_mif
 from normal_play.map.base import MapContext, MapSessionBase
@@ -34,6 +34,7 @@ class DungeonMapSession(MapSessionBase):
         self._ext_store = None
         self._location_key: Optional[str] = None
         self._discovered_hd: frozenset[tuple[int, int]] = frozenset()
+        self._discovered_wp: frozenset[tuple[int, int]] = frozenset()
         self._last_player_pos: Optional[tuple[int, int]] = None
         self._last_automap_mtime_ns: Optional[int] = None
         self._last_automap_size: int = 0
@@ -51,25 +52,14 @@ class DungeonMapSession(MapSessionBase):
         self._known_treasure: frozenset = frozenset()
         self._treasure_pickup_was_open = False
         self._wall_los_enabled = False
+        self._wall_passage_cells: tuple[tuple[int, int], ...] = ()
+        self._view_scan_key: tuple | None = None
         self._diag_prev_update: tuple = ()
         self._diag_prev_merge_reason: str | None = None
 
     def start(self, ctx: MapContext) -> None:
         _log.info('dungeon_diag[id=%x]: start mif=%r save_dir=%r analyzer=%s anchor=%r', id(self), ctx.mif_name, ctx.save_dir, ctx.analyzer is not None, ctx.anchor)
         super().start(ctx)
-        self._mif_name = None
-        self._walkable = None
-        self._map1 = None
-        self._flor = None
-        self._bitmap = None
-        self._seen_cells.clear()
-        self._last_player_pos = None
-        self._last_automap_mtime_ns = None
-        self._last_automap_size = 0
-        self._active_cache_index = None
-        self._notes = []
-        self._hidden_door_ids = frozenset()
-        self._menu_texture_indices = frozenset()
         self._diag_prev_merge_reason = None
 
     def stop(self, ctx: MapContext) -> None:
@@ -114,16 +104,19 @@ class DungeonMapSession(MapSessionBase):
                             apply_reveal_stencil_with_los(self._bitmap, self._map1, ix, iy)
                     self._note_hidden_door_if_any(ix, iy)
                     self._last_player_pos = pos
+        self._note_wall_passages_in_view(ctx)
         self._note_treasure_piles_if_any(ctx)
         if self._ext_store is not None and self._location_key:
             self._discovered_hd = self._ext_store.discovered_cells(self._location_key)
             self._known_treasure = self._ext_store.discovered_cells(self._location_key, SECTION_TREASURE_PILES)
+            self._discovered_wp = self._ext_store.discovered_cells(self._location_key, SECTION_WALL_PASSAGES)
         else:
             self._discovered_hd = frozenset()
             self._known_treasure = frozenset()
+            self._discovered_wp = frozenset()
 
     def get_canvas_data(self) -> CanvasData:
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, treasure_pile_cells=self._known_treasure, discovered_hidden_door_cells=self._discovered_hd, map_key=f'dungeon:{self._location_key}' if self._location_key else 'dungeon:<unknown>', cache_index=self._active_cache_index)
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, treasure_pile_cells=self._known_treasure, discovered_hidden_door_cells=self._discovered_hd, discovered_wall_passage_cells=self._discovered_wp, map_key=f'dungeon:{self._location_key}' if self._location_key else 'dungeon:<unknown>', cache_index=self._active_cache_index)
 
     def _note_treasure_piles_if_any(self, ctx: MapContext) -> None:
         opened = bool(ctx.treasure_pickup_open)
@@ -146,6 +139,21 @@ class DungeonMapSession(MapSessionBase):
             return
         if _is_hidden_door_cell(int(m[iy, ix]), self._hidden_door_ids):
             self._ext_store.note_discovery(self._location_key, ix, iy)
+
+    def _note_wall_passages_in_view(self, ctx: MapContext) -> None:
+        if self._ext_store is None or not self._location_key or (not self._wall_passage_cells):
+            return
+        if ctx.player_tile_x is None or ctx.player_tile_y is None or ctx.angle_deg is None:
+            return
+        px, py = (int(ctx.player_tile_x), int(ctx.player_tile_y))
+        key = (px, py, int(ctx.angle_deg / 5.0))
+        if key == self._view_scan_key:
+            return
+        self._view_scan_key = key
+        fx, fy = facing_delta(ctx.angle_deg)
+        for cx, cy in self._wall_passage_cells:
+            if cell_visible_in_cone(self._map1, px, py, fx, fy, cx, cy, ignore_walls=self._wall_los_enabled):
+                self._ext_store.note_discovery(self._location_key, cx, cy, SECTION_WALL_PASSAGES)
 
     def reset_progress(self) -> None:
         if self._bitmap is None:
@@ -185,6 +193,15 @@ class DungeonMapSession(MapSessionBase):
             self._flor = np.array(mif.flor, dtype=np.uint16).reshape(mif.height, mif.width)
         else:
             self._flor = None
+        self._wall_passage_cells = ()
+        self._view_scan_key = None
+        if self._flor is not None:
+            cells: list[tuple[int, int]] = []
+            for yy in range(mif.height):
+                for xx in range(mif.width):
+                    if _is_wall_passage_cell(int(map1[yy, xx]), int(self._flor[yy, xx])):
+                        cells.append((xx, yy))
+            self._wall_passage_cells = tuple(cells)
         self._level_up_index = None
         self._level_down_index = None
         hidden_door_ids: set[int] = set()
@@ -222,6 +239,7 @@ class DungeonMapSession(MapSessionBase):
         self._last_automap_size = 0
         self._active_cache_index = None
         self._notes = []
+        self._reset_retry_remaining = 20
 
     def _diag_log_skip(self, reason: str) -> None:
         if reason != self._diag_prev_merge_reason:
@@ -286,6 +304,8 @@ class DungeonMapSession(MapSessionBase):
             self._diag_log_skip('no_active_cache')
             return False
         if int((active.bitmap_grid != 0).sum()) >= int(active.bitmap_grid.size):
+            if in_retry:
+                self._reset_retry_remaining += 1
             self._diag_log_skip('degenerate_full_bitmap')
             return False
         self._bitmap[:] = active.bitmap_grid

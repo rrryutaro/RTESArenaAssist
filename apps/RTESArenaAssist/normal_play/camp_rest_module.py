@@ -102,10 +102,13 @@ def _cleanup_camp(w) -> None:
 def poll_camp_rest(w) -> bool:
     try:
         from camp_rest_reader import classify_camp_view
-        view = classify_camp_view(w._analyzer, w._anchor)
+        _streak_prev = int(getattr(w, '_camp_menu_release_streak', 0) or 0)
+        view = classify_camp_view(w._analyzer, w._anchor, menu_release_streak=_streak_prev)
+        w._camp_menu_release_streak = int(getattr(view, 'menu_release_streak', 0) or 0)
     except Exception:
         _log.exception('classify_camp_view failed')
         view = None
+        w._camp_menu_release_streak = 0
     kind = getattr(view, 'kind', 'none') if view is not None else 'none'
     _prev_kind = getattr(w, '_camp_view_kind_prev', 'none')
     if kind != _prev_kind:

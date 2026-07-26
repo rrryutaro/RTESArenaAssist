@@ -3,8 +3,10 @@ import logging
 from pathlib import Path
 from typing import Optional
 import numpy as np
-from common_draw.automap_canvas import CanvasData, _is_hidden_door_cell
+from common_draw.automap_canvas import CanvasData, _is_hidden_door_cell, _is_wall_passage_cell, facing_delta
+from services.arena_reveal_stencil import cell_visible_in_cone
 from services.city_voxel_assembler import detect_menu_cells
+from services.map_ext_store import SECTION_WALL_PASSAGES
 from runtime_paths import resolve_arena_install_dir
 from services.mif_loader import DEFAULT_INF_DIR, DEFAULT_MIF_DIR, load_mif, parse_inf_level_transitions, parse_inf_menu_indices, parse_inf_walls_hidden_door_ids, resolve_inf_for_mif
 from .base import MapContext, MapSessionBase
@@ -28,6 +30,9 @@ class InteriorMapSession(MapSessionBase):
         self._ext_store = None
         self._location_key: Optional[str] = None
         self._discovered_hd: frozenset[tuple[int, int]] = frozenset()
+        self._discovered_wp: frozenset[tuple[int, int]] = frozenset()
+        self._wall_passage_cells: tuple[tuple[int, int], ...] = ()
+        self._view_scan_key = None
         self._last_player_pos: Optional[tuple[int, int]] = None
         self._menu_texture_indices: frozenset[int] = frozenset()
         self._entrance_cells: tuple[tuple[int, int], ...] = ()
@@ -71,10 +76,13 @@ class InteriorMapSession(MapSessionBase):
             if pos != self._last_player_pos:
                 self._last_player_pos = pos
                 self._note_hidden_door_if_any(ix, iy)
+        self._note_wall_passages_in_view(ctx)
         if self._ext_store is not None and self._location_key:
             self._discovered_hd = self._ext_store.discovered_cells(self._location_key)
+            self._discovered_wp = self._ext_store.discovered_cells(self._location_key, SECTION_WALL_PASSAGES)
         else:
             self._discovered_hd = frozenset()
+            self._discovered_wp = frozenset()
 
     def _note_hidden_door_if_any(self, ix: int, iy: int) -> None:
         if self._ext_store is None or not self._location_key:
@@ -85,13 +93,28 @@ class InteriorMapSession(MapSessionBase):
         if _is_hidden_door_cell(int(m[iy, ix]), self._hidden_door_ids):
             self._ext_store.note_discovery(self._location_key, ix, iy)
 
+    def _note_wall_passages_in_view(self, ctx: MapContext) -> None:
+        if self._ext_store is None or not self._location_key or (not self._wall_passage_cells):
+            return
+        if ctx.player_tile_x is None or ctx.player_tile_y is None or ctx.angle_deg is None:
+            return
+        px, py = (int(ctx.player_tile_x), int(ctx.player_tile_y))
+        key = (px, py, int(ctx.angle_deg / 5.0))
+        if key == self._view_scan_key:
+            return
+        self._view_scan_key = key
+        fx, fy = facing_delta(ctx.angle_deg)
+        for cx, cy in self._wall_passage_cells:
+            if cell_visible_in_cone(self._map1, px, py, fx, fy, cx, cy, ignore_walls=ctx.wall_los_enabled):
+                self._ext_store.note_discovery(self._location_key, cx, cy, SECTION_WALL_PASSAGES)
+
     def get_canvas_data(self) -> CanvasData:
         px = int(self._player_x) if self._player_x is not None else None
         py = int(self._player_y) if self._player_y is not None else None
         angle = self._angle
         if not self._coord_in_bounds(px, py) and self._entry_center is not None:
             px, py = self._entry_center
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=px, player_y=py, player_angle_deg=angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=self._entrance_cells, is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, discovered_hidden_door_cells=self._discovered_hd, map_key=f'interior:{self._mif_name}#{self._floor}' if self._mif_name else 'interior:<unknown>')
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=px, player_y=py, player_angle_deg=angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=self._entrance_cells, is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, discovered_hidden_door_cells=self._discovered_hd, discovered_wall_passage_cells=self._discovered_wp, map_key=f'interior:{self._mif_name}#{self._floor}' if self._mif_name else 'interior:<unknown>')
 
     def reset_progress(self) -> None:
         if self._walkable is not None:
@@ -110,6 +133,8 @@ class InteriorMapSession(MapSessionBase):
         self._menu_texture_indices = frozenset()
         self._entrance_cells = ()
         self._entry_center = None
+        self._wall_passage_cells = ()
+        self._view_scan_key = None
 
     def _load_mif(self, mif_name: str, player_floor: int=0) -> None:
         try:
@@ -128,6 +153,15 @@ class InteriorMapSession(MapSessionBase):
             self._flor = np.array(mif.flor, dtype=np.uint16).reshape(mif.height, mif.width)
         else:
             self._flor = None
+        self._wall_passage_cells = ()
+        self._view_scan_key = None
+        if self._flor is not None:
+            cells: list[tuple[int, int]] = []
+            for yy in range(mif.height):
+                for xx in range(mif.width):
+                    if _is_wall_passage_cell(int(map1[yy, xx]), int(self._flor[yy, xx])):
+                        cells.append((xx, yy))
+            self._wall_passage_cells = tuple(cells)
         self._level_up_index = None
         self._level_down_index = None
         hidden_door_ids: set[int] = set()

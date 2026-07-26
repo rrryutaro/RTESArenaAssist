@@ -7,6 +7,8 @@ TEMPLATE_ANCHOR_DELTA = 23419
 FILLED_ANCHOR_DELTA = 37918
 FILLED_DELTA = 14499
 EXPECTED_TEMPLATE_PREFIX = b'You are in %s.'
+CURRENT_TEXT_PTR_OFFSET = 43076
+CURRENT_TEXT_PTR_AUX_OFFSET = 43078
 _TEMPLATE_ADDR_CACHE: Optional[int] = None
 _FILLED_ADDR_CACHE: Optional[int] = None
 STATUS_HEADER_PATTERN = re.compile('You are in (?P<location>.+?)\\.\\rIt is (?P<time>.+?)\\.\\rThe date is (?P<date>.+?)\\rYou are currently carrying (?P<weight>\\d+) kg out of (?P<weight_max>\\d+) kg\\.\\r')
@@ -92,6 +94,25 @@ def parse_filled(analyzer, anchor: int=None) -> Optional[Dict]:
     from date_translator import is_status_state_line
     parsed['states'] = tuple((ln for ln in text[m.end():].split('\r') if ln.strip() and is_status_state_line(ln)))
     return parsed
+
+def status_popup_foreground(analyzer, anchor: Optional[int]) -> bool:
+    if analyzer is None or anchor is None:
+        return False
+    addrs = _resolve_addrs(analyzer, anchor)
+    if addrs is None:
+        return False
+    filled_delta = addrs[1] - anchor
+    if not 0 <= filled_delta <= 65535:
+        return False
+    try:
+        raw = analyzer.read_bytes(anchor + CURRENT_TEXT_PTR_OFFSET, 4)
+    except (OSError, AttributeError):
+        return False
+    if not raw or len(raw) < 4:
+        return False
+    ptr = raw[0] | raw[1] << 8
+    aux = raw[2] | raw[3] << 8
+    return ptr == filled_delta and aux >> 8 != 0
 
 def reset_cache() -> None:
     global _TEMPLATE_ADDR_CACHE, _FILLED_ADDR_CACHE

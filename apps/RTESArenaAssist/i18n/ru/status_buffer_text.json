@@ -35,6 +35,7 @@
   "status_buffer_text.date_format_dialog_full": "{weekday}, {month}, день {day}, {era}, {year} год",
   "status_buffer_text.date_format_dialog_short": "{weekday}, {month}, день {day}",
   "status_buffer_text.ds_format_ask_about": "{trait} {occupation} по имени {title} {name}",
+  "status_buffer_text.ds_format_ask_about_untitled": "{trait} {occupation} по имени {name}",
   "status_buffer_text.ds_format_tavern_quest": "{descriptor} по имени {named} из {locale}",
   "status_buffer_text.ds_format_trait_name": "{trait} {name}",
   "status_buffer_text.settlement_format": "{type} «{name}»",

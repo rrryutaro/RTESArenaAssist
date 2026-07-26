@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:ab888e8f0123cfa01da892d6d8d565903e714b9e2622fe3f4c89dc15a6a791f9",
+  "registry_hash": "sha256:7105b21cadf19ee8cac2f0e51fcafcb0db91fede02a34391166fe9f093d1c684",
   "categories": [
     {
       "category": "assist_ui",
@@ -5365,6 +5365,48 @@
       ]
     },
     {
+      "category": "dungeon_splash",
+      "source_policy": "arena_generated",
+      "id_range": [
+        121000,
+        121999
+      ],
+      "entries": [
+        {
+          "id": 121000,
+          "kind": "label"
+        },
+        {
+          "id": 121001,
+          "kind": "label"
+        },
+        {
+          "id": 121002,
+          "kind": "label"
+        },
+        {
+          "id": 121003,
+          "kind": "label"
+        },
+        {
+          "id": 121004,
+          "kind": "label"
+        },
+        {
+          "id": 121005,
+          "kind": "label"
+        },
+        {
+          "id": 121006,
+          "kind": "label"
+        },
+        {
+          "id": 121007,
+          "kind": "label"
+        }
+      ]
+    },
+    {
       "category": "equipment",
       "source_policy": "arena_generated",
       "id_range": [
@@ -6087,6 +6129,56 @@
           "id": 903063,
           "kind": "label",
           "debug_name": "glossary.wil_abbr.0"
+        },
+        {
+          "id": 903064,
+          "kind": "label",
+          "debug_name": "glossary.crypt_of_hearts.0"
+        },
+        {
+          "id": 903065,
+          "kind": "label",
+          "debug_name": "glossary.crystal_tower.0"
+        },
+        {
+          "id": 903066,
+          "kind": "label",
+          "debug_name": "glossary.dagoth_ur.0"
+        },
+        {
+          "id": 903067,
+          "kind": "label",
+          "debug_name": "glossary.elden_grove.0"
+        },
+        {
+          "id": 903068,
+          "kind": "label",
+          "debug_name": "glossary.fang_lair.0"
+        },
+        {
+          "id": 903069,
+          "kind": "label",
+          "debug_name": "glossary.halls_of_colossus.0"
+        },
+        {
+          "id": 903070,
+          "kind": "label",
+          "debug_name": "glossary.labyrinthian.0"
+        },
+        {
+          "id": 903071,
+          "kind": "label",
+          "debug_name": "glossary.murkwood.0"
+        },
+        {
+          "id": 903072,
+          "kind": "label",
+          "debug_name": "glossary.shalidor.0"
+        },
+        {
+          "id": 903073,
+          "kind": "label",
+          "debug_name": "glossary.staff_of_chaos.0"
         }
       ]
     },
@@ -41908,6 +42000,10 @@
         {
           "id": 452093,
           "kind": "label"
+        },
+        {
+          "id": 452094,
+          "kind": "label"
         }
       ]
     },
@@ -49789,6 +49885,46 @@
         {
           "id": 903063,
           "text": "WIL"
+        },
+        {
+          "id": 903064,
+          "text": "Crypt of Hearts"
+        },
+        {
+          "id": 903065,
+          "text": "Crystal Tower"
+        },
+        {
+          "id": 903066,
+          "text": "Dagoth-Ur"
+        },
+        {
+          "id": 903067,
+          "text": "Elden Grove"
+        },
+        {
+          "id": 903068,
+          "text": "Fang Lair"
+        },
+        {
+          "id": 903069,
+          "text": "Halls of Colossus"
+        },
+        {
+          "id": 903070,
+          "text": "Labyrinthian"
+        },
+        {
+          "id": 903071,
+          "text": "Murkwood"
+        },
+        {
+          "id": 903072,
+          "text": "Shalidor"
+        },
+        {
+          "id": 903073,
+          "text": "Staff of Chaos"
         }
       ]
     },
@@ -68704,6 +68840,38 @@
           "text": "%0 ヒットポイントのシールドを生成。%4 レベルごとに +%1 ポイント。"
         },
         {
+          "id": 121000,
+          "text": "心臓の地下墓所の石壁を見つめると、死の冷気があなたの心に触れるかのようだ。入口の上には嘲笑う頭蓋骨が掲げられ、死者の広間を渡ろうとする者への警告となっている。下のどこかに、混沌の杖の六番目の一片の気配を感じる…"
+        },
+        {
+          "id": 121001,
+          "text": "クリスタルの塔がその一帯を支配し、天を指す糾弾の指のように聳え立つ。この魔法の砦は通常の人知を超越し、この世界のほかにも多くの次元に存在しているかのようだ。上のどこかに、混沌の杖の五番目の一片の気配を感じる…"
+        },
+        {
+          "id": 121002,
+          "text": "火の山ダゴス・ウルへのドワーフの鍛冶師たちの聖なる入口が、あなたの前に立っている。魔法のルーンが赤い炎の光の中で輝き、熱で揺らめく。開口部の岩肌の通気孔から硫黄の蒸気が噴き出す。混沌の杖の最後の一片が誘っている…"
+        },
+        {
+          "id": 121003,
+          "text": "エルデンの森への小さな草生した入口があなたの前に立ち、幾世代も忘れられてきた秘密を守っている。その霧深い回廊のどこかに、混沌の杖の三番目の一片が眠っている…"
+        },
+        {
+          "id": 121004,
+          "text": "牙の巣窟の竜の門の前に立ち、その威容にひれ伏す。ドワーフの砦はとうの昔に打ち捨てられたようで、石壁は時と荒廃で罅割れている。その奥深い湿った深部のどこかに、混沌の杖の最初の一片が眠っている…"
+        },
+        {
+          "id": 121005,
+          "text": "はるか昔の時代に巨人が築いた巨像の広間の巨大な壁の前に、あなたは立っている。風が空虚な胸壁を悲しげに吹き抜ける。ここに混沌の杖の四番目の一片がある…"
+        },
+        {
+          "id": 121006,
+          "text": "強情な草と根が厳しい極寒の気候の中で屈することなく立っている。あなたの前にはラビリンシアンの入口が聳える。大魔導士シャリドールの試練の地だ。その入り組んだ道の中に、混沌の杖の二番目の一片が眠っている…"
+        },
+        {
+          "id": 121007,
+          "text": "黒き森マークウッドの霧が渦を巻く。暗い森の奥からは、その狡猾な蜘蛛の巣の中で道を失った魂たちの、かすかな絶望の叫びが聞こえる。あらゆる木々と石から腐敗の匂いが漂うが、この森の中に混沌の杖の七番目の一片が眠っている…"
+        },
+        {
           "id": 200000,
           "text": "フレダス"
         },
@@ -74248,6 +74416,10 @@
           "text": "今のあなたの状態では、この旅を生き延びられないかもしれません。それでも旅に出ますか？"
         },
         {
+          "id": 452094,
+          "text": "{trait}{occupation}の{name}"
+        },
+        {
           "id": 900000,
           "text": "RTESArenaAssist はすでに起動しています。\n起動中のウィンドウを前面に表示します。"
         },
@@ -77430,6 +77602,46 @@
         {
           "id": 903063,
           "text": "WIL"
+        },
+        {
+          "id": 903064,
+          "text": "心臓の地下墓所"
+        },
+        {
+          "id": 903065,
+          "text": "クリスタルの塔"
+        },
+        {
+          "id": 903066,
+          "text": "ダゴス・ウル"
+        },
+        {
+          "id": 903067,
+          "text": "エルデンの森"
+        },
+        {
+          "id": 903068,
+          "text": "牙の巣窟"
+        },
+        {
+          "id": 903069,
+          "text": "巨像の広間"
+        },
+        {
+          "id": 903070,
+          "text": "ラビリンシアン"
+        },
+        {
+          "id": 903071,
+          "text": "マークウッド"
+        },
+        {
+          "id": 903072,
+          "text": "シャリドール"
+        },
+        {
+          "id": 903073,
+          "text": "混沌の杖"
         }
       ]
     },
@@ -97017,6 +97229,38 @@
           "text": "Genera un escudo de %0 puntos de golpe. +%1 puntos cada %4 niveles."
         },
         {
+          "id": 121000,
+          "text": "El frío de la muerte parece rozar tu corazón al contemplar los muros de piedra de la Cripta de los Corazones. Sobre la entrada se alza una calavera sonriente, advertencia para quienes osen recorrer los salones de los muertos. Puedes sentir la sexta pieza del Bastón del Caos, en algún lugar abajo..."
+        },
+        {
+          "id": 121001,
+          "text": "La Torre de cristal domina el paraje, alzándose como un dedo acusador que señala el cielo. Este bastión de hechicería parece trascender el entendimiento humano, existiendo en muchos planos además de este. Puedes sentir la quinta pieza del Bastón del Caos, en algún lugar en lo alto..."
+        },
+        {
+          "id": 121002,
+          "text": "Ante ti se encuentra la entrada sagrada de los herreros enanos a la montaña de fuego, Dagoth-Ur. Runas mágicas brillan a la luz roja del fuego, reverberando de calor. Chorros sulfurosos de vapor escapan de las grietas en la pared rocosa de la abertura. La última pieza del Bastón del Caos te llama..."
+        },
+        {
+          "id": 121003,
+          "text": "La pequeña entrada cubierta de maleza de la Arboleda de Elden se alza ante ti, guardando secretos olvidados desde hace eras. En algún lugar de sus corredores brumosos yace la tercera pieza del Bastón del Caos..."
+        },
+        {
+          "id": 121004,
+          "text": "Ante ti se alza la puerta del dragón de la Guarida del Colmillo, imponente en su majestuosidad. La fortaleza enana parece abandonada desde hace mucho, con sus muros de piedra agrietados por los años y el descuido. En algún lugar de sus húmedas profundidades yace la primera pieza del Bastón del Caos..."
+        },
+        {
+          "id": 121005,
+          "text": "Te encuentras ante los gigantescos muros de los Salones del Coloso, erigidos por gigantes en una era remota. El viento resuena con tristeza por las almenas vacías. Aquí yace la cuarta pieza del Bastón del Caos..."
+        },
+        {
+          "id": 121006,
+          "text": "Hierbas y raíces obstinadas resisten en el severo clima ártico, negándose a ceder. Ante ti se alza la entrada del Labyrinthian, campo de pruebas del Archimago Shalidor. En sus retorcidos senderos yace la segunda pieza del Bastón del Caos..."
+        },
+        {
+          "id": 121007,
+          "text": "Las brumas de Murkwood, el Bosque Negro, se arremolinan alrededor. Del interior del oscuro bosque llegan débiles gritos de desesperación: almas que se extraviaron en su astuta red. Aunque el olor a podredumbre emana de cada árbol y cada piedra, en este bosque yace la séptima pieza del Bastón del Caos..."
+        },
+        {
           "id": 200000,
           "text": "Fredas"
         },
@@ -102697,6 +102941,10 @@
           "text": "Considerando tu estado, quizá no sobrevivas a este viaje. ¿Deseas intentar el viaje?"
         },
         {
+          "id": 452094,
+          "text": "{occupation} {trait} de nombre {name}"
+        },
+        {
           "id": 900000,
           "text": "RTESArenaAssist ya está en ejecución.\nSe mostrará en primer plano la ventana existente."
         },
@@ -105879,6 +106127,46 @@
         {
           "id": 903063,
           "text": "WIL"
+        },
+        {
+          "id": 903064,
+          "text": "Cripta de los Corazones"
+        },
+        {
+          "id": 903065,
+          "text": "Torre de cristal"
+        },
+        {
+          "id": 903066,
+          "text": "Dagoth-Ur"
+        },
+        {
+          "id": 903067,
+          "text": "Arboleda de Elden"
+        },
+        {
+          "id": 903068,
+          "text": "Guarida del Colmillo"
+        },
+        {
+          "id": 903069,
+          "text": "Salones del Coloso"
+        },
+        {
+          "id": 903070,
+          "text": "Labyrinthian"
+        },
+        {
+          "id": 903071,
+          "text": "Murkwood"
+        },
+        {
+          "id": 903072,
+          "text": "Shalidor"
+        },
+        {
+          "id": 903073,
+          "text": "Bastón del Caos"
         }
       ]
     },
@@ -124794,6 +125082,38 @@
           "text": "Erzeugt einen Schild mit %0 Trefferpunkten. +%1 Punkte alle %4 Stufen."
         },
         {
+          "id": 121000,
+          "text": "Die Kälte des Todes scheint dein Herz zu berühren, während du auf die Steinmauern der Gruft der Herzen blickst. Über dem Eingang prangt ein grinsender Schädel, eine Warnung an jene, die die Hallen der Toten durchschreiten wollen. Du kannst das sechste Teil des Stabes des Chaos spüren, irgendwo dort unten..."
+        },
+        {
+          "id": 121001,
+          "text": "Der Kristallturm beherrscht die Gegend und ragt empor wie ein anklagender Finger, der zum Himmel zeigt. Diese Bastion der Zauberei scheint das menschliche Begreifen zu übersteigen und existiert auf vielen Ebenen zugleich. Du kannst das fünfte Teil des Stabes des Chaos spüren, irgendwo dort oben..."
+        },
+        {
+          "id": 121002,
+          "text": "Vor dir liegt der heilige Zugang der Zwergenschmiede in den Feuerberg Dagoth-Ur. Magische Runen glühen im roten Feuerschein und flimmern vor Hitze. Schweflige Dampfschwaden entweichen den Spalten im Fels der Öffnung. Das letzte Teil des Stabes des Chaos ruft..."
+        },
+        {
+          "id": 121003,
+          "text": "Der kleine, überwucherte Eingang zum Elden-Hain liegt vor dir und hütet Geheimnisse, die seit Zeitaltern vergessen sind. Irgendwo in seinen nebligen Gängen liegt das dritte Teil des Stabes des Chaos..."
+        },
+        {
+          "id": 121004,
+          "text": "Vor dir erhebt sich das Drachentor von Lager des Fangs, überwältigend in seiner Majestät. Die Zwergenfeste scheint seit langem verlassen, ihre Steinmauern rissig vor Alter und Verfall. Irgendwo in ihren feuchten Tiefen liegt das erste Teil des Stabes des Chaos..."
+        },
+        {
+          "id": 121005,
+          "text": "Du stehst vor den gewaltigen Mauern der Hallen des Koloss, errichtet von Riesen in einem längst vergangenen Zeitalter. Der Wind hallt klagend durch die leeren Zinnen. Hier liegt das vierte Teil des Stabes des Chaos..."
+        },
+        {
+          "id": 121006,
+          "text": "Widerspenstige Gräser und Wurzeln trotzen dem rauen arktischen Klima und weigern sich zu weichen. Vor dir erhebt sich der Eingang zum Labyrinthian, dem Prüfungsgrund des Erzmagiers Shalidor. In seinen verschlungenen Pfaden liegt das zweite Teil des Stabes des Chaos..."
+        },
+        {
+          "id": 121007,
+          "text": "Die Nebel von Murkwood, dem Schwarzen Wald, wabern umher. Aus dem dunklen Wald dringen leise Schreie der Verzweiflung — Seelen, die sich in seinem tückischen Geflecht verirrt haben. Obwohl der Geruch der Verwesung von jedem Baum und jedem Stein ausgeht, liegt in diesem Wald das siebte Teil des Stabes des Chaos..."
+        },
+        {
           "id": 200000,
           "text": "Fredas"
         },
@@ -130338,6 +130658,10 @@
           "text": "In deinem Zustand überlebst du diese Reise vielleicht nicht. Willst du die Reise dennoch antreten?"
         },
         {
+          "id": 452094,
+          "text": "{occupation} namens {name} ({trait})"
+        },
+        {
           "id": 900000,
           "text": "RTESArenaAssist läuft bereits.\nDas vorhandene Fenster wird in den Vordergrund geholt."
         },
@@ -133520,6 +133844,46 @@
         {
           "id": 903063,
           "text": "WIL"
+        },
+        {
+          "id": 903064,
+          "text": "Gruft der Herzen"
+        },
+        {
+          "id": 903065,
+          "text": "Kristallturm"
+        },
+        {
+          "id": 903066,
+          "text": "Dagoth-Ur"
+        },
+        {
+          "id": 903067,
+          "text": "Elden-Hain"
+        },
+        {
+          "id": 903068,
+          "text": "Lager des Fangs"
+        },
+        {
+          "id": 903069,
+          "text": "Hallen des Koloss"
+        },
+        {
+          "id": 903070,
+          "text": "Labyrinthian"
+        },
+        {
+          "id": 903071,
+          "text": "Murkwood"
+        },
+        {
+          "id": 903072,
+          "text": "Shalidor"
+        },
+        {
+          "id": 903073,
+          "text": "Stab des Chaos"
         }
       ]
     },
@@ -152435,6 +152799,38 @@
           "text": "Crée un bouclier de %0 point(s) de vie. +%1 point(s) tous les %4 niveaux."
         },
         {
+          "id": 121000,
+          "text": "Le froid de la mort semble effleurer votre cœur tandis que vous contemplez les murs de pierre de la Crypte des Cœurs. Au-dessus de l'entrée trône un crâne grimaçant, avertissement pour ceux qui voudraient parcourir les salles des morts. Vous pouvez sentir le sixième fragment du Bâton du Chaos, quelque part en dessous..."
+        },
+        {
+          "id": 121001,
+          "text": "La Tour de Cristal domine les lieux, dressée comme un doigt accusateur pointé vers le ciel. Ce bastion de sorcellerie semble transcender l'entendement humain, existant en de nombreux plans autres que celui-ci. Vous pouvez sentir le cinquième fragment du Bâton du Chaos, quelque part là-haut..."
+        },
+        {
+          "id": 121002,
+          "text": "L'entrée sacrée des forgerons nains dans la montagne de feu, Dagoth-Ur, se dresse devant vous. Des runes magiques luisent dans la rouge lueur des flammes, miroitant de chaleur. Des jets de vapeur sulfureuse s'échappent des fissures de la paroi rocheuse de l'ouverture. Le dernier fragment du Bâton du Chaos vous appelle..."
+        },
+        {
+          "id": 121003,
+          "text": "La petite entrée envahie par la végétation du Bosquet d'Elden se dresse devant vous, gardienne de secrets oubliés depuis des âges. Quelque part dans ses couloirs embrumés repose le troisième fragment du Bâton du Chaos..."
+        },
+        {
+          "id": 121004,
+          "text": "Vous voici devant la porte du dragon du Repaire du Croc, humble devant sa majesté. La forteresse naine semble abandonnée depuis fort longtemps, ses murs de pierre fissurés par l'âge et l'abandon. Quelque part dans ses profondeurs humides repose le premier fragment du Bâton du Chaos..."
+        },
+        {
+          "id": 121005,
+          "text": "Vous voici devant les murs gigantesques des Salles du Colosse, bâtis par des géants en un âge depuis longtemps révolu. Le vent résonne tristement à travers les remparts déserts. Ici repose le quatrième fragment du Bâton du Chaos..."
+        },
+        {
+          "id": 121006,
+          "text": "Herbes et racines obstinées se dressent dans le rude climat arctique, refusant de céder. Devant vous s'ouvre l'entrée du Labyrinthian, terrain d'épreuve de l'Archimage Shalidor. Dans ses sentiers tortueux repose le deuxième fragment du Bâton du Chaos..."
+        },
+        {
+          "id": 121007,
+          "text": "Les brumes de Murkwood, la Forêt noire, tourbillonnent alentour. Du fond de la sombre forêt montent de faibles cris de désespoir : des âmes égarées dans sa toile perfide. Bien que l'odeur de pourriture émane de chaque arbre et de chaque pierre, c'est dans cette forêt que repose le septième fragment du Bâton du Chaos..."
+        },
+        {
           "id": 200000,
           "text": "Fredas"
         },
@@ -157979,6 +158375,10 @@
           "text": "Vu ton état, tu pourrais ne pas survivre à ce voyage. Veux-tu tenter le voyage ?"
         },
         {
+          "id": 452094,
+          "text": "{occupation} {trait} du nom de {name}"
+        },
+        {
           "id": 900000,
           "text": "RTESArenaAssist est déjà en cours d'exécution.\nLa fenêtre existante est ramenée au premier plan."
         },
@@ -161161,6 +161561,46 @@
         {
           "id": 903063,
           "text": "WIL"
+        },
+        {
+          "id": 903064,
+          "text": "Crypte des Cœurs"
+        },
+        {
+          "id": 903065,
+          "text": "Tour de Cristal"
+        },
+        {
+          "id": 903066,
+          "text": "Dagoth-Ur"
+        },
+        {
+          "id": 903067,
+          "text": "Bosquet d'Elden"
+        },
+        {
+          "id": 903068,
+          "text": "Repaire du Croc"
+        },
+        {
+          "id": 903069,
+          "text": "Salles du Colosse"
+        },
+        {
+          "id": 903070,
+          "text": "Labyrinthian"
+        },
+        {
+          "id": 903071,
+          "text": "Murkwood"
+        },
+        {
+          "id": 903072,
+          "text": "Shalidor"
+        },
+        {
+          "id": 903073,
+          "text": "Bâton du Chaos"
         }
       ]
     },
@@ -180076,6 +180516,38 @@
           "text": "Genera uno scudo di %0 punti ferita. +%1 punti ogni %4 livelli."
         },
         {
+          "id": 121000,
+          "text": "Il gelo della morte sembra sfiorarti il cuore mentre osservi le mura di pietra della Cripta dei Cuori. Sopra l'ingresso campeggia un teschio ghignante, monito per chi voglia attraversare le sale dei morti. Puoi percepire il sesto frammento del Bastone del Caos, da qualche parte là sotto..."
+        },
+        {
+          "id": 121001,
+          "text": "La Torre di Cristallo domina la zona, levandosi come un dito accusatore puntato verso il cielo. Questo bastione di stregoneria sembra trascendere l'umana comprensione, esistendo in molti piani oltre a questo. Puoi percepire il quinto frammento del Bastone del Caos, da qualche parte lassù..."
+        },
+        {
+          "id": 121002,
+          "text": "L'ingresso sacro dei fabbri nani nella montagna di fuoco, Dagoth-Ur, si erge davanti a te. Rune magiche ardono nella rossa luce del fuoco, tremolando per il calore. Getti di vapore sulfureo sfuggono dalle fenditure della parete rocciosa dell'apertura. L'ultimo frammento del Bastone del Caos ti chiama..."
+        },
+        {
+          "id": 121003,
+          "text": "Il piccolo ingresso invaso dalla vegetazione del Boschetto di Elden si apre davanti a te, custode di segreti dimenticati da ere. Da qualche parte nei suoi corridoi avvolti dalla nebbia giace il terzo frammento del Bastone del Caos..."
+        },
+        {
+          "id": 121004,
+          "text": "Ti trovi davanti alla porta del drago del Covo delle Zanne, umile dinanzi alla sua maestà. La roccaforte nanica sembra abbandonata da tempo immemore, con le mura di pietra crepate dagli anni e dall'incuria. Da qualche parte nelle sue umide profondità giace il primo frammento del Bastone del Caos..."
+        },
+        {
+          "id": 121005,
+          "text": "Ti trovi davanti alle mura gigantesche delle Sale del Colosso, erette da giganti in un'era ormai remota. Il vento riecheggia mesto tra i bastioni deserti. Qui giace il quarto frammento del Bastone del Caos..."
+        },
+        {
+          "id": 121006,
+          "text": "Erbe e radici ostinate resistono nel rigido clima artico, rifiutandosi di cedere. Davanti a te si erge l'ingresso del Labyrinthian, terreno di prova dell'Arcimago Shalidor. Nei suoi sentieri contorti giace il secondo frammento del Bastone del Caos..."
+        },
+        {
+          "id": 121007,
+          "text": "Le nebbie di Murkwood, la Foresta Nera, vorticano tutt'intorno. Dall'oscura foresta giungono flebili grida di disperazione: anime che hanno smarrito la via nella sua trama insidiosa. Benché l'odore di putredine fluisca da ogni albero e da ogni pietra, in questa foresta giace il settimo frammento del Bastone del Caos..."
+        },
+        {
           "id": 200000,
           "text": "Fredas"
         },
@@ -185620,6 +186092,10 @@
           "text": "Viste le tue condizioni, potresti non sopravvivere a questo viaggio. Vuoi tentare il viaggio?"
         },
         {
+          "id": 452094,
+          "text": "{occupation} {trait} di nome {name}"
+        },
+        {
           "id": 900000,
           "text": "RTESArenaAssist è già in esecuzione.\nLa finestra esistente verrà portata in primo piano."
         },
@@ -188802,6 +189278,46 @@
         {
           "id": 903063,
           "text": "WIL"
+        },
+        {
+          "id": 903064,
+          "text": "Cripta dei Cuori"
+        },
+        {
+          "id": 903065,
+          "text": "Torre di Cristallo"
+        },
+        {
+          "id": 903066,
+          "text": "Dagoth-Ur"
+        },
+        {
+          "id": 903067,
+          "text": "Boschetto di Elden"
+        },
+        {
+          "id": 903068,
+          "text": "Covo delle Zanne"
+        },
+        {
+          "id": 903069,
+          "text": "Sale del Colosso"
+        },
+        {
+          "id": 903070,
+          "text": "Labyrinthian"
+        },
+        {
+          "id": 903071,
+          "text": "Murkwood"
+        },
+        {
+          "id": 903072,
+          "text": "Shalidor"
+        },
+        {
+          "id": 903073,
+          "text": "Bastone del Caos"
         }
       ]
     },
@@ -207717,6 +208233,38 @@
           "text": "Создаёт щит прочностью %0 очков. +%1 очков за каждые %4 уровней."
         },
         {
+          "id": 121000,
+          "text": "Холод смерти словно касается твоего сердца, когда ты смотришь на каменные стены Крипты Сердец. Над входом красуется ухмыляющийся череп — предостережение тем, кто дерзнёт пройти чертогами мёртвых. Ты чувствуешь шестой осколок Посоха Хаоса — где-то внизу..."
+        },
+        {
+          "id": 121001,
+          "text": "Хрустальная башня господствует над округой, вздымаясь, словно обвиняющий перст, устремлённый в небо. Этот оплот чародейства, кажется, превосходит человеческое разумение, существуя во многих планах бытия помимо этого. Ты чувствуешь пятый осколок Посоха Хаоса — где-то наверху..."
+        },
+        {
+          "id": 121002,
+          "text": "Перед тобой священный вход двемерских кузнецов в огненную гору Дагот Ур. Магические руны пылают в багровом свете пламени, дрожа от жара. Серные струи пара вырываются из расщелин в скальной стене у входа. Последний осколок Посоха Хаоса манит..."
+        },
+        {
+          "id": 121003,
+          "text": "Маленький заросший вход в Элденскую Рощу возвышается перед тобой, храня тайны, забытые века назад. Где-то в её туманных коридорах покоится третий осколок Посоха Хаоса..."
+        },
+        {
+          "id": 121004,
+          "text": "Ты стоишь перед драконьими вратами Логова Клыка, смиряясь перед их величием. Двемерская крепость, похоже, давно заброшена: её каменные стены растрескались от времени и запустения. Где-то в её сырых глубинах покоится первый осколок Посоха Хаоса..."
+        },
+        {
+          "id": 121005,
+          "text": "Ты стоишь перед исполинскими стенами Чертогов Колосса, возведённых великанами в давно минувшую эпоху. Ветер скорбно гудит среди опустевших бойниц. Здесь покоится четвёртый осколок Посоха Хаоса..."
+        },
+        {
+          "id": 121006,
+          "text": "Упрямые травы и корни стоят наперекор суровому арктическому климату, отказываясь уступать. Перед тобой вход в Лабиринтиан, место испытаний архимага Шалидора. Среди его извилистых троп покоится второй осколок Посоха Хаоса..."
+        },
+        {
+          "id": 121007,
+          "text": "Туманы Мурквуда, Чёрного леса, клубятся вокруг. Из глубин тёмного леса доносятся слабые крики отчаяния — души, заплутавшие в его коварной паутине. Хотя от каждого дерева и камня веет тленом, именно в этом лесу покоится седьмой осколок Посоха Хаоса..."
+        },
+        {
           "id": 200000,
           "text": "Фредас"
         },
@@ -213261,6 +213809,10 @@
           "text": "В твоём состоянии ты можешь не пережить это путешествие. Всё равно отправиться в путь?"
         },
         {
+          "id": 452094,
+          "text": "{trait} {occupation} по имени {name}"
+        },
+        {
           "id": 900000,
           "text": "RTESArenaAssist уже запущен.\nОткрытое окно будет выведено на передний план."
         },
@@ -216443,6 +216995,46 @@
         {
           "id": 903063,
           "text": "WIL"
+        },
+        {
+          "id": 903064,
+          "text": "Крипта Сердец"
+        },
+        {
+          "id": 903065,
+          "text": "Хрустальная башня"
+        },
+        {
+          "id": 903066,
+          "text": "Дагот Ур"
+        },
+        {
+          "id": 903067,
+          "text": "Элденская Роща"
+        },
+        {
+          "id": 903068,
+          "text": "Логово Клыка"
+        },
+        {
+          "id": 903069,
+          "text": "Чертоги Колосса"
+        },
+        {
+          "id": 903070,
+          "text": "Лабиринтиан"
+        },
+        {
+          "id": 903071,
+          "text": "Мурквуд"
+        },
+        {
+          "id": 903072,
+          "text": "Шалидор"
+        },
+        {
+          "id": 903073,
+          "text": "Посох Хаоса"
         }
       ]
     }

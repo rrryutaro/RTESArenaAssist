@@ -125,6 +125,11 @@ def _load_items_flat() -> None:
         ja = i18n.text(id_)
         if ja and ja != id_:
             _ITEMS_FLAT[en] = ja
+    for ent in i18n.v2_category_entries('mages'):
+        en = ent.get('original')
+        ja = ent.get('text')
+        if en and ja:
+            _ITEMS_FLAT.setdefault(en, ja)
 _KEY_MATERIALS: dict[str, str] = {}
 _KEY_MATERIALS_LOADED = False
 
@@ -267,7 +272,7 @@ def _preprocess_placeholder_value(name: str, value: str, lang: str) -> str:
     for compiled, replace in rules:
         value = compiled.sub(replace, value)
     return value
-_DS_PATTERN = re.compile('^(.+?)\\s+(\\w+)\\s+called\\s+(\\w+)\\s+(.+)$')
+_DS_PATTERN = re.compile('^(.+?)\\s+(\\w+)\\s+called\\s+(.+)$')
 _PLACEHOLDER_NAMES: frozenset[str] = frozenset(['a', 'a2', 'an', 'ccs', 'cll', 'cn', 'cn2', 'cp', 'ct', 'da', 'di', 'doc', 'ds', 'en', 'fn', 'fq', 'g', 'g2', 'g3', 'hc', 'hod', 'i', 'jok', 'lp', 'mi', 'mn', 'mt', 'n', 'nc', 'nc2', 'nd', 'ne', 'nh', 'nhd', 'ni', 'nk', 'nr', 'nt', 'o', 'oap', 'oc', 'omq', 'oth', 'pcf', 'pcn', 'qc', 'qt', 'r', 'ra', 'rcn', 'rf', 'sn', 'st', 't', 'tan', 'tem', 'tg', 'tl', 'tq', 'tt'])
 
 def _template_to_regex(en_template: str) -> re.Pattern | None:
@@ -583,6 +588,9 @@ def _translate_static_place(value: str, lang: str) -> str:
     cn = _PH_VALUES.get(('cn', name), {}).get(lang)
     if cn:
         return cn
+    cn = _ph_direct_id('cn', name)
+    if cn:
+        return cn
     return value
 
 def _translate_nt(value: str, lang: str) -> str:
@@ -610,6 +618,18 @@ def _npc_desc_noun(en: str, lang: str) -> Optional[str]:
 def _npc_desc_title(en: str, lang: str) -> Optional[str]:
     return _npc_desc_lookup('npc_desc_titles', en, lang)
 
+def _known_title_ja(token: str, lang: str) -> Optional[str]:
+    if not token:
+        return None
+    t = _npc_desc_title(token, lang)
+    if t:
+        return t
+    _load_ph()
+    t = _PH_VALUES.get(('t', token), {}).get(lang)
+    if t:
+        return t
+    return _ph_direct_id('t', token)
+
 def _translate_trait_words(en: str, lang: str) -> Optional[str]:
     if lang == 'en' or not en:
         return None
@@ -624,16 +644,6 @@ def _translate_trait_words(en: str, lang: str) -> Optional[str]:
 def _translate_ds(value: str, lang: str) -> str:
     if lang == 'en':
         return value
-    m = _DS_PATTERN.match(value)
-    if m:
-        import i18n_helper as i18n
-        trait_en, occupation_en, title_en, name_en = (m.group(1), m.group(2), m.group(3), m.group(4))
-        _load_traits()
-        trait_ja = _TRAIT_VALUES.get(trait_en) or i18n.text_opt(f'npc_traits.trait_{_ph_slug(trait_en)}.0') or _translate_trait_words(trait_en, lang) or trait_en
-        occupation_ja = _npc_desc_noun(occupation_en, lang) or i18n.value('descriptors', occupation_en.lower()) or translate_placeholder('oc', occupation_en, lang) or occupation_en
-        title_ja = _npc_desc_title(title_en, lang) or translate_placeholder('t', title_en, lang) or title_en
-        name_ja = translate_generated_name(name_en, lang)
-        return i18n.text('status_buffer_text.ds_format_ask_about').replace('{trait}', trait_ja).replace('{occupation}', occupation_ja).replace('{title}', title_ja).replace('{name}', name_ja)
     m = _DS_TAVERN_QUEST_PATTERN.match(value)
     if m:
         import i18n_helper as i18n
@@ -655,10 +665,9 @@ def _translate_ds(value: str, lang: str) -> str:
             if translated_name and translated_name != named_en:
                 named_ja = translated_name
         locale_ja = locale_en
-        _load_ph()
         for _ph_name in ('cn', 'lp', 'ct'):
-            _result = _PH_VALUES.get((_ph_name, locale_en), {}).get(lang)
-            if _result:
+            _result = translate_placeholder(_ph_name, locale_en, lang)
+            if _result != locale_en:
                 locale_ja = _result
                 break
         if locale_ja == locale_en:
@@ -670,6 +679,27 @@ def _translate_ds(value: str, lang: str) -> str:
             except Exception:
                 pass
         return i18n.text('status_buffer_text.ds_format_tavern_quest').replace('{locale}', locale_ja).replace('{named}', named_ja).replace('{descriptor}', descriptor_ja)
+    m = _DS_PATTERN.match(value)
+    if m:
+        import i18n_helper as i18n
+        trait_en, occupation_en, called_en = (m.group(1), m.group(2), m.group(3))
+        _load_traits()
+        trait_ja = _TRAIT_VALUES.get(trait_en) or i18n.text_opt(f'npc_traits.trait_{_ph_slug(trait_en)}.0') or _translate_trait_words(trait_en, lang) or trait_en
+        occupation_ja = _npc_desc_noun(occupation_en, lang) or i18n.value('descriptors', occupation_en.lower()) or translate_placeholder('oc', occupation_en, lang) or occupation_en
+        title_ja = None
+        name_en = called_en
+        parts = called_en.split(None, 1)
+        if len(parts) == 2:
+            maybe_title_ja = _known_title_ja(parts[0], lang)
+            if maybe_title_ja is not None:
+                title_ja, name_en = (maybe_title_ja, parts[1])
+        name_ja = translate_generated_name(name_en, lang)
+        if title_ja is None:
+            fmt = i18n.text_opt('status_buffer_text.ds_format_ask_about_untitled')
+            if not fmt:
+                return value
+            return fmt.replace('{trait}', trait_ja).replace('{occupation}', occupation_ja).replace('{name}', name_ja)
+        return i18n.text('status_buffer_text.ds_format_ask_about').replace('{trait}', trait_ja).replace('{occupation}', occupation_ja).replace('{title}', title_ja).replace('{name}', name_ja)
     return value
 
 def translate_placeholder(name: str, value: str, lang: str='ja') -> str:

@@ -35,6 +35,7 @@
   "status_buffer_text.date_format_dialog_full": "{weekday} {day} {month}, {era} {year}",
   "status_buffer_text.date_format_dialog_short": "{weekday} {day} {month}",
   "status_buffer_text.ds_format_ask_about": "{occupation} {trait} du nom de {title} {name}",
+  "status_buffer_text.ds_format_ask_about_untitled": "{occupation} {trait} du nom de {name}",
   "status_buffer_text.ds_format_tavern_quest": "{descriptor} du nom de {named}, de {locale}",
   "status_buffer_text.ds_format_trait_name": "{trait} {name}",
   "status_buffer_text.settlement_format": "{type} de {name}",

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional, Tuple
-from screen_detector import _tr, FLAG_STATUS_POPUP_OFFSET, FLAG_EQUIPMENT_OPEN_OFFSET, POPUP_OPEN_OFFSET, SPELL_DETAIL_ACTIVE_OFFSET, _read_u8
+from screen_detector import _tr, FLAG_STATUS_POPUP_OFFSET, FLAG_EQUIPMENT_OPEN_OFFSET, LOGBOOK_FG_WORD_OFFSET, LOGBOOK_FG_WORD_VALUE, POPUP_OPEN_OFFSET, SPELL_DETAIL_ACTIVE_OFFSET, _read_u8, _read_u16_le
 
 def detect_common_play_screen(analyzer, anchor: int, img_name: str) -> Optional[Tuple[str, str]]:
     img_upper = (img_name or '').upper()
@@ -22,5 +22,10 @@ def detect_common_play_screen(analyzer, anchor: int, img_name: str) -> Optional[
         if img_upper == 'LOGBOOK.IMG':
             return ('logbook', _tr('logbook'))
         if img_upper in ('AUTOMAP.IMG', 'POINTER.IMG'):
-            return ('automap', _tr('automap'))
+            from template_parser import status_popup_foreground
+            if not status_popup_foreground(analyzer, anchor):
+                return ('automap', _tr('automap'))
+    elif img_upper == 'LOGBOOK.IMG':
+        if _read_u16_le(analyzer, anchor + LOGBOOK_FG_WORD_OFFSET) == LOGBOOK_FG_WORD_VALUE:
+            return ('logbook', _tr('logbook'))
     return None
