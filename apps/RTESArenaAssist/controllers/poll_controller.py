@@ -384,6 +384,43 @@ def _poll_compute_newpop_gate(w, *, npc_dialog):
     _is_corpse_loot = _newpop_gate and _newpop_count_now == 0 and bool(npc_dialog) and (not _is_garbage_npc_buffer(npc_dialog))
     return (_newpop_gate, _is_corpse_loot)
 
+def _resolve_dungeon_level(w, mif_name: str | None) -> int | None:
+    if not mif_name:
+        return None
+    try:
+        import dungeon_level as dl
+        identity = dl.read_level_identity(w._analyzer, w._anchor)
+        if identity is None:
+            return None
+        if identity.get('mif', '').strip().lower() != str(mif_name).strip().lower():
+            return None
+        cache = getattr(w, '_dungeon_level_names_cache', None)
+        if not cache or cache.get('mif') != mif_name:
+            from services.mif_loader import DEFAULT_MIF_DIR, load_mif
+            from runtime_paths import resolve_arena_install_dir
+            dirs = [d for d in (DEFAULT_MIF_DIR, resolve_arena_install_dir()) if d is not None]
+            head = load_mif(mif_name, dirs)
+            if head is None:
+                return None
+            names: list[str] = []
+            infs: list[str] = []
+            want = max(int(head.level_count or 1), 1)
+            for i in range(want):
+                lv = load_mif(mif_name, dirs, level_index_override=i)
+                if lv is None:
+                    break
+                names.append(lv.mif_name or '')
+                infs.append(lv.info_name or '')
+            if len(names) < want:
+                return None
+            cache = {'mif': mif_name, 'names': names, 'infs': infs}
+            w._dungeon_level_names_cache = cache
+        if len(cache.get('names') or []) <= 1:
+            return None
+        return dl.match_level_index(identity, cache['names'], cache['infs'])
+    except Exception:
+        return None
+
 def _poll_handle_triggers(w, *, rt_x, rt_z, inf_name):
     try:
         from tts_prewarm import prewarm_dungeon_inf
@@ -531,6 +568,13 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
                 interior_mif_name = facility_info.mif_name
                 interior_facility_name = facility_info.name_ja or facility_info.name_en or None
                 display_mif_name = interior_mif_name
+            if getattr(w, '_entry_door_logged', None) != door_pos:
+                w._entry_door_logged = door_pos
+                try:
+                    from city_viewer_bridge import describe_entered_door
+                    _log.info('interior door: pos=%s %s -> mif=%r name=%r', door_pos, describe_entered_door(location_name, *door_pos), interior_mif_name, interior_facility_name)
+                except Exception:
+                    pass
         if interior_mif_name is None and location_name and (_img_safe == 'PALACE.XMI'):
             try:
                 from services.city_lookup import get_palace_mif_for_location
@@ -749,7 +793,14 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
         except Exception:
             interior_floor_hyp = None
     w._interior_floor_hyp = interior_floor_hyp
-    effective_floor = interior_floor_hyp if in_interior and interior_floor_hyp is not None else int(player_floor)
+    dungeon_level_hyp = None if interior_mif_name else _resolve_dungeon_level(w, display_mif_name)
+    w._dungeon_level_hyp = dungeon_level_hyp
+    if dungeon_level_hyp is not None:
+        effective_floor = dungeon_level_hyp
+    elif in_interior and interior_floor_hyp is not None:
+        effective_floor = interior_floor_hyp
+    else:
+        effective_floor = int(player_floor)
     if w._mif_matcher and _current_top_level(w) == 'normal-play':
         w._mif_matcher.update_map(display_mif_name)
     tab_map = getattr(w, '_tab_map', None)
@@ -1144,7 +1195,7 @@ def _poll_screen_detect_and_label(w, _img_name, mif_name, _resolved_area, player
     except (ImportError, OSError, AttributeError):
         pass
 from normal_play import normal_play_render as _normal_play_render
-from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_surface_dispatch, _poll_npc_popup_display, _poll_facility_render_dispatch, _poll_l4_dialog_dispatch
+from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_surface_dispatch, poll_cinematic_dispatch as _poll_cinematic_dispatch, _poll_npc_popup_display, _poll_facility_render_dispatch, _poll_l4_dialog_dispatch
 from normal_play.travel_map_module import poll_travel_map
 _ASK_ABOUT_MAIN_RECOVERY_STATE = _normal_play_render._ASK_ABOUT_MAIN_RECOVERY_STATE
 blocks_ask_about_main = _normal_play_render.blocks_ask_about_main
@@ -1348,6 +1399,7 @@ class PollController:
             _b30_dialog_active_prev = _b30['dialog_active_prev']
             _b30_img_name = _b30['img_name']
             _b30_in_gameplay = _b30['in_gameplay']
+            _poll_cinematic_dispatch(w, _b30)
             _poll_c1_surface_dispatch(w, _b30, npc_dialog_changed=_npc_dialog_changed, inf_name=inf_name, mif_name=mif_name, instore_resp_handled=_instore_resp_handled, c_area=_poll_hierarchy_area)
             from normal_play.level_up_module import produce_level_up_state as _produce_level_up_state
             _level_up_continue = _produce_level_up_state(w, loading_active=w._loading_state_active, load_edge_start=_load_edge_start, loading_post_settle=_loading_post_settle)

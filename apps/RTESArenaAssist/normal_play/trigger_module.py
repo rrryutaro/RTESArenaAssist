@@ -2,17 +2,20 @@ from __future__ import annotations
 import logging
 from arena_bridge import SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN, TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, get_trigger_text_by_index
 import inf_text_lookup as itl
+import mif_trigger
+from viewer_constants import CURRENT_TRIGGER_TEXT_PTR_OFFSET
 import assist_settings as settings
 from top_level.top_level_dispatcher import current_state as _current_top_level
-from normal_play.c1_cinematic_module import _current_hp_is_zero
+from normal_play.cinematic_module import _current_hp_is_zero
 _log = logging.getLogger('RTESArenaAssist')
 _DEATH_RED_TEXTS = frozenset({'You are dead', 'You have been slain'})
 
 def _entry_to_payload(entry: dict) -> tuple[str, str, str, str]:
     if entry.get('type') == 'riddle':
-        en = entry.get('question', '') or ''
+        fld = entry.get('_riddle_field', 'question')
+        en = entry.get(fld, '') or ''
         trans = itl.get_translation(entry)
-        ja = trans.get('question', '') if isinstance(trans, dict) else ''
+        ja = trans.get(fld, '') if isinstance(trans, dict) else ''
         return (en, ja, en, ja)
     en = itl.get_text_display(entry) or ''
     ja_disp = itl.get_translation_display(entry)
@@ -22,18 +25,65 @@ def _entry_to_payload(entry: dict) -> tuple[str, str, str, str]:
     panel_ja = panel_ja_raw if isinstance(panel_ja_raw, str) else ''
     return (en, ja, panel_en, panel_ja)
 
-def _render_trigger_entry(w, entry: dict) -> None:
+def _riddle_display_begin(w, entry: dict) -> None:
+    w._riddle_display = None
+    try:
+        raw = w._analyzer.read_bytes(w._anchor + TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ)
+        ptr = int.from_bytes(w._analyzer.read_bytes(w._anchor + CURRENT_TRIGGER_TEXT_PTR_OFFSET, 2), 'little')
+    except (OSError, AttributeError):
+        return
+    ranges = mif_trigger.find_riddle_group(raw, entry.get('question', ''))
+    question = next((r for r in ranges if r['kind'] == 'question'), None)
+    if question is None:
+        return
+    w._riddle_display = {'entry': entry, 'ranges': ranges, 'base': ptr - question['start'], 'kind': 'question'}
+
+def poll_riddle_display(w) -> None:
+    st = getattr(w, '_riddle_display', None)
+    if not st:
+        return
+    try:
+        ptr = int.from_bytes(w._analyzer.read_bytes(w._anchor + CURRENT_TRIGGER_TEXT_PTR_OFFSET, 2), 'little')
+    except (OSError, AttributeError):
+        return
+    hit = mif_trigger.classify_riddle_part(ptr, st['base'], st['ranges'])
+    if hit is None or hit['kind'] == st['kind']:
+        return
+    st['kind'] = hit['kind']
+    entry = dict(st['entry'])
+    entry['_riddle_field'] = hit['kind']
+    _render_trigger_entry(w, entry, begin_riddle=False)
+
+def _render_trigger_entry(w, entry: dict, *, begin_riddle: bool=True) -> None:
     try:
         w._set_chargen_ui_state(False)
     except (AttributeError, RuntimeError):
         pass
+    if begin_riddle and entry.get('type') == 'riddle':
+        _riddle_display_begin(w, entry)
+        try:
+            from services import riddle_store
+            from viewer_constants import MAP_NAME_OFFSET, MAP_NAME_MAXLEN
+            place = w._analyzer.read_bytes(w._anchor + MAP_NAME_OFFSET, MAP_NAME_MAXLEN).split(b'\x00')[0].decode('ascii', errors='replace').strip()
+            answers = list(entry.get('answers') or [])
+            if not answers:
+                raw = w._analyzer.read_bytes(w._anchor + TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ)
+                answers = mif_trigger.riddle_answers(raw, entry.get('question', ''))
+            riddle_store.get_store().note_seen(entry.get('inf', ''), entry.get('idx'), place, answers)
+        except Exception:
+            pass
     en, ja, panel_en, panel_ja = _entry_to_payload(entry)
-    _store_last_trigger_display(w, en, ja, panel_en, panel_ja)
-    w._ui_router.update_translation('trigger', en, ja, panel_en=panel_en, panel_ja=panel_ja, speech_role='situation')
+    tab_off = _riddle_tab_suppressed(w, entry)
+    _store_last_trigger_display(w, en, ja, panel_en, panel_ja, tab_off=tab_off)
+    w._ui_router.update_translation('trigger', en, ja, panel_en=panel_en, panel_ja=panel_ja, update_tab=not tab_off, speech_role='situation')
 
-def _store_last_trigger_display(w, en: str, ja: str, panel_en: str | None=None, panel_ja: str | None=None) -> None:
+def _riddle_tab_suppressed(w, entry: dict) -> bool:
+    return entry.get('type') == 'riddle' and bool(getattr(w, '_is_layout_active', False))
+
+def _store_last_trigger_display(w, en: str, ja: str, panel_en: str | None=None, panel_ja: str | None=None, *, tab_off: bool=False) -> None:
     w._last_trigger_display = (en, ja, panel_en, panel_ja)
     w._last_trigger_active = True
+    w._last_trigger_tab_off = tab_off
 
 def restore_last_trigger_display(w) -> bool:
     if not getattr(w, '_last_trigger_active', False):
@@ -42,7 +92,7 @@ def restore_last_trigger_display(w) -> bool:
     if not payload:
         return False
     en, ja, panel_en, panel_ja = payload
-    w._ui_router.update_translation('trigger', en, ja, panel_en=panel_en, panel_ja=panel_ja, speech_role='situation')
+    w._ui_router.update_translation('trigger', en, ja, panel_en=panel_en, panel_ja=panel_ja, update_tab=not getattr(w, '_last_trigger_tab_off', False), speech_role='situation')
     return True
 
 def _is_death_red_text(text: str) -> bool:
@@ -76,6 +126,7 @@ def classify_c1_dialog_substate(w, b30, *, npc_dialog_changed: bool=False) -> st
 def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, trigger_idx: int, trigger_slot: int, body: str, inf_name: str) -> None:
     if trigger_flag != 0:
         w._sb.showMessage(f"Trigger: flag=0x{trigger_flag:02X}  INF={inf_name or '(none)'}  idx={trigger_idx}  slot={trigger_slot}  body={body[:30]}", 4000)
+    poll_riddle_display(w)
     if new_trigger:
         text_index = None
         correct_body = body
@@ -94,6 +145,8 @@ def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, tr
             if entry is not None and entry.get('type') == 'key':
                 entry = None
             if entry is None and correct_body:
+                entry = itl.lookup_riddle_by_text(correct_body)
+            if entry is None and correct_body:
                 entry = itl.lookup_by_text(inf_name, correct_body)
             if entry is None and correct_body and inf_name:
                 entry = itl.lookup_by_substring(inf_name, correct_body)
@@ -103,7 +156,9 @@ def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, tr
                 _store_last_trigger_display(w, correct_body, '')
                 w._ui_router.update_translation('trigger', correct_body, '', speech_role='situation')
         elif correct_body:
-            entry = itl.lookup_by_text(inf_name, correct_body)
+            entry = itl.lookup_riddle_by_text(correct_body)
+            if entry is None:
+                entry = itl.lookup_by_text(inf_name, correct_body)
             if entry is None and inf_name:
                 entry = itl.lookup_by_substring(inf_name, correct_body)
             if entry is not None:
@@ -113,9 +168,11 @@ def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, tr
                 w._ui_router.update_translation('trigger', correct_body, '', speech_role='situation')
     if trig_fell and (not settings.get('keep_trigger_on_panel', False)):
         w._last_trigger_active = False
+        w._riddle_display = None
         w._ui_router.clear_if_owner('trigger')
     elif trig_fell:
         w._last_trigger_active = False
+        w._riddle_display = None
 
 def compute_b30_state(w, *, screen_id: str | None=None, c_area: str | None=None, c1_axis=None) -> dict:
     _screen_id = screen_id if screen_id is not None else getattr(w, '_screen_id_prev', None)

@@ -47,6 +47,62 @@ def get_facilities_for(province_id: int, location_id: int) -> Optional[list[Faci
     entries, random_after = expand_city_plan_with_random(city_seed, city_dim, reserved)
     return detect_city_facilities(entries=entries, city_seed=city_seed, start_position=start_pos, city_type=_CITY_TYPE_ENUM[location_type], city_type_key=_CITY_TYPE_KEY[location_type], province_id=province_id, coastal=is_coastal, random_after_plan=random_after)
 
+def get_city_doors_for(province_id: int, location_id: int) -> Optional[list]:
+    if not (is_data_available() and is_world_map_available()):
+        return None
+    location_type = _location_type_from_id(location_id)
+    if location_type is None:
+        return None
+    world_map = load_world_map_data()
+    if province_id < 0 or province_id >= len(world_map.provinces):
+        return None
+    province = world_map.provinces[province_id]
+    location = province.get_location(location_id)
+    if location is None or not location.name:
+        return None
+    city_gen = load_city_generation_data()
+    global_city_id = get_global_city_id(location_id, province_id)
+    is_coastal = city_gen.is_coastal(global_city_id)
+    is_city_state = location_type == ArenaLocationType.CITY_STATE
+    template_count = get_city_template_count(is_coastal, is_city_state)
+    template_id = global_city_id % template_count
+    rb_idx = get_city_reserved_block_list_index(is_coastal, template_id)
+    sp_idx = get_city_starting_position_index(location_type, is_coastal, template_id)
+    reserved = city_gen.get_reserved_block_list(rb_idx) or []
+    start_pos = city_gen.get_starting_position(sp_idx) or (0, 0)
+    city_dim = _CITY_DIM[location_type]
+    city_seed = location.city_seed()
+    entries, _random_after = expand_city_plan_with_random(city_seed, city_dim, reserved)
+    from .city_door_detector import detect_city_doors
+    from .city_facility_detector import load_block_mif
+    return detect_city_doors(entries, start_pos, load_block_mif)
+
+def get_city_doors_by_location_name(location_name: str) -> Optional[list]:
+    if not is_world_map_available():
+        return None
+    world_map = load_world_map_data()
+    found = world_map.find_location_by_name(location_name)
+    if found is None:
+        return None
+    province_id, location_id, _ = found
+    return get_city_doors_for(province_id, location_id)
+
+def get_city_type_and_ruler_seed(location_name: str):
+    if not is_world_map_available():
+        return None
+    world_map = load_world_map_data()
+    found = world_map.find_location_by_name(location_name)
+    if found is None:
+        return None
+    province_id, location_id, location = found
+    location_type = _location_type_from_id(location_id)
+    if location_type is None:
+        return None
+    province = world_map.provinces[province_id]
+    rect = Rect(province.global_x, province.global_y, province.global_w, province.global_h)
+    ruler_seed = get_ruler_seed(Int2(location.x, location.y), rect)
+    return (_CITY_TYPE_ENUM[location_type], ruler_seed)
+
 def get_facilities_by_location_name(location_name: str) -> Optional[list[FacilityPlacement]]:
     if not is_world_map_available():
         return None

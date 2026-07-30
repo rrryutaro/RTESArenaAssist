@@ -712,5 +712,19 @@
   "race.imperial_name": "Imperiale",
   "place.facility.noble_house": "Casa nobile",
   "place.facility.house": "Casa",
-  "place.facility.crypt": "Cripta"
+  "place.facility.crypt": "Cripta",
+  "manual.guide.title": "Guida agli enigmi",
+  "manual.guide.show": "Mostra la guida agli enigmi",
+  "manual.guide.intro": "Sono elencati solo gli enigmi già apparsi nel gioco. Scegli un luogo.",
+  "manual.guide.empty": "Non è ancora apparso alcun enigma. Verranno aggiunti qui quando incontrerai una porta con enigma nel gioco.",
+  "manual.guide.place_count": " ({n})",
+  "manual.guide.back": "← Torna all'elenco dei luoghi",
+  "manual.guide.question": "Enigma (traduzione)",
+  "manual.guide.original": "Originale",
+  "manual.guide.answer_heading": "Risposta (forme accettate)",
+  "manual.guide.reveal": "Mostra la risposta",
+  "manual.guide.answer_missing": "(Nessun dato della risposta trovato)",
+  "manual.guide.place_unknown": "(Luogo non registrato)",
+  "manual.guide.floor": "Livello {n}",
+  "manual.guide.answer_item": "• {answer}"
 }

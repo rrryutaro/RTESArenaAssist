@@ -28,14 +28,106 @@ def parse_mif_trigs(path: str) -> list[tuple[int, int, int, int]]:
         except OSError:
             return []
     return parse_mif_trigs_bytes(data)
+_RIDDLE_MARKER = '^'
+_RIDDLE_ANSWER = ':'
+_RIDDLE_RESPONSE = '`'
+
+def extract_riddle_question(chunk_text: str) -> str:
+    out: list[str] = []
+    for line in chunk_text.replace('\r', '\n').split('\n'):
+        stripped = line.strip()
+        if stripped.startswith(_RIDDLE_RESPONSE):
+            break
+        if stripped.startswith(_RIDDLE_MARKER) or stripped.startswith(_RIDDLE_ANSWER):
+            continue
+        out.append(line)
+    return '\n'.join(out).strip()
+
+def extract_riddle_response(chunk_text: str) -> str:
+    out: list[str] = []
+    for line in chunk_text.replace('\r', '\n').split('\n'):
+        if line.strip().startswith(_RIDDLE_RESPONSE):
+            continue
+        out.append(line)
+    return '\n'.join(out).strip()
+
+def riddle_part_ranges(raw_block: bytes) -> list[dict]:
+    out: list[dict] = []
+    group = -1
+    pos = 0
+    for part in raw_block.split(b'\x00'):
+        if part:
+            head = part.decode('ascii', errors='replace').lstrip('~')
+            if head.startswith(_RIDDLE_MARKER):
+                group += 1
+                out.append({'kind': 'question', 'start': pos, 'len': len(part), 'group': group})
+            elif head.startswith(_RIDDLE_RESPONSE) and group >= 0:
+                upper = head[1:].upper()
+                kind = 'correct' if upper.startswith('CORRECT') else 'wrong' if upper.startswith('WRONG') else None
+                if kind:
+                    out.append({'kind': kind, 'start': pos, 'len': len(part), 'group': group})
+        pos += len(part) + 1
+    return out
+
+def _norm_riddle_text(s: str) -> str:
+    return ' '.join((s or '').replace('\r', ' ').replace('\n', ' ').split())
+
+def find_riddle_group(raw_block: bytes, question_text: str) -> list[dict]:
+    target = _norm_riddle_text(question_text)
+    if not target:
+        return []
+    ranges = riddle_part_ranges(raw_block)
+    for r in ranges:
+        if r['kind'] != 'question':
+            continue
+        chunk = raw_block[r['start']:r['start'] + r['len']]
+        text = chunk.decode('ascii', errors='replace').lstrip('~')
+        if _norm_riddle_text(extract_riddle_question(text)) == target:
+            g = r['group']
+            return [x for x in ranges if x['group'] == g]
+    return []
+
+def riddle_answers(raw_block: bytes, question_text: str) -> list[str]:
+    ranges = find_riddle_group(raw_block, question_text)
+    q = next((r for r in ranges if r['kind'] == 'question'), None)
+    if q is None:
+        return []
+    chunk = raw_block[q['start']:q['start'] + q['len']].decode('ascii', errors='replace')
+    out: list[str] = []
+    for line in chunk.replace('\r', '\n').split('\n'):
+        s = line.strip()
+        if s.startswith(_RIDDLE_ANSWER):
+            v = s[1:].strip()
+            if v:
+                out.append(v)
+    return out
+
+def classify_riddle_part(ptr: int, base: int, ranges: list[dict]) -> dict | None:
+    off = ptr - base
+    for r in ranges:
+        if r['start'] <= off < r['start'] + r['len']:
+            return r
+    return None
+
+def _chunk_to_trigger_text(chunk: bytes) -> str | None:
+    text = chunk.decode('ascii', errors='replace').strip().lstrip('~')
+    if not text:
+        return None
+    ratio = sum((32 <= ord(c) <= 126 for c in text)) / max(len(text), 1)
+    if ratio < 0.7:
+        return None
+    if text.startswith(_RIDDLE_MARKER):
+        text = extract_riddle_question(text)
+    elif text.startswith(_RIDDLE_RESPONSE):
+        text = extract_riddle_response(text)
+    return text.replace('\r', ' ').replace('\n', ' ')
 
 def extract_trigger_texts(raw_block: bytes) -> list[str]:
     texts = []
     for chunk in raw_block.split(b'\x00'):
-        text = chunk.decode('ascii', errors='replace').strip().lstrip('~')
-        ratio = sum((32 <= ord(c) <= 126 for c in text)) / max(len(text), 1)
-        if text and ratio >= 0.7:
-            texts.append(text.replace('\r', ' ').replace('\n', ' '))
+        text = _chunk_to_trigger_text(chunk)
+        if text:
+            texts.append(text)
     return texts
 
 def get_trigger_text_by_index(raw_block: bytes, text_index: int) -> str:

@@ -45,6 +45,12 @@ class _MarkerHit:
 def _load_mif_cached(filename: str):
     return load_mif(os.path.join(_MIF_DIR, filename))
 
+def load_block_mif(filename: str):
+    try:
+        return _load_mif_cached(filename)
+    except Exception:
+        return None
+
 def _iter_marker_hits(entries: Iterable[CityBlockEntry], start_position: tuple[int, int], marker_voxel: int) -> list[_MarkerHit]:
     start_x, start_y = start_position
     hits: list[_MarkerHit] = []

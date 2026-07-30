@@ -1,6 +1,7 @@
 import os
 from PySide6.QtCore import QUrl, Qt
-from PySide6.QtWidgets import QButtonGroup, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem, QPushButton, QSizePolicy, QSplitter, QTextBrowser, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QButtonGroup, QCheckBox, QHBoxLayout, QLabel, QLineEdit, QListWidget, QListWidgetItem, QPushButton, QSizePolicy, QSplitter, QTextBrowser, QVBoxLayout, QWidget
+import assist_settings as settings
 import i18n_helper as i18n
 _MODE_SIMPLE = 'simple'
 _MODE_FULL = 'full'
@@ -39,6 +40,7 @@ class TabManual(QWidget):
         self._docs: list[tuple[str, str]] = []
         self._matches: list[int] = []
         self._match_idx: int = 0
+        self._revealed: set[str] = set()
         self._build_ui()
         self._load_docs()
 
@@ -83,6 +85,10 @@ class TabManual(QWidget):
         toolbar_row.addWidget(self._prev_btn)
         toolbar_row.addWidget(self._next_btn)
         toolbar_row.addWidget(self._match_lbl)
+        self._guide_chk = QCheckBox(i18n.tr('manual.guide.show'))
+        self._guide_chk.setChecked(bool(settings.get('manual_show_guide', False)))
+        self._guide_chk.toggled.connect(self._on_guide_toggled)
+        toolbar_row.addWidget(self._guide_chk)
         toolbar_row.addStretch()
         root.addWidget(toolbar)
         splitter = QSplitter(Qt.Orientation.Horizontal)
@@ -94,6 +100,8 @@ class TabManual(QWidget):
         splitter.addWidget(self._nav)
         self._browser = QTextBrowser()
         self._browser.setOpenExternalLinks(True)
+        self._browser.setOpenLinks(False)
+        self._browser.anchorClicked.connect(self._on_anchor_clicked)
         splitter.addWidget(self._browser)
         splitter.setSizes([140, 360])
         splitter.setStretchFactor(0, 0)
@@ -111,6 +119,54 @@ class TabManual(QWidget):
         if current_row < self._nav.count():
             self._nav.setCurrentRow(current_row)
 
+    def _guide_enabled(self) -> bool:
+        return bool(self._mode == _MODE_SIMPLE and getattr(self, '_guide_chk', None) and self._guide_chk.isChecked())
+
+    def _on_guide_toggled(self, on: bool) -> None:
+        settings.set_val('manual_show_guide', bool(on))
+        self._revealed = set()
+        self._guide_place = None
+        self._load_docs()
+
+    def _on_anchor_clicked(self, url) -> None:
+        import riddle_guide
+        text = url.toString()
+        place = riddle_guide.parse_place(text)
+        if place is not None:
+            self._guide_place = None if place < 0 else place
+            if self._guide_place is None:
+                self._refresh_guide_cache()
+            self._show_guide()
+            return
+        key = riddle_guide.parse_reveal(text)
+        if key is None:
+            return
+        self._revealed.add(key)
+        self._show_guide()
+
+    def _guide_groups(self):
+        import riddle_guide
+        from services import riddle_store
+        entries = riddle_guide.collect_entries(riddle_store.get_store().seen_entries())
+        return riddle_guide.group_entries(entries)
+
+    def _refresh_guide_cache(self) -> None:
+        self._guide_cache = self._guide_groups() if self._guide_enabled() else []
+
+    def _show_guide(self) -> None:
+        import riddle_guide
+        groups = getattr(self, '_guide_cache', None) or []
+        place_idx = getattr(self, '_guide_place', None)
+        if place_idx is None or not groups:
+            self._browser.setHtml(riddle_guide.build_index_html(groups))
+        else:
+            idx = max(0, min(place_idx, len(groups) - 1))
+            place, entries = groups[idx]
+            self._browser.setHtml(riddle_guide.build_html(entries, getattr(self, '_revealed', set()), heading=place, with_back=True))
+        self._matches = []
+        self._match_idx = 0
+        self._update_match_label()
+
     def _load_docs(self):
         self._docs = _list_docs(self._mode)
         self._nav.clear()
@@ -119,10 +175,19 @@ class TabManual(QWidget):
             return
         for stem, _ in self._docs:
             self._nav.addItem(QListWidgetItem(_doc_label(stem, self._mode)))
+        self._refresh_guide_cache()
+        if self._guide_enabled():
+            self._nav.addItem(QListWidgetItem(i18n.tr('manual.guide.title')))
         self._nav.setCurrentRow(0)
 
     def _on_nav_changed(self, row: int):
-        if row < 0 or row >= len(self._docs):
+        if row < 0:
+            return
+        if row >= len(self._docs):
+            if self._guide_enabled():
+                self._guide_place = None
+                self._refresh_guide_cache()
+                self._show_guide()
             return
         _, rel = self._docs[row]
         import app_resources

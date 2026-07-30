@@ -14,6 +14,7 @@ def recog(logger: logging.Logger, msg: str, *args) -> None:
 def _debug_env_value() -> str:
     return (os.environ.get('RTES_ARENA_ASSIST_LOG_LEVEL') or os.environ.get('RTES_ARENA_ASSIST_DEBUG_LOG') or '').strip().upper()
 _DEBUG_ENV_ENABLED = frozenset({'1', 'TRUE', 'YES', 'ON', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'RECOG'})
+_TEMP_DEFAULT_INFO = False
 
 def _resolve_level() -> int:
     raw = _debug_env_value()
@@ -23,6 +24,8 @@ def _resolve_level() -> int:
         return getattr(logging, raw)
     if raw == 'RECOG':
         return RECOGNITION_LEVEL
+    if _TEMP_DEFAULT_INFO:
+        return logging.INFO
     return RECOGNITION_LEVEL
 
 def _should_write_log_files(frozen: bool, debug_env: str) -> bool:

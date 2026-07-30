@@ -5,10 +5,10 @@ from arena_bridge import SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN
 import inf_text_lookup as itl
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
-_DEATH_CINEMATIC_HINT_ADDR = 276188176
-_DEATH_CINEMATIC_FULLREAD = 4096
-_DEATH_CINEMATIC_SCAN_START = 268435456
-_DEATH_CINEMATIC_SCAN_END = 301989888
+_CINEMATIC_TEXT_ADDR_OBSERVED = 276188176
+_CINEMATIC_FULLREAD = 4096
+_CINEMATIC_SCAN_START = 268435456
+_CINEMATIC_SCAN_END = 301989888
 _DEATH_GOOD_PREFIX = 'With you died our last hope for justice.'
 _DEATH_BAD_PREFIX = 'You were a fool to confront me,'
 _DEATH_CINEMATIC_PREFIXES = (_DEATH_GOOD_PREFIX, _DEATH_BAD_PREFIX)
@@ -22,7 +22,7 @@ _DEATH_BAD_JA = '愚かにも私に立ち向かい、ついに究極の代償を
 
 def _read_cinematic_block(w, address: int) -> str:
     data = b''
-    for size in (_DEATH_CINEMATIC_FULLREAD, 2048, 1024, 512, 256):
+    for size in (_CINEMATIC_FULLREAD, 2048, 1024, 512, 256):
         try:
             data = w._analyzer.read_bytes(address, size)
             if data:
@@ -112,17 +112,28 @@ def _lookup_vision_cinematic_payload(w, text: str) -> tuple[str, str, str] | Non
         ja = ja.replace('[名前]', player_name)
     return ('vision_cinematic', text, ja)
 
-def _find_death_cinematic_text(w, *, allow_scan: bool=False) -> tuple[str, int]:
-    block = _read_cinematic_block(w, _DEATH_CINEMATIC_HINT_ADDR)
-    if block and _death_cinematic_translation(block):
-        return (block, _DEATH_CINEMATIC_HINT_ADDR)
-    if not allow_scan:
-        return ('', 0)
-    for prefix in _DEATH_CINEMATIC_PREFIXES:
+def _candidate_text_addrs(w) -> tuple[int, ...]:
+    latched = int(getattr(w, '_cinematic_text_addr', 0) or 0)
+    if latched and latched != _CINEMATIC_TEXT_ADDR_OBSERVED:
+        return (latched, _CINEMATIC_TEXT_ADDR_OBSERVED)
+    return (latched or _CINEMATIC_TEXT_ADDR_OBSERVED,)
+
+def _probe_cinematic_text(w, resolver) -> tuple[str, int]:
+    for addr in _candidate_text_addrs(w):
+        block = _read_cinematic_block(w, addr)
+        if block and resolver(block):
+            w._cinematic_text_addr = addr
+            return (block, addr)
+    return ('', 0)
+
+def _scan_vision_cinematic_text(w, resolver) -> tuple[str, int]:
+    for prefix in _VISION_CINEMATIC_PREFIXES:
         try:
-            results = w._analyzer.scan_string(prefix, _DEATH_CINEMATIC_SCAN_START, _DEATH_CINEMATIC_SCAN_END)
+            results = w._analyzer.scan_string(prefix, _CINEMATIC_SCAN_START, _CINEMATIC_SCAN_END)
         except (OSError, RuntimeError, AttributeError) as exc:
-            _log.debug('death cinematic scan_string error: %s', exc)
+            if not getattr(w, '_cinematic_scan_error_logged', False):
+                w._cinematic_scan_error_logged = True
+                _log.info('cinematic scan_string error: %s', exc)
             continue
         if not results:
             continue
@@ -131,37 +142,21 @@ def _find_death_cinematic_text(w, *, allow_scan: bool=False) -> tuple[str, int]:
             if not addr:
                 continue
             block = _read_cinematic_block(w, addr)
-            if block and _death_cinematic_translation(block):
+            if block and resolver(block):
+                w._cinematic_text_addr = addr
                 return (block, addr)
     return ('', 0)
 
 def _find_vision_cinematic_text(w) -> tuple[str, int]:
-    block = _read_cinematic_block(w, _DEATH_CINEMATIC_HINT_ADDR)
-    if block and _lookup_vision_cinematic_payload(w, block):
-        return (block, _DEATH_CINEMATIC_HINT_ADDR)
-    for prefix in _VISION_CINEMATIC_PREFIXES:
-        try:
-            results = w._analyzer.scan_string(prefix, _DEATH_CINEMATIC_SCAN_START, _DEATH_CINEMATIC_SCAN_END)
-        except (OSError, RuntimeError, AttributeError) as exc:
-            _log.debug('vision cinematic scan_string error: %s', exc)
-            continue
-        if not results:
-            continue
-        for result in results:
-            addr = getattr(result, 'address', 0)
-            if not addr:
-                continue
-            block = _read_cinematic_block(w, addr)
-            if block and _lookup_vision_cinematic_payload(w, block):
-                return (block, addr)
-    return ('', 0)
 
-def poll_vision_cinematic(w, *, b30: dict | None=None) -> None:
-    if _current_top_level(w) != 'normal-play':
-        return
-    img_name = b30.get('img_name') if isinstance(b30, dict) else None
-    if not _is_vision_xmi_active(w, img_name=img_name):
-        return
+    def _ok(block: str) -> bool:
+        return _lookup_vision_cinematic_payload(w, block) is not None
+    text, addr = _probe_cinematic_text(w, _ok)
+    if text:
+        return (text, addr)
+    return _scan_vision_cinematic_text(w, _ok)
+
+def _poll_vision_state(w) -> None:
     text, addr = _find_vision_cinematic_text(w)
     payload = _lookup_vision_cinematic_payload(w, text)
     if payload is None:
@@ -177,13 +172,10 @@ def poll_vision_cinematic(w, *, b30: dict | None=None) -> None:
     except AttributeError:
         w._ui_router.update_translation(owner, en, ja, speech_role='situation')
 
-def poll_death_cinematic(w) -> None:
-    if _current_top_level(w) != 'normal-play':
-        return
-    if _is_vision_xmi_active(w):
-        return
-    text, addr = _find_death_cinematic_text(w, allow_scan=_current_hp_is_zero(w))
+def _poll_death_text_probe(w) -> None:
+    text, addr = _probe_cinematic_text(w, lambda block: bool(_death_cinematic_translation(block)))
     if not text:
+        w._death_cinematic_text_prev = ''
         return
     ja = _death_cinematic_translation(text)
     if not ja:
@@ -197,6 +189,35 @@ def poll_death_cinematic(w) -> None:
     except AttributeError:
         w._ui_router.update_translation('death_cinematic', text, ja, speech_role='situation')
 
+def _log_death_gate_once(w) -> None:
+    hp_zero = _current_hp_is_zero(w)
+    if not hp_zero:
+        w._death_gate_logged = False
+        return
+    if getattr(w, '_death_gate_logged', False):
+        return
+    w._death_gate_logged = True
+    try:
+        img = _read_screen_img_name(w)
+        probe_addr = _candidate_text_addrs(w)[0]
+        head = _read_cinematic_block(w, probe_addr)
+        head_ok = bool(head and _death_cinematic_translation(head))
+        _log.info('death gate: top=%r img=%r hp0=True probe_addr=0x%08X probe=%s head=%r', _current_top_level(w), img, probe_addr, head_ok, (head or '')[:60])
+    except Exception:
+        pass
+
+def poll_cinematic(w, *, b30: dict | None=None) -> None:
+    if _current_top_level(w) != 'normal-play':
+        return
+    _log_death_gate_once(w)
+    img_name = b30.get('img_name') if isinstance(b30, dict) else None
+    if _is_vision_xmi_active(w, img_name=img_name):
+        _poll_vision_state(w)
+        return
+    w._vision_cinematic_text_prev = ''
+    w._cinematic_scan_error_logged = False
+    _poll_death_text_probe(w)
+
 def _current_hp_is_zero(w) -> bool:
     try:
         raw = w._analyzer.read_bytes(w._anchor + _PLAYER_HP_CURRENT_OFFSET, 2)
@@ -205,4 +226,4 @@ def _current_hp_is_zero(w) -> bool:
     if not raw or len(raw) < 2:
         return False
     return int.from_bytes(raw[:2], 'little') == 0
-__all__ = ['poll_vision_cinematic', 'poll_death_cinematic', '_current_hp_is_zero']
+__all__ = ['poll_cinematic', '_current_hp_is_zero']

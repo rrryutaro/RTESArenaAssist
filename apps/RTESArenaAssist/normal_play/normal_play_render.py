@@ -5,9 +5,12 @@ from controllers.poll_diag import _checkpoint, _phase_record, _phase_start
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('normal_play_render')
 
+def poll_cinematic_dispatch(w, b30):
+    from normal_play.cinematic_module import poll_cinematic as _poll_cinematic
+    _poll_cinematic(w, b30=b30)
+
 def poll_c1_surface_dispatch(w, b30, *, npc_dialog_changed, inf_name, mif_name, instore_resp_handled, c_area: str=''):
     from normal_play.trigger_module import poll_red_text as _poll_red_text, poll_dialog_close as _poll_dialog_close, classify_c1_dialog_substate as _classify_c1_dialog_substate
-    from normal_play.c1_cinematic_module import poll_vision_cinematic as _poll_vision_cinematic, poll_death_cinematic as _poll_death_cinematic
     from normal_play.c1_gold_drop_module import poll_gold_drop as _poll_gold_drop
     if c_area != 'dungeon':
         w._c1_dialog_foreground = ''
@@ -20,8 +23,6 @@ def poll_c1_surface_dispatch(w, b30, *, npc_dialog_changed, inf_name, mif_name, 
         return
     _c1_fg = _classify_c1_dialog_substate(w, b30, npc_dialog_changed=npc_dialog_changed)
     w._c1_dialog_foreground = _c1_fg
-    _poll_vision_cinematic(w, b30=b30)
-    _poll_death_cinematic(w)
     _poll_red_text(w, b30=b30, npc_dialog_changed=npc_dialog_changed, c1_fg=_c1_fg)
     _poll_gold_drop(w, b30=b30, inf_name=inf_name, mif_name=mif_name, c1_fg=_c1_fg)
     _poll_dialog_close(w, b30=b30, npc_dialog_changed=npc_dialog_changed, instore_resp_handled=instore_resp_handled, c1_fg=_c1_fg)

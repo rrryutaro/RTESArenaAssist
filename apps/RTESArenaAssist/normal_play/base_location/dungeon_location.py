@@ -169,7 +169,7 @@ class DungeonMapSession(MapSessionBase):
 
     def _load_mif(self, mif_name: str, player_floor: int=0) -> None:
         try:
-            mif = load_mif(mif_name, self._mif_dirs, player_floor=player_floor)
+            mif = load_mif(mif_name, self._mif_dirs, level_index_override=player_floor)
         except Exception:
             _log.exception('parse_mif failed: %s', mif_name)
             self._walkable = None

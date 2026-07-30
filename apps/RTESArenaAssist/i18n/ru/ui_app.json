@@ -712,5 +712,19 @@
   "race.imperial_name": "Имперец",
   "place.facility.noble_house": "Дворянский дом",
   "place.facility.house": "Дом",
-  "place.facility.crypt": "Склеп"
+  "place.facility.crypt": "Склеп",
+  "manual.guide.title": "Подсказки к загадкам",
+  "manual.guide.show": "Показывать подсказки к загадкам",
+  "manual.guide.intro": "Здесь перечислены только загадки, которые уже встречались в игре. Выберите место.",
+  "manual.guide.empty": "Загадки пока не встречались. Они появятся здесь, когда вы столкнётесь с дверью-загадкой в игре.",
+  "manual.guide.place_count": " ({n})",
+  "manual.guide.back": "← Назад к списку мест",
+  "manual.guide.question": "Загадка (перевод)",
+  "manual.guide.original": "Оригинал",
+  "manual.guide.answer_heading": "Ответ (принимаемые варианты)",
+  "manual.guide.reveal": "Показать ответ",
+  "manual.guide.answer_missing": "(Данные ответа не найдены)",
+  "manual.guide.place_unknown": "(Место не записано)",
+  "manual.guide.floor": "Уровень {n}",
+  "manual.guide.answer_item": "• {answer}"
 }

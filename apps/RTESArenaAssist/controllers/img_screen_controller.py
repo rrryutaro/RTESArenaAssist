@@ -1,9 +1,32 @@
 import logging
+import re
 import assist_settings as settings
 from top_level.top_level_dispatcher import current_state as _current_top_level
 from top_level import pregame_render as _pregame_render
 from normal_play.npc_conversation_module import NPC_CONVERSATION_OWNER
 _log = logging.getLogger('img_screen_controller')
+_STAFF_PIECES_RE = re.compile('^\\s*Staff\\s+Pieces\\s*\\((\\d+)\\)', re.I)
+
+def _read_staff_pieces_row(w) -> dict | None:
+    try:
+        from arena_bridge import NPC_DIALOG_OFFSET
+        raw = w._analyzer.read_bytes(w._anchor + NPC_DIALOG_OFFSET, 64)
+    except (OSError, AttributeError, ImportError):
+        return None
+    text = raw.split(b'\x00', 1)[0].decode('ascii', errors='replace').strip()
+    m = _STAFF_PIECES_RE.match(text)
+    if not m:
+        return None
+    count = int(m.group(1))
+    ja = ''
+    try:
+        import npc_dialog_lookup as ndl
+        hit = ndl.lookup(text)
+        if hit is not None:
+            ja = ndl.format_japanese(hit[0], hit[1]) or ''
+    except Exception:
+        ja = ''
+    return {'en': text, 'ja': ja, 'equipped': False, 'is_unidentified': False, 'can_equip': True, 'slot_label': '', 'weight': None, 'condition': None, 'effect': f'{count} 個'}
 TRAVEL_SEARCH_OWNER = 'travel_search'
 
 class ImgScreenController:
@@ -140,6 +163,9 @@ class ImgScreenController:
             rules = read_class_equip_rules(self._w._analyzer, self._w._anchor)
             items_raw = read_equipment_items(self._w._analyzer, self._w._anchor)
             item_data = [{'en': it['en'], 'ja': dml.lookup_item(it['en']), 'equipped': it['equipped'], 'is_unidentified': it['is_unidentified'], 'can_equip': can_equip_item(it, rules), 'slot_label': it['slot_label'], 'weight': it['weight'], 'condition': it['condition'], 'effect': f"{it['count']} 個" if it.get('count') is not None else it['effect']} for it in items_raw]
+            _staff = _read_staff_pieces_row(self._w)
+            if _staff is not None:
+                item_data.append(_staff)
         except Exception:
             _log.exception('equipment read failed')
         self._w._ui_router.propose_equipment_list('equipment', title, item_data, priority=30, reason='screen:equipment')

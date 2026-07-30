@@ -15,24 +15,65 @@ venv/
 .DS_Store
 Thumbs.db
 
-# ビルド成果物
-build/
-build-public/
-dist/
-dist-public/
+# ランチャー設定（ローカル位置保存、公開対象外）
+launcher_settings.json
 
-# ビルド時生成物（exe 内 seed パック）
-apps/RTESArenaAssist/_seed_data.py
+# Claude Code — worktree（セッション一時生成物）とローカル個人設定は除外
+# settings.json はプロジェクト共通設定のためコミット対象
+.claude/worktrees/
+.claude/settings.local.json
+# 一時作業 / 試行スクリプト / 検証用スクリーンショット
+.claude/scratch/
+# 過去ビルド snapshot (worktree 検証用)
+.claude/snapshots/
 
-# 実行時生成物（ユーザー環境で生成・配布物ではない）
+# アプリ実行時生成ファイル（ユーザー固有・ランタイム生成）
 apps/RTESArenaAssist/assist_settings.json
+apps/RTESArenaAssist/saves_backup/
+apps/RTESArenaAssist/ext_data/
 apps/RTESArenaAssist/assist_debug.log
 apps/RTESArenaAssist/logs/
 apps/RTESArenaAssist/captures/
-apps/RTESArenaAssist/ext_data/
-apps/RTESArenaAssist/saves_backup/
-apps/RTESArenaAssist/output/
-
-# Arena 由来データ（ユーザー環境のみ・公開物に含めない）
-*.localpack
+# 公開版データ基盤: ユーザー Arena 資産から再生成する単一データパック（Arena 原文を含む・
+# 絶対にコミット/公開しない・再生成可能）。仕様067 §1/§5/§7。
+apps/RTESArenaAssist/arena_local.pak
 *.pak
+*.localpack
+apps/RTESArenaMapViewer/tests/_tmp/
+apps/RTESArenaProbe/legacy_tools/memory_analyzer/settings.json
+
+# Private-only research/reference material.
+# These folders may contain Arena game data, official manuals, third-party source,
+# internal analysis notes, and old investigation tools. Never publish them to the
+# public repository.
+docs/ARENA-data/
+docs/ArenaManual/
+docs/OpenTESArena-main/
+docs/reference/
+
+# Local development settings (per-developer)
+.claude/launch.json
+.claude/tmp/
+apps/RTESArenaMapViewer/mapviewer_settings.json
+
+# Temporary directories and root-level temp artifacts
+/tmp/
+/output/
+/tmp_*
+
+# PyInstaller build artifacts
+/build/
+/dist/
+
+# Dictionary form-migration backups (kept locally only)
+apps/RTESArenaAssist/dictionary/_backup_form_*/
+
+# Runtime-generated logs and memory dumps from scripts
+apps/RTESArenaAssist/scripts/fatigue_log.txt
+apps/RTESArenaAssist/scripts/monitor_*_log.json
+apps/RTESArenaAssist/scripts/snap_*.json
+apps/RTESArenaAssist/scripts/wide_*.bin
+/build-public/
+/dist-public/
+# 公開ビルド時に tools/build_seed.py が生成する exe 内 seed パック（仕様077・リポジトリに残さない）。
+apps/RTESArenaAssist/_seed_data.py

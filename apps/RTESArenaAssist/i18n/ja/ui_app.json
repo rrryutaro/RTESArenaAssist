@@ -712,5 +712,19 @@
   "race.imperial_name": "インペリアル",
   "place.facility.noble_house": "貴族邸",
   "place.facility.house": "家",
-  "place.facility.crypt": "地下室"
+  "place.facility.crypt": "地下室",
+  "manual.guide.title": "攻略情報",
+  "manual.guide.show": "攻略情報を表示する",
+  "manual.guide.intro": "ゲーム中で表示された謎かけだけが載ります。場所を選んでください。",
+  "manual.guide.empty": "まだ表示された謎かけはありません。ゲーム中で謎かけの扉に出会うと、ここに追加されます。",
+  "manual.guide.place_count": "（{n} 件）",
+  "manual.guide.back": "← 場所の一覧へ戻る",
+  "manual.guide.question": "謎かけ（訳）",
+  "manual.guide.original": "原文",
+  "manual.guide.answer_heading": "答え（受理される表記）",
+  "manual.guide.reveal": "答えを見る",
+  "manual.guide.answer_missing": "（答えのデータが見つかりませんでした）",
+  "manual.guide.place_unknown": "（場所名未記録）",
+  "manual.guide.floor": "第{n}階層",
+  "manual.guide.answer_item": "・{answer}"
 }

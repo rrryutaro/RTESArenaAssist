@@ -712,5 +712,19 @@
   "race.imperial_name": "Kaiserlicher",
   "place.facility.noble_house": "Adelshaus",
   "place.facility.house": "Haus",
-  "place.facility.crypt": "Gruft"
+  "place.facility.crypt": "Gruft",
+  "manual.guide.title": "Rätselhilfe",
+  "manual.guide.show": "Rätselhilfe anzeigen",
+  "manual.guide.intro": "Aufgeführt werden nur Rätsel, die im Spiel erschienen sind. Bitte einen Ort wählen.",
+  "manual.guide.empty": "Bisher ist kein Rätsel erschienen. Rätsel werden hier ergänzt, sobald im Spiel eine Rätseltür angetroffen wird.",
+  "manual.guide.place_count": " ({n})",
+  "manual.guide.back": "← Zurück zur Ortsliste",
+  "manual.guide.question": "Rätsel (Übersetzung)",
+  "manual.guide.original": "Original",
+  "manual.guide.answer_heading": "Antwort (akzeptierte Schreibweisen)",
+  "manual.guide.reveal": "Antwort anzeigen",
+  "manual.guide.answer_missing": "(Keine Antwortdaten gefunden)",
+  "manual.guide.place_unknown": "(Ort nicht erfasst)",
+  "manual.guide.floor": "Ebene {n}",
+  "manual.guide.answer_item": "• {answer}"
 }

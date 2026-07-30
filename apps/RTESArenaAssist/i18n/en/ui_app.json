@@ -712,5 +712,19 @@
   "race.imperial_name": "Imperial",
   "place.facility.noble_house": "Noble House",
   "place.facility.house": "House",
-  "place.facility.crypt": "Crypt"
+  "place.facility.crypt": "Crypt",
+  "manual.guide.title": "Riddle Guide",
+  "manual.guide.show": "Show riddle guide",
+  "manual.guide.intro": "Only riddles that have appeared in the game are listed. Choose a place.",
+  "manual.guide.empty": "No riddles have appeared yet. They are added here when a riddle door is encountered in the game.",
+  "manual.guide.place_count": " ({n})",
+  "manual.guide.back": "← Back to the list of places",
+  "manual.guide.question": "Riddle (translation)",
+  "manual.guide.original": "Original",
+  "manual.guide.answer_heading": "Answer (accepted spellings)",
+  "manual.guide.reveal": "Show the answer",
+  "manual.guide.answer_missing": "(No answer data was found)",
+  "manual.guide.place_unknown": "(Place not recorded)",
+  "manual.guide.floor": "Level {n}",
+  "manual.guide.answer_item": "• {answer}"
 }

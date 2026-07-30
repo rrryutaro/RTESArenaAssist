@@ -6,7 +6,8 @@ from datas**:
   - Not bundled: Arena source files (MIF/INF/RMD), i18n original text, i18n English
     source text, the legacy root i18n/en.json and i18n/ja.json, the full Arena manual
     extraction, and Arena-derived service data (e.g. world_map.json).
-  - Bundled (app-owned): assets, i18n/ja, i18n/es, i18n/_meta.json, i18n/_template.json,
+  - Bundled (app-owned): assets, public-enabled i18n language dirs,
+    i18n/_meta.json, i18n/_template.json,
     i18n/_aexe_template (curation templates — no Arena source text, mapping metadata only),
     manual/simple.
 

@@ -160,12 +160,8 @@ def check_trigger_flag(analyzer, anchor: int, prev_flag: int, trigger_indices: l
         raw = analyzer.read_bytes(anchor + TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ)
     except OSError:
         raw = b''
-    texts = []
-    for chunk in raw.split(b'\x00'):
-        text = chunk.decode('ascii', errors='replace').strip().lstrip('~')
-        ratio = sum((32 <= ord(c) <= 126 for c in text)) / max(len(text), 1)
-        if text and ratio >= 0.7:
-            texts.append(text.replace('\r', ' ').replace('\n', ' '))
+    from mif_trigger import extract_trigger_texts
+    texts = extract_trigger_texts(raw)
     if not texts:
         return (f'[0x{curr_flag:02X}]', curr_flag, trig_idx, 0, 0)
     if trig_idx and trig_idx not in trigger_indices:

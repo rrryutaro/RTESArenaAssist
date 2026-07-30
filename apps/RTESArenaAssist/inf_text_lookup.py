@@ -85,6 +85,24 @@ def lookup(inf_name: str, text_index: int) -> dict | None:
     _ensure_loaded()
     return _index.get((inf_name.upper(), text_index))
 
+def _norm_riddle(s: str) -> str:
+    return ' '.join((s or '').replace('\r', ' ').replace('\n', ' ').split())
+
+def lookup_riddle_by_text(body: str) -> dict | None:
+    _ensure_loaded()
+    target = _norm_riddle(body)
+    if not target:
+        return None
+    for e in _index.values():
+        if e.get('type') != 'riddle':
+            continue
+        for fld in ('question', 'correct', 'wrong'):
+            if _norm_riddle(e.get(fld) or '') == target:
+                matched = dict(e)
+                matched['_riddle_field'] = fld
+                return matched
+    return None
+
 def lookup_by_text(inf_name: str, body: str, max_prefix: int=50) -> dict | None:
     _ensure_loaded()
     if not body:

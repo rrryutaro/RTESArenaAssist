@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:7105b21cadf19ee8cac2f0e51fcafcb0db91fede02a34391166fe9f093d1c684",
+  "registry_hash": "sha256:7621e418dd3c74f1e06a552dd3461b4f0e88cacfc68e87df25a876799b923b7b",
   "categories": [
     {
       "category": "assist_ui",
@@ -3581,6 +3581,76 @@
           "id": 900713,
           "kind": "label",
           "debug_name": "settings.map_treasure_mark"
+        },
+        {
+          "id": 900714,
+          "kind": "label",
+          "debug_name": "manual.guide.answer_heading"
+        },
+        {
+          "id": 900715,
+          "kind": "label",
+          "debug_name": "manual.guide.answer_missing"
+        },
+        {
+          "id": 900716,
+          "kind": "label",
+          "debug_name": "manual.guide.back"
+        },
+        {
+          "id": 900717,
+          "kind": "label",
+          "debug_name": "manual.guide.empty"
+        },
+        {
+          "id": 900718,
+          "kind": "label",
+          "debug_name": "manual.guide.floor"
+        },
+        {
+          "id": 900719,
+          "kind": "label",
+          "debug_name": "manual.guide.intro"
+        },
+        {
+          "id": 900720,
+          "kind": "label",
+          "debug_name": "manual.guide.original"
+        },
+        {
+          "id": 900721,
+          "kind": "label",
+          "debug_name": "manual.guide.place_count"
+        },
+        {
+          "id": 900722,
+          "kind": "label",
+          "debug_name": "manual.guide.place_unknown"
+        },
+        {
+          "id": 900723,
+          "kind": "label",
+          "debug_name": "manual.guide.question"
+        },
+        {
+          "id": 900724,
+          "kind": "label",
+          "debug_name": "manual.guide.reveal"
+        },
+        {
+          "id": 900725,
+          "kind": "label",
+          "debug_name": "manual.guide.show"
+        },
+        {
+          "id": 900726,
+          "kind": "label",
+          "debug_name": "manual.guide.title"
+        },
+        {
+          "id": 900727,
+          "kind": "label",
+          "debug_name": "manual.guide.answer_item"
         }
       ]
     },
@@ -49559,6 +49629,62 @@
           "text": "Mark"
         },
         {
+          "id": 900714,
+          "text": "Answer (accepted spellings)"
+        },
+        {
+          "id": 900715,
+          "text": "(No answer data was found)"
+        },
+        {
+          "id": 900716,
+          "text": "← Back to the list of places"
+        },
+        {
+          "id": 900717,
+          "text": "No riddles have appeared yet. They are added here when a riddle door is encountered in the game."
+        },
+        {
+          "id": 900718,
+          "text": "Level {n}"
+        },
+        {
+          "id": 900719,
+          "text": "Only riddles that have appeared in the game are listed. Choose a place."
+        },
+        {
+          "id": 900720,
+          "text": "Original"
+        },
+        {
+          "id": 900721,
+          "text": " ({n})"
+        },
+        {
+          "id": 900722,
+          "text": "(Place not recorded)"
+        },
+        {
+          "id": 900723,
+          "text": "Riddle (translation)"
+        },
+        {
+          "id": 900724,
+          "text": "Show the answer"
+        },
+        {
+          "id": 900725,
+          "text": "Show riddle guide"
+        },
+        {
+          "id": 900726,
+          "text": "Riddle Guide"
+        },
+        {
+          "id": 900727,
+          "text": "• {answer}"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -50973,7 +51099,7 @@
         },
         {
           "id": 103164,
-          "text": "近づくと扉自体が話しかけてくる：\n-\n聞け、愚かな人間よ、この謎を。我に仕える値があることを証明せよ……\n-\nもし第三房に役立たずの真鍮があれば、第二房に金の鍵がある。\nもし第一房に金の鍵があれば、第三房に役立たずの真鍮がある。\nもし第二房に役立たずの真鍮があれば、第一房に金の鍵がある。\n-\nこれを知って、勇敢な愚か者よ、全てが真であるわけでは\nないと知った上で、どの房に金の鍵があるか？"
+          "text": "近づくと扉自体が話しかけてくる：\n-\n我が謎を聞け、愚かな人間よ。\nそして、我が助力を受けるに値する者であることを証明せよ……\n-\n第三房に価値なき真鍮があるならば、第二房に金の鍵がある。\n第一房に金の鍵があるならば、第三房に価値なき真鍮がある。\n第二房に価値なき真鍮があるならば、第一房に金の鍵がある。\n-\nこれを心得よ、勇敢なる愚か者よ。\nそして、語られしことはすべて真であると知ったうえで、\nいずれの房に金の鍵があるのか？"
         },
         {
           "id": 103165,
@@ -77276,6 +77402,62 @@
           "text": "マーク"
         },
         {
+          "id": 900714,
+          "text": "答え（受理される表記）"
+        },
+        {
+          "id": 900715,
+          "text": "（答えのデータが見つかりませんでした）"
+        },
+        {
+          "id": 900716,
+          "text": "← 場所の一覧へ戻る"
+        },
+        {
+          "id": 900717,
+          "text": "まだ表示された謎かけはありません。ゲーム中で謎かけの扉に出会うと、ここに追加されます。"
+        },
+        {
+          "id": 900718,
+          "text": "第{n}階層"
+        },
+        {
+          "id": 900719,
+          "text": "ゲーム中で表示された謎かけだけが載ります。場所を選んでください。"
+        },
+        {
+          "id": 900720,
+          "text": "原文"
+        },
+        {
+          "id": 900721,
+          "text": "（{n} 件）"
+        },
+        {
+          "id": 900722,
+          "text": "（場所名未記録）"
+        },
+        {
+          "id": 900723,
+          "text": "謎かけ（訳）"
+        },
+        {
+          "id": 900724,
+          "text": "答えを見る"
+        },
+        {
+          "id": 900725,
+          "text": "攻略情報を表示する"
+        },
+        {
+          "id": 900726,
+          "text": "攻略情報"
+        },
+        {
+          "id": 900727,
+          "text": "・{answer}"
+        },
+        {
           "id": 902000,
           "text": "メイジ"
         },
@@ -78858,7 +79040,7 @@
         },
         {
           "id": 103164,
-          "text": "Al acercarte, la propia puerta habla:\n-\nEscucha mi acertijo, necio mortal, y demuestra que\neres digno de mi servicio...\n-\nSi la Celda 3 contiene latón sin valor, la Celda 2 contiene la llave de oro.\nSi la Celda 1 contiene la llave de oro, la Celda 3 contiene latón sin valor.\nSi la Celda 2 contiene latón sin valor, la Celda 1 contiene la llave de oro.\n-\nSabiendo esto, valiente necio, y sabiendo que no todo lo dicho\npuede ser verdad, ¿qué celda contiene la llave de oro?"
+          "text": "Al acercarte, la propia puerta habla:\n-\nEscucha mi acertijo, necio mortal, y demuestra que\neres digno de mi servicio...\n-\nSi la Celda 3 contiene latón sin valor, la Celda 2 contiene la llave de oro.\nSi la Celda 1 contiene la llave de oro, la Celda 3 contiene latón sin valor.\nSi la Celda 2 contiene latón sin valor, la Celda 1 contiene la llave de oro.\n-\nSabiendo esto, valiente necio, y sabiendo que todo lo dicho\nes verdad, ¿qué celda contiene la llave de oro?"
         },
         {
           "id": 103165,
@@ -105801,6 +105983,62 @@
           "text": "Marca"
         },
         {
+          "id": 900714,
+          "text": "Respuesta (formas aceptadas)"
+        },
+        {
+          "id": 900715,
+          "text": "(No se encontraron datos de la respuesta)"
+        },
+        {
+          "id": 900716,
+          "text": "← Volver a la lista de lugares"
+        },
+        {
+          "id": 900717,
+          "text": "Todavía no ha aparecido ningún acertijo. Se añadirán aquí cuando encuentres una puerta con acertijo en el juego."
+        },
+        {
+          "id": 900718,
+          "text": "Nivel {n}"
+        },
+        {
+          "id": 900719,
+          "text": "Solo se listan los acertijos que han aparecido en el juego. Elige un lugar."
+        },
+        {
+          "id": 900720,
+          "text": "Original"
+        },
+        {
+          "id": 900721,
+          "text": " ({n})"
+        },
+        {
+          "id": 900722,
+          "text": "(Lugar no registrado)"
+        },
+        {
+          "id": 900723,
+          "text": "Acertijo (traducción)"
+        },
+        {
+          "id": 900724,
+          "text": "Ver la respuesta"
+        },
+        {
+          "id": 900725,
+          "text": "Mostrar la guía de acertijos"
+        },
+        {
+          "id": 900726,
+          "text": "Guía de acertijos"
+        },
+        {
+          "id": 900727,
+          "text": "• {answer}"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -107215,7 +107453,7 @@
         },
         {
           "id": 103164,
-          "text": "Als Ihr Euch nähert, spricht die Tür selbst:\n-\nHört mein Rätsel, törichter Sterblicher, und beweist,\ndass Ihr meines Dienstes würdig seid...\n-\nWenn Zelle 3 wertloses Messing enthält, enthält Zelle 2 den goldenen Schlüssel.\nWenn Zelle 1 den goldenen Schlüssel enthält, enthält Zelle 3 wertloses Messing.\nWenn Zelle 2 wertloses Messing enthält, enthält Zelle 1 den goldenen Schlüssel.\n-\nWisst Ihr dies, tapferer Narr, und wisst Ihr, dass nicht alles Gesagte\nwahr sein kann, welche Zelle enthält den goldenen Schlüssel?"
+          "text": "Als Ihr Euch nähert, spricht die Tür selbst:\n-\nHört mein Rätsel, törichter Sterblicher, und beweist,\ndass Ihr meines Dienstes würdig seid...\n-\nWenn Zelle 3 wertloses Messing enthält, enthält Zelle 2 den goldenen Schlüssel.\nWenn Zelle 1 den goldenen Schlüssel enthält, enthält Zelle 3 wertloses Messing.\nWenn Zelle 2 wertloses Messing enthält, enthält Zelle 1 den goldenen Schlüssel.\n-\nWisst Ihr dies, tapferer Narr, und wisst Ihr, dass alles Gesagte\nwahr ist, welche Zelle enthält den goldenen Schlüssel?"
         },
         {
           "id": 103165,
@@ -133518,6 +133756,62 @@
           "text": "Zeichen"
         },
         {
+          "id": 900714,
+          "text": "Antwort (akzeptierte Schreibweisen)"
+        },
+        {
+          "id": 900715,
+          "text": "(Keine Antwortdaten gefunden)"
+        },
+        {
+          "id": 900716,
+          "text": "← Zurück zur Ortsliste"
+        },
+        {
+          "id": 900717,
+          "text": "Bisher ist kein Rätsel erschienen. Rätsel werden hier ergänzt, sobald im Spiel eine Rätseltür angetroffen wird."
+        },
+        {
+          "id": 900718,
+          "text": "Ebene {n}"
+        },
+        {
+          "id": 900719,
+          "text": "Aufgeführt werden nur Rätsel, die im Spiel erschienen sind. Bitte einen Ort wählen."
+        },
+        {
+          "id": 900720,
+          "text": "Original"
+        },
+        {
+          "id": 900721,
+          "text": " ({n})"
+        },
+        {
+          "id": 900722,
+          "text": "(Ort nicht erfasst)"
+        },
+        {
+          "id": 900723,
+          "text": "Rätsel (Übersetzung)"
+        },
+        {
+          "id": 900724,
+          "text": "Antwort anzeigen"
+        },
+        {
+          "id": 900725,
+          "text": "Rätselhilfe anzeigen"
+        },
+        {
+          "id": 900726,
+          "text": "Rätselhilfe"
+        },
+        {
+          "id": 900727,
+          "text": "• {answer}"
+        },
+        {
           "id": 902000,
           "text": "Magier"
         },
@@ -134932,7 +135226,7 @@
         },
         {
           "id": 103164,
-          "text": "Alors que tu approches, la porte elle-même parle :\n-\nÉcoute mon énigme, mortel insensé, et prouve que tu\nes digne de mon service...\n-\nSi la Cellule 3 renferme du laiton sans valeur, la Cellule 2 renferme la clé d'or.\nSi la Cellule 1 renferme la clé d'or, la Cellule 3 renferme du laiton sans valeur.\nSi la Cellule 2 renferme du laiton sans valeur, la Cellule 1 renferme la clé d'or.\n-\nSachant cela, brave sot, et sachant que tout ce qui est dit\nne peut être vrai, quelle cellule contient la clé d'or ?"
+          "text": "Alors que tu approches, la porte elle-même parle :\n-\nÉcoute mon énigme, mortel insensé, et prouve que tu\nes digne de mon service...\n-\nSi la Cellule 3 renferme du laiton sans valeur, la Cellule 2 renferme la clé d'or.\nSi la Cellule 1 renferme la clé d'or, la Cellule 3 renferme du laiton sans valeur.\nSi la Cellule 2 renferme du laiton sans valeur, la Cellule 1 renferme la clé d'or.\n-\nSachant cela, brave sot, et sachant que tout ce qui est dit\nest vrai, quelle cellule contient la clé d'or ?"
         },
         {
           "id": 103165,
@@ -161235,6 +161529,62 @@
           "text": "Marque"
         },
         {
+          "id": 900714,
+          "text": "Réponse (formulations acceptées)"
+        },
+        {
+          "id": 900715,
+          "text": "(Aucune donnée de réponse trouvée)"
+        },
+        {
+          "id": 900716,
+          "text": "← Retour à la liste des lieux"
+        },
+        {
+          "id": 900717,
+          "text": "Aucune énigme n'est encore apparue. Elles seront ajoutées ici lorsque vous rencontrerez une porte à énigme dans le jeu."
+        },
+        {
+          "id": 900718,
+          "text": "Niveau {n}"
+        },
+        {
+          "id": 900719,
+          "text": "Seules les énigmes déjà apparues dans le jeu sont listées. Choisissez un lieu."
+        },
+        {
+          "id": 900720,
+          "text": "Original"
+        },
+        {
+          "id": 900721,
+          "text": " ({n})"
+        },
+        {
+          "id": 900722,
+          "text": "(Lieu non enregistré)"
+        },
+        {
+          "id": 900723,
+          "text": "Énigme (traduction)"
+        },
+        {
+          "id": 900724,
+          "text": "Voir la réponse"
+        },
+        {
+          "id": 900725,
+          "text": "Afficher le guide des énigmes"
+        },
+        {
+          "id": 900726,
+          "text": "Guide des énigmes"
+        },
+        {
+          "id": 900727,
+          "text": "• {answer}"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -162649,7 +162999,7 @@
         },
         {
           "id": 103164,
-          "text": "Mentre ti avvicini, la porta stessa parla:\n-\nAscolta il mio enigma, stolto mortale, e dimostra di\nessere degno del mio servizio...\n-\nSe la Cella 3 contiene ottone senza valore, la Cella 2 contiene la chiave d'oro.\nSe la Cella 1 contiene la chiave d'oro, la Cella 3 contiene ottone senza valore.\nSe la Cella 2 contiene ottone senza valore, la Cella 1 contiene la chiave d'oro.\n-\nSapendo questo, coraggioso stolto, e sapendo che tutto ciò che è detto\nnon può essere vero, quale cella contiene la chiave d'oro?"
+          "text": "Mentre ti avvicini, la porta stessa parla:\n-\nAscolta il mio enigma, stolto mortale, e dimostra di\nessere degno del mio servizio...\n-\nSe la Cella 3 contiene ottone senza valore, la Cella 2 contiene la chiave d'oro.\nSe la Cella 1 contiene la chiave d'oro, la Cella 3 contiene ottone senza valore.\nSe la Cella 2 contiene ottone senza valore, la Cella 1 contiene la chiave d'oro.\n-\nSapendo questo, coraggioso stolto, e sapendo che tutto ciò che è detto\nè vero, quale cella contiene la chiave d'oro?"
         },
         {
           "id": 103165,
@@ -188952,6 +189302,62 @@
           "text": "Segno"
         },
         {
+          "id": 900714,
+          "text": "Risposta (forme accettate)"
+        },
+        {
+          "id": 900715,
+          "text": "(Nessun dato della risposta trovato)"
+        },
+        {
+          "id": 900716,
+          "text": "← Torna all'elenco dei luoghi"
+        },
+        {
+          "id": 900717,
+          "text": "Non è ancora apparso alcun enigma. Verranno aggiunti qui quando incontrerai una porta con enigma nel gioco."
+        },
+        {
+          "id": 900718,
+          "text": "Livello {n}"
+        },
+        {
+          "id": 900719,
+          "text": "Sono elencati solo gli enigmi già apparsi nel gioco. Scegli un luogo."
+        },
+        {
+          "id": 900720,
+          "text": "Originale"
+        },
+        {
+          "id": 900721,
+          "text": " ({n})"
+        },
+        {
+          "id": 900722,
+          "text": "(Luogo non registrato)"
+        },
+        {
+          "id": 900723,
+          "text": "Enigma (traduzione)"
+        },
+        {
+          "id": 900724,
+          "text": "Mostra la risposta"
+        },
+        {
+          "id": 900725,
+          "text": "Mostra la guida agli enigmi"
+        },
+        {
+          "id": 900726,
+          "text": "Guida agli enigmi"
+        },
+        {
+          "id": 900727,
+          "text": "• {answer}"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -190366,7 +190772,7 @@
         },
         {
           "id": 103164,
-          "text": "Когда ты приближаешься, сама дверь заговаривает:\n-\nВыслушай мою загадку, глупый смертный, и докажи, что ты\nдостоин моей службы...\n-\nЕсли в Камере 3 бесполезная латунь, то в Камере 2 золотой ключ.\nЕсли в Камере 1 золотой ключ, то в Камере 3 бесполезная латунь.\nЕсли в Камере 2 бесполезная латунь, то в Камере 1 золотой ключ.\n-\nЗная это, храбрый глупец, и зная, что не всё сказанное\nможет быть правдой, в какой камере золотой ключ?"
+          "text": "Когда ты приближаешься, сама дверь заговаривает:\n-\nВыслушай мою загадку, глупый смертный, и докажи, что ты\nдостоин моей службы...\n-\nЕсли в Камере 3 бесполезная латунь, то в Камере 2 золотой ключ.\nЕсли в Камере 1 золотой ключ, то в Камере 3 бесполезная латунь.\nЕсли в Камере 2 бесполезная латунь, то в Камере 1 золотой ключ.\n-\nЗная это, храбрый глупец, и зная, что всё сказанное\nесть правда, в какой камере золотой ключ?"
         },
         {
           "id": 103165,
@@ -216667,6 +217073,62 @@
         {
           "id": 900713,
           "text": "Метка"
+        },
+        {
+          "id": 900714,
+          "text": "Ответ (принимаемые варианты)"
+        },
+        {
+          "id": 900715,
+          "text": "(Данные ответа не найдены)"
+        },
+        {
+          "id": 900716,
+          "text": "← Назад к списку мест"
+        },
+        {
+          "id": 900717,
+          "text": "Загадки пока не встречались. Они появятся здесь, когда вы столкнётесь с дверью-загадкой в игре."
+        },
+        {
+          "id": 900718,
+          "text": "Уровень {n}"
+        },
+        {
+          "id": 900719,
+          "text": "Здесь перечислены только загадки, которые уже встречались в игре. Выберите место."
+        },
+        {
+          "id": 900720,
+          "text": "Оригинал"
+        },
+        {
+          "id": 900721,
+          "text": " ({n})"
+        },
+        {
+          "id": 900722,
+          "text": "(Место не записано)"
+        },
+        {
+          "id": 900723,
+          "text": "Загадка (перевод)"
+        },
+        {
+          "id": 900724,
+          "text": "Показать ответ"
+        },
+        {
+          "id": 900725,
+          "text": "Показывать подсказки к загадкам"
+        },
+        {
+          "id": 900726,
+          "text": "Подсказки к загадкам"
+        },
+        {
+          "id": 900727,
+          "text": "• {answer}"
         },
         {
           "id": 902000,

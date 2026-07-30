@@ -712,5 +712,19 @@
   "race.imperial_name": "Imperial",
   "place.facility.noble_house": "Casa noble",
   "place.facility.house": "Casa",
-  "place.facility.crypt": "Cripta"
+  "place.facility.crypt": "Cripta",
+  "manual.guide.title": "Guía de acertijos",
+  "manual.guide.show": "Mostrar la guía de acertijos",
+  "manual.guide.intro": "Solo se listan los acertijos que han aparecido en el juego. Elige un lugar.",
+  "manual.guide.empty": "Todavía no ha aparecido ningún acertijo. Se añadirán aquí cuando encuentres una puerta con acertijo en el juego.",
+  "manual.guide.place_count": " ({n})",
+  "manual.guide.back": "← Volver a la lista de lugares",
+  "manual.guide.question": "Acertijo (traducción)",
+  "manual.guide.original": "Original",
+  "manual.guide.answer_heading": "Respuesta (formas aceptadas)",
+  "manual.guide.reveal": "Ver la respuesta",
+  "manual.guide.answer_missing": "(No se encontraron datos de la respuesta)",
+  "manual.guide.place_unknown": "(Lugar no registrado)",
+  "manual.guide.floor": "Nivel {n}",
+  "manual.guide.answer_item": "• {answer}"
 }
