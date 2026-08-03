@@ -8,6 +8,8 @@ class FacilityView:
     render_owner: str = ''
     bar_key: str = ''
     l4_visible: bool = False
+    message_source_owned: bool = False
+    signals_snapshot: Any = None
     reason: str = 'seam'
 
 class FacilityNode:
@@ -39,6 +41,9 @@ class FacilityNode:
         raise NotImplementedError
 
     def on_exit(self, w) -> None:
+        return None
+
+    def suspend_for_story(self, w) -> None:
         return None
 
     def __repr__(self) -> str:

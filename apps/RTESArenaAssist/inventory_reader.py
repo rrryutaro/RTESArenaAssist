@@ -92,25 +92,23 @@ _ACCESSORY_SLOT_LABEL_IDS = {0: 'item.slot.bracelet', 1: 'item.slot.belt', 2: 'i
 _SPELLCASTING_SLOT_LABEL_IDS = {0: 'item.slot.mark', 1: 'items.spellcasting_items.1.0', 2: 'item.slot.bracers', 3: 'items.spellcasting_items.3.0'}
 _ARMOR_SLOT_LABEL_IDS = {0: 'item.slot.torso', 1: 'item.slot.hands', 2: 'item.slot.legs', 3: 'item.slot.shoulder_left', 4: 'item.slot.shoulder_right', 5: 'item.slot.head', 6: 'item.slot.feet'}
 
-def _slot_label(item: dict) -> str:
+def _slot_label(item: dict, classification: tuple[str, int] | None=None) -> str:
     hands = item['hands']
     sid = item['slot_id']
-    p1 = item['param1']
-    if _is_potion(item):
+    kind, _armor_material_id = classification if classification is not None else _classify_item(item)
+    if kind == 'potion':
         return _label_text('item.slot.potion')
-    if hands in (1, 2):
+    if kind == 'weapon':
         return _label_text('item.slot.one_handed' if hands == 1 else 'item.slot.two_handed')
-    if hands > 2:
+    if kind == 'spellcasting':
         return _label_text(_SPELLCASTING_SLOT_LABEL_IDS.get(sid, 'item.slot.spellcasting'))
-    if item['x'] == 255 and 0 <= sid <= 3:
+    if kind == 'accessory':
         return _label_text(_ACCESSORY_SLOT_LABEL_IDS.get(sid, 'item.slot.accessory'))
-    if item['x'] == 255 and 4 <= sid <= 6:
+    if kind == 'armor':
         return _label_text(_ARMOR_SLOT_LABEL_IDS.get(sid, 'item.slot.armor'))
-    if 18 <= p1 <= 50:
-        return _label_text(_ARMOR_SLOT_LABEL_IDS.get(sid, 'item.slot.armor'))
-    if SHIELD_SLOT_MIN <= sid <= SHIELD_SLOT_MAX:
+    if kind == 'shield':
         return _label_text('item.slot.shield')
-    return _label_text(_ACCESSORY_SLOT_LABEL_IDS.get(sid, 'item.slot.accessory'))
+    return ''
 
 def _is_potion(item: dict) -> bool:
     return item['hands'] == 0 and item['attr'] == 255 and (item['x'] == 0) and (0 <= item['slot_id'] < POTION_COUNT)
@@ -160,14 +158,15 @@ def _ench_index(item: dict) -> int | None:
         return None
     return x
 
-def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], chain_names: list[str], leather_names: list[str], jewelry_names: list[str], spellcasting_names: list[str], material_names: list[str], base_armor_names: list[str], armor_enchant_names: list[str], weapon_enchant_names: list[str], spell_attack_names: list[str], spell_defense_names: list[str], spell_misc_names: list[str], potion_names: list[str] | None=None, unidentified_potion_name: list[str] | None=None) -> str:
+def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], chain_names: list[str], leather_names: list[str], jewelry_names: list[str], spellcasting_names: list[str], material_names: list[str], base_armor_names: list[str], armor_enchant_names: list[str], weapon_enchant_names: list[str], spell_attack_names: list[str], spell_defense_names: list[str], spell_misc_names: list[str], potion_names: list[str] | None=None, unidentified_potion_name: list[str] | None=None, classification: tuple[str, int] | None=None) -> str:
     sid = item['slot_id']
     hands = item['hands']
     p1 = item['param1']
     mat_id = item['material']
     is_magic = bool(item['flags'] & FLAG_MAGIC)
     is_identified = not item['flags'] & FLAG_UNIDENTIFIED
-    if _is_potion(item):
+    kind, _armor_material_id = classification if classification is not None else _classify_item(item)
+    if kind == 'potion':
         if not is_identified:
             _un = unidentified_potion_name or []
             if _un and _un[0]:
@@ -175,18 +174,18 @@ def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], 
             return 'Potion#?'
         _pn = potion_names or []
         return _pn[sid] if 0 <= sid < len(_pn) else f'Potion#{sid}'
-    if hands in (1, 2):
+    if kind == 'weapon':
         if 0 <= sid < len(weapon_names):
             base = weapon_names[sid]
         else:
-            return f'Weapon#{p1}'
+            return f'Weapon#{sid}'
         if item['x'] == 255 and 0 <= mat_id < len(material_names):
             return f'{material_names[mat_id]} {base}'
         ei = _ench_index(item)
         if ei is not None and ei < len(weapon_enchant_names):
             return f'{base} {weapon_enchant_names[ei]}'
         return base
-    if hands > 2:
+    if kind == 'spellcasting':
         base = spellcasting_names[sid] if 0 <= sid < len(spellcasting_names) else f'Spellcasting#{sid}'
         if is_magic and is_identified:
             table = {0: spell_attack_names, 1: spell_defense_names, 2: spell_misc_names}.get(mat_id)
@@ -195,23 +194,28 @@ def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], 
                 return f'{base} {table[x]}'
         return base
     ei = _ench_index(item)
-    if ei is not None and 0 <= sid < len(base_armor_names):
+    if ei is not None and kind == 'accessory' and (0 <= sid < len(jewelry_names)):
+        base = jewelry_names[sid]
+        if ei < len(armor_enchant_names):
+            return f'{base} {armor_enchant_names[ei]}'
+        return base
+    if ei is not None and kind in ('armor', 'shield') and (0 <= sid < len(base_armor_names)):
         base = base_armor_names[sid]
         if 0 <= mat_id < len(material_names):
             base = f'{material_names[mat_id]} {base}'
         if ei < len(armor_enchant_names):
             return f'{base} {armor_enchant_names[ei]}'
-    if item['x'] == 255 and 0 <= sid <= 3:
+    if kind == 'accessory' and item['x'] == 255:
         base = jewelry_names[sid] if 0 <= sid < len(jewelry_names) else f'Jewelry#{sid}'
         if is_magic and is_identified:
             mi = mat_id + ACCESSORY_MATERIAL_BASE
             if 0 <= mi < len(material_names):
                 return f'{material_names[mi]} {base}'
         return base
-    if item['x'] == 255 and 0 <= mat_id < len(material_names) and (4 <= sid <= ARMOR_PIECE_SLOT_MAX):
+    if kind == 'armor' and item['x'] == 255 and (0 <= mat_id < len(material_names)) and (4 <= sid <= ARMOR_PIECE_SLOT_MAX):
         base = base_armor_names[sid] if sid < len(base_armor_names) else f'Slot#{sid}'
         return f'{material_names[mat_id]} {base}'
-    if 18 <= p1 <= 50:
+    if kind == 'armor':
         if 40 <= p1 <= 50:
             if 0 <= sid < len(plate_names):
                 return plate_names[sid]
@@ -221,11 +225,14 @@ def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], 
         elif 18 <= p1 <= 28:
             if 0 <= sid < len(leather_names):
                 return leather_names[sid]
-    elif SHIELD_SLOT_MIN <= sid <= SHIELD_SLOT_MAX:
+    elif kind == 'shield':
         if 0 <= sid < len(plate_names):
             return plate_names[sid]
-    elif 0 <= sid < len(jewelry_names):
+        return f'Shield#{sid}'
+    elif kind == 'accessory' and 0 <= sid < len(jewelry_names):
         return jewelry_names[sid]
+    elif kind == 'accessory':
+        return f'Jewelry#{sid}'
     return f'Armor#{p1}'
 
 def read_item_name_tables(analyzer, anchor: int) -> dict:
@@ -233,7 +240,7 @@ def read_item_name_tables(analyzer, anchor: int) -> dict:
     def _s(offset: int, size: int, count: int) -> list[str]:
         try:
             return _read_null_strings(analyzer.read_bytes(anchor + offset, size), count)
-        except OSError:
+        except (OSError, AttributeError, TypeError):
             return []
     return {'weapon_names': _s(WEAPON_NAMES_OFFSET, 400, 18), 'plate_names': _s(PLATE_NAMES_OFFSET, 300, 11), 'chain_names': _s(CHAIN_NAMES_OFFSET, 300, 11), 'leather_names': _s(LEATHER_NAMES_OFFSET, 300, 11), 'jewelry_names': _s(JEWELRY_NAMES_OFFSET, 100, 4), 'spellcasting_names': _s(SPELLCASTING_NAMES_OFFSET, 64, 4), 'material_names': _s(MATERIAL_NAMES_OFFSET, 100, 8), 'base_armor_names': _s(BASE_ARMOR_NAMES_OFFSET, 200, 11), 'armor_enchant_names': _s(ARMOR_ENCHANT_NAMES_OFFSET, 300, ENCHANT_COUNT), 'weapon_enchant_names': _s(WEAPON_ENCHANT_NAMES_OFFSET, 300, ENCHANT_COUNT), 'spell_attack_names': _s(SPELL_ATTACK_NAMES_OFFSET, 400, SPELL_ATTACK_COUNT), 'spell_defense_names': _s(SPELL_DEFENSE_NAMES_OFFSET, 300, SPELL_DEFENSE_COUNT), 'spell_misc_names': _s(SPELL_MISC_NAMES_OFFSET, 300, SPELL_MISC_COUNT), 'potion_names': _s(POTION_NAMES_OFFSET, POTION_NAMES_SIZE, POTION_COUNT), 'unidentified_potion_name': _s(UNIDENT_POTION_NAME_OFFSET, 16, 1)}
 
@@ -241,20 +248,27 @@ def name_from_item_bytes(item_bytes: bytes, tables: dict) -> str:
     item = _parse_item(item_bytes, 0)
     if item is None:
         return ''
-    return _get_item_name(item, **tables)
+    classification = _classify_item(item)
+    return _get_item_name(item, classification=classification, **tables)
 
-def read_equipment_items(analyzer, anchor: int) -> list[dict]:
-    tables = read_item_name_tables(analyzer, anchor)
+def read_equipment_items_with_status(analyzer, anchor: int) -> tuple[bool, list[dict]]:
     try:
         inv_raw = analyzer.read_bytes(anchor + INV_OFFSET, ITEM_SIZE * INV_SLOTS)
-    except OSError:
-        return []
+        if len(inv_raw) != ITEM_SIZE * INV_SLOTS:
+            return (False, [])
+    except (OSError, AttributeError, TypeError):
+        return (False, [])
+    tables = read_item_name_tables(analyzer, anchor)
     items: list[dict] = []
     for i in range(INV_SLOTS):
         item = _parse_item(inv_raw, i * ITEM_SIZE)
         if item is None or _is_empty(item):
             continue
-        en = _get_item_name(item, **tables)
-        item_type, armor_material_id = _classify_item(item)
-        items.append({'en': en, 'slot_id': item['slot_id'], 'hands': item['hands'], 'health': item['health'], 'max_hp': item['max_hp'], 'price': item['price'], 'equipped': bool(item['flags'] & 128), 'is_unidentified': _display_unidentified(item), 'item_type': item_type, 'armor_material_id': armor_material_id, 'slot_label': _slot_label(item), 'weight': '' if item_type == 'potion' else _weight_str(item['weight']), 'condition': '' if item_type == 'potion' else _condition_str(item), 'effect': '' if item_type == 'potion' else _effect_str(item), 'count': _potion_count(item) if item_type == 'potion' else None})
-    return items
+        classification = _classify_item(item)
+        item_type, armor_material_id = classification
+        en = _get_item_name(item, classification=classification, **tables)
+        items.append({'en': en, 'slot_id': item['slot_id'], 'hands': item['hands'], 'health': item['health'], 'max_hp': item['max_hp'], 'price': item['price'], 'equipped': bool(item['flags'] & 128), 'is_unidentified': _display_unidentified(item), 'item_type': item_type, 'armor_material_id': armor_material_id, 'slot_label': _slot_label(item, classification=classification), 'weight': '' if item_type == 'potion' else _weight_str(item['weight']), 'condition': '' if item_type == 'potion' else _condition_str(item), 'effect': '' if item_type == 'potion' else _effect_str(item), 'count': _potion_count(item) if item_type == 'potion' else None})
+    return (True, items)
+
+def read_equipment_items(analyzer, anchor: int) -> list[dict]:
+    return read_equipment_items_with_status(analyzer, anchor)[1]

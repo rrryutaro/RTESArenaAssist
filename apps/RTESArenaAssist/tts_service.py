@@ -11,6 +11,7 @@ from collections import OrderedDict, deque
 from dataclasses import dataclass
 _SVSF_ASYNC = 1
 _SVSF_PURGE_BEFORE_SPEAK = 2
+_SAPI_WAIT_POLL_MS = 50
 _URL_RE = re.compile('https?://\\S+')
 _APOSTROPHES = ("'", '’', '‘', '`')
 _TRAILING_SILENT_CHARS = frozenset('」』”’"\')）〕］】｝〉》〙〗〟〞>＞、，,・:：;；…‥ー―-!?！？')
@@ -412,9 +413,10 @@ class TTSService:
             if not segment:
                 continue
             self._notify_segment(full_text, segment)
-            self._speak_sapi5_blocking(speaker, segment)
+            if not self._speak_sapi5_async(speaker, segment, generation):
+                return
 
-    def _speak_sapi5_blocking(self, speaker, text: str) -> None:
+    def _speak_sapi5_async(self, speaker, text: str, generation: int) -> bool:
         try:
             speech_text = self._normalize_speech_text(text)
             with self._lock:
@@ -423,9 +425,21 @@ class TTSService:
             speaker.Volume = volume
             speaker.Rate = rate
             self._apply_voice(speaker)
-            speaker.Speak(speech_text)
+            speaker.Speak(speech_text, _SVSF_ASYNC)
+            while True:
+                if not self._is_generation_current(generation):
+                    speaker.Speak('', _SVSF_ASYNC | _SVSF_PURGE_BEFORE_SPEAK)
+                    return False
+                if speaker.WaitUntilDone(_SAPI_WAIT_POLL_MS):
+                    return self._is_generation_current(generation)
         except Exception:
-            _log_tts('SAPI5 speak error:\n' + traceback.format_exc())
+            error_trace = traceback.format_exc()
+            try:
+                speaker.Speak('', _SVSF_ASYNC | _SVSF_PURGE_BEFORE_SPEAK)
+            except Exception:
+                pass
+            _log_tts('SAPI5 speak error:\n' + error_trace)
+            return False
 
     def _apply_voice(self, speaker) -> None:
         with self._lock:

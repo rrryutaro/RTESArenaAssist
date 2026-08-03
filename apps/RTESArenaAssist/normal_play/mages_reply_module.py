@@ -12,6 +12,7 @@ _DETECT_MAGIC_QUOTE_PREFIX = 'I can tell you if that is magical'
 _DETECT_MAGIC_ALREADY_KNOWN = 'You already know what that is!'
 _DETECT_MAGIC_IDENTIFIED = 'The item is now identified in your inventory.'
 _DETECT_MAGIC_RESULT_OFFSET = 37534
+_SNAPSHOT_UNSET = object()
 
 def _normalize_reply_text(text: str) -> str:
     s = (text or '').replace('\r', ' ').replace('\n', ' ').replace('\x00', ' ')
@@ -83,18 +84,21 @@ def _read_detect_magic_already_known(w, current_ptr, candidates, *, force: bool=
         return None
     return ResponseCandidate(text=text, lookup_hit=True, source_offset=_MAGES_MENU_TEXT_OFFSET)
 
-def _detect_magic_reply_kind(w, img: str) -> str:
+def _detect_magic_reply_kind(w, img: str, *, sig: dict | None=None, current_ptr=_SNAPSHOT_UNSET) -> str:
     try:
         from mages_signals import detect_magic_reply_kind_from_memory, read_signals
-        sig = read_signals(w._analyzer, w._anchor)
-        return detect_magic_reply_kind_from_memory(w._analyzer, w._anchor, img, sig)
+        if sig is None:
+            sig = read_signals(w._analyzer, w._anchor)
+        if current_ptr is _SNAPSHOT_UNSET:
+            return detect_magic_reply_kind_from_memory(w._analyzer, w._anchor, img, sig)
+        return detect_magic_reply_kind_from_memory(w._analyzer, w._anchor, img, sig, current_ptr=current_ptr)
     except Exception:
         return ''
 
-def _current_mages_state(w) -> str:
+def _current_mages_state(w, *, sig: dict | None=None) -> str:
     try:
         from mages_signals import classify, read_signals
-        return classify(read_signals(w._analyzer, w._anchor))
+        return classify(sig if sig is not None else read_signals(w._analyzer, w._anchor))
     except Exception:
         return 'unknown'
 
@@ -117,15 +121,15 @@ def _detect_magic_result_candidate(w, candidates) -> ResponseCandidate | None:
         return ResponseCandidate(text=_DETECT_MAGIC_IDENTIFIED, lookup_hit=True, source_offset=_DETECT_MAGIC_RESULT_OFFSET)
     return None
 
-def poll_mages_reply(w, *, mages_active: bool, mages_just_started: bool, img_name: str, shop_menu_visible: bool) -> bool:
+def poll_mages_reply(w, *, mages_active: bool, mages_just_started: bool, img_name: str, shop_menu_visible: bool, signals_snapshot: dict | None=None, foreground_ptr=_SNAPSHOT_UNSET) -> bool:
     _ensure_state(w)
     if not mages_active:
         return False
     img = (img_name or '').upper()
     if img not in _ALLOWED_IMGS:
         return False
-    detect_kind = _detect_magic_reply_kind(w, img)
-    current_state = _current_mages_state(w)
+    detect_kind = _detect_magic_reply_kind(w, img, sig=signals_snapshot, current_ptr=foreground_ptr)
+    current_state = _current_mages_state(w, sig=signals_snapshot)
     if img == 'NEWPOP.IMG' and (not detect_kind) and (current_state in {'list', 'main_menu', 'buy_submenu', 'steal_menu', 'edit_effects_menu'}):
         _clear_reply_owner(w)
         return False
@@ -138,7 +142,7 @@ def poll_mages_reply(w, *, mages_active: bool, mages_just_started: bool, img_nam
         from popup11_response_reader import candidate_contains_pointer, read_current_text_pointer, read_response_candidates_all
         import npc_dialog_lookup as _ndl
         candidates = read_response_candidates_all(w._analyzer, w._anchor)
-        current_ptr = read_current_text_pointer(w._analyzer, w._anchor)
+        current_ptr = read_current_text_pointer(w._analyzer, w._anchor) if foreground_ptr is _SNAPSHOT_UNSET else foreground_ptr
     except Exception:
         _log.exception('mages_reply response read failed')
         return False

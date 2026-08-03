@@ -3,28 +3,27 @@ import logging
 from types import SimpleNamespace
 from top_level.top_level_dispatcher import current_state as _current_top_level
 from normal_play.npc_conversation_module import poll_npc_conversation
-from normal_play.npc_message_module import NPC_MESSAGE_OWNER, _poll_route3_dungeon_msg, _poll_route4a_arrival
+from normal_play.npc_message_module import NPC_MESSAGE_OWNER, _poll_route_msg_foreground, _poll_route3_dungeon_msg, _poll_route4a_arrival
 from normal_play.instore_dialog_module import _poll_route1_instore_response
 _log = logging.getLogger('RTESArenaAssist')
 
 def _build_dialog_context(w, *, in_interior, facility_active_now):
     try:
-        _dialog_byte = w._analyzer.read_bytes(w._anchor + 43077, 1)[0]
-    except (OSError, AttributeError):
-        _dialog_byte = 0
-    _dialog_active_now = _dialog_byte != 0
-    _dialog_active_prev = getattr(w, '_b30_dialog_active_prev', False)
-    _dialog_just_opened = _dialog_active_now and (not _dialog_active_prev)
-    try:
         _fg_raw = w._analyzer.read_bytes(w._anchor + 43076, 2)
         _fg_ptr = _fg_raw[0] | _fg_raw[1] << 8
-        try:
-            from active_template_reader import is_response_text_buffer_pointer
-            _response_text_on_screen = _dialog_active_now and is_response_text_buffer_pointer(_fg_ptr)
-        except Exception:
-            _response_text_on_screen = _dialog_active_now and any((start <= _fg_ptr < start + length for start, length in ((4164, 512), (37534, 512), (39582, 512))))
     except (OSError, AttributeError):
-        _response_text_on_screen = False
+        _fg_ptr = None
+    try:
+        from active_template_reader import is_dialog_text_pointer, is_response_text_buffer_pointer, is_message_buffer_pointer
+        _dialog_active_now = is_dialog_text_pointer(_fg_ptr)
+        _response_text_on_screen = is_response_text_buffer_pointer(_fg_ptr)
+        _msg_text_on_screen = is_message_buffer_pointer(_fg_ptr)
+    except Exception:
+        _response_text_on_screen = _fg_ptr is not None and any((start <= _fg_ptr < start + length for start, length in ((4164, 512), (37534, 512), (39582, 512))))
+        _msg_text_on_screen = _fg_ptr is not None and 39582 <= _fg_ptr < 39582 + 512
+        _dialog_active_now = _response_text_on_screen or (_fg_ptr is not None and 16384 <= _fg_ptr < 49152)
+    _dialog_active_prev = getattr(w, '_b30_dialog_active_prev', False)
+    _dialog_just_opened = _dialog_active_now and (not _dialog_active_prev)
     _panel_only_interior_message = in_interior and (not facility_active_now) and (not bool(getattr(w, '_npc_conversation_active', False)))
     try:
         from arena_bridge import SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN
@@ -34,7 +33,7 @@ def _build_dialog_context(w, *, in_interior, facility_active_now):
         _on_travel_screen = False
     if getattr(w, '_travel_l4_active', False):
         _on_travel_screen = True
-    return SimpleNamespace(dialog_just_opened=_dialog_just_opened, response_text_on_screen=_response_text_on_screen, panel_only_interior_message=_panel_only_interior_message, on_travel_screen=_on_travel_screen)
+    return SimpleNamespace(dialog_just_opened=_dialog_just_opened, response_text_on_screen=_response_text_on_screen, msg_text_on_screen=_msg_text_on_screen, panel_only_interior_message=_panel_only_interior_message, on_travel_screen=_on_travel_screen)
 
 def _show_npc_dialog_text(w, en: str, ja: str, *, panel_only: bool) -> None:
     if panel_only:
@@ -47,7 +46,9 @@ def poll_npc_dialog(w, *, entry_handled: bool, npc_overlay_active: bool, in_inte
     instore_resp_handled = False
     instore_resp_handled, entry_handled = _poll_route1_instore_response(w, ctx, entry_handled=entry_handled, npc_overlay_active=npc_overlay_active, in_interior=in_interior, npc_phase_raw=npc_phase_raw, facility_active_now=facility_active_now, instore_resp_handled=instore_resp_handled, internalized_facility_active=internalized_facility_active, shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, shop_state_kind=shop_state_kind, negot_handled=negot_handled, active_tmpl_handled=active_tmpl_handled, c_area=c_area)
     if not entry_handled and _current_top_level(w) == 'normal-play' and (not ctx.on_travel_screen) and (not shop_buy_active) and (not shop_menu_visible):
-        if _poll_route3_dungeon_msg(w, ctx, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, facility_active_now=facility_active_now, c_area=c_area):
+        if _poll_route_msg_foreground(w, ctx, in_interior=in_interior, facility_active_now=facility_active_now, c_area=c_area):
+            pass
+        elif _poll_route3_dungeon_msg(w, ctx, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, facility_active_now=facility_active_now, c_area=c_area):
             instore_resp_handled = True
         elif _poll_route4a_arrival(w, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, dialog_just_opened=ctx.dialog_just_opened, facility_active_now=facility_active_now):
             pass

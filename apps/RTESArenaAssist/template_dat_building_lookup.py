@@ -183,11 +183,7 @@ def _partial_literal_match(normalized: str) -> tuple[str, str, str | None, str |
     best_group.sort(key=lambda c: c[4] if c[4] is not None else 0)
     return best_group[0]
 
-def lookup(text: str) -> tuple[str, dict] | None:
-    _load()
-    normalized = ' '.join(text.split())
-    if not normalized:
-        return None
+def _lookup_exact_normalized(normalized: str) -> tuple[str, dict] | None:
     for pattern, ja_template, key, letter, ph_list, _idx, source_id, copy, source_hash in _COMPILED:
         m = pattern.match(normalized)
         if m is None:
@@ -199,6 +195,23 @@ def lookup(text: str) -> tuple[str, dict] | None:
         meta['placeholders'] = placeholders_en
         meta['placeholders_ja'] = placeholders_ja
         return (translated, meta)
+    return None
+
+def lookup_exact(text: str) -> tuple[str, dict] | None:
+    _load()
+    normalized = ' '.join(text.split())
+    if not normalized:
+        return None
+    return _lookup_exact_normalized(normalized)
+
+def lookup(text: str) -> tuple[str, dict] | None:
+    _load()
+    normalized = ' '.join(text.split())
+    if not normalized:
+        return None
+    exact = _lookup_exact_normalized(normalized)
+    if exact is not None:
+        return exact
     import difflib
     best_ratio = 0.0
     best = None
@@ -218,3 +231,6 @@ def lookup(text: str) -> tuple[str, dict] | None:
 
 def is_building_entry_message(text: str) -> bool:
     return lookup(text) is not None
+
+def is_building_entry_message_exact(text: str) -> bool:
+    return lookup_exact(text) is not None

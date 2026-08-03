@@ -435,10 +435,78 @@ def _poll_shared_negotiation_and_template(w, *, _shop_menu_visible, _shop_buy_ac
     if not _active_tmpl_handled and (not _negot_handled):
         _cleanup_active_template(w)
     return (_negot_handled, _active_tmpl_handled)
+_FACILITY_PTR_UNSET = object()
 
-def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_tavern, _tview, _temple_active_now, _tavern_active_now, _tavern_l4_kind, _poll_hierarchy_area, _shop_menu_visible, _shop_buy_active):
+def _read_facility_story_pointer(w) -> int | None:
+    try:
+        from active_template_reader import read_current_text_pointer
+        return read_current_text_pointer(w._analyzer, w._anchor)
+    except Exception:
+        return None
+
+def _classify_facility_story_axis(w, *, facility_view_active: bool, foreground_ptr=_FACILITY_PTR_UNSET) -> tuple[str, int | None]:
+    ptr = _read_facility_story_pointer(w) if foreground_ptr is _FACILITY_PTR_UNSET else foreground_ptr
+    mif_name = getattr(w, '_interior_mif_name', None)
+    try:
+        from normal_play.palace_dialog_module import is_palace_interior_mif, _dialog_body_source
+        if is_palace_interior_mif(mif_name) and _dialog_body_source(ptr):
+            return ('palace', ptr)
+    except (ImportError, AttributeError):
+        pass
+    try:
+        from normal_play.mages_guild_render_module import is_mages_interior_mif, _story_body_source, _STORY_BUF_OFFSET, _STORY_CHOICE_OVERLAY_PTR
+        strong_story_ptr = ptr in (_STORY_BUF_OFFSET, _STORY_CHOICE_OVERLAY_PTR)
+        if is_mages_interior_mif(mif_name) and _story_body_source(ptr) and (strong_story_ptr or not facility_view_active):
+            return ('mages', ptr)
+    except (ImportError, AttributeError):
+        pass
+    return ('', ptr)
+
+def _close_facility_story_units(w) -> None:
+    try:
+        from normal_play.palace_dialog_module import poll_palace_dialog
+        poll_palace_dialog(w, palace_active=False)
+    except (ImportError, AttributeError):
+        pass
+    w._facility_story_kind_now = ''
+    w._facility_story_ptr_now = None
+    try:
+        from normal_play.mages_guild_render_module import poll_mages_story
+        poll_mages_story(w, guild_active=False)
+    except (ImportError, AttributeError):
+        pass
+
+def _poll_facility_story_dispatch(w, *, blocked: bool, in_interior: bool, story_kind: str, story_ptr: int | None) -> bool:
+    from normal_play.palace_dialog_module import poll_palace_dialog
+    from normal_play.mages_guild_render_module import poll_mages_story
+    if blocked or not in_interior:
+        poll_palace_dialog(w, palace_active=False)
+        poll_mages_story(w, guild_active=False)
+        w._facility_story_kind_now = ''
+        w._facility_story_ptr_now = None
+        return False
+    if story_kind == 'palace':
+        poll_mages_story(w, guild_active=False)
+        return bool(poll_palace_dialog(w, palace_active=True, foreground_ptr=story_ptr))
+    if story_kind == 'mages':
+        poll_palace_dialog(w, palace_active=False)
+        return bool(poll_mages_story(w, guild_active=True, foreground_ptr=story_ptr))
+    poll_palace_dialog(w, palace_active=False)
+    poll_mages_story(w, guild_active=False)
+    return False
+
+def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_tavern, _tview, _temple_active_now, _tavern_active_now, _tavern_l4_kind, _poll_hierarchy_area, _shop_menu_visible, _shop_buy_active, _facility_foreground_ptr=_FACILITY_PTR_UNSET):
     _unified_node = _unified_facility_node(w)
     _closed_facility_active = _unified_node is not None
+    _story_ptr = _read_facility_story_pointer(w) if _facility_foreground_ptr is _FACILITY_PTR_UNSET else _facility_foreground_ptr
+    _uview = None
+    if _unified_node is not None:
+        _uview = _unified_node.classify_view(w, shop_state=_shop_state, shop_img_name=_shop_img_name, foreground_ptr=_story_ptr)
+        if getattr(_unified_node, 'name', '') == 'mages_guild':
+            w._mages_view_signals_snapshot = getattr(_uview, 'signals_snapshot', None)
+    _story_kind, _story_ptr = _classify_facility_story_axis(w, facility_view_active=bool(_uview is not None and _uview.message_source_owned), foreground_ptr=_story_ptr)
+    w._facility_story_kind_now = _story_kind
+    w._facility_story_ptr_now = _story_ptr
     _poll_compute_temple_gate(w, _temple_active_now=_temple_active_now)
     w._equipment_reply_polled_in_render = False
     w._equipment_reply_handled_in_render = False
@@ -447,15 +515,17 @@ def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_
     _t_facility_render = _phase_start()
     _negot_handled = False
     _active_tmpl_handled = False
-    if _unified_node is not None:
-        _uview = _unified_node.classify_view(w, shop_state=_shop_state, shop_img_name=_shop_img_name)
+    if _story_kind:
+        if _unified_node is not None:
+            _unified_node.suspend_for_story(w)
+    elif _unified_node is not None:
         _negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active = _unified_node.render(w, view=_uview, shop_state=_shop_state, shop_img_name=_shop_img_name, top_level_state=_current_top_level(w))
     elif _facility_tavern:
         from session.tavern_node import TAVERN_NODE as _TAVERN_NODE
         _negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active = _TAVERN_NODE.render(w, view=_tview, shop_state=_shop_state, shop_img_name=_shop_img_name, top_level_state=_current_top_level(w))
     _phase_record(w, 'facility_render', _t_facility_render)
     _checkpoint(w, 'facility_render')
-    if _unified_node is None and (not _facility_tavern):
+    if not _story_kind and _unified_node is None and (not _facility_tavern):
         from session.tavern_node import TAVERN_NODE as _TAVERN_NODE_NS
         _shop_buy_active, _shop_menu_visible = _TAVERN_NODE_NS.render_no_session_shop(w, shop_state=_shop_state, shop_img_name=_shop_img_name, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible)
         _negot_handled, _active_tmpl_handled = _poll_shared_negotiation_and_template(w, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active, _shop_img_name=_shop_img_name, _temple_active_now=_temple_active_now, _tavern_active_now=_tavern_active_now, _tavern_l4_kind=_tavern_l4_kind, _poll_hierarchy_area=_poll_hierarchy_area, _negot_handled=_negot_handled, _active_tmpl_handled=_active_tmpl_handled)
@@ -479,10 +549,10 @@ def _poll_l4_dialog_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog
     _entry_handled = _poll_building_entry(w, building_entry_active=_building_entry_active, entry_phase_prev=_entry_phase_prev, msg_buf=msg_buf, npc_dialog=npc_dialog)
     if _travel_event_active or _dungeon_splash_active:
         _entry_handled = True
-    if not _entry_handled:
-        from normal_play.palace_dialog_module import poll_palace_dialog as _poll_palace_dialog, is_palace_interior_mif as _is_palace_interior_mif
-        _palace_active = in_interior and _is_palace_interior_mif(getattr(w, '_interior_mif_name', None))
-        _poll_palace_dialog(w, palace_active=_palace_active)
+    _story_kind = getattr(w, '_facility_story_kind_now', '')
+    _story_ptr = getattr(w, '_facility_story_ptr_now', None)
+    if _poll_facility_story_dispatch(w, blocked=_entry_handled, in_interior=in_interior, story_kind=_story_kind, story_ptr=_story_ptr):
+        _entry_handled = True
     from normal_play.temple_dialog_module import poll_temple_dialog as _poll_temple_dialog, reset_temple_reply_on_stop as _reset_temple_reply_on_stop
     from normal_play.equipment_reply_module import poll_equipment_reply as _poll_equipment_reply
     from normal_play.mages_reply_module import poll_mages_reply as _poll_mages_reply
@@ -505,7 +575,12 @@ def _poll_l4_dialog_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog
         if getattr(w, '_mages_reply_polled_in_render', False):
             _facility_reply_handled = bool(getattr(w, '_mages_reply_handled_in_render', False))
         else:
-            _facility_reply_handled = _poll_mages_reply(w, mages_active=True, mages_just_started=_mages_just_started, img_name=_shop_img_name, shop_menu_visible=_shop_menu_visible)
+            _mages_snapshot_kwargs = {}
+            if hasattr(w, '_mages_view_signals_snapshot'):
+                _mages_snapshot_kwargs['signals_snapshot'] = getattr(w, '_mages_view_signals_snapshot')
+            if hasattr(w, '_facility_story_ptr_now'):
+                _mages_snapshot_kwargs['foreground_ptr'] = getattr(w, '_facility_story_ptr_now')
+            _facility_reply_handled = _poll_mages_reply(w, mages_active=True, mages_just_started=_mages_just_started, img_name=_shop_img_name, shop_menu_visible=_shop_menu_visible, **_mages_snapshot_kwargs)
     w._temple_dialog_context_prev = _temple_dialog_context
     if _facility_reply_handled:
         _entry_handled = True

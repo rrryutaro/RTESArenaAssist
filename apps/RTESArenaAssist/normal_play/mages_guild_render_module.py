@@ -19,6 +19,7 @@ _CONFIRM_FAMILY = 75
 _CONFIRM_DIALOG_OFFSET = 19280
 _CONFIRM_TR = {'Are you sure ?': '本当によろしいですか？', 'Are you sure': '本当によろしいですか？', 'Yes': 'はい', 'No': 'いいえ'}
 MENU_OWNER_PROMPT = 'mages_prompt'
+STORY_OWNER = 'mages_story'
 _PROMPT_KEY = '_mages_prompt_key_prev'
 _MAGES_MENU_TEXT_OFFSET = 28508
 _MAGES_MENU_PTR_START = 28416
@@ -47,7 +48,9 @@ def poll_mages_render(w, *, view=None, shop_state=None, shop_img_name: str='', t
     reply_visible = False
     confirm_visible = False
     detail_visible = False
-    sig = _read_signals(w)
+    sig = getattr(view, 'signals_snapshot', None)
+    if sig is None:
+        sig = _read_signals(w)
     state = _classify(sig)
     is_form_img = img.startswith('FORM') and img.endswith('.IMG')
     view_kind = getattr(view, 'l4_kind', '') or ''
@@ -71,9 +74,9 @@ def poll_mages_render(w, *, view=None, shop_state=None, shop_img_name: str='', t
         else:
             spell_visible = _render_spellmaker(w, sig)
     elif view_kind == 'prompt':
-        prompt_visible = _render_buy_prompt(w)
+        prompt_visible = _render_buy_prompt(w, foreground_ptr=sig.get('foreground_ptr', _PROMPT_PTR_UNSET))
     elif view_kind == 'reply':
-        reply_visible = _render_reply(w, img)
+        reply_visible = _render_reply(w, img, sig=sig)
     elif view_kind == 'list':
         if _is_spellmaker_return_from_residual_list(w, sig, img, state):
             spell_visible = _render_spellmaker(w, sig)
@@ -143,7 +146,7 @@ def _render_effect_menu(w) -> bool:
 def _select_list_source(w, sig: dict, img: str):
     from mages_list_reader import POTION_LIST_OFFSET, SPELL_LIST_OFFSET, INVENTORY_LIST_OFFSET, SPELLMAKER_TARGET_OFFSET, SPELLMAKER_EFFECT_OFFSET, SPELLMAKER_SUBLIST_OFFSET, EFFECT_PICK_OFFSET, read_priced_list, read_name_list, read_magic_item_list, read_active_priced_list, looks_like_potion_list, read_active_list_offset, classify_spellmaker_name_items, enrich_unidentified_by_index
     family = sig.get('family')
-    cur = _read_current_ptr(w)
+    cur = sig.get('foreground_ptr') if 'foreground_ptr' in sig else _read_current_ptr(w)
     cur = cur if isinstance(cur, int) else 0
 
     def _classified(offset: int):
@@ -411,11 +414,14 @@ def _render_negotiation(w, img: str, top_level_state: str) -> bool:
         _log.exception('mages_negotiation update failed')
         return False
 
-def _render_reply(w, img: str) -> bool:
+def _render_reply(w, img: str, *, sig: dict | None=None) -> bool:
     setattr(w, '_mages_reply_polled_in_render', True)
     try:
         from normal_play.mages_reply_module import poll_mages_reply
-        handled = poll_mages_reply(w, mages_active=True, mages_just_started=False, img_name=img, shop_menu_visible=False)
+        snapshot_kwargs = {'signals_snapshot': sig}
+        if sig is not None and 'foreground_ptr' in sig:
+            snapshot_kwargs['foreground_ptr'] = sig['foreground_ptr']
+        handled = poll_mages_reply(w, mages_active=True, mages_just_started=False, img_name=img, shop_menu_visible=False, **snapshot_kwargs)
     except Exception:
         _log.exception('mages_reply render failed')
         handled = False
@@ -491,8 +497,9 @@ def _render_confirm(w) -> bool:
     except Exception:
         _log.exception('mages_confirm update failed')
     return True
+_PROMPT_PTR_UNSET = object()
 
-def _resolve_response_prompt(w):
+def _resolve_response_prompt(w, *, foreground_ptr=_PROMPT_PTR_UNSET):
     try:
         raw = w._analyzer.read_bytes(w._anchor + _NPC_DIALOG_OFFSET, 512)
     except (OSError, AttributeError):
@@ -503,7 +510,14 @@ def _resolve_response_prompt(w):
             extra_chunks.append(w._analyzer.read_bytes(w._anchor + off, 160))
         except (OSError, AttributeError):
             extra_chunks.append(b'')
-    cache_key = (raw, tuple(extra_chunks))
+    current_ptr = foreground_ptr
+    if current_ptr is _PROMPT_PTR_UNSET:
+        try:
+            from popup11_response_reader import read_current_text_pointer
+            current_ptr = read_current_text_pointer(w._analyzer, w._anchor)
+        except Exception:
+            current_ptr = None
+    cache_key = (raw, tuple(extra_chunks), current_ptr)
     cache = getattr(w, _PROMPT_CACHE_ATTR, None)
     if cache is not None and cache[0] == cache_key:
         return cache[1]
@@ -517,12 +531,7 @@ def _resolve_response_prompt(w):
     normalized_text = ' '.join(literal_text.split())
     result = None
     if _DETECT_MAGIC_QUOTE_PREFIX in normalized_text:
-        try:
-            from popup11_response_reader import read_current_text_pointer
-            cur_ptr = read_current_text_pointer(w._analyzer, w._anchor)
-        except Exception:
-            cur_ptr = None
-        if isinstance(cur_ptr, int) and _MAGES_MENU_PTR_START <= cur_ptr < _MAGES_MENU_PTR_END:
+        if isinstance(current_ptr, int) and _MAGES_MENU_PTR_START <= current_ptr < _MAGES_MENU_PTR_END:
             try:
                 raw_known = w._analyzer.read_bytes(w._anchor + _MAGES_MENU_TEXT_OFFSET, 80)
             except (OSError, AttributeError):
@@ -579,8 +588,8 @@ def _resolve_response_prompt(w):
     setattr(w, _PROMPT_CACHE_ATTR, (cache_key, result))
     return result
 
-def _render_buy_prompt(w) -> bool:
-    info = _resolve_response_prompt(w)
+def _render_buy_prompt(w, *, foreground_ptr=_PROMPT_PTR_UNSET) -> bool:
+    info = _resolve_response_prompt(w, foreground_ptr=foreground_ptr)
     if not info:
         return False
     en, ja = info
@@ -608,6 +617,208 @@ def _last_spellmaker_list_title(w) -> str:
 
 def _is_spellmaker_return_from_residual_list(w, sig: dict, img: str, state: str) -> bool:
     return img in LIST_IMGS and bool(_last_spellmaker_list_title(w)) and (state == 'reply') and (sig.get('list') != 0)
+_STORY_BUF_OFFSET = 38434
+_STORY_BUF_READ = 4096
+_STORY_KEY_ATTR = '_mages_story_key_prev'
+_STORY_UNIT_ATTR = '_mages_story_accepted_unit'
+_STORY_RESOLVE_CACHE_ATTR = '_mages_story_resolve_cache'
+_POINTER_UNSET = object()
+_STORY_CHOICE_OVERLAY_PTR = 33384
+
+def _story_body_source(ptr: int | None) -> tuple[int, int, bool] | None:
+    if ptr is None:
+        return None
+    try:
+        from active_template_reader import message_buffer_remaining
+    except ImportError:
+        return None
+    remaining = message_buffer_remaining(ptr)
+    if remaining is not None:
+        return (ptr, remaining, False)
+    if ptr == _STORY_BUF_OFFSET:
+        return (_STORY_BUF_OFFSET, _STORY_BUF_READ, False)
+    if ptr == _STORY_CHOICE_OVERLAY_PTR:
+        return (_STORY_BUF_OFFSET, _STORY_BUF_READ, True)
+    return None
+
+def _story_foreground(w) -> bool:
+    try:
+        from active_template_reader import read_current_text_pointer
+        ptr = read_current_text_pointer(w._analyzer, w._anchor)
+    except Exception:
+        return False
+    return _story_body_source(ptr) is not None
+_TEXT_BYTES = frozenset(bytes(range(32, 127)) + b'\n\r\t')
+
+def _is_text_bytes(seg: bytes) -> bool:
+    return bool(seg) and all((b in _TEXT_BYTES for b in seg))
+
+def _read_story_chunks(w, off: int=_STORY_BUF_OFFSET, size: int=_STORY_BUF_READ) -> list[str]:
+    try:
+        raw = w._analyzer.read_bytes(w._anchor + off, size)
+        if len(raw) != size:
+            return []
+    except (OSError, AttributeError, TypeError):
+        return []
+    parts: list[str] = []
+    segments = raw.split(b'\x00')
+    final_is_terminated = raw.endswith(b'\x00')
+    for index, seg in enumerate(segments):
+        if index == len(segments) - 1 and (not final_is_terminated):
+            if parts:
+                break
+            return []
+        if not seg:
+            if parts:
+                break
+            return []
+        if not _is_text_bytes(seg):
+            if parts:
+                break
+            return []
+        frag = seg.decode('ascii', errors='replace').strip()
+        if frag:
+            parts.append(' '.join(frag.split()))
+        elif parts:
+            break
+        else:
+            return []
+    return parts
+
+def _read_story_body(w, off: int=_STORY_BUF_OFFSET, size: int=_STORY_BUF_READ) -> str:
+    return ' '.join(_read_story_chunks(w, off, size))
+
+def _is_building_entry_body(body: str) -> bool:
+    try:
+        import template_dat_building_lookup as _tbl
+        return _tbl.is_building_entry_message(body)
+    except (ImportError, AttributeError):
+        return False
+
+def _is_building_entry_chunks(chunks: list[str]) -> bool:
+    return any((_is_building_entry_body(' '.join(chunks[:end])) for end in range(1, len(chunks) + 1)))
+
+def _explains_body(span: str, first_chunk: str) -> bool:
+    if not span or not first_chunk:
+        return False
+    return span == first_chunk or span.startswith(first_chunk + ' ')
+
+def resolve_story_text(w) -> tuple[str, str] | None:
+    source = _story_body_source(_read_story_pointer(w))
+    if source is None:
+        return None
+    return _resolve_story_from_source(w, source)
+
+def _read_story_pointer(w) -> int | None:
+    try:
+        from active_template_reader import read_current_text_pointer
+        return read_current_text_pointer(w._analyzer, w._anchor)
+    except Exception:
+        return None
+
+def _resolve_story_from_source(w, source: tuple[int, int]) -> tuple[str, str] | None:
+    chunks = _read_story_chunks(w, source[0], source[1])
+    if not chunks:
+        return None
+    cache_key = (source, tuple(chunks))
+    cached = getattr(w, _STORY_RESOLVE_CACHE_ATTR, None)
+    if cached is not None and cached[0] == cache_key:
+        return cached[1]
+    if _is_building_entry_chunks(chunks):
+        setattr(w, _STORY_RESOLVE_CACHE_ATTR, (cache_key, None))
+        return None
+    en, ja = (chunks[0], '')
+    try:
+        import npc_dialog_lookup as _ndl
+        found = _ndl.lookup_span_at_chunk_boundaries(chunks)
+        boundaries = {' '.join(chunks[:i]) for i in range(1, len(chunks) + 1)}
+        if found and found[2] in boundaries and _explains_body(found[2], chunks[0]):
+            ja_text = _ndl.format_japanese(found[0], found[1])
+            if ja_text and '%' not in ja_text:
+                en, ja = (found[2], ja_text)
+    except (ImportError, AttributeError):
+        pass
+    resolved = (en, ja) if en else None
+    setattr(w, _STORY_RESOLVE_CACHE_ATTR, (cache_key, resolved))
+    return resolved
+
+def is_mages_interior_mif(interior_mif_name: str | None) -> bool:
+    return (interior_mif_name or '').upper().startswith('MAGE')
+
+def poll_mages_story(w, *, guild_active: bool, foreground_ptr=_POINTER_UNSET) -> bool:
+    if not guild_active:
+        _close_story_unit(w)
+        return False
+    return _render_story(w, foreground_ptr=foreground_ptr)
+
+def _close_story_unit(w) -> None:
+    shown = getattr(w, _STORY_KEY_ATTR, None) is not None
+    if shown:
+        try:
+            w._ui_router.notify_display_unit_closed(STORY_OWNER)
+        except AttributeError:
+            pass
+    if w._ui_router.is_owner(STORY_OWNER):
+        w._ui_router.clear_if_owner(STORY_OWNER, notify_close=False)
+    setattr(w, _STORY_KEY_ATTR, None)
+    setattr(w, _STORY_UNIT_ATTR, None)
+
+def _read_story_occurrence(w) -> int | None:
+    try:
+        from active_template_reader import read_display_occurrence
+        return read_display_occurrence(w._analyzer, w._anchor)
+    except Exception:
+        return None
+
+def _story_display_unit(w, occurrence: int, source: tuple[int, int, bool], resolved: tuple[str, str]) -> str:
+    unit = getattr(w, _STORY_UNIT_ATTR, None)
+    if unit is None:
+        return 'new'
+    body_changed = unit[3] != resolved[0]
+    if unit[0] != occurrence:
+        if body_changed:
+            return 'new'
+        return 'page' if (unit[1], unit[2]) != (source[0], source[2]) else 'same'
+    if body_changed:
+        return 'hold'
+    if (unit[1], unit[2]) != (source[0], source[2]):
+        return 'page'
+    return 'same'
+
+def _story_display_text(ja: str) -> str:
+    if not ja:
+        return ja
+    return f'{ja}\n\n  はい\n  いいえ'
+
+def _render_story(w, *, foreground_ptr=_POINTER_UNSET) -> bool:
+    ptr = _read_story_pointer(w) if foreground_ptr is _POINTER_UNSET else foreground_ptr
+    source = _story_body_source(ptr)
+    if source is None:
+        _close_story_unit(w)
+        return False
+    resolved = _resolve_story_from_source(w, source)
+    occurrence = _read_story_occurrence(w)
+    if resolved is None or occurrence is None:
+        return True
+    kind = _story_display_unit(w, occurrence, source, resolved)
+    if kind == 'hold' or kind == 'same':
+        return True
+    en, ja = resolved
+    if kind == 'new' and getattr(w, _STORY_KEY_ATTR, None) is not None:
+        try:
+            w._ui_router.notify_display_unit_replaced(STORY_OWNER)
+        except AttributeError:
+            pass
+    display_ja = _story_display_text(ja) if source[2] else ja
+    keep = (en, display_ja, source[2])
+    if getattr(w, _STORY_KEY_ATTR, None) != keep or not w._ui_router.is_owner(STORY_OWNER):
+        setattr(w, _STORY_KEY_ATTR, keep)
+        w._ui_router.update_translation(STORY_OWNER, en, display_ja, speech_role='conversation' if ja else None, speech_text=ja if ja else None)
+        _log.info('mages story displayed (len=%d translated=%s choices=%s)', len(en), bool(ja), source[2])
+    unit = getattr(w, _STORY_UNIT_ATTR, None)
+    accepted = occurrence if kind == 'new' or unit is None else unit[0]
+    setattr(w, _STORY_UNIT_ATTR, (accepted, source[0], source[2], en))
+    return True
 
 def _cleanup(w, menu_visible: bool, list_visible: bool, spell_visible: bool, confirm_visible: bool=False, prompt_visible: bool=False, detail_visible: bool=False, negot_visible: bool=False, effect_menu_visible: bool=False, reply_visible: bool=False) -> None:
     if not reply_visible:

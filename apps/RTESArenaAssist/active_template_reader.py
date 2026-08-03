@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from typing import Optional
 from arena_bridge import ArenaMemoryAnalyzer
 CURRENT_TEXT_PTR_OFFSET = 43076
-_RESPONSE_TEXT_BUFFER_RANGES = ((4164, 512), (37534, 512), (39582, 512))
+_MESSAGE_TEXT_BUFFER_RANGE = (39582, 512)
+_RESPONSE_TEXT_BUFFER_RANGES = ((4164, 512), (37534, 512), _MESSAGE_TEXT_BUFFER_RANGE)
 _RUNTIME_MESSAGE_BUFFER_RANGES = ((31097, 68),)
 
 def is_runtime_message_buffer_pointer(ptr: int | None) -> bool:
@@ -16,12 +17,38 @@ def is_response_text_buffer_pointer(ptr: int | None) -> bool:
         return False
     return any((start <= ptr < start + length for start, length in _RESPONSE_TEXT_BUFFER_RANGES))
 
+def is_message_buffer_pointer(ptr: int | None) -> bool:
+    if ptr is None:
+        return False
+    start, length = _MESSAGE_TEXT_BUFFER_RANGE
+    return start <= ptr < start + length
+
+def message_buffer_remaining(ptr: int | None) -> int | None:
+    if ptr is None:
+        return None
+    start, length = _MESSAGE_TEXT_BUFFER_RANGE
+    end = start + length
+    if not start <= ptr < end:
+        return None
+    return end - ptr
+
 def is_response_buffer_pointer(ptr: int | None) -> bool:
     if ptr is None:
         return False
     if is_response_text_buffer_pointer(ptr):
         return True
     return is_runtime_message_buffer_pointer(ptr)
+
+def is_dialog_text_pointer(ptr: int | None) -> bool:
+    if ptr is None:
+        return False
+    if is_response_buffer_pointer(ptr):
+        return True
+    return TEMPLATE_RANGE_LOW <= ptr < TEMPLATE_RANGE_HIGH
+
+def read_dialog_text_foreground(analyzer: 'ArenaMemoryAnalyzer', anchor: int) -> tuple[bool, Optional[int]]:
+    ptr = read_current_text_pointer(analyzer, anchor)
+    return (is_dialog_text_pointer(ptr), ptr)
 ACTIVE_TEMPLATE_PTR_OFFSETS = tuple(range(64184, 64216, 2))
 ACTIVE_TEMPLATE_PTR_OFFSET = 64204
 TEMPLATE_RANGE_LOW = 16384
@@ -104,6 +131,16 @@ def read_current_text_pointer(analyzer: 'ArenaMemoryAnalyzer', anchor: int) -> O
         if len(raw) < 2:
             return None
         return raw[0] | raw[1] << 8
+    except (OSError, AttributeError):
+        return None
+DISPLAY_OCCURRENCE_OFFSET = 37366
+
+def read_display_occurrence(analyzer: 'ArenaMemoryAnalyzer', anchor: int) -> Optional[int]:
+    try:
+        raw = analyzer.read_bytes(anchor + DISPLAY_OCCURRENCE_OFFSET, 4)
+        if len(raw) < 4:
+            return None
+        return raw[0] | raw[1] << 8 | raw[2] << 16 | raw[3] << 24
     except (OSError, AttributeError):
         return None
 
@@ -269,4 +306,4 @@ def select_active_template_candidate(candidates: list['ActiveTemplateCandidate']
                 continue
     _ = (ctx_key, prev_ctx_key, prev_signatures)
     return None
-__all__ = ['ACTIVE_TEMPLATE_PTR_OFFSETS', 'ACTIVE_TEMPLATE_PTR_OFFSET', 'CURRENT_TEXT_PTR_OFFSET', 'TEMPLATE_RANGE_LOW', 'TEMPLATE_RANGE_HIGH', 'ActiveTemplateCandidate', 'candidate_signature', 'input_prompt_facility', 'is_active_template_input_prompt', 'is_response_buffer_pointer', 'is_response_text_buffer_pointer', 'is_runtime_message_buffer_pointer', 'read_active_template', 'read_active_templates', 'read_active_template_candidates', 'read_current_text_pointer', 'select_active_template_candidate']
+__all__ = ['ACTIVE_TEMPLATE_PTR_OFFSETS', 'ACTIVE_TEMPLATE_PTR_OFFSET', 'CURRENT_TEXT_PTR_OFFSET', 'DISPLAY_OCCURRENCE_OFFSET', 'TEMPLATE_RANGE_LOW', 'TEMPLATE_RANGE_HIGH', 'ActiveTemplateCandidate', 'candidate_signature', 'input_prompt_facility', 'is_active_template_input_prompt', 'is_dialog_text_pointer', 'is_message_buffer_pointer', 'message_buffer_remaining', 'is_response_buffer_pointer', 'is_response_text_buffer_pointer', 'is_runtime_message_buffer_pointer', 'read_active_template', 'read_active_templates', 'read_active_template_candidates', 'read_current_text_pointer', 'read_dialog_text_foreground', 'read_display_occurrence', 'select_active_template_candidate']

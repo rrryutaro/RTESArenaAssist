@@ -2,7 +2,7 @@ from __future__ import annotations
 import logging
 import re as _re
 from arena_bridge import SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN
-import inf_text_lookup as itl
+import npc_dialog_lookup as npcd
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 _CINEMATIC_TEXT_ADDR_OBSERVED = 276188176
@@ -11,9 +11,10 @@ _CINEMATIC_SCAN_START = 268435456
 _CINEMATIC_SCAN_END = 301989888
 _DEATH_GOOD_PREFIX = 'With you died our last hope for justice.'
 _DEATH_BAD_PREFIX = 'You were a fool to confront me,'
-_DEATH_CINEMATIC_PREFIXES = (_DEATH_GOOD_PREFIX, _DEATH_BAD_PREFIX)
-_VISION_XMI_NAME = 'VISION.XMI'
-_VISION_CINEMATIC_PREFIXES = ('Do not fear for it is I', 'I see you have strengthened your arm', 'It is said that Fang Lair was originally built', 'It seems that you are well chosen', 'I would congratulate you on retrieving the', 'You have done well', 'You have recovered the fourth piece', 'It has become a habit', 'Tharn is livid', 'I would take no chances', 'I had expected that with all eight pieces together', *_DEATH_CINEMATIC_PREFIXES)
+_VISION_TEMPLATE_KEYS = frozenset({*range(1294, 1303), *range(1392, 1400), 1400, 1500})
+_DEATH_TEMPLATE_KEYS = frozenset({1402, 1403})
+_CINEMATIC_TEMPLATE_KEYS = frozenset(_VISION_TEMPLATE_KEYS | _DEATH_TEMPLATE_KEYS)
+_CINEMATIC_SCREEN_NAMES = frozenset({'VISION.XMI', 'VISION.FLC', 'JAGAR.FLC'})
 _PLAYER_HP_CURRENT_OFFSET = 509
 _PLAYER_NAME_OFFSET = 429
 _PLAYER_NAME_LEN = 26
@@ -57,7 +58,11 @@ def _read_cinematic_block(w, address: int) -> str:
         if len(s) < 3 and text_parts:
             continue
         text_parts.append(s)
-    return ' '.join(text_parts).strip()
+    text = ' '.join(text_parts).strip()
+    if not text:
+        return ''
+    trimmed = npcd.body_head_trim(text, keys=_CINEMATIC_TEMPLATE_KEYS)
+    return trimmed if trimmed is not None else text
 
 def _read_screen_img_name(w) -> str:
     try:
@@ -69,9 +74,9 @@ def _read_screen_img_name(w) -> str:
     except Exception:
         return ''
 
-def _is_vision_xmi_active(w, *, img_name: str | None=None) -> bool:
+def _is_cinematic_screen_active(w, *, img_name: str | None=None) -> bool:
     name = img_name if img_name is not None else _read_screen_img_name(w)
-    return (name or '').upper() == _VISION_XMI_NAME
+    return (name or '').upper() in _CINEMATIC_SCREEN_NAMES
 
 def _read_player_name(w) -> str:
     try:
@@ -94,22 +99,33 @@ def _death_cinematic_translation(text: str) -> str:
         return _DEATH_BAD_JA
     return ''
 
+def _detect_cinematic_text(text: str) -> bool:
+    if not text:
+        return False
+    if _death_cinematic_translation(text):
+        return True
+    body = ' '.join(text.split())
+    anchors = npcd.body_head_anchors(_VISION_TEMPLATE_KEYS)
+    return bool(anchors) and body.startswith(anchors)
+
 def _lookup_vision_cinematic_payload(w, text: str) -> tuple[str, str, str] | None:
     if not text:
         return None
     death_ja = _death_cinematic_translation(text)
     if death_ja:
         return ('death_cinematic', text, death_ja)
-    entry = itl.lookup_by_text('', text)
-    if entry is None:
+    resolved = npcd.lookup_body_head(text, keys=_VISION_TEMPLATE_KEYS)
+    if resolved is None:
         return None
-    tr = itl.get_translation(entry)
-    ja = tr if isinstance(tr, str) else ''
+    ja_template, placeholders = resolved
+    player_name = placeholders.get('pcn') or placeholders.get('pcf') or _read_player_name(w)
+    if player_name:
+        for key in ('pcn', 'pcf'):
+            if not placeholders.get(key):
+                placeholders[key] = player_name
+    ja = npcd.format_japanese(ja_template, placeholders)
     if not ja:
         return None
-    player_name = _read_player_name(w)
-    if player_name:
-        ja = ja.replace('[名前]', player_name)
     return ('vision_cinematic', text, ja)
 
 def _candidate_text_addrs(w) -> tuple[int, ...]:
@@ -126,8 +142,11 @@ def _probe_cinematic_text(w, resolver) -> tuple[str, int]:
             return (block, addr)
     return ('', 0)
 
+def _cinematic_scan_prefixes() -> tuple[str, ...]:
+    return npcd.body_head_anchors(_CINEMATIC_TEMPLATE_KEYS)
+
 def _scan_vision_cinematic_text(w, resolver) -> tuple[str, int]:
-    for prefix in _VISION_CINEMATIC_PREFIXES:
+    for prefix in _cinematic_scan_prefixes():
         try:
             results = w._analyzer.scan_string(prefix, _CINEMATIC_SCAN_START, _CINEMATIC_SCAN_END)
         except (OSError, RuntimeError, AttributeError) as exc:
@@ -148,18 +167,20 @@ def _scan_vision_cinematic_text(w, resolver) -> tuple[str, int]:
     return ('', 0)
 
 def _find_vision_cinematic_text(w) -> tuple[str, int]:
-
-    def _ok(block: str) -> bool:
-        return _lookup_vision_cinematic_payload(w, block) is not None
-    text, addr = _probe_cinematic_text(w, _ok)
+    text, addr = _probe_cinematic_text(w, _detect_cinematic_text)
     if text:
         return (text, addr)
-    return _scan_vision_cinematic_text(w, _ok)
+    return _scan_vision_cinematic_text(w, _detect_cinematic_text)
 
 def _poll_vision_state(w) -> None:
     text, addr = _find_vision_cinematic_text(w)
+    if not text:
+        return
     payload = _lookup_vision_cinematic_payload(w, text)
     if payload is None:
+        if text != getattr(w, '_cinematic_unresolved_prev', ''):
+            w._cinematic_unresolved_prev = text
+            _log.info('cinematic detected but unresolved addr=0x%08X: %r', addr, text[:96])
         return
     owner, en, ja = payload
     prev_attr = '_death_cinematic_text_prev' if owner == 'death_cinematic' else '_vision_cinematic_text_prev'
@@ -211,10 +232,11 @@ def poll_cinematic(w, *, b30: dict | None=None) -> None:
         return
     _log_death_gate_once(w)
     img_name = b30.get('img_name') if isinstance(b30, dict) else None
-    if _is_vision_xmi_active(w, img_name=img_name):
+    if _is_cinematic_screen_active(w, img_name=img_name):
         _poll_vision_state(w)
         return
     w._vision_cinematic_text_prev = ''
+    w._cinematic_unresolved_prev = ''
     w._cinematic_scan_error_logged = False
     _poll_death_text_probe(w)
 

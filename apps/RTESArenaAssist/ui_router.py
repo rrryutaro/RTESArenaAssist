@@ -7,7 +7,7 @@ import i18n_helper as i18n
 from assist_log import recog as _recog
 from display_intent import DisplayIntent, PollFrame
 from hierarchy_state import active_facility_session_name, facility_owners_for_session, CONVERSATION_PANEL_OWNERS
-from panel_mode_resolver import required_owner_for_mode, resolve_flush_mode
+from panel_mode_resolver import panel_is_effective, required_owner_for_mode, resolve_flush_mode
 _log = logging.getLogger('RTESArenaAssist')
 _CONVERSATION_TAB_OWNERS = CONVERSATION_PANEL_OWNERS
 
@@ -22,6 +22,7 @@ class UiRouter:
         self._translation_observer = None
         self._obs_last_key = None
         self._clear_observer = None
+        self._replacement_observer = None
         self._displayed_translation: Optional[tuple[str, str, str]] = None
 
     def set_translation_observer(self, callback) -> None:
@@ -30,8 +31,30 @@ class UiRouter:
     def set_clear_observer(self, callback) -> None:
         self._clear_observer = callback
 
+    def set_replacement_observer(self, callback) -> None:
+        self._replacement_observer = callback
+
+    def notify_display_unit_closed(self, panel_owner: str) -> None:
+        self._notify_clear(panel_owner)
+
+    def notify_display_unit_replaced(self, panel_owner: str) -> None:
+        if not panel_owner:
+            return
+        if self._obs_last_key is not None and self._obs_last_key[0] == panel_owner:
+            self._obs_last_key = None
+        if self._replacement_observer is None:
+            return
+        try:
+            self._replacement_observer(panel_owner)
+        except Exception:
+            _log.exception('replacement_observer failed')
+
     def _notify_clear(self, owner: str) -> None:
-        if self._clear_observer is None or not owner:
+        if not owner:
+            return
+        if self._obs_last_key is not None and self._obs_last_key[0] == owner:
+            self._obs_last_key = None
+        if self._clear_observer is None:
             return
         try:
             self._clear_observer(owner)
@@ -114,6 +137,9 @@ class UiRouter:
             emulate, fb = (False, 'map')
         return (emulate, fb)
 
+    def _panel_active(self, emulate: bool) -> bool:
+        return panel_is_effective(panel_present=getattr(self._window, '_layout_translate_panel', None) is not None, emulate_panel_hidden=emulate)
+
     def _apply_flush_panel_mode(self, intent: Optional[DisplayIntent]) -> None:
         tab = getattr(self._window, '_tab_translate', None)
         if tab is None:
@@ -132,12 +158,13 @@ class UiRouter:
 
     def _resolve_flush_target(self, intent: Optional[DisplayIntent], cur: str, owner_now: str) -> Optional[str]:
         emulate, fb = self._flush_mode_settings()
+        panel_active = self._panel_active(emulate)
         top_level = getattr(self._window, '_top_level_state', 'pregame')
         if intent is None or intent.kind == 'release_if_owner':
             if required_owner_for_mode(cur) is None:
                 return None
-            return resolve_flush_mode(winner_mode=cur, top_level=top_level, emulate=emulate, winner_has_content=False, winner_is_tab_owner=False, fallback_setting=fb, current_owner=owner_now)
-        return resolve_flush_mode(winner_mode=intent.mode if intent.mode is not None else cur, top_level=top_level, emulate=emulate, winner_has_content=self._winner_has_content(intent), winner_is_tab_owner=bool(intent.kind == 'translation' and (intent.panel_owner or '') in _CONVERSATION_TAB_OWNERS), fallback_setting=fb, current_owner=owner_now)
+            return resolve_flush_mode(winner_mode=cur, top_level=top_level, emulate=emulate, winner_has_content=False, winner_is_tab_owner=False, fallback_setting=fb, current_owner=owner_now, panel_active=panel_active)
+        return resolve_flush_mode(winner_mode=intent.mode if intent.mode is not None else cur, top_level=top_level, emulate=emulate, winner_has_content=self._winner_has_content(intent), winner_is_tab_owner=bool(intent.kind == 'translation' and (intent.panel_owner or '') in _CONVERSATION_TAB_OWNERS), fallback_setting=fb, current_owner=owner_now, panel_active=panel_active)
 
     def _log_flush_winner(self, intent: Optional[DisplayIntent], frame: Optional[PollFrame]) -> None:
         if intent is None:
@@ -161,21 +188,22 @@ class UiRouter:
 
     def _resolve_proposed_intent(self, intent: DisplayIntent) -> Optional[DisplayIntent]:
         current = self.current_owner()
+        applied_owner = self._poll_frame.panel_owner if self._poll_frame is not None else current
         if intent.allowed_current_owners is not None and current not in intent.allowed_current_owners:
             _log.debug('ui_router.propose_display skipped (kind=%s owner=%r current=%r allowed=%r)', intent.kind, intent.panel_owner, current, intent.allowed_current_owners)
             return None
         if intent.allowed_current_owners is not None:
             intent = replace(intent, allowed_current_owners=None)
         if intent.kind == 'clear':
-            return intent
+            return intent if intent.closed_owner else replace(intent, closed_owner=applied_owner)
         if intent.kind == 'clear_if_owner':
             if current != intent.panel_owner:
                 return None
-            return DisplayIntent.clear('', mode=intent.mode, clear_place_list=intent.clear_place_list, clear_travel_table=intent.clear_travel_table, priority=intent.priority, reason=intent.reason)
+            return DisplayIntent.clear('', mode=intent.mode, clear_place_list=intent.clear_place_list, clear_travel_table=intent.clear_travel_table, priority=intent.priority, reason=intent.reason, closed_owner=applied_owner, notify_close=intent.notify_close)
         if intent.kind == 'release_if_owner':
             if current != intent.panel_owner:
                 return None
-            return DisplayIntent.claim_owner('', mode=intent.mode, priority=intent.priority, reason=intent.reason)
+            return DisplayIntent.claim_owner('', mode=intent.mode, priority=intent.priority, reason=intent.reason, closed_owner=applied_owner)
         return intent
 
     def _apply_logical_display(self, intent: DisplayIntent) -> None:
@@ -186,11 +214,11 @@ class UiRouter:
         if intent.kind in ('clear', 'claim_owner', 'shop_buy_list', 'facility_list', 'item_pickup_list', 'load_screen_slots', 'equipment_list', 'spell_detail', 'place_list', 'travel_table', 'journal_entries'):
             self._window._panel_owner = intent.panel_owner
 
-    def update_translation(self, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None) -> None:
-        self.propose_display(DisplayIntent.translation(panel_owner, en, ja, mode=mode, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, speech_role=speech_role, speech_text=speech_text))
+    def update_translation(self, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace') -> None:
+        self.propose_display(DisplayIntent.translation(panel_owner, en, ja, mode=mode, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action))
 
-    def propose_translation(self, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None) -> None:
-        self.propose_display(DisplayIntent.translation(panel_owner, en, ja, mode=mode, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, speech_role=speech_role, speech_text=speech_text))
+    def propose_translation(self, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace') -> None:
+        self.propose_display(DisplayIntent.translation(panel_owner, en, ja, mode=mode, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action))
 
     def apply_display(self, intent: DisplayIntent) -> None:
         if intent.allowed_current_owners is not None:
@@ -203,6 +231,7 @@ class UiRouter:
             self._apply_translation(intent)
             return
         if intent.kind == 'clear':
+            closed_owner = intent.closed_owner or self.current_owner()
             w._tab_translate.update_translation('', '', suppress_fallback=True)
             if intent.clear_place_list:
                 try:
@@ -218,6 +247,8 @@ class UiRouter:
                 w._layout_translate_panel.update_translation('', '')
             w._panel_owner = intent.panel_owner
             self._displayed_translation = None
+            if intent.notify_close:
+                self._notify_clear(closed_owner)
             return
         if intent.kind == 'clear_if_owner':
             current = self.current_owner()
@@ -238,13 +269,18 @@ class UiRouter:
                 w._layout_translate_panel.update_translation('', '')
             w._panel_owner = ''
             self._displayed_translation = None
+            if intent.notify_close:
+                self._notify_clear(current)
             return
         if intent.kind == 'release_if_owner':
-            if self.current_owner() == intent.panel_owner:
+            current = self.current_owner()
+            if current == intent.panel_owner:
                 w._panel_owner = ''
+                self._notify_clear(current)
             return
         if intent.kind == 'claim_owner':
             w._panel_owner = intent.panel_owner
+            self._notify_clear(intent.closed_owner)
             return
         if intent.kind == 'panel_mode':
             return
@@ -300,11 +336,11 @@ class UiRouter:
             w._panel_owner = intent.panel_owner
             if self._translation_observer is not None and intent.speech_role:
                 _obs_owner = intent.panel_owner or self.current_owner()
-                _obs_key = (_obs_owner, intent.panel_en or '', intent.panel_ja or '')
+                _obs_key = (_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled)
                 if self._obs_last_key != _obs_key:
                     self._obs_last_key = _obs_key
                     try:
-                        self._translation_observer(_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.log_enabled)
+                        self._translation_observer(_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.log_enabled, intent.speech_action)
                     except Exception:
                         _log.exception('translation_observer failed')
             return
@@ -318,11 +354,11 @@ class UiRouter:
             w._panel_owner = intent.panel_owner
             if self._translation_observer is not None and intent.speech_role:
                 _obs_owner = intent.panel_owner or self.current_owner()
-                _obs_key = (_obs_owner, intent.panel_en or '', intent.panel_ja or '')
+                _obs_key = (_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled)
                 if self._obs_last_key != _obs_key:
                     self._obs_last_key = _obs_key
                     try:
-                        self._translation_observer(_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.log_enabled)
+                        self._translation_observer(_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.log_enabled, intent.speech_action)
                     except Exception:
                         _log.exception('translation_observer failed')
             return
@@ -355,11 +391,11 @@ class UiRouter:
             _obs_en = intent.en or (intent.panel_en or '')
             _obs_ja = intent.ja or (intent.panel_ja or '')
             _obs_owner = intent.panel_owner or self.current_owner()
-            _obs_key = (_obs_owner, _obs_en, _obs_ja)
+            _obs_key = (_obs_owner, _obs_en, _obs_ja, intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled)
             if self._obs_last_key != _obs_key:
                 self._obs_last_key = _obs_key
                 try:
-                    self._translation_observer(_obs_owner, _obs_en, _obs_ja, intent.speech_role, intent.speech_text, intent.log_enabled)
+                    self._translation_observer(_obs_owner, _obs_en, _obs_ja, intent.speech_role, intent.speech_text, intent.log_enabled, intent.speech_action)
                 except Exception:
                     _log.exception('translation_observer failed')
 
@@ -370,6 +406,9 @@ class UiRouter:
             return
         owner = self.current_owner()
         if owner and owner in facility_owners_for_session(session_name):
+            return
+        story_owner = {'mages': 'mages_story', 'palace': 'palace_dialog'}.get(getattr(w, '_facility_story_kind_now', ''), '')
+        if owner and owner == story_owner:
             return
         key = (session_name, owner, getattr(w, '_screen_id_prev', None), getattr(w, '_img_name_prev', '') or '', frame.top_level if frame is not None else '')
         if key == getattr(self, '_facility_empty_owner_key', None):
@@ -388,23 +427,16 @@ class UiRouter:
             return False
         return self._displayed_translation == (panel_owner, en, ja)
 
-    def clear_if_owner(self, panel_owner: str, *, mode: Optional[str]=None, clear_place_list: bool=False, clear_travel_table: bool=False) -> None:
-        if self.current_owner() == panel_owner:
-            self._notify_clear(panel_owner)
-        self.propose_display(DisplayIntent.clear_if_owner(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table))
+    def clear_if_owner(self, panel_owner: str, *, mode: Optional[str]=None, clear_place_list: bool=False, clear_travel_table: bool=False, notify_close: bool=True) -> None:
+        self.propose_display(DisplayIntent.clear_if_owner(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, notify_close=notify_close))
 
     def clear_display(self, panel_owner: str='', *, mode: Optional[str]='translate', clear_place_list: bool=False, clear_travel_table: bool=False, allowed_current_owners: Optional[tuple]=None) -> None:
-        _cur = self.current_owner()
-        if _cur and (allowed_current_owners is None or _cur in allowed_current_owners):
-            self._notify_clear(_cur)
         self.propose_display(DisplayIntent.clear(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, allowed_current_owners=allowed_current_owners))
 
-    def update_panel_translation(self, panel_en: str, panel_ja: str, *, speech_role: Optional[str]=None, speech_text: Optional[str]=None, log_enabled: bool=True, priority: int=0) -> None:
-        self.propose_display(DisplayIntent.panel_translation(panel_en, panel_ja, priority=priority, speech_role=speech_role, speech_text=speech_text, log_enabled=log_enabled))
+    def update_panel_translation(self, panel_en: str, panel_ja: str, *, speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True, priority: int=0) -> None:
+        self.propose_display(DisplayIntent.panel_translation(panel_en, panel_ja, priority=priority, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled))
 
     def release_if_owner(self, panel_owner: str, *, mode: Optional[str]=None, priority: int=0, reason: str='') -> None:
-        if self.current_owner() == panel_owner:
-            self._notify_clear(panel_owner)
         self.propose_display(DisplayIntent.release_if_owner(panel_owner, mode=mode, priority=priority, reason=reason))
 
     def claim_owner(self, panel_owner: str, *, mode: Optional[str]=None, priority: int=0, reason: str='') -> None:
@@ -443,9 +475,9 @@ class UiRouter:
     def update_place_list(self, panel_owner: str, items: list, *, title: str='', panel_en: str='', panel_ja: str='') -> None:
         self.propose_display(DisplayIntent.place_list(panel_owner, items, title=title, panel_en=panel_en, panel_ja=panel_ja))
 
-    def update_travel_table(self, panel_owner: str, rows: list, *, title: str='', panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, log_enabled: bool=True, priority: int=0, reason: str='') -> None:
-        self.propose_display(DisplayIntent.travel_table(panel_owner, rows, title=title, panel_en=panel_en, panel_ja=panel_ja, speech_role=speech_role, speech_text=speech_text, log_enabled=log_enabled, priority=priority, reason=reason))
+    def update_travel_table(self, panel_owner: str, rows: list, *, title: str='', panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True, priority: int=0, reason: str='') -> None:
+        self.propose_display(DisplayIntent.travel_table(panel_owner, rows, title=title, panel_en=panel_en, panel_ja=panel_ja, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled, priority=priority, reason=reason))
 
-    def propose_journal_entries(self, panel_owner: str, entries: list, *, panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, log_enabled: bool=True, priority: int=0, reason: str='') -> None:
-        self.propose_display(DisplayIntent.journal_entries(panel_owner, entries, panel_en=panel_en, panel_ja=panel_ja, speech_role=speech_role, speech_text=speech_text, log_enabled=log_enabled, priority=priority, reason=reason))
+    def propose_journal_entries(self, panel_owner: str, entries: list, *, panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True, priority: int=0, reason: str='') -> None:
+        self.propose_display(DisplayIntent.journal_entries(panel_owner, entries, panel_en=panel_en, panel_ja=panel_ja, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled, priority=priority, reason=reason))
 __all__ = ['UiRouter']

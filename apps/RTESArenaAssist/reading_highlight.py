@@ -1,5 +1,6 @@
 from __future__ import annotations
 import html as _html
+import re
 import threading
 from PySide6.QtCore import QObject, QTimer, Qt
 import assist_settings as settings
@@ -26,9 +27,11 @@ def clear_highlight(label) -> None:
     label._ra_highlighted = False
     label.setTextFormat(Qt.TextFormat.PlainText)
     label.setText(getattr(label, '_ra_plain', '') or '')
+_INDENT_SPACES = re.compile('  +')
 
 def _esc(s: str) -> str:
-    return _html.escape(s).replace('\n', '<br>')
+    escaped = _html.escape(s).replace('\n', '<br>')
+    return _INDENT_SPACES.sub(lambda m: '&nbsp;' * len(m.group(0)), escaped)
 
 def highlight_segment(label, segment: str, color: str=_HL_COLOR_CURRENT) -> bool:
     return highlight_marked(label, [(segment, color)])
@@ -76,8 +79,12 @@ def _to_display_segments(label, full_text, current_segment, prefetched):
         plain = plain_of(label)
         spoken = TTSService._split_sentences(full_text or '')
         display = TTSService._split_sentences(plain or '')
-        if not spoken or len(spoken) != len(display):
+        if not spoken or len(display) < len(spoken):
             return (current_segment, prefetched)
+        if len(display) > len(spoken):
+            display = display[:len(spoken)]
+            if not any((s == d for s, d in zip(spoken, display))):
+                return (current_segment, prefetched)
         index_of = {}
         for i, seg in enumerate(spoken):
             index_of.setdefault(seg, i)

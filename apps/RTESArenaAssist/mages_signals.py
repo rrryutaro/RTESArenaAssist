@@ -30,6 +30,7 @@ DETECT_MAGIC_QUOTE_PREFIX = 'I can tell you if that is magical'
 DETECT_MAGIC_ALREADY_KNOWN = 'You already know what that is!'
 DETECT_MAGIC_IDENTIFIED = 'The item is now identified in your inventory.'
 MENU_STATES = frozenset({'main_menu', 'buy_submenu', 'steal_menu', 'edit_effects_menu'})
+_CURRENT_PTR_UNSET = object()
 
 def _u8(analyzer, anchor: int, off: int):
     try:
@@ -65,9 +66,13 @@ def _contains_normalized(analyzer, anchor: int, off: int, length: int, needle: s
     text = raw.decode('ascii', errors='replace').replace('\x00', ' ')
     return needle in _normalize_text(text)
 
-def read_signals(analyzer, anchor: int) -> dict:
+def read_signals(analyzer, anchor: int, *, foreground_ptr=_CURRENT_PTR_UNSET) -> dict:
     view_desc = _u16(analyzer, anchor, VIEW_DESC_OFFSET)
-    return {'view': _u8(analyzer, anchor, VIEW_FLAG_OFFSET), 'type': _u8(analyzer, anchor, VIEW_TYPE_OFFSET), 'list': _u8(analyzer, anchor, LIST_FLAG_OFFSET), 'dialog': _u8(analyzer, anchor, DIALOG_ACTIVE_OFFSET), 'family': _u8(analyzer, anchor, TEXT_FAMILY_OFFSET), 'sub': _u8(analyzer, anchor, SUBSTATE_OFFSET), 'view_desc': view_desc, 'view_desc_lo': view_desc & 255 if view_desc is not None else None, 'result_hint': _u8(analyzer, anchor, RESULT_HINT_OFFSET)}
+    family = _u8(analyzer, anchor, TEXT_FAMILY_OFFSET) if foreground_ptr is _CURRENT_PTR_UNSET else foreground_ptr >> 8 & 255 if isinstance(foreground_ptr, int) else None
+    signals = {'view': _u8(analyzer, anchor, VIEW_FLAG_OFFSET), 'type': _u8(analyzer, anchor, VIEW_TYPE_OFFSET), 'list': _u8(analyzer, anchor, LIST_FLAG_OFFSET), 'dialog': _u8(analyzer, anchor, DIALOG_ACTIVE_OFFSET), 'family': family, 'sub': _u8(analyzer, anchor, SUBSTATE_OFFSET), 'view_desc': view_desc, 'view_desc_lo': view_desc & 255 if view_desc is not None else None, 'result_hint': _u8(analyzer, anchor, RESULT_HINT_OFFSET)}
+    if foreground_ptr is not _CURRENT_PTR_UNSET:
+        signals['foreground_ptr'] = foreground_ptr
+    return signals
 
 def classify(sig: dict) -> str:
     view = sig.get('view')
@@ -115,7 +120,7 @@ def detect_magic_reply_kind(sig: dict, img_name: str='') -> str:
 def is_detect_magic_reply_foreground(sig: dict, img_name: str='') -> bool:
     return bool(detect_magic_reply_kind(sig, img_name))
 
-def detect_magic_reply_kind_from_memory(analyzer, anchor: int, img_name: str='', sig: dict | None=None) -> str:
+def detect_magic_reply_kind_from_memory(analyzer, anchor: int, img_name: str='', sig: dict | None=None, *, current_ptr=_CURRENT_PTR_UNSET) -> str:
     sig = sig if sig is not None else read_signals(analyzer, anchor)
     img = (img_name or '').upper()
     if img not in ('NEWPOP.IMG', 'YESNO.IMG', ''):
@@ -135,7 +140,8 @@ def detect_magic_reply_kind_from_memory(analyzer, anchor: int, img_name: str='',
     old_kind = detect_magic_reply_kind(sig, img_name)
     if old_kind:
         return old_kind
-    current_ptr = _u16(analyzer, anchor, CURRENT_TEXT_PTR_OFFSET)
+    if current_ptr is _CURRENT_PTR_UNSET:
+        current_ptr = _u16(analyzer, anchor, CURRENT_TEXT_PTR_OFFSET)
     known_text = _ascii_cstr(analyzer, anchor, MAGES_MENU_TEXT_OFFSET, 96)
     response_text = _normalize_text(_ascii_cstr(analyzer, anchor, RESPONSE_TEXT_OFFSET, 160))
     if img == 'NEWPOP.IMG' and sig.get('list') not in (None, LIST_ON) and isinstance(current_ptr, int) and (MAGES_MENU_PTR_START <= current_ptr < MAGES_MENU_PTR_END) and (known_text == DETECT_MAGIC_ALREADY_KNOWN):

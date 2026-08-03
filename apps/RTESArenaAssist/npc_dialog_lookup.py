@@ -201,9 +201,20 @@ def _reset_i18n_bound_caches() -> None:
     global _CALENDAR_HOLIDAYS, _CALENDAR_LOADED
     global _TRAVEL_RE_CACHE, _TRAVEL_LOC_RE_CACHE
     global _TRAVEL_EVENT_COMPILED
+    global _BODY_HEAD_ENTRIES, _BODY_HEAD_LOADED, _BODY_HEAD_PREFIX_RE
+    global _BODY_HEAD_ANCHORS, _BODY_SPAN_ENTRIES, _BODY_SPAN_RE
+    global _FIXED_SEG_ENTRIES, _FIXED_SEG_LOADED
     _COMPILED = []
     _LOADED = False
     _TRAVEL_EVENT_COMPILED = []
+    _BODY_HEAD_ENTRIES = []
+    _BODY_HEAD_LOADED = False
+    _BODY_HEAD_PREFIX_RE = {}
+    _BODY_HEAD_ANCHORS = {}
+    _BODY_SPAN_ENTRIES = {}
+    _BODY_SPAN_RE = {}
+    _FIXED_SEG_ENTRIES = []
+    _FIXED_SEG_LOADED = False
     _CLOSED_PH_ALT = {}
     _CLOSED_PH_LOADED = False
     _DOC_VALUES = {}
@@ -273,9 +284,9 @@ def _preprocess_placeholder_value(name: str, value: str, lang: str) -> str:
         value = compiled.sub(replace, value)
     return value
 _DS_PATTERN = re.compile('^(.+?)\\s+(\\w+)\\s+called\\s+(.+)$')
-_PLACEHOLDER_NAMES: frozenset[str] = frozenset(['a', 'a2', 'an', 'ccs', 'cll', 'cn', 'cn2', 'cp', 'ct', 'da', 'di', 'doc', 'ds', 'en', 'fn', 'fq', 'g', 'g2', 'g3', 'hc', 'hod', 'i', 'jok', 'lp', 'mi', 'mn', 'mt', 'n', 'nc', 'nc2', 'nd', 'ne', 'nh', 'nhd', 'ni', 'nk', 'nr', 'nt', 'o', 'oap', 'oc', 'omq', 'oth', 'pcf', 'pcn', 'qc', 'qt', 'r', 'ra', 'rcn', 'rf', 'sn', 'st', 't', 'tan', 'tem', 'tg', 'tl', 'tq', 'tt'])
+_PLACEHOLDER_NAMES: frozenset[str] = frozenset(['a', 'a2', 'adn', 'amn', 'an', 'apr', 'arc', 'art', 'ba', 'ccs', 'cll', 'cn', 'cn2', 'cp', 'ct', 'da', 'de', 'di', 'dit', 'doc', 'ds', 'du', 'en', 'fn', 'fq', 'g', 'g2', 'g3', 'hc', 'hod', 'i', 'jok', 'lp', 'mi', 'mn', 'mpr', 'mt', 'n', 'nap', 'nc', 'nc2', 'nd', 'ne', 'nh', 'nhd', 'ni', 'nk', 'nr', 'nt', 'o', 'oap', 'oc', 'omq', 'opp', 'oth', 'pcf', 'pcn', 'qc', 'qmn', 'qt', 'r', 'ra', 'rcn', 'rf', 's', 'sn', 'st', 't', 'ta', 'tan', 'tc', 'tem', 'tg', 'ti', 'tl', 'tq', 'tt', 'u'])
 
-def _template_to_regex(en_template: str) -> re.Pattern | None:
+def _template_to_regex(en_template: str, *, anchor_end: bool=True) -> re.Pattern | None:
     seen: set[str] = set()
     pattern_parts: list[str] = []
     pos = 0
@@ -299,7 +310,7 @@ def _template_to_regex(en_template: str) -> re.Pattern | None:
             pattern_parts.append('.+?')
         last = m.end()
     pattern_parts.append(re.escape(text[last:]))
-    full_pattern = '^' + ''.join(pattern_parts) + '$'
+    full_pattern = '^' + ''.join(pattern_parts) + ('$' if anchor_end else '')
     try:
         return re.compile(full_pattern, re.DOTALL)
     except re.error:
@@ -330,7 +341,7 @@ def _resolve_npcd_ref(ref) -> str | None:
         return i18n.text_by_source_id(val, category=_NPCD_CAT)
     return i18n.text(val)
 
-def _iter_npcd():
+def _iter_npcd(*, include_untranslated: bool=False):
     import i18n_helper as i18n
     if i18n.v2_public_enabled(_NPCD_CAT):
         for e in i18n.v2_category_entries(_NPCD_CAT):
@@ -339,7 +350,9 @@ def _iter_npcd():
                 continue
             tmpl = e.get('text')
             if not tmpl:
-                continue
+                if not include_untranslated:
+                    continue
+                tmpl = ''
             sid = e.get('source_id')
             yield (en_raw, tmpl, _npcd_ph_of(en_raw), _npcd_key_int(sid), ('sid', sid))
     else:
@@ -349,7 +362,9 @@ def _iter_npcd():
                 continue
             tmpl = i18n.text(id_)
             if not tmpl:
-                continue
+                if not include_untranslated:
+                    continue
+                tmpl = ''
             parts = id_.split('.')
             try:
                 key_int = int(parts[1]) if len(parts) >= 2 else -1
@@ -714,7 +729,7 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
             v2 = i18n.value_by_surface('placeholder_values', value, section=section, lang=lang)
             if v2 is not None:
                 return v2
-    if name in ('n', 'fn', 'rf'):
+    if name in ('n', 'fn', 'rf', 'an', 'nc'):
         if lang != 'en':
             return translate_generated_name(value, lang)
         return value
@@ -737,7 +752,7 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
                         result = result.replace(f'%{ph_name}', translated_val)
                 return result
         return value
-    if name == 'mn':
+    if name in ('mn', 'mt'):
         if lang == 'en':
             return value
         from dungeon_msg_lookup import lookup_monster_name
@@ -770,6 +785,10 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
             races_ja = i18n.value_in('races', value, lang)
             if races_ja is not None:
                 return races_ja
+        if name == 'ct' and lang != 'en':
+            _st = _translate_settlement_type(value.strip().title(), lang)
+            if _st:
+                return _st
         if name in ('lp', 'tem'):
             if lang != 'en':
                 from dynamic_place_lookup import lookup as _place_lookup
@@ -781,7 +800,9 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
             if _static != value:
                 return _static
         return value
-    if name in ('cp', 'cll', 'ccs', 'rcn', 'cn2'):
+    if name == 'tq':
+        return translate_placeholder('t', value, lang)
+    if name in ('cp', 'cll', 'ccs', 'rcn', 'cn2', 'hc', 'qc', 'tan'):
         return _translate_static_place(value, lang)
     if name == 'st':
         if lang == 'en':
@@ -792,17 +813,17 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
         return _translate_calendar_label(value, lang)
     if name == 'nhd':
         return _translate_date(value, lang)
-    if name == 'hod':
+    if name in ('hod', 'jok'):
         return _translate_nested_npc_dialog(value, lang)
     if name == 'nt':
         return _translate_nt(value, lang)
     if name == 'ds':
         return _translate_ds(value, lang)
-    if name in ('a', 'a2'):
+    if name in ('a', 'a2', 'oap'):
         return value
     if name == 'da':
         return _translate_date(value, lang)
-    if name == 'omq':
+    if name in ('omq', 'mi'):
         translated = _translate_quest_item(value, lang)
         return translated if translated is not None else value
     if name == 'r':
@@ -832,9 +853,9 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
         if lang != 'en':
             return translate_generated_name(cleaned, lang)
         return cleaned
-    if name == 'o':
+    if name in ('o', 'pcn'):
         return value
-    if name == 'tl':
+    if name in ('tl', 'en'):
         if lang != 'en':
             from dynamic_place_lookup import lookup as _place_lookup
             translated = _place_lookup(value)
@@ -875,6 +896,12 @@ _ARRIVAL_RE = re.compile('^You have arrived in (?P<loc>.+?) in (?P<prov>.+?) Pro
 _SETTLEMENT_RE = re.compile('^The (?P<type>Village|Town|City-State|City) of (?P<name>.+)$')
 _SETTLEMENT_TYPE_IDS = {'Village': 'settlement_types.0.0', 'Town': 'settlement_types.1.0', 'City': 'settlement_types.2.0', 'City-State': 'settlement_types.3.0'}
 
+def _translate_settlement_type(loc_type: str, lang: str) -> str | None:
+    if not loc_type:
+        return None
+    import i18n_helper as i18n
+    return i18n.value_in('location_types', loc_type, lang) or i18n.value_in('settlement_types', loc_type, lang) or i18n.lang_value_in(_SETTLEMENT_TYPE_IDS.get(loc_type, ''), lang)
+
 def _translate_settlement_location(loc: str, lang: str) -> str:
     if lang == 'en':
         return loc
@@ -883,7 +910,7 @@ def _translate_settlement_location(loc: str, lang: str) -> str:
     if not m:
         return _translate_static_place(loc.strip(), lang)
     loc_type = m.group('type')
-    type_ja = i18n.value_in('location_types', loc_type, lang) or i18n.value_in('settlement_types', loc_type, lang) or i18n.lang_value_in(_SETTLEMENT_TYPE_IDS.get(loc_type, ''), lang) or loc_type
+    type_ja = _translate_settlement_type(loc_type, lang) or loc_type
     name_ja = _translate_static_place(m.group('name').strip(), lang)
     return i18n.text('status_buffer_text.settlement_format').replace('{type}', type_ja).replace('{name}', name_ja)
 
@@ -1105,15 +1132,38 @@ def lookup(text: str) -> tuple[str, dict] | None:
     travel = _translate_travel_estimate(text, 'ja')
     if travel is not None:
         return (travel, {})
-    for compiled, ja, ph_count, is_exact, _literal_len in _COMPILED:
-        m = compiled.match(text)
-        if m:
-            placeholders = m.groupdict()
-            return (ja, placeholders)
+    compiled = _lookup_compiled_full(text)
+    if compiled is not None:
+        return compiled
     composite = lookup_composite(text)
     if composite is not None:
         return (composite[1], {})
     return None
+
+def _lookup_compiled_full(text: str) -> tuple[str, dict] | None:
+    closed_invalid_score = None
+    closed_invalid_checked = False
+    for compiled, ja, ph_count, is_exact, _literal_len in _COMPILED:
+        m = compiled.match(text)
+        if m:
+            placeholders = m.groupdict()
+            has_closed_group = any((name in _CLOSED_PH_ALT for name in placeholders))
+            if not is_exact and (not has_closed_group):
+                if not closed_invalid_checked:
+                    closed_invalid_score = _closed_invalid_specificity(text)
+                    closed_invalid_checked = True
+                if closed_invalid_score is not None and closed_invalid_score[0] >= _literal_len:
+                    continue
+            return (ja, placeholders)
+    return None
+
+def lookup_exact(text: str) -> tuple[str, dict] | None:
+    if not text:
+        return None
+    _ensure_i18n_bound_caches_current()
+    normalized = ' '.join(text.split())
+    _load()
+    return _lookup_compiled_full(normalized)
 _COMPOSITE_SPLIT_RE = re.compile('(?=`)')
 
 def lookup_composite(text: str) -> tuple[str, str] | None:
@@ -1146,6 +1196,335 @@ def lookup_travel_event(text: str) -> tuple[str, dict] | None:
         if m:
             return (ja, m.groupdict())
     return None
+_BODY_HEAD_ENTRIES: list[tuple[str, str, str, int]] = []
+_BODY_HEAD_LOADED = False
+_BODY_HEAD_PREFIX_RE: dict[str, re.Pattern] = {}
+_BODY_HEAD_ANCHORS: dict[frozenset, tuple[str, ...]] = {}
+_BODY_HEAD_ANCHOR_MAX = 50
+_BODY_HEAD_ANCHOR_MIN = 16
+
+def _body_head_anchor_of(en_norm: str) -> str:
+    m = _PH_RE_NPCD.search(en_norm)
+    lit = en_norm[:m.start()] if m else en_norm
+    anchor = lit[:_BODY_HEAD_ANCHOR_MAX].rstrip()
+    if len(anchor) < _BODY_HEAD_ANCHOR_MIN:
+        return ''
+    return anchor
+
+def _load_body_head() -> None:
+    global _BODY_HEAD_LOADED
+    if _BODY_HEAD_LOADED:
+        return
+    _BODY_HEAD_LOADED = True
+    _load_closed_ph()
+    for en_raw, tmpl, _ph_list, key_int, _ref in _iter_npcd():
+        en = ' '.join(en_raw.split())
+        anchor = _body_head_anchor_of(en)
+        if not anchor:
+            continue
+        _BODY_HEAD_ENTRIES.append((anchor.upper(), en, tmpl, key_int))
+
+def body_head_anchors(keys: frozenset) -> tuple[str, ...]:
+    _ensure_i18n_bound_caches_current()
+    cached = _BODY_HEAD_ANCHORS.get(keys)
+    if cached is not None:
+        return cached
+    anchors: list[str] = []
+    for en_raw, _tmpl, _ph_list, key_int, _ref in _iter_npcd(include_untranslated=True):
+        if key_int not in keys:
+            continue
+        anchor = _body_head_anchor_of(' '.join(en_raw.split()))
+        if anchor:
+            anchors.append(anchor)
+    out = tuple(dict.fromkeys(anchors))
+    _BODY_HEAD_ANCHORS[keys] = out
+    return out
+
+def lookup_body_head(text: str, *, keys: frozenset | None=None) -> tuple[str, dict] | None:
+    if not text:
+        return None
+    _ensure_i18n_bound_caches_current()
+    body = ' '.join(text.split())
+    if not body:
+        return None
+    _load_body_head()
+    body_upper = body.upper()
+    best: tuple[int, str, str] | None = None
+    ambiguous = False
+    for anchor_u, en, tmpl, key_int in _BODY_HEAD_ENTRIES:
+        if keys is not None and key_int not in keys:
+            continue
+        if not body_upper.startswith(anchor_u):
+            continue
+        if best is None or len(anchor_u) > best[0]:
+            best = (len(anchor_u), en, tmpl)
+            ambiguous = False
+        elif len(anchor_u) == best[0] and (en, tmpl) != (best[1], best[2]):
+            ambiguous = True
+    if best is None or ambiguous:
+        return None
+    _anchor_len, en, tmpl = best
+    compiled = _BODY_HEAD_PREFIX_RE.get(en)
+    if compiled is None:
+        compiled = _template_to_regex(en, anchor_end=False)
+        if compiled is not None:
+            _BODY_HEAD_PREFIX_RE[en] = compiled
+    placeholders: dict = {}
+    if compiled is not None:
+        m = compiled.match(body)
+        if m:
+            placeholders = {k: v for k, v in m.groupdict().items() if v}
+    return (tmpl, placeholders)
+_BODY_SPAN_ENTRIES: dict[frozenset | None, tuple[tuple[str, str], ...]] = {}
+_BODY_SPAN_RE: dict[str, re.Pattern | None] = {}
+
+def _squeeze_ws(s: str) -> str:
+    return ''.join(s.split())
+
+def _body_span_regex(en_norm: str) -> re.Pattern | None:
+    if en_norm in _BODY_SPAN_RE:
+        return _BODY_SPAN_RE[en_norm]
+    parts: list[str] = []
+    last = 0
+    for m in _PH_RE_NPCD.finditer(en_norm):
+        parts.append(re.escape(_squeeze_ws(en_norm[last:m.start()])))
+        parts.append('.+?')
+        last = m.end()
+    tail = _squeeze_ws(en_norm[last:])
+    compiled: re.Pattern | None = None
+    if tail:
+        parts.append(re.escape(tail))
+        try:
+            compiled = re.compile('^' + ''.join(parts), re.DOTALL | re.IGNORECASE)
+        except re.error:
+            compiled = None
+    _BODY_SPAN_RE[en_norm] = compiled
+    return compiled
+
+def _body_span_entries(keys: frozenset | None) -> tuple[tuple[str, str], ...]:
+    cached = _BODY_SPAN_ENTRIES.get(keys)
+    if cached is not None:
+        return cached
+    entries: list[tuple[str, str]] = []
+    for en_raw, _tmpl, _ph_list, key_int, _ref in _iter_npcd(include_untranslated=True):
+        if keys is not None and key_int not in keys:
+            continue
+        en = ' '.join(en_raw.split())
+        anchor = _body_head_anchor_of(en)
+        if not anchor:
+            continue
+        entries.append((anchor.upper(), en))
+    out = tuple(entries)
+    _BODY_SPAN_ENTRIES[keys] = out
+    return out
+
+def body_head_trim(text: str, *, keys: frozenset | None=None) -> str | None:
+    if not text:
+        return None
+    _ensure_i18n_bound_caches_current()
+    body = ' '.join(text.split())
+    if not body:
+        return None
+    body_upper = body.upper()
+    best: tuple[int, str] | None = None
+    ambiguous = False
+    for anchor_u, en in _body_span_entries(keys):
+        if not body_upper.startswith(anchor_u):
+            continue
+        if best is None or len(anchor_u) > best[0]:
+            best = (len(anchor_u), en)
+            ambiguous = False
+        elif len(anchor_u) == best[0] and en != best[1]:
+            ambiguous = True
+    if best is None or ambiguous:
+        return None
+    compiled = _body_span_regex(best[1])
+    if compiled is None:
+        return None
+    m = compiled.match(_squeeze_ws(body))
+    if m is None:
+        return None
+    remaining = m.end()
+    for i, ch in enumerate(body):
+        if not ch.isspace():
+            remaining -= 1
+            if remaining == 0:
+                return body[:i + 1]
+    return None
+_FIXED_SEG_ENTRIES: list[tuple[tuple, list, str, int]] = []
+_FIXED_SEG_LOADED = False
+
+def _split_segments(en_norm: str) -> tuple[tuple, list]:
+    segs: list[tuple[str, str]] = []
+    names: list[str] = []
+    pos = 0
+    for m in _PH_RE_NPCD.finditer(en_norm):
+        lit = en_norm[pos:m.start()]
+        if lit:
+            segs.append(('lit', lit))
+        segs.append(('ph', m.group(1)))
+        names.append(m.group(1))
+        pos = m.end()
+    tail = en_norm[pos:]
+    if tail:
+        segs.append(('lit', tail))
+    return (tuple(segs), names)
+
+def _load_fixed_segments() -> None:
+    global _FIXED_SEG_LOADED
+    if _FIXED_SEG_LOADED:
+        return
+    _FIXED_SEG_LOADED = True
+    _load_closed_ph()
+    for en_raw, tmpl, _ph_list, key_int, _ref in _iter_npcd():
+        if not tmpl:
+            continue
+        segs, names = _split_segments(' '.join(en_raw.split()))
+        if not segs:
+            continue
+        _FIXED_SEG_ENTRIES.append((segs, names, tmpl, key_int))
+
+def _walk_segments(segs: tuple, body_up: str, body: str, *, allow_partial: bool=False) -> tuple | None:
+    pos = 0
+    matched_parts = 0
+    matched_chars = 0
+    values: dict[str, str] = {}
+    pending_ph: str | None = None
+    first = True
+    walked_all = True
+    for kind, val in segs:
+        if kind == 'ph':
+            pending_ph = val
+            continue
+        up = val.upper()
+        if first:
+            if pending_ph is None:
+                if not body_up.startswith(up):
+                    return None
+                idx = 0
+            else:
+                idx = body_up.find(up, pos)
+                if idx <= pos:
+                    return None
+        else:
+            idx = body_up.find(up, pos)
+            if idx == -1:
+                if not allow_partial:
+                    return None
+                remainder = body_up[pos:]
+                if pending_ph is None and (not up.startswith(remainder)):
+                    return None
+                walked_all = False
+                break
+        if pending_ph is not None:
+            captured = body[pos:idx].strip()
+            if not captured:
+                return None
+            previous = values.get(pending_ph)
+            if previous is not None and previous != captured:
+                return None
+            values[pending_ph] = captured
+            pending_ph = None
+        pos = idx + len(val)
+        matched_parts += 1
+        matched_chars += len(val)
+        first = False
+    if matched_parts == 0:
+        return None
+    span_end = pos if walked_all and pending_ph is None else None
+    return (matched_parts, matched_chars, values, span_end)
+
+def _closed_invalid_specificity(text: str) -> tuple[int, int] | None:
+    if not text:
+        return None
+    _load_fixed_segments()
+    body = ' '.join(text.split())
+    body_up = body.upper()
+    best: tuple[int, int] | None = None
+    for segs, names, _tmpl, _key_int in _FIXED_SEG_ENTRIES:
+        if not any((name in _CLOSED_PH_ALT for name in names)):
+            continue
+        got = _walk_segments(segs, body_up, body)
+        if got is None or got[3] != len(body):
+            continue
+        invalid = any(((alt := _CLOSED_PH_ALT.get(name)) is not None and re.fullmatch(f'(?:{alt})', value, flags=re.IGNORECASE) is None for name, value in got[2].items()))
+        if not invalid:
+            continue
+        score = (got[1], got[0])
+        if best is None or score > best:
+            best = score
+    return best
+
+def _identify_by_fixed_parts(text: str, *, allow_partial: bool=False, require_span: bool=False) -> tuple[str, dict, int | None] | None:
+    if not text:
+        return None
+    _ensure_i18n_bound_caches_current()
+    _load_fixed_segments()
+    body = ' '.join(text.split())
+    body_up = body.upper()
+    best = None
+    best_score = (0, 0)
+    invalid_best_score = (0, 0)
+    tied = False
+    for segs, _names, tmpl, _key_int in _FIXED_SEG_ENTRIES:
+        got = _walk_segments(segs, body_up, body, allow_partial=allow_partial)
+        if got is None:
+            continue
+        score = (got[1], got[0])
+        closed_invalid = False
+        for name, value in got[2].items():
+            alt = _CLOSED_PH_ALT.get(name)
+            if alt and re.fullmatch(f'(?:{alt})', value, flags=re.IGNORECASE) is None:
+                closed_invalid = True
+                break
+        if closed_invalid:
+            if score > invalid_best_score:
+                invalid_best_score = score
+            continue
+        if require_span and got[3] is None:
+            continue
+        if score > best_score:
+            best_score = score
+            best = (tmpl, got[2], got[3])
+            tied = False
+        elif score == best_score and best is not None:
+            tied = True
+    if best is None or tied or (invalid_best_score != (0, 0) and invalid_best_score >= best_score):
+        return None
+    return best
+
+def lookup_by_fixed_parts(text: str) -> tuple[str, dict] | None:
+    found = _identify_by_fixed_parts(text)
+    if found is None:
+        return None
+    return (found[0], found[1])
+
+def lookup_partial_by_fixed_parts(text: str) -> tuple[str, dict] | None:
+    found = _identify_by_fixed_parts(text, allow_partial=True)
+    if found is None:
+        return None
+    return (found[0], found[1])
+
+def lookup_span_by_fixed_parts(text: str) -> tuple[str, dict, str] | None:
+    found = _identify_by_fixed_parts(text, require_span=True)
+    if found is None:
+        return None
+    body = ' '.join(text.split())
+    return (found[0], found[1], body[:found[2]])
+
+def lookup_span_at_chunk_boundaries(chunks: list[str] | tuple[str, ...]) -> tuple[str, dict, str] | None:
+    prefix: list[str] = []
+    matches: list[tuple[str, dict, str]] = []
+    for chunk in chunks:
+        normalized = ' '.join((chunk or '').split())
+        if not normalized:
+            return None
+        prefix.append(normalized)
+        span = ' '.join(prefix)
+        found = lookup_exact(span)
+        if found is not None:
+            matches.append((found[0], found[1], span))
+    return matches[0] if len(matches) == 1 else None
 
 def format_japanese(ja_template: str, placeholders: dict, lang: str='ja') -> str:
     result = ja_template

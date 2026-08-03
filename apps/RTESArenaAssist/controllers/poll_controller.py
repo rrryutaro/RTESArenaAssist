@@ -10,7 +10,7 @@ import inf_text_lookup as itl
 from display_intent import PollFrame
 from hierarchy_state import facility_owners_for_session, HierarchyRecognitionInput, SeparationHierarchy
 from normal_play.base_location.base_location_view import resolve_area_with_indoor_fallback as _resolve_area_with_indoor_fallback
-from controllers.chargen_helpers import _CHARGEN_GOYENOW_HINT_ADDR, _CHARGEN_GOYENOW_HINT_CHECKLEN, _CHARGEN_GOYENOW_PREFIX, _CHARGEN_GOYENOW_SCAN_START, _CHARGEN_GOYENOW_SCAN_END, _is_garbage_npc_buffer
+from controllers.chargen_helpers import _CHARGEN_GOYENOW_HINT_ADDR, _CHARGEN_GOYENOW_HINT_CHECKLEN, _CHARGEN_GOYENOW_PREFIX, _CHARGEN_GOYENOW_SCAN_START, _CHARGEN_GOYENOW_SCAN_END
 from controllers.coord_transition_gate import resolve_coord_transition as _resolve_coord_transition
 from controllers.map_fallback_suppression import arm_city_load_fallback_suppression as _arm_city_load_fallback_suppression, city_load_fallback_suppression as _city_load_fallback_suppression
 from top_level.normal_play_state import poll_sessions as _poll_normal_play_sessions
@@ -115,6 +115,10 @@ def _release_completed_load_screen_owner(w, *, img_name: str, save_detected: boo
         w._ui_router.claim_owner('', mode=_normal_play_idle_panel_mode(), priority=_SCREEN_PANEL_PRIORITY, reason='loadsave:release')
     except (AttributeError, RuntimeError) as exc:
         _log.debug('load_screen owner release skipped: %s', exc)
+
+def _screen_state_display_active(w) -> bool:
+    from panel_mode_resolver import is_screen_state_owner
+    return is_screen_state_owner(getattr(w, '_panel_owner', '') or '')
 _INTERIOR_KIND_LABEL_SOURCES: dict[str, tuple[str, str | None, str]] = {'TAVERN': ('Inn', 'ask_about_menu', 'ask_about_menu.place_inn.0'), 'TEMPLE': ('Temple', 'ask_about_menu', 'ask_about_menu.place_temple.0'), 'EQUIP': ('Equipment Store', 'ask_about_menu', 'ask_about_menu.place_equipment_store.0'), 'MAGES': ('Mages Guild', 'ask_about_menu', 'ask_about_menu.place_mages_guild.0'), 'PALACE': ('Palace', 'ask_about_menu', 'ask_about_menu.place_palace.0'), 'TOWNPAL': ('Palace', 'ask_about_menu', 'ask_about_menu.place_palace.0'), 'VILPAL': ('Palace', 'ask_about_menu', 'ask_about_menu.place_palace.0'), 'NOBLE': ('Noble House', None, 'place.facility.noble_house'), 'HOUSE': ('House', None, 'place.facility.house'), 'WCRYPT': ('Crypt', None, 'place.facility.crypt'), 'TOWER': ('tower', 'location', 'location.tower.0'), 'BS': ('House', None, 'place.facility.house')}
 
 def _interior_kind_label(interior_mif_name: str | None) -> str:
@@ -377,11 +381,8 @@ def _poll_compute_newpop_gate(w, *, npc_dialog):
         _newpop_gate = _newpop_img_now == 'NEWPOP.IMG' and _newpop_gate_byte == 0
     except (OSError, AttributeError):
         _newpop_gate = False
-    try:
-        _newpop_count_now = w._analyzer.read_bytes(w._anchor + 4082, 1)[0]
-    except (OSError, AttributeError):
-        _newpop_count_now = 0
-    _is_corpse_loot = _newpop_gate and _newpop_count_now == 0 and bool(npc_dialog) and (not _is_garbage_npc_buffer(npc_dialog))
+    from normal_play.item_pickup_module import corpse_item_message
+    _is_corpse_loot = bool(_newpop_gate and corpse_item_message(npc_dialog))
     return (_newpop_gate, _is_corpse_loot)
 
 def _resolve_dungeon_level(w, mif_name: str | None) -> int | None:
@@ -737,11 +738,12 @@ def _poll_read_game_state(w):
     return (gs, rt_x, rt_z, in_interior, interior_raw, state, inf_name, mif_name, player_floor)
 
 def _poll_read_npc_phase_and_img(w):
-    from arena_bridge import read_npc_phase
     try:
-        _npc_phase_early = read_npc_phase(w._analyzer, w._anchor)
+        from active_template_reader import read_current_text_pointer
+        _foreground_ptr_early = read_current_text_pointer(w._analyzer, w._anchor)
     except Exception:
-        _npc_phase_early = None
+        _foreground_ptr_early = None
+    _npc_phase_early = _foreground_ptr_early >> 8 & 255 if isinstance(_foreground_ptr_early, int) else None
     w._npc_phase = _npc_phase_early
     try:
         from arena_bridge import SCREEN_IMG_OFFSET as _SI_OFF_E, SCREEN_IMG_MAXLEN as _SI_LEN_E
@@ -749,7 +751,7 @@ def _poll_read_npc_phase_and_img(w):
         _img_name_early = _img_raw_early.split(b'\x00', 1)[0].decode('ascii', errors='replace')
     except Exception:
         _img_name_early = ''
-    return (_npc_phase_early, _img_name_early)
+    return (_npc_phase_early, _img_name_early, _foreground_ptr_early)
 
 def _poll_run_session_manager(w, *, _img_name_early, _npc_phase_early, in_interior, _resolved_area, mif_name, interior_mif_name):
     try:
@@ -1195,7 +1197,7 @@ def _poll_screen_detect_and_label(w, _img_name, mif_name, _resolved_area, player
     except (ImportError, OSError, AttributeError):
         pass
 from normal_play import normal_play_render as _normal_play_render
-from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_surface_dispatch, poll_cinematic_dispatch as _poll_cinematic_dispatch, _poll_npc_popup_display, _poll_facility_render_dispatch, _poll_l4_dialog_dispatch
+from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_surface_dispatch, poll_cinematic_dispatch as _poll_cinematic_dispatch, _poll_npc_popup_display, _poll_facility_render_dispatch, _poll_l4_dialog_dispatch, _close_facility_story_units
 from normal_play.travel_map_module import poll_travel_map
 _ASK_ABOUT_MAIN_RECOVERY_STATE = _normal_play_render._ASK_ABOUT_MAIN_RECOVERY_STATE
 blocks_ask_about_main = _normal_play_render.blocks_ask_about_main
@@ -1274,7 +1276,7 @@ class PollController:
         ui_router = getattr(w, '_ui_router', None)
         _poll_file_lifecycle(w)
         try:
-            from arena_bridge import read_game_state, interpret_location, check_trigger_flag, get_trigger_text_by_index, TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, RT_COORD_X_OFFSET, RT_COORD_Z_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW, read_live_buffer, NPC_DIALOG_OFFSET, NPC_DIALOG_MAXLEN, CHARGEN_STATE_OFFSET, CHARGEN_Q_SEQ_OFFSET, CHARGEN_Q_ARRAY_OFFSET, CHARGEN_DONE_OFFSET, NPC_PHASE_ASKING, NPC_PHASE_IDLE, NPC_PHASE_RESPONDING, NPC_PHASE_BUILDING_ENTRY, read_npc_phase, read_interior_flag, is_in_interior
+            from arena_bridge import read_game_state, interpret_location, check_trigger_flag, get_trigger_text_by_index, TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, RT_COORD_X_OFFSET, RT_COORD_Z_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW, read_live_buffer, NPC_DIALOG_OFFSET, NPC_DIALOG_MAXLEN, CHARGEN_STATE_OFFSET, CHARGEN_Q_SEQ_OFFSET, CHARGEN_Q_ARRAY_OFFSET, CHARGEN_DONE_OFFSET, NPC_PHASE_ASKING, NPC_PHASE_IDLE, NPC_PHASE_RESPONDING, NPC_PHASE_BUILDING_ENTRY, read_interior_flag, is_in_interior
             gs, rt_x, rt_z, in_interior, interior_raw, state, inf_name, mif_name, player_floor = _poll_read_game_state(w)
             _top_is_normal_play = _current_top_level(w) == 'normal-play'
             _field_facility_active = False
@@ -1284,7 +1286,7 @@ class PollController:
                 w._in_interior = in_interior
             else:
                 display_mif_name, interior_mif_name, interior_facility_name = (mif_name, None, None)
-            _npc_phase_early, _img_name_early = _poll_read_npc_phase_and_img(w)
+            _npc_phase_early, _img_name_early, _foreground_ptr_early = _poll_read_npc_phase_and_img(w)
             _resolved_area, _poll_hierarchy_area = _poll_resolve_area_and_frame(w, mif_name=mif_name, in_interior=in_interior, ui_router=ui_router, field_facility_active=_field_facility_active)
             _poll_chargen_normal_play_transition(w, mif_name=mif_name, _img_name_early=_img_name_early)
             _img_name_early_upper, _load_edge_start, _loading_post_settle = _poll_resolve_loading_state(w, _img_name_early=_img_name_early)
@@ -1326,7 +1328,11 @@ class PollController:
                 except Exception:
                     _c1_dialog_axis_now = None
             w._c1_dialog_axis_now = _c1_dialog_axis_now
-            _negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active = _poll_facility_render_dispatch(w, _shop_state=_shop_state, _shop_img_name=_shop_img_name, _facility_tavern=_facility_tavern, _tview=_tview, _temple_active_now=_temple_active_now, _tavern_active_now=_tavern_active_now, _tavern_l4_kind=_tavern_l4_kind, _poll_hierarchy_area=_poll_hierarchy_area, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active)
+            _screen_display_active = _screen_state_display_active(w)
+            if _screen_display_active:
+                _negot_handled, _active_tmpl_handled = (False, False)
+            else:
+                _negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active = _poll_facility_render_dispatch(w, _shop_state=_shop_state, _shop_img_name=_shop_img_name, _facility_tavern=_facility_tavern, _tview=_tview, _temple_active_now=_temple_active_now, _tavern_active_now=_tavern_active_now, _tavern_l4_kind=_tavern_l4_kind, _poll_hierarchy_area=_poll_hierarchy_area, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active, _facility_foreground_ptr=_foreground_ptr_early)
             _poll_detect_dungeon_entry(w, mif_name=mif_name)
             if _top_is_normal_play:
                 _poll_handle_triggers(w, rt_x=rt_x, rt_z=rt_z, inf_name=inf_name)
@@ -1343,11 +1349,7 @@ class PollController:
                 _newpop_gate, _is_corpse_loot = _poll_compute_newpop_gate(w, npc_dialog=npc_dialog)
             else:
                 _newpop_gate, _is_corpse_loot = (False, False)
-            w._treasure_pickup_open_prev = bool(_newpop_gate and (not _is_corpse_loot))
-            try:
-                _npc_phase_raw = read_npc_phase(w._analyzer, w._anchor)
-            except Exception:
-                _npc_phase_raw = None
+            _npc_phase_raw = _npc_phase_early
             _entry_phase = _npc_phase_raw == NPC_PHASE_BUILDING_ENTRY
             _entry_phase_prev = getattr(w, '_entry_phase_prev', False)
             w._entry_phase_prev = _entry_phase
@@ -1370,7 +1372,10 @@ class PollController:
             _entry_handled = False
             _instore_resp_handled = False
             if _top_is_normal_play:
-                if _pre_system_menu:
+                if _screen_display_active:
+                    _close_facility_story_units(w)
+                elif _pre_system_menu:
+                    _close_facility_story_units(w)
                     try:
                         for _owner in ('npc_conversation', 'npc_dialog', 'npc_message'):
                             w._ui_router.clear_if_owner(_owner, mode='translate', clear_place_list=True)
@@ -1383,6 +1388,8 @@ class PollController:
                         pass
                 else:
                     _entry_handled, _instore_resp_handled = _poll_l4_dialog_dispatch(w, in_interior=in_interior, msg_buf=msg_buf, npc_dialog=npc_dialog, _npc_dialog_changed=_npc_dialog_changed, _npc_phase_raw=_npc_phase_raw, _img_name_now=_img_name_now, _building_entry_active=_building_entry_active, _entry_phase_prev=_entry_phase_prev, _shop_state=_shop_state, _shop_img_name=_shop_img_name, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active, _facility_active_now=_facility_active_now, _poll_hierarchy_area=_poll_hierarchy_area, _temple_active_now=_temple_active_now, _temple_just_started=_temple_just_started, _equipment_active_now=_equipment_active_now, _equipment_just_started=_equipment_just_started, _mages_active_now=_mages_active_now, _mages_just_started=_mages_just_started, _negot_handled=_negot_handled, _active_tmpl_handled=_active_tmpl_handled)
+            else:
+                _close_facility_story_units(w)
             from top_level.chargen_state import handle_npc_dialog as _chargen_handle_npc_dialog
             _chargen_handle_npc_dialog(w, npc_dialog=npc_dialog, entry_handled=False, is_corpse_loot=_is_corpse_loot)
             if _npc_dialog_changed:
@@ -1400,11 +1407,13 @@ class PollController:
             _b30_img_name = _b30['img_name']
             _b30_in_gameplay = _b30['in_gameplay']
             _poll_cinematic_dispatch(w, _b30)
-            _poll_c1_surface_dispatch(w, _b30, npc_dialog_changed=_npc_dialog_changed, inf_name=inf_name, mif_name=mif_name, instore_resp_handled=_instore_resp_handled, c_area=_poll_hierarchy_area)
+            if not _screen_display_active:
+                _poll_c1_surface_dispatch(w, _b30, npc_dialog_changed=_npc_dialog_changed, inf_name=inf_name, mif_name=mif_name, instore_resp_handled=_instore_resp_handled, c_area=_poll_hierarchy_area)
             from normal_play.level_up_module import produce_level_up_state as _produce_level_up_state
             _level_up_continue = _produce_level_up_state(w, loading_active=w._loading_state_active, load_edge_start=_load_edge_start, loading_post_settle=_loading_post_settle)
             from normal_play.item_pickup_module import poll_item_pickup as _poll_item_pickup
             _poll_item_pickup(w, newpop_gate=_newpop_gate, b30_img_name=_b30_img_name, npc_dialog=npc_dialog, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, screen_id=getattr(w, '_screen_id_prev', None), facility_active=bool(_active_facility_name))
+            w._treasure_pickup_open_prev = bool(getattr(w, '_b32_newpop_open', False) and (not getattr(w, '_b32_was_corpse', False)))
             _img_name = _poll_detect_img_name(w)
             pass
             _npc_phase = _npc_phase_early

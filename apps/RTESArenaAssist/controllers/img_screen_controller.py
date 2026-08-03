@@ -158,10 +158,12 @@ class ImgScreenController:
         title = '装備品一覧'
         try:
             from class_equip_reader import can_equip_item, read_class_equip_rules
-            from inventory_reader import read_equipment_items
+            from inventory_reader import INV_SLOTS, read_equipment_items_with_status
             import dungeon_msg_lookup as dml
             rules = read_class_equip_rules(self._w._analyzer, self._w._anchor)
-            items_raw = read_equipment_items(self._w._analyzer, self._w._anchor)
+            inventory_ok, items_raw = read_equipment_items_with_status(self._w._analyzer, self._w._anchor)
+            if inventory_ok:
+                title = '%s  %d / %d' % (title, len(items_raw), INV_SLOTS)
             item_data = [{'en': it['en'], 'ja': dml.lookup_item(it['en']), 'equipped': it['equipped'], 'is_unidentified': it['is_unidentified'], 'can_equip': can_equip_item(it, rules), 'slot_label': it['slot_label'], 'weight': it['weight'], 'condition': it['condition'], 'effect': f"{it['count']} 個" if it.get('count') is not None else it['effect']} for it in items_raw]
             _staff = _read_staff_pieces_row(self._w)
             if _staff is not None:

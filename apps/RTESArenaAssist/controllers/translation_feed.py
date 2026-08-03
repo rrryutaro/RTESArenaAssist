@@ -17,11 +17,14 @@ class TranslationFeed:
         self._window = window
         self._log_store = log_store
         self._last_spoken: str | None = None
+        self._last_spoken_original: str | None = None
+        self._last_spoken_owner: str | None = None
+        self._last_spoken_role: str | None = None
         self._last_top_level: str | None = None
         self._spoken_keys: 'OrderedDict[tuple[str | None, str], None]' = OrderedDict()
         self._speaking_owner: str | None = None
 
-    def on_translation(self, panel_owner: str, original: str, text: str, speech_role: str | None=None, speech_text: str | None=None, log_enabled: bool=True) -> None:
+    def on_translation(self, panel_owner: str, original: str, text: str, speech_role: str | None=None, speech_text: str | None=None, log_enabled: bool=True, speech_action: str='replace') -> None:
         self._reset_guard_on_context_change()
         if speech_role is None:
             return
@@ -35,16 +38,21 @@ class TranslationFeed:
         key = _ROLE_SETTING.get(speech_role)
         if not (key and bool(settings.get(key, True))):
             return
-        if read_text == self._last_spoken:
+        same_unit = panel_owner == self._last_spoken_owner and speech_role == self._last_spoken_role
+        if same_unit and original == self._last_spoken_original and (read_text == self._last_spoken):
             return
-        if self._last_spoken and read_text.startswith(self._last_spoken):
+        if speech_action == 'append' and same_unit and self._last_spoken and read_text.startswith(self._last_spoken):
             self._last_spoken = read_text
+            self._last_spoken_original = original
             self._remember_spoken((speech_role, read_text))
             return
         repeat_key = (speech_role, read_text)
         if settings.get('tts_suppress_repeat', False) and repeat_key in self._spoken_keys:
             return
         self._last_spoken = read_text
+        self._last_spoken_original = original
+        self._last_spoken_owner = panel_owner
+        self._last_spoken_role = speech_role
         self._remember_spoken(repeat_key)
         self._speaking_owner = panel_owner
         self._tts.speak(self._apply_name_reading(read_text))
@@ -56,15 +64,32 @@ class TranslationFeed:
             self._spoken_keys.popitem(last=False)
 
     def on_display_cleared(self, owner: str) -> None:
-        if not settings.get('tts_cancel_on_close', False):
-            return
         if owner and owner == self._speaking_owner:
-            try:
-                self._tts.stop_speaking()
-            except Exception:
-                pass
+            if settings.get('tts_cancel_on_close', False):
+                try:
+                    self._tts.stop_speaking()
+                except Exception:
+                    pass
             self._speaking_owner = None
             self._last_spoken = None
+            self._last_spoken_original = None
+            self._last_spoken_owner = None
+            self._last_spoken_role = None
+
+    def on_display_replaced(self, owner: str) -> None:
+        if not (owner and owner == self._speaking_owner):
+            return
+        if not settings.get('tts_interrupt', True):
+            return
+        try:
+            self._tts.stop_speaking()
+        except Exception:
+            pass
+        self._speaking_owner = None
+        self._last_spoken = None
+        self._last_spoken_original = None
+        self._last_spoken_owner = None
+        self._last_spoken_role = None
 
     def _reset_guard_on_context_change(self) -> None:
         w = self._window
@@ -79,6 +104,9 @@ class TranslationFeed:
             prev = self._last_top_level
             self._last_top_level = tl
             self._last_spoken = None
+            self._last_spoken_original = None
+            self._last_spoken_owner = None
+            self._last_spoken_role = None
             self._spoken_keys.clear()
             self._speaking_owner = None
             if prev is not None and tl in ('pregame', 'chargen') and (self._log_store is not None):
@@ -89,6 +117,9 @@ class TranslationFeed:
 
     def reset_spoken(self) -> None:
         self._last_spoken = None
+        self._last_spoken_original = None
+        self._last_spoken_owner = None
+        self._last_spoken_role = None
         self._last_top_level = None
         self._spoken_keys.clear()
         self._speaking_owner = None

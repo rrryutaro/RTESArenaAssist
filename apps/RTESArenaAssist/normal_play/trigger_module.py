@@ -196,10 +196,16 @@ def compute_b30_state(w, *, screen_id: str | None=None, c_area: str | None=None,
         _log.debug('b30 0x7979 changed: %r → %r', _red_prev, _red_str)
     w._b30_red_str_prev = _red_str
     try:
-        _dialog_byte = w._analyzer.read_bytes(w._anchor + 43077, 1)[0]
+        _fg_raw = w._analyzer.read_bytes(w._anchor + 43076, 2)
+        _fg_ptr = _fg_raw[0] | _fg_raw[1] << 8
     except (OSError, AttributeError):
-        _dialog_byte = 0
-    _dialog_active = _dialog_byte != 0
+        _fg_ptr = None
+    try:
+        from active_template_reader import is_dialog_text_pointer
+        _dialog_text_fg = is_dialog_text_pointer(_fg_ptr)
+    except Exception:
+        _dialog_text_fg = _fg_ptr is not None and (4164 <= _fg_ptr < 4164 + 512 or 16384 <= _fg_ptr < 49152)
+    _dialog_active = _dialog_text_fg
     _dialog_active_prev = getattr(w, '_b30_dialog_active_prev', False)
     try:
         _img_raw = w._analyzer.read_bytes(w._anchor + SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN)
@@ -225,8 +231,8 @@ def compute_b30_state(w, *, screen_id: str | None=None, c_area: str | None=None,
         except Exception as exc:
             _log.debug('C1 dialog axis read failed: %s', exc)
     w._b30_in_gameplay_prev = _in_gameplay
-    w._b30_dialog_active_prev = _dialog_active
-    return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_byte': _dialog_byte, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay}
+    w._b30_dialog_active_prev = _dialog_text_fg
+    return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay}
 
 def poll_red_text(w, *, b30: dict, npc_dialog_changed: bool, c1_fg: str='') -> None:
     _c1_fg_blocks_render = bool(c1_fg and c1_fg not in ('red_text', 'red_text_dialog'))
@@ -312,7 +318,7 @@ def poll_dialog_close(w, *, b30: dict, npc_dialog_changed: bool, instore_resp_ha
             if _owner_text_still_on_screen(_cur_owner):
                 _log.info('b30 dialog close detected but owner text still on screen (owner=%s) - preserve display', _cur_owner)
                 return
-            _log.info('b30 dialog closed (0xA845 → 0x00, owner=%s) - clearing', _cur_owner)
+            _log.info('b30 dialog closed (foreground text ptr left known text ranges, owner=%s) - clearing', _cur_owner)
             w._ui_router.clear_if_owner(_cur_owner)
         else:
             _log.info('b30 dialog closed but owner=%r - preserve display', w._panel_owner)

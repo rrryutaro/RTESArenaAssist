@@ -36,33 +36,36 @@ class DisplayIntent:
     priority: int = 0
     reason: str = ''
     allowed_current_owners: Optional[tuple[str, ...]] = None
+    closed_owner: str = ''
+    notify_close: bool = True
     speech_role: Optional[str] = None
     speech_text: Optional[str] = None
+    speech_action: str = 'replace'
     log_enabled: bool = True
 
     @classmethod
-    def translation(cls, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', allowed_current_owners: Optional[tuple[str, ...]]=None, speech_role: Optional[str]=None, speech_text: Optional[str]=None, log_enabled: bool=True) -> 'DisplayIntent':
-        return cls(kind='translation', panel_owner=panel_owner, mode=mode, en=en, ja=ja, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, allowed_current_owners=allowed_current_owners, speech_role=speech_role, speech_text=speech_text, log_enabled=log_enabled)
+    def translation(cls, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', allowed_current_owners: Optional[tuple[str, ...]]=None, speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True) -> 'DisplayIntent':
+        return cls(kind='translation', panel_owner=panel_owner, mode=mode, en=en, ja=ja, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, allowed_current_owners=allowed_current_owners, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled)
 
     @classmethod
-    def panel_translation(cls, panel_en: str, panel_ja: str, *, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, log_enabled: bool=True) -> 'DisplayIntent':
-        return cls(kind='translation', panel_owner='', mode=None, en='', ja='', panel_en=panel_en, panel_ja=panel_ja, update_tab=False, update_panel=True, keep_owner=True, priority=priority, reason=reason, speech_role=speech_role, speech_text=speech_text, log_enabled=log_enabled)
+    def panel_translation(cls, panel_en: str, panel_ja: str, *, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True) -> 'DisplayIntent':
+        return cls(kind='translation', panel_owner='', mode=None, en='', ja='', panel_en=panel_en, panel_ja=panel_ja, update_tab=False, update_panel=True, keep_owner=True, priority=priority, reason=reason, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled)
 
     @classmethod
-    def clear(cls, panel_owner: str='', *, mode: Optional[str]='translate', clear_place_list: bool=False, clear_travel_table: bool=False, priority: int=0, reason: str='', allowed_current_owners: Optional[tuple[str, ...]]=None) -> 'DisplayIntent':
-        return cls(kind='clear', panel_owner=panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, priority=priority, reason=reason, allowed_current_owners=allowed_current_owners)
+    def clear(cls, panel_owner: str='', *, mode: Optional[str]='translate', clear_place_list: bool=False, clear_travel_table: bool=False, priority: int=0, reason: str='', allowed_current_owners: Optional[tuple[str, ...]]=None, closed_owner: str='', notify_close: bool=True) -> 'DisplayIntent':
+        return cls(kind='clear', panel_owner=panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, priority=priority, reason=reason, allowed_current_owners=allowed_current_owners, closed_owner=closed_owner, notify_close=notify_close)
 
     @classmethod
-    def clear_if_owner(cls, panel_owner: str, *, mode: Optional[str]=None, clear_place_list: bool=False, clear_travel_table: bool=False, priority: int=0, reason: str='') -> 'DisplayIntent':
-        return cls(kind='clear_if_owner', panel_owner=panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, priority=priority, reason=reason)
+    def clear_if_owner(cls, panel_owner: str, *, mode: Optional[str]=None, clear_place_list: bool=False, clear_travel_table: bool=False, priority: int=0, reason: str='', notify_close: bool=True) -> 'DisplayIntent':
+        return cls(kind='clear_if_owner', panel_owner=panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, priority=priority, reason=reason, notify_close=notify_close)
 
     @classmethod
     def release_if_owner(cls, panel_owner: str, *, mode: Optional[str]=None, priority: int=0, reason: str='') -> 'DisplayIntent':
         return cls(kind='release_if_owner', panel_owner=panel_owner, mode=mode, priority=priority, reason=reason)
 
     @classmethod
-    def claim_owner(cls, panel_owner: str, *, mode: Optional[str]=None, priority: int=0, reason: str='') -> 'DisplayIntent':
-        return cls(kind='claim_owner', panel_owner=panel_owner, mode=mode, priority=priority, reason=reason)
+    def claim_owner(cls, panel_owner: str, *, mode: Optional[str]=None, priority: int=0, reason: str='', closed_owner: str='') -> 'DisplayIntent':
+        return cls(kind='claim_owner', panel_owner=panel_owner, mode=mode, priority=priority, reason=reason, closed_owner=closed_owner)
 
     @classmethod
     def panel_mode(cls, mode: str, *, priority: int=0, reason: str='') -> 'DisplayIntent':
@@ -93,12 +96,12 @@ class DisplayIntent:
         return cls(kind='spell_detail', panel_owner=panel_owner, mode='spell_detail', items=data, panel_en=panel_en, panel_ja=panel_ja, priority=priority, reason=reason)
 
     @classmethod
-    def travel_table(cls, panel_owner: str, rows: list, *, title: str='', panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, log_enabled: bool=True, priority: int=0, reason: str='') -> 'DisplayIntent':
-        return cls(kind='travel_table', panel_owner=panel_owner, mode='travel_table', items=rows, title=title, panel_en=panel_en, panel_ja=panel_ja, speech_role=speech_role, speech_text=speech_text, log_enabled=log_enabled, priority=priority, reason=reason)
+    def travel_table(cls, panel_owner: str, rows: list, *, title: str='', panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True, priority: int=0, reason: str='') -> 'DisplayIntent':
+        return cls(kind='travel_table', panel_owner=panel_owner, mode='travel_table', items=rows, title=title, panel_en=panel_en, panel_ja=panel_ja, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled, priority=priority, reason=reason)
 
     @classmethod
-    def journal_entries(cls, panel_owner: str, entries: list, *, panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, log_enabled: bool=True, priority: int=0, reason: str='') -> 'DisplayIntent':
-        return cls(kind='journal_entries', panel_owner=panel_owner, mode='journal', items=entries, panel_en=panel_en, panel_ja=panel_ja, speech_role=speech_role, speech_text=speech_text, log_enabled=log_enabled, priority=priority, reason=reason)
+    def journal_entries(cls, panel_owner: str, entries: list, *, panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True, priority: int=0, reason: str='') -> 'DisplayIntent':
+        return cls(kind='journal_entries', panel_owner=panel_owner, mode='journal', items=entries, panel_en=panel_en, panel_ja=panel_ja, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled, priority=priority, reason=reason)
 
     @classmethod
     def place_list(cls, panel_owner: str, items: list, *, title: str='', panel_en: str='', panel_ja: str='', priority: int=0, reason: str='') -> 'DisplayIntent':

@@ -3,12 +3,12 @@ import logging
 _log = logging.getLogger('RTESArenaAssist')
 C1_RUNTIME_DIALOG_OWNER = 'c1_runtime_dialog'
 
-def _read_dialog_just_opened(w) -> tuple[bool, bool]:
+def _dialog_open_state(w, fg_ptr: int | None) -> tuple[bool, bool]:
     try:
-        _dialog_byte = w._analyzer.read_bytes(w._anchor + 43077, 1)[0]
-    except (OSError, AttributeError):
-        _dialog_byte = 0
-    _dialog_active_now = _dialog_byte != 0
+        from active_template_reader import is_dialog_text_pointer
+        _dialog_active_now = is_dialog_text_pointer(fg_ptr)
+    except Exception:
+        _dialog_active_now = fg_ptr is not None and (_ptr_targets_runtime_dialog(fg_ptr) or _ptr_targets_other_c1_surface(fg_ptr) or 16384 <= fg_ptr < 49152)
     _dialog_active_prev = getattr(w, '_b30_dialog_active_prev', False)
     return (_dialog_active_now and (not _dialog_active_prev), _dialog_active_now)
 
@@ -95,7 +95,7 @@ def poll_c1_runtime_dialog(w, *, npc_dialog: str, npc_dialog_changed: bool, faci
     _body = _resolve_runtime_dialog_body(w, npc_dialog=npc_dialog, msg_buf=msg_buf, fg_ptr=_fg_ptr, dlgflg_active=_dlgflg_active)
     if not _body:
         return False
-    _dialog_just_opened, _dialog_active_now = _read_dialog_just_opened(w)
+    _dialog_just_opened, _dialog_active_now = _dialog_open_state(w, _fg_ptr)
     _runtime_dialog_text_on_screen = _dialog_active_now and _ptr_targets_runtime_dialog(_fg_ptr)
     _runtime_dialog_just_opened = _dialog_just_opened and _c1_runtime_axis_active
     if not (npc_dialog_changed or _runtime_dialog_just_opened or _runtime_dialog_text_on_screen or _c1_runtime_axis_active):

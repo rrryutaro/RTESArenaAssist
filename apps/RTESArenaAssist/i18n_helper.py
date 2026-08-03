@@ -271,6 +271,10 @@ def value_section(category: str, original_text: str, section: str) -> str | None
         return None
     if v2_public_enabled(category):
         return value_by_surface(category, original_text, section=section)
+    if v2_public_enabled(None):
+        v2 = value_by_surface(category, original_text, section=section)
+        if v2 is not None:
+            return v2
     return value(category, original_text)
 
 def _v2_slot_index(category: str) -> dict:
