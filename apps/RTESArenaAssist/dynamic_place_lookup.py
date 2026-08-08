@@ -4,6 +4,7 @@ import re
 _log = logging.getLogger(__name__)
 _DATA: dict = {}
 _LOC_TYPES: dict[str, str] = {}
+_CT_CANON: dict[str, str] = {}
 _LOADED = False
 
 def _load() -> None:
@@ -13,10 +14,17 @@ def _load() -> None:
     try:
         import i18n_helper as i18n
         _DATA.update(i18n.rules().get('dynamic_places', {}))
-        for id_, e in i18n.originals('location_types').items():
-            en = e.get('original', '') if isinstance(e, dict) else ''
-            if en:
-                _LOC_TYPES[en] = i18n.lang_only(id_) or ''
+        if i18n.v2_public_enabled('location_types'):
+            for e in i18n.v2_category_entries('location_types'):
+                en = e.get('original') or ''
+                if en:
+                    _LOC_TYPES[en] = e.get('text') or ''
+        else:
+            for id_, e in i18n.originals('location_types').items():
+                en = e.get('original', '') if isinstance(e, dict) else ''
+                if en:
+                    _LOC_TYPES[en] = i18n.lang_only(id_) or ''
+        _CT_CANON.update({en.casefold(): en for en in _LOC_TYPES})
     except Exception as exc:
         _log.warning('dynamic_places/location_types load failed: %s', exc)
     _LOADED = True
@@ -28,10 +36,32 @@ def _translate_name_part(name: str) -> str:
         return result if result else name
     except Exception:
         return name
+_CT_SLUG_RE = re.compile('[^a-z0-9]+')
+
+def _ct_slug(en: str) -> str:
+    return _CT_SLUG_RE.sub('_', en.lower()).strip('_')
+
+def normalize_city_type(value: str) -> str | None:
+    _load()
+    return _CT_CANON.get((value or '').strip().casefold())
+
+def translate_city_type(value: str) -> str:
+    canon = normalize_city_type(value)
+    if canon is None:
+        _log.debug('dynamic_place_unmatched: category=city_type en=%r', value)
+        return value
+    return _LOC_TYPES.get(canon) or value
+
+def city_type_surface(key: str) -> str:
+    _load()
+    want = (key or '').strip().lower()
+    for en in _LOC_TYPES:
+        if _ct_slug(en) == want:
+            return en.lower()
+    return ''
 
 def _translate_ct(ct_en: str) -> str:
-    _load()
-    return _LOC_TYPES.get(ct_en, ct_en)
+    return translate_city_type(ct_en)
 
 def _lookup_tavern(en_text: str) -> str:
     data = _DATA.get('tavern', {})
@@ -75,6 +105,13 @@ def _lookup_temple(en_text: str) -> str:
     _log.debug('dynamic_place_unmatched: category=temple en=%r (no prefix)', en_text)
     return ''
 
+def _ct_alternation() -> str:
+    _load()
+    words = sorted(_LOC_TYPES, key=len, reverse=True)
+    if not words:
+        return '((?!))'
+    return '((?i:' + '|'.join((re.escape(w) for w in words)) + '))'
+
 def _build_eq_prefix_regex(prefix_en: str) -> tuple[re.Pattern, list[str]]:
     variables: list[str] = []
     parts = re.split('(%ef|%n|%ct)', prefix_en)
@@ -87,7 +124,7 @@ def _build_eq_prefix_regex(prefix_en: str) -> tuple[re.Pattern, list[str]]:
             regex_parts.append('(.+?)')
             variables.append('n')
         elif part == '%ct':
-            regex_parts.append('(City-State|Town|Village|Dungeon)')
+            regex_parts.append(_ct_alternation())
             variables.append('ct')
         else:
             regex_parts.append(re.escape(part))

@@ -72,7 +72,6 @@ def corpse_item_message(npc_dialog: str) -> bool:
     except Exception:
         return False
 _BLOCKED_SCREENS = ('equipment', 'spellbook', 'spell_detail', 'status_page', 'bonus_screen')
-_BLOCKED_IMGS = ('MRSHIRT.IMG', 'EQUIP.IMG', 'MPANTS.IMG', 'PAGE2.IMG', 'CHARSTAT.IMG')
 _CACHE_TTL = 10
 _CLOSE_DEBOUNCE_POLLS = 2
 _CLOSE_KEEP_OWNER_SCREENS = ('equipment', 'spellbook', 'spell_detail')
@@ -216,7 +215,7 @@ def _poll_open_corpse(w, *, gate_open: bool, count: int, names_present: bool, np
         w._b32_seen_items = _seen
         _show_item_pickup(w, _seen, 1)
 
-def poll_item_pickup(w, *, newpop_gate: bool, b30_img_name: str, npc_dialog: str, shop_buy_active: bool, shop_menu_visible: bool, screen_id: str | None=None, facility_active: bool=False) -> None:
+def poll_item_pickup(w, *, newpop_gate: bool, b30_img_name: str, npc_dialog: str, shop_buy_active: bool, shop_menu_visible: bool, screen_id: str | None=None, facility_active: bool=False, inventory_screen: bool=False) -> None:
     _screen_id = screen_id if screen_id is not None else getattr(w, '_screen_id_prev', None)
     if _current_top_level(w) != 'normal-play':
         if getattr(w, '_b32_newpop_open', False):
@@ -240,7 +239,7 @@ def poll_item_pickup(w, *, newpop_gate: bool, b30_img_name: str, npc_dialog: str
     _names_present = bool(_read_names(w, 1))
     _corpse_item_name = corpse_item_message(npc_dialog)
     if not _was_open:
-        _blocked = _screen_id in _BLOCKED_SCREENS or b30_img_name in _BLOCKED_IMGS or shop_buy_active or shop_menu_visible or facility_active
+        _blocked = _screen_id in _BLOCKED_SCREENS or inventory_screen or shop_buy_active or shop_menu_visible or facility_active
         _poll_closed(w, gate_open=newpop_gate, display_n=_display_n, names_present=_names_present, npc_dialog=npc_dialog, corpse_item=_corpse_item_name, blocked=_blocked, screen_id=_screen_id)
     elif getattr(w, '_b32_was_corpse', False):
         _poll_open_corpse(w, gate_open=newpop_gate, count=_count, names_present=_names_present, npc_dialog=npc_dialog, corpse_item=_corpse_item_name, img_name=b30_img_name, screen_id=_screen_id)

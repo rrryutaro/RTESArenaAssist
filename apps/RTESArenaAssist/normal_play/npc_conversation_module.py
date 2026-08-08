@@ -4,7 +4,7 @@ from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 NPC_CONVERSATION_OWNER = 'npc_conversation'
 
-def poll_npc_conversation(w, ctx, *, npc_dialog: str, npc_dialog_changed: bool, dialog_just_opened: bool, in_interior: bool, facility_active_now: bool, npc_translated: bool, c_area: str='') -> None:
+def poll_npc_conversation(w, ctx, *, npc_dialog: str, npc_dialog_changed: bool, dialog_just_opened: bool, in_interior: bool, facility_active_now: bool, npc_translated: bool, c_area: str='', screen_img: str='') -> None:
     _response_surface_active = bool(getattr(ctx, 'response_text_on_screen', False) or getattr(ctx, 'panel_only_interior_message', False))
     _route4_eligible = not npc_translated and bool(npc_dialog) and (c_area != 'dungeon') and (npc_dialog_changed or dialog_just_opened) and (w._npc_conversation_active or in_interior) and (not facility_active_now) and _response_surface_active
     if _route4_eligible:
@@ -19,7 +19,7 @@ def poll_npc_conversation(w, ctx, *, npc_dialog: str, npc_dialog_changed: bool, 
                 else:
                     w._ui_router.update_translation(NPC_CONVERSATION_OWNER, npc_dialog, _ndl_ja, clear_place_list=True, speech_role='conversation')
                     from normal_play.normal_play_render import latch_popup11_place_response_from_conversation
-                    latch_popup11_place_response_from_conversation(w, npc_dialog)
+                    latch_popup11_place_response_from_conversation(w, npc_dialog, screen_img=screen_img)
                 _log.info('npc_dialog message displayed (route=ask_about panel_only=%s text=%r)', ctx.panel_only_interior_message, npc_dialog)
             else:
                 _log.info('route4 lookup miss (npc_conv=%s in_interior=%s changed=%s just_opened=%s text=%r)', w._npc_conversation_active, in_interior, npc_dialog_changed, dialog_just_opened, npc_dialog[:120])

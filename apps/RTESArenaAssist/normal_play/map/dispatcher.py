@@ -61,9 +61,6 @@ class MapDispatcher:
         return None
 
     def reset_progress(self) -> None:
-        if self._active_path == 'interior':
-            if self.interior.is_active():
-                self.interior.reset_progress()
-        elif self._active_path == 'base_location':
-            self.base_location.reset_progress()
+        self.interior.reset_progress()
+        self.base_location.reset_progress()
 __all__ = ['MapDispatcher']

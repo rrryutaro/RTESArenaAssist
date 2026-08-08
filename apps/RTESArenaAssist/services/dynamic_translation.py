@@ -125,30 +125,32 @@ def translate_temple(t: TempleName) -> BuildingTranslation:
             ja = combination_rule.replace('{suffix}', suf_ja)
             missing = []
     return BuildingTranslation(en=en, ja=ja, parts_missing=missing)
-_CITY_TYPE_EN = {'city_state': 'city', 'town': 'town', 'village': 'village'}
-_CITY_TYPE_ID = {'city_state': 'city_types.0.0', 'town': 'city_types.1.0', 'village': 'city_types.2.0'}
+
+def _city_type_parts(city_type: Optional[str]) -> tuple[str, Optional[str]]:
+    if not city_type:
+        return ('', None)
+    if _ASSIST_DIR not in sys.path:
+        sys.path.insert(0, _ASSIST_DIR)
+    from dynamic_place_lookup import city_type_surface, translate_city_type
+    en = city_type_surface(city_type)
+    if not en:
+        return ('', None)
+    ja = translate_city_type(en)
+    return (en, ja if ja != en else None)
 
 def translate_equipment(e: EquipmentName, city_type: Optional[str]=None) -> BuildingTranslation:
     data = _load().get('equipment_store', {})
     pre_en = _aexe_part('equipment_prefixes', e.prefix_index)
     suf_en = _aexe_part('equipment_suffixes', e.suffix_index)
     en = f'{pre_en} {suf_en}'.strip()
-    if _ASSIST_DIR not in sys.path:
-        sys.path.insert(0, _ASSIST_DIR)
-    import i18n_helper as i18n
-    ct_en = _CITY_TYPE_EN.get(city_type or '', '')
-    _ct_id = _CITY_TYPE_ID.get(city_type or '', '')
-    ct_ja = i18n.text_opt(_ct_id) if _ct_id else None
+    ct_en, ct_ja = _city_type_parts(city_type)
     if '%ct' in en and ct_en:
         en = en.replace('%ct', ct_en)
     if '%ef' in en and e.ef_name:
         en = en.replace('%ef', e.ef_name)
     if '%n' in en and e.n_name:
         en = en.replace('%n', e.n_name)
-    lookup_en = en
-    if ct_en:
-        lookup_en = lookup_en.replace(f'The {ct_en} ', f'The {ct_en.title()} ')
-    ja = _lookup_place_ja(lookup_en, 'equipment_store')
+    ja = _lookup_place_ja(en, 'equipment_store')
     missing = []
     if not ja:
         prefixes = data.get('prefixes', [])

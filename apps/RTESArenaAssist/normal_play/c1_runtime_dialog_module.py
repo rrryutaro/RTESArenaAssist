@@ -61,20 +61,9 @@ def _axis_targets_runtime_dialog(axis) -> bool:
     if not axis or not getattr(axis, 'active', False):
         return False
     return getattr(axis, 'a845', 0) == 16 or getattr(axis, 'a84d', 0) == 64 or _ptr_targets_runtime_dialog(getattr(axis, 'current_ptr', None))
-_INVENTORY_IMGS = ('MRSHIRT.IMG', 'EQUIP.IMG', 'MPANTS.IMG', 'PAGE2.IMG', 'CHARSTAT.IMG')
-
-def _on_inventory_screen(w) -> bool:
-    try:
-        from arena_bridge import SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN
-        img = w._analyzer.read_bytes(w._anchor + SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN).split(b'\x00', 1)[0].decode('ascii', errors='replace').upper()
-    except (OSError, AttributeError, ImportError):
-        return False
-    return img in _INVENTORY_IMGS
 
 def poll_c1_runtime_dialog(w, *, npc_dialog: str, npc_dialog_changed: bool, facility_active_now: bool, msg_buf: str='') -> bool:
     if bool(getattr(w, '_npc_conversation_active', False)) or facility_active_now:
-        return False
-    if _on_inventory_screen(w):
         return False
     _c1_axis = None
     _c1_runtime_axis_active = False

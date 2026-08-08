@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from types import SimpleNamespace
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 STATE_NONE = 'none'
@@ -424,13 +425,16 @@ def _diag_travel(w, *, img: str, state: str, dlg: bool, adb6: int, text: str) ->
         w._travel_diag_prev = sig
         _log.warning('TRAVEL_SIG img=%s state=%s B7C4=0x%02X B7C6=0x%04X 0x6C28=0x%02X 0xA845=0x%02X +44470=0x%02X dlg=%s text=%r', img, state, b7c4, b7c6, flag, a845, adb6, dlg, snippet)
 
-def poll_travel_map(w, img_name: str) -> bool:
+def _inactive_travel_view():
+    return SimpleNamespace(state=STATE_NONE, hover=None, full_text='', list_key=None, dest_loc=None, dialog_panel=None)
+
+def classify_travel_l4(w, img_name: str):
     on_np = _current_top_level(w) == 'normal-play'
     img = (img_name or '').upper()
     prev_state = getattr(w, '_travel_l4_state', STATE_NONE)
     if not on_np:
         _reset_travel_state(w)
-        return False
+        return _inactive_travel_view()
     _is_est, full_text = _read_estimate_text(w)
     adb6 = _read_u8(w, _OFF_ADB6)
     _dialog_flag = _read_u8(w, _OFF_DIALOG_FLAG) != 0
@@ -496,7 +500,7 @@ def poll_travel_map(w, img_name: str) -> bool:
     w._travel_search_grace = _grace
     if not session:
         _reset_travel_state(w)
-        return False
+        return _inactive_travel_view()
     w._travel_session = True
     list_key = None
     if search_list_open:
@@ -525,7 +529,15 @@ def poll_travel_map(w, img_name: str) -> bool:
         _cond_ja, _cond_role = _lookup_estimate(_popup_body)
         if _cond_ja:
             dialog_panel = (_popup_body, _cond_ja, _cond_role)
-    if state != STATE_NONE:
-        _render_state(w, state, hover=hover, full_text=full_text, list_key=list_key, dest_loc=dest_loc, dialog_panel=dialog_panel)
-    return state != STATE_NONE
-__all__ = ['STATE_NONE', 'STATE_REGION_SELECT', 'STATE_DETAIL', 'STATE_HOVER_NAME', 'STATE_ESTIMATE', 'STATE_INPUT', 'STATE_LIST', 'TRAVEL_HOVER_OWNER', 'TRAVEL_ESTIMATE_OWNER', 'TRAVEL_TABLE_OWNER', 'TRAVEL_SEARCH_OWNER', 'in_travel_session', 'classify_travel_map_state', 'poll_travel_map']
+    return SimpleNamespace(state=state, hover=hover, full_text=full_text, list_key=list_key, dest_loc=dest_loc, dialog_panel=dialog_panel)
+
+def render_travel_l4(w, view) -> None:
+    if view is None or view.state == STATE_NONE:
+        return
+    _render_state(w, view.state, hover=view.hover, full_text=view.full_text, list_key=view.list_key, dest_loc=view.dest_loc, dialog_panel=view.dialog_panel)
+
+def poll_travel_map(w, img_name: str) -> bool:
+    view = classify_travel_l4(w, img_name)
+    render_travel_l4(w, view)
+    return view.state != STATE_NONE
+__all__ = ['STATE_NONE', 'STATE_REGION_SELECT', 'STATE_DETAIL', 'STATE_HOVER_NAME', 'STATE_ESTIMATE', 'STATE_INPUT', 'STATE_LIST', 'TRAVEL_HOVER_OWNER', 'TRAVEL_ESTIMATE_OWNER', 'TRAVEL_TABLE_OWNER', 'TRAVEL_SEARCH_OWNER', 'in_travel_session', 'classify_travel_map_state', 'classify_travel_l4', 'render_travel_l4', 'poll_travel_map']

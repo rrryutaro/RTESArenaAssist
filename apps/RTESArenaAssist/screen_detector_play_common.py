@@ -1,6 +1,10 @@
 from __future__ import annotations
 from typing import Optional, Tuple
 from screen_detector import _tr, FLAG_STATUS_POPUP_OFFSET, FLAG_EQUIPMENT_OPEN_OFFSET, LOGBOOK_FG_WORD_OFFSET, LOGBOOK_FG_WORD_VALUE, POPUP_OPEN_OFFSET, SPELL_DETAIL_ACTIVE_OFFSET, _read_u8, _read_u16_le
+INVENTORY_SCREEN_IMGS = ('MRSHIRT.IMG', 'EQUIP.IMG', 'MPANTS.IMG', 'PAGE2.IMG', 'CHARSTAT.IMG')
+
+def is_inventory_screen_img(img_name: str) -> bool:
+    return (img_name or '').upper() in INVENTORY_SCREEN_IMGS
 
 def detect_common_play_screen(analyzer, anchor: int, img_name: str) -> Optional[Tuple[str, str]]:
     img_upper = (img_name or '').upper()

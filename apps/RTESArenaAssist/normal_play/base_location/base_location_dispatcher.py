@@ -63,6 +63,6 @@ class BaseLocationDispatcher:
         self._suspended_key = None
 
     def reset_progress(self) -> None:
-        if self._active_key is not None:
-            dict(self._sessions)[self._active_key].reset_progress()
+        for _key, sess in self._sessions:
+            sess.reset_progress()
 __all__ = ['BaseLocationDispatcher']

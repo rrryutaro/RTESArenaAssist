@@ -14,6 +14,19 @@ for _race_id in range(8):
     _NAME_RULES[100 + _race_id] = _forename_rules
 _USED_CHUNKS_0_8: frozenset[int] = frozenset((r['c'] for gender_rules in (_NAME_RULES[r] for r in range(9)) for rules in gender_rules for r in rules if r['t'] in ('I', 'IC', 'ISC')))
 _NNC_CAT = 'npc_name_chunks'
+_LITERAL_ID_PREFIX = f'{_NNC_CAT}.literals.'
+
+def _iter_nnc_literals():
+    import i18n_helper as i18n
+    for id_ in i18n.lang_ids(_NNC_CAT):
+        if not id_.startswith(_LITERAL_ID_PREFIX):
+            continue
+        en = id_[len(_LITERAL_ID_PREFIX):]
+        if not en:
+            continue
+        surface = i18n.lang_only(id_)
+        if surface and surface != en:
+            yield ('literal', None, None, en, surface)
 
 def _iter_nnc():
     import i18n_helper as i18n
@@ -40,19 +53,21 @@ def _iter_nnc():
         for id_, e in i18n.originals(_NNC_CAT).items():
             if not isinstance(e, dict):
                 continue
+            parts = id_.split('.')
+            if not (len(parts) >= 4 and parts[1] == 'chunks'):
+                continue
             en = e.get('original', '')
+            if not en:
+                continue
             translated = i18n.text(id_)
             surface = translated if translated and translated != en else None
-            parts = id_.split('.')
-            if len(parts) >= 4 and parts[1] == 'chunks':
-                ci = parts[2]
-                try:
-                    ei = int(parts[3])
-                except ValueError:
-                    continue
-                yield ('chunk', ci, ei, en, surface)
-            elif len(parts) >= 3 and parts[1] == 'literals' and en:
-                yield ('literal', None, None, en, surface)
+            ci = parts[2]
+            try:
+                ei = int(parts[3])
+            except ValueError:
+                continue
+            yield ('chunk', ci, ei, en, surface)
+    yield from _iter_nnc_literals()
 
 def _load() -> None:
     global _chunks_data, _overrides_data

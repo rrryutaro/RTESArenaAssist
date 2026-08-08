@@ -25,6 +25,7 @@ class DungeonMapSession(MapSessionBase):
         self._map1: Optional[np.ndarray] = None
         self._flor: Optional[np.ndarray] = None
         self._bitmap: Optional[np.ndarray] = None
+        self._level_bitmaps: dict[str, np.ndarray] = {}
         self._seen_cells: set[tuple[int, int]] = set()
         self._notes: list[tuple[int, int, str]] = []
         self._level_up_index: Optional[int] = None
@@ -156,9 +157,12 @@ class DungeonMapSession(MapSessionBase):
                 self._ext_store.note_discovery(self._location_key, cx, cy, SECTION_WALL_PASSAGES)
 
     def reset_progress(self) -> None:
+        self._level_bitmaps.clear()
         if self._bitmap is None:
             self._bitmap = np.zeros((128, 128), dtype=np.uint8)
         self._bitmap[:] = 0
+        if self._mif_name:
+            self._level_bitmaps[f'{self._mif_name.upper()}#{self._floor}'] = self._bitmap
         self._seen_cells.clear()
         self._last_player_pos = None
         self._last_automap_mtime_ns = None
@@ -232,8 +236,13 @@ class DungeonMapSession(MapSessionBase):
                 self._treasure_pile_cells = frozenset(((int(e.x), int(e.y)) for e in mif.entities or [] if int(e.flat_index) in piles))
             except Exception:
                 self._treasure_pile_cells = frozenset()
-        self._bitmap = np.zeros((128, 128), dtype=np.uint8)
-        self._seen_cells.clear()
+        key = f'{mif_name.upper()}#{player_floor}'
+        bm = self._level_bitmaps.get(key)
+        if bm is None:
+            bm = np.zeros((128, 128), dtype=np.uint8)
+            self._level_bitmaps[key] = bm
+        self._bitmap = bm
+        self._seen_cells = rebuild_seen_cells_from_bitmap(bm)
         self._last_player_pos = None
         self._last_automap_mtime_ns = None
         self._last_automap_size = 0
@@ -308,7 +317,10 @@ class DungeonMapSession(MapSessionBase):
                 self._reset_retry_remaining += 1
             self._diag_log_skip('degenerate_full_bitmap')
             return False
-        self._bitmap[:] = active.bitmap_grid
+        if ctx.automap_open:
+            self._bitmap[:] = active.bitmap_grid
+        else:
+            np.maximum(self._bitmap, active.bitmap_grid, out=self._bitmap)
         self._seen_cells = rebuild_seen_cells_from_bitmap(self._bitmap)
         self._notes = [(n.x, n.y, n.text) for n in active.valid_notes]
         self._last_player_pos = None

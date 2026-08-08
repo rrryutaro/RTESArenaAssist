@@ -25,15 +25,7 @@ def _build_dialog_context(w, *, in_interior, facility_active_now):
     _dialog_active_prev = getattr(w, '_b30_dialog_active_prev', False)
     _dialog_just_opened = _dialog_active_now and (not _dialog_active_prev)
     _panel_only_interior_message = in_interior and (not facility_active_now) and (not bool(getattr(w, '_npc_conversation_active', False)))
-    try:
-        from arena_bridge import SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN
-        _img = w._analyzer.read_bytes(w._anchor + SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN).split(b'\x00', 1)[0].decode('ascii', errors='replace').upper()
-        _on_travel_screen = _img in ('TERRAIN.IMG', 'POPUP8.IMG', 'OUTPROV.CIF', 'MAPOUT.CIF')
-    except (OSError, AttributeError, ImportError):
-        _on_travel_screen = False
-    if getattr(w, '_travel_l4_active', False):
-        _on_travel_screen = True
-    return SimpleNamespace(dialog_just_opened=_dialog_just_opened, response_text_on_screen=_response_text_on_screen, msg_text_on_screen=_msg_text_on_screen, panel_only_interior_message=_panel_only_interior_message, on_travel_screen=_on_travel_screen)
+    return SimpleNamespace(dialog_just_opened=_dialog_just_opened, response_text_on_screen=_response_text_on_screen, msg_text_on_screen=_msg_text_on_screen, panel_only_interior_message=_panel_only_interior_message)
 
 def _show_npc_dialog_text(w, en: str, ja: str, *, panel_only: bool) -> None:
     if panel_only:
@@ -41,11 +33,11 @@ def _show_npc_dialog_text(w, en: str, ja: str, *, panel_only: bool) -> None:
     else:
         w._ui_router.update_translation('npc_dialog', en, ja, speech_role='conversation')
 
-def poll_npc_dialog(w, *, entry_handled: bool, npc_overlay_active: bool, in_interior: bool, npc_phase_raw, shop_buy_active: bool, shop_menu_visible: bool, facility_active_now: bool, npc_dialog: str, npc_dialog_changed: bool=True, c_area: str='', internalized_facility_active: bool=False, shop_state_kind: str='none', negot_handled: bool=False, active_tmpl_handled: bool=False) -> bool:
+def poll_npc_dialog(w, *, entry_handled: bool, npc_overlay_active: bool, in_interior: bool, npc_phase_raw, shop_buy_active: bool, shop_menu_visible: bool, facility_active_now: bool, npc_dialog: str, npc_dialog_changed: bool=True, c_area: str='', internalized_facility_active: bool=False, shop_state_kind: str='none', negot_handled: bool=False, active_tmpl_handled: bool=False, screen_img: str='') -> bool:
     ctx = _build_dialog_context(w, in_interior=in_interior, facility_active_now=facility_active_now)
     instore_resp_handled = False
     instore_resp_handled, entry_handled = _poll_route1_instore_response(w, ctx, entry_handled=entry_handled, npc_overlay_active=npc_overlay_active, in_interior=in_interior, npc_phase_raw=npc_phase_raw, facility_active_now=facility_active_now, instore_resp_handled=instore_resp_handled, internalized_facility_active=internalized_facility_active, shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, shop_state_kind=shop_state_kind, negot_handled=negot_handled, active_tmpl_handled=active_tmpl_handled, c_area=c_area)
-    if not entry_handled and _current_top_level(w) == 'normal-play' and (not ctx.on_travel_screen) and (not shop_buy_active) and (not shop_menu_visible):
+    if not entry_handled and _current_top_level(w) == 'normal-play' and (not shop_buy_active) and (not shop_menu_visible):
         if _poll_route_msg_foreground(w, ctx, in_interior=in_interior, facility_active_now=facility_active_now, c_area=c_area):
             pass
         elif _poll_route3_dungeon_msg(w, ctx, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, facility_active_now=facility_active_now, c_area=c_area):
@@ -53,6 +45,6 @@ def poll_npc_dialog(w, *, entry_handled: bool, npc_overlay_active: bool, in_inte
         elif _poll_route4a_arrival(w, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, dialog_just_opened=ctx.dialog_just_opened, facility_active_now=facility_active_now):
             pass
         else:
-            poll_npc_conversation(w, ctx, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, dialog_just_opened=ctx.dialog_just_opened, in_interior=in_interior, facility_active_now=facility_active_now, npc_translated=False, c_area=c_area)
+            poll_npc_conversation(w, ctx, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, dialog_just_opened=ctx.dialog_just_opened, in_interior=in_interior, facility_active_now=facility_active_now, npc_translated=False, c_area=c_area, screen_img=screen_img)
     return instore_resp_handled
 __all__ = ['poll_npc_dialog', 'NPC_MESSAGE_OWNER']

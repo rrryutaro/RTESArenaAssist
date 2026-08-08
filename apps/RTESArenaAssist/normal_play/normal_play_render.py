@@ -129,17 +129,11 @@ def _popup11_place_response_lock_matches(w, list_state: str, item_dyn_now) -> tu
         return (False, '')
     return (True, str(lock.get('text', '') or ''))
 
-def latch_popup11_place_response_from_conversation(w, response_text: str) -> None:
+def latch_popup11_place_response_from_conversation(w, response_text: str, *, screen_img: str='') -> None:
     text = (response_text or '').strip()
     if not text:
         return
-    try:
-        from arena_bridge import SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN
-        raw_img = w._analyzer.read_bytes(w._anchor + SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN)
-        img_name = raw_img.split(b'\x00', 1)[0].decode('ascii', errors='replace').upper()
-    except Exception:
-        img_name = ''
-    if img_name != 'POPUP11.IMG':
+    if (screen_img or '').upper() != 'POPUP11.IMG':
         return
     try:
         from popup11_list_detector import detect_popup11_list_state, POPUP11_ITEM_COUNT_OFFSET, POPUP11_DYN_COUNT_OFFSET
@@ -531,7 +525,7 @@ def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_
         _negot_handled, _active_tmpl_handled = _poll_shared_negotiation_and_template(w, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active, _shop_img_name=_shop_img_name, _temple_active_now=_temple_active_now, _tavern_active_now=_tavern_active_now, _tavern_l4_kind=_tavern_l4_kind, _poll_hierarchy_area=_poll_hierarchy_area, _negot_handled=_negot_handled, _active_tmpl_handled=_active_tmpl_handled)
     return (_negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active)
 
-def _poll_l4_dialog_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog_changed, _npc_phase_raw, _img_name_now, _building_entry_active, _entry_phase_prev, _shop_state, _shop_img_name, _shop_menu_visible, _shop_buy_active, _facility_active_now, _poll_hierarchy_area, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _negot_handled, _active_tmpl_handled):
+def _poll_l4_dialog_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog_changed, _npc_phase_raw, _img_name_now, _building_entry_active, _entry_phase_prev, _shop_state, _shop_img_name, _shop_menu_visible, _shop_buy_active, _facility_active_now, _poll_hierarchy_area, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _negot_handled, _active_tmpl_handled, _inventory_screen=False):
     from arena_bridge import NPC_PHASE_BUILDING_ENTRY, NPC_PHASE_RESPONDING, NPC_PHASE_IDLE, NPC_PHASE_ASKING
     from normal_play.building_entry_module import poll_building_entry as _poll_building_entry
     from normal_play.npc_message_module import poll_travel_event_lifecycle as _poll_travel_event_lifecycle
@@ -591,10 +585,10 @@ def _poll_l4_dialog_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog
     from normal_play.npc_dialog_module import poll_npc_dialog as _poll_npc_dialog
     _instore_resp_handled = False
     if not _entry_handled:
-        _instore_resp_handled = _poll_npc_dialog(w, entry_handled=False, npc_overlay_active=_npc_overlay_active, in_interior=in_interior, npc_phase_raw=_npc_phase_raw, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, facility_active_now=_facility_active_now, npc_dialog=npc_dialog, npc_dialog_changed=_npc_dialog_changed, c_area=_poll_hierarchy_area, internalized_facility_active=_temple_active_now or _equipment_active_now or _mages_active_now, shop_state_kind=_shop_state.kind if _shop_state is not None else 'none', negot_handled=_negot_handled, active_tmpl_handled=_active_tmpl_handled)
+        _instore_resp_handled = _poll_npc_dialog(w, entry_handled=False, npc_overlay_active=_npc_overlay_active, in_interior=in_interior, screen_img=_img_name_now, npc_phase_raw=_npc_phase_raw, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, facility_active_now=_facility_active_now, npc_dialog=npc_dialog, npc_dialog_changed=_npc_dialog_changed, c_area=_poll_hierarchy_area, internalized_facility_active=_temple_active_now or _equipment_active_now or _mages_active_now, shop_state_kind=_shop_state.kind if _shop_state is not None else 'none', negot_handled=_negot_handled, active_tmpl_handled=_active_tmpl_handled)
         if _instore_resp_handled:
             _entry_handled = True
-    if _poll_hierarchy_area == 'dungeon' and (not _entry_handled):
+    if _poll_hierarchy_area == 'dungeon' and (not _entry_handled) and (not _inventory_screen):
         from normal_play.c1_runtime_dialog_module import poll_c1_runtime_dialog as _poll_c1_runtime_dialog
         if _poll_c1_runtime_dialog(w, npc_dialog=npc_dialog, npc_dialog_changed=_npc_dialog_changed, facility_active_now=_facility_active_now, msg_buf=msg_buf):
             _instore_resp_handled = True
