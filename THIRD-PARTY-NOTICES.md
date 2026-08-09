@@ -28,7 +28,8 @@ RTESArenaAssist 本体は MIT License です（[LICENSE](LICENSE)）。配布し
 
 ## The Elder Scrolls: Arena について
 
-本ツールはゲーム本体を改変しません。また **Arena のデータ・テキスト・画像を同梱していません**。
+本ツールはゲームの実行ファイルやデータファイルを書き換えません。また **Arena のデータ・
+テキスト・画像を同梱していません**。
 翻訳表示に必要なデータは、利用者の環境にインストールされた Arena から実行時に読み出して
 生成します。The Elder Scrolls: Arena および関連する名称・意匠は ZeniMax Media Inc. および
 Bethesda Softworks LLC に帰属します。本ツールは非公式のファンメイドであり、これらの企業とは
