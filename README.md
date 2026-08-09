@@ -24,12 +24,15 @@
 ## アルファ版について
 
 まだアルファ版です。ゲームをクリアするまでの全体を確認できておらず、翻訳の抜けや表示の
-不具合が残っています。遊びながら気づいた点は Issues でお知らせください。
+不具合が残っています。遊びながら気づいた点は Issues か
+[Nexus Mods のページ](https://www.nexusmods.com/tesarena/mods/94)でお知らせください。
+日本語・英語どちらでも構いません。
 
 ## 導入
 
-1. [Releases](https://github.com/rrryutaro/RTESArenaAssist/releases) から
-   `RTESArenaAssist.exe` をダウンロードします。
+1. [Releases](https://github.com/rrryutaro/RTESArenaAssist/releases) または
+   [Nexus Mods](https://www.nexusmods.com/tesarena/mods/94) から
+   `RTESArenaAssist.exe` をダウンロードします（どちらも同じファイルです）。
 2. Arena（DOSBox）を先に起動します。
 3. `RTESArenaAssist.exe` を実行します。初回は表示言語の選択と、翻訳データの生成が行われます。
    生成には数分かかることがあります。
