@@ -1,6 +1,7 @@
 import logging
 import re
 import assist_settings as settings
+import i18n_helper as i18n
 from top_level.top_level_dispatcher import current_state as _current_top_level
 from top_level import pregame_render as _pregame_render
 from normal_play.npc_conversation_module import NPC_CONVERSATION_OWNER
@@ -207,7 +208,7 @@ class ImgScreenController:
         except Exception:
             _log.exception('spellbook read failed')
             item_data = []
-        self._w._ui_router.propose_equipment_list('spellbook', '習得呪文一覧', item_data, priority=30, reason='screen:spellbook')
+        self._w._ui_router.propose_spellbook_list('spellbook', item_data, 'Spell Book', i18n.tr('screen.spellbook'), list_title_ja=i18n.tr('spellbook.list_title'), priority=30, reason='screen:spellbook')
 
     def _show_newgame_slide(self, img_name: str) -> None:
         _pregame_render.show_newgame_slide(self._w, img_name)

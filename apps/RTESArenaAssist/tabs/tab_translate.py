@@ -21,6 +21,7 @@ _MODE_SPELL_DETAIL = 'spell_detail'
 _MODE_PLACE_LIST = 'place_list'
 _MODE_SHOP_BUY = 'shop_buy'
 _MODE_FACILITY_LIST = 'facility_list'
+_MODE_SPELLBOOK = 'spellbook'
 _MODE_TRAVEL_TABLE = 'travel_table'
 _MODE_JOURNAL = 'journal'
 _MODE_APPEARANCE_FACES = 'appearance_faces'
@@ -121,6 +122,8 @@ class TabTranslate(QWidget):
             self._stack.setCurrentIndex(13)
         elif mode == _MODE_JOURNAL:
             self._stack.setCurrentIndex(14)
+        elif mode == _MODE_SPELLBOOK:
+            self._stack.setCurrentIndex(15)
         elif mode == _MODE_APPEARANCE_FACES:
             self._stack.setCurrentIndex(10)
         elif mode == _MODE_FALLBACK_STATUS:
@@ -208,6 +211,12 @@ class TabTranslate(QWidget):
 
     def set_facility_list_title(self, title: str) -> None:
         self._facility_list_group.setTitle(title)
+
+    def update_spellbook_list(self, items: list) -> None:
+        self._render_price_rows(self._spellbook_rows_layout, items, show_price=False)
+
+    def set_spellbook_title(self, title: str) -> None:
+        self._spellbook_group.setTitle(title)
 
     def update_travel_table(self, rows: list) -> None:
         idx = 0

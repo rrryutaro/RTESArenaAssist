@@ -205,7 +205,7 @@ def spell_effect_surfaces() -> dict:
         if surf and surf[1].startswith('verified'):
             out[addr.spell_effect_id(struct[0], struct[1])] = surf[0]
     return out
-_MAGES_SPELLSG65_INDEX = {'Stamina': 0, 'Sanctuary': 1, 'Wanderlight': 3, 'Wizard Lock': 4, 'Orc Strength': 5, "Wizard's Fire": 6, 'Strength Leech': 11, 'Ice Bolt': 12, 'Resist Fire': 14, 'Resist Cold': 15, 'Fireball': 16, 'Earth Wall': 17, "Witch's Curse": 19, 'Cure Poison': 21, 'Resist Shock': 23, 'Ice Storm': 26, 'Heal True': 33, 'Fire Storm': 35, 'Spell Shield': 36, 'Free Action': 37, "Troll's Blood": 41, 'Cause Disease': 59, 'Cure Disease': 60}
+_MAGES_SPELLSG65_INDEX = {'Stamina': 0, 'Sanctuary': 1, 'Wanderlight': 3, 'Wizard Lock': 4, 'Orc Strength': 5, "Wizard's Fire": 6, 'Strength Leech': 11, 'Ice Bolt': 12, 'Resist Fire': 14, 'Resist Cold': 15, 'Fireball': 16, 'Earth Wall': 17, "Witch's Curse": 19, 'Cure Poison': 21, 'Resist Shock': 23, 'Ice Storm': 26, 'Heal True': 33, 'Fire Storm': 35, 'Spell Shield': 36, 'Free Action': 37, "Troll's Blood": 41, 'Cause Disease': 59, 'Cure Disease': 60, 'Wizard Rend': 10, "Wyvern's Sting": 20, 'Force Bolt': 22, "Gods' Fire": 25, 'Force Wall': 27, 'Lightning': 28, 'Pitfalls': 29, 'Wildfire': 30, 'Far Silence': 32, 'Passwall': 34, 'Resist Poison': 38, 'Lifesteal': 39, 'Toxic Cloud': 40, "Medusa's Gaze": 42, 'Spell Drain': 43, "Shalidor's Mirror": 44, 'Purify': 45, 'Fire Dart': 61, 'Light Heal': 62}
 
 def mages_spellsg65_source_id(legacy_id: str) -> str | None:
     if not legacy_id.startswith('mages.'):

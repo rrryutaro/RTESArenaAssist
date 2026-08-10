@@ -80,6 +80,10 @@ class DisplayIntent:
         return cls(kind='facility_list', panel_owner=panel_owner, mode='facility_list', items=items, panel_en=panel_en, panel_ja=panel_ja, list_title_ja=list_title_ja, priority=priority, reason=reason)
 
     @classmethod
+    def spellbook_list(cls, panel_owner: str, items: list, panel_en: str, panel_ja: str, *, list_title_ja: Optional[str]=None, priority: int=0, reason: str='') -> 'DisplayIntent':
+        return cls(kind='spellbook', panel_owner=panel_owner, mode='spellbook', items=items, panel_en=panel_en, panel_ja=panel_ja, list_title_ja=list_title_ja, priority=priority, reason=reason)
+
+    @classmethod
     def item_pickup_list(cls, panel_owner: str, items: list, remaining: int, *, priority: int=0, reason: str='') -> 'DisplayIntent':
         return cls(kind='item_pickup_list', panel_owner=panel_owner, mode='item_pickup', items=items, remaining=remaining, priority=priority, reason=reason)
 

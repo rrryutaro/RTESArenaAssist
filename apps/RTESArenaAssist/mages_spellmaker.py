@@ -7,6 +7,7 @@ _GRP_OFFS = [22502, 22508, 22514, 22520, 22526, 22532]
 EFFECT_TO_FORM = {'Damage': 'FORM1', 'Continuous Damage': 'FORM2', 'Cause Disease': 'FORM4', 'Cause Poison': 'FORM4A', 'Cause Curse': 'FORM5', 'Fortify Attribute': 'FORM6', 'Drain Attribute': 'FORM6A', 'Light': 'FORM8', 'Create Shield': 'FORM9', 'Designate as Non-Target': 'FORM10', 'Levitate': 'FORM11', 'Create Wall': 'FORM13', 'Regenerate': 'FORM15'}
 FORM_FIELDS = {'FORM1': {0: 'Range min', 1: 'Range max', 2: 'Increase min', 3: 'Increase max', 4: 'Levels'}, 'FORM2': {0: 'Range min', 1: 'Range max', 2: 'Increase min', 3: 'Increase max', 4: 'Levels', 5: 'Strikes'}, 'FORM3': {0: 'Chance', 1: 'Increase', 4: 'per Levels'}, 'FORM4': {0: 'Chance', 1: 'Increase', 2: 'Deterioration', 3: 'per Rnds', 4: 'per Levels', 5: 'Duration'}, 'FORM5': {0: 'Chance', 1: 'Increase', 2: 'Duration per Lv', 4: 'Increase per Lv', 5: 'Duration'}, 'FORM6': {0: 'Increase', 1: 'Rate of Release', 4: 'Release per Rnds', 5: 'Duration'}, 'FORM6A': {0: 'Decrease', 1: 'Rate of Recovery', 4: 'Recovery per Rnds', 5: 'Duration'}, 'FORM7': {0: 'Decrease'}, 'FORM8': {0: 'Light level', 5: 'Duration'}, 'FORM9': {0: 'Strength', 1: 'Increase', 4: 'Levels'}, 'FORM10': {0: 'Chance', 1: 'Increase', 2: 'Duration per Lv', 4: 'Increase per Lv', 5: 'Duration'}, 'FORM11': {0: 'Base Time', 1: 'Increase', 4: 'per Levels'}, 'FORM13': {0: 'Number'}, 'FORM15': {0: 'Gain', 1: 'Every', 4: 'For'}}
 FORM_ALIASES = {'FORM4A': 'FORM4', 'FORM12': 'FORM3', 'FORM14': 'FORM5'}
+FORM_CHOICES = {'FORM8': {'label': {'en': 'Type', 'id': 'spellmaker.form_label_type'}, 'options': [{'en': 'Follows caster', 'id': 'mages.Follows caster'}, {'en': 'Projectile', 'id': 'mages.Projectile'}]}}
 FORM_FIELD_JA = {'Range min': '射程 最小', 'Range max': '射程 最大', 'Increase min': '増加 最小', 'Increase max': '増加 最大', 'Levels': 'レベル', 'Strikes': '回数', 'Chance': '確率', 'Increase': '増加', 'Deterioration': '悪化', 'per Rnds': '毎ラウンド', 'per Levels': '毎レベル', 'Duration': '持続', 'Duration per Lv': '持続/レベル', 'Increase per Lv': '増加/レベル', 'Rate of Release': '解放率', 'Release per Rnds': '解放/ラウンド', 'Rate of Recovery': '回復率', 'Recovery per Rnds': '回復/ラウンド', 'Decrease': '減少', 'Light level': '光量', 'Strength': '強度', 'Base Time': '基本時間', 'Number': '数', 'Gain': '獲得', 'Every': '毎', 'For': '期間'}
 
 def field_label_ja(label_en: str) -> str:
@@ -75,79 +76,39 @@ def format_form_layout(form: str, values: dict) -> tuple[list[str], list[str]]:
         return ([], [])
     return (_fill_layout(en, values), _fill_layout(ja, values))
 
-def _fmt_value(values: dict, key: str, suffix: str='') -> str:
-    if key not in values:
-        return '—'
-    return f'{values[key]}{suffix}'
-
-def _line(label_en: str, label_ja: str, en_value: str, ja_value: str='') -> str:
-    body = f'{label_en}（{label_ja}）: {en_value}'
-    if ja_value:
-        body += f' / {ja_value}'
-    return body
-
-def format_form_display(form: str, values: dict) -> list[str]:
-    base_form = resolve_form(form) or form
-    f = FORM_ALIASES.get(base_form, base_form)
-    if f == 'FORM1':
-        return [_line('Range', '射程', f"{_fmt_value(values, 'Range min')}〜{_fmt_value(values, 'Range max')}"), _line('Increase', '増加', f"{_fmt_value(values, 'Increase min')}〜{_fmt_value(values, 'Increase max')} / {_fmt_value(values, 'Levels')}レベルごと")]
-    if f == 'FORM2':
-        return [*_line_form1(values), _line('Strikes', '回数', f"{_fmt_value(values, 'Strikes')}回")]
-    if f in ('FORM3', 'FORM12'):
-        return [_line('Chance', '確率', _fmt_value(values, 'Chance', '%'), ''), _line('Increase', '増加', _fmt_value(values, 'Increase', '%'), f"{_fmt_value(values, 'per Levels')}レベルごと")]
-    if f in ('FORM4', 'FORM4A'):
-        return [_line('Chance', '確率', _fmt_value(values, 'Chance', '%'), ''), _line('Increase', '増加', _fmt_value(values, 'Increase', '%'), f"{_fmt_value(values, 'per Levels')}レベルごと"), _line('Deterioration', '悪化', f"{_fmt_value(values, 'Deterioration')}ポイント", f"{_fmt_value(values, 'per Rnds')}ラウンドごと"), _line('Duration', '持続', f"{_fmt_value(values, 'Duration')}ラウンド", 'レベルごと')]
-    if f in ('FORM5', 'FORM14', 'FORM10'):
-        return [_line('Chance', '確率', _fmt_value(values, 'Chance', '%'), ''), _line('Increase', '増加', _fmt_value(values, 'Increase', '%'), f"{_fmt_value(values, 'Increase per Lv')}レベルごと"), _line('Duration', '持続', f"{_fmt_value(values, 'Duration')}ラウンド", f"{_fmt_value(values, 'Duration per Lv')}レベルごと")]
-    if f == 'FORM6':
-        return [_line('Increase', '増加', f"{_fmt_value(values, 'Increase')}ポイント"), _line('Duration', '持続', f"{_fmt_value(values, 'Duration')}ラウンド"), _line('Rate of Release', '解放率', f"{_fmt_value(values, 'Rate of Release')}ポイント", f"{_fmt_value(values, 'Release per Rnds')}ラウンドごと")]
-    if f == 'FORM6A':
-        return [_line('Decrease', '減少', f"{_fmt_value(values, 'Decrease')}ポイント"), _line('Duration', '持続', f"{_fmt_value(values, 'Duration')}ラウンド"), _line('Rate of Recovery', '回復率', f"{_fmt_value(values, 'Rate of Recovery')}ポイント", f"{_fmt_value(values, 'Recovery per Rnds')}ラウンドごと")]
-    if f == 'FORM7':
-        return [_line('Decrease', '減少', f"{_fmt_value(values, 'Decrease')}ポイント")]
-    if f == 'FORM8':
-        return [_line('Light level', '光量', _fmt_value(values, 'Light level')), _line('Duration', '持続', f"{_fmt_value(values, 'Duration')}ラウンド")]
-    if f == 'FORM9':
-        return [_line('Strength', '強度', f"{_fmt_value(values, 'Strength')}ヒットポイント"), _line('Increase', '増加', f"{_fmt_value(values, 'Increase')}ヒット", f"{_fmt_value(values, 'Levels')}レベルごと")]
-    if f == 'FORM11':
-        return [_line('Base Time', '基本時間', f"{_fmt_value(values, 'Base Time')}ラウンド"), _line('Increase', '増加', f"{_fmt_value(values, 'Increase')}ラウンド", f"{_fmt_value(values, 'per Levels')}レベルごと")]
-    if f == 'FORM13':
-        return [_line('Number', '数', _fmt_value(values, 'Number'))]
-    if f == 'FORM15':
-        return [_line('Gain', '獲得', f"{_fmt_value(values, 'Gain')}ヒットポイント"), _line('Every', '毎', f"{_fmt_value(values, 'Every')}ラウンドごと"), _line('For', '期間', f"{_fmt_value(values, 'For')}ラウンド/レベル")]
-    return [_line(k, field_label_ja(k), str(v)) for k, v in values.items()]
-
-def _html_label(label: str) -> str:
-    m = re.fullmatch('(.+?)（(.+?)）', label)
-    if not m:
-        return label
-    return f'{m.group(1)} / {m.group(2)}'
-
-def format_form_display_text(form: str, values: dict, *, cost: int | None=None, title_en: str='', title_ja: str='') -> str:
-    lines = list(format_form_display(form, values))
+def format_form_assist(form: str, values: dict, *, cost: int | None=None, title_en: str='', title_ja: str='', choice: dict | None=None) -> tuple[list[dict], str, str, str]:
+    en_lines, ja_lines = format_form_layout(form, values)
+    if not en_lines:
+        en_lines = [f'{k}: {v}' for k, v in values.items()]
+        ja_lines = [f'{field_label_ja(k)}: {v}' for k, v in values.items()]
+    en_lines = list(en_lines)
+    ja_lines = list(ja_lines)
+    row_en = list(en_lines)
+    row_ja = list(ja_lines)
+    if choice:
+        opts = list(choice.get('options') or [])
+        label_en = choice.get('label_en') or ''
+        label_ja = choice.get('label_ja') or label_en
+        for i, (opt_en, opt_ja) in enumerate(opts):
+            en_lines.append(f'{label_en}: {opt_en}' if i == 0 else opt_en)
+            ja_lines.append(f'{label_ja}: {opt_ja}' if i == 0 else opt_ja)
+        sel = choice.get('selected')
+        if isinstance(sel, int) and 0 <= sel < len(opts):
+            row_en.append(f'{label_en}: {opts[sel][0]}')
+            row_ja.append(f'{label_ja}: {opts[sel][1]}')
     if cost is not None:
-        lines.append(f'Spell Cost（呪文コスト）: {cost}')
-    rows: list[str] = []
-    for line in lines:
-        if ': ' in line:
-            label, value = line.split(': ', 1)
-        else:
-            label, value = (line, '')
-        label = _html_label(label)
-        rows.append(f'{label}: {value}' if value else label)
-    body = '\n'.join(rows)
-    title = ''
-    if title_en or title_ja:
-        if title_en and title_ja and (title_en != title_ja):
-            title = f'{title_en} {title_ja}'
-        else:
-            title = title_ja or title_en
-    if title and body:
-        return f'{title}\n{body}'
-    return title or body
-
-def _line_form1(values: dict) -> list[str]:
-    return [_line('Range', '射程', f"{_fmt_value(values, 'Range min')}〜{_fmt_value(values, 'Range max')}"), _line('Increase', '増加', f"{_fmt_value(values, 'Increase min')}〜{_fmt_value(values, 'Increase max')} / {_fmt_value(values, 'Levels')}レベルごと")]
+        en_lines.append(f'Spell Cost: {cost}')
+        ja_lines.append(f'呪文コスト: {cost}')
+        row_en.append(f'Spell Cost: {cost}')
+        row_ja.append(f'呪文コスト: {cost}')
+    rows = [{'en': e, 'ja': j} for e, j in zip(row_en, row_ja)]
+    panel_en = '\n'.join(([title_en] if title_en else []) + en_lines)
+    panel_ja = '\n'.join(([title_ja] if title_ja else []) + ja_lines)
+    if title_en and title_ja and (title_en != title_ja):
+        tab_title = f'{title_en} {title_ja}'
+    else:
+        tab_title = title_ja or title_en
+    return (rows, panel_en, panel_ja, tab_title)
 
 def _effect_details(analyzer, anchor: int) -> list[dict]:
     try:
@@ -197,4 +158,4 @@ def resolve_effect_title_from_record(analyzer, anchor: int, form: str='') -> str
         if effect and effect != '(none)':
             return effect
     return ''
-__all__ = ['SPELLDATA_OFFSET', 'EFFECT_TO_FORM', 'FORM_FIELDS', 'FORM_ALIASES', 'resolve_form', 'read_form_values', 'all_form_labels', 'format_form_layout', 'format_form_display', 'format_form_display_text', 'FORM_LAYOUT_EN', 'FORM_LAYOUT_JA', 'resolve_edit_slot', 'resolve_effect_title_from_record']
+__all__ = ['SPELLDATA_OFFSET', 'EFFECT_TO_FORM', 'FORM_FIELDS', 'FORM_ALIASES', 'resolve_form', 'read_form_values', 'all_form_labels', 'format_form_layout', 'format_form_assist', 'FORM_LAYOUT_EN', 'FORM_LAYOUT_JA', 'resolve_edit_slot', 'resolve_effect_title_from_record']

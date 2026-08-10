@@ -603,6 +603,14 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
         display_mif_name = field_mif
         interior_facility_name = field_name
         effective_in_interior = True
+    _cur_location = gs.get('MapName') or ''
+    _prev_location = getattr(w, '_interior_location_name', '')
+    if _cur_location and _prev_location and (_cur_location != _prev_location):
+        if getattr(w, '_interior_mif_name', None):
+            _log.info('interior facility memory dropped: location %r -> %r', _prev_location, _cur_location)
+        w._interior_mif_name = None
+        w._interior_facility_name = None
+        w._entry_door_pos = None
     if effective_in_interior and (not field_active):
         if interior_facility_name is None:
             interior_facility_name = getattr(w, '_interior_facility_name', None)
@@ -612,6 +620,8 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
                 display_mif_name = interior_mif_name
     w._interior_mif_name = interior_mif_name
     w._interior_facility_name = interior_facility_name
+    if _cur_location:
+        w._interior_location_name = _cur_location
     if interior_facility_name:
         w._log_location_hint = interior_facility_name
     else:

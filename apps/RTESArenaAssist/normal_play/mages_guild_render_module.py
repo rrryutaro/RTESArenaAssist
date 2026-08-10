@@ -272,13 +272,17 @@ def _render_spellmaker(w, sig: dict, form_img: str='') -> bool:
     if not form_img:
         return _render_spellmaker_detail(w)
     try:
-        tab_en, tab_ja, panel_en, panel_ja = _spellmaker_display(w, sig, form_img)
+        rows, panel_en, panel_ja, tab_title = _spellmaker_form_display(w, form_img)
+    except Exception:
+        _log.exception('mages_spellmaker form display failed')
+        return _render_spellmaker_detail(w)
+    try:
         owner_taken = w._panel_owner != SPELLMAKER_OWNER
-        key_now = ('spellmaker', tab_en)
+        key_now = ('spellmaker_form', panel_en, tuple(((r.get('en', ''), r.get('ja', '')) for r in rows)))
         if key_now != getattr(w, _SPELL_KEY, None) or owner_taken:
             setattr(w, _SPELL_KEY, key_now)
-            w._ui_router.update_translation(SPELLMAKER_OWNER, tab_en, tab_ja, panel_en=panel_en, panel_ja=panel_ja)
-            _log.info('mages_spellmaker update: %r', tab_en[:60])
+            w._ui_router.update_facility_list(SPELLMAKER_OWNER, rows, panel_en, panel_ja, list_title_ja=tab_title, priority=90, reason='mages_form')
+            _log.info('mages_spellmaker form update: %r', panel_en[:60])
     except Exception:
         _log.exception('mages_spellmaker update failed')
     return True
@@ -325,44 +329,45 @@ def _render_spellmaker_detail(w, *, panel_en: str='', panel_ja: str='', reason: 
         _log.exception('mages_spellmaker detail update failed')
     return True
 
-def _spellmaker_display(w, sig: dict, form_img: str='') -> tuple[str, str, str, str]:
-    if form_img:
+def _spellmaker_form_display(w, form_img: str) -> tuple[list[dict], str, str, str]:
+    from mages_spellmaker import FORM_CHOICES, read_form_values, format_form_assist, resolve_edit_slot, resolve_effect_title_from_record
+    form = form_img[:-4] if form_img.endswith('.IMG') else form_img
+    title = _read_effect_title(w)
+    if not title:
+        title = resolve_effect_title_from_record(w._analyzer, w._anchor, form)
+    title_en = title or ''
+    title_ja = ''
+    if title:
         try:
-            from mages_spellmaker import read_form_values, field_label_ja, format_form_layout, format_form_display_text, resolve_edit_slot, resolve_effect_title_from_record
-            form = form_img[:-4] if form_img.endswith('.IMG') else form_img
-            title = _read_effect_title(w)
-            if not title:
-                title = resolve_effect_title_from_record(w._analyzer, w._anchor, form)
-            head_en = title or 'Spell Effect'
-            if title:
-                try:
-                    from mages_list_reader import translate_name
-                    head_ja = translate_name(title)
-                except Exception:
-                    head_ja = _translate_ui(title)
-            else:
-                head_ja = '呪文効果'
-            slot = resolve_edit_slot(w._analyzer, w._anchor, title)
-            vals = read_form_values(w._analyzer, w._anchor, form, slot=slot)
-            en_lines, ja_only_lines = format_form_layout(form, vals)
-            cost = _read_cost_string(w)
-            if not en_lines:
-                en_lines = [f'{k}: {v}' for k, v in vals.items()]
-                ja_only_lines = [f'{k} / {field_label_ja(k)}: {v}' for k, v in vals.items()]
-            if cost is not None:
-                en_lines = list(en_lines) + [f'Spell Cost: {cost}']
-            tab_en = head_en + ('\n' + '\n'.join(en_lines) if en_lines else '')
-            if ja_only_lines or cost is not None:
-                tab_ja = format_form_display_text(form, vals, cost=cost, title_en=head_en, title_ja=head_ja)
-            else:
-                head_display_ja = f'{head_en} {head_ja}' if head_en and head_ja and (head_en != head_ja) else head_ja or head_en
-                tab_ja = head_display_ja
-            return (tab_en, tab_ja, head_en, head_ja)
+            from mages_list_reader import translate_name
+            title_ja = translate_name(title)
         except Exception:
-            _log.exception('spellmaker form read failed')
-    en = 'Spellmaker (New Spell / Buy Spell / Exit)'
-    ja = '呪文作成 (新規呪文 / 呪文購入 / 終了)'
-    return (en, ja, en, ja)
+            title_ja = _translate_ui(title)
+    slot = resolve_edit_slot(w._analyzer, w._anchor, title)
+    vals = read_form_values(w._analyzer, w._anchor, form, slot=slot)
+    cost = _read_cost_string(w)
+    choice = _resolve_form_choice(w, FORM_CHOICES.get(form))
+    return format_form_assist(form, vals, cost=cost, title_en=title_en, title_ja=title_ja, choice=choice)
+
+def _resolve_form_choice(w, spec: dict | None) -> dict | None:
+    if not spec:
+        return None
+    from spell_reader import read_spell_choice_index
+    options = [(o.get('en', ''), _term(o)) for o in spec.get('options', [])]
+    if not options:
+        return None
+    label = spec.get('label', {})
+    return {'label_en': label.get('en', ''), 'label_ja': _term(label), 'options': options, 'selected': read_spell_choice_index(w._analyzer, w._anchor)}
+
+def _term(entry: dict) -> str:
+    en = entry.get('en', '') if entry else ''
+    key = entry.get('id', '') if entry else ''
+    if not key:
+        return en
+    try:
+        return i18n.text_opt(key) or en
+    except Exception:
+        return en
 
 def _render_spellmaker_prompt_overlay(w, sig: dict) -> bool:
     info = _resolve_spellmaker_prompt(w, sig)

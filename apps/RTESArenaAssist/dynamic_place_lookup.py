@@ -211,12 +211,18 @@ def detect_category(en_text: str) -> str | None:
         if text.endswith(' ' + sfx) or text == sfx:
             return 'equipment_store'
     return 'tavern'
+_EN_ARTICLE_RE = re.compile('^the\\s+', re.IGNORECASE)
 
-def lookup(en_text: str, category: str | None=None) -> str:
-    _load()
+def surface_candidates(en_text: str) -> list[str]:
     text = (en_text or '').strip()
     if not text:
-        return ''
+        return []
+    without_article = _EN_ARTICLE_RE.sub('', text, count=1).strip()
+    if without_article and without_article != text:
+        return [text, without_article]
+    return [text]
+
+def _lookup_surface(text: str, category: str | None) -> str:
     cat = category or detect_category(text)
     if cat == 'tavern':
         return _lookup_tavern(text)
@@ -227,4 +233,12 @@ def lookup(en_text: str, category: str | None=None) -> str:
     if cat == 'mages_guild':
         return _lookup_mages_guild(text)
     _log.debug('dynamic_place_unmatched: category=%r en=%r (unknown category)', cat, text)
+    return ''
+
+def lookup(en_text: str, category: str | None=None) -> str:
+    _load()
+    for surface in surface_candidates(en_text):
+        result = _lookup_surface(surface, category)
+        if result:
+            return result
     return ''

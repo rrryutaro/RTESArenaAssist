@@ -1,7 +1,7 @@
 {
   "schema": "rtesaa.source_id_map",
   "schema_version": 2,
-  "registry_hash": "sha256:338b8f13a0edbf08070002e13e45ba4f07c809d4f83f03af5e29f62564052519",
+  "registry_hash": "sha256:6c0dae0a8ae3b9d3983e99052da421d1465cc63970ed3387966fcd8ad52ed9f3",
   "map": {
     "aexe:akey:A001.0": [
       111871
@@ -7037,6 +7037,9 @@
     "spellsg65:standard:1": [
       107104
     ],
+    "spellsg65:standard:10": [
+      107148
+    ],
     "spellsg65:standard:11": [
       107116
     ],
@@ -7058,20 +7061,47 @@
     "spellsg65:standard:19": [
       107123
     ],
+    "spellsg65:standard:20": [
+      107149
+    ],
     "spellsg65:standard:21": [
       107031
+    ],
+    "spellsg65:standard:22": [
+      107133
     ],
     "spellsg65:standard:23": [
       107103
     ],
+    "spellsg65:standard:25": [
+      107135
+    ],
     "spellsg65:standard:26": [
       107066
+    ],
+    "spellsg65:standard:27": [
+      107134
+    ],
+    "spellsg65:standard:28": [
+      107138
+    ],
+    "spellsg65:standard:29": [
+      107141
     ],
     "spellsg65:standard:3": [
       107121
     ],
+    "spellsg65:standard:30": [
+      107147
+    ],
+    "spellsg65:standard:32": [
+      107131
+    ],
     "spellsg65:standard:33": [
       107063
+    ],
+    "spellsg65:standard:34": [
+      107140
     ],
     "spellsg65:standard:35": [
       107053
@@ -7082,11 +7112,32 @@
     "spellsg65:standard:37": [
       107058
     ],
+    "spellsg65:standard:38": [
+      107143
+    ],
+    "spellsg65:standard:39": [
+      107136
+    ],
     "spellsg65:standard:4": [
       107124
     ],
+    "spellsg65:standard:40": [
+      107146
+    ],
     "spellsg65:standard:41": [
       107119
+    ],
+    "spellsg65:standard:42": [
+      107139
+    ],
+    "spellsg65:standard:43": [
+      107145
+    ],
+    "spellsg65:standard:44": [
+      107144
+    ],
+    "spellsg65:standard:45": [
+      107142
     ],
     "spellsg65:standard:5": [
       107080
@@ -7099,6 +7150,12 @@
     ],
     "spellsg65:standard:60": [
       107028
+    ],
+    "spellsg65:standard:61": [
+      107132
+    ],
+    "spellsg65:standard:62": [
+      107137
     ],
     "template:0000_a:0:0": [
       118000

@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:338b8f13a0edbf08070002e13e45ba4f07c809d4f83f03af5e29f62564052519",
+  "registry_hash": "sha256:6c0dae0a8ae3b9d3983e99052da421d1465cc63970ed3387966fcd8ad52ed9f3",
   "categories": [
     {
       "category": "assist_ui",
@@ -3651,6 +3651,26 @@
           "id": 900727,
           "kind": "label",
           "debug_name": "manual.guide.answer_item"
+        },
+        {
+          "id": 900728,
+          "kind": "label",
+          "debug_name": "spellmaker.form_label_type"
+        },
+        {
+          "id": 900729,
+          "kind": "label",
+          "debug_name": "spellbook.header_original"
+        },
+        {
+          "id": 900730,
+          "kind": "label",
+          "debug_name": "spellbook.header_translation"
+        },
+        {
+          "id": 900731,
+          "kind": "label",
+          "debug_name": "spellbook.list_title"
         }
       ]
     },
@@ -6236,6 +6256,26 @@
           "id": 903073,
           "kind": "label",
           "debug_name": "glossary.staff_of_chaos.0"
+        },
+        {
+          "id": 903074,
+          "kind": "label",
+          "debug_name": "glossary.artifact_ebony_mail.0"
+        },
+        {
+          "id": 903075,
+          "kind": "label",
+          "debug_name": "glossary.artifact_ring_of_khajiit.0"
+        },
+        {
+          "id": 903076,
+          "kind": "label",
+          "debug_name": "glossary.artifact_ring_of_phynaster.0"
+        },
+        {
+          "id": 903077,
+          "kind": "label",
+          "debug_name": "glossary.artifact_staff_of_magnus.0"
         }
       ]
     },
@@ -15773,6 +15813,139 @@
           "kind": "label",
           "source": {
             "source_id": "aexe:mages:effect_types:14"
+          }
+        },
+        {
+          "id": 107131,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:32"
+          }
+        },
+        {
+          "id": 107132,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:61"
+          }
+        },
+        {
+          "id": 107133,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:22"
+          }
+        },
+        {
+          "id": 107134,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:27"
+          }
+        },
+        {
+          "id": 107135,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:25"
+          }
+        },
+        {
+          "id": 107136,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:39"
+          }
+        },
+        {
+          "id": 107137,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:62"
+          }
+        },
+        {
+          "id": 107138,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:28"
+          }
+        },
+        {
+          "id": 107139,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:42"
+          }
+        },
+        {
+          "id": 107140,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:34"
+          }
+        },
+        {
+          "id": 107141,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:29"
+          }
+        },
+        {
+          "id": 107142,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:45"
+          }
+        },
+        {
+          "id": 107143,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:38"
+          }
+        },
+        {
+          "id": 107144,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:44"
+          }
+        },
+        {
+          "id": 107145,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:43"
+          }
+        },
+        {
+          "id": 107146,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:40"
+          }
+        },
+        {
+          "id": 107147,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:30"
+          }
+        },
+        {
+          "id": 107148,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:10"
+          }
+        },
+        {
+          "id": 107149,
+          "kind": "label",
+          "source": {
+            "source_id": "spellsg65:standard:20"
           }
         }
       ]
@@ -41020,224 +41193,7 @@
         117000,
         117999
       ],
-      "entries": [
-        {
-          "id": 117000,
-          "kind": "label"
-        },
-        {
-          "id": 117001,
-          "kind": "label"
-        },
-        {
-          "id": 117002,
-          "kind": "label"
-        },
-        {
-          "id": 117003,
-          "kind": "label"
-        },
-        {
-          "id": 117004,
-          "kind": "label"
-        },
-        {
-          "id": 117005,
-          "kind": "label"
-        },
-        {
-          "id": 117006,
-          "kind": "label"
-        },
-        {
-          "id": 117007,
-          "kind": "label"
-        },
-        {
-          "id": 117008,
-          "kind": "label"
-        },
-        {
-          "id": 117009,
-          "kind": "label"
-        },
-        {
-          "id": 117010,
-          "kind": "label"
-        },
-        {
-          "id": 117011,
-          "kind": "label"
-        },
-        {
-          "id": 117012,
-          "kind": "label"
-        },
-        {
-          "id": 117013,
-          "kind": "label"
-        },
-        {
-          "id": 117014,
-          "kind": "label"
-        },
-        {
-          "id": 117015,
-          "kind": "label"
-        },
-        {
-          "id": 117016,
-          "kind": "label"
-        },
-        {
-          "id": 117017,
-          "kind": "label"
-        },
-        {
-          "id": 117018,
-          "kind": "label"
-        },
-        {
-          "id": 117019,
-          "kind": "label"
-        },
-        {
-          "id": 117020,
-          "kind": "label"
-        },
-        {
-          "id": 117021,
-          "kind": "label"
-        },
-        {
-          "id": 117022,
-          "kind": "label"
-        },
-        {
-          "id": 117023,
-          "kind": "label"
-        },
-        {
-          "id": 117024,
-          "kind": "label"
-        },
-        {
-          "id": 117025,
-          "kind": "label"
-        },
-        {
-          "id": 117026,
-          "kind": "label"
-        },
-        {
-          "id": 117027,
-          "kind": "label"
-        },
-        {
-          "id": 117028,
-          "kind": "label"
-        },
-        {
-          "id": 117029,
-          "kind": "label"
-        },
-        {
-          "id": 117030,
-          "kind": "label"
-        },
-        {
-          "id": 117031,
-          "kind": "label"
-        },
-        {
-          "id": 117032,
-          "kind": "label"
-        },
-        {
-          "id": 117033,
-          "kind": "label"
-        },
-        {
-          "id": 117034,
-          "kind": "label"
-        },
-        {
-          "id": 117035,
-          "kind": "label"
-        },
-        {
-          "id": 117036,
-          "kind": "label"
-        },
-        {
-          "id": 117037,
-          "kind": "label"
-        },
-        {
-          "id": 117038,
-          "kind": "label"
-        },
-        {
-          "id": 117039,
-          "kind": "label"
-        },
-        {
-          "id": 117040,
-          "kind": "label"
-        },
-        {
-          "id": 117041,
-          "kind": "label"
-        },
-        {
-          "id": 117042,
-          "kind": "label"
-        },
-        {
-          "id": 117043,
-          "kind": "label"
-        },
-        {
-          "id": 117044,
-          "kind": "label"
-        },
-        {
-          "id": 117045,
-          "kind": "label"
-        },
-        {
-          "id": 117046,
-          "kind": "label"
-        },
-        {
-          "id": 117047,
-          "kind": "label"
-        },
-        {
-          "id": 117048,
-          "kind": "label"
-        },
-        {
-          "id": 117049,
-          "kind": "label"
-        },
-        {
-          "id": 117050,
-          "kind": "label"
-        },
-        {
-          "id": 117051,
-          "kind": "label"
-        },
-        {
-          "id": 117052,
-          "kind": "label"
-        },
-        {
-          "id": 117053,
-          "kind": "label"
-        }
-      ]
+      "entries": []
     },
     {
       "category": "spells",
@@ -49669,6 +49625,22 @@
           "text": "• {answer}"
         },
         {
+          "id": 900728,
+          "text": "Type"
+        },
+        {
+          "id": 900729,
+          "text": "Original"
+        },
+        {
+          "id": 900730,
+          "text": "Translation"
+        },
+        {
+          "id": 900731,
+          "text": "Known Spells"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -50035,6 +50007,22 @@
         {
           "id": 903073,
           "text": "Staff of Chaos"
+        },
+        {
+          "id": 903074,
+          "text": "Ebony Mail"
+        },
+        {
+          "id": 903075,
+          "text": "Ring of Khajiit"
+        },
+        {
+          "id": 903076,
+          "text": "Ring of Phynaster"
+        },
+        {
+          "id": 903077,
+          "text": "Staff of Magnus"
         }
       ]
     },
@@ -53431,7 +53419,7 @@
         },
         {
           "id": 107012,
-          "text": "病気付与"
+          "text": "コーズディジーズ"
         },
         {
           "id": 107014,
@@ -53491,7 +53479,7 @@
         },
         {
           "id": 107028,
-          "text": "病気治療"
+          "text": "キュアディジーズ"
         },
         {
           "id": 107030,
@@ -53499,7 +53487,7 @@
         },
         {
           "id": 107031,
-          "text": "解毒"
+          "text": "キュアポイズン"
         },
         {
           "id": 107032,
@@ -53591,11 +53579,11 @@
         },
         {
           "id": 107058,
-          "text": "行動自由"
+          "text": "フリーアクション"
         },
         {
           "id": 107059,
-          "text": "治癒"
+          "text": "ヒール"
         },
         {
           "id": 107060,
@@ -53611,7 +53599,7 @@
         },
         {
           "id": 107063,
-          "text": "完全治癒"
+          "text": "ヒールトゥルー"
         },
         {
           "id": 107064,
@@ -53631,15 +53619,15 @@
         },
         {
           "id": 107068,
-          "text": "透明化"
+          "text": "インビジビリティ"
         },
         {
           "id": 107069,
-          "text": "浮遊"
+          "text": "レビテート"
         },
         {
           "id": 107070,
-          "text": "光"
+          "text": "ライト"
         },
         {
           "id": 107071,
@@ -53675,11 +53663,11 @@
         },
         {
           "id": 107079,
-          "text": "開錠"
+          "text": "オープン"
         },
         {
           "id": 107080,
-          "text": "オークの剛力"
+          "text": "オークストレングス"
         },
         {
           "id": 107081,
@@ -53759,15 +53747,15 @@
         },
         {
           "id": 107101,
-          "text": "冷気耐性"
+          "text": "レジストコールド"
         },
         {
           "id": 107102,
-          "text": "火炎耐性"
+          "text": "レジストファイア"
         },
         {
           "id": 107103,
-          "text": "電撃耐性"
+          "text": "レジストショック"
         },
         {
           "id": 107104,
@@ -53779,11 +53767,11 @@
         },
         {
           "id": 107106,
-          "text": "電撃"
+          "text": "ショック"
         },
         {
           "id": 107107,
-          "text": "沈黙"
+          "text": "サイレンス"
         },
         {
           "id": 107108,
@@ -53819,7 +53807,7 @@
         },
         {
           "id": 107116,
-          "text": "筋力吸収"
+          "text": "ストレングスリーチ"
         },
         {
           "id": 107117,
@@ -53831,7 +53819,7 @@
         },
         {
           "id": 107119,
-          "text": "トロルの血"
+          "text": "トロルブラッド"
         },
         {
           "id": 107120,
@@ -53847,11 +53835,11 @@
         },
         {
           "id": 107123,
-          "text": "魔女の呪い"
+          "text": "ウィッチカース"
         },
         {
           "id": 107124,
-          "text": "魔法錠"
+          "text": "ウィザードロック"
         },
         {
           "id": 107125,
@@ -53872,6 +53860,82 @@
         {
           "id": 107129,
           "text": "投獄"
+        },
+        {
+          "id": 107131,
+          "text": "ファーサイレンス"
+        },
+        {
+          "id": 107132,
+          "text": "ファイアダート"
+        },
+        {
+          "id": 107133,
+          "text": "フォースボルト"
+        },
+        {
+          "id": 107134,
+          "text": "フォースウォール"
+        },
+        {
+          "id": 107135,
+          "text": "ゴッズファイア"
+        },
+        {
+          "id": 107136,
+          "text": "ライフスティール"
+        },
+        {
+          "id": 107137,
+          "text": "ライトヒール"
+        },
+        {
+          "id": 107138,
+          "text": "ライトニング"
+        },
+        {
+          "id": 107139,
+          "text": "メドゥーサゲイズ"
+        },
+        {
+          "id": 107140,
+          "text": "パスウォール"
+        },
+        {
+          "id": 107141,
+          "text": "ピットフォールズ"
+        },
+        {
+          "id": 107142,
+          "text": "ピュリファイ"
+        },
+        {
+          "id": 107143,
+          "text": "レジストポイズン"
+        },
+        {
+          "id": 107144,
+          "text": "シャリドールミラー"
+        },
+        {
+          "id": 107145,
+          "text": "スペルドレイン"
+        },
+        {
+          "id": 107146,
+          "text": "トキシッククラウド"
+        },
+        {
+          "id": 107147,
+          "text": "ワイルドファイア"
+        },
+        {
+          "id": 107148,
+          "text": "ウィザードレンド"
+        },
+        {
+          "id": 107149,
+          "text": "ワイバーンスティング"
         },
         {
           "id": 108000,
@@ -66170,222 +66234,6 @@
           "text": "セン"
         },
         {
-          "id": 117000,
-          "text": "ファイアダート"
-        },
-        {
-          "id": 117001,
-          "text": "ファイアボール"
-        },
-        {
-          "id": 117002,
-          "text": "ライトニングボルト"
-        },
-        {
-          "id": 117003,
-          "text": "サンダー"
-        },
-        {
-          "id": 117004,
-          "text": "エネルギーバースト"
-        },
-        {
-          "id": 117005,
-          "text": "ブラインディングフラッシュ"
-        },
-        {
-          "id": 117006,
-          "text": "スタン"
-        },
-        {
-          "id": 117007,
-          "text": "スリープ"
-        },
-        {
-          "id": 117008,
-          "text": "サイレンス"
-        },
-        {
-          "id": 117009,
-          "text": "パラライズ"
-        },
-        {
-          "id": 117010,
-          "text": "ディスインテグレート"
-        },
-        {
-          "id": 117011,
-          "text": "フォースボルト"
-        },
-        {
-          "id": 117012,
-          "text": "フレイムス"
-        },
-        {
-          "id": 117013,
-          "text": "ライトヒール"
-        },
-        {
-          "id": 117014,
-          "text": "ヒール"
-        },
-        {
-          "id": 117015,
-          "text": "グレートヒール"
-        },
-        {
-          "id": 117016,
-          "text": "エクストラヒーリング"
-        },
-        {
-          "id": 117017,
-          "text": "解毒"
-        },
-        {
-          "id": 117018,
-          "text": "病気治癒"
-        },
-        {
-          "id": 117019,
-          "text": "フリーアクション"
-        },
-        {
-          "id": 117020,
-          "text": "健康回復"
-        },
-        {
-          "id": 117021,
-          "text": "シールド"
-        },
-        {
-          "id": 117022,
-          "text": "アンデッド除け"
-        },
-        {
-          "id": 117023,
-          "text": "ファイアストーム"
-        },
-        {
-          "id": 117024,
-          "text": "スペル反射"
-        },
-        {
-          "id": 117025,
-          "text": "スペル吸収"
-        },
-        {
-          "id": 117026,
-          "text": "耐火"
-        },
-        {
-          "id": 117027,
-          "text": "耐冷"
-        },
-        {
-          "id": 117028,
-          "text": "耐雷"
-        },
-        {
-          "id": 117029,
-          "text": "耐魔法"
-        },
-        {
-          "id": 117030,
-          "text": "インビジビリティ"
-        },
-        {
-          "id": 117031,
-          "text": "カメレオン"
-        },
-        {
-          "id": 117032,
-          "text": "レビテート"
-        },
-        {
-          "id": 117033,
-          "text": "リコール"
-        },
-        {
-          "id": 117034,
-          "text": "チルタッチ"
-        },
-        {
-          "id": 117035,
-          "text": "パスウォール"
-        },
-        {
-          "id": 117036,
-          "text": "オープン"
-        },
-        {
-          "id": 117037,
-          "text": "ジャンプ"
-        },
-        {
-          "id": 117038,
-          "text": "テレポート"
-        },
-        {
-          "id": 117039,
-          "text": "水上歩行"
-        },
-        {
-          "id": 117040,
-          "text": "水中呼吸"
-        },
-        {
-          "id": 117041,
-          "text": "ライト"
-        },
-        {
-          "id": 117042,
-          "text": "マジック検知"
-        },
-        {
-          "id": 117043,
-          "text": "モンスター検知"
-        },
-        {
-          "id": 117044,
-          "text": "トラップ検知"
-        },
-        {
-          "id": 117045,
-          "text": "アイスボルト"
-        },
-        {
-          "id": 117046,
-          "text": "ディスペルマジック"
-        },
-        {
-          "id": 117047,
-          "text": "食料生成"
-        },
-        {
-          "id": 117048,
-          "text": "ウィザードロック"
-        },
-        {
-          "id": 117049,
-          "text": "チャーム"
-        },
-        {
-          "id": 117050,
-          "text": "アイスストーム"
-        },
-        {
-          "id": 117051,
-          "text": "フロストバイト"
-        },
-        {
-          "id": 117052,
-          "text": "ショック"
-        },
-        {
-          "id": 117053,
-          "text": "スパーク"
-        },
-        {
           "id": 118000,
           "text": "%tの謁見室に足を踏み入れると、部屋を飾る立派な装飾品や家具が目に留まる。涼しいそよ風が室内を渡り、汗を乾かして夏の暑さからの心地よい解放感をもたらす。つかの間の休息を味わう。前方には%cnの%tである%rfが待っている。%cnが現在、隣国%cn2と%stの状態にあることはよく知られている。"
         },
@@ -77430,6 +77278,22 @@
           "text": "・{answer}"
         },
         {
+          "id": 900728,
+          "text": "種別"
+        },
+        {
+          "id": 900729,
+          "text": "原文名"
+        },
+        {
+          "id": 900730,
+          "text": "翻訳名"
+        },
+        {
+          "id": 900731,
+          "text": "習得呪文一覧"
+        },
+        {
           "id": 902000,
           "text": "メイジ"
         },
@@ -77796,6 +77660,22 @@
         {
           "id": 903073,
           "text": "混沌の杖"
+        },
+        {
+          "id": 903074,
+          "text": "エボニーメイル"
+        },
+        {
+          "id": 903075,
+          "text": "カジートのリング"
+        },
+        {
+          "id": 903076,
+          "text": "フィナスターのリング"
+        },
+        {
+          "id": 903077,
+          "text": "マグナスの杖"
         }
       ]
     },
@@ -81933,6 +81813,82 @@
         {
           "id": 107129,
           "text": "Encarcelar"
+        },
+        {
+          "id": 107131,
+          "text": "Silencio a distancia"
+        },
+        {
+          "id": 107132,
+          "text": "Dardo de fuego"
+        },
+        {
+          "id": 107133,
+          "text": "Rayo de fuerza"
+        },
+        {
+          "id": 107134,
+          "text": "Muro de fuerza"
+        },
+        {
+          "id": 107135,
+          "text": "Fuego de los dioses"
+        },
+        {
+          "id": 107136,
+          "text": "Robo de vida"
+        },
+        {
+          "id": 107137,
+          "text": "Curación leve"
+        },
+        {
+          "id": 107138,
+          "text": "Relámpago"
+        },
+        {
+          "id": 107139,
+          "text": "Mirada de Medusa"
+        },
+        {
+          "id": 107140,
+          "text": "Paso de pared"
+        },
+        {
+          "id": 107141,
+          "text": "Trampas de caída"
+        },
+        {
+          "id": 107142,
+          "text": "Purificar"
+        },
+        {
+          "id": 107143,
+          "text": "Resistencia al veneno"
+        },
+        {
+          "id": 107144,
+          "text": "Espejo de Shalidor"
+        },
+        {
+          "id": 107145,
+          "text": "Drenaje de hechizos"
+        },
+        {
+          "id": 107146,
+          "text": "Nube tóxica"
+        },
+        {
+          "id": 107147,
+          "text": "Fuego salvaje"
+        },
+        {
+          "id": 107148,
+          "text": "Desgarro del mago"
+        },
+        {
+          "id": 107149,
+          "text": "Aguijón de guiverno"
         },
         {
           "id": 108000,
@@ -94603,222 +94559,6 @@
           "text": "sen"
         },
         {
-          "id": 117000,
-          "text": "Dardo de fuego"
-        },
-        {
-          "id": 117001,
-          "text": "Bola de fuego"
-        },
-        {
-          "id": 117002,
-          "text": "Rayo relámpago"
-        },
-        {
-          "id": 117003,
-          "text": "Trueno"
-        },
-        {
-          "id": 117004,
-          "text": "Estallido de energía"
-        },
-        {
-          "id": 117005,
-          "text": "Destello cegador"
-        },
-        {
-          "id": 117006,
-          "text": "Aturdir"
-        },
-        {
-          "id": 117007,
-          "text": "Dormir"
-        },
-        {
-          "id": 117008,
-          "text": "Silencio"
-        },
-        {
-          "id": 117009,
-          "text": "Paralizar"
-        },
-        {
-          "id": 117010,
-          "text": "Desintegrar"
-        },
-        {
-          "id": 117011,
-          "text": "Rayo de fuerza"
-        },
-        {
-          "id": 117012,
-          "text": "Llamas"
-        },
-        {
-          "id": 117013,
-          "text": "Curación leve"
-        },
-        {
-          "id": 117014,
-          "text": "Curar"
-        },
-        {
-          "id": 117015,
-          "text": "Gran curación"
-        },
-        {
-          "id": 117016,
-          "text": "Curación extra"
-        },
-        {
-          "id": 117017,
-          "text": "Curar veneno"
-        },
-        {
-          "id": 117018,
-          "text": "Curar enfermedad"
-        },
-        {
-          "id": 117019,
-          "text": "Acción libre"
-        },
-        {
-          "id": 117020,
-          "text": "Restaurar salud"
-        },
-        {
-          "id": 117021,
-          "text": "Escudo"
-        },
-        {
-          "id": 117022,
-          "text": "Repeler no-muertos"
-        },
-        {
-          "id": 117023,
-          "text": "Tormenta de fuego"
-        },
-        {
-          "id": 117024,
-          "text": "Reflejo de hechizos"
-        },
-        {
-          "id": 117025,
-          "text": "Absorción de hechizos"
-        },
-        {
-          "id": 117026,
-          "text": "Resistencia al fuego"
-        },
-        {
-          "id": 117027,
-          "text": "Resistencia al frío"
-        },
-        {
-          "id": 117028,
-          "text": "Resistencia al rayo"
-        },
-        {
-          "id": 117029,
-          "text": "Resistencia a la magia"
-        },
-        {
-          "id": 117030,
-          "text": "Invisibilidad"
-        },
-        {
-          "id": 117031,
-          "text": "Camaleón"
-        },
-        {
-          "id": 117032,
-          "text": "Levitar"
-        },
-        {
-          "id": 117033,
-          "text": "Llamar de regreso"
-        },
-        {
-          "id": 117034,
-          "text": "Toque helado"
-        },
-        {
-          "id": 117035,
-          "text": "Paso de pared"
-        },
-        {
-          "id": 117036,
-          "text": "Abrir"
-        },
-        {
-          "id": 117037,
-          "text": "Saltar"
-        },
-        {
-          "id": 117038,
-          "text": "Teleportar"
-        },
-        {
-          "id": 117039,
-          "text": "Caminar sobre agua"
-        },
-        {
-          "id": 117040,
-          "text": "Respiración acuática"
-        },
-        {
-          "id": 117041,
-          "text": "Luz"
-        },
-        {
-          "id": 117042,
-          "text": "Detectar magia"
-        },
-        {
-          "id": 117043,
-          "text": "Detectar monstruos"
-        },
-        {
-          "id": 117044,
-          "text": "Detectar trampas"
-        },
-        {
-          "id": 117045,
-          "text": "Rayo de hielo"
-        },
-        {
-          "id": 117046,
-          "text": "Disipar magia"
-        },
-        {
-          "id": 117047,
-          "text": "Crear comida"
-        },
-        {
-          "id": 117048,
-          "text": "Cerradura de mago"
-        },
-        {
-          "id": 117049,
-          "text": "Encantar"
-        },
-        {
-          "id": 117050,
-          "text": "Tormenta de hielo"
-        },
-        {
-          "id": 117051,
-          "text": "Mordisco de escarcha"
-        },
-        {
-          "id": 117052,
-          "text": "Rayo"
-        },
-        {
-          "id": 117053,
-          "text": "Chispa"
-        },
-        {
           "id": 118000,
           "text": "Entras a la sala de audiencias del %t, notando los finos adornos y muebles que decoran el lugar. Una fresca brisa se desplaza por la zona, secando el sudor de tu cuerpo y trayendo un suspiro de bienvenida a tus labios. Disfrutas del breve respiro. Ante ti espera %rf, %t de %cn. Es bien sabido que %cn está actualmente en %st con su vecina, %cn2."
         },
@@ -105999,6 +105739,22 @@
           "text": "• {answer}"
         },
         {
+          "id": 900728,
+          "text": "Tipo"
+        },
+        {
+          "id": 900729,
+          "text": "Original"
+        },
+        {
+          "id": 900730,
+          "text": "Traducción"
+        },
+        {
+          "id": 900731,
+          "text": "Hechizos conocidos"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -106365,6 +106121,22 @@
         {
           "id": 903073,
           "text": "Bastón del Caos"
+        },
+        {
+          "id": 903074,
+          "text": "Cota de ébano"
+        },
+        {
+          "id": 903075,
+          "text": "Anillo del Khajiit"
+        },
+        {
+          "id": 903076,
+          "text": "Anillo de Phynaster"
+        },
+        {
+          "id": 903077,
+          "text": "Bastón de Magnus"
         }
       ]
     },
@@ -110202,6 +109974,82 @@
         {
           "id": 107129,
           "text": "Einkerkern"
+        },
+        {
+          "id": 107131,
+          "text": "Fernstille"
+        },
+        {
+          "id": 107132,
+          "text": "Feuerpfeil"
+        },
+        {
+          "id": 107133,
+          "text": "Kraftstoß"
+        },
+        {
+          "id": 107134,
+          "text": "Kraftwand"
+        },
+        {
+          "id": 107135,
+          "text": "Götterfeuer"
+        },
+        {
+          "id": 107136,
+          "text": "Lebensraub"
+        },
+        {
+          "id": 107137,
+          "text": "Leichte Heilung"
+        },
+        {
+          "id": 107138,
+          "text": "Blitzschlag"
+        },
+        {
+          "id": 107139,
+          "text": "Medusenblick"
+        },
+        {
+          "id": 107140,
+          "text": "Wanddurchgang"
+        },
+        {
+          "id": 107141,
+          "text": "Fallgruben"
+        },
+        {
+          "id": 107142,
+          "text": "Reinigung"
+        },
+        {
+          "id": 107143,
+          "text": "Giftresistenz"
+        },
+        {
+          "id": 107144,
+          "text": "Shalidors Spiegel"
+        },
+        {
+          "id": 107145,
+          "text": "Zauberentzug"
+        },
+        {
+          "id": 107146,
+          "text": "Giftwolke"
+        },
+        {
+          "id": 107147,
+          "text": "Waldbrand"
+        },
+        {
+          "id": 107148,
+          "text": "Magierriss"
+        },
+        {
+          "id": 107149,
+          "text": "Wyvernstachel"
         },
         {
           "id": 108000,
@@ -122500,222 +122348,6 @@
           "text": "sen"
         },
         {
-          "id": 117000,
-          "text": "Feuerpfeil"
-        },
-        {
-          "id": 117001,
-          "text": "Feuerball"
-        },
-        {
-          "id": 117002,
-          "text": "Blitzschlag"
-        },
-        {
-          "id": 117003,
-          "text": "Donner"
-        },
-        {
-          "id": 117004,
-          "text": "Energieausbruch"
-        },
-        {
-          "id": 117005,
-          "text": "Blendender Blitz"
-        },
-        {
-          "id": 117006,
-          "text": "Betäuben"
-        },
-        {
-          "id": 117007,
-          "text": "Schlaf"
-        },
-        {
-          "id": 117008,
-          "text": "Stille"
-        },
-        {
-          "id": 117009,
-          "text": "Lähmen"
-        },
-        {
-          "id": 117010,
-          "text": "Zerfallen"
-        },
-        {
-          "id": 117011,
-          "text": "Kraftstoß"
-        },
-        {
-          "id": 117012,
-          "text": "Flammen"
-        },
-        {
-          "id": 117013,
-          "text": "Leichte Heilung"
-        },
-        {
-          "id": 117014,
-          "text": "Heilen"
-        },
-        {
-          "id": 117015,
-          "text": "Große Heilung"
-        },
-        {
-          "id": 117016,
-          "text": "Extraheilung"
-        },
-        {
-          "id": 117017,
-          "text": "Gift heilen"
-        },
-        {
-          "id": 117018,
-          "text": "Krankheit heilen"
-        },
-        {
-          "id": 117019,
-          "text": "Freie Aktion"
-        },
-        {
-          "id": 117020,
-          "text": "Gesundheit wiederherstellen"
-        },
-        {
-          "id": 117021,
-          "text": "Schild"
-        },
-        {
-          "id": 117022,
-          "text": "Untotenschutz"
-        },
-        {
-          "id": 117023,
-          "text": "Feuersturm"
-        },
-        {
-          "id": 117024,
-          "text": "Zauberreflexion"
-        },
-        {
-          "id": 117025,
-          "text": "Zauberabsorption"
-        },
-        {
-          "id": 117026,
-          "text": "Feuerresistenz"
-        },
-        {
-          "id": 117027,
-          "text": "Frostresistenz"
-        },
-        {
-          "id": 117028,
-          "text": "Schockresistenz"
-        },
-        {
-          "id": 117029,
-          "text": "Magieresistenz"
-        },
-        {
-          "id": 117030,
-          "text": "Unsichtbarkeit"
-        },
-        {
-          "id": 117031,
-          "text": "Chamäleon"
-        },
-        {
-          "id": 117032,
-          "text": "Levitation"
-        },
-        {
-          "id": 117033,
-          "text": "Rückruf"
-        },
-        {
-          "id": 117034,
-          "text": "Frostberührung"
-        },
-        {
-          "id": 117035,
-          "text": "Wanddurchgang"
-        },
-        {
-          "id": 117036,
-          "text": "Öffnen"
-        },
-        {
-          "id": 117037,
-          "text": "Sprung"
-        },
-        {
-          "id": 117038,
-          "text": "Teleportation"
-        },
-        {
-          "id": 117039,
-          "text": "Wasserwandeln"
-        },
-        {
-          "id": 117040,
-          "text": "Wasseratmung"
-        },
-        {
-          "id": 117041,
-          "text": "Licht"
-        },
-        {
-          "id": 117042,
-          "text": "Magie entdecken"
-        },
-        {
-          "id": 117043,
-          "text": "Monster entdecken"
-        },
-        {
-          "id": 117044,
-          "text": "Falle entdecken"
-        },
-        {
-          "id": 117045,
-          "text": "Eisblitz"
-        },
-        {
-          "id": 117046,
-          "text": "Magie bannen"
-        },
-        {
-          "id": 117047,
-          "text": "Nahrung erschaffen"
-        },
-        {
-          "id": 117048,
-          "text": "Zauberschloss"
-        },
-        {
-          "id": 117049,
-          "text": "Bezirzen"
-        },
-        {
-          "id": 117050,
-          "text": "Eissturm"
-        },
-        {
-          "id": 117051,
-          "text": "Frostbiss"
-        },
-        {
-          "id": 117052,
-          "text": "Schock"
-        },
-        {
-          "id": 117053,
-          "text": "Funke"
-        },
-        {
           "id": 118000,
           "text": "Du betrittst den Audienzsaal des %t und bemerkst die feine Ausstattung und die Möbel, die den Raum schmücken. Eine kühle Brise weht durch den Raum, trocknet den Schweiß auf deinem Körper und entlockt deinen Lippen einen wohltuenden Seufzer. Du genießt die kurze Verschnaufpause. Vor dir wartet %rf, %t von %cn. Es ist wohlbekannt, dass %cn sich derzeit mit seinem Nachbarn %cn2 im Zustand %st befindet."
         },
@@ -133760,6 +133392,22 @@
           "text": "• {answer}"
         },
         {
+          "id": 900728,
+          "text": "Typ"
+        },
+        {
+          "id": 900729,
+          "text": "Original"
+        },
+        {
+          "id": 900730,
+          "text": "Übersetzung"
+        },
+        {
+          "id": 900731,
+          "text": "Bekannte Zauber"
+        },
+        {
           "id": 902000,
           "text": "Magier"
         },
@@ -134126,6 +133774,22 @@
         {
           "id": 903073,
           "text": "Stab des Chaos"
+        },
+        {
+          "id": 903074,
+          "text": "Ebenerzpanzerhemd"
+        },
+        {
+          "id": 903075,
+          "text": "Ring des Khajiit"
+        },
+        {
+          "id": 903076,
+          "text": "Phynasters Ring"
+        },
+        {
+          "id": 903077,
+          "text": "Stab des Magnus"
         }
       ]
     },
@@ -137963,6 +137627,82 @@
         {
           "id": 107129,
           "text": "Emprisonner"
+        },
+        {
+          "id": 107131,
+          "text": "Silence à distance"
+        },
+        {
+          "id": 107132,
+          "text": "Fléchette de feu"
+        },
+        {
+          "id": 107133,
+          "text": "Trait de force"
+        },
+        {
+          "id": 107134,
+          "text": "Mur de force"
+        },
+        {
+          "id": 107135,
+          "text": "Feu des dieux"
+        },
+        {
+          "id": 107136,
+          "text": "Vol de vie"
+        },
+        {
+          "id": 107137,
+          "text": "Guérison légère"
+        },
+        {
+          "id": 107138,
+          "text": "Éclair"
+        },
+        {
+          "id": 107139,
+          "text": "Regard de Méduse"
+        },
+        {
+          "id": 107140,
+          "text": "Traverse-mur"
+        },
+        {
+          "id": 107141,
+          "text": "Trappes"
+        },
+        {
+          "id": 107142,
+          "text": "Purifier"
+        },
+        {
+          "id": 107143,
+          "text": "Résistance au poison"
+        },
+        {
+          "id": 107144,
+          "text": "Miroir de Shalidor"
+        },
+        {
+          "id": 107145,
+          "text": "Drain de sorts"
+        },
+        {
+          "id": 107146,
+          "text": "Nuage toxique"
+        },
+        {
+          "id": 107147,
+          "text": "Feu sauvage"
+        },
+        {
+          "id": 107148,
+          "text": "Déchirure du sorcier"
+        },
+        {
+          "id": 107149,
+          "text": "Dard de wyverne"
         },
         {
           "id": 108000,
@@ -150261,222 +150001,6 @@
           "text": "sen"
         },
         {
-          "id": 117000,
-          "text": "Fléchette de feu"
-        },
-        {
-          "id": 117001,
-          "text": "Boule de feu"
-        },
-        {
-          "id": 117002,
-          "text": "Éclair"
-        },
-        {
-          "id": 117003,
-          "text": "Tonnerre"
-        },
-        {
-          "id": 117004,
-          "text": "Explosion d'énergie"
-        },
-        {
-          "id": 117005,
-          "text": "Éclair aveuglant"
-        },
-        {
-          "id": 117006,
-          "text": "Étourdissement"
-        },
-        {
-          "id": 117007,
-          "text": "Sommeil"
-        },
-        {
-          "id": 117008,
-          "text": "Silence"
-        },
-        {
-          "id": 117009,
-          "text": "Paralysie"
-        },
-        {
-          "id": 117010,
-          "text": "Désintégration"
-        },
-        {
-          "id": 117011,
-          "text": "Trait de force"
-        },
-        {
-          "id": 117012,
-          "text": "Flammes"
-        },
-        {
-          "id": 117013,
-          "text": "Guérison légère"
-        },
-        {
-          "id": 117014,
-          "text": "Guérison"
-        },
-        {
-          "id": 117015,
-          "text": "Grande guérison"
-        },
-        {
-          "id": 117016,
-          "text": "Guérison suprême"
-        },
-        {
-          "id": 117017,
-          "text": "Guérir le poison"
-        },
-        {
-          "id": 117018,
-          "text": "Guérir la maladie"
-        },
-        {
-          "id": 117019,
-          "text": "Action libre"
-        },
-        {
-          "id": 117020,
-          "text": "Restauration de la santé"
-        },
-        {
-          "id": 117021,
-          "text": "Bouclier"
-        },
-        {
-          "id": 117022,
-          "text": "Repousser les morts-vivants"
-        },
-        {
-          "id": 117023,
-          "text": "Tempête de feu"
-        },
-        {
-          "id": 117024,
-          "text": "Réflexion des sorts"
-        },
-        {
-          "id": 117025,
-          "text": "Absorption des sorts"
-        },
-        {
-          "id": 117026,
-          "text": "Résistance au feu"
-        },
-        {
-          "id": 117027,
-          "text": "Résistance au froid"
-        },
-        {
-          "id": 117028,
-          "text": "Résistance au choc"
-        },
-        {
-          "id": 117029,
-          "text": "Résistance à la magie"
-        },
-        {
-          "id": 117030,
-          "text": "Invisibilité"
-        },
-        {
-          "id": 117031,
-          "text": "Caméléon"
-        },
-        {
-          "id": 117032,
-          "text": "Lévitation"
-        },
-        {
-          "id": 117033,
-          "text": "Rappel"
-        },
-        {
-          "id": 117034,
-          "text": "Toucher glacial"
-        },
-        {
-          "id": 117035,
-          "text": "Traverse-mur"
-        },
-        {
-          "id": 117036,
-          "text": "Ouverture"
-        },
-        {
-          "id": 117037,
-          "text": "Saut"
-        },
-        {
-          "id": 117038,
-          "text": "Téléportation"
-        },
-        {
-          "id": 117039,
-          "text": "Marche sur l'eau"
-        },
-        {
-          "id": 117040,
-          "text": "Respiration aquatique"
-        },
-        {
-          "id": 117041,
-          "text": "Lumière"
-        },
-        {
-          "id": 117042,
-          "text": "Détection de magie"
-        },
-        {
-          "id": 117043,
-          "text": "Détection de monstre"
-        },
-        {
-          "id": 117044,
-          "text": "Détection de piège"
-        },
-        {
-          "id": 117045,
-          "text": "Trait de givre"
-        },
-        {
-          "id": 117046,
-          "text": "Dissipation de la magie"
-        },
-        {
-          "id": 117047,
-          "text": "Création de nourriture"
-        },
-        {
-          "id": 117048,
-          "text": "Verrou de sorcier"
-        },
-        {
-          "id": 117049,
-          "text": "Charme"
-        },
-        {
-          "id": 117050,
-          "text": "Tempête de givre"
-        },
-        {
-          "id": 117051,
-          "text": "Morsure du givre"
-        },
-        {
-          "id": 117052,
-          "text": "Choc"
-        },
-        {
-          "id": 117053,
-          "text": "Étincelle"
-        },
-        {
           "id": 118000,
           "text": "Vous pénétrez dans la chambre d'audience du %t, remarquant les riches ornements et le mobilier qui décorent la pièce. Une brise fraîche traverse les lieux, séchant la sueur de votre corps et arrachant à vos lèvres un soupir de bienvenue. Vous savourez ce bref répit. Devant vous attend %rf, %t de %cn. Il est bien connu que %cn est actuellement en %st avec son voisin, %cn2."
         },
@@ -161521,6 +161045,22 @@
           "text": "• {answer}"
         },
         {
+          "id": 900728,
+          "text": "Type"
+        },
+        {
+          "id": 900729,
+          "text": "Original"
+        },
+        {
+          "id": 900730,
+          "text": "Traduction"
+        },
+        {
+          "id": 900731,
+          "text": "Sorts connus"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -161887,6 +161427,22 @@
         {
           "id": 903073,
           "text": "Bâton du Chaos"
+        },
+        {
+          "id": 903074,
+          "text": "Cotte d'Ébonite"
+        },
+        {
+          "id": 903075,
+          "text": "Anneau du Khajiit"
+        },
+        {
+          "id": 903076,
+          "text": "Anneau de Phynaster"
+        },
+        {
+          "id": 903077,
+          "text": "Bâton de Magnus"
         }
       ]
     },
@@ -165724,6 +165280,82 @@
         {
           "id": 107129,
           "text": "Imprigiona"
+        },
+        {
+          "id": 107131,
+          "text": "Silenzio a distanza"
+        },
+        {
+          "id": 107132,
+          "text": "Dardo di fuoco"
+        },
+        {
+          "id": 107133,
+          "text": "Saetta di forza"
+        },
+        {
+          "id": 107134,
+          "text": "Muro di forza"
+        },
+        {
+          "id": 107135,
+          "text": "Fuoco degli dèi"
+        },
+        {
+          "id": 107136,
+          "text": "Furto vitale"
+        },
+        {
+          "id": 107137,
+          "text": "Cura lieve"
+        },
+        {
+          "id": 107138,
+          "text": "Fulmine"
+        },
+        {
+          "id": 107139,
+          "text": "Sguardo di Medusa"
+        },
+        {
+          "id": 107140,
+          "text": "Attraversamuri"
+        },
+        {
+          "id": 107141,
+          "text": "Trabocchetti"
+        },
+        {
+          "id": 107142,
+          "text": "Purifica"
+        },
+        {
+          "id": 107143,
+          "text": "Resistenza al veleno"
+        },
+        {
+          "id": 107144,
+          "text": "Specchio di Shalidor"
+        },
+        {
+          "id": 107145,
+          "text": "Drenaggio degli incantesimi"
+        },
+        {
+          "id": 107146,
+          "text": "Nube tossica"
+        },
+        {
+          "id": 107147,
+          "text": "Fuoco selvaggio"
+        },
+        {
+          "id": 107148,
+          "text": "Squarcio del mago"
+        },
+        {
+          "id": 107149,
+          "text": "Pungiglione di viverna"
         },
         {
           "id": 108000,
@@ -178022,222 +177654,6 @@
           "text": "sen"
         },
         {
-          "id": 117000,
-          "text": "Dardo di fuoco"
-        },
-        {
-          "id": 117001,
-          "text": "Palla di fuoco"
-        },
-        {
-          "id": 117002,
-          "text": "Fulmine"
-        },
-        {
-          "id": 117003,
-          "text": "Tuono"
-        },
-        {
-          "id": 117004,
-          "text": "Scarica di energia"
-        },
-        {
-          "id": 117005,
-          "text": "Lampo accecante"
-        },
-        {
-          "id": 117006,
-          "text": "Stordire"
-        },
-        {
-          "id": 117007,
-          "text": "Sonno"
-        },
-        {
-          "id": 117008,
-          "text": "Silenzio"
-        },
-        {
-          "id": 117009,
-          "text": "Paralisi"
-        },
-        {
-          "id": 117010,
-          "text": "Disintegrare"
-        },
-        {
-          "id": 117011,
-          "text": "Saetta di forza"
-        },
-        {
-          "id": 117012,
-          "text": "Fiamme"
-        },
-        {
-          "id": 117013,
-          "text": "Cura lieve"
-        },
-        {
-          "id": 117014,
-          "text": "Cura"
-        },
-        {
-          "id": 117015,
-          "text": "Grande cura"
-        },
-        {
-          "id": 117016,
-          "text": "Cura superiore"
-        },
-        {
-          "id": 117017,
-          "text": "Cura veleno"
-        },
-        {
-          "id": 117018,
-          "text": "Cura malattia"
-        },
-        {
-          "id": 117019,
-          "text": "Azione libera"
-        },
-        {
-          "id": 117020,
-          "text": "Ripristina salute"
-        },
-        {
-          "id": 117021,
-          "text": "Scudo"
-        },
-        {
-          "id": 117022,
-          "text": "Respingi non morti"
-        },
-        {
-          "id": 117023,
-          "text": "Tempesta di fuoco"
-        },
-        {
-          "id": 117024,
-          "text": "Riflesso degli incantesimi"
-        },
-        {
-          "id": 117025,
-          "text": "Assorbimento degli incantesimi"
-        },
-        {
-          "id": 117026,
-          "text": "Resistenza al fuoco"
-        },
-        {
-          "id": 117027,
-          "text": "Resistenza al freddo"
-        },
-        {
-          "id": 117028,
-          "text": "Resistenza alla scossa"
-        },
-        {
-          "id": 117029,
-          "text": "Resistenza alla magia"
-        },
-        {
-          "id": 117030,
-          "text": "Invisibilità"
-        },
-        {
-          "id": 117031,
-          "text": "Camaleonte"
-        },
-        {
-          "id": 117032,
-          "text": "Levitazione"
-        },
-        {
-          "id": 117033,
-          "text": "Richiamo"
-        },
-        {
-          "id": 117034,
-          "text": "Tocco gelido"
-        },
-        {
-          "id": 117035,
-          "text": "Attraversamuri"
-        },
-        {
-          "id": 117036,
-          "text": "Apri"
-        },
-        {
-          "id": 117037,
-          "text": "Salto"
-        },
-        {
-          "id": 117038,
-          "text": "Teletrasporto"
-        },
-        {
-          "id": 117039,
-          "text": "Cammino sulle acque"
-        },
-        {
-          "id": 117040,
-          "text": "Respirazione acquatica"
-        },
-        {
-          "id": 117041,
-          "text": "Luce"
-        },
-        {
-          "id": 117042,
-          "text": "Rilevamento magia"
-        },
-        {
-          "id": 117043,
-          "text": "Rilevamento mostri"
-        },
-        {
-          "id": 117044,
-          "text": "Rilevamento trappole"
-        },
-        {
-          "id": 117045,
-          "text": "Saetta di ghiaccio"
-        },
-        {
-          "id": 117046,
-          "text": "Dissolvi magia"
-        },
-        {
-          "id": 117047,
-          "text": "Crea cibo"
-        },
-        {
-          "id": 117048,
-          "text": "Serratura magica"
-        },
-        {
-          "id": 117049,
-          "text": "Ammaliare"
-        },
-        {
-          "id": 117050,
-          "text": "Tempesta di ghiaccio"
-        },
-        {
-          "id": 117051,
-          "text": "Morso del gelo"
-        },
-        {
-          "id": 117052,
-          "text": "Scossa"
-        },
-        {
-          "id": 117053,
-          "text": "Scintilla"
-        },
-        {
           "id": 118000,
           "text": "Entri nella sala delle udienze del %t, notando i pregiati ornamenti e gli arredi che decorano l'ambiente. Una fresca brezza attraversa la stanza, asciugando il sudore dal tuo corpo e strappandoti un sospiro di sollievo. Ti concedi quel breve momento di riposo. Davanti a te attende %rf, %t di %cn. È risaputo che %cn è attualmente in %st con il suo vicino, %cn2."
         },
@@ -189282,6 +188698,22 @@
           "text": "• {answer}"
         },
         {
+          "id": 900728,
+          "text": "Tipo"
+        },
+        {
+          "id": 900729,
+          "text": "Originale"
+        },
+        {
+          "id": 900730,
+          "text": "Traduzione"
+        },
+        {
+          "id": 900731,
+          "text": "Incantesimi conosciuti"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -189648,6 +189080,22 @@
         {
           "id": 903073,
           "text": "Bastone del Caos"
+        },
+        {
+          "id": 903074,
+          "text": "Maglia d'Ebano"
+        },
+        {
+          "id": 903075,
+          "text": "Anello del Khajiit"
+        },
+        {
+          "id": 903076,
+          "text": "Anello di Phynaster"
+        },
+        {
+          "id": 903077,
+          "text": "Bastone di Magnus"
         }
       ]
     },
@@ -193485,6 +192933,82 @@
         {
           "id": 107129,
           "text": "Заточение"
+        },
+        {
+          "id": 107131,
+          "text": "Дальняя немота"
+        },
+        {
+          "id": 107132,
+          "text": "Огненный дротик"
+        },
+        {
+          "id": 107133,
+          "text": "Силовой удар"
+        },
+        {
+          "id": 107134,
+          "text": "Стена силы"
+        },
+        {
+          "id": 107135,
+          "text": "Огонь богов"
+        },
+        {
+          "id": 107136,
+          "text": "Похищение жизни"
+        },
+        {
+          "id": 107137,
+          "text": "Лёгкое исцеление"
+        },
+        {
+          "id": 107138,
+          "text": "Молния"
+        },
+        {
+          "id": 107139,
+          "text": "Взгляд Медузы"
+        },
+        {
+          "id": 107140,
+          "text": "Проход сквозь стены"
+        },
+        {
+          "id": 107141,
+          "text": "Западни"
+        },
+        {
+          "id": 107142,
+          "text": "Очищение"
+        },
+        {
+          "id": 107143,
+          "text": "Сопротивление яду"
+        },
+        {
+          "id": 107144,
+          "text": "Зеркало Шалидора"
+        },
+        {
+          "id": 107145,
+          "text": "Истощение заклинаний"
+        },
+        {
+          "id": 107146,
+          "text": "Ядовитое облако"
+        },
+        {
+          "id": 107147,
+          "text": "Дикий огонь"
+        },
+        {
+          "id": 107148,
+          "text": "Разрыв чародея"
+        },
+        {
+          "id": 107149,
+          "text": "Жало виверны"
         },
         {
           "id": 108000,
@@ -205783,222 +205307,6 @@
           "text": "сен"
         },
         {
-          "id": 117000,
-          "text": "Огненный дротик"
-        },
-        {
-          "id": 117001,
-          "text": "Огненный шар"
-        },
-        {
-          "id": 117002,
-          "text": "Молния"
-        },
-        {
-          "id": 117003,
-          "text": "Гром"
-        },
-        {
-          "id": 117004,
-          "text": "Всплеск энергии"
-        },
-        {
-          "id": 117005,
-          "text": "Ослепляющая вспышка"
-        },
-        {
-          "id": 117006,
-          "text": "Оглушение"
-        },
-        {
-          "id": 117007,
-          "text": "Сон"
-        },
-        {
-          "id": 117008,
-          "text": "Немота"
-        },
-        {
-          "id": 117009,
-          "text": "Паралич"
-        },
-        {
-          "id": 117010,
-          "text": "Дезинтеграция"
-        },
-        {
-          "id": 117011,
-          "text": "Силовой удар"
-        },
-        {
-          "id": 117012,
-          "text": "Пламя"
-        },
-        {
-          "id": 117013,
-          "text": "Лёгкое исцеление"
-        },
-        {
-          "id": 117014,
-          "text": "Исцеление"
-        },
-        {
-          "id": 117015,
-          "text": "Великое исцеление"
-        },
-        {
-          "id": 117016,
-          "text": "Усиленное исцеление"
-        },
-        {
-          "id": 117017,
-          "text": "Излечение от яда"
-        },
-        {
-          "id": 117018,
-          "text": "Излечение от болезни"
-        },
-        {
-          "id": 117019,
-          "text": "Свобода действий"
-        },
-        {
-          "id": 117020,
-          "text": "Восстановление здоровья"
-        },
-        {
-          "id": 117021,
-          "text": "Щит"
-        },
-        {
-          "id": 117022,
-          "text": "Оберег от нежити"
-        },
-        {
-          "id": 117023,
-          "text": "Огненная буря"
-        },
-        {
-          "id": 117024,
-          "text": "Отражение заклинаний"
-        },
-        {
-          "id": 117025,
-          "text": "Поглощение заклинаний"
-        },
-        {
-          "id": 117026,
-          "text": "Сопротивление огню"
-        },
-        {
-          "id": 117027,
-          "text": "Сопротивление холоду"
-        },
-        {
-          "id": 117028,
-          "text": "Сопротивление электричеству"
-        },
-        {
-          "id": 117029,
-          "text": "Сопротивление магии"
-        },
-        {
-          "id": 117030,
-          "text": "Невидимость"
-        },
-        {
-          "id": 117031,
-          "text": "Хамелеон"
-        },
-        {
-          "id": 117032,
-          "text": "Левитация"
-        },
-        {
-          "id": 117033,
-          "text": "Возврат"
-        },
-        {
-          "id": 117034,
-          "text": "Ледяное прикосновение"
-        },
-        {
-          "id": 117035,
-          "text": "Проход сквозь стены"
-        },
-        {
-          "id": 117036,
-          "text": "Отпирание"
-        },
-        {
-          "id": 117037,
-          "text": "Прыжок"
-        },
-        {
-          "id": 117038,
-          "text": "Телепортация"
-        },
-        {
-          "id": 117039,
-          "text": "Хождение по воде"
-        },
-        {
-          "id": 117040,
-          "text": "Дыхание под водой"
-        },
-        {
-          "id": 117041,
-          "text": "Свет"
-        },
-        {
-          "id": 117042,
-          "text": "Обнаружение магии"
-        },
-        {
-          "id": 117043,
-          "text": "Обнаружение монстров"
-        },
-        {
-          "id": 117044,
-          "text": "Обнаружение ловушек"
-        },
-        {
-          "id": 117045,
-          "text": "Ледяная стрела"
-        },
-        {
-          "id": 117046,
-          "text": "Развеивание магии"
-        },
-        {
-          "id": 117047,
-          "text": "Создание пищи"
-        },
-        {
-          "id": 117048,
-          "text": "Волшебный замок"
-        },
-        {
-          "id": 117049,
-          "text": "Очарование"
-        },
-        {
-          "id": 117050,
-          "text": "Ледяная буря"
-        },
-        {
-          "id": 117051,
-          "text": "Обморожение"
-        },
-        {
-          "id": 117052,
-          "text": "Шок"
-        },
-        {
-          "id": 117053,
-          "text": "Искра"
-        },
-        {
           "id": 118000,
           "text": "Ты входишь в приёмный зал %t, замечая изысканную обстановку и мебель, что украшают это место. Прохладный ветерок пробегает по залу, высушивая пот на твоём теле и вызывая на устах вздох облегчения. Ты наслаждаешься этой недолгой передышкой. Впереди тебя ждёт %rf, %t города %cn. Хорошо известно, что между %cn и %cn2, его соседом, ныне царит %st."
         },
@@ -217043,6 +216351,22 @@
           "text": "• {answer}"
         },
         {
+          "id": 900728,
+          "text": "Тип"
+        },
+        {
+          "id": 900729,
+          "text": "Оригинал"
+        },
+        {
+          "id": 900730,
+          "text": "Перевод"
+        },
+        {
+          "id": 900731,
+          "text": "Известные заклинания"
+        },
+        {
           "id": 902000,
           "text": "Маг"
         },
@@ -217409,6 +216733,22 @@
         {
           "id": 903073,
           "text": "Посох Хаоса"
+        },
+        {
+          "id": 903074,
+          "text": "Эбонитовая кольчуга"
+        },
+        {
+          "id": 903075,
+          "text": "Кольцо Каджита"
+        },
+        {
+          "id": 903076,
+          "text": "Кольцо Финастера"
+        },
+        {
+          "id": 903077,
+          "text": "Посох Магнуса"
         }
       ]
     }

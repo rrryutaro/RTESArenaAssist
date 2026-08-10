@@ -300,6 +300,16 @@ class UiRouter:
                 w._layout_translate_panel.update_translation(intent.panel_en or '', intent.panel_ja or '')
             w._panel_owner = intent.panel_owner
             return
+        if intent.kind == 'spellbook':
+            try:
+                w._tab_translate.set_spellbook_title(intent.list_title_ja or intent.panel_ja or intent.panel_en or '')
+            except AttributeError:
+                pass
+            w._tab_translate.update_spellbook_list(intent.items)
+            if w._layout_translate_panel is not None:
+                w._layout_translate_panel.update_translation(intent.panel_en or '', intent.panel_ja or '')
+            w._panel_owner = intent.panel_owner
+            return
         if intent.kind == 'item_pickup_list':
             w._tab_translate.update_item_pickup_list(intent.items, intent.remaining or 0)
             w._panel_owner = intent.panel_owner
@@ -462,6 +472,9 @@ class UiRouter:
 
     def update_equipment_list(self, panel_owner: str, title: str, items: list) -> None:
         self.propose_display(DisplayIntent.equipment_list(panel_owner, title, items))
+
+    def propose_spellbook_list(self, panel_owner: str, items: list, panel_en: str, panel_ja: str, *, list_title_ja: str=None, priority: int=0, reason: str='') -> None:
+        self.propose_display(DisplayIntent.spellbook_list(panel_owner, items, panel_en, panel_ja, list_title_ja=list_title_ja, priority=priority, reason=reason))
 
     def propose_equipment_list(self, panel_owner: str, title: str, items: list, *, priority: int=0, reason: str='') -> None:
         self.propose_display(DisplayIntent.equipment_list(panel_owner, title, items, priority=priority, reason=reason))

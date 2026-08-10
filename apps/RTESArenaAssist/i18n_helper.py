@@ -182,7 +182,7 @@ def v2_category_entries(category: str, *, lang: str | None=None) -> list:
         if e.get('retired'):
             continue
         eid = int(e['id'])
-        out.append({'id': eid, 'source_id': (e.get('source') or {}).get('source_id'), 'kind': e.get('kind'), 'original': _V2_PUBLIC.resolve_original_surface(eid), 'text': _V2_PUBLIC.resolve_text(eid, loc), 'rich': _V2_PUBLIC.rich_meta(eid), 'context': e.get('context') or {}})
+        out.append({'id': eid, 'source_id': (e.get('source') or {}).get('source_id'), 'kind': e.get('kind'), 'original': _V2_PUBLIC.resolve_original_surface(eid), 'text': _V2_PUBLIC.resolve_text(eid, loc), 'rich': _V2_PUBLIC.rich_meta(eid), 'context': e.get('context') or {}, 'debug_name': e.get('debug_name')})
     return out
 
 def v2_bundle_categories() -> list:

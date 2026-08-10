@@ -1,7 +1,7 @@
 from __future__ import annotations
 import os
 from spell_effect_compose import _lookup_pair, _active_effect_slot, _resolve_effect_name, _effect_details_from_arrays, _decode_spell_effect_segments, _normalize_spell_effect_text, _attach_effect_texts, _fill_missing_spellmaker_effect_texts, translate_effect_text
-__all__ = ['load_spellsg', 'read_spell_detail', 'read_spellbook_items', 'translate_effect_text']
+__all__ = ['load_spellsg', 'read_custom_spells', 'read_spell_choice_index', 'read_spell_detail', 'read_spellbook_items', 'translate_effect_text']
 NPCDATA_BASE = 420
 SPELL_COUNT_OFFSET = NPCDATA_BASE + 870
 SPELL_IDS_OFFSET = NPCDATA_BASE + 871
@@ -36,31 +36,23 @@ def load_spellsg(game_dir: str) -> dict[int, str]:
         except OSError:
             continue
     return {}
+CUSTOM_SPELLS_OFFSET = -26656
 
-def load_custom_spells(game_dir: str) -> dict[int, str]:
-    if not game_dir:
+def read_custom_spells(analyzer, anchor: int) -> dict[int, str]:
+    try:
+        data = analyzer.read_bytes(anchor + CUSTOM_SPELLS_OFFSET, SPELL_DATA_SIZE * MAX_CUSTOM_SPELLS)
+    except OSError:
         return {}
-    for nn in ('00', '01', '02', '03', '04', '05', '06', '07', '08', '09'):
-        path = os.path.join(game_dir, f'SPELLS.{nn}')
-        if not os.path.exists(path):
-            continue
-        try:
-            with open(path, 'rb') as f:
-                data = f.read()
-            result: dict[int, str] = {}
-            max_records = min(MAX_CUSTOM_SPELLS, len(data) // SPELL_DATA_SIZE)
-            for i in range(max_records):
-                base = i * SPELL_DATA_SIZE
-                if base + SPELL_DATA_SIZE > len(data):
-                    break
-                name_bytes = data[base + SPELL_NAME_OFFSET:base + SPELL_NAME_OFFSET + SPELL_NAME_LEN]
-                name = name_bytes.split(b'\x00')[0].decode('ascii', errors='replace').strip()
-                if name:
-                    result[CUSTOM_SPELL_ID_BASE + i] = name
-            return result
-        except OSError:
-            continue
-    return {}
+    result: dict[int, str] = {}
+    for i in range(MAX_CUSTOM_SPELLS):
+        base = i * SPELL_DATA_SIZE
+        if base + SPELL_DATA_SIZE > len(data):
+            break
+        name_bytes = data[base + SPELL_NAME_OFFSET:base + SPELL_NAME_OFFSET + SPELL_NAME_LEN]
+        name = name_bytes.split(b'\x00')[0].decode('ascii', errors='replace').strip()
+        if name:
+            result[CUSTOM_SPELL_ID_BASE + i] = name
+    return result
 SPELL_DETAIL_DATA_OFFSET = 22502
 SPELL_DETAIL_NAME_OFFSET = SPELL_DETAIL_DATA_OFFSET + SPELL_NAME_OFFSET
 SPELL_DETAIL_COST_OFFSET = SPELL_DETAIL_DATA_OFFSET + 50
@@ -72,6 +64,16 @@ SPELL_DETAIL_SUB_EFFECTS_OFFSET = SPELL_DETAIL_DATA_OFFSET + 44
 SPELL_DETAIL_AFFECTED_ATTRS_OFFSET = SPELL_DETAIL_DATA_OFFSET + 47
 SPELL_DETAIL_TEXT_OFFSET = 4164
 SPELL_DETAIL_TEXT_LEN = 512
+SPELL_CHOICE_FLAG_VALUES = {0: 0, 128: 1}
+
+def read_spell_choice_index(analyzer, anchor: int) -> int | None:
+    try:
+        raw = analyzer.read_bytes(anchor + SPELL_DETAIL_FLAGS_OFFSET, 2)
+    except OSError:
+        return None
+    if not raw or len(raw) < 2:
+        return None
+    return SPELL_CHOICE_FLAG_VALUES.get(raw[0] | raw[1] << 8)
 PLAYER_NAME_OFFSET = 429
 PLAYER_LEVEL_OFFSET = 426
 PLAYER_GOLD_OFFSET = 1474
@@ -157,7 +159,7 @@ def read_spellbook_items(analyzer, anchor: int) -> list[dict]:
     import assist_settings as settings
     game_dir = settings.get('save_dir', '')
     spell_table = load_spellsg(game_dir)
-    spell_table.update(load_custom_spells(game_dir))
+    spell_table.update(read_custom_spells(analyzer, anchor))
     try:
         count = analyzer.read_bytes(anchor + SPELL_COUNT_OFFSET, 1)[0]
     except OSError:

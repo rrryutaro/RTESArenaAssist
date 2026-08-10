@@ -15,6 +15,18 @@ def _container_display_count(w) -> int | None:
         return None
     return lr.container_item_count(lr.parse_records(raw), container)
 
+def _corpse_list_state(w) -> bool | None:
+    try:
+        import viewer_constants as vc
+        b = w._analyzer.read_bytes(w._anchor + vc.CORPSE_LIST_STATE_OFFSET, 1)[0]
+    except (OSError, AttributeError, ImportError, IndexError):
+        return None
+    if b == vc.CORPSE_LIST_STATE_CLOSED:
+        return True
+    if b == vc.CORPSE_LIST_STATE_OPEN:
+        return False
+    return None
+
 def _display_count(count: int) -> int:
     return max(count - 2, 0)
 
@@ -39,6 +51,50 @@ def _read_names(w, count: int) -> list[str]:
         names.append(nm)
         pos = end + 1
     return names
+
+def _corpse_item_names(w, head: str) -> list[str]:
+    if not head:
+        return []
+    try:
+        import viewer_constants as vc
+        import dungeon_msg_lookup as _dml
+        raw = w._analyzer.read_bytes(w._anchor + vc.NPC_DIALOG_OFFSET, vc.NPC_DIALOG_MAXLEN)
+        limit = vc.CORPSE_LIST_MAX
+    except (OSError, AttributeError, ImportError):
+        return []
+    if not raw:
+        return []
+    names, pos = ([], 0)
+    while len(names) < limit:
+        end = raw.find(b'\x00', pos)
+        if end == -1:
+            break
+        seg = raw[pos:end]
+        if not seg or not all((32 <= b <= 126 for b in seg)):
+            break
+        nm = seg.decode('ascii').strip()
+        if not nm or not any((c.isalnum() for c in nm)):
+            break
+        if not _dml.lookup_item(nm):
+            break
+        names.append(nm)
+        pos = end + 1
+    if not names or names[0] != head:
+        return []
+    return names
+
+def _merge_corpse_items(w, names: list[str]) -> tuple[list[dict], int]:
+    import dungeon_msg_lookup as _dml
+    seen = list(getattr(w, '_b32_seen_items', []) or [])
+    now = set(names)
+    for it in seen:
+        if not it['taken'] and it['en'] not in now:
+            it['taken'] = True
+    have = {it['en'] for it in seen}
+    for n in names:
+        if n not in have:
+            seen.append({'en': n, 'ja': _dml.lookup_item(n) or '', 'taken': False})
+    return (seen, len(names))
 
 def _filter_suffix_fragments(names: list[str]) -> list[str]:
     if not names:
@@ -153,8 +209,13 @@ def _open_transition(w, *, display_n: int, names_present: bool, npc_dialog: str,
             if _ignored_fragments or _existing:
                 _log.info('NEWPOP new chest (raw=%s ignored_fragments=%s ex_untaken=%d known=%d remaining=%d)', _raw_names, _ignored_fragments, len(_ex_untaken_set), len(_known_names), _remaining)
     else:
-        _seen = [{'en': npc_dialog, 'ja': _dml.lookup_item(npc_dialog) or '', 'taken': False}]
-        _remaining = 1
+        _corpse_names = _corpse_item_names(w, npc_dialog)
+        if _corpse_names:
+            _seen = [{'en': n, 'ja': _dml.lookup_item(n) or '', 'taken': False} for n in _corpse_names]
+            _remaining = len(_corpse_names)
+        else:
+            _seen = [{'en': npc_dialog, 'ja': _dml.lookup_item(npc_dialog) or '', 'taken': False}]
+            _remaining = 1
     w._b32_newpop_open = True
     w._b32_seen_items = _seen
     w._b32_was_corpse = _is_corpse
@@ -177,7 +238,7 @@ def _poll_closed(w, *, gate_open: bool, display_n: int, names_present: bool, npc
             w._b32_seen_items = []
             w._b32_seen_cache_age = 0
     _content_chest_ready = display_n > 0 and names_present
-    _content_corpse_ready = corpse_item
+    _content_corpse_ready = corpse_item and _corpse_list_state(w) is not True
     if gate_open and (not blocked) and (_content_chest_ready or _content_corpse_ready):
         _open_transition(w, display_n=display_n, names_present=names_present, npc_dialog=npc_dialog, chest_ready=_content_chest_ready, corpse_ready=_content_corpse_ready)
 
@@ -204,12 +265,25 @@ def _poll_open_chest(w, *, gate_open: bool, container_n: int | None, display_n: 
             _show_item_pickup(w, _seen, display_n)
 
 def _poll_open_corpse(w, *, gate_open: bool, count: int, names_present: bool, npc_dialog: str, corpse_item: bool, img_name: str, screen_id) -> None:
+    if _corpse_list_state(w) is True:
+        _close_confirmed(w, reason='corpse-state-closed', img_name=img_name, count=count, names_present=names_present, corpse_item=corpse_item, gate_open=gate_open, pending=getattr(w, '_b32_pending_close_count', 0), screen_id=screen_id)
+        return
     if not gate_open:
         _gate_close_step(w, count=count, names_present=names_present, corpse_item=corpse_item, img_name=img_name, screen_id=screen_id)
         return
     w._b32_pending_close_count = 0
     _claim_item_pickup_owner(w)
-    if corpse_item and npc_dialog != (w._b32_seen_items[0]['en'] if w._b32_seen_items else ''):
+    if not corpse_item:
+        return
+    _names_now = _corpse_item_names(w, npc_dialog)
+    if _names_now:
+        _untaken_prev = [it['en'] for it in getattr(w, '_b32_seen_items', []) if not it['taken']]
+        if _untaken_prev != _names_now:
+            _seen, _remaining = _merge_corpse_items(w, _names_now)
+            w._b32_seen_items = _seen
+            _show_item_pickup(w, _seen, _remaining)
+        return
+    if npc_dialog != (w._b32_seen_items[0]['en'] if w._b32_seen_items else ''):
         import dungeon_msg_lookup as _dml2
         _seen = [{'en': npc_dialog, 'ja': _dml2.lookup_item(npc_dialog) or '', 'taken': False}]
         w._b32_seen_items = _seen
