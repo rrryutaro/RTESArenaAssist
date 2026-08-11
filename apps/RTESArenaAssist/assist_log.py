@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import sys
@@ -13,11 +14,28 @@ def recog(logger: logging.Logger, msg: str, *args) -> None:
 
 def _debug_env_value() -> str:
     return (os.environ.get('RTES_ARENA_ASSIST_LOG_LEVEL') or os.environ.get('RTES_ARENA_ASSIST_DEBUG_LOG') or '').strip().upper()
+_settings_switch = ''
+SETTINGS_DEBUG_KEY = 'debug_log'
+
+def _read_settings_switch(app_dir: str) -> str:
+    try:
+        with open(os.path.join(app_dir, 'assist_settings.json'), encoding='utf-8') as f:
+            raw = json.load(f).get(SETTINGS_DEBUG_KEY, '')
+    except (OSError, ValueError, AttributeError):
+        return ''
+    if raw is True:
+        return '1'
+    if raw is False or raw is None:
+        return ''
+    return str(raw).strip().upper()
+
+def _debug_switch() -> str:
+    return _debug_env_value() or _settings_switch
 _DEBUG_ENV_ENABLED = frozenset({'1', 'TRUE', 'YES', 'ON', 'DEBUG', 'INFO', 'WARNING', 'ERROR', 'RECOG'})
 _TEMP_DEFAULT_INFO = False
 
 def _resolve_level() -> int:
-    raw = _debug_env_value()
+    raw = _debug_switch()
     if raw in ('1', 'TRUE', 'YES', 'ON'):
         return logging.DEBUG
     if raw in ('DEBUG', 'INFO', 'WARNING', 'ERROR'):
@@ -49,13 +67,14 @@ def _prune_history(history_dir: str) -> None:
             pass
 
 def init(app_dir: str) -> None:
-    global _logger_initialized
+    global _logger_initialized, _settings_switch
     if _logger_initialized:
         return
     _logger_initialized = True
+    _settings_switch = _read_settings_switch(app_dir)
     level = _resolve_level()
     frozen = bool(getattr(sys, 'frozen', False))
-    if not _should_write_log_files(frozen, _debug_env_value()):
+    if not _should_write_log_files(frozen, _debug_switch()):
         root = logging.getLogger()
         root.setLevel(level)
         root.addHandler(logging.NullHandler())

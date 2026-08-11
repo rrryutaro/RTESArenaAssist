@@ -92,6 +92,7 @@ def find_active_cache(automap: AutomapFile, analyzer=None, anchor: int | None=No
             for c in automap.caches:
                 if c.level_hash == cur_hash:
                     return c
+            return None
     cache0 = automap.caches[0]
     cache0_50x50_nz = int((cache0.bitmap_grid[:50, :50] != 0).sum()) if cache0.bitmap_grid is not None else 0
     if len(cache0.valid_notes) >= 1 or cache0_50x50_nz > 0:

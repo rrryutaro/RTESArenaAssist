@@ -298,9 +298,14 @@ class DungeonMapSession(MapSessionBase):
                 cur_hash = int.from_bytes(raw, 'little')
         except (OSError, AttributeError):
             cur_hash = None
-        if matched is not None and cur_hash is not None and (cur_hash != 0) and (matched.level_hash == cur_hash):
-            active: AutomapCache | None = matched
-            new_active_index = matched.index
+        active: AutomapCache | None
+        if cur_hash is not None and cur_hash != 0:
+            if matched is not None and matched.level_hash == cur_hash:
+                active = matched
+                new_active_index = matched.index
+            else:
+                self._diag_log_skip('no_level_hash_match')
+                return False
         else:
             cached_index = self._active_cache_index
             if cached_index is not None and 0 <= cached_index < len(af.caches):
