@@ -529,6 +529,14 @@ class _SettingsDialog(QDialog):
         return self._map_treasure_mark_edit.text()[:1]
 
     @property
+    def map_pipe_under(self) -> bool:
+        return self._map_pipe_under_cb.isChecked()
+
+    @property
+    def map_pipe_opacity(self) -> int:
+        return int(self._map_pipe_opacity_spin.value())
+
+    @property
     def map_show_grid(self) -> bool:
         return self._map_show_grid_cb.isChecked()
 

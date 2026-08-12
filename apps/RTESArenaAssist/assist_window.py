@@ -365,6 +365,8 @@ class AssistWindow(QMainWindow):
             settings.set_val(_k, _v)
         settings.set_val('map_colors', dlg.map_colors)
         settings.set_val('map_treasure_mark', dlg.map_treasure_mark)
+        settings.set_val('map_pipe_under', dlg.map_pipe_under)
+        settings.set_val('map_pipe_opacity', dlg.map_pipe_opacity)
         settings.set_val('map_show_grid', dlg.map_show_grid)
         settings.set_val('map_show_chunk_grid', dlg.map_show_chunk_grid)
         settings.set_val('map_show_chunk_coords', dlg.map_show_chunk_coords)

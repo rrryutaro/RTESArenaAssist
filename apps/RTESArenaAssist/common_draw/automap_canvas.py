@@ -3,8 +3,8 @@ import logging
 import math
 from dataclasses import dataclass
 import numpy as np
-from PySide6.QtCore import QPoint, QPointF, QRect, Qt
-from PySide6.QtGui import QColor, QFont, QMouseEvent, QPainter, QPen, QPolygon, QWheelEvent
+from PySide6.QtCore import QPoint, QPointF, QRect, QSize, Qt
+from PySide6.QtGui import QColor, QFont, QMouseEvent, QPainter, QPainterPath, QPen, QPixmap, QPolygon, QWheelEvent
 from PySide6.QtWidgets import QWidget
 from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
 _log = logging.getLogger('common_draw.automap_canvas')
@@ -23,10 +23,17 @@ _RECENTER_LINE = QColor(58, 111, 174, 130)
 _EDGE_LINE_COLORS = {'fence': QColor(138, 90, 43), 'hedge': QColor(47, 122, 63), 'garden': QColor(157, 184, 85)}
 _CROP_FILL_COLORS = {'corn': QColor(181, 161, 58), 'farm': QColor(194, 164, 90)}
 _CROP_MARK_COLORS = {'corn': QColor(35, 77, 18), 'farm': QColor(94, 60, 24)}
-_CELL_COLORS_ARENA: dict[str, QColor] = {'wall': QColor(130, 89, 48), 'raised': QColor(97, 85, 60), 'door': QColor(146, 0, 0), 'hidden_door': QColor(168, 85, 212), 'wall_chasm': QColor(74, 107, 130), 'wall_passage': QColor(45, 74, 72), 'wall_lava': QColor(160, 74, 24), 'level_up': QColor(0, 105, 0), 'level_down': QColor(0, 0, 255), 'wet_chasm': QColor(109, 138, 174), 'dry_chasm': QColor(20, 40, 40), 'lava_chasm': QColor(255, 0, 0), 'wild_wall': QColor(109, 69, 32), 'wild_door': QColor(255, 0, 0), 'wild_road': QColor(199, 154, 90), 'wild_corn': QColor(181, 161, 58), 'wild_farm': QColor(181, 161, 58), 'wild_field': QColor(181, 161, 58)}
+_CELL_COLORS_ARENA: dict[str, QColor] = {'wall': QColor(130, 89, 48), 'diagonal': QColor(130, 89, 48), 'raised': QColor(97, 85, 60), 'door': QColor(146, 0, 0), 'hidden_door': QColor(168, 85, 212), 'wall_chasm': QColor(74, 107, 130), 'wall_passage': QColor(45, 74, 72), 'wall_lava': QColor(160, 74, 24), 'level_up': QColor(0, 105, 0), 'level_down': QColor(0, 0, 255), 'wet_chasm': QColor(109, 138, 174), 'dry_chasm': QColor(20, 40, 40), 'lava_chasm': QColor(255, 0, 0), 'wild_wall': QColor(109, 69, 32), 'wild_door': QColor(255, 0, 0), 'wild_road': QColor(199, 154, 90), 'wild_corn': QColor(181, 161, 58), 'wild_farm': QColor(181, 161, 58), 'wild_field': QColor(181, 161, 58)}
 _WILD_FIELD_FLOOR_ID = 2
-_CELL_COLORS_MAPVIEWER: dict[str, QColor] = {'wall': QColor(130, 89, 48), 'raised': QColor(120, 120, 112), 'door': QColor(146, 0, 0), 'hidden_door': QColor(168, 85, 212), 'exit_door': QColor(146, 0, 0), 'level_up': QColor(0, 105, 0), 'level_down': QColor(0, 0, 255), 'wet_chasm': QColor(109, 138, 174), 'wall_chasm': QColor(74, 107, 130), 'wall_passage': QColor(45, 74, 72), 'wall_lava': QColor(160, 74, 24), 'dry_chasm': QColor(20, 40, 40), 'lava_chasm': QColor(255, 0, 0), 'wild_wall': QColor(109, 69, 32), 'wild_door': QColor(255, 0, 0), 'wild_road': QColor(199, 154, 90)}
+_CELL_COLORS_MAPVIEWER: dict[str, QColor] = {'wall': QColor(130, 89, 48), 'diagonal': QColor(130, 89, 48), 'raised': QColor(120, 120, 112), 'door': QColor(146, 0, 0), 'hidden_door': QColor(168, 85, 212), 'exit_door': QColor(146, 0, 0), 'level_up': QColor(0, 105, 0), 'level_down': QColor(0, 0, 255), 'wet_chasm': QColor(109, 138, 174), 'wall_chasm': QColor(74, 107, 130), 'wall_passage': QColor(45, 74, 72), 'wall_lava': QColor(160, 74, 24), 'dry_chasm': QColor(20, 40, 40), 'lava_chasm': QColor(255, 0, 0), 'wild_wall': QColor(109, 69, 32), 'wild_door': QColor(255, 0, 0), 'wild_road': QColor(199, 154, 90)}
 _CELL_COLOR_UNKNOWN = QColor(204, 68, 255)
+_PIPE_WIDTH_RATIO = 0.22
+
+def pipe_fill_color(base: QColor) -> QColor:
+    out = base.lighter(150)
+    if out.rgb() == base.rgb():
+        out = QColor((base.red() * 3 + 255) // 4, (base.green() * 3 + 255) // 4, (base.blue() * 3 + 255) // 4)
+    return out
 _TREASURE_MARK = QColor(255, 210, 74)
 _TREASURE_MARK_EDGE = QColor(74, 51, 0)
 
@@ -93,6 +100,33 @@ def _map1_kind(value: int) -> str:
     return 'wall'
 _DOOR_TEXTURE_MASK = 63
 
+def diagonal_shape(map1_val: int, north: int, south: int, east: int, west: int) -> tuple[bool, str | None]:
+    is_slash = map1_val & 256 != 0
+
+    def _wall(v: int) -> bool:
+        return _map1_kind(v) in ('wall', 'raised')
+    if is_slash:
+        pa, pb = ((north, west), (south, east))
+    else:
+        pa, pb = ((north, east), (south, west))
+    a = sum((1 for v in pa if _wall(v)))
+    b = sum((1 for v in pb if _wall(v)))
+    if a > b:
+        return (is_slash, 'a')
+    if b > a:
+        return (is_slash, 'b')
+    return (is_slash, None)
+
+def diagonal_polygon(rect, is_slash: bool, side: str):
+    from PySide6.QtCore import QPoint
+    l, t = (rect.left(), rect.top())
+    r, b = (rect.left() + rect.width(), rect.top() + rect.height())
+    if is_slash:
+        pts = ((l, t), (r, t), (l, b)) if side == 'a' else ((r, t), (r, b), (l, b))
+    else:
+        pts = ((l, t), (r, t), (r, b)) if side == 'a' else ((l, t), (l, b), (r, b))
+    return [QPoint(int(x), int(y)) for x, y in pts]
+
 def facing_delta(angle_deg: float) -> tuple[float, float]:
     a = math.radians(angle_deg)
     return (-math.sin(a), -math.cos(a))
@@ -138,6 +172,41 @@ def _floor_kind(floor: int) -> str:
 def _is_wall_passage_cell(map1_val: int, flor_val: int) -> bool:
     return _map1_kind(map1_val) == 'wall' and _floor_kind(flor_val) in ('wet_chasm', 'dry_chasm', 'lava_chasm')
 
+def pipe_under_kind(map1_val: int, flor_val: int, *, express_wall_chasm: bool=False, express_wall_passage: bool=False, express_wall_lava: bool=False, wall_passage_discovered: bool=False) -> str | None:
+    wall_kind = _map1_kind(map1_val)
+    if wall_kind not in ('wall', 'raised'):
+        return None
+    floor_kind = _floor_kind(flor_val)
+    if floor_kind == 'wet_chasm':
+        if wall_kind == 'raised':
+            return None
+        if express_wall_chasm and (not wall_passage_discovered):
+            return None
+        return 'wet_chasm'
+    if floor_kind == 'dry_chasm':
+        if wall_kind == 'raised':
+            return 'dry_chasm'
+        if not express_wall_passage or not wall_passage_discovered:
+            return None
+        return 'dry_chasm'
+    if floor_kind == 'lava_chasm':
+        if wall_kind == 'raised':
+            return None
+        if express_wall_lava and (not wall_passage_discovered):
+            return None
+        return 'lava_chasm'
+    return None
+
+def pipe_block_origin(pipe_cells, x: int, y: int) -> bool:
+    return all(((x + dx, y + dy) in pipe_cells for dx in (0, 1) for dy in (0, 1)))
+
+def pipe_edge_hidden(pipe_cells, x: int, y: int, dx: int, dy: int) -> bool:
+    if dx:
+        bx = min(x, x + dx)
+        return pipe_block_origin(pipe_cells, bx, y - 1) and pipe_block_origin(pipe_cells, bx, y)
+    by = min(y, y + dy)
+    return pipe_block_origin(pipe_cells, x - 1, by) and pipe_block_origin(pipe_cells, x, by)
+
 def _wall_texture_index(value: int, kind: str) -> int:
     if kind == 'edge':
         least = value & 127
@@ -148,10 +217,12 @@ def _wall_texture_index(value: int, kind: str) -> int:
 def _is_wild_wall_colored_floor_id(floor_id: int) -> bool:
     return floor_id not in (0, 2, 3, 4)
 
-def _classify_cell(map1_val: int, flor_val: int, level_up_index: int | None=None, level_down_index: int | None=None, *, extended: bool=False, express_wall_chasm: bool=False, express_wall_passage: bool=False, express_wall_lava: bool=False, express_hidden_door: bool=True, hidden_door_ids: frozenset | set | None=None, hidden_door_discovered: bool=False, wall_passage_discovered: bool=False, menu_texture_indices: set[int] | None=None, is_wilderness: bool=False, wilderness_compact: bool=False, wild_distinguish_road: bool=False, wild_show_field: bool=False) -> str:
+def _classify_cell(map1_val: int, flor_val: int, level_up_index: int | None=None, level_down_index: int | None=None, *, extended: bool=False, express_wall_chasm: bool=False, express_wall_passage: bool=False, express_wall_lava: bool=False, express_hidden_door: bool=True, hidden_door_ids: frozenset | set | None=None, hidden_door_discovered: bool=False, wall_passage_discovered: bool=False, pipe_under: bool=False, menu_texture_indices: set[int] | None=None, is_wilderness: bool=False, wilderness_compact: bool=False, wild_distinguish_road: bool=False, wild_show_field: bool=False) -> str:
     floor_kind = _floor_kind(flor_val)
     wall_kind = _map1_kind(map1_val)
     floor_id = flor_val >> 8 & 255
+    if pipe_under and wall_kind in ('wall', 'raised') and (floor_kind in ('wet_chasm', 'dry_chasm', 'lava_chasm')):
+        return 'wall' if wall_kind == 'wall' else 'raised'
     if floor_kind == 'wet_chasm':
         if wall_kind == 'raised':
             return 'raised'
@@ -174,6 +245,8 @@ def _classify_cell(map1_val: int, flor_val: int, level_up_index: int | None=None
         if wall_kind == 'raised':
             return 'raised'
         return 'lava_chasm'
+    if wall_kind == 'diagonal' and (not is_wilderness):
+        return 'diagonal'
     if wall_kind in ('none', 'entity', 'diagonal'):
         if is_wilderness:
             if wild_show_field and floor_id == _WILD_FIELD_FLOOR_ID:
@@ -232,6 +305,8 @@ class AutomapCanvas(QWidget):
         self._express_wall_passage = True
         self._express_wall_lava = True
         self._express_treasure = True
+        self._pipe_under = True
+        self._pipe_opacity = 100
         self._color_overrides: dict = {}
         self._treasure_mark: str = ''
         self._menu_texture_indices: set[int] = set()
@@ -404,6 +479,11 @@ class AutomapCanvas(QWidget):
         self._express_treasure = bool(treasure)
         self.update()
 
+    def set_pipe_under(self, *, enabled: bool, opacity: int) -> None:
+        self._pipe_under = bool(enabled)
+        self._pipe_opacity = max(0, min(100, int(opacity)))
+        self.update()
+
     def set_color_overrides(self, overrides: dict | None) -> None:
         self._color_overrides = dict(overrides or {})
         self.update()
@@ -411,6 +491,107 @@ class AutomapCanvas(QWidget):
     def set_treasure_mark(self, mark: str) -> None:
         self._treasure_mark = (mark or '')[:1]
         self.update()
+
+    def _paint_diagonal(self, painter, rect, map1_val, map1, x, y, vis) -> None:
+        h, w = map1.shape
+
+        def _at(cx, cy):
+            if 0 <= cx < w and 0 <= cy < h:
+                return int(map1[cy, cx])
+            return 0
+        is_slash, side = diagonal_shape(map1_val, _at(x, y - 1), _at(x, y + 1), _at(x + 1, y), _at(x - 1, y))
+        if self._x_flip:
+            is_slash = not is_slash
+        wall_color = _blend_color(self._palette().get('wall', _CELL_COLOR_UNKNOWN), vis, self._reveal_all)
+        if side is None:
+            return
+        painter.setPen(Qt.PenStyle.NoPen)
+        painter.setBrush(wall_color)
+        painter.drawPolygon(diagonal_polygon(rect, is_slash, side))
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+
+    def _paint_pipes(self, painter, pipe_cells, hole_cells, rect_by_cell) -> None:
+        opacity = self._pipe_opacity / 100.0
+        if opacity <= 0.0:
+            return
+        if opacity >= 1.0:
+            self._draw_pipe_layer(painter, pipe_cells, hole_cells, rect_by_cell)
+            return
+        dpr = self.devicePixelRatioF()
+        layer = QPixmap(QSize(max(1, int(self.width() * dpr)), max(1, int(self.height() * dpr))))
+        layer.setDevicePixelRatio(dpr)
+        layer.fill(Qt.GlobalColor.transparent)
+        sub = QPainter(layer)
+        try:
+            self._draw_pipe_layer(sub, pipe_cells, hole_cells, rect_by_cell)
+        finally:
+            sub.end()
+        painter.setOpacity(opacity)
+        painter.drawPixmap(0, 0, layer)
+        painter.setOpacity(1.0)
+
+    def _draw_pipe_layer(self, painter, pipe_cells, hole_cells, rect_by_cell) -> None:
+        palette = self._palette()
+        width = max(2.0, self._zoom * _PIPE_WIDTH_RATIO)
+        smooth_before = painter.testRenderHint(QPainter.RenderHint.Antialiasing)
+        painter.setRenderHint(QPainter.RenderHint.Antialiasing, True)
+        try:
+            self._draw_pipes(painter, pipe_cells, hole_cells, rect_by_cell, palette, width)
+        finally:
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing, smooth_before)
+
+    def _draw_pipes(self, painter, pipe_cells, hole_cells, rect_by_cell, palette, width) -> None:
+        painter.setPen(Qt.PenStyle.NoPen)
+        for (x, y), (kind, vis) in pipe_cells.items():
+            if not pipe_block_origin(pipe_cells, x, y):
+                continue
+            near = rect_by_cell.get((x, y))
+            far = rect_by_cell.get((x + 1, y + 1))
+            if near is None or far is None:
+                continue
+            base = pipe_fill_color(palette.get(kind, _CELL_COLOR_UNKNOWN))
+            painter.setBrush(_blend_color(base, vis, self._reveal_all))
+            painter.drawRect(QRect(near.center(), far.center()).normalized())
+        painter.setBrush(Qt.BrushStyle.NoBrush)
+        for (x, y), (kind, vis) in pipe_cells.items():
+            rect = rect_by_cell.get((x, y))
+            if rect is None:
+                continue
+            color = _blend_color(palette.get(kind, _CELL_COLOR_UNKNOWN), vis, self._reveal_all)
+            center = QPointF(rect.center())
+            ends = []
+            for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                nb = (x + dx, y + dy)
+                if nb in pipe_cells:
+                    if pipe_edge_hidden(pipe_cells, x, y, dx, dy):
+                        continue
+                elif nb not in hole_cells:
+                    continue
+                nrect = rect_by_cell.get(nb)
+                if nrect is None:
+                    continue
+                nc = QPointF(nrect.center())
+                ends.append(QPointF((center.x() + nc.x()) / 2.0, (center.y() + nc.y()) / 2.0))
+            if not ends:
+                painter.setPen(Qt.PenStyle.NoPen)
+                painter.setBrush(color)
+                painter.drawEllipse(center, width / 2.0, width / 2.0)
+                painter.setBrush(Qt.BrushStyle.NoBrush)
+                continue
+            pen = QPen(color, width)
+            pen.setCapStyle(Qt.PenCapStyle.FlatCap)
+            pen.setJoinStyle(Qt.PenJoinStyle.RoundJoin)
+            painter.setPen(pen)
+            path = QPainterPath()
+            if len(ends) == 2:
+                path.moveTo(ends[0])
+                path.lineTo(center)
+                path.lineTo(ends[1])
+            else:
+                for end in ends:
+                    path.moveTo(center)
+                    path.lineTo(end)
+            painter.drawPath(path)
 
     def _palette(self) -> dict[str, QColor]:
         base = _CELL_COLORS_MAPVIEWER if self._reveal_all else _CELL_COLORS_ARENA
@@ -568,6 +749,8 @@ class AutomapCanvas(QWidget):
         has_flor = d.flor is not None
         palette = self._palette()
         cells_drawn: list[tuple[int, int, QRect]] = []
+        pipe_cells: dict[tuple[int, int], tuple[str, int]] = {}
+        hole_cells: set[tuple[int, int]] = set()
         entrance_set: set[tuple[int, int]] = set(d.entrance_cells) if d.entrance_cells else set()
         discovered_hd: set[tuple[int, int]] = set(d.discovered_hidden_door_cells) if d.discovered_hidden_door_cells else set()
         discovered_wp: set[tuple[int, int]] = set(d.discovered_wall_passage_cells) if d.discovered_wall_passage_cells else set()
@@ -593,9 +776,16 @@ class AutomapCanvas(QWidget):
                 if not self._show_unexplored_floor and (not self._reveal_all):
                     painter.fillRect(rect, _PARCHMENT)
                 if has_map1 and has_flor:
-                    cell_kind = _classify_cell(int(d.map1[y, x]), int(d.flor[y, x]), d.level_up_index, d.level_down_index, extended=self._reveal_all, express_wall_chasm=self._reveal_all or self._express_wall_chasm, express_wall_passage=self._reveal_all or self._express_wall_passage, express_wall_lava=self._reveal_all or self._express_wall_lava, express_hidden_door=self._express_hidden_door, hidden_door_ids=self._hidden_door_ids, hidden_door_discovered=self._reveal_all or (x, y) in discovered_hd, wall_passage_discovered=self._reveal_all or (x, y) in discovered_wp, menu_texture_indices=self._menu_texture_indices, is_wilderness=d.is_wilderness, wilderness_compact=not d.wild_show_edge, wild_distinguish_road=d.wild_distinguish_road, wild_show_field=d.wild_show_crops)
+                    cell_kind = _classify_cell(int(d.map1[y, x]), int(d.flor[y, x]), d.level_up_index, d.level_down_index, extended=self._reveal_all, express_wall_chasm=self._reveal_all or self._express_wall_chasm, express_wall_passage=self._reveal_all or self._express_wall_passage, express_wall_lava=self._reveal_all or self._express_wall_lava, express_hidden_door=self._express_hidden_door, hidden_door_ids=self._hidden_door_ids, hidden_door_discovered=self._reveal_all or (x, y) in discovered_hd, wall_passage_discovered=self._reveal_all or (x, y) in discovered_wp, pipe_under=self._pipe_under, menu_texture_indices=self._menu_texture_indices, is_wilderness=d.is_wilderness, wilderness_compact=not d.wild_show_edge, wild_distinguish_road=d.wild_distinguish_road, wild_show_field=d.wild_show_crops)
                 else:
                     cell_kind = 'floor' if d.walkable[y, x] else 'wall'
+                if self._pipe_under and has_map1 and has_flor:
+                    if cell_kind in ('wet_chasm', 'dry_chasm', 'lava_chasm'):
+                        hole_cells.add((x, y))
+                    else:
+                        pk = pipe_under_kind(int(d.map1[y, x]), int(d.flor[y, x]), express_wall_chasm=self._reveal_all or self._express_wall_chasm, express_wall_passage=self._reveal_all or self._express_wall_passage, express_wall_lava=self._reveal_all or self._express_wall_lava, wall_passage_discovered=self._reveal_all or (x, y) in discovered_wp)
+                        if pk is not None:
+                            pipe_cells[x, y] = (pk, vis)
                 if (x, y) in entrance_set:
                     cell_kind = 'wild_door' if d.is_wilderness else 'door'
                 if (x, y) in edge_set:
@@ -606,9 +796,15 @@ class AutomapCanvas(QWidget):
                 if cell_kind == 'floor':
                     cells_drawn.append((x, y, rect))
                     continue
+                if cell_kind == 'diagonal':
+                    self._paint_diagonal(painter, rect, int(d.map1[y, x]), d.map1, x, y, vis)
+                    cells_drawn.append((x, y, rect))
+                    continue
                 base_color = palette.get(cell_kind, _CELL_COLOR_UNKNOWN)
                 painter.fillRect(rect, _blend_color(base_color, vis, self._reveal_all))
                 cells_drawn.append((x, y, rect))
+        if pipe_cells:
+            self._paint_pipes(painter, pipe_cells, hole_cells, {(cx, cy): crect for cx, cy, crect in cells_drawn})
         treasure_cells = d.treasure_pile_cells or frozenset() if self._express_treasure else frozenset()
         mark = self._treasure_mark[:1]
         if treasure_cells and mark and (self._zoom >= 4):
@@ -636,8 +832,18 @@ class AutomapCanvas(QWidget):
                     painter.drawLine(int(rx), int(oy), int(rx), int(oy + H * self._zoom))
             else:
                 painter.setBrush(Qt.BrushStyle.NoBrush)
+                drawn_at = {(self._transform_x(_x, W), _y) for _x, _y, _r in cells_drawn}
                 for _x, _y, rect in cells_drawn:
-                    painter.drawRect(rect)
+                    col = self._transform_x(_x, W)
+                    x0, y0 = (rect.x(), rect.y())
+                    x1 = int(ox + (col + 1) * self._zoom)
+                    y1 = int(oy + (_y + 1) * self._zoom)
+                    painter.drawLine(x0, y0, x0, y1)
+                    painter.drawLine(x0, y0, x1, y0)
+                    if (col + 1, _y) not in drawn_at:
+                        painter.drawLine(x1, y0, x1, y1)
+                    if (col, _y + 1) not in drawn_at:
+                        painter.drawLine(x0, y1, x1, y1)
         if d.is_wilderness and (self._show_chunk_grid or self._show_chunk_coords):
             if self._show_chunk_grid:
                 cpen = QPen(_CHUNK_LINE)

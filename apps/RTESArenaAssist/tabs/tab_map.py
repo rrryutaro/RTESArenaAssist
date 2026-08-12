@@ -47,6 +47,7 @@ class TabMap(QWidget):
         self._canvas.set_show_recenter_lines(bool(settings.get('map_show_recenter_lines', False)))
         self._canvas.set_chunk_coord_font_size(int(settings.get('map_chunk_coord_font_size', 10)))
         self._canvas.set_map_expression(hidden_door=bool(settings.get('map_express_hidden_door', True)), wall_chasm=bool(settings.get('map_express_wall_chasm', True)), wall_passage=bool(settings.get('map_express_wall_passage', True)), wall_lava=bool(settings.get('map_express_wall_lava', True)), treasure=bool(settings.get('map_express_treasure', True)))
+        self._canvas.set_pipe_under(enabled=bool(settings.get('map_pipe_under', True)), opacity=int(settings.get('map_pipe_opacity', 100)))
         self._canvas.set_color_overrides(settings.get('map_colors', {}))
         self._canvas.set_treasure_mark(str(settings.get('map_treasure_mark', '') or ''))
 

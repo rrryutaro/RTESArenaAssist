@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:6c0dae0a8ae3b9d3983e99052da421d1465cc63970ed3387966fcd8ad52ed9f3",
+  "registry_hash": "sha256:c90163afee4bf3c1ddeeb37fc2f6f81473b1aa5a2a1d04c70cc124345f6c2e44",
   "categories": [
     {
       "category": "assist_ui",
@@ -3671,6 +3671,26 @@
           "id": 900731,
           "kind": "label",
           "debug_name": "spellbook.list_title"
+        },
+        {
+          "id": 900732,
+          "kind": "label",
+          "debug_name": "settings.map_pipe_opacity"
+        },
+        {
+          "id": 900733,
+          "kind": "label",
+          "debug_name": "settings.map_pipe_under"
+        },
+        {
+          "id": 900734,
+          "kind": "label",
+          "debug_name": "settings.map_pipe_under_note"
+        },
+        {
+          "id": 900735,
+          "kind": "label",
+          "debug_name": "settings.map_pipe_under_on"
         }
       ]
     },
@@ -49641,6 +49661,22 @@
           "text": "Known Spells"
         },
         {
+          "id": 900732,
+          "text": "Strength"
+        },
+        {
+          "id": 900733,
+          "text": "Passages underneath"
+        },
+        {
+          "id": 900734,
+          "text": "Shows passages running under walls and platforms as pipes through the centre of each cell. Turn it off to fill the whole cell with colour as before. Pipes use the same colour as open pits and join them without a break."
+        },
+        {
+          "id": 900735,
+          "text": "Show as pipes"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -77292,6 +77328,22 @@
         {
           "id": 900731,
           "text": "習得呪文一覧"
+        },
+        {
+          "id": 900732,
+          "text": "濃さ"
+        },
+        {
+          "id": 900733,
+          "text": "下の通路の描き方"
+        },
+        {
+          "id": 900734,
+          "text": "壁や高台の下を通る通路を、セルの中心を通る管で示します。OFF にすると従来どおりセル全体を色で塗ります。管の色は穴と同じ色で、穴とは途切れず繋がります。"
+        },
+        {
+          "id": 900735,
+          "text": "管で示す"
         },
         {
           "id": 902000,
@@ -105755,6 +105807,22 @@
           "text": "Hechizos conocidos"
         },
         {
+          "id": 900732,
+          "text": "Intensidad"
+        },
+        {
+          "id": 900733,
+          "text": "Pasajes por debajo"
+        },
+        {
+          "id": 900734,
+          "text": "Muestra los pasajes que discurren bajo muros y plataformas como tuberías que cruzan el centro de cada casilla. Al desactivarlo se colorea toda la casilla como antes. Las tuberías usan el mismo color que los pozos abiertos y se unen a ellos sin interrupción."
+        },
+        {
+          "id": 900735,
+          "text": "Mostrar como tuberías"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -133406,6 +133474,22 @@
         {
           "id": 900731,
           "text": "Bekannte Zauber"
+        },
+        {
+          "id": 900732,
+          "text": "Stärke"
+        },
+        {
+          "id": 900733,
+          "text": "Gänge darunter"
+        },
+        {
+          "id": 900734,
+          "text": "Zeigt Gänge unter Mauern und Podesten als Röhren durch die Mitte jedes Feldes. Ausgeschaltet wird das ganze Feld wie bisher farbig gefüllt. Die Röhren haben dieselbe Farbe wie offene Schächte und gehen ohne Unterbrechung in sie über."
+        },
+        {
+          "id": 900735,
+          "text": "Als Röhren zeigen"
         },
         {
           "id": 902000,
@@ -161061,6 +161145,22 @@
           "text": "Sorts connus"
         },
         {
+          "id": 900732,
+          "text": "Intensité"
+        },
+        {
+          "id": 900733,
+          "text": "Passages en dessous"
+        },
+        {
+          "id": 900734,
+          "text": "Montre les passages sous les murs et les plates-formes sous forme de conduits traversant le centre de chaque case. Désactivé, la case entière est colorée comme auparavant. Les conduits ont la même couleur que les gouffres ouverts et les rejoignent sans rupture."
+        },
+        {
+          "id": 900735,
+          "text": "Montrer en conduits"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -188714,6 +188814,22 @@
           "text": "Incantesimi conosciuti"
         },
         {
+          "id": 900732,
+          "text": "Intensità"
+        },
+        {
+          "id": 900733,
+          "text": "Passaggi sottostanti"
+        },
+        {
+          "id": 900734,
+          "text": "Mostra i passaggi che corrono sotto muri e piattaforme come condotti che attraversano il centro di ogni casella. Disattivandolo l'intera casella viene colorata come prima. I condotti hanno lo stesso colore delle voragini aperte e vi si congiungono senza interruzioni."
+        },
+        {
+          "id": 900735,
+          "text": "Mostra come condotti"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -216365,6 +216481,22 @@
         {
           "id": 900731,
           "text": "Известные заклинания"
+        },
+        {
+          "id": 900732,
+          "text": "Насыщенность"
+        },
+        {
+          "id": 900733,
+          "text": "Проходы внизу"
+        },
+        {
+          "id": 900734,
+          "text": "Показывает проходы под стенами и помостами трубами через центр каждой клетки. При выключении клетка целиком закрашивается, как раньше. Цвет труб совпадает с цветом открытых провалов, и они соединяются без разрыва."
+        },
+        {
+          "id": 900735,
+          "text": "Показывать трубами"
         },
         {
           "id": 902000,
