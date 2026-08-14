@@ -168,4 +168,4 @@ def read_response_candidate(analyzer, anchor: int) -> ResponseCandidate | None:
     hits = [c for c in candidates if c.lookup_hit]
     if hits:
         return hits[0]
-    return max(candidates, key=lambda c: len(c.text))
+    return None

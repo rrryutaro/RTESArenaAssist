@@ -431,6 +431,10 @@ def _dungeon_floor_with_hold(dungeon_level_hyp: int | None, display_mif_name: st
         return (held[1], held)
     return (None, None)
 
+def reset_floor_holds_on_load(w) -> None:
+    w._dungeon_level_held = None
+    w._interior_floor_held = None
+
 def _poll_handle_triggers(w, *, rt_x, rt_z, inf_name):
     try:
         from tts_prewarm import prewarm_dungeon_inf
@@ -819,14 +823,19 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
     dungeon_floor: int | None = None
     if not interior_mif_name:
         dungeon_floor, w._dungeon_level_held = _dungeon_floor_with_hold(dungeon_level_hyp, display_mif_name, getattr(w, '_dungeon_level_held', None))
+    interior_floor: int | None = None
+    if in_interior and interior_mif_name:
+        interior_floor, w._interior_floor_held = _dungeon_floor_with_hold(interior_floor_hyp, interior_mif_name, getattr(w, '_interior_floor_held', None))
+    else:
+        w._interior_floor_held = None
     if dungeon_floor is not None:
         effective_floor = dungeon_floor
-    elif in_interior and interior_floor_hyp is not None:
-        effective_floor = interior_floor_hyp
+    elif in_interior and interior_floor is not None:
+        effective_floor = interior_floor
     else:
         effective_floor = int(player_floor)
     if w._mif_matcher and _current_top_level(w) == 'normal-play':
-        w._mif_matcher.update_map(display_mif_name)
+        w._mif_matcher.update_map(display_mif_name, dungeon_floor)
     tab_map = getattr(w, '_tab_map', None)
     if tab_map is not None and _current_top_level(w) == 'chargen':
         if not getattr(w, '_map_cleared_for_chargen', False):
@@ -908,9 +917,9 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
                 except Exception:
                     _log.exception('wild_diag failed')
             wild_location_name = gs.get('MapName') or '' if diag_area in ('city', 'wilderness') else None
-            tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, automap_open=_automap_open, treasure_pickup_open=_treasure_pickup_open)
+            tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, automap_open=_automap_open, treasure_pickup_open=_treasure_pickup_open, dungeon_floor_fresh=dungeon_level_hyp)
             try:
-                w._tab_translate.update_fallback_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, automap_open=_automap_open, treasure_pickup_open=_treasure_pickup_open, suppress_map=_fallback_suppress_map, suppress_reason=_fallback_suppress_reason)
+                w._tab_translate.update_fallback_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, automap_open=_automap_open, treasure_pickup_open=_treasure_pickup_open, dungeon_floor_fresh=dungeon_level_hyp, suppress_map=_fallback_suppress_map, suppress_reason=_fallback_suppress_reason)
             except AttributeError as _e:
                 if 'update_fallback_map_state' not in str(_e):
                     _log.warning('fallback_map update AttributeError: %s', _e)
@@ -951,6 +960,12 @@ def _poll_screen_detect_and_label(w, _img_name, mif_name, _resolved_area, player
         elif w._loading_state_active:
             _screen_name = i18n.tr('screen.loading_in_play')
         _top_state = _current_top_level(w)
+        _feed = getattr(w, '_translation_feed', None)
+        if _feed is not None:
+            try:
+                _feed.on_screen_context(top_level=_top_state, screen_id=_screen_id)
+            except Exception:
+                _log.exception('translation_feed.on_screen_context failed')
         _area = _resolved_area
         _travel_l4_active_for_label = bool(getattr(w, '_travel_l4_active', False))
         _screen_suppresses_conversation_label = _travel_l4_active_for_label or _screen_id in ('system_menu', 'loadsave_in_play', 'automap', 'logbook')

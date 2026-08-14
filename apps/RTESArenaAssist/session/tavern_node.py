@@ -30,7 +30,7 @@ class TavernNode(FacilityNode):
         _mif_u = (interior_mif_name or '').upper()
         _active_facility = (active_facility_name or '').lower()
         _non_tavern_active = _active_facility in ('temple', 'equipment', 'mages_guild', 'magesguild')
-        return not _non_tavern_active and (_active_facility == 'tavern' or not _mif_u or _mif_u.startswith('TAVERN'))
+        return not _non_tavern_active and (_active_facility == 'tavern' or _mif_u.startswith('TAVERN'))
 
     def classify_view(self, w, *, shop_kind: str='none', shop_owner: str='', img: str='', in_interior: bool=False, facility_tavern: bool=False, npc_phase: Optional[int]=None):
         from session.tavern_signals import gather_tavern_signals

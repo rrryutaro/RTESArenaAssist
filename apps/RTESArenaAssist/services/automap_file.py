@@ -79,34 +79,20 @@ def parse_automap_file(path: Path | str) -> AutomapFile:
     return AutomapFile(path=p, file_size=len(data), caches=caches)
 CURRENT_LEVEL_HASH_OFFSET = 26167
 
-def find_active_cache(automap: AutomapFile, analyzer=None, anchor: int | None=None) -> AutomapCache | None:
-    if not automap.caches:
+def read_current_level_hash(analyzer, anchor: int | None) -> int | None:
+    if analyzer is None or anchor is None:
         return None
-    if analyzer is not None and anchor is not None:
-        try:
-            raw = analyzer.read_bytes(anchor + CURRENT_LEVEL_HASH_OFFSET, 4)
-            cur_hash = int.from_bytes(raw, 'little')
-        except (OSError, AttributeError):
-            cur_hash = None
-        if cur_hash is not None and cur_hash != 0:
-            for c in automap.caches:
-                if c.level_hash == cur_hash:
-                    return c
-            return None
-    cache0 = automap.caches[0]
-    cache0_50x50_nz = int((cache0.bitmap_grid[:50, :50] != 0).sum()) if cache0.bitmap_grid is not None else 0
-    if len(cache0.valid_notes) >= 1 or cache0_50x50_nz > 0:
-        return cache0
-    candidates = []
-    for c in automap.caches[1:]:
-        valid_count = len(c.valid_notes)
-        nz_50x50 = int((c.bitmap_grid[:50, :50] != 0).sum()) if c.bitmap_grid is not None else 0
-        candidates.append((valid_count, nz_50x50, c))
-    with_valid = [t for t in candidates if t[0] >= 1]
-    if with_valid:
-        with_valid.sort(key=lambda t: (-t[0], -t[1]))
-        return with_valid[0][2]
-    candidates.sort(key=lambda t: -t[1])
-    if candidates and candidates[0][1] > 0:
-        return candidates[0][2]
-    return cache0
+    try:
+        raw = analyzer.read_bytes(anchor + CURRENT_LEVEL_HASH_OFFSET, 4)
+    except (OSError, AttributeError):
+        return None
+    if not raw or len(raw) != 4:
+        return None
+    value = int.from_bytes(raw, 'little')
+    return value if value != 0 else None
+
+def cache_for_level_hash(automap: AutomapFile, level_hash: int) -> AutomapCache | None:
+    for c in automap.caches:
+        if c.level_hash == level_hash:
+            return c
+    return None

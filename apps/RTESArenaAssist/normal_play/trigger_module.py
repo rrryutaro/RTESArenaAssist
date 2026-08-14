@@ -80,6 +80,11 @@ def _render_trigger_entry(w, entry: dict, *, begin_riddle: bool=True) -> None:
 def _riddle_tab_suppressed(w, entry: dict) -> bool:
     return entry.get('type') == 'riddle' and bool(getattr(w, '_is_layout_active', False))
 
+def _reset_trigger_display(w) -> None:
+    w._last_trigger_active = False
+    w._riddle_display = None
+    w._ui_router.clear_if_owner('trigger')
+
 def _store_last_trigger_display(w, en: str, ja: str, panel_en: str | None=None, panel_ja: str | None=None, *, tab_off: bool=False) -> None:
     w._last_trigger_display = (en, ja, panel_en, panel_ja)
     w._last_trigger_active = True
@@ -137,9 +142,7 @@ def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, tr
                     raw_b = w._analyzer.read_bytes(w._anchor + TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ)
                     correct_body = get_trigger_text_by_index(raw_b, text_index)
                 except OSError:
-                    pass
-        if text_index is None and trigger_slot > 0:
-            text_index = trigger_slot
+                    correct_body = ''
         if text_index is not None:
             entry = itl.lookup(inf_name, text_index)
             if entry is not None and entry.get('type') == 'key':
@@ -155,17 +158,25 @@ def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, tr
             elif correct_body:
                 _store_last_trigger_display(w, correct_body, '')
                 w._ui_router.update_translation('trigger', correct_body, '', speech_role='situation')
-        elif correct_body:
-            entry = itl.lookup_riddle_by_text(correct_body)
-            if entry is None:
-                entry = itl.lookup_by_text(inf_name, correct_body)
-            if entry is None and inf_name:
-                entry = itl.lookup_by_substring(inf_name, correct_body)
-            if entry is not None:
-                _render_trigger_entry(w, entry)
             else:
-                _store_last_trigger_display(w, correct_body, '')
-                w._ui_router.update_translation('trigger', correct_body, '', speech_role='situation')
+                _reset_trigger_display(w)
+        elif correct_body:
+            riddle_hit = itl.lookup_riddle_by_text(correct_body)
+            if isinstance(riddle_hit, dict):
+                _reset_trigger_display(w)
+            else:
+                entry = itl.lookup_by_text(inf_name, correct_body)
+                if entry is None and inf_name:
+                    entry = itl.lookup_by_substring(inf_name, correct_body)
+                if isinstance(entry, dict) and entry.get('type') == 'riddle':
+                    _reset_trigger_display(w)
+                elif entry is not None:
+                    _render_trigger_entry(w, entry)
+                else:
+                    _store_last_trigger_display(w, correct_body, '')
+                    w._ui_router.update_translation('trigger', correct_body, '', speech_role='situation')
+        else:
+            _reset_trigger_display(w)
     if trig_fell and (not settings.get('keep_trigger_on_panel', False)):
         w._last_trigger_active = False
         w._riddle_display = None

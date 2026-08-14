@@ -170,7 +170,7 @@ def _floor_kind(floor: int) -> str:
     return 'floor'
 
 def _is_wall_passage_cell(map1_val: int, flor_val: int) -> bool:
-    return _map1_kind(map1_val) == 'wall' and _floor_kind(flor_val) in ('wet_chasm', 'dry_chasm', 'lava_chasm')
+    return _map1_kind(map1_val) in ('wall', 'raised') and _floor_kind(flor_val) in ('wet_chasm', 'dry_chasm', 'lava_chasm')
 
 def pipe_under_kind(map1_val: int, flor_val: int, *, express_wall_chasm: bool=False, express_wall_passage: bool=False, express_wall_lava: bool=False, wall_passage_discovered: bool=False) -> str | None:
     wall_kind = _map1_kind(map1_val)
@@ -185,6 +185,8 @@ def pipe_under_kind(map1_val: int, flor_val: int, *, express_wall_chasm: bool=Fa
         return 'wet_chasm'
     if floor_kind == 'dry_chasm':
         if wall_kind == 'raised':
+            if express_wall_passage and (not wall_passage_discovered):
+                return None
             return 'dry_chasm'
         if not express_wall_passage or not wall_passage_discovered:
             return None
@@ -236,6 +238,10 @@ def _classify_cell(map1_val: int, flor_val: int, level_up_index: int | None=None
             if express_wall_passage:
                 return 'wall_passage' if wall_passage_discovered else 'wall'
             return 'raised'
+        if wall_kind == 'raised':
+            if express_wall_passage and (not wall_passage_discovered):
+                return 'raised'
+            return 'dry_chasm'
         return 'dry_chasm'
     if floor_kind == 'lava_chasm':
         if wall_kind == 'wall':

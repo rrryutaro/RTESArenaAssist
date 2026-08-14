@@ -210,7 +210,10 @@ def detect_category(en_text: str) -> str | None:
     for sfx in eq_sfx:
         if text.endswith(' ' + sfx) or text == sfx:
             return 'equipment_store'
-    return 'tavern'
+    for p in _DATA.get('tavern', {}).get('prefixes', []):
+        if text.startswith(p.get('en', '') + ' '):
+            return 'tavern'
+    return None
 _EN_ARTICLE_RE = re.compile('^the\\s+', re.IGNORECASE)
 
 def surface_candidates(en_text: str) -> list[str]:

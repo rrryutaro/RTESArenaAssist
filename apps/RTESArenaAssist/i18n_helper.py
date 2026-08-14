@@ -147,28 +147,45 @@ def _v2_pick_id(source_id: str, category: str | None):
     ids = _v2_ids_for_source_id(source_id)
     if not ids:
         return None
-    if len(ids) > 1 and category is not None and (_V2_PUBLIC is not None):
+    if len(ids) == 1:
+        return int(ids[0])
+    if category is not None and _V2_PUBLIC is not None:
         for i in ids:
             c = _V2_PUBLIC.category_of(int(i))
             if c and c.get('category') == category:
                 return int(i)
-    return int(ids[0])
+    return None
 
 def text_by_source_id(source_id: str, *, category: str | None=None, lang: str | None=None) -> str | None:
     if _V2_PUBLIC is None:
         return None
     nid = _v2_pick_id(source_id, category)
-    if nid is None:
+    if nid is not None:
+        return _V2_PUBLIC.resolve_text(nid, _v2_locale_tag(lang or _lang))
+    ids = _v2_ids_for_source_id(source_id)
+    if len(ids) <= 1:
         return None
-    return _V2_PUBLIC.resolve_text(nid, _v2_locale_tag(lang or _lang))
+    loc = _v2_locale_tag(lang or _lang)
+    texts = {_V2_PUBLIC.resolve_text(int(i), loc) for i in ids}
+    texts.discard(None)
+    if len(texts) == 1:
+        return next(iter(texts))
+    return None
 
 def original_by_source_id(source_id: str, *, category: str | None=None) -> str | None:
     if _V2_PUBLIC is None:
         return None
     nid = _v2_pick_id(source_id, category)
-    if nid is None:
+    if nid is not None:
+        return _V2_PUBLIC.resolve_original_surface(nid)
+    ids = _v2_ids_for_source_id(source_id)
+    if len(ids) <= 1:
         return None
-    return _V2_PUBLIC.resolve_original_surface(nid)
+    originals = {_V2_PUBLIC.resolve_original_surface(int(i)) for i in ids}
+    originals.discard(None)
+    if len(originals) == 1:
+        return next(iter(originals))
+    return None
 
 def v2_category_entries(category: str, *, lang: str | None=None) -> list:
     if _V2_PUBLIC is None:

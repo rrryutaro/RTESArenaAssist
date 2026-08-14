@@ -112,6 +112,9 @@ def lookup_by_text(inf_name: str, body: str, max_prefix: int=50) -> dict | None:
         return s.replace('\r', ' ').replace('\n', ' ').strip()
     body_norm = _norm(body)
     inf_upper = inf_name.upper()
+    best: dict | None = None
+    best_len = -1
+    ambiguous = False
     for (inf, _idx), e in _index.items():
         if inf_upper and inf != inf_upper:
             continue
@@ -120,8 +123,14 @@ def lookup_by_text(inf_name: str, body: str, max_prefix: int=50) -> dict | None:
         if not cand_norm:
             continue
         if body_norm[:len(cand_norm)].upper() == cand_norm.upper():
-            return e
-    return None
+            n = len(cand_norm)
+            if n > best_len:
+                best, best_len, ambiguous = (e, n, False)
+            elif n == best_len:
+                ambiguous = True
+    if ambiguous:
+        return None
+    return best
 
 def lookup_by_substring(inf_name: str, body: str, min_fragment_len: int=16) -> dict | None:
     _ensure_loaded()

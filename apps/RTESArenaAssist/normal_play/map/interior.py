@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional
 import numpy as np
 from common_draw.automap_canvas import CanvasData, _is_hidden_door_cell, _is_wall_passage_cell, facing_delta
-from services.arena_reveal_stencil import cell_visible_in_cone
+from services.arena_reveal_stencil import resolve_first_block, wall_passage_cell_visible
 from services.city_voxel_assembler import detect_menu_cells
 from services.map_ext_store import SECTION_WALL_PASSAGES
 from runtime_paths import resolve_arena_install_dir
@@ -33,6 +33,7 @@ class InteriorMapSession(MapSessionBase):
         self._discovered_wp: frozenset[tuple[int, int]] = frozenset()
         self._wall_passage_cells: tuple[tuple[int, int], ...] = ()
         self._view_scan_key = None
+        self._in_first_block: bool = False
         self._last_player_pos: Optional[tuple[int, int]] = None
         self._menu_texture_indices: frozenset[int] = frozenset()
         self._entrance_cells: tuple[tuple[int, int], ...] = ()
@@ -99,13 +100,14 @@ class InteriorMapSession(MapSessionBase):
         if ctx.player_tile_x is None or ctx.player_tile_y is None or ctx.angle_deg is None:
             return
         px, py = (int(ctx.player_tile_x), int(ctx.player_tile_y))
+        self._in_first_block = resolve_first_block(self._map1, self._flor, px, py, self._in_first_block)
         key = (px, py, int(ctx.angle_deg / 5.0))
         if key == self._view_scan_key:
             return
         self._view_scan_key = key
         fx, fy = facing_delta(ctx.angle_deg)
         for cx, cy in self._wall_passage_cells:
-            if cell_visible_in_cone(self._map1, px, py, fx, fy, cx, cy, ignore_walls=ctx.wall_los_enabled):
+            if wall_passage_cell_visible(self._flor, px, py, fx, fy, cx, cy, in_first_block=self._in_first_block, ignore_walls=ctx.wall_los_enabled):
                 self._ext_store.note_discovery(self._location_key, cx, cy, SECTION_WALL_PASSAGES)
 
     def get_canvas_data(self) -> CanvasData:
@@ -135,6 +137,7 @@ class InteriorMapSession(MapSessionBase):
         self._entry_center = None
         self._wall_passage_cells = ()
         self._view_scan_key = None
+        self._in_first_block = False
 
     def _load_mif(self, mif_name: str, player_floor: int=0) -> None:
         try:
@@ -155,6 +158,7 @@ class InteriorMapSession(MapSessionBase):
             self._flor = None
         self._wall_passage_cells = ()
         self._view_scan_key = None
+        self._in_first_block = False
         if self._flor is not None:
             cells: list[tuple[int, int]] = []
             for yy in range(mif.height):

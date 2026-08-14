@@ -20,6 +20,7 @@ class MapContext:
     area: Optional[str] = None
     automap_open: bool = False
     treasure_pickup_open: bool = False
+    dungeon_floor_fresh: Optional[int] = None
     ext_store: Any = None
     wall_los_enabled: bool = False
     reveal_all: bool = False

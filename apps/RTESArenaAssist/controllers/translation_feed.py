@@ -23,6 +23,7 @@ class TranslationFeed:
         self._last_top_level: str | None = None
         self._spoken_keys: 'OrderedDict[tuple[str | None, str], None]' = OrderedDict()
         self._speaking_owner: str | None = None
+        self._last_screen_cut = False
 
     def on_translation(self, panel_owner: str, original: str, text: str, speech_role: str | None=None, speech_text: str | None=None, log_enabled: bool=True, speech_action: str='replace') -> None:
         self._reset_guard_on_context_change()
@@ -130,6 +131,19 @@ class TranslationFeed:
         except Exception:
             pass
         self.reset_spoken()
+    _SPEECH_CUT_SCREENS = frozenset({'system_menu', 'loadsave_in_play'})
+
+    def on_screen_context(self, *, top_level: str, screen_id: str) -> None:
+        cut = top_level == 'pregame' or screen_id in self._SPEECH_CUT_SCREENS
+        prev = self._last_screen_cut
+        self._last_screen_cut = cut
+        if not cut or prev:
+            return
+        try:
+            self._tts.stop_speaking()
+        except Exception:
+            pass
+        self._speaking_owner = None
 
     def _apply_name_reading(self, text: str) -> str:
         reading = settings.get('tts_name_reading', '') or ''

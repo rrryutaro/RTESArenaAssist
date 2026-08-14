@@ -72,13 +72,19 @@ def _read_chunk_size(data: bytes, offset: int) -> int | None:
         return None
     return size
 
-def parse_mif(path: str | Path, level_index_override: int | None=None, player_floor: int | None=None) -> MifMap:
+class _LevelUnavailableError(Exception):
+    pass
+
+def parse_mif(path: str | Path, level_index_override: int | None=None, player_floor: int | None=None) -> MifMap | None:
     mif_path = Path(path)
     return parse_mif_bytes(mif_path.read_bytes(), mif_path, level_index_override, player_floor)
 
-def parse_mif_bytes(data: bytes, path: str | Path='<memory>', level_index_override: int | None=None, player_floor: int | None=None) -> MifMap:
+def parse_mif_bytes(data: bytes, path: str | Path='<memory>', level_index_override: int | None=None, player_floor: int | None=None) -> MifMap | None:
     mif_path = Path(path)
-    parsed = _parse_mif_structured(data, mif_path, level_index_override, player_floor)
+    try:
+        parsed = _parse_mif_structured(data, mif_path, level_index_override, player_floor)
+    except _LevelUnavailableError:
+        return None
     if parsed is not None:
         return parsed
     return _parse_mif_scan_fallback(data, mif_path)
@@ -112,14 +118,17 @@ def _parse_mif_structured(data: bytes, mif_path: Path, level_index_override: int
         level_index += 1
     if not levels:
         return None
-    if level_index_override is not None and 0 <= level_index_override < len(levels):
+    if level_index_override is not None:
+        if not 0 <= level_index_override < len(levels):
+            raise _LevelUnavailableError(f'{mif_path.name}: level_index_override={level_index_override} (levels={len(levels)})')
         selected_index = level_index_override
-    elif player_floor is not None and 0 <= starting_level < len(levels):
+    elif player_floor is not None:
+        if not 0 <= starting_level < len(levels):
+            raise _LevelUnavailableError(f'{mif_path.name}: starting_level={starting_level} (levels={len(levels)})')
         adj = starting_level - player_floor
-        if 0 <= adj < len(levels):
-            selected_index = adj
-        else:
-            selected_index = starting_level
+        if not 0 <= adj < len(levels):
+            raise _LevelUnavailableError(f'{mif_path.name}: player_floor={player_floor} → index={adj} (levels={len(levels)})')
+        selected_index = adj
     elif 0 <= starting_level < len(levels):
         selected_index = starting_level
     else:

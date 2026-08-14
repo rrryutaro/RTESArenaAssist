@@ -121,6 +121,8 @@ class AssistWindow(QMainWindow):
             from controllers.map_ext_lifecycle import get_lifecycle
             get_lifecycle().add_store(self._log_store)
             get_lifecycle().add_on_load(self._translation_feed.on_load)
+            from controllers.poll_controller import reset_floor_holds_on_load
+            get_lifecycle().add_on_load(lambda: reset_floor_holds_on_load(self))
         except Exception:
             pass
         try:

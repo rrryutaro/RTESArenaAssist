@@ -49,14 +49,14 @@ def match_floor_by_geometry(level_maps, live_map1) -> Optional[int]:
         return None
     return best_idx
 
-def match_floor_by_topology(signatures, up_exists: bool, down_exists: bool) -> int:
+def match_floor_by_topology(signatures, up_exists: bool, down_exists: bool) -> Optional[int]:
     if not signatures:
-        return 0
+        return None
     any_stairs = any((u or d for u, d in signatures))
     matched = [i for i, (u, d) in enumerate(signatures) if ((u or d) or not any_stairs) and (u, d) == (up_exists, down_exists)]
     if len(matched) == 1:
         return matched[0]
-    return 0
+    return None
 
 def level_stair_signatures(mif_name: str):
     data = _level_data(mif_name)

@@ -144,7 +144,7 @@ def _render_effect_menu(w) -> bool:
     return True
 
 def _select_list_source(w, sig: dict, img: str):
-    from mages_list_reader import POTION_LIST_OFFSET, SPELL_LIST_OFFSET, INVENTORY_LIST_OFFSET, SPELLMAKER_TARGET_OFFSET, SPELLMAKER_EFFECT_OFFSET, SPELLMAKER_SUBLIST_OFFSET, EFFECT_PICK_OFFSET, read_priced_list, read_name_list, read_magic_item_list, read_active_priced_list, looks_like_potion_list, read_active_list_offset, classify_spellmaker_name_items, enrich_unidentified_by_index
+    from mages_list_reader import POTION_LIST_OFFSET, SPELL_LIST_OFFSET, INVENTORY_LIST_OFFSET, SPELLMAKER_TARGET_OFFSET, SPELLMAKER_EFFECT_OFFSET, SPELLMAKER_SUBLIST_OFFSET, EFFECT_PICK_OFFSET, read_name_list, read_magic_item_list, read_active_priced_list, looks_like_potion_list, read_active_list_offset, classify_spellmaker_name_items, enrich_unidentified_by_index
     family = sig.get('family')
     cur = sig.get('foreground_ptr') if 'foreground_ptr' in sig else _read_current_ptr(w)
     cur = cur if isinstance(cur, int) else 0
@@ -172,8 +172,10 @@ def _select_list_source(w, sig: dict, img: str):
                 return ('Potions', 'ポーション一覧', items)
             return ('Spells', '呪文一覧', items)
         if SPELL_LIST_OFFSET <= cur < 39936:
-            return ('Spells', '呪文一覧', read_priced_list(w._analyzer, w._anchor, SPELL_LIST_OFFSET))
-        return ('Potions', 'ポーション一覧', read_priced_list(w._analyzer, w._anchor, POTION_LIST_OFFSET))
+            return ('Spells', '呪文一覧', [])
+        if POTION_LIST_OFFSET <= cur < SPELL_LIST_OFFSET:
+            return ('Potions', 'ポーション一覧', [])
+        return ('', '', [])
     if family == 111:
         if img == 'NEWPOP.IMG':
             off = read_active_list_offset(w._analyzer, w._anchor)

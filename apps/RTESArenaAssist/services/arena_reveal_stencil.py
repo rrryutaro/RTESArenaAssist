@@ -154,3 +154,64 @@ def _line_of_sight_blocked(map1: np.ndarray, px: int, py: int, tx: int, ty: int)
             return True
         prev_cx, prev_cy = (cx, cy)
     return False
+_CHASM_FLOOR_IDS = (12, 13, 14)
+
+def _is_chasm_floor(flor_val: int) -> bool:
+    return flor_val >> 8 & 255 in _CHASM_FLOOR_IDS
+
+def resolve_first_block(map1: np.ndarray | None, flor: np.ndarray | None, px: int, py: int, prev: bool) -> bool:
+    if flor is None:
+        return False
+    H, W = flor.shape
+    if not (0 <= px < W and 0 <= py < H):
+        return prev
+    if not _is_chasm_floor(int(flor[py, px])):
+        return False
+    kind = _map1_kind(int(map1[py, px])) if map1 is not None else 'none'
+    if kind in ('none', 'wall'):
+        return True
+    return prev
+
+def wall_passage_cell_visible(flor: np.ndarray | None, px: int, py: int, facing_dx: float, facing_dy: float, tx: int, ty: int, *, in_first_block: bool=False, ignore_walls: bool=False) -> bool:
+    if not cell_visible_in_cone(None, px, py, facing_dx, facing_dy, tx, ty):
+        return False
+    if ignore_walls:
+        return True
+    if flor is None or not in_first_block:
+        return False
+    if (px, py) == (tx, ty):
+        return True
+    return not _line_of_sight_blocked_l1(flor, px, py, tx, ty)
+
+def _line_of_sight_blocked_l1(flor: np.ndarray, px: int, py: int, tx: int, ty: int) -> bool:
+    if (px, py) == (tx, ty):
+        return False
+    H, W = flor.shape
+    line = _bresenham(px, py, tx, ty)
+    prev_cx, prev_cy = (px, py)
+    for cx, cy in line:
+        if (cx, cy) == (px, py):
+            prev_cx, prev_cy = (cx, cy)
+            continue
+        if (cx, cy) == (tx, ty):
+            return False
+        if not (0 <= cx < W and 0 <= cy < H):
+            prev_cx, prev_cy = (cx, cy)
+            continue
+        step_dx = cx - prev_cx
+        step_dy = cy - prev_cy
+        if step_dx != 0 and step_dy != 0:
+            orth_a = (prev_cx + step_dx, prev_cy)
+            orth_b = (prev_cx, prev_cy + step_dy)
+            a_blocked = False
+            b_blocked = False
+            if 0 <= orth_a[0] < W and 0 <= orth_a[1] < H:
+                a_blocked = not _is_chasm_floor(int(flor[orth_a[1], orth_a[0]]))
+            if 0 <= orth_b[0] < W and 0 <= orth_b[1] < H:
+                b_blocked = not _is_chasm_floor(int(flor[orth_b[1], orth_b[0]]))
+            if a_blocked or b_blocked:
+                return True
+        if not _is_chasm_floor(int(flor[cy, cx])):
+            return True
+        prev_cx, prev_cy = (cx, cy)
+    return False

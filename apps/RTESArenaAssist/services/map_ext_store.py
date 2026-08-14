@@ -1,7 +1,7 @@
 from __future__ import annotations
 import json
 import os
-_FILE_VERSION = 1
+_FILE_VERSION = 3
 SECTION_HIDDEN_DOORS = 'hidden_doors'
 SECTION_TREASURE_PILES = 'treasure_piles'
 SECTION_WALL_PASSAGES = 'wall_passages'
@@ -16,6 +16,35 @@ def ext_data_dir() -> str:
 
 def slot_filename(slot: int) -> str:
     return f'map_ext.0{int(slot)}'
+_PAIRS_FILENAME = 'map_level_pairs.json'
+
+def load_hash_floor_pairs() -> dict[str, dict[int, int]]:
+    path = os.path.join(ext_data_dir(), _PAIRS_FILENAME)
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+    except (OSError, ValueError):
+        return {}
+    out: dict[str, dict[int, int]] = {}
+    for mif, pairs in (data.get('pairs') or {}).items():
+        if not isinstance(pairs, dict):
+            continue
+        m: dict[int, int] = {}
+        for hex_hash, floor in pairs.items():
+            try:
+                m[int(str(hex_hash), 16)] = int(floor)
+            except (TypeError, ValueError):
+                continue
+        if m:
+            out[str(mif)] = m
+    return out
+
+def save_hash_floor_pairs(pairs: dict[str, dict[int, int]]) -> None:
+    os.makedirs(ext_data_dir(), exist_ok=True)
+    path = os.path.join(ext_data_dir(), _PAIRS_FILENAME)
+    obj = {'version': 1, 'pairs': {mif: {f'{h:08X}': int(fl) for h, fl in m.items()} for mif, m in pairs.items()}}
+    with open(path, 'w', encoding='utf-8') as f:
+        json.dump(obj, f, ensure_ascii=False, indent=2)
 
 def _loc_dict_to_sets(raw: dict) -> dict[str, set[tuple[int, int]]]:
     out: dict[str, set[tuple[int, int]]] = {}
@@ -65,6 +94,12 @@ class MapExtStore:
             return (None, _empty_cells())
         save_id = obj.get('save_id')
         data = {sec: _loc_dict_to_sets(obj.get(sec, {})) for sec in _SECTIONS}
+        try:
+            file_version = int(obj.get('version') or 1)
+        except (TypeError, ValueError):
+            file_version = 1
+        if file_version < 3:
+            data[SECTION_WALL_PASSAGES] = {}
         return (save_id, data)
 
     def _write_slot_file(self, slot: int, save_id: str | None, data: dict) -> None:
@@ -106,6 +141,21 @@ class MapExtStore:
         out = set(self._persist.get(section, {}).get(location_key, set()))
         out |= self._active.get(section, {}).get(location_key, set())
         return frozenset(out)
+
+    def migrate_location_key(self, old_key: str, new_key: str) -> bool:
+        if not old_key or not new_key or old_key == new_key:
+            return False
+        moved = False
+        for section in _SECTIONS:
+            for layer in (self._active, self._persist):
+                sec = layer.get(section)
+                if not sec or old_key not in sec:
+                    continue
+                cells = sec.pop(old_key)
+                if cells:
+                    sec.setdefault(new_key, set()).update(cells)
+                    moved = True
+        return moved
 
     def commit_to_slot(self, slot: int, save_id: str | None) -> None:
         merged = _empty_cells()

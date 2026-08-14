@@ -1,33 +1,5 @@
-import json
-import os
-import struct
-import sys
-
-def parse_mif_trigs_bytes(data: bytes) -> list[tuple[int, int, int, int]]:
-    i = 0
-    while i < len(data) - 6:
-        if data[i:i + 4] == b'TRIG':
-            size = struct.unpack_from('<H', data, i + 4)[0]
-            rec_count = size // 4
-            offset = i + 6
-            return [struct.unpack_from('4B', data, offset + r * 4) for r in range(rec_count)]
-        i += 1
-    return []
-
-def parse_mif_trigs(path: str) -> list[tuple[int, int, int, int]]:
-    data = None
-    try:
-        from services.mif_loader import read_mif_bytes
-        data = read_mif_bytes(path)
-    except ImportError:
-        data = None
-    if data is None:
-        try:
-            with open(path, 'rb') as f:
-                data = f.read()
-        except OSError:
-            return []
-    return parse_mif_trigs_bytes(data)
+def _sound_only(text_index: int) -> bool:
+    return text_index == 255
 _RIDDLE_MARKER = '^'
 _RIDDLE_ANSWER = ':'
 _RIDDLE_RESPONSE = '`'
@@ -131,81 +103,87 @@ def extract_trigger_texts(raw_block: bytes) -> list[str]:
     return texts
 
 def get_trigger_text_by_index(raw_block: bytes, text_index: int) -> str:
-    texts = extract_trigger_texts(raw_block)
-    if not texts:
-        return ''
-    if 0 <= text_index < len(texts):
-        return texts[text_index]
-    return texts[0]
-
-def _load_bundled_trig_table() -> dict[str, list[tuple[int, int, int]]]:
-    if getattr(sys, 'frozen', False):
-        base_dir = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(sys.executable)))
-        json_path = os.path.join(base_dir, 'dictionary', 'trig_table.json')
-    else:
-        here = os.path.dirname(os.path.abspath(__file__))
-        json_path = os.path.normpath(os.path.join(here, '..', 'RTESArenaAssist', 'dictionary', 'trig_table.json'))
-    if not os.path.isfile(json_path):
-        return {}
-    try:
-        with open(json_path, 'r', encoding='utf-8') as f:
-            raw = json.load(f)
-    except (OSError, ValueError):
-        return {}
-    return {k.upper(): [tuple(v) for v in vs] for k, vs in raw.items()}
-_BUNDLED_TABLE: dict[str, list[tuple[int, int, int]]] | None = None
-
-def _bundled_table() -> dict[str, list[tuple[int, int, int]]]:
-    global _BUNDLED_TABLE
-    if _BUNDLED_TABLE is None:
-        _BUNDLED_TABLE = _load_bundled_trig_table()
-    return _BUNDLED_TABLE
+    number = -1
+    for chunk in raw_block.split(b'\x00'):
+        if not chunk:
+            continue
+        head = chunk.decode('ascii', errors='replace').lstrip('~')
+        if not head.strip():
+            continue
+        is_response = head.startswith(_RIDDLE_RESPONSE)
+        if not is_response:
+            number += 1
+            if number == text_index:
+                return _chunk_to_trigger_text(chunk) or ''
+        if number > text_index:
+            break
+    return ''
 
 class MifTriggerMatcher:
 
     def __init__(self, mif_dir: str=''):
         self._mif_dir = mif_dir
         self._loaded_mif: str = ''
-        self._trigs: list[tuple[int, int, int, int]] = []
+        self._trigs_by_level: list[list[tuple[int, int, int, int]]] = []
+        self._active_level: int | None = None
         self._last_status: str = 'unknown'
         self._last_mif_entry: tuple[int, int, int, int] | None = None
         self._source: str = 'none'
 
-    def update_map(self, mif_name: str) -> bool:
-        if not mif_name or mif_name == self._loaded_mif:
-            return bool(self._trigs)
-        key = mif_name.upper()
-        bundled = _bundled_table().get(key)
-        if bundled:
-            self._trigs = [(x, y, ti, 0) for x, y, ti in bundled]
-            self._loaded_mif = mif_name
-            self._source = 'bundled'
-            self._last_status = 'unknown'
-            return True
-        path = os.path.join(self._mif_dir, key) if self._mif_dir else key
-        self._trigs = parse_mif_trigs(path)
+    def update_map(self, mif_name: str, level_index: int | None=None) -> bool:
+        if mif_name and mif_name != self._loaded_mif:
+            self._load_levels(mif_name)
+        self._active_level = level_index
+        return any(self._trigs_by_level)
+
+    def _load_levels(self, mif_name: str) -> None:
+        levels: list[list[tuple[int, int, int, int]]] = []
+        try:
+            from runtime_paths import resolve_arena_install_dir
+            from services.mif_loader import DEFAULT_MIF_DIR, load_mif
+            dirs = [d for d in (self._mif_dir or None, DEFAULT_MIF_DIR, resolve_arena_install_dir()) if d]
+            head = load_mif(mif_name, dirs)
+            if head is not None:
+                want = max(int(head.level_count or 1), 1)
+                for i in range(want):
+                    lv = head if i == head.level_index else load_mif(mif_name, dirs, level_index_override=i)
+                    trigs = [(t.x, t.y, t.text_index, t.sound_index) for t in (lv.trigs if lv is not None else []) or []]
+                    levels.append(trigs)
+        except Exception:
+            levels = []
+        self._trigs_by_level = levels
         self._loaded_mif = mif_name
-        self._source = 'mif_file' if self._trigs else 'none'
-        self._last_status = 'mif_trig_not_found' if not self._trigs else 'unknown'
-        return bool(self._trigs)
+        self._source = 'mif_levels' if any(levels) else 'none'
+        self._last_status = 'unknown' if any(levels) else 'mif_trig_not_found'
+
+    def _match_in(self, trigs: list[tuple[int, int, int, int]], rt_x: int, rt_y: int) -> list[tuple[int, int, int, int]]:
+        return [e for e in trigs if e[0] == rt_x and e[1] == rt_y and (not _sound_only(e[2]))]
 
     def find_text_index(self, rt_x: int, rt_y: int) -> int | None:
         self._last_mif_entry = None
-        if not self._trigs:
+        if not any(self._trigs_by_level):
             self._last_status = 'mif_not_loaded' if not self._loaded_mif else 'mif_trig_not_found'
             return None
-        for entry in self._trigs:
-            x, y, ti, _si = entry
-            if x == rt_x and y == rt_y:
-                self._last_mif_entry = entry
-                self._last_status = 'matched'
-                return ti
+        lvl = self._active_level
+        if lvl is not None and 0 <= lvl < len(self._trigs_by_level):
+            hits = self._match_in(self._trigs_by_level[lvl], rt_x, rt_y)
+        else:
+            hits = []
+            for trigs in self._trigs_by_level:
+                hits.extend(self._match_in(trigs, rt_x, rt_y))
+            if len({e[2] for e in hits}) > 1:
+                self._last_status = 'mif_coord_ambiguous'
+                return None
+        if hits:
+            self._last_mif_entry = hits[0]
+            self._last_status = 'matched'
+            return hits[0][2]
         self._last_status = 'mif_coord_not_found'
         return None
 
     @property
     def trig_count(self) -> int:
-        return len(self._trigs)
+        return sum((len(t) for t in self._trigs_by_level))
 
     @property
     def loaded_mif(self) -> str:

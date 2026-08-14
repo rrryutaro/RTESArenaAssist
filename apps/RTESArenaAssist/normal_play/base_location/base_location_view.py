@@ -64,8 +64,8 @@ def resolve_area_with_indoor_fallback(analyzer, anchor: Optional[int], mif_name:
             return ('dungeon', last_non_interior_area)
         if last_non_interior_area:
             return (last_non_interior_area, last_non_interior_area)
-        if area == 'unknown' or (area == 'dungeon' and _looks_like_interior_mif(mif_name)):
-            return ('city', last_non_interior_area)
+        if area == 'dungeon' and _looks_like_interior_mif(mif_name):
+            return ('unknown', last_non_interior_area)
         return (area, last_non_interior_area)
     area = detect_play_area(analyzer, anchor, mif_name)
     if area in ('city', 'wilderness', 'dungeon'):
