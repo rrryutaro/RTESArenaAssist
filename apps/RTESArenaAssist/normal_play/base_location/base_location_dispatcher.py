@@ -62,6 +62,12 @@ class BaseLocationDispatcher:
             self._active_key = None
         self._suspended_key = None
 
+    def request_automap_import(self) -> None:
+        key = self._active_key
+        if key is None:
+            return
+        dict(self._sessions)[key].request_automap_import()
+
     def reset_progress(self) -> None:
         for _key, sess in self._sessions:
             sess.reset_progress()

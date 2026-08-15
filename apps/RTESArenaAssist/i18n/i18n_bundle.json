@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:c90163afee4bf3c1ddeeb37fc2f6f81473b1aa5a2a1d04c70cc124345f6c2e44",
+  "registry_hash": "sha256:5067d0259a783ca3a1596bda5bca63f3c01ed07e1152dd6de04aea0fcd594823",
   "categories": [
     {
       "category": "assist_ui",
@@ -3691,6 +3691,21 @@
           "id": 900735,
           "kind": "label",
           "debug_name": "settings.map_pipe_under_on"
+        },
+        {
+          "id": 900736,
+          "kind": "label",
+          "debug_name": "map.action.actual_size"
+        },
+        {
+          "id": 900737,
+          "kind": "label",
+          "debug_name": "map.action.fit"
+        },
+        {
+          "id": 900738,
+          "kind": "label",
+          "debug_name": "map.action.refresh"
         }
       ]
     },
@@ -49677,6 +49692,18 @@
           "text": "Show as pipes"
         },
         {
+          "id": 900736,
+          "text": "Actual size (100%)"
+        },
+        {
+          "id": 900737,
+          "text": "Fit whole map"
+        },
+        {
+          "id": 900738,
+          "text": "Refresh map"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -77344,6 +77371,18 @@
         {
           "id": 900735,
           "text": "管で示す"
+        },
+        {
+          "id": 900736,
+          "text": "100% 表示（既定のサイズ）"
+        },
+        {
+          "id": 900737,
+          "text": "全体表示"
+        },
+        {
+          "id": 900738,
+          "text": "マップを更新"
         },
         {
           "id": 902000,
@@ -105823,6 +105862,18 @@
           "text": "Mostrar como tuberías"
         },
         {
+          "id": 900736,
+          "text": "Tamaño real (100 %)"
+        },
+        {
+          "id": 900737,
+          "text": "Ajustar todo el mapa"
+        },
+        {
+          "id": 900738,
+          "text": "Actualizar mapa"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -133490,6 +133541,18 @@
         {
           "id": 900735,
           "text": "Als Röhren zeigen"
+        },
+        {
+          "id": 900736,
+          "text": "Originalgröße (100 %)"
+        },
+        {
+          "id": 900737,
+          "text": "Ganze Karte einpassen"
+        },
+        {
+          "id": 900738,
+          "text": "Karte aktualisieren"
         },
         {
           "id": 902000,
@@ -161161,6 +161224,18 @@
           "text": "Montrer en conduits"
         },
         {
+          "id": 900736,
+          "text": "Taille réelle (100 %)"
+        },
+        {
+          "id": 900737,
+          "text": "Ajuster la carte entière"
+        },
+        {
+          "id": 900738,
+          "text": "Actualiser la carte"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -188830,6 +188905,18 @@
           "text": "Mostra come condotti"
         },
         {
+          "id": 900736,
+          "text": "Dimensioni reali (100%)"
+        },
+        {
+          "id": 900737,
+          "text": "Adatta l'intera mappa"
+        },
+        {
+          "id": 900738,
+          "text": "Aggiorna mappa"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -216497,6 +216584,18 @@
         {
           "id": 900735,
           "text": "Показывать трубами"
+        },
+        {
+          "id": 900736,
+          "text": "Реальный размер (100 %)"
+        },
+        {
+          "id": 900737,
+          "text": "Вписать всю карту"
+        },
+        {
+          "id": 900738,
+          "text": "Обновить карту"
         },
         {
           "id": 902000,

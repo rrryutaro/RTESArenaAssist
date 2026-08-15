@@ -734,5 +734,8 @@
   "manual.guide.answer_missing": "(No se encontraron datos de la respuesta)",
   "manual.guide.place_unknown": "(Lugar no registrado)",
   "manual.guide.floor": "Nivel {n}",
-  "manual.guide.answer_item": "• {answer}"
+  "manual.guide.answer_item": "• {answer}",
+  "map.action.refresh": "Actualizar mapa",
+  "map.action.fit": "Ajustar todo el mapa",
+  "map.action.actual_size": "Tamaño real (100 %)"
 }

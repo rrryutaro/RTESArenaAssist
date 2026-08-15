@@ -431,6 +431,21 @@ def _dungeon_floor_with_hold(dungeon_level_hyp: int | None, display_mif_name: st
         return (held[1], held)
     return (None, None)
 
+def reset_map_progress_on_load(w) -> None:
+    for tab in (getattr(w, '_tab_map', None), _fallback_map_tab_or_none(w)):
+        if tab is None:
+            continue
+        try:
+            tab.reset_progress()
+        except (AttributeError, RuntimeError):
+            _log.exception('reset_progress failed on load')
+
+def _fallback_map_tab_or_none(w):
+    try:
+        return w._tab_translate.fallback_map_tab()
+    except (AttributeError, RuntimeError):
+        return None
+
 def reset_floor_holds_on_load(w) -> None:
     w._dungeon_level_held = None
     w._interior_floor_held = None
@@ -700,14 +715,6 @@ def _poll_resolve_loading_state(w, *, _img_name_early):
     _loading_post_settle = _loading_post_settle_remaining > 0
     if _load_edge_start:
         _arm_city_load_fallback_suppression(w)
-        try:
-            w._tab_map.reset_progress()
-        except (AttributeError, RuntimeError):
-            pass
-        try:
-            w._tab_translate.fallback_map_tab().reset_progress()
-        except (AttributeError, RuntimeError):
-            pass
     try:
         _a845_for_release = w._analyzer.read_bytes(w._anchor + 43077, 1)[0]
     except (OSError, AttributeError, IndexError):
@@ -903,7 +910,6 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
             _map_area_eff, _map_mif_eff, _map_in_interior_eff, _map_interior_mif_eff = _map_bg_last
         elif not _is_loading_for_map:
             w._map_bg_last = (_map_area_eff, _map_mif_eff, _map_in_interior_eff, _map_interior_mif_eff)
-        _automap_open = getattr(w, '_screen_id_prev', None) == 'automap'
         _treasure_pickup_open = bool(getattr(w, '_treasure_pickup_open_prev', False))
         _fallback_suppress_map, _fallback_suppress_reason = _city_load_fallback_suppression(w, area=_resolved_area, coord_source='raw', player_x=_show_player_x, player_y=_show_player_y, surface_owner=_map_surface_owner, is_loading=_is_loading_for_map)
         try:
@@ -917,9 +923,9 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
                 except Exception:
                     _log.exception('wild_diag failed')
             wild_location_name = gs.get('MapName') or '' if diag_area in ('city', 'wilderness') else None
-            tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, automap_open=_automap_open, treasure_pickup_open=_treasure_pickup_open, dungeon_floor_fresh=dungeon_level_hyp)
+            tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, treasure_pickup_open=_treasure_pickup_open, dungeon_floor_fresh=dungeon_level_hyp)
             try:
-                w._tab_translate.update_fallback_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, automap_open=_automap_open, treasure_pickup_open=_treasure_pickup_open, dungeon_floor_fresh=dungeon_level_hyp, suppress_map=_fallback_suppress_map, suppress_reason=_fallback_suppress_reason)
+                w._tab_translate.update_fallback_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, treasure_pickup_open=_treasure_pickup_open, dungeon_floor_fresh=dungeon_level_hyp, suppress_map=_fallback_suppress_map, suppress_reason=_fallback_suppress_reason)
             except AttributeError as _e:
                 if 'update_fallback_map_state' not in str(_e):
                     _log.warning('fallback_map update AttributeError: %s', _e)

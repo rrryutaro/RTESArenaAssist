@@ -734,5 +734,8 @@
   "manual.guide.answer_missing": "(Aucune donnée de réponse trouvée)",
   "manual.guide.place_unknown": "(Lieu non enregistré)",
   "manual.guide.floor": "Niveau {n}",
-  "manual.guide.answer_item": "• {answer}"
+  "manual.guide.answer_item": "• {answer}",
+  "map.action.refresh": "Actualiser la carte",
+  "map.action.fit": "Ajuster la carte entière",
+  "map.action.actual_size": "Taille réelle (100 %)"
 }

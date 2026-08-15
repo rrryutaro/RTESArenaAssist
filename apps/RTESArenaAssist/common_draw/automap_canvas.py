@@ -3,9 +3,9 @@ import logging
 import math
 from dataclasses import dataclass
 import numpy as np
-from PySide6.QtCore import QPoint, QPointF, QRect, QSize, Qt
-from PySide6.QtGui import QColor, QFont, QMouseEvent, QPainter, QPainterPath, QPen, QPixmap, QPolygon, QWheelEvent
-from PySide6.QtWidgets import QWidget
+from PySide6.QtCore import QPoint, QPointF, QRect, QSize, Qt, Signal
+from PySide6.QtGui import QAction, QColor, QFont, QMouseEvent, QPainter, QPainterPath, QPen, QPixmap, QPolygon, QWheelEvent
+from PySide6.QtWidgets import QMenu, QToolButton, QWidget
 from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
 _log = logging.getLogger('common_draw.automap_canvas')
 _BG_DARK = QColor(26, 26, 46)
@@ -288,8 +288,19 @@ def _blend_color(base: QColor, vis: int, reveal_all: bool) -> QColor:
     col = QColor(base)
     col.setAlpha(alpha)
     return col
+_DEFAULT_ZOOM = 12.0
+_MIN_ZOOM = 2.0
+_MAX_ZOOM = 48.0
+
+def _ui_text(key: str) -> str:
+    try:
+        import i18n_helper
+        return i18n_helper.tr(key)
+    except Exception:
+        return key
 
 class AutomapCanvas(QWidget):
+    refresh_requested = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -316,15 +327,17 @@ class AutomapCanvas(QWidget):
         self._color_overrides: dict = {}
         self._treasure_mark: str = ''
         self._menu_texture_indices: set[int] = set()
-        self._zoom: float = 12.0
+        self._zoom: float = _DEFAULT_ZOOM
         self._pan: QPointF = QPointF(0, 0)
         self._drag_last: QPointF | None = None
         self._user_panned = False
+        self._fit_mode = False
         self._data_view_key: tuple | None = None
         self._diag_prev_paint: tuple = ()
         self.setMouseTracking(True)
         self.setMinimumSize(420, 420)
         self.setStyleSheet('background-color: #1a1a2e;')
+        self._build_overlay_buttons()
 
     def set_data(self, data: CanvasData) -> None:
         prev_x, prev_y = (self._data.player_x, self._data.player_y)
@@ -332,12 +345,14 @@ class AutomapCanvas(QWidget):
         next_key = self._canvas_data_view_key(data)
         data_changed = prev_key != next_key
         self._data = data
-        if data_changed:
+        if data_changed and (not self._fit_mode):
             self._data_view_key = next_key
             if self._center_on_player:
                 self._user_panned = False
                 if data.player_x is None or data.player_y is None:
                     self._pan = QPointF(0, 0)
+        elif data_changed:
+            self._data_view_key = next_key
         if data.hidden_door_ids:
             self._hidden_door_ids = set(data.hidden_door_ids)
         else:
@@ -346,7 +361,7 @@ class AutomapCanvas(QWidget):
             self._menu_texture_indices = set(data.menu_texture_indices)
         else:
             self._menu_texture_indices = set()
-        if data.player_x is not None and data.player_y is not None and (data.player_x != prev_x or data.player_y != prev_y):
+        if not self._fit_mode and data.player_x is not None and (data.player_y is not None) and (data.player_x != prev_x or data.player_y != prev_y):
             self._user_panned = False
         self.update()
 
@@ -420,15 +435,88 @@ class AutomapCanvas(QWidget):
         self.update()
 
     def reset_view(self) -> None:
-        self._zoom = 12.0
+        self._fit_mode = False
+        self._zoom = _DEFAULT_ZOOM
         self._pan = QPointF(0, 0)
         self._user_panned = False
+        self._sync_overlay_buttons()
         self.update()
+
+    def fit_to_map(self) -> None:
+        self._fit_mode = True
+        self._sync_overlay_buttons()
+        self.update()
+
+    def _build_overlay_buttons(self) -> None:
+        style = 'QToolButton {  color: #dbe4f0; background: rgba(26,38,53,0.86);  border: 1px solid #3a5876; border-radius: 3px;  padding: 2px 6px; font-size: 12px;}QToolButton:hover { background: rgba(42,66,88,0.95); }QToolButton:checked { background: #2f5d86; border-color: #6fa8dc; }'
+        self._btn_refresh = QToolButton(self)
+        self._btn_refresh.setText('⟳')
+        self._btn_refresh.clicked.connect(self.refresh_requested.emit)
+        self._btn_fit = QToolButton(self)
+        self._btn_fit.setText('⛶')
+        self._btn_fit.setCheckable(True)
+        self._btn_fit.clicked.connect(lambda: self.fit_to_map())
+        self._btn_actual = QToolButton(self)
+        self._btn_actual.setText('1:1')
+        self._btn_actual.clicked.connect(lambda: self.reset_view())
+        self._overlay_buttons = [self._btn_refresh, self._btn_fit, self._btn_actual]
+        for b in self._overlay_buttons:
+            b.setStyleSheet(style)
+            b.setCursor(Qt.CursorShape.ArrowCursor)
+            b.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.retranslate_ui()
+        self._sync_overlay_buttons()
+
+    def retranslate_ui(self) -> None:
+        for b, key in ((self._btn_refresh, 'map.action.refresh'), (self._btn_fit, 'map.action.fit'), (self._btn_actual, 'map.action.actual_size')):
+            b.setToolTip(_ui_text(key))
+
+    def _sync_overlay_buttons(self) -> None:
+        self._btn_fit.setChecked(self._fit_mode)
+
+    def _layout_overlay_buttons(self) -> None:
+        margin, gap = (6, 4)
+        x = self.width() - margin
+        for b in reversed(self._overlay_buttons):
+            size = b.sizeHint()
+            x -= size.width()
+            b.setGeometry(x, margin, size.width(), size.height())
+            b.raise_()
+            x -= gap
+
+    def build_view_menu(self) -> QMenu:
+        menu = QMenu(self)
+        for key, slot in (('map.action.refresh', self.refresh_requested.emit), ('map.action.fit', self.fit_to_map), ('map.action.actual_size', self.reset_view)):
+            act = QAction(_ui_text(key), menu)
+            act.triggered.connect(slot)
+            menu.addAction(act)
+        return menu
+
+    def contextMenuEvent(self, event) -> None:
+        self.build_view_menu().exec(event.globalPos())
+
+    def resizeEvent(self, event) -> None:
+        super().resizeEvent(event)
+        self._layout_overlay_buttons()
+
+    def showEvent(self, event) -> None:
+        super().showEvent(event)
+        self._layout_overlay_buttons()
 
     def _transform_x(self, x: int, width: int) -> int:
         return width - 1 - x if self._x_flip else x
 
+    def _apply_fit(self, W: int, H: int) -> None:
+        if W <= 0 or H <= 0:
+            return
+        zoom = min(self.width() / float(W), self.height() / float(H))
+        self._zoom = max(_MIN_ZOOM, min(_MAX_ZOOM, zoom))
+        self._pan = QPointF(0, 0)
+
     def _apply_player_centering(self, W: int, H: int) -> None:
+        if self._fit_mode:
+            self._apply_fit(W, H)
+            return
         if not self._center_on_player or self._user_panned:
             return
         d = self._data
@@ -963,6 +1051,9 @@ class AutomapCanvas(QWidget):
             self._drag_last = cur
             if delta.x() != 0 or delta.y() != 0:
                 self._user_panned = True
+                if self._fit_mode:
+                    self._fit_mode = False
+                    self._sync_overlay_buttons()
             self.update()
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
@@ -972,7 +1063,10 @@ class AutomapCanvas(QWidget):
     def wheelEvent(self, event: QWheelEvent) -> None:
         delta = event.angleDelta().y()
         factor = 1.15 if delta > 0 else 1 / 1.15
-        new_zoom = max(2.0, min(48.0, self._zoom * factor))
+        new_zoom = max(_MIN_ZOOM, min(_MAX_ZOOM, self._zoom * factor))
+        if self._fit_mode:
+            self._fit_mode = False
+            self._sync_overlay_buttons()
         if self._user_panned:
             pos = event.position()
             center = QPointF(self.width() / 2, self.height() / 2) + self._pan

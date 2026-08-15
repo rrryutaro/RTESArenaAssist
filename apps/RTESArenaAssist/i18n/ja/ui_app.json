@@ -734,5 +734,8 @@
   "manual.guide.answer_missing": "（答えのデータが見つかりませんでした）",
   "manual.guide.place_unknown": "（場所名未記録）",
   "manual.guide.floor": "第{n}階層",
-  "manual.guide.answer_item": "・{answer}"
+  "manual.guide.answer_item": "・{answer}",
+  "map.action.refresh": "マップを更新",
+  "map.action.fit": "全体表示",
+  "map.action.actual_size": "100% 表示（既定のサイズ）"
 }

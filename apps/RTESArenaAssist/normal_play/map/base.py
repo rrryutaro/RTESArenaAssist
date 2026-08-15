@@ -18,7 +18,6 @@ class MapContext:
     save_dir: str
     in_interior: Optional[bool] = None
     area: Optional[str] = None
-    automap_open: bool = False
     treasure_pickup_open: bool = False
     dungeon_floor_fresh: Optional[int] = None
     ext_store: Any = None
@@ -56,5 +55,8 @@ class MapSessionBase:
         raise NotImplementedError
 
     def reset_progress(self) -> None:
+        pass
+
+    def request_automap_import(self) -> None:
         pass
 __all__ = ['MapContext', 'MapSessionBase']

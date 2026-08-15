@@ -734,5 +734,8 @@
   "manual.guide.answer_missing": "(Данные ответа не найдены)",
   "manual.guide.place_unknown": "(Место не записано)",
   "manual.guide.floor": "Уровень {n}",
-  "manual.guide.answer_item": "• {answer}"
+  "manual.guide.answer_item": "• {answer}",
+  "map.action.refresh": "Обновить карту",
+  "map.action.fit": "Вписать всю карту",
+  "map.action.actual_size": "Реальный размер (100 %)"
 }

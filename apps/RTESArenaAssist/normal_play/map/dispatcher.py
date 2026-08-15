@@ -60,6 +60,12 @@ class MapDispatcher:
             return self.base_location.active_key()
         return None
 
+    def request_automap_import(self) -> None:
+        if self._active_path == 'interior':
+            self.interior.request_automap_import()
+        else:
+            self.base_location.request_automap_import()
+
     def reset_progress(self) -> None:
         self.interior.reset_progress()
         self.base_location.reset_progress()

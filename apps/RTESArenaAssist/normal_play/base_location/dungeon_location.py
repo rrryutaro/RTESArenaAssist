@@ -80,6 +80,7 @@ class DungeonMapSession(MapSessionBase):
         self._known_treasure: frozenset = frozenset()
         self._treasure_pickup_was_open = False
         self._wall_los_enabled = False
+        self._import_request = False
         self._wall_passage_cells: tuple[tuple[int, int], ...] = ()
         self._view_scan_key: tuple | None = None
         self._in_first_block: bool = False
@@ -126,7 +127,10 @@ class DungeonMapSession(MapSessionBase):
         self._location_key = self._level_store_key
         self._refresh_axis_alignment(ctx)
         self._update_record_gate(ctx)
-        if ctx.automap_open or self._reset_retry_remaining > 0:
+        if self._import_request:
+            self._import_request = False
+            self._maybe_merge_automap(ctx, overwrite=True, force=True)
+        elif self._reset_retry_remaining > 0:
             self._maybe_merge_automap(ctx)
         if self._record_ok and ctx.player_tile_x is not None and (ctx.player_tile_y is not None) and (self._bitmap is not None):
             ix = int(ctx.player_tile_x)
@@ -203,6 +207,9 @@ class DungeonMapSession(MapSessionBase):
         for cx, cy in self._wall_passage_cells:
             if wall_passage_cell_visible(self._flor, px, py, fx, fy, cx, cy, in_first_block=self._in_first_block, ignore_walls=self._wall_los_enabled):
                 self._ext_store.note_discovery(self._location_key, cx, cy, SECTION_WALL_PASSAGES)
+
+    def request_automap_import(self) -> None:
+        self._import_request = True
 
     def reset_progress(self) -> None:
         self._level_bitmaps.clear()
@@ -404,7 +411,7 @@ class DungeonMapSession(MapSessionBase):
             self._diag_prev_merge_reason = reason
             _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: merge skip reason=%s', id(self), reason)
 
-    def _maybe_merge_automap(self, ctx: MapContext) -> bool:
+    def _maybe_merge_automap(self, ctx: MapContext, *, overwrite: bool=False, force: bool=False) -> bool:
         save_dir = ctx.save_dir
         if not save_dir:
             self._diag_log_skip('no_save_dir')
@@ -426,7 +433,7 @@ class DungeonMapSession(MapSessionBase):
         same_stamp = self._last_automap_mtime_ns is not None and st_before.st_mtime_ns == self._last_automap_mtime_ns and (st_before.st_size == self._last_automap_size)
         if in_retry:
             self._reset_retry_remaining -= 1
-        elif same_stamp:
+        elif same_stamp and (not force):
             self._diag_log_skip('same_mtime')
             return False
         if st_before.st_size != EXPECTED_FILE_SIZE:
@@ -453,7 +460,7 @@ class DungeonMapSession(MapSessionBase):
                 self._reset_retry_remaining += 1
             self._diag_log_skip('degenerate_full_bitmap')
             return False
-        if ctx.automap_open:
+        if overwrite:
             self._bitmap[:] = active.bitmap_grid
         else:
             np.maximum(self._bitmap, active.bitmap_grid, out=self._bitmap)

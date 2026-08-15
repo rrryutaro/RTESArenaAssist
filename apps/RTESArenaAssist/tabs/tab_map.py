@@ -25,6 +25,7 @@ class TabMap(QWidget):
         self._place_label.setStyleSheet('QLabel#mapPlaceLabel {  padding: 4px 8px;  color: #c9d1e0;  font-weight: bold;  background: #1a2635;  border-bottom: 1px solid #2a4258;}')
         self._canvas = AutomapCanvas(self)
         self._canvas.setObjectName(f'AssistMapCanvas:{name}')
+        self._canvas.refresh_requested.connect(self.request_automap_import)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
@@ -50,6 +51,10 @@ class TabMap(QWidget):
         self._canvas.set_pipe_under(enabled=bool(settings.get('map_pipe_under', True)), opacity=int(settings.get('map_pipe_opacity', 100)))
         self._canvas.set_color_overrides(settings.get('map_colors', {}))
         self._canvas.set_treasure_mark(str(settings.get('map_treasure_mark', '') or ''))
+        self._canvas.retranslate_ui()
+
+    def request_automap_import(self) -> None:
+        self._dispatcher.request_automap_import()
 
     def reset_progress(self) -> None:
         self._dispatcher.reset_progress()
@@ -58,9 +63,9 @@ class TabMap(QWidget):
         except Exception:
             _log.exception('map_ext on_load failed')
 
-    def update_map_state(self, mif_name: Optional[str], player_tile_x: Optional[float], player_tile_y: Optional[float], angle_deg: Optional[float], player_floor: int=0, place_text: Optional[str]=None, location_name: Optional[str]=None, analyzer=None, anchor: Optional[int]=None, interior_mif_name: Optional[str]=None, in_interior: Optional[bool]=None, area: Optional[str]=None, automap_open: bool=False, treasure_pickup_open: bool=False, dungeon_floor_fresh: Optional[int]=None, suppress_map: bool=False, suppress_reason: str='') -> None:
+    def update_map_state(self, mif_name: Optional[str], player_tile_x: Optional[float], player_tile_y: Optional[float], angle_deg: Optional[float], player_floor: int=0, place_text: Optional[str]=None, location_name: Optional[str]=None, analyzer=None, anchor: Optional[int]=None, interior_mif_name: Optional[str]=None, in_interior: Optional[bool]=None, area: Optional[str]=None, treasure_pickup_open: bool=False, dungeon_floor_fresh: Optional[int]=None, suppress_map: bool=False, suppress_reason: str='') -> None:
         _save_dir = str(settings.get('save_dir', ''))
-        ctx = MapContext(mif_name=mif_name, interior_mif_name=interior_mif_name, in_interior=in_interior, area=area, automap_open=automap_open, treasure_pickup_open=treasure_pickup_open, dungeon_floor_fresh=dungeon_floor_fresh, location_name=location_name, player_floor=player_floor, player_tile_x=player_tile_x, player_tile_y=player_tile_y, angle_deg=angle_deg, analyzer=analyzer, anchor=anchor, ext_store=get_store(), place_text=place_text, save_dir=_save_dir, wall_los_enabled=self._wall_los_enabled, reveal_all=bool(settings.get('cheat_enabled', False)) and bool(settings.get('cheat_reveal_map', False)), show_unexplored_floor=bool(settings.get('map_show_unexplored_floor', False)), center_on_player=bool(settings.get('map_center_on_player', True)), show_grid=bool(settings.get('map_show_grid', True)), wilderness_compact_view=bool(settings.get('wilderness_compact_view', False)), wild_distinguish_road=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_distinguish_road', True)), wild_show_edge=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_show_edge', True)), wild_distinguish_edge=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_distinguish_edge', True)), wild_show_crops=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_show_crops', True)), wild_show_all_entrances=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_show_all_entrances', True)), wild_show_static_flats=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_show_static_flats', True)))
+        ctx = MapContext(mif_name=mif_name, interior_mif_name=interior_mif_name, in_interior=in_interior, area=area, treasure_pickup_open=treasure_pickup_open, dungeon_floor_fresh=dungeon_floor_fresh, location_name=location_name, player_floor=player_floor, player_tile_x=player_tile_x, player_tile_y=player_tile_y, angle_deg=angle_deg, analyzer=analyzer, anchor=anchor, ext_store=get_store(), place_text=place_text, save_dir=_save_dir, wall_los_enabled=self._wall_los_enabled, reveal_all=bool(settings.get('cheat_enabled', False)) and bool(settings.get('cheat_reveal_map', False)), show_unexplored_floor=bool(settings.get('map_show_unexplored_floor', False)), center_on_player=bool(settings.get('map_center_on_player', True)), show_grid=bool(settings.get('map_show_grid', True)), wilderness_compact_view=bool(settings.get('wilderness_compact_view', False)), wild_distinguish_road=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_distinguish_road', True)), wild_show_edge=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_show_edge', True)), wild_distinguish_edge=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_distinguish_edge', True)), wild_show_crops=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_show_crops', True)), wild_show_all_entrances=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_show_all_entrances', True)), wild_show_static_flats=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_show_static_flats', True)))
         try:
             self._dispatcher.poll(ctx)
         except Exception:
