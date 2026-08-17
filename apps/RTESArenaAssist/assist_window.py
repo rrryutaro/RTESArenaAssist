@@ -124,6 +124,8 @@ class AssistWindow(QMainWindow):
             from controllers.poll_controller import reset_floor_holds_on_load, reset_map_progress_on_load
             get_lifecycle().add_on_load(lambda: reset_floor_holds_on_load(self))
             get_lifecycle().add_on_load(lambda: reset_map_progress_on_load(self))
+            from normal_play.level_up_module import reset_level_up_on_load
+            get_lifecycle().add_on_load(lambda: reset_level_up_on_load(self))
         except Exception:
             pass
         try:

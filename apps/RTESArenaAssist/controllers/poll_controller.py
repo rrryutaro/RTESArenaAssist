@@ -934,10 +934,11 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
         except Exception:
             _log.exception('tab_map update failed')
 
-def _is_pre_screen_system_menu(*, img_name: str, menu_active_now: int, menu_active_prev: int, city_npc_active: int) -> bool:
+def _is_pre_screen_system_menu(*, img_name: str, menu_active_now: int, menu_active_prev: int, city_npc_active: int, foreground_ptr: int | None) -> bool:
     from screen_detector import is_city_npc_dialog_active
+    from active_template_reader import is_message_buffer_pointer
     img = (img_name or '').upper()
-    return img == 'OP.IMG' and menu_active_now == 0 and (menu_active_prev == 0) and (not is_city_npc_dialog_active(city_npc_active))
+    return img == 'OP.IMG' and menu_active_now == 0 and (menu_active_prev == 0) and (not is_city_npc_dialog_active(city_npc_active)) and (not is_message_buffer_pointer(foreground_ptr))
 
 def _poll_screen_detect_and_label(w, _img_name, mif_name, _resolved_area, player_floor, in_interior, _shop_state, _shop_img_name, _level_up_continue, _b30_dialog_active, _b30_dialog_active_prev, _b30_red_changed, _npc_dialog_changed):
     try:
@@ -1411,7 +1412,7 @@ class PollController:
                 from screen_detector import MENU_ACTIVE_OFFSET, CITY_NPC_ACTIVE_OFFSET, _read_u16_le
                 _menu_active_now = _read_u16_le(w._analyzer, w._anchor + MENU_ACTIVE_OFFSET)
                 _city_npc_active = _read_u16_le(w._analyzer, w._anchor + CITY_NPC_ACTIVE_OFFSET)
-                _pre_system_menu = _is_pre_screen_system_menu(img_name=_img_name_now, menu_active_now=_menu_active_now, menu_active_prev=getattr(w, '_menu_active_prev', 65535), city_npc_active=_city_npc_active)
+                _pre_system_menu = _is_pre_screen_system_menu(img_name=_img_name_now, menu_active_now=_menu_active_now, menu_active_prev=getattr(w, '_menu_active_prev', 65535), city_npc_active=_city_npc_active, foreground_ptr=_foreground_ptr_early)
             except (OSError, AttributeError, ImportError):
                 _pre_system_menu = False
             _travel_view = _classify_travel_l4(w, _img_name_now)
@@ -1459,7 +1460,7 @@ class PollController:
             if not _screen_display_active:
                 _poll_c1_surface_dispatch(w, _b30, npc_dialog_changed=_npc_dialog_changed, inf_name=inf_name, mif_name=mif_name, instore_resp_handled=_instore_resp_handled, c_area=_poll_hierarchy_area)
             from normal_play.level_up_module import produce_level_up_state as _produce_level_up_state
-            _level_up_continue = _produce_level_up_state(w, loading_active=w._loading_state_active, load_edge_start=_load_edge_start, loading_post_settle=_loading_post_settle)
+            _level_up_continue = _produce_level_up_state(w, loading_active=w._loading_state_active, loading_post_settle=_loading_post_settle)
             from normal_play.item_pickup_module import poll_item_pickup as _poll_item_pickup
             _poll_item_pickup(w, newpop_gate=_newpop_gate, b30_img_name=_b30_img_name, npc_dialog=npc_dialog, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, screen_id=getattr(w, '_screen_id_prev', None), facility_active=bool(_active_facility_name), inventory_screen=_inventory_screen_now)
             w._treasure_pickup_open_prev = bool(getattr(w, '_b32_newpop_open', False) and (not getattr(w, '_b32_was_corpse', False)))

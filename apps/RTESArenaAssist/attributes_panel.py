@@ -19,7 +19,7 @@ OFF_RACE_INDEX = 424
 OFF_CLASS_INDEX = 425
 OFF_LEVEL_U16 = 541
 OFF_LEVEL_U8 = 426
-OFF_GOLD_U16 = 1474
+OFF_GOLD_U32 = 1474
 OFF_EXP_U32 = 1453
 OFF_FATIGUE_U16 = 513
 OFF_FATIGUE_MAX = None
@@ -212,7 +212,8 @@ class AttributesPanel(QWidget):
             elif key == 'spell':
                 _u16(OFF_SPELL_PTS_CURR, value)
             elif key == 'gold':
-                _u16(OFF_GOLD_U16, value)
+                v = value & 4294967295
+                self._analyzer.write_bytes(self._anchor + OFF_GOLD_U32, bytes([v & 255, v >> 8 & 255, v >> 16 & 255, v >> 24 & 255]))
             elif key == 'exp':
                 v = value & 4294967295
                 self._analyzer.write_bytes(self._anchor + OFF_EXP_U32, bytes([v & 255, v >> 8 & 255, v >> 16 & 255, v >> 24 & 255]))
@@ -318,6 +319,10 @@ class AttributesPanel(QWidget):
     def _read_u16(self, addr: int) -> int:
         b = self._analyzer.read_bytes(addr, 2)
         return b[0] | b[1] << 8
+
+    def _read_u32(self, addr: int) -> int:
+        b = self._analyzer.read_bytes(addr, 4)
+        return b[0] | b[1] << 8 | b[2] << 16 | b[3] << 24
 
     def _next_exp_threshold(self, current_level: Optional[int]) -> Optional[int]:
         if current_level is None or self._chargen_mode:

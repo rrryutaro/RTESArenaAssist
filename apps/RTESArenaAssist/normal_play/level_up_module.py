@@ -2,28 +2,33 @@ from __future__ import annotations
 import logging
 _log = logging.getLogger('RTESArenaAssist')
 
-def produce_level_up_state(w, *, loading_active: bool=False, load_edge_start: bool=False, loading_post_settle: bool=False) -> bool:
+def reset_level_up_on_load(w) -> None:
+    try:
+        import player_reader as _pr
+        _cur_level = _pr.read_all(w._analyzer, w._anchor)['level']
+    except Exception:
+        _cur_level = None
+    if w._level_up_active or getattr(w, '_panel_owner', '') == 'level_up':
+        _log.info('LEVEL UP: load detected → state cleared (prev_level=%s, cur_level=%s)', getattr(w, '_player_level_prev', None), _cur_level)
+    w._level_up_active = False
+    w._level_up_from = None
+    w._level_up_to = None
+    w._player_bonus_prev = None
+    w._level_up_saw_bonus = False
+    w._level_up_waiting_for_bonus = False
+    try:
+        if getattr(w, '_ui_router', None) is not None and w._ui_router.is_owner('level_up'):
+            w._ui_router.clear_if_owner('level_up')
+    except (AttributeError, RuntimeError):
+        pass
+    w._player_level_prev = _cur_level
+
+def produce_level_up_state(w, *, loading_active: bool=False, loading_post_settle: bool=False) -> bool:
     try:
         import player_reader as _pr
         _player = _pr.read_all(w._analyzer, w._anchor)
         _cur_level = _player['level']
         _cur_exp = _player['experience']
-        if load_edge_start:
-            if w._level_up_active or getattr(w, '_panel_owner', '') == 'level_up':
-                _log.info('LEVEL UP: load edge detected → state cleared (prev_level=%s, cur_level=%s)', w._player_level_prev, _cur_level)
-            w._level_up_active = False
-            w._level_up_from = None
-            w._level_up_to = None
-            w._player_bonus_prev = None
-            w._level_up_saw_bonus = False
-            w._level_up_waiting_for_bonus = False
-            try:
-                if getattr(w, '_ui_router', None) is not None and w._ui_router.is_owner('level_up'):
-                    w._ui_router.clear_if_owner('level_up')
-            except (AttributeError, RuntimeError):
-                pass
-            w._player_level_prev = _cur_level
-            return False
         if loading_active or loading_post_settle:
             if _cur_level is not None:
                 w._player_level_prev = _cur_level
@@ -75,8 +80,8 @@ def consume_level_up_display(w, *, screen_id_stable: str | None, b30_dialog_acti
     except (ImportError, AttributeError, OSError):
         pass
 
-def poll_level_up(w, *, b30_dialog_active: bool, b30_dialog_active_prev: bool, b30_red_changed: bool, npc_dialog_changed: bool, loading_active: bool=False, load_edge_start: bool=False, loading_post_settle: bool=False) -> None:
-    _continue = produce_level_up_state(w, loading_active=loading_active, load_edge_start=load_edge_start, loading_post_settle=loading_post_settle)
+def poll_level_up(w, *, b30_dialog_active: bool, b30_dialog_active_prev: bool, b30_red_changed: bool, npc_dialog_changed: bool, loading_active: bool=False, loading_post_settle: bool=False) -> None:
+    _continue = produce_level_up_state(w, loading_active=loading_active, loading_post_settle=loading_post_settle)
     if not _continue:
         return
     consume_level_up_display(w, screen_id_stable=getattr(w, '_screen_id_prev', None), b30_dialog_active=b30_dialog_active, b30_dialog_active_prev=b30_dialog_active_prev, b30_red_changed=b30_red_changed, npc_dialog_changed=npc_dialog_changed)

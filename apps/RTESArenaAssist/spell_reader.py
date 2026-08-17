@@ -101,6 +101,13 @@ def read_spell_detail(analyzer, anchor: int) -> dict:
         except (OSError, AttributeError):
             return 0
 
+    def _u32(off: int) -> int:
+        try:
+            b = analyzer.read_bytes(anchor + off, 4)
+            return b[0] | b[1] << 8 | b[2] << 16 | b[3] << 24
+        except (OSError, AttributeError):
+            return 0
+
     def _u8_array(off: int, length: int, default: int=0) -> list[int]:
         try:
             raw = analyzer.read_bytes(anchor + off, length)
@@ -141,7 +148,7 @@ def read_spell_detail(analyzer, anchor: int) -> dict:
     player_name = _str(PLAYER_NAME_OFFSET, 26)
     level_raw = _u8_opt(PLAYER_LEVEL_OFFSET)
     player_level = level_raw + 1 if level_raw is not None else 0
-    player_gold = _u16(PLAYER_GOLD_OFFSET)
+    player_gold = _u32(PLAYER_GOLD_OFFSET)
     casting_cost = cost // player_level if cost and player_level > 0 else 0
     effect_details = _attach_effect_texts(text_en, effect_details, text_segments)
     effect_details = _fill_missing_spellmaker_effect_texts(effect_details, analyzer, anchor)

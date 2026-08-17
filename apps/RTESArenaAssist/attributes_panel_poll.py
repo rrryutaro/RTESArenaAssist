@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Optional
 import arena_data
 import i18n_helper as i18n
-from attributes_panel import OFF_BONUS_PTS_U8, OFF_CLASS_INDEX, OFF_DAMAGE_I16, OFF_EXP_U32, OFF_FATIGUE_U16, OFF_GOLD_U16, OFF_HEALTH_CURR_U16, OFF_HEALTH_MAX_U16, OFF_LEVEL_U8, OFF_NAME, OFF_PRIMARY_1, OFF_RACE_INDEX, OFF_SPELL_PTS_CURR, OFF_SPELL_PTS_MAX, PRIMARY_LEN, UNKNOWN, _signed
+from attributes_panel import OFF_BONUS_PTS_U8, OFF_CLASS_INDEX, OFF_DAMAGE_I16, OFF_EXP_U32, OFF_FATIGUE_U16, OFF_GOLD_U32, OFF_HEALTH_CURR_U16, OFF_HEALTH_MAX_U16, OFF_LEVEL_U8, OFF_NAME, OFF_PRIMARY_1, OFF_RACE_INDEX, OFF_SPELL_PTS_CURR, OFF_SPELL_PTS_MAX, PRIMARY_LEN, UNKNOWN, _signed
 from attribute_formulas import calc_bonus_to_health, calc_bonus_to_health_256, calc_bonus_to_hit, calc_damage_bonus, calc_magic_defense, calc_max_kilos, calc_max_stamina
 
 def poll_attributes(panel) -> None:
@@ -140,11 +140,8 @@ def poll_attributes(panel) -> None:
         except OSError:
             panel._stats['fatigue'].setText(f'—/{fat_max}')
     try:
-        gold = panel._read_u16(panel._anchor + OFF_GOLD_U16)
-        if 0 <= gold <= 50000:
-            panel._stats['gold'].setText(str(gold))
-        else:
-            panel._stats['gold'].setText(UNKNOWN)
+        gold = panel._read_u32(panel._anchor + OFF_GOLD_U32)
+        panel._stats['gold'].setText(str(gold))
     except OSError:
         panel._stats['gold'].setText(UNKNOWN)
     current_level: Optional[int] = None

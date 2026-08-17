@@ -245,7 +245,6 @@ class ImgScreenController:
                 cand = read_response_candidate(self._w._analyzer, self._w._anchor)
                 text = cand.text if cand else ''
             if not text:
-                self._w._ui_router.clear_if_owner(NPC_CONVERSATION_OWNER, mode=self._npc_clear_panel_mode(), clear_place_list=True)
                 return
             result = ndl.lookup(text)
             if result:

@@ -101,6 +101,16 @@ def _read_msg_buf_chunks(w) -> list[str]:
             break
     return chunks
 
+def _join_candidates(base: str, suffix: str) -> list[str]:
+    forms = [f'{base} {suffix}'.strip(), f'{base}{suffix}'.strip()]
+    for k in range(min(len(base), len(suffix) - 1), 0, -1):
+        if base.endswith(suffix[:k]):
+            merged = f'{base[:-k]}{suffix}'.strip()
+            if merged not in forms:
+                forms.append(merged)
+            break
+    return forms
+
 def _build_entry_text_candidates(w, msg_buf: str) -> list[str]:
     if not msg_buf:
         return []
@@ -108,7 +118,12 @@ def _build_entry_text_candidates(w, msg_buf: str) -> list[str]:
     candidates = [_normalized_msg]
     if _normalized_msg.endswith(('.', '?', '!')):
         return candidates
-    chunks = [_normalize_for_lookup(chunk).strip() for chunk in _read_b131_chunks(w) if chunk.strip()]
+    chunks_all = [_normalize_for_lookup(chunk).strip() for chunk in _read_b131_chunks(w) if chunk.strip()]
+    if not chunks_all:
+        return candidates
+    msg_chunks = _read_msg_buf_chunks(w)
+    full_msg = _normalize_for_lookup(' '.join(msg_chunks)).strip() if len(msg_chunks) > 1 else ''
+    chunks = [chunk for chunk in chunks_all if chunk not in _normalized_msg and (not full_msg or chunk not in full_msg)]
     if not chunks:
         return candidates
     variants = []
@@ -118,18 +133,15 @@ def _build_entry_text_candidates(w, msg_buf: str) -> list[str]:
     for suffix in variants:
         if not suffix or suffix in _normalized_msg:
             continue
-        for candidate in (f'{_normalized_msg} {suffix}'.strip(), f'{_normalized_msg}{suffix}'.strip()):
+        for candidate in _join_candidates(_normalized_msg, suffix):
             if candidate not in candidates:
                 candidates.append(candidate)
-    msg_chunks = _read_msg_buf_chunks(w)
-    if len(msg_chunks) > 1:
-        full_msg = _normalize_for_lookup(' '.join(msg_chunks)).strip()
+    if full_msg:
         bodies = [full_msg]
         for suffix in variants:
             if not suffix or suffix in full_msg:
                 continue
-            bodies.append(f'{full_msg} {suffix}'.strip())
-            bodies.append(f'{full_msg}{suffix}'.strip())
+            bodies.extend(_join_candidates(full_msg, suffix))
         for cand in bodies:
             if cand and cand not in candidates:
                 candidates.append(cand)
@@ -138,6 +150,19 @@ def _build_entry_text_candidates(w, msg_buf: str) -> list[str]:
 def _build_full_entry_text(w, msg_buf: str) -> str:
     candidates = _build_entry_text_candidates(w, msg_buf)
     return candidates[0] if candidates else ''
+
+def _push_entry_original(w, msg_buf: str) -> bool:
+    _en = _normalize_for_lookup(msg_buf).strip() if msg_buf else ''
+    if not _en:
+        _en = _normalize_for_lookup(_read_b131_buffer(w)).strip()
+    if not _en:
+        return False
+    w._ui_router.update_translation('building_entry', _en, '')
+    _entry_log_key = ('original_fallback', None, _en[:40])
+    if getattr(w, '_building_entry_log_key', None) != _entry_log_key:
+        w._building_entry_log_key = _entry_log_key
+        _log.info('panel_owner -> building_entry (src=original_fallback en=%r)', _en[:40])
+    return True
 
 def poll_building_entry(w, *, building_entry_active: bool, entry_phase_prev: bool, msg_buf: str, npc_dialog: str) -> bool:
     entry_handled = False
@@ -170,6 +195,7 @@ def poll_building_entry(w, *, building_entry_active: bool, entry_phase_prev: boo
             _log.exception('building entry lookup failed')
         if not entry_handled:
             _diag_dump_memory(w, msg_buf, npc_dialog)
+            entry_handled = _push_entry_original(w, msg_buf)
     elif entry_phase_prev or getattr(w, '_building_entry_pending', False):
         w._building_entry_pending = False
         w._building_entry_log_key = None
