@@ -1,5 +1,5 @@
-__version__ = '0.1.21'
-__build__ = 2
+__version__ = '0.1.22'
+__build__ = 1
 __dev__ = False
 
 def version_string() -> str:
