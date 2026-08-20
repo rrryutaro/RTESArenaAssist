@@ -7,7 +7,7 @@ _ROOT = os.path.dirname(os.path.abspath(__file__))
 import i18n_helper as i18n
 import location_lookup
 from memory_core import ArenaMemoryAnalyzer, MEMORY_BASIC_INFORMATION, MEM_COMMIT, PAGE_NOACCESS, PAGE_GUARD
-from viewer_constants import GAMESTATE_OFFSET, GS_DEFS, TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, TRIGGER_FLAG_OFFSET, TRIGGER_INDEX_OFFSET, FLAGS4_BITS, INF_PREFIXES, LIVE_MIF_OFFSET, LIVE_MIF_MAXLEN, MAP_NAME_OFFSET, MAP_NAME_MAXLEN, CHARGEN_STATE_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW
+from viewer_constants import GAMESTATE_OFFSET, GS_DEFS, TRIGGER_FLAG_OFFSET, FLAGS4_BITS, INF_PREFIXES, LIVE_MIF_OFFSET, LIVE_MIF_MAXLEN, MAP_NAME_OFFSET, MAP_NAME_MAXLEN, CHARGEN_STATE_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW
 _LOG_BASE = os.path.dirname(os.path.abspath(sys.executable)) if getattr(sys, 'frozen', False) else _ROOT
 LOG_DIR = os.path.join(_LOG_BASE, 'output')
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -148,36 +148,11 @@ def collect_startup_memory_diagnostics(analyzer: ArenaMemoryAnalyzer, anchor: in
                 offset = idx + 1
     return {'scan_range': {'start': f'0x{start:08X}', 'end': f'0x{end:08X}'}, 'region_count': len(regions), 'total_readable_bytes': total_size, 'combined_crc32': f'{combined_crc & 4294967295:08X}', 'regions': regions, 'startup_text_hits': {query: {'hit_count_limited': len(items), 'hits': items} for query, items in hits.items()}}
 
-def check_trigger_flag(analyzer, anchor: int, prev_flag: int, trigger_indices: list, cached_trig_idx: int=0) -> tuple:
+def check_trigger_flag(analyzer, anchor: int, prev_flag: int) -> int:
     try:
-        curr_flag = analyzer.read_bytes(anchor + TRIGGER_FLAG_OFFSET, 1)[0]
+        return analyzer.read_bytes(anchor + TRIGGER_FLAG_OFFSET, 1)[0]
     except OSError:
-        return ('', prev_flag, 0, 0, 0)
-    if curr_flag == 0:
-        return ('', curr_flag, 0, 0, 0)
-    trig_idx = cached_trig_idx
-    try:
-        raw = analyzer.read_bytes(anchor + TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ)
-    except OSError:
-        raw = b''
-    from mif_trigger import extract_trigger_texts
-    texts = extract_trigger_texts(raw)
-    if not texts:
-        return (f'[0x{curr_flag:02X}]', curr_flag, trig_idx, 0, 0)
-    if trig_idx and trig_idx not in trigger_indices:
-        trigger_indices.append(trig_idx)
-    n = len(texts)
-    if not trig_idx:
-        slot = 0
-        body = texts[0]
-    else:
-        slot = trig_idx // 32 - 1
-        if 0 <= slot < n:
-            body = texts[slot]
-        else:
-            slot = 0
-            body = texts[0]
-    return (body, curr_flag, trig_idx, n, slot)
+        return prev_flag
 _LOC_DISPLAY_MEMO: dict[tuple[str, str, str], str] = {}
 
 def _location_display_name(name_key: str) -> str:

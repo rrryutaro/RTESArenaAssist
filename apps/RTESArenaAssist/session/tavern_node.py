@@ -41,6 +41,23 @@ class TavernNode(FacilityNode):
         from normal_play.tavern_render_module import poll_tavern_render
         return poll_tavern_render(w, tview=view, shop_state=shop_state, shop_img_name=shop_img_name, top_level_state=top_level_state)
 
+    def on_exit(self, w) -> None:
+        try:
+            from normal_play.tavern_render_module import reset_tavern_render_state
+            reset_tavern_render_state(w)
+        except Exception:
+            pass
+        try:
+            from normal_play.negotiation_module import cleanup_if_owner as _cleanup_negotiation
+            _cleanup_negotiation(w)
+        except Exception:
+            pass
+        try:
+            from normal_play.active_template_module import cleanup_if_owner as _cleanup_active_template
+            _cleanup_active_template(w)
+        except Exception:
+            pass
+
     def render_no_session_shop(self, w, *, shop_state, shop_img_name: str, shop_buy_active: bool, shop_menu_visible: bool):
         from normal_play.tavern_render_module import render_no_session_shop
         return render_no_session_shop(w, shop_state=shop_state, shop_img_name=shop_img_name, shop_buy_active=shop_buy_active, shop_menu_visible=shop_menu_visible)

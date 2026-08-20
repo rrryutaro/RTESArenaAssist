@@ -66,7 +66,8 @@ def render_equipment_view(w, *, view, shop_state=None, shop_img_name: str='', to
         repair_visible = _render_repair_jobs(w, view.repair_job_names)
     elif state in (EquipmentL4State.ITEM_SELECT, EquipmentL4State.BUY_LIST):
         list_visible = _render_list(w, img)
-    _cleanup(w, menu_visible, list_visible, negot_visible, repair_visible=repair_visible, reply_visible=reply_visible)
+    if menu_visible or list_visible or negot_visible or repair_visible or reply_visible:
+        _cleanup(w, menu_visible, list_visible, negot_visible, repair_visible=repair_visible, reply_visible=reply_visible)
     return (negot_visible, False, menu_visible, list_visible)
 
 def poll_equipment_render(w, *, shop_state=None, shop_img_name: str='', top_level_state: str='normal-play', **_ignored) -> tuple[bool, bool, bool, bool]:

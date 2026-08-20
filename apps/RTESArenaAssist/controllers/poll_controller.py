@@ -11,7 +11,7 @@ from display_intent import PollFrame
 from hierarchy_state import facility_owners_for_session, HierarchyRecognitionInput, SeparationHierarchy
 from normal_play.base_location.base_location_view import resolve_area_with_indoor_fallback as _resolve_area_with_indoor_fallback
 from controllers.chargen_helpers import _CHARGEN_GOYENOW_HINT_ADDR, _CHARGEN_GOYENOW_HINT_CHECKLEN, _CHARGEN_GOYENOW_PREFIX, _CHARGEN_GOYENOW_SCAN_START, _CHARGEN_GOYENOW_SCAN_END
-from controllers.coord_transition_gate import resolve_coord_transition as _resolve_coord_transition
+from controllers.coord_transition_gate import arrival_consumption_due as _arrival_consumption_due, resolve_coord_transition as _resolve_coord_transition
 from controllers.map_fallback_suppression import arm_city_load_fallback_suppression as _arm_city_load_fallback_suppression, city_load_fallback_suppression as _city_load_fallback_suppression
 from top_level.normal_play_state import poll_sessions as _poll_normal_play_sessions
 from top_level.top_level_dispatcher import build_session_context as _build_session_context, current_state as _current_top_level
@@ -267,8 +267,18 @@ def _poll_track_facility_latch(w):
     _facility_just_started = _tavern_just_started or _temple_just_started or _equipment_just_started or _mages_just_started
     if _tavern_just_stopped:
         _clear_stopped_facility_display(w, 'tavern')
+        try:
+            from session.tavern_node import TAVERN_NODE
+            TAVERN_NODE.on_exit(w)
+        except Exception:
+            _log.exception('tavern on_exit cleanup failed')
     if _temple_just_stopped:
         _clear_stopped_facility_display(w, 'temple')
+        try:
+            from session.temple_node import TEMPLE_NODE
+            TEMPLE_NODE.on_exit(w)
+        except Exception:
+            _log.exception('temple on_exit cleanup failed')
     if _equipment_just_stopped:
         _clear_stopped_facility_display(w, 'equipment')
         try:
@@ -281,6 +291,11 @@ def _poll_track_facility_latch(w):
         if getattr(w, '_mages_reply_baselined', False):
             from normal_play.mages_reply_module import reset_mages_reply_state as _reset_mages_reply
             _reset_mages_reply(w)
+        try:
+            from session.mages_guild_node import MAGES_GUILD_NODE
+            MAGES_GUILD_NODE.on_exit(w)
+        except Exception:
+            _log.exception('mages_guild on_exit cleanup failed')
     return (_active_facility_name, _tavern_active_now, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _facility_active_now, _facility_just_started)
 
 def _poll_resolve_yesno_menu_recovery(w, *, _shop_img_name, _temple_active_now):
@@ -317,6 +332,9 @@ def _poll_detect_shop_state(w, *, _shop_img_name, in_interior, _active_facility_
     try:
         from shop_popup_detector import detect_shop_popup_state
         _active_facility_for_shop = _active_facility_name if _active_facility_name in ('equipment', 'mages_guild', 'temple', 'tavern') else ''
+        from normal_play.field_temple_module import is_field_temple_interior, detect_field_temple_shop_state
+        if is_field_temple_interior(area=area or '', in_interior=in_interior, interior_mif_name=getattr(w, '_interior_mif_name', '') or ''):
+            return detect_field_temple_shop_state(w._analyzer, w._anchor, top_level_state=_current_top_level(w), img_name=_shop_img_name, in_interior=in_interior, screen_id=w._screen_id_prev, allow_yesno_menu_recovery=_allow_yesno_menu_recovery, interior_mif_name=getattr(w, '_interior_mif_name', '') or '')
         _shop_state = detect_shop_popup_state(w._analyzer, w._anchor, top_level_state=_current_top_level(w), img_name=_shop_img_name, in_interior=in_interior, screen_id=w._screen_id_prev, allow_yesno_menu_recovery=_allow_yesno_menu_recovery, interior_mif_name=getattr(w, '_interior_mif_name', '') or '', active_facility_name=_active_facility_for_shop, area=area)
     except Exception:
         _log.exception('shop_popup_detector failed')
@@ -341,7 +359,7 @@ def _poll_classify_tavern_view_and_log(w, *, _shop_state, _shop_img_name, in_int
     except Exception:
         _log.exception('tavern view classify failed')
         from session.tavern_view import TavernView as _TVErr
-        _tview = _TVErr(l4_kind='none', render_owner='', bar_key='', l4_visible=False, l3_start=False, reason='error')
+        _tview = _TVErr(l4_kind='none', render_owner='', bar_key='', l4_visible=False, l4_start=False, reason='error')
     w._tavern_view = _tview
     w._tavern_view_l4_visible = _tview.l4_visible
     _tavern_l4_kind = _tview.l4_kind
@@ -446,28 +464,34 @@ def _fallback_map_tab_or_none(w):
     except (AttributeError, RuntimeError):
         return None
 
+def reset_trigger_axis_on_load(w) -> None:
+    w._trigger_axis_live_prev = False
+
 def reset_floor_holds_on_load(w) -> None:
     w._dungeon_level_held = None
     w._interior_floor_held = None
 
-def _poll_handle_triggers(w, *, rt_x, rt_z, inf_name):
+def _poll_handle_triggers(w, *, rt_x, rt_z, inf_name, coord_valid=True):
     try:
         from tts_prewarm import prewarm_dungeon_inf
         prewarm_dungeon_inf(w, inf_name)
     except Exception:
         pass
     from arena_bridge import check_trigger_flag
-    body, trigger_flag, trigger_idx, _n, trigger_slot = check_trigger_flag(w._analyzer, w._anchor, w._trigger_flag_prev, w._trigger_indices, w._cached_trig_idx)
+    trigger_flag = check_trigger_flag(w._analyzer, w._anchor, w._trigger_flag_prev)
     old_flag = w._trigger_flag_prev
-    _new_trigger = trigger_flag > old_flag and (not getattr(w, '_npc_conversation_active', False))
-    _trig_fell = old_flag != 0 and trigger_flag == 0
+    _axis_was_live = bool(getattr(w, '_trigger_axis_live_prev', False))
+    w._trigger_axis_live_prev = True
+    if not _axis_was_live and trigger_flag != old_flag:
+        _recog(_log, 'trigger axis entry: seeding prev flag=0x%02X', trigger_flag)
+    _new_trigger = _axis_was_live and trigger_flag > old_flag and (not getattr(w, '_npc_conversation_active', False))
+    _trig_fell = _axis_was_live and old_flag != 0 and (trigger_flag == 0)
     if _new_trigger:
-        w._cached_rt_x = rt_x
-        w._cached_rt_z = rt_z
-        w._cached_trig_idx = trigger_idx
+        w._cached_rt_x = rt_x if coord_valid else None
+        w._cached_rt_z = rt_z if coord_valid else None
     w._trigger_flag_prev = trigger_flag
     from normal_play.trigger_module import poll_trigger as _poll_trigger
-    _poll_trigger(w, new_trigger=_new_trigger, trig_fell=_trig_fell, trigger_flag=trigger_flag, trigger_idx=trigger_idx, trigger_slot=trigger_slot, body=body, inf_name=inf_name)
+    _poll_trigger(w, new_trigger=_new_trigger, trig_fell=_trig_fell, trigger_flag=trigger_flag, inf_name=inf_name)
 
 def _poll_status_template_parse(w, *, _entry_handled):
     try:
@@ -570,6 +594,7 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
     if _just_entered_interior:
         w._entry_door_pos = getattr(w, '_last_outside_rt', None)
         w._building_entry_pending = True
+        w._building_entry_msg_buf_written = False
         w._b288_entry_diag_count = 0
         _log.info('interior entered, door_pos=%s map=%s interior_raw=%s', getattr(w, '_entry_door_pos', None), gs.get('MapName'), interior_raw)
     if not in_interior and prev_in_interior:
@@ -579,6 +604,7 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
         w._instore_resp_current_key = None
         w._instore_resp_text_by_offset = {}
         w._building_entry_pending = False
+        w._building_entry_msg_buf_written = False
     w._in_interior_prev = in_interior
     display_mif_name = mif_name
     interior_mif_name: str | None = None
@@ -787,12 +813,26 @@ def _poll_run_session_manager(w, *, _img_name_early, _npc_phase_early, in_interi
     try:
         _session_hierarchy_area = _resolved_area
         _session_ctx = _build_session_context(w, img_name=_img_name_early, screen_id=w._screen_id_prev, top_level_state=_current_top_level(w), in_interior=in_interior, npc_phase=_npc_phase_early, npc_active=bool(getattr(w, '_npc_conversation_active', False)), c_area=_session_hierarchy_area, mif_name=mif_name, interior_mif_name=interior_mif_name or '', facility_kind='', extras={'window': w})
-        _t_l3 = _phase_start()
+        _t_l4 = _phase_start()
         _poll_normal_play_sessions(w, _session_ctx)
-        _phase_record(w, 'L3_session', _t_l3)
+        _phase_record(w, 'L4_session', _t_l4)
         _checkpoint(w, 'session')
     except Exception:
         _log.exception('session_manager.poll failed')
+        _session_ctx = None
+    try:
+        from normal_play.field_temple_module import poll_field_temple_session
+        if _session_ctx is not None:
+            poll_field_temple_session(w, _session_ctx)
+        if getattr(w, '_field_temple_just_stopped', False):
+            _clear_stopped_facility_display(w, 'temple')
+            try:
+                from session.temple_node import TEMPLE_NODE
+                TEMPLE_NODE.on_exit(w)
+            except Exception:
+                _log.exception('field temple on_exit cleanup failed')
+    except Exception:
+        _log.exception('field temple session poll failed')
 
 def _log_hierarchy_recognition(w, *, stage: str, hierarchy: SeparationHierarchy, decision: HierarchyRecognitionInput) -> None:
     path = ' > '.join(hierarchy.path_codes) or '(none)'
@@ -887,12 +927,14 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
             _arr_seq, _arr = _arr_entry
             if getattr(w, '_load_arrival_consumed_seq', None) != _arr_seq:
                 _load_arrival_coord = (_arr['tile_x'], _arr['tile_y'])
-        _gate = _resolve_coord_transition(loc=_gate_loc, prev_loc=getattr(w, '_coord_gate_loc_prev', None), in_transition=bool(getattr(w, '_coord_gate_active', False)), pre_coord=getattr(w, '_coord_gate_pre_coord', None), coord=(rt_x, rt_z), prev_coord=getattr(w, '_coord_gate_coord_prev', None), is_loading=_is_loading_for_map, arrival_coord=_load_arrival_coord)
+        _gate_loc_was = getattr(w, '_coord_gate_loc_prev', None)
+        _gate_active_was = bool(getattr(w, '_coord_gate_active', False))
+        _gate = _resolve_coord_transition(loc=_gate_loc, prev_loc=_gate_loc_was, in_transition=_gate_active_was, pre_coord=getattr(w, '_coord_gate_pre_coord', None), coord=(rt_x, rt_z), prev_coord=getattr(w, '_coord_gate_coord_prev', None), is_loading=_is_loading_for_map, arrival_coord=_load_arrival_coord)
         w._coord_gate_loc_prev = _gate_loc
         w._coord_gate_active = _gate.in_transition
         w._coord_gate_pre_coord = _gate.pre_coord
         w._coord_gate_coord_prev = (rt_x, rt_z)
-        if _load_arrival_coord is not None and (not _is_loading_for_map) and ((rt_x, rt_z) == _load_arrival_coord):
+        if _arrival_consumption_due(arrival_supplied=_load_arrival_coord is not None, is_loading=_is_loading_for_map, gate_in_transition=_gate.in_transition, gate_was_in_transition=_gate_active_was, loc=_gate_loc, prev_loc=_gate_loc_was):
             w._load_arrival_consumed_seq = _arr_seq
         if not _gate.shown:
             _show_player_x = None
@@ -1063,7 +1105,8 @@ def _poll_screen_detect_and_label(w, _img_name, mif_name, _resolved_area, player
                 _temple_surface = ''
                 _temple_text = ''
                 _temple_sub_key = ''
-            if _is_temple_ctx and _active_session_name_for_label == 'temple' and _temple_sub_key:
+            _temple_label_active = _active_session_name_for_label == 'temple' or (not _screen_suppresses_conversation_label and bool(getattr(w, '_field_temple_active_now', False)))
+            if _is_temple_ctx and _temple_label_active and _temple_sub_key:
                 try:
                     _conv_label = _conv_label + i18n.tr(_temple_sub_key)
                 except (AttributeError, ImportError):
@@ -1094,10 +1137,14 @@ def _poll_screen_detect_and_label(w, _img_name, mif_name, _resolved_area, player
                 _temple_cands = ','.join(_temple_cand_descs[:6])
             except Exception:
                 _temple_cands = ''
-            _temple_dbg_key = (_is_temple_ctx, _temple_sub_key, _temple_owner, _temple_surface, _shop_img_name, _temple_phase, _temple_cands)
+            _temple_shop_kind = getattr(_shop_state, 'kind', 'none') if _shop_state is not None else 'none'
+            _temple_shop_owner = getattr(_shop_state, 'owner_kind', '') if _shop_state is not None else ''
+            _temple_shop_reason = getattr(_shop_state, 'reason', '') if _shop_state is not None else ''
+            _temple_field_latch = bool(getattr(w, '_field_temple_active_now', False))
+            _temple_dbg_key = (_is_temple_ctx, _temple_sub_key, _temple_owner, _temple_surface, _shop_img_name, _temple_phase, _temple_cands, _temple_shop_kind, _temple_shop_owner, _resolved_area, _temple_field_latch)
             if _temple_dbg_key != getattr(w, '_temple_view_dbg_key', None):
                 w._temple_view_dbg_key = _temple_dbg_key
-                _log.warning('temple view dbg: sub=%s view(+0x8F6E)=%s flag(+0x8F74)=%s phase=%s vals=%s surface=%r owner=%r img=%r text=%r cands=[%s] ctx_temple=%s', _temple_sub_key.rsplit('.', 1)[-1] if _temple_sub_key else 'none', f'0x{_temple_view:04X}' if _temple_view is not None else 'None', f'0x{_temple_flag:02X}' if _temple_flag is not None else 'None', _temple_phase, _temple_phase_vals, _temple_surface, _temple_owner, _shop_img_name, _temple_text[:48], _temple_cands, _is_temple_ctx)
+                _log.warning('temple view dbg: sub=%s view(+0x8F6E)=%s flag(+0x8F74)=%s phase=%s vals=%s surface=%r owner=%r img=%r text=%r cands=[%s] ctx_temple=%s shop=%s/%r area=%r field_latch=%s shop_reason=%r', _temple_sub_key.rsplit('.', 1)[-1] if _temple_sub_key else 'none', f'0x{_temple_view:04X}' if _temple_view is not None else 'None', f'0x{_temple_flag:02X}' if _temple_flag is not None else 'None', _temple_phase, _temple_phase_vals, _temple_surface, _temple_owner, _shop_img_name, _temple_text[:48], _temple_cands, _is_temple_ctx, _temple_shop_kind, _temple_shop_owner, _resolved_area, _temple_field_latch, _temple_shop_reason[:96])
             w._temple_view_dbg_prev_ctx = _is_temple_ctx
         _is_tavern_ctx = _facility_key == 'recognition.facility_tavern'
         if _is_tavern_ctx or getattr(w, '_tavern_view_dbg_prev_ctx', False):
@@ -1321,7 +1368,7 @@ class PollController:
         ui_router = getattr(w, '_ui_router', None)
         _poll_file_lifecycle(w)
         try:
-            from arena_bridge import read_game_state, interpret_location, check_trigger_flag, get_trigger_text_by_index, TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, RT_COORD_X_OFFSET, RT_COORD_Z_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW, read_live_buffer, NPC_DIALOG_OFFSET, NPC_DIALOG_MAXLEN, CHARGEN_STATE_OFFSET, CHARGEN_Q_SEQ_OFFSET, CHARGEN_Q_ARRAY_OFFSET, CHARGEN_DONE_OFFSET, NPC_PHASE_ASKING, NPC_PHASE_IDLE, NPC_PHASE_RESPONDING, NPC_PHASE_BUILDING_ENTRY, read_interior_flag, is_in_interior
+            from arena_bridge import read_game_state, interpret_location, check_trigger_flag, TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, RT_COORD_X_OFFSET, RT_COORD_Z_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW, read_live_buffer, NPC_DIALOG_OFFSET, NPC_DIALOG_MAXLEN, CHARGEN_STATE_OFFSET, CHARGEN_Q_SEQ_OFFSET, CHARGEN_Q_ARRAY_OFFSET, CHARGEN_DONE_OFFSET, NPC_PHASE_ASKING, NPC_PHASE_IDLE, NPC_PHASE_RESPONDING, NPC_PHASE_BUILDING_ENTRY, read_interior_flag, is_in_interior
             gs, rt_x, rt_z, in_interior, interior_raw, state, inf_name, mif_name, player_floor = _poll_read_game_state(w)
             _top_is_normal_play = _current_top_level(w) == 'normal-play'
             _field_facility_active = False
@@ -1338,10 +1385,19 @@ class PollController:
             _poll_run_session_manager(w, _img_name_early=_img_name_early, _npc_phase_early=_npc_phase_early, in_interior=in_interior, _resolved_area=_resolved_area, mif_name=mif_name, interior_mif_name=interior_mif_name)
             if _top_is_normal_play:
                 _active_facility_name, _tavern_active_now, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _facility_active_now, _facility_just_started = _poll_track_facility_latch(w)
+                _field_temple_active_now = bool(getattr(w, '_field_temple_active_now', False))
+                _field_temple_just_started = bool(getattr(w, '_field_temple_just_started', False))
+                if _field_temple_active_now:
+                    _temple_active_now = True
+                    _temple_just_started = _temple_just_started or _field_temple_just_started
+                    _facility_active_now = True
+                    _facility_just_started = _facility_just_started or _field_temple_just_started
                 _poll_reset_temple_keys_on_img_transition(w, _img_name_early=_img_name_early, _temple_active_now=_temple_active_now)
                 _poll_update_npc_conversation_latch(w, _facility_active_now=_facility_active_now, _facility_just_started=_facility_just_started, _npc_phase_early=_npc_phase_early)
             else:
                 _active_facility_name, _tavern_active_now, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _facility_active_now, _facility_just_started = ('', False, False, False, False, False, False, False, False, False)
+                _field_temple_active_now = False
+                _field_temple_just_started = False
             _poll_log_hierarchy_recognition_post_session(w, _resolved_area=_resolved_area, in_interior=in_interior, _npc_phase_early=_npc_phase_early, mif_name=mif_name, _img_name_early=_img_name_early, interior_mif_name=interior_mif_name, interior_raw=interior_raw)
             _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _loading_post_settle)
             _shop_state = None
@@ -1376,11 +1432,16 @@ class PollController:
             _screen_display_active = _screen_state_display_active(w)
             if _screen_display_active:
                 _negot_handled, _active_tmpl_handled = (False, False)
+            elif _field_temple_active_now:
+                from normal_play.field_temple_module import poll_field_temple_render
+                _negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active = poll_field_temple_render(w, shop_state=_shop_state, shop_img_name=_shop_img_name, foreground_ptr=_foreground_ptr_early)
             else:
                 _negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active = _poll_facility_render_dispatch(w, _shop_state=_shop_state, _shop_img_name=_shop_img_name, _facility_tavern=_facility_tavern, _tview=_tview, _temple_active_now=_temple_active_now, _tavern_active_now=_tavern_active_now, _tavern_l4_kind=_tavern_l4_kind, _poll_hierarchy_area=_poll_hierarchy_area, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active, _facility_foreground_ptr=_foreground_ptr_early)
             _poll_detect_dungeon_entry(w, mif_name=mif_name)
             if _top_is_normal_play:
-                _poll_handle_triggers(w, rt_x=rt_x, rt_z=rt_z, inf_name=inf_name)
+                _poll_handle_triggers(w, rt_x=rt_x, rt_z=rt_z, inf_name=inf_name, coord_valid=not getattr(w, '_coord_gate_active', False))
+            else:
+                w._trigger_axis_live_prev = False
             npc_dialog = read_live_buffer(w._analyzer, w._anchor + NPC_DIALOG_OFFSET, NPC_DIALOG_MAXLEN)
             _npc_dialog_changed = npc_dialog != w._npc_dialog_prev
             try:
@@ -1390,6 +1451,8 @@ class PollController:
             _msg_buf_prev = getattr(w, '_msg_buf_prev', '')
             _msg_buf_changed = msg_buf != _msg_buf_prev
             w._msg_buf_prev = msg_buf
+            if _msg_buf_changed and getattr(w, '_building_entry_pending', False):
+                w._building_entry_msg_buf_written = True
             if _top_is_normal_play:
                 _newpop_gate, _is_corpse_loot = _poll_compute_newpop_gate(w, npc_dialog=npc_dialog)
             else:

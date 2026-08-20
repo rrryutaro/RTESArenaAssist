@@ -75,8 +75,7 @@ def on_connect_done(win, pid: int, anchor: int):
     except Exception:
         win._mif_matcher = None
     win._trigger_flag_prev = 0
-    win._trigger_indices = []
-    win._cached_trig_idx = 0
+    win._trigger_axis_live_prev = False
     win._cached_rt_x = win._cached_rt_z = None
     win._panel_owner: str = ''
     win._ui_router = UiRouter(win)

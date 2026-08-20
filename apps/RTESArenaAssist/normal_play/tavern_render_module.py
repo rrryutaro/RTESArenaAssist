@@ -17,16 +17,16 @@ def poll_tavern_render(w, *, tview, shop_state, shop_img_name: str, top_level_st
     elif owner in ('shop_menu', 'shop_rumor_type') and shop_state is not None and (shop_state.kind in ('shop_menu', 'shop_rumor_type')):
         shop_menu_visible = True
         _render_shop_menu(w, shop_state, shop_img_name)
-    _cleanup_shop_buy(w, shop_buy_active, shop_menu_visible, shop_img_name)
-    _cleanup_shop_menu(w, shop_menu_visible, shop_buy_active, shop_img_name)
+    if owner:
+        _cleanup_shop_buy(w, shop_buy_active, shop_menu_visible, shop_img_name)
+        _cleanup_shop_menu(w, shop_menu_visible, shop_buy_active, shop_img_name)
     from normal_play.negotiation_module import poll_negotiation as _poll_negotiation, cleanup_if_owner as _cleanup_negotiation
     if owner == 'negotiation':
         negot_handled = _poll_negotiation(w, img_name=shop_img_name, top_level_state=top_level_state)
-        if not negot_handled:
-            _cleanup_negotiation(w)
     else:
         negot_handled = False
-        _cleanup_negotiation(w)
+        if owner:
+            _cleanup_negotiation(w)
     from normal_play.active_template_module import poll_active_template as _poll_active_template, cleanup_if_owner as _cleanup_active_template
     if negot_handled:
         active_tmpl_handled = False
@@ -34,7 +34,7 @@ def poll_tavern_render(w, *, tview, shop_state, shop_img_name: str, top_level_st
         active_tmpl_handled = False
     else:
         active_tmpl_handled = _poll_active_template(w, shop_img_name=shop_img_name, shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, active_facility='tavern', allow_during_shop_menu=True, tavern_l4_kind=l4_kind)
-    if not active_tmpl_handled and (not negot_handled):
+    if owner and owner != 'active_template' and (not negot_handled):
         _cleanup_active_template(w)
     return (negot_handled, active_tmpl_handled, shop_menu_visible, shop_buy_active)
 
@@ -101,9 +101,10 @@ def _render_shop_menu(w, shop_state, shop_img_name: str) -> None:
         _owner_taken = w._panel_owner != _shop_kind
         if _menu_key != _prev_menu_key or _owner_taken:
             w._shop_menu_key_prev = _menu_key
-            _menu_tr = translate_shop_menu_items(_menu_items, owner_kind='tavern')
+            _menu_owner = getattr(shop_state, 'owner_kind', '') or 'tavern'
+            _menu_tr = translate_shop_menu_items(_menu_items, owner_kind=_menu_owner)
             _title_en = shop_state.menu_title_en or ''
-            _title_ja = translate_ui_text('tavern', _title_en) or _title_en if _title_en else ''
+            _title_ja = translate_ui_text(_menu_owner, _title_en) or _title_en if _title_en else ''
             _tab_en_text, _tab_ja_text, _panel_en_text, _panel_ja_text = build_menu_display(_menu_tr, _menu_hotkeys, _title_en, _title_ja)
             w._ui_router.update_translation(_shop_kind, _tab_en_text, _tab_ja_text, panel_en=_panel_en_text, panel_ja=_panel_ja_text)
             _log.info('%s update (img=%r title=%r items=%r hotkeys=%r owner_taken=%s)', _shop_kind, shop_img_name, _title_en, _menu_items, _menu_hotkeys, _owner_taken)
@@ -146,6 +147,16 @@ def _cleanup_shop_menu(w, shop_menu_visible: bool, shop_buy_active: bool, shop_i
             w._ui_router.release_if_owner(_was_owner)
         _log.info('%s exit (img=%r next=%s)', _was_owner, shop_img_name, 'shop_buy' if shop_buy_active else 'none')
 
+def reset_tavern_render_state(w) -> None:
+    w._shop_menu_key_prev = None
+    w._shop_buy_seen_items = []
+    w._shop_buy_key_prev = None
+    try:
+        if w._tab_translate.panel_mode() == 'shop_buy':
+            w._ui_router.set_panel_mode('translate')
+    except AttributeError:
+        pass
+
 def render_no_session_shop(w, *, shop_state, shop_img_name: str, shop_buy_active: bool, shop_menu_visible: bool) -> tuple[bool, bool]:
     if shop_state is not None:
         _kind = shop_state.kind
@@ -166,4 +177,4 @@ render_shop_rooms = _render_shop_rooms
 render_shop_menu = _render_shop_menu
 cleanup_shop_buy = _cleanup_shop_buy
 cleanup_shop_menu = _cleanup_shop_menu
-__all__ = ['poll_tavern_render', 'render_no_session_shop', 'render_shop_drinks', 'render_shop_rooms', 'render_shop_menu', 'cleanup_shop_buy', 'cleanup_shop_menu']
+__all__ = ['poll_tavern_render', 'render_no_session_shop', 'render_shop_drinks', 'render_shop_rooms', 'render_shop_menu', 'cleanup_shop_buy', 'cleanup_shop_menu', 'reset_tavern_render_state']

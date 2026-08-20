@@ -6,6 +6,16 @@ import i18n_helper as i18n
 import assist_settings as settings
 _log = logging.getLogger('RTESArenaAssist')
 
+def resolve_pair_texts(original: str, translated: str) -> tuple[str, str]:
+    nd = i18n.tr('translate.no_data')
+    if translated:
+        ja = translated
+    elif original:
+        ja = i18n.tr('translate.not_in_dict')
+    else:
+        ja = nd
+    return (original or nd, ja)
+
 class LayoutPanelTranslate(QWidget):
 
     def __init__(self, parent=None):
@@ -75,11 +85,10 @@ class LayoutPanelTranslate(QWidget):
             self._prev_orig = original
             self._prev_trans = translated
             _log.info('layout_panel_translate.update_translation (orig=%r trans=%r)', original[:160], translated[:160])
-        nd = i18n.tr('translate.no_data')
-        not_in = i18n.tr('translate.not_in_dict')
+        en_text, ja_text = resolve_pair_texts(original, translated)
         import reading_highlight as _rh
-        _rh.set_plain(self._ja_lbl, translated if translated else not_in)
-        self._en_lbl.setText(original or nd)
+        _rh.set_plain(self._ja_lbl, ja_text)
+        self._en_lbl.setText(en_text)
 
     def highlight_reading(self, full_text, current_segment, prefetched_segments=None) -> None:
         import reading_highlight as _rh

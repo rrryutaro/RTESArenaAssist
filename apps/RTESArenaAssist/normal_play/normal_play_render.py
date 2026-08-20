@@ -442,15 +442,15 @@ def _classify_facility_story_axis(w, *, facility_view_active: bool, foreground_p
     ptr = _read_facility_story_pointer(w) if foreground_ptr is _FACILITY_PTR_UNSET else foreground_ptr
     mif_name = getattr(w, '_interior_mif_name', None)
     try:
-        from normal_play.palace_dialog_module import is_palace_interior_mif, _dialog_body_source
-        if is_palace_interior_mif(mif_name) and _dialog_body_source(ptr):
+        from normal_play.palace_dialog_module import is_palace_interior_mif, _dialog_body_source, _dialog_hold_pointer
+        if is_palace_interior_mif(mif_name) and (_dialog_body_source(ptr) or _dialog_hold_pointer(ptr)):
             return ('palace', ptr)
     except (ImportError, AttributeError):
         pass
     try:
-        from normal_play.mages_guild_render_module import is_mages_interior_mif, _story_body_source, _STORY_BUF_OFFSET, _STORY_CHOICE_OVERLAY_PTR
+        from normal_play.mages_guild_render_module import is_mages_interior_mif, _story_body_source, _story_hold_pointer, _STORY_BUF_OFFSET, _STORY_CHOICE_OVERLAY_PTR
         strong_story_ptr = ptr in (_STORY_BUF_OFFSET, _STORY_CHOICE_OVERLAY_PTR)
-        if is_mages_interior_mif(mif_name) and _story_body_source(ptr) and (strong_story_ptr or not facility_view_active):
+        if is_mages_interior_mif(mif_name) and (_story_body_source(ptr) or _story_hold_pointer(ptr)) and (strong_story_ptr or not facility_view_active):
             return ('mages', ptr)
     except (ImportError, AttributeError):
         pass

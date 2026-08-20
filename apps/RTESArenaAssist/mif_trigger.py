@@ -125,7 +125,9 @@ class MifTriggerMatcher:
         self._mif_dir = mif_dir
         self._loaded_mif: str = ''
         self._trigs_by_level: list[list[tuple[int, int, int, int]]] = []
+        self._info_by_level: list[str] = []
         self._active_level: int | None = None
+        self._matched_level: int | None = None
         self._last_status: str = 'unknown'
         self._last_mif_entry: tuple[int, int, int, int] | None = None
         self._source: str = 'none'
@@ -138,6 +140,7 @@ class MifTriggerMatcher:
 
     def _load_levels(self, mif_name: str) -> None:
         levels: list[list[tuple[int, int, int, int]]] = []
+        infos: list[str] = []
         try:
             from runtime_paths import resolve_arena_install_dir
             from services.mif_loader import DEFAULT_MIF_DIR, load_mif
@@ -149,9 +152,13 @@ class MifTriggerMatcher:
                     lv = head if i == head.level_index else load_mif(mif_name, dirs, level_index_override=i)
                     trigs = [(t.x, t.y, t.text_index, t.sound_index) for t in (lv.trigs if lv is not None else []) or []]
                     levels.append(trigs)
+                    infos.append(getattr(lv, 'info_name', '') or '')
         except Exception:
             levels = []
+            infos = []
         self._trigs_by_level = levels
+        self._info_by_level = infos
+        self._matched_level = None
         self._loaded_mif = mif_name
         self._source = 'mif_levels' if any(levels) else 'none'
         self._last_status = 'unknown' if any(levels) else 'mif_trig_not_found'
@@ -161,25 +168,45 @@ class MifTriggerMatcher:
 
     def find_text_index(self, rt_x: int, rt_y: int) -> int | None:
         self._last_mif_entry = None
+        self._matched_level = None
         if not any(self._trigs_by_level):
             self._last_status = 'mif_not_loaded' if not self._loaded_mif else 'mif_trig_not_found'
             return None
         lvl = self._active_level
         if lvl is not None and 0 <= lvl < len(self._trigs_by_level):
             hits = self._match_in(self._trigs_by_level[lvl], rt_x, rt_y)
+            hit_levels = [lvl] if hits else []
         else:
             hits = []
-            for trigs in self._trigs_by_level:
-                hits.extend(self._match_in(trigs, rt_x, rt_y))
+            hit_levels = []
+            for li, trigs in enumerate(self._trigs_by_level):
+                lv_hits = self._match_in(trigs, rt_x, rt_y)
+                if lv_hits:
+                    hits.extend(lv_hits)
+                    hit_levels.append(li)
             if len({e[2] for e in hits}) > 1:
                 self._last_status = 'mif_coord_ambiguous'
                 return None
         if hits:
             self._last_mif_entry = hits[0]
+            if len(hit_levels) == 1:
+                self._matched_level = hit_levels[0]
             self._last_status = 'matched'
             return hits[0][2]
         self._last_status = 'mif_coord_not_found'
         return None
+
+    def declared_inf_name(self) -> str:
+        infos = self._info_by_level
+        if not infos:
+            return ''
+        for lvl in (self._matched_level, self._active_level):
+            if lvl is not None and 0 <= lvl < len(infos) and infos[lvl]:
+                return infos[lvl]
+        uniq = {n for n in infos if n}
+        if len(uniq) == 1:
+            return next(iter(uniq))
+        return ''
 
     @property
     def trig_count(self) -> int:

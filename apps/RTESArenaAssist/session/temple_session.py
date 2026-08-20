@@ -1,7 +1,7 @@
 from __future__ import annotations
 from .session_base import SessionBase, SessionContext
 _TEMPLE_OWNER_KINDS = frozenset({'shop_menu'})
-_TEMPLE_PANEL_OWNERS = frozenset({'temple_menu', 'temple_priest_reply', 'temple_cost', 'temple_prompt', 'temple_cure'})
+_TEMPLE_CONVERSATION_PHASES = frozenset({'menu', 'select_input', 'result'})
 _TEMPLE_NONE_HYSTERESIS_POLLS = 3
 
 class TempleSession(SessionBase):
@@ -50,6 +50,14 @@ class TempleSession(SessionBase):
         if not ctx.in_interior:
             return ('none', '')
         try:
+            from normal_play.field_temple_module import is_field_temple_interior, detect_field_temple_shop_state
+        except ImportError:
+            is_field_temple_interior = None
+            detect_field_temple_shop_state = None
+        try:
+            if is_field_temple_interior is not None and is_field_temple_interior(area=ctx.area, in_interior=ctx.in_interior, interior_mif_name=ctx.interior_mif_name or ''):
+                state = detect_field_temple_shop_state(ctx.analyzer, ctx.anchor, top_level_state=ctx.top_level_state, img_name=ctx.img_name, in_interior=ctx.in_interior, screen_id=ctx.screen_id, interior_mif_name=ctx.interior_mif_name or '')
+                return (state.kind or 'none', state.owner_kind or '')
             state = detect_shop_popup_state(ctx.analyzer, ctx.anchor, top_level_state=ctx.top_level_state, img_name=ctx.img_name, in_interior=ctx.in_interior, screen_id=ctx.screen_id, interior_mif_name=ctx.interior_mif_name or '', area=ctx.area, active_facility_name='temple' if self._active or self._is_temple_context(ctx) else '')
             return (state.kind or 'none', state.owner_kind or '')
         except Exception:
@@ -149,16 +157,6 @@ class TempleSession(SessionBase):
                 return any((prev_by_offset.get(c.source_offset) != c.text for c in read.candidates))
         return False
 
-    def _is_temple_panel_owned(self, ctx: SessionContext) -> bool:
-        extras_owner = ctx.extras.get('temple_panel_owner') if ctx.extras else None
-        if extras_owner is not None:
-            return extras_owner in _TEMPLE_PANEL_OWNERS
-        w = ctx.extras.get('window') if ctx.extras else None
-        if w is None:
-            return False
-        owner = getattr(w, '_panel_owner', '') or ''
-        return owner in _TEMPLE_PANEL_OWNERS
-
     @property
     def last_img(self) -> str:
         return self._last_img
@@ -196,7 +194,8 @@ class TempleSession(SessionBase):
             self._none_shop_polls = 0
             self._last_img = ctx.img_name or ''
             return False
-        if self._detect_temple_phase(ctx) == 'out':
+        _phase = self._detect_temple_phase(ctx)
+        if _phase == 'out':
             return self._stop()
         if self._is_yesno_active(ctx):
             self._none_shop_polls = 0
@@ -214,7 +213,19 @@ class TempleSession(SessionBase):
             self._none_shop_polls = 0
             self._last_img = ctx.img_name or ''
             return False
-        if self._is_temple_panel_owned(ctx):
+        if _phase in _TEMPLE_CONVERSATION_PHASES:
+            self._none_shop_polls = 0
+            self._last_img = ctx.img_name or ''
+            return False
+        _extras_view = ctx.extras.get('temple_view_l4_visible') if ctx.extras else None
+        if _extras_view is not None:
+            _view_visible = bool(_extras_view)
+        else:
+            _w_view = ctx.extras.get('window') if ctx.extras else None
+            _view_visible = bool(_w_view is not None and getattr(_w_view, '_temple_view_l4_visible', False))
+            if _w_view is not None:
+                _w_view._temple_view_l4_visible = False
+        if _view_visible:
             self._none_shop_polls = 0
             self._last_img = ctx.img_name or ''
             return False

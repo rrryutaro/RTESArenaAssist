@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:5067d0259a783ca3a1596bda5bca63f3c01ed07e1152dd6de04aea0fcd594823",
+  "registry_hash": "sha256:269836326c260a067c4978eb0084de4e4c863e75b91bc6fd902e7de2c8b53156",
   "categories": [
     {
       "category": "assist_ui",
@@ -32462,6 +32462,13 @@
           "source": {
             "source_id": "aexe:akey:A619.0"
           }
+        },
+        {
+          "id": 112284,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:akey:A200.0"
+          }
         }
       ]
     },
@@ -63509,6 +63516,10 @@
           "text": "そんなに長く待てませんか？"
         },
         {
+          "id": 112284,
+          "text": "すみませんが、それには興味がありません..."
+        },
+        {
           "id": 115000,
           "text": "テオディ"
         },
@@ -91488,6 +91499,10 @@
         {
           "id": 112283,
           "text": "No puedes esperar tanto?"
+        },
+        {
+          "id": 112284,
+          "text": "Lo siento, amigo! Eso no me interesa..."
         },
         {
           "id": 115000,
@@ -119679,6 +119694,10 @@
           "text": "Könnt Ihr nicht so lange warten?"
         },
         {
+          "id": 112284,
+          "text": "Tut mir leid, Freund! Daran bin ich nicht interessiert..."
+        },
+        {
           "id": 115000,
           "text": "Theod"
         },
@@ -147358,6 +147377,10 @@
         {
           "id": 112283,
           "text": "Ne pouvez-vous pas attendre aussi longtemps ?"
+        },
+        {
+          "id": 112284,
+          "text": "Désolé, l'ami ! Cela ne m'intéresse pas..."
         },
         {
           "id": 115000,
@@ -175041,6 +175064,10 @@
           "text": "Non potete aspettare così a lungo?"
         },
         {
+          "id": 112284,
+          "text": "Mi dispiace, amico! Quello non mi interessa..."
+        },
+        {
           "id": 115000,
           "text": "Theod"
         },
@@ -202720,6 +202747,10 @@
         {
           "id": 112283,
           "text": "Не можете подождать так долго?"
+        },
+        {
+          "id": 112284,
+          "text": "Извини, приятель! Меня это не интересует..."
         },
         {
           "id": 115000,

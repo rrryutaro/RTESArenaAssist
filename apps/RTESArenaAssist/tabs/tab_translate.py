@@ -2,7 +2,7 @@ import logging
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFrame, QLabel, QTableWidgetItem, QVBoxLayout, QWidget
 import assist_settings as settings
-import i18n_helper as i18n
+from layout_panel_translate import resolve_pair_texts
 _log = logging.getLogger('RTESArenaAssist')
 from attributes_panel import AttributesPanel
 from appearance_faces_panel import AppearanceFacesPanel
@@ -57,11 +57,10 @@ class TabTranslate(QWidget):
             self._b267_prev_orig = original
             self._b267_prev_trans = translated
             _log.debug('b267 tab_translate.update_translation (panel_mode=%r orig=%r trans=%r)', self._panel_mode, original[:160], translated[:160])
-        nd = i18n.tr('translate.no_data')
-        not_in = i18n.tr('translate.not_in_dict')
+        en_text, ja_text = resolve_pair_texts(original, translated)
         import reading_highlight as _rh
-        self._orig_val.setText(original or nd)
-        _rh.set_plain(self._trans_val, translated if translated else not_in)
+        self._orig_val.setText(en_text)
+        _rh.set_plain(self._trans_val, ja_text)
 
     def highlight_reading(self, full_text, current_segment, prefetched_segments=None) -> None:
         import reading_highlight as _rh

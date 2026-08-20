@@ -121,8 +121,9 @@ class AssistWindow(QMainWindow):
             from controllers.map_ext_lifecycle import get_lifecycle
             get_lifecycle().add_store(self._log_store)
             get_lifecycle().add_on_load(self._translation_feed.on_load)
-            from controllers.poll_controller import reset_floor_holds_on_load, reset_map_progress_on_load
+            from controllers.poll_controller import reset_floor_holds_on_load, reset_map_progress_on_load, reset_trigger_axis_on_load
             get_lifecycle().add_on_load(lambda: reset_floor_holds_on_load(self))
+            get_lifecycle().add_on_load(lambda: reset_trigger_axis_on_load(self))
             get_lifecycle().add_on_load(lambda: reset_map_progress_on_load(self))
             from normal_play.level_up_module import reset_level_up_on_load
             get_lifecycle().add_on_load(lambda: reset_level_up_on_load(self))
@@ -179,8 +180,7 @@ class AssistWindow(QMainWindow):
         self._newgame_layout_pushed: bool = False
         self._startup_layout_pushed: bool = False
         self._trigger_flag_prev: int = 0
-        self._trigger_indices: list = []
-        self._cached_trig_idx: int = 0
+        self._trigger_axis_live_prev: bool = False
         self._cached_rt_x: int | None = None
         self._cached_rt_z: int | None = None
         self._mif_matcher = None

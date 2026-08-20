@@ -69,8 +69,12 @@ class MagesGuildNode(FacilityNode):
         return poll_mages_render(w, view=view, shop_state=shop_state, shop_img_name=shop_img_name, top_level_state=top_level_state)
 
     def on_exit(self, w) -> None:
-        from normal_play.mages_guild_render_module import MENU_OWNER, LIST_OWNER, SPELLMAKER_OWNER, EFFECT_MENU_OWNER, MENU_OWNER_CONFIRM, MENU_OWNER_SPELLDETAIL, MENU_OWNER_PROMPT, NEGOTIATION_OWNER
+        from normal_play.mages_guild_render_module import MENU_OWNER, LIST_OWNER, SPELLMAKER_OWNER, EFFECT_MENU_OWNER, MENU_OWNER_CONFIRM, MENU_OWNER_SPELLDETAIL, MENU_OWNER_PROMPT, NEGOTIATION_OWNER, reset_mages_render_keys
         from normal_play.mages_reply_module import REPLY_OWNER
+        try:
+            reset_mages_render_keys(w)
+        except Exception:
+            pass
         for owner in (MENU_OWNER, LIST_OWNER, SPELLMAKER_OWNER, EFFECT_MENU_OWNER, MENU_OWNER_CONFIRM, MENU_OWNER_SPELLDETAIL, MENU_OWNER_PROMPT, NEGOTIATION_OWNER, REPLY_OWNER):
             try:
                 if w._panel_owner == owner:

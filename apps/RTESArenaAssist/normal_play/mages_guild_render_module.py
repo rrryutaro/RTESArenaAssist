@@ -82,7 +82,8 @@ def poll_mages_render(w, *, view=None, shop_state=None, shop_img_name: str='', t
             spell_visible = _render_spellmaker(w, sig)
         else:
             list_visible = _render_list(w, sig, img)
-    _cleanup(w, menu_visible, list_visible, spell_visible, confirm_visible, prompt_visible, detail_visible, negot_visible, effect_menu_visible, reply_visible)
+    if menu_visible or list_visible or spell_visible or confirm_visible or prompt_visible or detail_visible or negot_visible or effect_menu_visible or reply_visible:
+        _cleanup(w, menu_visible, list_visible, spell_visible, confirm_visible, prompt_visible, detail_visible, negot_visible, effect_menu_visible, reply_visible)
     return (negot_visible, False, menu_visible, list_visible or spell_visible or confirm_visible or prompt_visible or detail_visible or effect_menu_visible or reply_visible)
 
 def _read_signals(w) -> dict:
@@ -648,6 +649,13 @@ def _story_body_source(ptr: int | None) -> tuple[int, int, bool] | None:
         return (_STORY_BUF_OFFSET, _STORY_BUF_READ, True)
     return None
 
+def _story_hold_pointer(ptr: int | None) -> bool:
+    if ptr is None:
+        return False
+    if _story_body_source(ptr) is not None:
+        return False
+    return _STORY_BUF_OFFSET <= ptr < _STORY_BUF_OFFSET + _STORY_BUF_READ
+
 def _story_foreground(w) -> bool:
     try:
         from active_template_reader import read_current_text_pointer
@@ -801,6 +809,8 @@ def _render_story(w, *, foreground_ptr=_POINTER_UNSET) -> bool:
     ptr = _read_story_pointer(w) if foreground_ptr is _POINTER_UNSET else foreground_ptr
     source = _story_body_source(ptr)
     if source is None:
+        if _story_hold_pointer(ptr) and getattr(w, _STORY_UNIT_ATTR, None) is not None:
+            return True
         _close_story_unit(w)
         return False
     resolved = _resolve_story_from_source(w, source)
@@ -808,7 +818,9 @@ def _render_story(w, *, foreground_ptr=_POINTER_UNSET) -> bool:
     if resolved is None or occurrence is None:
         return True
     kind = _story_display_unit(w, occurrence, source, resolved)
-    if kind == 'hold' or kind == 'same':
+    if kind == 'hold':
+        return True
+    if kind == 'same' and w._ui_router.is_owner(STORY_OWNER):
         return True
     en, ja = resolved
     if kind == 'new' and getattr(w, _STORY_KEY_ATTR, None) is not None:
@@ -818,14 +830,33 @@ def _render_story(w, *, foreground_ptr=_POINTER_UNSET) -> bool:
             pass
     display_ja = _story_display_text(ja) if source[2] else ja
     keep = (en, display_ja, source[2])
-    if getattr(w, _STORY_KEY_ATTR, None) != keep or not w._ui_router.is_owner(STORY_OWNER):
+    keep_changed = getattr(w, _STORY_KEY_ATTR, None) != keep
+    if keep_changed or not w._ui_router.is_owner(STORY_OWNER):
         setattr(w, _STORY_KEY_ATTR, keep)
         w._ui_router.update_translation(STORY_OWNER, en, display_ja, speech_role='conversation' if ja else None, speech_text=ja if ja else None)
-        _log.info('mages story displayed (len=%d translated=%s choices=%s)', len(en), bool(ja), source[2])
+        if keep_changed:
+            _log.info('mages story displayed (len=%d translated=%s choices=%s)', len(en), bool(ja), source[2])
     unit = getattr(w, _STORY_UNIT_ATTR, None)
     accepted = occurrence if kind == 'new' or unit is None else unit[0]
     setattr(w, _STORY_UNIT_ATTR, (accepted, source[0], source[2], en))
     return True
+
+def reset_mages_render_keys(w) -> None:
+    setattr(w, _MENU_KEY, None)
+    setattr(w, _LIST_KEY, None)
+    setattr(w, _SPELL_KEY, None)
+    setattr(w, _EFFECT_MENU_KEY, None)
+    setattr(w, _CONFIRM_KEY, None)
+    setattr(w, _PROMPT_KEY, None)
+    setattr(w, _SPELLDETAIL_KEY, None)
+    setattr(w, _LIST_TITLE_ATTR, '')
+    setattr(w, _LIST_STABLE_ATTR, {})
+    setattr(w, _LIST_PENDING_ATTR, {})
+    try:
+        if w._tab_translate.panel_mode() == 'facility_list':
+            w._ui_router.set_panel_mode('translate')
+    except AttributeError:
+        pass
 
 def _cleanup(w, menu_visible: bool, list_visible: bool, spell_visible: bool, confirm_visible: bool=False, prompt_visible: bool=False, detail_visible: bool=False, negot_visible: bool=False, effect_menu_visible: bool=False, reply_visible: bool=False) -> None:
     if not reply_visible:
@@ -878,4 +909,4 @@ def _cleanup(w, menu_visible: bool, list_visible: bool, spell_visible: bool, con
         setattr(w, _SPELL_KEY, None)
         if w._panel_owner == SPELLMAKER_OWNER:
             w._ui_router.clear_if_owner(SPELLMAKER_OWNER)
-__all__ = ['poll_mages_render', 'MENU_OWNER', 'LIST_OWNER', 'SPELLMAKER_OWNER', 'EFFECT_MENU_OWNER', 'LIST_IMGS', 'SPELLMAKER_IMG', '_read_cost_string', '_casting_cost_from_spell_cost', '_buy_price_for', '_read_spellmaker_live_spell_cost', '_resolve_spellmaker_spell_cost', '_read_effect_title']
+__all__ = ['poll_mages_render', 'reset_mages_render_keys', 'MENU_OWNER', 'LIST_OWNER', 'SPELLMAKER_OWNER', 'EFFECT_MENU_OWNER', 'LIST_IMGS', 'SPELLMAKER_IMG', '_read_cost_string', '_casting_cost_from_spell_cost', '_buy_price_for', '_read_spellmaker_live_spell_cost', '_resolve_spellmaker_spell_cost', '_read_effect_title']

@@ -168,23 +168,23 @@ class UiRouter:
 
     def _log_flush_winner(self, intent: Optional[DisplayIntent], frame: Optional[PollFrame]) -> None:
         if intent is None:
-            key = ('<none>', '', '', 0)
+            key = ('<none>', '', '', 0, '')
         else:
-            key = (intent.kind, intent.panel_owner or '', intent.mode or '', intent.priority)
+            key = (intent.kind, intent.panel_owner or '', intent.mode or '', intent.priority, intent.closed_owner or '')
         prev = getattr(self, '_winner_key', None)
         if key == prev:
             return
         self._winner_key = key
 
         def _idle(k) -> bool:
-            return k is not None and k[0] in ('<none>', 'clear') and (not k[1])
+            return k is not None and k[0] in ('<none>', 'clear') and (not k[1]) and (not k[4])
         if _idle(key) and _idle(prev):
             return
         try:
             tab_mode = self._window._tab_translate.panel_mode()
         except (AttributeError, RuntimeError):
             tab_mode = '?'
-        _recog(_log, 'flush winner: kind=%s owner=%r mode=%r prio=%d tab_mode=%r owner_now=%r reason=%r', key[0], key[1], key[2], key[3], tab_mode, self.current_owner(), intent.reason if intent is not None else '')
+        _recog(_log, 'flush winner: kind=%s owner=%r mode=%r prio=%d closed=%r tab_mode=%r owner_now=%r reason=%r', key[0], key[1], key[2], key[3], key[4], tab_mode, self.current_owner(), intent.reason if intent is not None else '')
 
     def _resolve_proposed_intent(self, intent: DisplayIntent) -> Optional[DisplayIntent]:
         current = self.current_owner()
@@ -424,7 +424,7 @@ class UiRouter:
         if key == getattr(self, '_facility_empty_owner_key', None):
             return
         self._facility_empty_owner_key = key
-        _log.warning('facility display invariant warning: active L3 session L4 owner is %s (session=%s screen=%r img=%r frame_top=%r)', 'empty' if not owner else f'non-facility {owner!r}', session_name, getattr(w, '_screen_id_prev', None), getattr(w, '_img_name_prev', '') or '', frame.top_level if frame is not None else '')
+        _log.warning('facility display invariant warning: active L4 facility session display owner is %s (session=%s screen=%r img=%r frame_top=%r)', 'empty' if not owner else f'non-facility {owner!r}', session_name, getattr(w, '_screen_id_prev', None), getattr(w, '_img_name_prev', '') or '', frame.top_level if frame is not None else '')
 
     def current_owner(self) -> str:
         return getattr(self._window, '_panel_owner', '') or ''

@@ -52,7 +52,6 @@ def poll_temple_cost(w, *, img_name: str) -> bool:
         _cur_ptr = read_current_text_pointer(w._analyzer, w._anchor)
     except Exception:
         _log.exception('temple_cost active_template read failed')
-        _cleanup(w)
         return False
     try:
         import npc_dialog_lookup as _ndl
@@ -70,7 +69,6 @@ def poll_temple_cost(w, *, img_name: str) -> bool:
                 return False
         selected, kind = _select(candidates, img, _hit)
     if selected is None or _ndl is None:
-        _cleanup(w)
         return False
     en = selected.text.rstrip()
     try:
@@ -78,7 +76,6 @@ def poll_temple_cost(w, *, img_name: str) -> bool:
     except Exception:
         _r = None
     if not _r:
-        _cleanup(w)
         return False
     owner = PROMPT_OWNER if kind in _PROMPT_SURFACE_KINDS else COST_OWNER
     _ja_tmpl, _ph = _r
@@ -95,7 +92,7 @@ def poll_temple_cost(w, *, img_name: str) -> bool:
         _log.info('temple_cost translated: owner=%s kind=%s img=%r en=%r ja=%r', owner, kind, img, en[:80], ja[:80])
     return True
 
-def _cleanup(w) -> None:
+def reset_temple_cost_on_stop(w) -> None:
     if getattr(w, _KEY, None) is not None:
         setattr(w, _KEY, None)
     for attr in ('_temple_cost_current_owner', '_temple_cost_current_surface', '_temple_cost_current_text'):
@@ -109,4 +106,4 @@ def _cleanup(w) -> None:
                 w._ui_router.clear_if_owner(owner)
         except AttributeError:
             pass
-__all__ = ['poll_temple_cost', 'COST_OWNER', 'PROMPT_OWNER']
+__all__ = ['poll_temple_cost', 'reset_temple_cost_on_stop', 'COST_OWNER', 'PROMPT_OWNER']

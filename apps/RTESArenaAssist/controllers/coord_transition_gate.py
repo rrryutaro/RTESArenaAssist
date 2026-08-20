@@ -20,3 +20,8 @@ def resolve_coord_transition(*, loc, prev_loc, in_transition: bool, pre_coord: O
             return TransitionGateResult(in_transition=False, pre_coord=None, shown=True)
         return TransitionGateResult(in_transition=True, pre_coord=coord, shown=False)
     return TransitionGateResult(in_transition=False, pre_coord=None, shown=True)
+
+def arrival_consumption_due(*, arrival_supplied: bool, is_loading: bool, gate_in_transition: bool, gate_was_in_transition: bool, loc, prev_loc) -> bool:
+    if not arrival_supplied or is_loading or gate_in_transition:
+        return False
+    return gate_was_in_transition or (prev_loc is not None and loc != prev_loc)

@@ -8,7 +8,6 @@ _OTHER_FACILITY_MIF_PREFIXES = ('TAVERN', 'TEMPLE', 'EQUIP', 'ARMOR', 'PALACE')
 _MAGES_OWNER_KINDS = frozenset({'shop_menu'})
 _MAGES_UI_IMGS = frozenset({'MENU_RT.IMG', 'SPELLMKR.IMG', 'BUYSPELL.IMG', 'YESNO.IMG', 'NEGOTBUT.IMG', 'POPUP.IMG', 'POPUP7.IMG', 'NEWPOP.IMG'})
 _MAGES_NPC_PHASES = frozenset({111, 112})
-_MAGES_PANEL_OWNERS = frozenset({'mages_menu', 'mages_list', 'mages_spellmaker', 'mages_effect_menu', 'mages_spelldetail', 'mages_prompt', 'mages_confirm', 'mages_negotiation', 'mages_reply'})
 _MAGES_NONE_HYSTERESIS_POLLS = 3
 
 class MagesGuildSession(SessionBase):
@@ -75,23 +74,8 @@ class MagesGuildSession(SessionBase):
             return False
         return get_negotiation_profile(img) is not None
 
-    def _is_mages_panel_owned(self, ctx: SessionContext) -> bool:
-        extras_owner = ctx.extras.get('mages_panel_owner') if ctx.extras else None
-        if extras_owner is not None:
-            return extras_owner in _MAGES_PANEL_OWNERS
-        w = ctx.extras.get('window') if ctx.extras else None
-        if w is None:
-            return False
-        owner = getattr(w, '_panel_owner', '') or ''
-        return owner in _MAGES_PANEL_OWNERS
-
-    def _is_mages_panel_surface_active(self, ctx: SessionContext) -> bool:
-        if not self._is_mages_panel_owned(ctx):
-            return False
-        if self._is_guild_modal_img(ctx):
-            return True
-        if self._is_negotiation_active(ctx):
-            return True
+    @staticmethod
+    def _is_mages_conversation_phase(ctx: SessionContext) -> bool:
         return ctx.npc_phase in _MAGES_NPC_PHASES
 
     @property
@@ -137,7 +121,7 @@ class MagesGuildSession(SessionBase):
             self._none_shop_polls = 0
             self._last_img = ctx.img_name or ''
             return False
-        if self._is_mages_panel_surface_active(ctx):
+        if self._is_mages_conversation_phase(ctx):
             self._none_shop_polls = 0
             self._last_img = ctx.img_name or ''
             return False

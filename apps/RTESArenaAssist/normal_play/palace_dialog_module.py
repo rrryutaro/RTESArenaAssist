@@ -35,6 +35,13 @@ def _dialog_body_source(ptr: int | None) -> tuple[int, int, bool] | None:
         return (_DIALOG_BUF_OFFSET, _DIALOG_BUF_READ, True)
     return None
 
+def _dialog_hold_pointer(ptr: int | None) -> bool:
+    if ptr is None:
+        return False
+    if _dialog_body_source(ptr) is not None:
+        return False
+    return _DIALOG_BUF_OFFSET <= ptr < _DIALOG_BUF_OFFSET + _DIALOG_BUF_READ
+
 def _read_dialog_pointer(w) -> int | None:
     try:
         raw = w._analyzer.read_bytes(w._anchor + _FG_PTR_OFFSET, 2)
@@ -150,6 +157,8 @@ def poll_palace_dialog(w, *, palace_active: bool, foreground_ptr=_POINTER_UNSET)
     ptr = _read_dialog_pointer(w) if foreground_ptr is _POINTER_UNSET else foreground_ptr
     source = _dialog_body_source(ptr)
     if source is None:
+        if _dialog_hold_pointer(ptr) and getattr(w, _UNIT_ATTR, None) is not None:
+            return True
         _close_palace_unit(w)
         return False
     resolved = _resolve_dialog(w, source)
@@ -157,7 +166,9 @@ def poll_palace_dialog(w, *, palace_active: bool, foreground_ptr=_POINTER_UNSET)
     if resolved is None or occurrence is None:
         return True
     kind = _dialog_display_unit(w, occurrence, source, resolved)
-    if kind == 'hold' or kind == 'same':
+    if kind == 'hold':
+        return True
+    if kind == 'same' and w._ui_router.is_owner(_OWNER):
         return True
     en, base_ja = resolved
     if kind == 'new' and getattr(w, _KEY_ATTR, None) is not None:
@@ -170,11 +181,13 @@ def poll_palace_dialog(w, *, palace_active: bool, foreground_ptr=_POINTER_UNSET)
     if yesno and base_ja:
         display_ja = f'{base_ja}\n\n  はい\n  いいえ'
     key = (en, display_ja, yesno)
-    if getattr(w, _KEY_ATTR, None) != key or not w._ui_router.is_owner(_OWNER):
+    key_changed = getattr(w, _KEY_ATTR, None) != key
+    if key_changed or not w._ui_router.is_owner(_OWNER):
         setattr(w, _KEY_ATTR, key)
         w._palace_dialog_last_off = source[0]
         w._ui_router.update_translation(_OWNER, en, display_ja, speech_role='conversation' if base_ja else None, speech_text=base_ja if base_ja else None)
-        _log.info('palace dialog displayed (len=%d translated=%s yesno=%s)', len(en), bool(base_ja), yesno)
+        if key_changed:
+            _log.info('palace dialog displayed (len=%d translated=%s yesno=%s)', len(en), bool(base_ja), yesno)
     unit = getattr(w, _UNIT_ATTR, None)
     accepted = occurrence if kind == 'new' or unit is None else unit[0]
     setattr(w, _UNIT_ATTR, (accepted, source[0], source[2], en))

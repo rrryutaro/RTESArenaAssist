@@ -29,7 +29,7 @@ class TavernView:
     render_owner: str
     bar_key: str
     l4_visible: bool
-    l3_start: bool
+    l4_start: bool
     reason: str = ''
 
 def _pick_surface(signals: TavernSignals) -> str:
@@ -46,7 +46,7 @@ def classify_tavern_view(signals: TavernSignals) -> TavernView:
         _owner, _bar = _L4_OWNER_BAR[kind]
         if owner is not None:
             _owner = owner
-        return TavernView(l4_kind=kind, render_owner=_owner, bar_key=_bar, l4_visible=kind != 'none', l3_start=signals.shop_owner == 'tavern' and signals.shop_kind in _TAVERN_MENU_SHOP_KINDS, reason=reason)
+        return TavernView(l4_kind=kind, render_owner=_owner, bar_key=_bar, l4_visible=kind != 'none', l4_start=signals.shop_owner == 'tavern' and signals.shop_kind in _TAVERN_MENU_SHOP_KINDS, reason=reason)
     if not signals.in_interior or not signals.facility_tavern:
         return _mk('none', reason='not_in_tavern')
     img = (signals.img or '').upper()

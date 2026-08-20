@@ -1163,6 +1163,7 @@
   "npc_dialog.A197.0": "Vous avez volé un %ni avec succès.",
   "npc_dialog.A198.0": "`Votre %ni est équipé.",
   "npc_dialog.A199.0": "`Voulez-vous toujours le vendre ?",
+  "npc_dialog.A200.0": "Désolé, l'ami ! Cela ne m'intéresse pas...",
   "npc_dialog.A210.0": "Quelle catégorie ?",
   "npc_dialog.A211.0": "Pas assez de place pour stocker le sort.",
   "npc_dialog.A212.0": "Vous devez donner un nom à ce sort !",

@@ -151,10 +151,11 @@ def _build_full_entry_text(w, msg_buf: str) -> str:
     candidates = _build_entry_text_candidates(w, msg_buf)
     return candidates[0] if candidates else ''
 
+def _entry_original_allowed(*, pending: bool, msg_buf_written: bool) -> bool:
+    return bool(pending and msg_buf_written)
+
 def _push_entry_original(w, msg_buf: str) -> bool:
     _en = _normalize_for_lookup(msg_buf).strip() if msg_buf else ''
-    if not _en:
-        _en = _normalize_for_lookup(_read_b131_buffer(w)).strip()
     if not _en:
         return False
     w._ui_router.update_translation('building_entry', _en, '')
@@ -185,6 +186,7 @@ def poll_building_entry(w, *, building_entry_active: bool, entry_phase_prev: boo
                 except Exception:
                     pass
                 w._building_entry_pending = False
+                w._building_entry_msg_buf_written = False
                 _entry_log_key = (_src, _entry_meta.get('matched_key'), _txt[:40])
                 if getattr(w, '_building_entry_log_key', None) != _entry_log_key:
                     w._building_entry_log_key = _entry_log_key
@@ -195,9 +197,11 @@ def poll_building_entry(w, *, building_entry_active: bool, entry_phase_prev: boo
             _log.exception('building entry lookup failed')
         if not entry_handled:
             _diag_dump_memory(w, msg_buf, npc_dialog)
-            entry_handled = _push_entry_original(w, msg_buf)
+            if _entry_original_allowed(pending=getattr(w, '_building_entry_pending', False), msg_buf_written=getattr(w, '_building_entry_msg_buf_written', False)):
+                entry_handled = _push_entry_original(w, msg_buf)
     elif entry_phase_prev or getattr(w, '_building_entry_pending', False):
         w._building_entry_pending = False
+        w._building_entry_msg_buf_written = False
         w._building_entry_log_key = None
         if w._ui_router.is_owner('building_entry'):
             w._ui_router.release_if_owner('building_entry')

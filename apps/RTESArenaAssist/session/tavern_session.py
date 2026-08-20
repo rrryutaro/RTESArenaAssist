@@ -72,17 +72,6 @@ class TavernSession(SessionBase):
         except ImportError:
             return False
         return get_negotiation_profile(img) is not None
-    _TAVERN_PANEL_OWNERS = frozenset({'tavern_rumor_type', 'negotiation', 'active_template', 'npc_dialog'})
-
-    def _is_tavern_panel_owned(self, ctx: SessionContext) -> bool:
-        extras_owner = ctx.extras.get('tavern_panel_owner') if ctx.extras else None
-        if extras_owner is not None:
-            return extras_owner in self._TAVERN_PANEL_OWNERS
-        w = ctx.extras.get('window') if ctx.extras else None
-        if w is None:
-            return False
-        owner = getattr(w, '_panel_owner', '') or ''
-        return owner in self._TAVERN_PANEL_OWNERS
 
     def _is_tavern_template_surface_active(self, ctx: SessionContext) -> bool:
         extras_flag = ctx.extras.get('tavern_template_surface_active') if ctx.extras else None
@@ -169,8 +158,13 @@ class TavernSession(SessionBase):
             w = ctx.extras.get('window') if ctx.extras else None
             if w is not None and getattr(w, '_tavern_rumor_flow_active', False):
                 w._tavern_rumor_flow_active = False
-        _w_view = ctx.extras.get('window') if ctx.extras else None
-        if _w_view is not None and getattr(_w_view, '_tavern_view_l4_visible', False):
+        _extras_view = ctx.extras.get('tavern_view_l4_visible') if ctx.extras else None
+        if _extras_view is not None:
+            _view_visible = bool(_extras_view)
+        else:
+            _w_view = ctx.extras.get('window') if ctx.extras else None
+            _view_visible = bool(_w_view is not None and getattr(_w_view, '_tavern_view_l4_visible', False))
+        if _view_visible:
             self._none_shop_polls = 0
             return False
         if owner == 'tavern' and kind in _TAVERN_OWNER_KINDS:
@@ -183,9 +177,6 @@ class TavernSession(SessionBase):
             self._none_shop_polls = 0
             return False
         if self._is_tavern_template_surface_active(ctx):
-            self._none_shop_polls = 0
-            return False
-        if self._is_tavern_panel_owned(ctx):
             self._none_shop_polls = 0
             return False
         self._none_shop_polls += 1
