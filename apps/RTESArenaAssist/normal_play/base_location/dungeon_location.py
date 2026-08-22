@@ -64,10 +64,7 @@ class DungeonMapSession(MapSessionBase):
         self._discovered_hd: frozenset[tuple[int, int]] = frozenset()
         self._discovered_wp: frozenset[tuple[int, int]] = frozenset()
         self._last_player_pos: Optional[tuple[int, int]] = None
-        self._last_automap_mtime_ns: Optional[int] = None
-        self._last_automap_size: int = 0
         self._active_cache_index: Optional[int] = None
-        self._reset_retry_remaining: int = 0
         self._place_text: Optional[str] = None
         self._player_x: Optional[float] = None
         self._player_y: Optional[float] = None
@@ -129,8 +126,6 @@ class DungeonMapSession(MapSessionBase):
         self._update_record_gate(ctx)
         if self._import_request:
             self._import_request = False
-            self._maybe_merge_automap(ctx, overwrite=True, force=True)
-        elif self._reset_retry_remaining > 0:
             self._maybe_merge_automap(ctx)
         if self._record_ok and ctx.player_tile_x is not None and (ctx.player_tile_y is not None) and (self._bitmap is not None):
             ix = int(ctx.player_tile_x)
@@ -229,11 +224,8 @@ class DungeonMapSession(MapSessionBase):
         self._in_first_block = False
         self._seen_cells.clear()
         self._last_player_pos = None
-        self._last_automap_mtime_ns = None
-        self._last_automap_size = 0
         self._active_cache_index = None
         self._notes = []
-        self._reset_retry_remaining = 20
 
     def _load_mif(self, mif_name: str, player_floor: int=0) -> None:
         try:
@@ -314,7 +306,6 @@ class DungeonMapSession(MapSessionBase):
                 self._treasure_pile_cells = frozenset(((int(e.x), int(e.y)) for e in mif.entities or [] if int(e.flat_index) in piles))
             except Exception:
                 self._treasure_pile_cells = frozenset()
-        self._reset_retry_remaining = 20
 
     def _resolve_target_floor(self, ctx: MapContext) -> Optional[int]:
         if self._level_hash is None:
@@ -399,11 +390,8 @@ class DungeonMapSession(MapSessionBase):
         self._bitmap = bm
         self._seen_cells = rebuild_seen_cells_from_bitmap(bm)
         self._last_player_pos = None
-        self._last_automap_mtime_ns = None
-        self._last_automap_size = 0
         self._active_cache_index = None
         self._notes = []
-        self._reset_retry_remaining = 20
         _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: level axis latch key=%r nz=%d', id(self), key, int((bm != 0).sum()))
 
     def _diag_log_skip(self, reason: str) -> None:
@@ -411,7 +399,7 @@ class DungeonMapSession(MapSessionBase):
             self._diag_prev_merge_reason = reason
             _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: merge skip reason=%s', id(self), reason)
 
-    def _maybe_merge_automap(self, ctx: MapContext, *, overwrite: bool=False, force: bool=False) -> bool:
+    def _maybe_merge_automap(self, ctx: MapContext) -> bool:
         save_dir = ctx.save_dir
         if not save_dir:
             self._diag_log_skip('no_save_dir')
@@ -428,13 +416,6 @@ class DungeonMapSession(MapSessionBase):
             st_before = ap.stat()
         except OSError:
             self._diag_log_skip('stat_failed')
-            return False
-        in_retry = self._reset_retry_remaining > 0
-        same_stamp = self._last_automap_mtime_ns is not None and st_before.st_mtime_ns == self._last_automap_mtime_ns and (st_before.st_size == self._last_automap_size)
-        if in_retry:
-            self._reset_retry_remaining -= 1
-        elif same_stamp and (not force):
-            self._diag_log_skip('same_mtime')
             return False
         if st_before.st_size != EXPECTED_FILE_SIZE:
             self._diag_log_skip(f'bad_size={st_before.st_size}')
@@ -456,19 +437,12 @@ class DungeonMapSession(MapSessionBase):
             return False
         new_active_index = active.index
         if int((active.bitmap_grid != 0).sum()) >= int(active.bitmap_grid.size):
-            if in_retry:
-                self._reset_retry_remaining += 1
             self._diag_log_skip('degenerate_full_bitmap')
             return False
-        if overwrite:
-            self._bitmap[:] = active.bitmap_grid
-        else:
-            np.maximum(self._bitmap, active.bitmap_grid, out=self._bitmap)
+        self._bitmap[:] = active.bitmap_grid
         self._seen_cells = rebuild_seen_cells_from_bitmap(self._bitmap)
         self._notes = [(n.x, n.y, n.text) for n in active.valid_notes]
         self._last_player_pos = None
-        self._last_automap_mtime_ns = st_before.st_mtime_ns
-        self._last_automap_size = st_before.st_size
         self._active_cache_index = new_active_index
         nz = int((self._bitmap != 0).sum())
         _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: merge OK cache=#%s cur_hash=0x%08X bitmap_nz=%d', id(self), new_active_index, cur_hash if cur_hash else 0, nz)

@@ -34,7 +34,7 @@ _SPEECH_COMMA_RE = re.compile('、{2,}')
 
 def _log_tts(message: str) -> None:
     try:
-        logging.getLogger('poll_controller').debug(message)
+        logging.getLogger('poll_controller').warning(message)
     except Exception:
         pass
 

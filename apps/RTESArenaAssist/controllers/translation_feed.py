@@ -1,8 +1,11 @@
 from __future__ import annotations
 from collections import OrderedDict
+import logging
 import re
 import assist_settings as settings
 import i18n_helper as i18n
+from assist_log import recog as _recog
+_log = logging.getLogger('RTESArenaAssist')
 _ROLE_SETTING = {'situation': 'tts_target_situation', 'conversation': 'tts_target_conversation'}
 _LOG_MEANINGFUL_RE = re.compile('[0-9A-Za-z\\u3040-\\u30ff\\u3400-\\u9fff]')
 
@@ -24,6 +27,7 @@ class TranslationFeed:
         self._spoken_keys: 'OrderedDict[tuple[str | None, str], None]' = OrderedDict()
         self._speaking_owner: str | None = None
         self._last_screen_cut = False
+        self._last_decision_log: tuple | None = None
 
     def on_translation(self, panel_owner: str, original: str, text: str, speech_role: str | None=None, speech_text: str | None=None, log_enabled: bool=True, speech_action: str='replace') -> None:
         self._reset_guard_on_context_change()
@@ -31,25 +35,32 @@ class TranslationFeed:
             return
         read_text = speech_text if speech_text is not None else text
         if not read_text:
+            self._log_decision('suppress', 'empty_text', panel_owner, speech_role, text)
             return
         if log_enabled and self._log_store is not None:
             self._append_log(speech_role, read_text, original)
         if not settings.get('tts_enabled', False):
+            self._log_decision('suppress', 'tts_disabled', panel_owner, speech_role, read_text)
             return
         key = _ROLE_SETTING.get(speech_role)
         if not (key and bool(settings.get(key, True))):
+            self._log_decision('suppress', 'target_off', panel_owner, speech_role, read_text)
             return
         same_unit = panel_owner == self._last_spoken_owner and speech_role == self._last_spoken_role
         if same_unit and original == self._last_spoken_original and (read_text == self._last_spoken):
+            self._log_decision('suppress', 'same_unit_reassert', panel_owner, speech_role, read_text)
             return
         if speech_action == 'append' and same_unit and self._last_spoken and read_text.startswith(self._last_spoken):
             self._last_spoken = read_text
             self._last_spoken_original = original
             self._remember_spoken((speech_role, read_text))
+            self._log_decision('silent', 'append', panel_owner, speech_role, read_text)
             return
         repeat_key = (speech_role, read_text)
         if settings.get('tts_suppress_repeat', False) and repeat_key in self._spoken_keys:
+            self._log_decision('suppress', 'repeat', panel_owner, speech_role, read_text)
             return
+        self._log_decision('speak', speech_action, panel_owner, speech_role, read_text)
         self._last_spoken = read_text
         self._last_spoken_original = original
         self._last_spoken_owner = panel_owner
@@ -58,6 +69,13 @@ class TranslationFeed:
         self._speaking_owner = panel_owner
         self._tts.speak(self._apply_name_reading(read_text))
 
+    def _log_decision(self, decision: str, reason: str, owner: str, role: str | None, text: str) -> None:
+        key = (decision, reason, owner, role, text)
+        if key == self._last_decision_log:
+            return
+        self._last_decision_log = key
+        _recog(_log, 'speech %s: reason=%s owner=%r role=%s text=%r', decision, reason, owner, role, (text or '')[:80])
+
     def _remember_spoken(self, key) -> None:
         self._spoken_keys[key] = None
         self._spoken_keys.move_to_end(key)
@@ -65,32 +83,39 @@ class TranslationFeed:
             self._spoken_keys.popitem(last=False)
 
     def on_display_cleared(self, owner: str) -> None:
-        if owner and owner == self._speaking_owner:
+        if not owner:
+            return
+        if owner == self._speaking_owner:
             if settings.get('tts_cancel_on_close', False):
+                self._log_decision('stop', 'display_cleared', owner, self._last_spoken_role, self._last_spoken or '')
                 try:
                     self._tts.stop_speaking()
                 except Exception:
                     pass
             self._speaking_owner = None
+        if owner == self._last_spoken_owner:
             self._last_spoken = None
             self._last_spoken_original = None
             self._last_spoken_owner = None
             self._last_spoken_role = None
 
     def on_display_replaced(self, owner: str) -> None:
-        if not (owner and owner == self._speaking_owner):
+        if not owner:
             return
         if not settings.get('tts_interrupt', True):
             return
-        try:
-            self._tts.stop_speaking()
-        except Exception:
-            pass
-        self._speaking_owner = None
-        self._last_spoken = None
-        self._last_spoken_original = None
-        self._last_spoken_owner = None
-        self._last_spoken_role = None
+        if owner == self._speaking_owner:
+            self._log_decision('stop', 'display_replaced', owner, self._last_spoken_role, self._last_spoken or '')
+            try:
+                self._tts.stop_speaking()
+            except Exception:
+                pass
+            self._speaking_owner = None
+        if owner == self._last_spoken_owner:
+            self._last_spoken = None
+            self._last_spoken_original = None
+            self._last_spoken_owner = None
+            self._last_spoken_role = None
 
     def _reset_guard_on_context_change(self) -> None:
         w = self._window
@@ -126,6 +151,7 @@ class TranslationFeed:
         self._speaking_owner = None
 
     def on_load(self) -> None:
+        self._log_decision('stop', 'load', self._last_spoken_owner or '', self._last_spoken_role, self._last_spoken or '')
         try:
             self._tts.stop_speaking()
         except Exception:
@@ -139,6 +165,7 @@ class TranslationFeed:
         self._last_screen_cut = cut
         if not cut or prev:
             return
+        self._log_decision('stop', 'screen_cut:' + (screen_id if top_level != 'pregame' else 'pregame'), self._last_spoken_owner or '', self._last_spoken_role, self._last_spoken or '')
         try:
             self._tts.stop_speaking()
         except Exception:

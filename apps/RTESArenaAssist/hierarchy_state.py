@@ -128,8 +128,8 @@ class HierarchyRecognitionInput:
         return (hierarchy.path_codes, hierarchy.path_names)
 
     def anomaly_key(self) -> tuple:
-        if self.top_level_state == 'normal-play' and self.c_area == 'dungeon' and self.in_interior:
-            return ('dungeon_interior_rejected', self.top_level_state, self.c_area, self.mif_name, self.img_name, self.screen_id)
+        if self.top_level_state == 'normal-play' and self.c_area == 'dungeon' and (self.active_session in FACILITY_CONVERSATION_SESSION_NAMES or is_facility_conversation_owner(self.panel_owner)):
+            return ('dungeon_facility_rejected', self.top_level_state, self.c_area, self.active_session, self.panel_owner, self.mif_name)
         if self.top_level_state == 'normal-play' and (not self.c_area):
             return ('normal_play_area_unknown', self.top_level_state, self.mif_name, self.img_name, self.screen_id)
         return ()

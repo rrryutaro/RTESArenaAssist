@@ -213,7 +213,7 @@ def _poll_update_npc_conversation_latch(w, *, _facility_active_now, _facility_ju
             w._npc_conversation_active = False
         elif _npc_phase_early != NPC_PHASE_RESPONDING:
             if w._npc_phase_unknown_prev != _npc_phase_early:
-                _log.warning('NPC_PHASE unknown value: 0x%02X', _npc_phase_early)
+                _log.debug('NPC_PHASE non-latch value: 0x%02X (前景ポインタ上位・latch 保持)', _npc_phase_early)
                 w._npc_phase_unknown_prev = _npc_phase_early
     if _npc_state_prev and (not w._npc_conversation_active):
         try:
@@ -478,18 +478,30 @@ def _poll_handle_triggers(w, *, rt_x, rt_z, inf_name, coord_valid=True):
     except Exception:
         pass
     from arena_bridge import check_trigger_flag
-    trigger_flag = check_trigger_flag(w._analyzer, w._anchor, w._trigger_flag_prev)
+    from arena_logic import read_trigger_display_ptr
     old_flag = w._trigger_flag_prev
+    old_ptr = getattr(w, '_trigger_disp_ptr_prev', None)
+    trigger_flag = check_trigger_flag(w._analyzer, w._anchor, old_flag)
+    disp_ptr = read_trigger_display_ptr(w._analyzer, w._anchor, old_ptr)
     _axis_was_live = bool(getattr(w, '_trigger_axis_live_prev', False))
     w._trigger_axis_live_prev = True
-    if not _axis_was_live and trigger_flag != old_flag:
-        _recog(_log, 'trigger axis entry: seeding prev flag=0x%02X', trigger_flag)
-    _new_trigger = _axis_was_live and trigger_flag > old_flag and (not getattr(w, '_npc_conversation_active', False))
-    _trig_fell = _axis_was_live and old_flag != 0 and (trigger_flag == 0)
+    if not _axis_was_live and (trigger_flag != old_flag or disp_ptr != old_ptr):
+        _recog(_log, 'trigger axis entry: seeding prev flag=0x%02X ptr=%s', trigger_flag, f'0x{disp_ptr:04X}' if disp_ptr is not None else 'n/a')
+    _prev_active = old_flag != 0
+    _now_active = trigger_flag != 0
+    from normal_play.trigger_module import riddle_group_holds_ptr
+    _same_record = disp_ptr == old_ptr or (riddle_group_holds_ptr(w, disp_ptr) and riddle_group_holds_ptr(w, old_ptr))
+    _npc_talking = bool(getattr(w, '_npc_conversation_active', False))
+    _new_trigger = _axis_was_live and _now_active and (not _prev_active or not _same_record) and (not _npc_talking)
+    _trig_fell = _axis_was_live and _prev_active and (not _now_active)
     if _new_trigger:
+        _recog(_log, 'trigger fire edge: flag 0x%02X→0x%02X ptr %s→%s', old_flag, trigger_flag, f'0x{old_ptr:04X}' if old_ptr is not None else 'n/a', f'0x{disp_ptr:04X}' if disp_ptr is not None else 'n/a')
         w._cached_rt_x = rt_x if coord_valid else None
         w._cached_rt_z = rt_z if coord_valid else None
+    elif _axis_was_live and _prev_active and _now_active and _same_record and (trigger_flag > old_flag) and (not _npc_talking):
+        _recog(_log, 'trigger refire same record: flag 0x%02X→0x%02X ptr %s', old_flag, trigger_flag, f'0x{disp_ptr:04X}' if disp_ptr is not None else 'n/a')
     w._trigger_flag_prev = trigger_flag
+    w._trigger_disp_ptr_prev = disp_ptr
     from normal_play.trigger_module import poll_trigger as _poll_trigger
     _poll_trigger(w, new_trigger=_new_trigger, trig_fell=_trig_fell, trigger_flag=trigger_flag, inf_name=inf_name)
 
@@ -976,26 +988,22 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
         except Exception:
             _log.exception('tab_map update failed')
 
-def _is_pre_screen_system_menu(*, img_name: str, menu_active_now: int, menu_active_prev: int, city_npc_active: int, foreground_ptr: int | None) -> bool:
-    from screen_detector import is_city_npc_dialog_active
-    from active_template_reader import is_message_buffer_pointer
-    img = (img_name or '').upper()
-    return img == 'OP.IMG' and menu_active_now == 0 and (menu_active_prev == 0) and (not is_city_npc_dialog_active(city_npc_active)) and (not is_message_buffer_pointer(foreground_ptr))
-
-def _poll_screen_detect_and_label(w, _img_name, mif_name, _resolved_area, player_floor, in_interior, _shop_state, _shop_img_name, _level_up_continue, _b30_dialog_active, _b30_dialog_active_prev, _b30_red_changed, _npc_dialog_changed):
+def _poll_confirm_screen_id(w, *, img_name, mif_name, area, foreground_ptr) -> tuple:
+    from screen_detector import detect_screen, get_chargen_subscreen, MENU_ACTIVE_OFFSET
+    chargen_hint = get_chargen_subscreen(w)
+    if chargen_hint is not None:
+        w._chargen_subscreen_last = chargen_hint
     try:
-        from screen_detector import detect_screen, get_chargen_subscreen, MENU_ACTIVE_OFFSET
-        chargen_hint = get_chargen_subscreen(w)
-        if chargen_hint is not None:
-            w._chargen_subscreen_last = chargen_hint
-        try:
-            _menu_raw = w._analyzer.read_bytes(w._anchor + MENU_ACTIVE_OFFSET, 2)
-            _menu_active_now = _menu_raw[0] | _menu_raw[1] << 8
-        except (OSError, AttributeError):
-            _menu_active_now = 65535
-        _menu_active_was_zero = _menu_active_now == 0 and getattr(w, '_menu_active_prev', 65535) == 0
-        w._menu_active_prev = _menu_active_now
-        _screen_id, _screen_name = detect_screen(w._analyzer, w._anchor, _img_name, chargen_hint, menu_active_was_zero=_menu_active_was_zero, top_level_state=_current_top_level(w), last_chargen_subscreen=w._chargen_subscreen_last, mif_name=mif_name, area=_resolved_area or None)
+        _menu_raw = w._analyzer.read_bytes(w._anchor + MENU_ACTIVE_OFFSET, 2)
+        _menu_active_now = _menu_raw[0] | _menu_raw[1] << 8
+    except (OSError, AttributeError):
+        _menu_active_now = 65535
+    _menu_active_was_zero = _menu_active_now == 0 and getattr(w, '_menu_active_prev', 65535) == 0
+    w._menu_active_prev = _menu_active_now
+    return detect_screen(w._analyzer, w._anchor, img_name, chargen_hint, menu_active_was_zero=_menu_active_was_zero, top_level_state=_current_top_level(w), last_chargen_subscreen=w._chargen_subscreen_last, mif_name=mif_name, area=area or None, foreground_ptr=foreground_ptr)
+
+def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_name, _resolved_area, player_floor, in_interior, _shop_state, _shop_img_name, _level_up_continue, _b30_dialog_active, _b30_dialog_active_prev, _b30_red_changed, _npc_dialog_changed):
+    try:
         if getattr(w, '_travel_l4_active', False):
             _screen_id = 'game_screen'
             _screen_name = i18n.tr('screen.game_screen')
@@ -1009,12 +1017,6 @@ def _poll_screen_detect_and_label(w, _img_name, mif_name, _resolved_area, player
         elif w._loading_state_active:
             _screen_name = i18n.tr('screen.loading_in_play')
         _top_state = _current_top_level(w)
-        _feed = getattr(w, '_translation_feed', None)
-        if _feed is not None:
-            try:
-                _feed.on_screen_context(top_level=_top_state, screen_id=_screen_id)
-            except Exception:
-                _log.exception('translation_feed.on_screen_context failed')
         _area = _resolved_area
         _travel_l4_active_for_label = bool(getattr(w, '_travel_l4_active', False))
         _screen_suppresses_conversation_label = _travel_l4_active_for_label or _screen_id in ('system_menu', 'loadsave_in_play', 'automap', 'logbook')
@@ -1472,12 +1474,10 @@ class PollController:
             from normal_play.building_entry_module import should_poll_building_entry as _should_poll_building_entry
             _building_entry_active = _should_poll_building_entry(entry_phase=_entry_phase, panel_owner=w._panel_owner, pending=_building_entry_pending, img_name=_img_name_now)
             try:
-                from screen_detector import MENU_ACTIVE_OFFSET, CITY_NPC_ACTIVE_OFFSET, _read_u16_le
-                _menu_active_now = _read_u16_le(w._analyzer, w._anchor + MENU_ACTIVE_OFFSET)
-                _city_npc_active = _read_u16_le(w._analyzer, w._anchor + CITY_NPC_ACTIVE_OFFSET)
-                _pre_system_menu = _is_pre_screen_system_menu(img_name=_img_name_now, menu_active_now=_menu_active_now, menu_active_prev=getattr(w, '_menu_active_prev', 65535), city_npc_active=_city_npc_active, foreground_ptr=_foreground_ptr_early)
+                _screen_id, _screen_name = _poll_confirm_screen_id(w, img_name=_img_name_now, mif_name=mif_name, area=_resolved_area, foreground_ptr=_foreground_ptr_early)
             except (OSError, AttributeError, ImportError):
-                _pre_system_menu = False
+                _screen_id = getattr(w, '_screen_id_prev', None) or 'loading'
+                _screen_name = i18n.tr(f'screen.{_screen_id}')
             _travel_view = _classify_travel_l4(w, _img_name_now)
             w._travel_l4_active = _travel_view.state != _TRAVEL_STATE_NONE
             _entry_handled = False
@@ -1485,7 +1485,7 @@ class PollController:
             if _top_is_normal_play:
                 if _screen_display_active:
                     _close_facility_story_units(w)
-                elif _pre_system_menu:
+                elif _screen_id == 'system_menu':
                     _close_facility_story_units(w)
                     try:
                         for _owner in ('npc_conversation', 'npc_dialog', 'npc_message'):
@@ -1534,7 +1534,13 @@ class PollController:
             _render_travel_l4(w, _travel_view)
             from top_level.pregame_state import check_load_save_transition
             check_load_save_transition(w, mif_name=mif_name, img_name=_img_name)
-            _poll_screen_detect_and_label(w, _img_name, mif_name, _resolved_area, player_floor, in_interior, _shop_state, _shop_img_name, _level_up_continue, _b30_dialog_active, _b30_dialog_active_prev, _b30_red_changed, _npc_dialog_changed)
+            _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_name, _resolved_area, player_floor, in_interior, _shop_state, _shop_img_name, _level_up_continue, _b30_dialog_active, _b30_dialog_active_prev, _b30_red_changed, _npc_dialog_changed)
+            _feed = getattr(w, '_translation_feed', None)
+            if _feed is not None:
+                try:
+                    _feed.on_screen_context(top_level=_current_top_level(w), screen_id=getattr(w, '_screen_id_prev', '') or '')
+                except Exception:
+                    _log.exception('translation_feed.on_screen_context failed')
             from top_level.chargen_state import poll as _poll_chargen
             _poll_chargen(w)
             if ui_router is not None:

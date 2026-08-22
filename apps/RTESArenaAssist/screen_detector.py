@@ -52,7 +52,7 @@ def _detect_pregame_screen(img_name: str) -> Optional[Tuple[str, str]]:
         return ('loadsave', _tr('loadsave'))
     return None
 
-def detect_screen(analyzer, anchor: Optional[int], img_name: str, chargen_hint: Optional[str]=None, menu_active_was_zero: bool=False, top_level_state: str='pregame', last_chargen_subscreen: Optional[str]=None, mif_name: str='', area: Optional[str]=None) -> Tuple[str, str]:
+def detect_screen(analyzer, anchor: Optional[int], img_name: str, chargen_hint: Optional[str]=None, menu_active_was_zero: bool=False, top_level_state: str='pregame', last_chargen_subscreen: Optional[str]=None, mif_name: str='', area: Optional[str]=None, foreground_ptr: Optional[int]=None) -> Tuple[str, str]:
     from screen_detector_chargen import detect_chargen_screen
     from screen_detector_play import detect_play_screen
     if analyzer is None or anchor is None:
@@ -67,7 +67,7 @@ def detect_screen(analyzer, anchor: Optional[int], img_name: str, chargen_hint: 
         fallback = last_chargen_subscreen or 'loading'
         return (fallback, _tr(fallback))
     else:
-        return detect_play_screen(analyzer, anchor, img_name, mif_name=mif_name, menu_active_was_zero=menu_active_was_zero, area=area)
+        return detect_play_screen(analyzer, anchor, img_name, mif_name=mif_name, menu_active_was_zero=menu_active_was_zero, area=area, foreground_ptr=foreground_ptr)
 
 def get_chargen_subscreen(window) -> Optional[str]:
     if getattr(window, '_chargen_opening_displayed', False):

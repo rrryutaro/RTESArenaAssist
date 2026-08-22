@@ -27,6 +27,7 @@ def apply_reveal_stencil_with_los(bitmap: np.ndarray, map1: np.ndarray | None, p
         return apply_reveal_stencil(bitmap, player_x, player_y)
     changes = 0
     H, W = map1.shape
+    raised_threshold = resolve_raised_sight_threshold()
     for dx, dy, value in iter_arena_reveal_offsets():
         x = player_x + dx & 127
         y = player_y + dy & 127
@@ -34,7 +35,7 @@ def apply_reveal_stencil_with_los(bitmap: np.ndarray, map1: np.ndarray | None, p
         if value <= old:
             continue
         if 0 <= x < W and 0 <= y < H:
-            if _line_of_sight_blocked(map1, player_x, player_y, x, y):
+            if _line_of_sight_blocked(map1, player_x, player_y, x, y, raised_threshold):
                 continue
         bitmap[y, x] = value
         changes += 1
@@ -48,6 +49,51 @@ def rebuild_seen_cells_from_bitmap(bitmap: np.ndarray) -> set[tuple[int, int]]:
     for x, y in zip(xs.tolist(), ys.tolist()):
         seen.add((int(x), int(y)))
     return seen
+RAISED_HEIGHT_STEP_PERCENT = 12.5
+RAISED_THICKNESS_STEP_PERCENT = 6.25
+RAISED_SIGHT_THRESHOLD_DEFAULT = 0
+FULL_RAISED_AS_WALL_DEFAULT = True
+
+def raised_extent_percent(value: int) -> tuple[float, float] | None:
+    if value == 0 or value & 32768 != 0:
+        return None
+    most = (value & 32512) >> 8
+    least = value & 127
+    if most == least:
+        return None
+    height_index = most & 7
+    thickness_index = (most & 120) >> 3
+    bottom = height_index * RAISED_HEIGHT_STEP_PERCENT
+    top = bottom + (thickness_index + 1) * RAISED_THICKNESS_STEP_PERCENT
+    return (bottom, top)
+
+def is_full_height_raised(value: int) -> bool:
+    extent = raised_extent_percent(value)
+    if extent is None:
+        return False
+    bottom, top = extent
+    return bottom == 0.0 and top >= 100.0
+
+def raised_blocks_sight(value: int, threshold_percent: float) -> bool:
+    extent = raised_extent_percent(value)
+    if extent is None:
+        return True
+    return extent[1] >= threshold_percent
+
+def resolve_raised_sight_threshold() -> float:
+    try:
+        import assist_settings
+        value = float(assist_settings.get('map_raised_sight_threshold', RAISED_SIGHT_THRESHOLD_DEFAULT))
+    except (ImportError, TypeError, ValueError):
+        return float(RAISED_SIGHT_THRESHOLD_DEFAULT)
+    return min(max(value, 0.0), 100.0)
+
+def resolve_full_raised_as_wall() -> bool:
+    try:
+        import assist_settings
+        return bool(assist_settings.get('map_full_raised_as_wall', FULL_RAISED_AS_WALL_DEFAULT))
+    except ImportError:
+        return FULL_RAISED_AS_WALL_DEFAULT
 
 def _map1_kind(value: int) -> str:
     if value == 0:
@@ -71,8 +117,10 @@ def _map1_kind(value: int) -> str:
         return 'diagonal'
     return 'wall'
 
-def _is_blocker(value: int) -> bool:
+def _is_blocker(value: int, raised_sight_threshold: float=0.0) -> bool:
     kind = _map1_kind(value)
+    if kind == 'raised':
+        return raised_blocks_sight(value, raised_sight_threshold)
     if kind in ('wall', 'edge', 'door'):
         return True
     if kind == 'transparent':
@@ -122,9 +170,11 @@ def cell_visible_in_cone(map1: np.ndarray | None, px: int, py: int, facing_dx: f
             return False
     return True
 
-def _line_of_sight_blocked(map1: np.ndarray, px: int, py: int, tx: int, ty: int) -> bool:
+def _line_of_sight_blocked(map1: np.ndarray, px: int, py: int, tx: int, ty: int, raised_sight_threshold: float | None=None) -> bool:
     if (px, py) == (tx, ty):
         return False
+    if raised_sight_threshold is None:
+        raised_sight_threshold = resolve_raised_sight_threshold()
     H, W = map1.shape
     line = _bresenham(px, py, tx, ty)
     prev_cx, prev_cy = (px, py)
@@ -145,12 +195,12 @@ def _line_of_sight_blocked(map1: np.ndarray, px: int, py: int, tx: int, ty: int)
             a_blocked = False
             b_blocked = False
             if 0 <= orth_a[0] < W and 0 <= orth_a[1] < H:
-                a_blocked = _is_blocker(int(map1[orth_a[1], orth_a[0]]))
+                a_blocked = _is_blocker(int(map1[orth_a[1], orth_a[0]]), raised_sight_threshold)
             if 0 <= orth_b[0] < W and 0 <= orth_b[1] < H:
-                b_blocked = _is_blocker(int(map1[orth_b[1], orth_b[0]]))
+                b_blocked = _is_blocker(int(map1[orth_b[1], orth_b[0]]), raised_sight_threshold)
             if a_blocked or b_blocked:
                 return True
-        if _is_blocker(int(map1[cy, cx])):
+        if _is_blocker(int(map1[cy, cx]), raised_sight_threshold):
             return True
         prev_cx, prev_cy = (cx, cy)
     return False

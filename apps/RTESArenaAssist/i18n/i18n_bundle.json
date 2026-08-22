@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:269836326c260a067c4978eb0084de4e4c863e75b91bc6fd902e7de2c8b53156",
+  "registry_hash": "sha256:8a0303c4e445bee734a38e26365ffe176eb739e7c8ea32db6b72e6e50fc03b5c",
   "categories": [
     {
       "category": "assist_ui",
@@ -3706,6 +3706,26 @@
           "id": 900738,
           "kind": "label",
           "debug_name": "map.action.refresh"
+        },
+        {
+          "id": 900739,
+          "kind": "label",
+          "debug_name": "settings.map_full_raised_as_wall"
+        },
+        {
+          "id": 900740,
+          "kind": "label",
+          "debug_name": "settings.map_full_raised_as_wall_tip"
+        },
+        {
+          "id": 900741,
+          "kind": "label",
+          "debug_name": "settings.map_raised_sight_threshold"
+        },
+        {
+          "id": 900742,
+          "kind": "label",
+          "debug_name": "settings.map_raised_sight_threshold_tip"
         }
       ]
     },
@@ -49711,6 +49731,22 @@
           "text": "Refresh map"
         },
         {
+          "id": 900739,
+          "text": "Show full-height raised platforms as walls"
+        },
+        {
+          "id": 900740,
+          "text": "When ON (default), raised platforms that fill the space from floor to ceiling are drawn in the wall color. Only the display classification changes; line-of-sight blocking is not affected. Raised platforms below full height are still shown as raised platforms."
+        },
+        {
+          "id": 900741,
+          "text": "Height at which raised platforms block sight"
+        },
+        {
+          "id": 900742,
+          "text": "With the ceiling height as 100%, raised platforms whose top reaches this height or more block line of sight on the map. At 0% (default), every raised platform blocks sight, matching the previous behavior."
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -77394,6 +77430,22 @@
         {
           "id": 900738,
           "text": "マップを更新"
+        },
+        {
+          "id": 900739,
+          "text": "全高の高台を壁として表示"
+        },
+        {
+          "id": 900740,
+          "text": "ON (既定) にすると、床から天井まで詰まった高台を壁の色で表示します。変わるのは表示の分類だけで、視線の遮蔽の判定には影響しません。全高でない高台は高台のまま表示されます。"
+        },
+        {
+          "id": 900741,
+          "text": "高台が視線を遮る高さ"
+        },
+        {
+          "id": 900742,
+          "text": "天井の高さを 100% として、上端がこの高さ以上の高台がマップの視線を遮ります。0% (既定) では全ての高台が視線を遮ります (従来の動作)。"
         },
         {
           "id": 902000,
@@ -105889,6 +105941,22 @@
           "text": "Actualizar mapa"
         },
         {
+          "id": 900739,
+          "text": "Mostrar las plataformas elevadas de altura completa como muros"
+        },
+        {
+          "id": 900740,
+          "text": "Con ACTIVAR (predeterminado), las plataformas elevadas que llegan del suelo al techo se dibujan con el color de muro. Solo cambia la clasificación visual; no afecta al bloqueo de la línea de visión. Las plataformas elevadas que no alcanzan la altura completa se siguen mostrando como plataformas elevadas."
+        },
+        {
+          "id": 900741,
+          "text": "Altura a la que las plataformas elevadas bloquean la visión"
+        },
+        {
+          "id": 900742,
+          "text": "Tomando la altura del techo como 100%, las plataformas elevadas cuya parte superior alcanza esta altura o más bloquean la línea de visión en el mapa. Con 0% (predeterminado), todas las plataformas elevadas bloquean la visión (comportamiento anterior)."
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -133572,6 +133640,22 @@
         {
           "id": 900738,
           "text": "Karte aktualisieren"
+        },
+        {
+          "id": 900739,
+          "text": "Erhöhungen voller Höhe als Mauern anzeigen"
+        },
+        {
+          "id": 900740,
+          "text": "Wenn AN (Standard), werden Erhöhungen, die vom Boden bis zur Decke reichen, in der Mauerfarbe gezeichnet. Nur die Anzeigeklassifizierung ändert sich; die Blockierung der Sichtlinie bleibt unberührt. Erhöhungen ohne volle Höhe werden weiterhin als Erhöhungen angezeigt."
+        },
+        {
+          "id": 900741,
+          "text": "Höhe, ab der Erhöhungen die Sicht blockieren"
+        },
+        {
+          "id": 900742,
+          "text": "Bezogen auf die Deckenhöhe als 100 % blockieren Erhöhungen, deren Oberkante diese Höhe erreicht oder überschreitet, die Sichtlinie auf der Karte. Bei 0 % (Standard) blockieren alle Erhöhungen die Sicht (bisheriges Verhalten)."
         },
         {
           "id": 902000,
@@ -161259,6 +161343,22 @@
           "text": "Actualiser la carte"
         },
         {
+          "id": 900739,
+          "text": "Afficher les plateformes surélevées pleine hauteur comme des murs"
+        },
+        {
+          "id": 900740,
+          "text": "Si activé (par défaut), les plateformes surélevées qui vont du sol au plafond sont dessinées avec la couleur des murs. Seule la classification d'affichage change ; le blocage de la ligne de vue n'est pas affecté. Les plateformes surélevées qui n'atteignent pas la pleine hauteur restent affichées comme plateformes surélevées."
+        },
+        {
+          "id": 900741,
+          "text": "Hauteur à partir de laquelle les plateformes surélevées bloquent la vue"
+        },
+        {
+          "id": 900742,
+          "text": "La hauteur du plafond valant 100 %, les plateformes surélevées dont le sommet atteint ou dépasse cette hauteur bloquent la ligne de vue sur la carte. À 0 % (par défaut), toutes les plateformes surélevées bloquent la vue (comportement précédent)."
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -188944,6 +189044,22 @@
           "text": "Aggiorna mappa"
         },
         {
+          "id": 900739,
+          "text": "Mostra le piattaforme rialzate a tutta altezza come muri"
+        },
+        {
+          "id": 900740,
+          "text": "Se attivo (predefinito), le piattaforme rialzate che vanno dal pavimento al soffitto vengono disegnate con il colore dei muri. Cambia solo la classificazione visiva; il blocco della linea visiva non è influenzato. Le piattaforme rialzate non a tutta altezza restano mostrate come piattaforme rialzate."
+        },
+        {
+          "id": 900741,
+          "text": "Altezza alla quale le piattaforme rialzate bloccano la visuale"
+        },
+        {
+          "id": 900742,
+          "text": "Considerando l'altezza del soffitto come 100%, le piattaforme rialzate la cui sommità raggiunge o supera questa altezza bloccano la linea visiva sulla mappa. Con 0% (predefinito) tutte le piattaforme rialzate bloccano la visuale (comportamento precedente)."
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -216627,6 +216743,22 @@
         {
           "id": 900738,
           "text": "Обновить карту"
+        },
+        {
+          "id": 900739,
+          "text": "Показывать возвышения полной высоты как стены"
+        },
+        {
+          "id": 900740,
+          "text": "Если включено (по умолчанию), возвышения, занимающие пространство от пола до потолка, отображаются цветом стены. Меняется только классификация отображения; на блокировку линии обзора это не влияет. Возвышения неполной высоты по-прежнему отображаются как возвышения."
+        },
+        {
+          "id": 900741,
+          "text": "Высота, с которой возвышения перекрывают обзор"
+        },
+        {
+          "id": 900742,
+          "text": "Если принять высоту потолка за 100%, возвышения, верх которых достигает этой высоты или выше, перекрывают линию обзора на карте. При 0% (по умолчанию) обзор перекрывают все возвышения (прежнее поведение)."
         },
         {
           "id": 902000,

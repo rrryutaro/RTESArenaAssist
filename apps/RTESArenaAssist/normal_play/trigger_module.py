@@ -55,6 +55,12 @@ def poll_riddle_display(w) -> None:
     entry['_riddle_field'] = hit['kind']
     _render_trigger_entry(w, entry, begin_riddle=False)
 
+def riddle_group_holds_ptr(w, ptr) -> bool:
+    st = getattr(w, '_riddle_display', None)
+    if not st or ptr is None:
+        return False
+    return mif_trigger.classify_riddle_part(ptr, st['base'], st['ranges']) is not None
+
 def _render_trigger_entry(w, entry: dict, *, begin_riddle: bool=True) -> None:
     try:
         w._set_chargen_ui_state(False)
@@ -183,8 +189,7 @@ def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, in
         if entry is not None and entry.get('type') == 'key':
             entry = None
         if entry is None and index_state == 'not_text':
-            _recog(_log, 'trigger is not a text trigger: inf=%r text_index=%s (index not defined as text; display cleared)', lookup_inf, text_index)
-            _reset_trigger_display(w)
+            _recog(_log, 'trigger is not a text trigger: inf=%r text_index=%s (index not defined as text; display held)', lookup_inf, text_index)
             return
         if entry is None and correct_body:
             entry = itl.lookup_riddle_by_text(correct_body)
@@ -354,4 +359,4 @@ def poll_dialog_close(w, *, b30: dict, npc_dialog_changed: bool, instore_resp_ha
             w._ui_router.clear_if_owner(_cur_owner)
         else:
             _log.info('b30 dialog closed but owner=%r - preserve display', w._panel_owner)
-__all__ = ['poll_trigger', 'compute_b30_state', 'poll_red_text', 'poll_dialog_close', 'restore_last_trigger_display', 'classify_c1_dialog_substate']
+__all__ = ['poll_trigger', 'riddle_group_holds_ptr', 'compute_b30_state', 'poll_red_text', 'poll_dialog_close', 'restore_last_trigger_display', 'classify_c1_dialog_substate']

@@ -7,7 +7,7 @@ _ROOT = os.path.dirname(os.path.abspath(__file__))
 import i18n_helper as i18n
 import location_lookup
 from memory_core import ArenaMemoryAnalyzer, MEMORY_BASIC_INFORMATION, MEM_COMMIT, PAGE_NOACCESS, PAGE_GUARD
-from viewer_constants import GAMESTATE_OFFSET, GS_DEFS, TRIGGER_FLAG_OFFSET, FLAGS4_BITS, INF_PREFIXES, LIVE_MIF_OFFSET, LIVE_MIF_MAXLEN, MAP_NAME_OFFSET, MAP_NAME_MAXLEN, CHARGEN_STATE_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW
+from viewer_constants import GAMESTATE_OFFSET, GS_DEFS, TRIGGER_FLAG_OFFSET, CURRENT_TRIGGER_TEXT_PTR_OFFSET, FLAGS4_BITS, INF_PREFIXES, LIVE_MIF_OFFSET, LIVE_MIF_MAXLEN, MAP_NAME_OFFSET, MAP_NAME_MAXLEN, CHARGEN_STATE_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW
 _LOG_BASE = os.path.dirname(os.path.abspath(sys.executable)) if getattr(sys, 'frozen', False) else _ROOT
 LOG_DIR = os.path.join(_LOG_BASE, 'output')
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -153,6 +153,12 @@ def check_trigger_flag(analyzer, anchor: int, prev_flag: int) -> int:
         return analyzer.read_bytes(anchor + TRIGGER_FLAG_OFFSET, 1)[0]
     except OSError:
         return prev_flag
+
+def read_trigger_display_ptr(analyzer, anchor: int, prev_ptr):
+    try:
+        return int.from_bytes(analyzer.read_bytes(anchor + CURRENT_TRIGGER_TEXT_PTR_OFFSET, 2), 'little')
+    except OSError:
+        return prev_ptr
 _LOC_DISPLAY_MEMO: dict[tuple[str, str, str], str] = {}
 
 def _location_display_name(name_key: str) -> str:

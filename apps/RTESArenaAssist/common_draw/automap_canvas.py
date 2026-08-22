@@ -7,6 +7,7 @@ from PySide6.QtCore import QPoint, QPointF, QRect, QSize, Qt, Signal
 from PySide6.QtGui import QAction, QColor, QFont, QMouseEvent, QPainter, QPainterPath, QPen, QPixmap, QPolygon, QWheelEvent
 from PySide6.QtWidgets import QMenu, QToolButton, QWidget
 from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
+from services.arena_reveal_stencil import _map1_kind, is_full_height_raised, resolve_full_raised_as_wall
 _log = logging.getLogger('common_draw.automap_canvas')
 _BG_DARK = QColor(26, 26, 46)
 _PARCHMENT = QColor(170, 130, 81)
@@ -76,28 +77,6 @@ class CanvasData:
     suppress_map: bool = False
     suppress_reason: str = ''
     chunk_origin: tuple[int, int] | None = None
-
-def _map1_kind(value: int) -> str:
-    if value == 0:
-        return 'none'
-    high = value >> 12 & 15
-    if high == 8:
-        return 'entity'
-    if value & 32768 == 0:
-        most = (value & 32512) >> 8
-        least = value & 127
-        return 'wall' if most == least else 'raised'
-    if high == 9:
-        return 'transparent'
-    if high == 10:
-        return 'edge'
-    if high == 11:
-        return 'door'
-    if high == 12:
-        return 'none'
-    if high == 13:
-        return 'diagonal'
-    return 'wall'
 _DOOR_TEXTURE_MASK = 63
 
 def diagonal_shape(map1_val: int, north: int, south: int, east: int, west: int) -> tuple[bool, str | None]:
@@ -219,7 +198,7 @@ def _wall_texture_index(value: int, kind: str) -> int:
 def _is_wild_wall_colored_floor_id(floor_id: int) -> bool:
     return floor_id not in (0, 2, 3, 4)
 
-def _classify_cell(map1_val: int, flor_val: int, level_up_index: int | None=None, level_down_index: int | None=None, *, extended: bool=False, express_wall_chasm: bool=False, express_wall_passage: bool=False, express_wall_lava: bool=False, express_hidden_door: bool=True, hidden_door_ids: frozenset | set | None=None, hidden_door_discovered: bool=False, wall_passage_discovered: bool=False, pipe_under: bool=False, menu_texture_indices: set[int] | None=None, is_wilderness: bool=False, wilderness_compact: bool=False, wild_distinguish_road: bool=False, wild_show_field: bool=False) -> str:
+def _classify_cell(map1_val: int, flor_val: int, level_up_index: int | None=None, level_down_index: int | None=None, *, extended: bool=False, express_wall_chasm: bool=False, express_wall_passage: bool=False, express_wall_lava: bool=False, express_hidden_door: bool=True, hidden_door_ids: frozenset | set | None=None, hidden_door_discovered: bool=False, wall_passage_discovered: bool=False, pipe_under: bool=False, menu_texture_indices: set[int] | None=None, is_wilderness: bool=False, wilderness_compact: bool=False, wild_distinguish_road: bool=False, wild_show_field: bool=False, full_raised_as_wall: bool=False) -> str:
     floor_kind = _floor_kind(flor_val)
     wall_kind = _map1_kind(map1_val)
     floor_id = flor_val >> 8 & 255
@@ -261,7 +240,11 @@ def _classify_cell(map1_val: int, flor_val: int, level_up_index: int | None=None
                 return 'wild_road' if wild_distinguish_road else 'wild_wall'
         return 'floor'
     if wall_kind == 'raised':
-        return 'wild_wall' if is_wilderness else 'raised'
+        if is_wilderness:
+            return 'wild_wall'
+        if full_raised_as_wall and is_full_height_raised(map1_val):
+            return 'wall'
+        return 'raised'
     if wall_kind == 'door':
         if express_hidden_door and _is_hidden_door_cell(map1_val, hidden_door_ids):
             return 'hidden_door' if hidden_door_discovered else 'wall'
@@ -340,19 +323,14 @@ class AutomapCanvas(QWidget):
         self._build_overlay_buttons()
 
     def set_data(self, data: CanvasData) -> None:
-        prev_x, prev_y = (self._data.player_x, self._data.player_y)
         prev_key = self._canvas_data_view_key(self._data)
         next_key = self._canvas_data_view_key(data)
         data_changed = prev_key != next_key
         self._data = data
-        if data_changed and (not self._fit_mode):
+        if data_changed:
             self._data_view_key = next_key
-            if self._center_on_player:
-                self._user_panned = False
-                if data.player_x is None or data.player_y is None:
-                    self._pan = QPointF(0, 0)
-        elif data_changed:
-            self._data_view_key = next_key
+            if not self._fit_mode and self._center_on_player and (not self._user_panned) and (data.player_x is None or data.player_y is None):
+                self._pan = QPointF(0, 0)
         if data.hidden_door_ids:
             self._hidden_door_ids = set(data.hidden_door_ids)
         else:
@@ -361,8 +339,6 @@ class AutomapCanvas(QWidget):
             self._menu_texture_indices = set(data.menu_texture_indices)
         else:
             self._menu_texture_indices = set()
-        if not self._fit_mode and data.player_x is not None and (data.player_y is not None) and (data.player_x != prev_x or data.player_y != prev_y):
-            self._user_panned = False
         self.update()
 
     def _canvas_data_view_key(self, data: CanvasData) -> tuple:
@@ -850,6 +826,7 @@ class AutomapCanvas(QWidget):
         discovered_wp: set[tuple[int, int]] = set(d.discovered_wall_passage_cells) if d.discovered_wall_passage_cells else set()
         edge_set: set[tuple[int, int]] = {(x, z) for x, z, _c in d.edge_marks} if d.edge_marks else set()
         crop_kind: dict[tuple[int, int], str] = {(x, z): 'wild_corn' if c == 'corn' else 'wild_farm' for x, z, c in d.crop_marks} if d.crop_marks else {}
+        full_raised_wall = resolve_full_raised_as_wall()
         for y in range(H):
             for x in range(W):
                 _is_entrance = (x, y) in entrance_set
@@ -870,7 +847,7 @@ class AutomapCanvas(QWidget):
                 if not self._show_unexplored_floor and (not self._reveal_all):
                     painter.fillRect(rect, _PARCHMENT)
                 if has_map1 and has_flor:
-                    cell_kind = _classify_cell(int(d.map1[y, x]), int(d.flor[y, x]), d.level_up_index, d.level_down_index, extended=self._reveal_all, express_wall_chasm=self._reveal_all or self._express_wall_chasm, express_wall_passage=self._reveal_all or self._express_wall_passage, express_wall_lava=self._reveal_all or self._express_wall_lava, express_hidden_door=self._express_hidden_door, hidden_door_ids=self._hidden_door_ids, hidden_door_discovered=self._reveal_all or (x, y) in discovered_hd, wall_passage_discovered=self._reveal_all or (x, y) in discovered_wp, pipe_under=self._pipe_under, menu_texture_indices=self._menu_texture_indices, is_wilderness=d.is_wilderness, wilderness_compact=not d.wild_show_edge, wild_distinguish_road=d.wild_distinguish_road, wild_show_field=d.wild_show_crops)
+                    cell_kind = _classify_cell(int(d.map1[y, x]), int(d.flor[y, x]), d.level_up_index, d.level_down_index, extended=self._reveal_all, express_wall_chasm=self._reveal_all or self._express_wall_chasm, express_wall_passage=self._reveal_all or self._express_wall_passage, express_wall_lava=self._reveal_all or self._express_wall_lava, express_hidden_door=self._express_hidden_door, hidden_door_ids=self._hidden_door_ids, hidden_door_discovered=self._reveal_all or (x, y) in discovered_hd, wall_passage_discovered=self._reveal_all or (x, y) in discovered_wp, pipe_under=self._pipe_under, menu_texture_indices=self._menu_texture_indices, is_wilderness=d.is_wilderness, wilderness_compact=not d.wild_show_edge, wild_distinguish_road=d.wild_distinguish_road, wild_show_field=d.wild_show_crops, full_raised_as_wall=full_raised_wall)
                 else:
                     cell_kind = 'floor' if d.walkable[y, x] else 'wall'
                 if self._pipe_under and has_map1 and has_flor:

@@ -115,6 +115,17 @@ def _resolve_dialog(w, source: tuple[int, int, bool]) -> tuple[str, str] | None:
     setattr(w, _RESOLVE_CACHE_ATTR, (cache_key, resolved))
     return resolved
 
+def _is_settled_page_body(unit, prev_key, resolved) -> bool:
+    if unit is None or resolved is None:
+        return False
+    current_en, current_ja = resolved
+    if not current_ja:
+        return False
+    if prev_key is not None and prev_key[1]:
+        return False
+    accepted_en = unit[3]
+    return bool(accepted_en) and bool(current_en) and (accepted_en.startswith(current_en) or current_en.startswith(accepted_en))
+
 def _close_palace_unit(w) -> None:
     shown = getattr(w, _KEY_ATTR, None) is not None
     if shown:
@@ -167,7 +178,8 @@ def poll_palace_dialog(w, *, palace_active: bool, foreground_ptr=_POINTER_UNSET)
         return True
     kind = _dialog_display_unit(w, occurrence, source, resolved)
     if kind == 'hold':
-        return True
+        if not _is_settled_page_body(getattr(w, _UNIT_ATTR, None), getattr(w, _KEY_ATTR, None), resolved):
+            return True
     if kind == 'same' and w._ui_router.is_owner(_OWNER):
         return True
     en, base_ja = resolved

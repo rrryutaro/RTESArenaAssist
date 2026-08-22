@@ -512,7 +512,10 @@ class _SettingsDialog(QDialog):
 
     @property
     def map_express_flags(self) -> dict:
-        return {k: cb.isChecked() for k, cb in self._map_express_cbs.items()}
+        out = {k: cb.isChecked() for k, cb in self._map_express_cbs.items()}
+        out['map_full_raised_as_wall'] = self._map_full_raised_wall_cb.isChecked()
+        out['map_raised_sight_threshold'] = int(self._map_raised_sight_spin.value())
+        return out
 
     @property
     def map_colors(self) -> dict:
