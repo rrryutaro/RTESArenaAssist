@@ -113,10 +113,28 @@ def _version_plausible(analyzer, image_base: int, version: str) -> bool:
             return False
         good += 1
     return good == len(_SENTINELS)
+ANCHOR_TO_IMAGE_BASE = {'ACD.EXE': 244224}
+_IMAGE_BASE_CACHE: dict[int, Optional[tuple[str, int]]] = {}
 
-def detect_image_base(analyzer) -> Optional[tuple[str, int]]:
+def detect_image_base(analyzer, anchor: Optional[int]=None) -> Optional[tuple[str, int]]:
     if analyzer is None:
         return None
+    if anchor is not None:
+        cached = _IMAGE_BASE_CACHE.get(anchor)
+        if cached is not None:
+            return cached
+        for version, delta in ANCHOR_TO_IMAGE_BASE.items():
+            image_base = anchor - delta
+            if image_base >= 0 and _version_plausible(analyzer, image_base, version):
+                logger.info('arena_aexe: version=%s image_base=0x%08X (anchor-0x%X・走査なし)', version, image_base, delta)
+                _IMAGE_BASE_CACHE[anchor] = (version, image_base)
+                return (version, image_base)
+    result = _detect_image_base_by_scan(analyzer)
+    if anchor is not None and result is not None:
+        _IMAGE_BASE_CACHE[anchor] = result
+    return result
+
+def _detect_image_base_by_scan(analyzer) -> Optional[tuple[str, int]]:
     hits = _find_wilderness_hits(analyzer)
     if not hits:
         logger.info('arena_aexe: no wilderness anchor found')
@@ -148,6 +166,30 @@ def read_thieving_divisors(analyzer) -> Optional[list[int]]:
         logger.warning('arena_aexe: thieving divisors read failed: %s', e)
         return None
     return list(raw)
+
+def read_lock_message_data(analyzer, anchor: Optional[int]=None) -> Optional[dict]:
+    detected = detect_image_base(analyzer, anchor)
+    if detected is None:
+        return None
+    version, image_base = detected
+    idx = 0 if version == 'A.EXE' else 1
+    off = THIEVING_DIVISORS_OFFSETS.get(version)
+    if off is None:
+        return None
+    try:
+        names_rec = AEXE_TABLES['classes.names']
+        msgs_rec = AEXE_TABLES['status.lock_difficulty_messages']
+        class_names = _read_table(analyzer, image_base, names_rec[idx], names_rec[2], names_rec[3])
+        messages = _read_table(analyzer, image_base, msgs_rec[idx], msgs_rec[2], msgs_rec[3])
+        divisors = list(analyzer.read_bytes(image_base + off, THIEVING_DIVISORS_COUNT))
+    except (OSError, KeyError) as e:
+        logger.warning('arena_aexe: lock message tables read failed: %s', e)
+        return None
+    if len(class_names) != names_rec[2] or len(messages) != msgs_rec[2] or len(divisors) != THIEVING_DIVISORS_COUNT:
+        return None
+    if not all((_printable_ok(s) for s in class_names + messages)):
+        return None
+    return {'class_names': class_names, 'thieving_divisors': divisors, 'messages': messages}
 
 def harvest(analyzer, progress=None, cancel_check=None) -> Optional[tuple[str, dict]]:
     detected = detect_image_base(analyzer)
@@ -269,4 +311,4 @@ def harvest_city_generation(analyzer) -> Optional[tuple[str, dict]]:
         except OSError:
             pass
     return (version, data)
-__all__ = ['GENERATOR_VERSION', 'AEXE_TABLES', 'AKEY_ACD_OFFSETS', 'WILDERNESS_NORMAL', 'CITY_GEN_OFFSETS', 'THIEVING_DIVISORS_OFFSETS', 'THIEVING_DIVISORS_COUNT', 'detect_image_base', 'harvest', 'harvest_akey', 'harvest_city_generation', 'read_thieving_divisors', 'build_aexe_original_json']
+__all__ = ['GENERATOR_VERSION', 'AEXE_TABLES', 'AKEY_ACD_OFFSETS', 'WILDERNESS_NORMAL', 'CITY_GEN_OFFSETS', 'THIEVING_DIVISORS_OFFSETS', 'THIEVING_DIVISORS_COUNT', 'detect_image_base', 'ANCHOR_TO_IMAGE_BASE', 'harvest', 'harvest_akey', 'harvest_city_generation', 'read_thieving_divisors', 'read_lock_message_data', 'build_aexe_original_json']

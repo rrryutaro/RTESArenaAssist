@@ -43,7 +43,7 @@ class AutomapFile:
     def is_valid(self) -> bool:
         return self.file_size == EXPECTED_FILE_SIZE
 
-def _unpack_bitmap_2bit(bitmap: bytes, h: int=128, w: int=128) -> np.ndarray:
+def unpack_bitmap_2bit(bitmap: bytes, h: int=128, w: int=128) -> np.ndarray:
     arr = np.frombuffer(bitmap, dtype=np.uint8)
     cells = np.zeros(h * w, dtype=np.uint8)
     n = min(h * w, len(arr) * 4)
@@ -52,6 +52,15 @@ def _unpack_bitmap_2bit(bitmap: bytes, h: int=128, w: int=128) -> np.ndarray:
         shift = (3 - i % 4) * 2
         cells[i] = byte >> shift & 3
     return cells.reshape(h, w)
+
+def pack_bitmap_2bit(grid: np.ndarray, h: int=128, w: int=128) -> bytes:
+    cells = np.asarray(grid, dtype=np.uint8).reshape(-1)[:h * w]
+    if cells.size < h * w:
+        cells = np.concatenate([cells, np.zeros(h * w - cells.size, dtype=np.uint8)])
+    cells = cells & 3
+    quads = cells.reshape(-1, 4).astype(np.uint8)
+    packed = quads[:, 0] << 6 | quads[:, 1] << 4 | quads[:, 2] << 2 | quads[:, 3]
+    return packed.astype(np.uint8).tobytes()
 
 def parse_automap_file(path: Path | str) -> AutomapFile:
     p = Path(path)
@@ -74,7 +83,7 @@ def parse_automap_file(path: Path | str) -> AutomapFile:
             if x == 0 and y == 0 and (not text):
                 continue
             notes.append(AutomapNote(slot=i, x=x, y=y, text=text))
-        bitmap_grid = _unpack_bitmap_2bit(bitmap)
+        bitmap_grid = unpack_bitmap_2bit(bitmap)
         caches.append(AutomapCache(index=ci, level_hash=level_hash, notes=notes, bitmap=bitmap, bitmap_grid=bitmap_grid))
     return AutomapFile(path=p, file_size=len(data), caches=caches)
 CURRENT_LEVEL_HASH_OFFSET = 26167

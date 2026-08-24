@@ -289,7 +289,14 @@ def poll_red_text(w, *, b30: dict, npc_dialog_changed: bool, c1_fg: str='') -> N
         _dlg_on_screen = False
     _axis = b30.get('c1_dialog_axis')
     _c1_red_axis_active = bool(_axis and _axis.active and (_axis.a845 == 121 or (_axis.current_ptr is not None and 31097 <= _axis.current_ptr < 31097 + 68)))
-    if not _c1_fg_blocks_render and _current_top_level(w) == 'normal-play' and (not w._npc_conversation_active) and b30['in_gameplay'] and (b30['red_changed'] or _death_red_new or _dlg_on_screen or _c1_red_axis_active) and b30['red_str']:
+    try:
+        _owner_now = w._ui_router.current_owner() or ''
+    except (AttributeError, RuntimeError):
+        _owner_now = getattr(w, '_panel_owner', '') or ''
+    _panel_free = _owner_now in ('', 'red_text', 'red_text_dialog')
+    if not _panel_free and b30['red_changed'] and b30['red_str']:
+        _recog(_log, 'red text suppressed: 他の表示が出ている owner=%r text=%r', _owner_now, b30['red_str'][:40])
+    if not _c1_fg_blocks_render and _panel_free and (_current_top_level(w) == 'normal-play') and (not w._npc_conversation_active) and b30['in_gameplay'] and (b30['red_changed'] or _death_red_new or _dlg_on_screen or _c1_red_axis_active) and b30['red_str']:
         import dungeon_msg_lookup as _dml
         _b30_red_jpn = _dml.lookup(b30['red_str'])
         if not _b30_red_jpn:
@@ -305,7 +312,7 @@ def poll_red_text(w, *, b30: dict, npc_dialog_changed: bool, c1_fg: str='') -> N
         if b30['red_changed'] or _death_red_new:
             w._ui_router.update_translation(_red_owner, b30['red_str'], _b30_red_jpn or '', speech_role='situation')
             w._dlg_keep_key = (b30['red_str'], _b30_red_jpn or '')
-            _log.info('b30 red text accepted: %r → %r', b30['red_str'], _b30_red_jpn)
+            _recog(_log, 'red text accepted: %r → %r', b30['red_str'], _b30_red_jpn)
         elif _b30_red_jpn:
             _keep = (b30['red_str'], _b30_red_jpn)
             if not (getattr(w, '_dlg_keep_key', None) == _keep and w._ui_router.is_owner(_red_owner)):
@@ -321,7 +328,34 @@ def poll_red_text(w, *, b30: dict, npc_dialog_changed: bool, c1_fg: str='') -> N
             _reason.append('not-in-gameplay')
         if npc_dialog_changed:
             _reason.append('npc-dialog-changed')
-        _log.info('b30 red text skipped (%s): %r', ','.join(_reason) or 'unknown', b30['red_str'])
+        _recog(_log, 'red text skipped (%s): %r', ','.join(_reason) or 'unknown', b30['red_str'])
+
+def poll_red_text_lifetime(w, *, b30: dict) -> None:
+    try:
+        owner = w._ui_router.current_owner() or ''
+    except (AttributeError, RuntimeError):
+        return
+    if owner not in ('red_text', 'red_text_dialog'):
+        w._red_text_close_seen = False
+        return
+    if b30.get('dialog_active_prev') and (not b30.get('dialog_active')):
+        w._red_text_close_seen = True
+    if not getattr(w, '_red_text_close_seen', False):
+        return
+    feed = getattr(w, '_translation_feed', None)
+    try:
+        speaking_owner = feed.speaking_owner() if feed is not None else None
+    except AttributeError:
+        speaking_owner = None
+    if speaking_owner == owner:
+        try:
+            if w._tts.is_speaking():
+                return
+        except AttributeError:
+            pass
+    _recog(_log, 'red text display end: owner=%s (表示終了・読み上げ終了)', owner)
+    w._red_text_close_seen = False
+    w._ui_router.clear_if_owner(owner)
 
 def poll_dialog_close(w, *, b30: dict, npc_dialog_changed: bool, instore_resp_handled: bool, c1_fg: str='') -> None:
 
@@ -337,20 +371,16 @@ def poll_dialog_close(w, *, b30: dict, npc_dialog_changed: bool, instore_resp_ha
                 return False
             if owner == 'gold_drop':
                 return is_response_text_buffer_pointer(_fg_ptr)
-            if owner == 'red_text_dialog':
-                return is_runtime_message_buffer_pointer(_fg_ptr)
         except Exception:
             if owner == 'c1_runtime_dialog':
                 return False
             if owner == 'gold_drop':
                 return any((start <= _fg_ptr < start + length for start, length in ((4164, 512), (37534, 512), (39582, 512))))
-            if owner == 'red_text_dialog':
-                return 31097 <= _fg_ptr < 31097 + 68
         return False
     if b30['in_gameplay'] and (not w._npc_conversation_active) and b30['dialog_active_prev'] and (not b30['dialog_active']):
         if c1_fg != '' or instore_resp_handled:
             _log.info('b30 dialog close detected but C1 surface is foreground / instore resp this poll - skip clear (c1_fg=%r, instore_resp=%s, owner=%r)', c1_fg, instore_resp_handled, w._panel_owner)
-        elif w._ui_router.current_owner() in ('c1_runtime_dialog', 'gold_drop', 'red_text_dialog'):
+        elif w._ui_router.current_owner() in ('c1_runtime_dialog', 'gold_drop'):
             _cur_owner = w._ui_router.current_owner()
             if _owner_text_still_on_screen(_cur_owner):
                 _log.info('b30 dialog close detected but owner text still on screen (owner=%s) - preserve display', _cur_owner)
@@ -359,4 +389,4 @@ def poll_dialog_close(w, *, b30: dict, npc_dialog_changed: bool, instore_resp_ha
             w._ui_router.clear_if_owner(_cur_owner)
         else:
             _log.info('b30 dialog closed but owner=%r - preserve display', w._panel_owner)
-__all__ = ['poll_trigger', 'riddle_group_holds_ptr', 'compute_b30_state', 'poll_red_text', 'poll_dialog_close', 'restore_last_trigger_display', 'classify_c1_dialog_substate']
+__all__ = ['poll_trigger', 'riddle_group_holds_ptr', 'compute_b30_state', 'poll_red_text', 'poll_red_text_lifetime', 'poll_dialog_close', 'restore_last_trigger_display', 'classify_c1_dialog_substate']

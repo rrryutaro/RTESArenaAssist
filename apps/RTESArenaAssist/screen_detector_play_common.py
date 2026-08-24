@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional, Tuple
-from screen_detector import _tr, FLAG_STATUS_POPUP_OFFSET, FLAG_EQUIPMENT_OPEN_OFFSET, LOGBOOK_FG_WORD_OFFSET, LOGBOOK_FG_WORD_VALUE, POPUP_OPEN_OFFSET, SPELL_DETAIL_ACTIVE_OFFSET, _read_u8, _read_u16_le
+from screen_detector import is_spell_detail_drawn, _tr, FLAG_STATUS_POPUP_OFFSET, FLAG_EQUIPMENT_OPEN_OFFSET, LOGBOOK_FG_WORD_OFFSET, LOGBOOK_FG_WORD_VALUE, POPUP_OPEN_OFFSET, _read_u8, _read_u16_le
 INVENTORY_SCREEN_IMGS = ('MRSHIRT.IMG', 'EQUIP.IMG', 'MPANTS.IMG', 'PAGE2.IMG', 'CHARSTAT.IMG')
 
 def is_inventory_screen_img(img_name: str) -> bool:
@@ -18,8 +18,10 @@ def detect_common_play_screen(analyzer, anchor: int, img_name: str) -> Optional[
             return ('bonus_screen', _tr('bonus_screen'))
         if flag_equipment == 1:
             return ('equipment', _tr('equipment'))
-        spell_detail_active = _read_u8(analyzer, anchor + SPELL_DETAIL_ACTIVE_OFFSET)
-        if spell_detail_active != 0:
+        drawn_detail = is_spell_detail_drawn(analyzer, anchor)
+        if drawn_detail is None:
+            raise OSError('screen row unreadable')
+        if drawn_detail:
             return ('spell_detail', _tr('spell_detail'))
         return ('spellbook', _tr('spellbook'))
     if popup_open == 1:

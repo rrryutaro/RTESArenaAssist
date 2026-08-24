@@ -565,20 +565,23 @@ def _poll_detect_img_name(w):
             w._popup11_place_response_lock = None
     return _img_name
 
+def _field_entrance_hint(w):
+    tab_map = getattr(w, '_tab_map', None)
+    disp = getattr(tab_map, '_dispatcher', None) if tab_map is not None else None
+    wild = getattr(disp, 'wilderness', None) if disp is not None else None
+    if wild is None:
+        return None
+    try:
+        return wild.field_entrance_hint()
+    except (AttributeError, RuntimeError):
+        return None
+
 def _resolve_field_facility(w, interior_raw):
     try:
         from normal_play.base_location.base_location_view import resolve_field_facility_entry
     except ImportError:
         return (False, None, '', None)
-    tab_map = getattr(w, '_tab_map', None)
-    disp = getattr(tab_map, '_dispatcher', None) if tab_map is not None else None
-    wild = getattr(disp, 'wilderness', None) if disp is not None else None
-    if wild is None:
-        return (False, None, '', None)
-    try:
-        hint = wild.field_entrance_hint()
-    except (AttributeError, RuntimeError):
-        hint = None
+    hint = _field_entrance_hint(w)
     if hint is None:
         return (False, None, '', None)
     try:
@@ -893,6 +896,17 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
         effective_floor = interior_floor
     else:
         effective_floor = int(player_floor)
+    if in_interior and interior_mif_name and (interior_floor is not None):
+        w._current_map_level = (interior_mif_name, interior_floor)
+    elif not interior_mif_name and display_mif_name and (dungeon_floor is not None):
+        w._current_map_level = (display_mif_name, dungeon_floor)
+    else:
+        w._current_map_level = None
+    w._current_outdoor_location = gs.get('MapName') or '' if not in_interior and _resolved_area in ('city', 'wilderness') else ''
+    _field_hint = _field_entrance_hint(w) if not in_interior and _resolved_area == 'wilderness' else None
+    _field_door_x = getattr(_field_hint, 'door_x', None)
+    _field_door_y = getattr(_field_hint, 'door_y', None)
+    w._current_field_door = (_field_door_x, _field_door_y, getattr(_field_hint, 'door_dist', None)) if _field_door_x is not None and _field_door_y is not None else None
     if w._mif_matcher and _current_top_level(w) == 'normal-play':
         w._mif_matcher.update_map(display_mif_name, dungeon_floor)
     tab_map = getattr(w, '_tab_map', None)
@@ -988,6 +1002,22 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
         except Exception:
             _log.exception('tab_map update failed')
 
+def _signal_hunter(w):
+    hunter = getattr(w, '_signal_hunter_obj', 'unset')
+    if hunter != 'unset':
+        return hunter
+    import os
+    if not os.environ.get('RTES_ARENA_ASSIST_SIGNAL_HUNT'):
+        w._signal_hunter_obj = None
+        return None
+    try:
+        from services.signal_hunt import ViewSignalHunter
+        w._signal_hunter_obj = ViewSignalHunter(name='spell_view')
+        _log.warning('signal hunt: 有効（呪文の一覧/詳細の切り替わりで絞り込む）')
+    except Exception:
+        w._signal_hunter_obj = None
+    return w._signal_hunter_obj
+
 def _poll_confirm_screen_id(w, *, img_name, mif_name, area, foreground_ptr) -> tuple:
     from screen_detector import detect_screen, get_chargen_subscreen, MENU_ACTIVE_OFFSET
     chargen_hint = get_chargen_subscreen(w)
@@ -1000,7 +1030,15 @@ def _poll_confirm_screen_id(w, *, img_name, mif_name, area, foreground_ptr) -> t
         _menu_active_now = 65535
     _menu_active_was_zero = _menu_active_now == 0 and getattr(w, '_menu_active_prev', 65535) == 0
     w._menu_active_prev = _menu_active_now
-    return detect_screen(w._analyzer, w._anchor, img_name, chargen_hint, menu_active_was_zero=_menu_active_was_zero, top_level_state=_current_top_level(w), last_chargen_subscreen=w._chargen_subscreen_last, mif_name=mif_name, area=area or None, foreground_ptr=foreground_ptr)
+    result = detect_screen(w._analyzer, w._anchor, img_name, chargen_hint, menu_active_was_zero=_menu_active_was_zero, top_level_state=_current_top_level(w), last_chargen_subscreen=w._chargen_subscreen_last, mif_name=mif_name, area=area or None, foreground_ptr=foreground_ptr)
+    _confirmed = result[0]
+    if _confirmed in ('system_menu', 'loadsave_in_play'):
+        if getattr(w, '_screen_confirm_diag_prev', None) != _confirmed:
+            w._screen_confirm_diag_prev = _confirmed
+            _recog(_log, 'screen confirm: id=%s img=%r menu_active=0x%04X fg_ptr=%s', _confirmed, img_name, _menu_active_now, 'None' if foreground_ptr is None else f'0x{foreground_ptr:04X}')
+    else:
+        w._screen_confirm_diag_prev = None
+    return result
 
 def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_name, _resolved_area, player_floor, in_interior, _shop_state, _shop_img_name, _level_up_continue, _b30_dialog_active, _b30_dialog_active_prev, _b30_red_changed, _npc_dialog_changed):
     try:
@@ -1290,7 +1328,7 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
     except (ImportError, OSError, AttributeError):
         pass
 from normal_play import normal_play_render as _normal_play_render
-from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_surface_dispatch, poll_cinematic_dispatch as _poll_cinematic_dispatch, _poll_npc_popup_display, _poll_facility_render_dispatch, _poll_l4_dialog_dispatch, _close_facility_story_units
+from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_surface_dispatch, poll_lock_message_dispatch as _poll_lock_message_dispatch, poll_cinematic_dispatch as _poll_cinematic_dispatch, _poll_npc_popup_display, _poll_facility_render_dispatch, _poll_l4_dialog_dispatch, _close_facility_story_units
 from normal_play.travel_map_module import STATE_NONE as _TRAVEL_STATE_NONE, classify_travel_l4 as _classify_travel_l4, render_travel_l4 as _render_travel_l4
 from screen_detector_play_common import is_inventory_screen_img as _is_inventory_screen_img
 _ASK_ABOUT_MAIN_RECOVERY_STATE = _normal_play_render._ASK_ABOUT_MAIN_RECOVERY_STATE
@@ -1478,6 +1516,10 @@ class PollController:
             except (OSError, AttributeError, ImportError):
                 _screen_id = getattr(w, '_screen_id_prev', None) or 'loading'
                 _screen_name = i18n.tr(f'screen.{_screen_id}')
+            if _screen_id in ('spellbook', 'spell_detail'):
+                _hunter = _signal_hunter(w)
+                if _hunter is not None:
+                    _hunter.observe(w._analyzer, w._anchor, _screen_id)
             _travel_view = _classify_travel_l4(w, _img_name_now)
             w._travel_l4_active = _travel_view.state != _TRAVEL_STATE_NONE
             _entry_handled = False
@@ -1522,6 +1564,7 @@ class PollController:
             _poll_cinematic_dispatch(w, _b30)
             if not _screen_display_active:
                 _poll_c1_surface_dispatch(w, _b30, npc_dialog_changed=_npc_dialog_changed, inf_name=inf_name, mif_name=mif_name, instore_resp_handled=_instore_resp_handled, c_area=_poll_hierarchy_area)
+            _poll_lock_message_dispatch(w, _b30, rt_x=rt_x, rt_z=rt_z, in_play=_top_is_normal_play and (not _screen_display_active))
             from normal_play.level_up_module import produce_level_up_state as _produce_level_up_state
             _level_up_continue = _produce_level_up_state(w, loading_active=w._loading_state_active, loading_post_settle=_loading_post_settle)
             from normal_play.item_pickup_module import poll_item_pickup as _poll_item_pickup

@@ -353,7 +353,7 @@ class WildernessMapSession(MapSessionBase):
         abs_y = self._origin_chunk[1] * _CHUNK + cz
         mif = self._resolve_field_door_mif(abs_x, abs_y, mid)
         name_en, name_ja = self._resolve_field_facility_name(abs_x, abs_y, mid)
-        self._field_entrance_ctx = FieldEntranceContext(interior_mif_name=mif, menu_label=_MENU_LABELS.get(mid, str(mid)), name_en=name_en, name_ja=name_ja)
+        self._field_entrance_ctx = FieldEntranceContext(interior_mif_name=mif, menu_label=_MENU_LABELS.get(mid, str(mid)), name_en=name_en, name_ja=name_ja, door_x=abs_x, door_y=abs_y, door_dist=best_d)
         if mif != self._logged_entrance_mif:
             self._logged_entrance_mif = mif
             self._log_field_entrance_calibration(abs_x, abs_y, cx, cz, mid, mif)

@@ -107,19 +107,22 @@ def lookup_spell(name: str) -> str:
     surface = name.strip()
     return i18n.value('mages', surface) or _artifact_names().get(surface) or ''
 
+def _rebuild_category(category: str) -> list[dict]:
+    rebuilt: list[dict] = []
+    for _id, e in i18n.originals(category).items():
+        en = e.get('original', '') if isinstance(e, dict) else ''
+        if not en:
+            continue
+        ja = i18n.value(category, en)
+        ja_clean = ja if ja and ja != en else ''
+        rebuilt.append({'key': {'en': en}, 'translations': {'ja': ja_clean}})
+    return rebuilt
+
 def _ensure_loaded() -> None:
     global _entries, _loaded
     if _loaded:
         return
-    rebuilt: list[dict] = []
-    for _id, e in i18n.originals('dungeon_messages').items():
-        en = e.get('original', '') if isinstance(e, dict) else ''
-        if not en:
-            continue
-        ja = i18n.value('dungeon_messages', en)
-        ja_clean = ja if ja and ja != en else ''
-        rebuilt.append({'key': {'en': en}, 'translations': {'ja': ja_clean}})
-    _entries = rebuilt
+    _entries = _rebuild_category('dungeon_messages') + _rebuild_category('lock_messages')
     _loaded = True
 
 def lookup_item(name: str) -> str:

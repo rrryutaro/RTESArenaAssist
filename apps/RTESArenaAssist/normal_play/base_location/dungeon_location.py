@@ -40,7 +40,6 @@ class DungeonMapSession(MapSessionBase):
         self._map1: Optional[np.ndarray] = None
         self._flor: Optional[np.ndarray] = None
         self._bitmap: Optional[np.ndarray] = None
-        self._level_bitmaps: dict[str, np.ndarray] = {}
         self._level_hash: Optional[int] = None
         self._level_store_key: Optional[str] = None
         self._level_hash_fresh: Optional[int] = None
@@ -51,6 +50,7 @@ class DungeonMapSession(MapSessionBase):
         self._hidden_door_ids: frozenset[int] = frozenset()
         self._menu_texture_indices: frozenset[int] = frozenset()
         self._ext_store = None
+        self._private_store = None
         self._location_key: Optional[str] = None
         self._hash_floor_pairs: dict[str, dict[int, int]] = {}
         self._await_axis_reconfirm: bool = False
@@ -74,6 +74,8 @@ class DungeonMapSession(MapSessionBase):
         self._center_on_player = True
         self._show_grid = True
         self._treasure_pile_cells: frozenset = frozenset()
+        self._flat_marks_all: tuple[tuple[int, int, str], ...] = ()
+        self._show_static_flats = False
         self._known_treasure: frozenset = frozenset()
         self._treasure_pickup_was_open = False
         self._wall_los_enabled = False
@@ -103,6 +105,7 @@ class DungeonMapSession(MapSessionBase):
         self._center_on_player = ctx.center_on_player
         self._show_grid = ctx.show_grid
         self._wall_los_enabled = ctx.wall_los_enabled
+        self._show_static_flats = bool(getattr(ctx, 'wild_show_static_flats', False))
         self._ext_store = ctx.ext_store
         upd_key = (ctx.mif_name, ctx.player_tile_x, ctx.player_tile_y, self._mif_name, self._bitmap is None)
         if upd_key != self._diag_prev_update:
@@ -159,7 +162,7 @@ class DungeonMapSession(MapSessionBase):
     def get_canvas_data(self) -> CanvasData:
         if self._await_axis_reconfirm or not self._axis_aligned or self._location_key is None:
             return CanvasData(walkable=None, map1=None, flor=None, bitmap_grid=None, notes=[], player_x=None, player_y=None, player_angle_deg=None, level_up_index=None, level_down_index=None, entrance_cells=(), is_wilderness=False, hidden_door_ids=frozenset(), menu_texture_indices=frozenset(), treasure_pile_cells=frozenset(), discovered_hidden_door_cells=frozenset(), discovered_wall_passage_cells=frozenset(), map_key='dungeon:<transition>', cache_index=None)
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, treasure_pile_cells=self._known_treasure, discovered_hidden_door_cells=self._discovered_hd, discovered_wall_passage_cells=self._discovered_wp, map_key=f'dungeon:{self._location_key}' if self._location_key else 'dungeon:<unknown>', cache_index=self._active_cache_index)
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, treasure_pile_cells=self._known_treasure, discovered_hidden_door_cells=self._discovered_hd, discovered_wall_passage_cells=self._discovered_wp, flat_marks=self._visible_flat_marks(), map_key=f'dungeon:{self._location_key}' if self._location_key else 'dungeon:<unknown>', cache_index=self._active_cache_index)
 
     def _note_treasure_piles_if_any(self, ctx: MapContext) -> None:
         opened = bool(ctx.treasure_pickup_open)
@@ -207,10 +210,8 @@ class DungeonMapSession(MapSessionBase):
         self._import_request = True
 
     def reset_progress(self) -> None:
-        self._level_bitmaps.clear()
-        if self._bitmap is None:
-            self._bitmap = np.zeros((128, 128), dtype=np.uint8)
-        self._bitmap[:] = 0
+        self._bitmap = None
+        self._private_store = None
         self._level_hash = None
         self._level_hash_fresh = None
         self._level_store_key = None
@@ -306,6 +307,21 @@ class DungeonMapSession(MapSessionBase):
                 self._treasure_pile_cells = frozenset(((int(e.x), int(e.y)) for e in mif.entities or [] if int(e.flat_index) in piles))
             except Exception:
                 self._treasure_pile_cells = frozenset()
+        self._flat_marks_all = ()
+        if inf_path is not None:
+            try:
+                from services.wild_flats import classify_flat_name
+                from services.mif_loader import parse_inf_flats
+                flats = {f.index: f for f in parse_inf_flats(inf_path)}
+                marks: list[tuple[int, int, str]] = []
+                for e in mif.entities or []:
+                    entry = flats.get(int(e.flat_index))
+                    if entry is None or entry.item_number is not None:
+                        continue
+                    marks.append((int(e.x), int(e.y), classify_flat_name(entry.name)))
+                self._flat_marks_all = tuple(marks)
+            except Exception:
+                self._flat_marks_all = ()
 
     def _resolve_target_floor(self, ctx: MapContext) -> Optional[int]:
         if self._level_hash is None:
@@ -383,16 +399,31 @@ class DungeonMapSession(MapSessionBase):
         self._level_store_key = key
         self._pair_candidate = None
         self._pair_streak = 0
-        bm = self._level_bitmaps.get(key)
-        if bm is None:
-            bm = np.zeros((128, 128), dtype=np.uint8)
-            self._level_bitmaps[key] = bm
+        bm = self._reveal_store().reveal_grid_for_update(key)
         self._bitmap = bm
         self._seen_cells = rebuild_seen_cells_from_bitmap(bm)
         self._last_player_pos = None
         self._active_cache_index = None
         self._notes = []
         _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: level axis latch key=%r nz=%d', id(self), key, int((bm != 0).sum()))
+
+    def _visible_flat_marks(self) -> tuple[tuple[int, int, str], ...]:
+        if not self._show_static_flats or not self._flat_marks_all:
+            return ()
+        if self._reveal_all:
+            return self._flat_marks_all
+        bm = self._bitmap
+        if bm is None:
+            return ()
+        return tuple(((x, y, cat) for x, y, cat in self._flat_marks_all if 0 <= y < 128 and 0 <= x < 128 and (bm[y, x] != 0)))
+
+    def _reveal_store(self):
+        if self._ext_store is not None:
+            return self._ext_store
+        if self._private_store is None:
+            from services.map_ext_store import MapExtStore
+            self._private_store = MapExtStore()
+        return self._private_store
 
     def _diag_log_skip(self, reason: str) -> None:
         if reason != self._diag_prev_merge_reason:

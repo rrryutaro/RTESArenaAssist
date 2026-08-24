@@ -69,6 +69,7 @@ class TabLog(QWidget):
         super().__init__(parent)
         self._store = None
         self._cards: list[LogCard] = []
+        self._log_dirty = False
         outer = QVBoxLayout(self)
         outer.setContentsMargins(6, 6, 6, 6)
         outer.setSpacing(4)
@@ -164,6 +165,13 @@ class TabLog(QWidget):
             self.refresh()
 
     def refresh(self) -> None:
+        if not self.isVisible():
+            self._log_dirty = True
+            return
+        self._rebuild()
+
+    def _rebuild(self) -> None:
+        self._log_dirty = False
         self._rebuild_location_filter()
         for card in self._cards:
             card.setParent(None)
@@ -199,6 +207,6 @@ class TabLog(QWidget):
         self._count_lbl.setText(i18n.tr('log.count', n=n))
 
     def showEvent(self, event) -> None:
-        self.refresh()
+        self._rebuild()
         super().showEvent(event)
 __all__ = ['TabLog']

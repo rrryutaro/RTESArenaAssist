@@ -10,6 +10,13 @@ MENU_MIF_PREFIXES = ['PALACE', 'BS', 'NOBLE', 'TAVERN', 'TEMPLE', 'EQUIP', 'MAGE
 def get_door_voxel_offset(x: int, y: int) -> int:
     return ((y & 255) << 8) + ((x & 255) << 1)
 
+def get_door_voxel_lock_level(x: int, y: int) -> int:
+    from .arena_random import ArenaRandom
+    offset = get_door_voxel_offset(x, y)
+    random = ArenaRandom()
+    random.srand(offset + (offset << 16) & 4294967295)
+    return random.next() % 10 + 1
+
 def get_door_voxel_mif_name(x: int, y: int, menu_id: int, ruler_seed: int, palace_is_main_quest_dungeon: bool, city_type: ArenaCityType, map_type: MapType) -> Optional[str]:
     menu_type = get_menu_type(menu_id, map_type)
     is_final_dungeon_entrance = palace_is_main_quest_dungeon and menu_type == ArenaMenuType.PALACE

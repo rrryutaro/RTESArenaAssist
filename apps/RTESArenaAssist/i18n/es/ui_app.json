@@ -547,7 +547,7 @@
   "settings.wild_show_all_entrances": "Mostrar todas las entradas de edificios",
   "settings.wild_show_all_entrances_tip": "También marca en rojo las entradas de casas/tabernas/templos/puertas de ciudad. Con ACTIVAR se muestran; con DESACTIVAR solo cripta/torre/mazmorra aparecen en rojo, como en el mapa automático del juego. Las entradas de cripta/torre/mazmorra siempre están en rojo sin importar este ajuste.",
   "settings.wild_show_static_flats": "Mostrar puntos de referencia (árboles, arbustos, etc.)",
-  "settings.wild_show_static_flats_tip": "Muestra los puntos de referencia del campo (árboles, arbustos, rocas, tumbas, ruinas) con marcas simplificadas por tipo (árbol = triángulo verde, arbusto = punto verde, roca = rombo gris, tumba = cruz, ruina = cuadrado). Las marcas se superponen sin rellenar el mapa. DESACTIVADO de forma predeterminada (los árboles son numerosos y pueden saturar el mapa); actívalo cuando quieras inspeccionar los puntos de referencia.",
+  "settings.wild_show_static_flats_tip": "Muestra los puntos de referencia del campo y de las mazmorras (árboles, arbustos, rocas, tumbas, ruinas) con marcas simplificadas por tipo (árbol = triángulo verde, arbusto = punto verde, roca = rombo gris, tumba = cruz, ruina = cuadrado). Las marcas se superponen sin rellenar el mapa. DESACTIVADO de forma predeterminada (los árboles son numerosos y pueden saturar el mapa); actívalo cuando quieras inspeccionar los puntos de referencia. En las mazmorras solo aparecen dentro de la zona ya revelada.",
   "manual.doc.09_calendar": "Fechas y calendario",
   "tab.log": "Registro",
   "log.clear": "Limpiar",

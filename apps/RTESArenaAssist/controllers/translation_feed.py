@@ -46,8 +46,9 @@ class TranslationFeed:
         if not (key and bool(settings.get(key, True))):
             self._log_decision('suppress', 'target_off', panel_owner, speech_role, read_text)
             return
+        reannounce = speech_action == 'reannounce'
         same_unit = panel_owner == self._last_spoken_owner and speech_role == self._last_spoken_role
-        if same_unit and original == self._last_spoken_original and (read_text == self._last_spoken):
+        if not reannounce and same_unit and (original == self._last_spoken_original) and (read_text == self._last_spoken):
             self._log_decision('suppress', 'same_unit_reassert', panel_owner, speech_role, read_text)
             return
         if speech_action == 'append' and same_unit and self._last_spoken and read_text.startswith(self._last_spoken):
@@ -57,7 +58,7 @@ class TranslationFeed:
             self._log_decision('silent', 'append', panel_owner, speech_role, read_text)
             return
         repeat_key = (speech_role, read_text)
-        if settings.get('tts_suppress_repeat', False) and repeat_key in self._spoken_keys:
+        if not reannounce and settings.get('tts_suppress_repeat', False) and (repeat_key in self._spoken_keys):
             self._log_decision('suppress', 'repeat', panel_owner, speech_role, read_text)
             return
         self._log_decision('speak', speech_action, panel_owner, speech_role, read_text)
@@ -158,6 +159,9 @@ class TranslationFeed:
             pass
         self.reset_spoken()
     _SPEECH_CUT_SCREENS = frozenset({'system_menu', 'loadsave_in_play'})
+
+    def speaking_owner(self) -> str | None:
+        return self._speaking_owner
 
     def on_screen_context(self, *, top_level: str, screen_id: str) -> None:
         cut = top_level == 'pregame' or screen_id in self._SPEECH_CUT_SCREENS

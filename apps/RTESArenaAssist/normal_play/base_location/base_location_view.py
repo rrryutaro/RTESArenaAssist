@@ -9,6 +9,9 @@ class FieldEntranceContext:
     menu_label: str = ''
     name_en: str = ''
     name_ja: Optional[str] = None
+    door_x: Optional[int] = None
+    door_y: Optional[int] = None
+    door_dist: Optional[int] = None
 _WILD_FIELD_FLAG = 1
 _WILD_CRYPT_FLAG = 4
 

@@ -109,6 +109,8 @@ class _TTSRequest:
 class TTSService:
 
     def __init__(self, *, start_worker: bool=True) -> None:
+        self._pending_lock = threading.Lock()
+        self._pending = 0
         self._enabled = False
         self._interrupt = False
         self._volume = 100
@@ -134,6 +136,23 @@ class TTSService:
             self._worker.start()
             self._prewarm_worker = threading.Thread(target=self._run_prewarm, daemon=True)
             self._prewarm_worker.start()
+
+    def is_speaking(self) -> bool:
+        with self._pending_lock:
+            return self._pending > 0
+
+    def _pending_add(self) -> None:
+        with self._pending_lock:
+            self._pending += 1
+
+    def _pending_done(self) -> None:
+        with self._pending_lock:
+            if self._pending > 0:
+                self._pending -= 1
+
+    def _pending_clear(self) -> None:
+        with self._pending_lock:
+            self._pending = 0
 
     def set_enabled(self, value: bool) -> None:
         with self._lock:
@@ -221,6 +240,7 @@ class TTSService:
             self._paused = False
             self._pause_cond.notify_all()
         self._drain()
+        self._pending_clear()
         self._stop_playback()
         self._notify_segment(None, None)
         self._queue.put(_TTSRequest('', True, generation))
@@ -274,8 +294,10 @@ class TTSService:
             generation = self._generation
         if interrupt:
             self._drain()
+            self._pending_clear()
             if engine == 'voicevox':
                 self._stop_playback()
+        self._pending_add()
         self._queue.put(_TTSRequest(value, force, generation))
 
     def _drain(self) -> None:
@@ -396,6 +418,8 @@ class TTSService:
             except Exception:
                 _log_tts('TTS worker error:\n' + traceback.format_exc())
                 continue
+            finally:
+                self._pending_done()
         speaker = None
         if had_sapi:
             try:
