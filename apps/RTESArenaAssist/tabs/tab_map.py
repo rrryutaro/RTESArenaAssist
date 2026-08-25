@@ -1,4 +1,5 @@
 from __future__ import annotations
+import copy
 import logging
 from pathlib import Path
 from typing import Literal, Optional
@@ -10,7 +11,7 @@ from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
 from common_draw.automap_canvas import AutomapCanvas, CanvasData
 from controllers.map_ext_lifecycle import get_lifecycle
 from normal_play.map import MapContext
-from normal_play.map.dispatcher import MapDispatcher
+from normal_play.map.dispatcher import get_dispatcher
 from services.map_ext_store import get_store
 _log = logging.getLogger('tab_map')
 
@@ -31,7 +32,7 @@ class TabMap(QWidget):
         layout.setSpacing(0)
         layout.addWidget(self._place_label, 0)
         layout.addWidget(self._canvas, 1)
-        self._dispatcher = MapDispatcher()
+        self._dispatcher = get_dispatcher()
         self._wall_los_enabled: bool = False
         self.apply_settings()
 
@@ -63,17 +64,22 @@ class TabMap(QWidget):
         except Exception:
             _log.exception('map_ext on_load failed')
 
-    def update_map_state(self, mif_name: Optional[str], player_tile_x: Optional[float], player_tile_y: Optional[float], angle_deg: Optional[float], player_floor: int=0, place_text: Optional[str]=None, location_name: Optional[str]=None, analyzer=None, anchor: Optional[int]=None, interior_mif_name: Optional[str]=None, in_interior: Optional[bool]=None, area: Optional[str]=None, treasure_pickup_open: bool=False, dungeon_floor_fresh: Optional[int]=None, suppress_map: bool=False, suppress_reason: str='') -> None:
+    def update_map_state(self, mif_name: Optional[str], player_tile_x: Optional[float], player_tile_y: Optional[float], angle_deg: Optional[float], player_floor: int=0, place_text: Optional[str]=None, location_name: Optional[str]=None, analyzer=None, anchor: Optional[int]=None, interior_mif_name: Optional[str]=None, in_interior: Optional[bool]=None, area: Optional[str]=None, treasure_pickup_open: bool=False, dungeon_floor_fresh: Optional[int]=None, suppress_map: bool=False, suppress_reason: str='') -> Optional[CanvasData]:
         _save_dir = str(settings.get('save_dir', ''))
         ctx = MapContext(mif_name=mif_name, interior_mif_name=interior_mif_name, in_interior=in_interior, area=area, treasure_pickup_open=treasure_pickup_open, dungeon_floor_fresh=dungeon_floor_fresh, location_name=location_name, player_floor=player_floor, player_tile_x=player_tile_x, player_tile_y=player_tile_y, angle_deg=angle_deg, analyzer=analyzer, anchor=anchor, ext_store=get_store(), place_text=place_text, save_dir=_save_dir, wall_los_enabled=self._wall_los_enabled, reveal_all=bool(settings.get('cheat_enabled', False)) and bool(settings.get('cheat_reveal_map', False)), show_unexplored_floor=bool(settings.get('map_show_unexplored_floor', False)), center_on_player=bool(settings.get('map_center_on_player', True)), show_grid=bool(settings.get('map_show_grid', True)), wilderness_compact_view=bool(settings.get('wilderness_compact_view', False)), wild_distinguish_road=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_distinguish_road', True)), wild_show_edge=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_show_edge', True)), wild_distinguish_edge=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_distinguish_edge', True)), wild_show_crops=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_show_crops', True)), wild_show_all_entrances=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_show_all_entrances', True)), wild_show_static_flats=bool(settings.get('map_extended_display', True)) and bool(settings.get('wild_show_static_flats', True)))
         try:
             self._dispatcher.poll(ctx)
         except Exception:
             _log.exception('MapDispatcher.poll failed')
-            return
+            return None
+        view = self._dispatcher.get_canvas_data()
+        self.render_map_view(view, place_text=place_text, suppress_map=suppress_map, suppress_reason=suppress_reason)
+        return view
+
+    def render_map_view(self, view: CanvasData, place_text: Optional[str]=None, suppress_map: bool=False, suppress_reason: str='') -> None:
         if place_text is not None:
             self._place_label.setText(place_text)
-        _cd = self._dispatcher.get_canvas_data()
+        _cd = copy.copy(view)
         _cd.suppress_map = bool(suppress_map)
         _cd.suppress_reason = suppress_reason if suppress_map else ''
         self._canvas.set_data(_cd)

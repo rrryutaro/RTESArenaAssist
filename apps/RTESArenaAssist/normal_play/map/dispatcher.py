@@ -69,4 +69,11 @@ class MapDispatcher:
     def reset_progress(self) -> None:
         self.interior.reset_progress()
         self.base_location.reset_progress()
-__all__ = ['MapDispatcher']
+_SHARED_DISPATCHER: Optional[MapDispatcher] = None
+
+def get_dispatcher() -> MapDispatcher:
+    global _SHARED_DISPATCHER
+    if _SHARED_DISPATCHER is None:
+        _SHARED_DISPATCHER = MapDispatcher()
+    return _SHARED_DISPATCHER
+__all__ = ['MapDispatcher', 'get_dispatcher']

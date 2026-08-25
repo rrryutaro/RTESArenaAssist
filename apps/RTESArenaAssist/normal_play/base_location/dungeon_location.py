@@ -130,6 +130,8 @@ class DungeonMapSession(MapSessionBase):
         if self._import_request:
             self._import_request = False
             self._maybe_merge_automap(ctx)
+        if self._record_ok and ctx.player_tile_x is not None and (ctx.player_tile_y is not None):
+            self._in_first_block = resolve_first_block(self._map1, self._flor, int(ctx.player_tile_x), int(ctx.player_tile_y), self._in_first_block)
         if self._record_ok and ctx.player_tile_x is not None and (ctx.player_tile_y is not None) and (self._bitmap is not None):
             ix = int(ctx.player_tile_x)
             iy = int(ctx.player_tile_y)
@@ -141,7 +143,7 @@ class DungeonMapSession(MapSessionBase):
                         if self._wall_los_enabled:
                             apply_reveal_stencil(self._bitmap, ix, iy)
                         else:
-                            apply_reveal_stencil_with_los(self._bitmap, self._map1, ix, iy)
+                            apply_reveal_stencil_with_los(self._bitmap, self._map1, ix, iy, flor=self._flor, in_first_block=self._in_first_block)
                     self._note_hidden_door_if_any(ix, iy)
                     self._last_player_pos = pos
         self._note_wall_passages_in_view(ctx)
@@ -196,7 +198,6 @@ class DungeonMapSession(MapSessionBase):
         if ctx.player_tile_x is None or ctx.player_tile_y is None or ctx.angle_deg is None:
             return
         px, py = (int(ctx.player_tile_x), int(ctx.player_tile_y))
-        self._in_first_block = resolve_first_block(self._map1, self._flor, px, py, self._in_first_block)
         key = (px, py, int(ctx.angle_deg / 5.0))
         if key == self._view_scan_key:
             return

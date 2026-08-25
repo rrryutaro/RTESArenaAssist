@@ -22,11 +22,12 @@ def apply_reveal_stencil(bitmap: np.ndarray, player_x: int, player_y: int) -> in
             changes += 1
     return changes
 
-def apply_reveal_stencil_with_los(bitmap: np.ndarray, map1: np.ndarray | None, player_x: int, player_y: int) -> int:
+def apply_reveal_stencil_with_los(bitmap: np.ndarray, map1: np.ndarray | None, player_x: int, player_y: int, flor: np.ndarray | None=None, in_first_block: bool=False) -> int:
     if map1 is None:
         return apply_reveal_stencil(bitmap, player_x, player_y)
+    use_l1 = in_first_block and flor is not None
     changes = 0
-    H, W = map1.shape
+    H, W = flor.shape if use_l1 else map1.shape
     raised_threshold = resolve_raised_sight_threshold()
     for dx, dy, value in iter_arena_reveal_offsets():
         x = player_x + dx & 127
@@ -35,7 +36,10 @@ def apply_reveal_stencil_with_los(bitmap: np.ndarray, map1: np.ndarray | None, p
         if value <= old:
             continue
         if 0 <= x < W and 0 <= y < H:
-            if _line_of_sight_blocked(map1, player_x, player_y, x, y, raised_threshold):
+            if use_l1:
+                if _line_of_sight_blocked_l1(flor, player_x, player_y, x, y):
+                    continue
+            elif _line_of_sight_blocked(map1, player_x, player_y, x, y, raised_threshold):
                 continue
         bitmap[y, x] = value
         changes += 1

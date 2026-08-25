@@ -1,4 +1,5 @@
 from __future__ import annotations
+import logging
 import re
 
 def _template_ja(idx: int) -> str | None:
@@ -11,6 +12,18 @@ def _parse_spellmkr(data: str) -> dict[int, str]:
     for m in re.finditer('#(\\d+)\\r?\\n(.*?)(?=#\\d+\\r?\\n|$)', data, re.S):
         out[int(m.group(1))] = ' '.join(m.group(2).split())
     return out
+_log = logging.getLogger(__name__)
+_source_ok_prev: bool | None = None
+
+def _note_source(ok: bool) -> None:
+    global _source_ok_prev
+    if ok == _source_ok_prev:
+        return
+    _source_ok_prev = ok
+    if ok:
+        _log.warning('呪文効果の説明文: 原文テンプレを読めるようになった')
+    else:
+        _log.warning('呪文効果の説明文: 原文テンプレ（SPELLMKR.TXT）が読めない。Arena のインストールが解決できていないため、効果説明は翻訳されない')
 
 def _en_templates() -> dict[int, str]:
     try:
@@ -19,9 +32,12 @@ def _en_templates() -> dict[int, str]:
         if vfs is not None:
             data = vfs.read('SPELLMKR.TXT')
             if data is not None:
-                return _parse_spellmkr(data.decode('latin-1', errors='replace'))
+                out = _parse_spellmkr(data.decode('latin-1', errors='replace'))
+                _note_source(bool(out))
+                return out
     except Exception:
         pass
+    _note_source(False)
     return {}
 _COMPILED: list[tuple[re.Pattern, list[str], int]] | None = None
 
@@ -90,8 +106,10 @@ def match_template(text_en: str) -> tuple[int, str, str] | None:
     global _COMPILED
     if not text_en:
         return None
-    if _COMPILED is None:
+    if not _COMPILED:
         _COMPILED = _build()
+    if not _COMPILED:
+        return None
     for s in _candidate_prefixes(text_en):
         for pattern, order, idx in _COMPILED:
             m = pattern.match(s)

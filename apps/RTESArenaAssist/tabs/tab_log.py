@@ -170,19 +170,36 @@ class TabLog(QWidget):
             return
         self._rebuild()
 
+    @staticmethod
+    def _card_key(entry: LogEntry, salt: tuple) -> tuple:
+        return (entry.seq, entry.category, entry.location, entry.ts, entry.text, entry.original) + salt
+
     def _rebuild(self) -> None:
         self._log_dirty = False
         self._rebuild_location_filter()
-        for card in self._cards:
-            card.setParent(None)
-        self._cards = []
         entries = []
         if self._store is not None:
             entries = self._store.entries(newest_first=self._newest_first(), category=self._filter_category(), location=self._filter_location())
-        for idx, entry in enumerate(entries):
-            card = LogCard(entry)
-            self._vbox.insertWidget(idx, card)
-            self._cards.append(card)
+        salt = (bool(settings.get('log_show_original', False)), bool(settings.get('log_show_datetime', True)), settings.get('log_datetime_format', DEFAULT_LOG_DATETIME_FORMAT), i18n.current_lang())
+        pool: dict = {}
+        for card in self._cards:
+            pool.setdefault(getattr(card, '_card_key_value', None), []).append(card)
+        cards = []
+        for entry in entries:
+            key = self._card_key(entry, salt)
+            bucket = pool.get(key)
+            card = bucket.pop() if bucket else None
+            if card is None:
+                card = LogCard(entry)
+                card._card_key_value = key
+            cards.append(card)
+        for bucket in pool.values():
+            for stale in bucket:
+                stale.setParent(None)
+        if cards != self._cards:
+            for idx, card in enumerate(cards):
+                self._vbox.insertWidget(idx, card)
+        self._cards = cards
         self._empty_lbl.setVisible(not entries)
         self._update_count()
 

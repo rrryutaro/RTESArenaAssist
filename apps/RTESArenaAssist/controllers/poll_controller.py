@@ -142,7 +142,14 @@ def _format_place_text(state: dict, in_interior: bool, interior_mif_name: str | 
         floor_n = int(player_floor) + 1
     except (TypeError, ValueError):
         floor_n = None
-    floor_s = f'  {floor_n}F' if floor_n is not None and floor_n > 0 else ''
+    if floor_n is None or floor_n <= 0:
+        floor_s = ''
+    elif in_interior:
+        floor_s = f'  {floor_n}F'
+    elif area == 'dungeon':
+        floor_s = f'  B{floor_n}'
+    else:
+        floor_s = f'  {floor_n}F'
     if in_interior:
         kind = _interior_kind_label(interior_mif_name)
         name = (interior_facility_name or '').strip()
@@ -450,9 +457,8 @@ def _dungeon_floor_with_hold(dungeon_level_hyp: int | None, display_mif_name: st
     return (None, None)
 
 def reset_map_progress_on_load(w) -> None:
-    for tab in (getattr(w, '_tab_map', None), _fallback_map_tab_or_none(w)):
-        if tab is None:
-            continue
+    tab = getattr(w, '_tab_map', None) or _fallback_map_tab_or_none(w)
+    if tab is not None:
         try:
             tab.reset_progress()
         except (AttributeError, RuntimeError):
@@ -991,14 +997,15 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
                 except Exception:
                     _log.exception('wild_diag failed')
             wild_location_name = gs.get('MapName') or '' if diag_area in ('city', 'wilderness') else None
-            tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, treasure_pickup_open=_treasure_pickup_open, dungeon_floor_fresh=dungeon_level_hyp)
-            try:
-                w._tab_translate.update_fallback_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, treasure_pickup_open=_treasure_pickup_open, dungeon_floor_fresh=dungeon_level_hyp, suppress_map=_fallback_suppress_map, suppress_reason=_fallback_suppress_reason)
-            except AttributeError as _e:
-                if 'update_fallback_map_state' not in str(_e):
-                    _log.warning('fallback_map update AttributeError: %s', _e)
-            except Exception:
-                _log.exception('fallback_map update failed')
+            _map_view = tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, treasure_pickup_open=_treasure_pickup_open, dungeon_floor_fresh=dungeon_level_hyp)
+            if _map_view is not None:
+                try:
+                    w._tab_translate.render_fallback_map_view(_map_view, place_text=place_text, suppress_map=_fallback_suppress_map, suppress_reason=_fallback_suppress_reason)
+                except AttributeError as _e:
+                    if 'render_fallback_map_view' not in str(_e):
+                        _log.warning('fallback_map render AttributeError: %s', _e)
+                except Exception:
+                    _log.exception('fallback_map render failed')
         except Exception:
             _log.exception('tab_map update failed')
 
@@ -1030,12 +1037,13 @@ def _poll_confirm_screen_id(w, *, img_name, mif_name, area, foreground_ptr) -> t
         _menu_active_now = 65535
     _menu_active_was_zero = _menu_active_now == 0 and getattr(w, '_menu_active_prev', 65535) == 0
     w._menu_active_prev = _menu_active_now
-    result = detect_screen(w._analyzer, w._anchor, img_name, chargen_hint, menu_active_was_zero=_menu_active_was_zero, top_level_state=_current_top_level(w), last_chargen_subscreen=w._chargen_subscreen_last, mif_name=mif_name, area=area or None, foreground_ptr=foreground_ptr)
+    _trigger_display_active = getattr(w, '_trigger_flag_prev', 0) != 0
+    result = detect_screen(w._analyzer, w._anchor, img_name, chargen_hint, menu_active_was_zero=_menu_active_was_zero, top_level_state=_current_top_level(w), last_chargen_subscreen=w._chargen_subscreen_last, mif_name=mif_name, area=area or None, foreground_ptr=foreground_ptr, trigger_display_active=_trigger_display_active)
     _confirmed = result[0]
     if _confirmed in ('system_menu', 'loadsave_in_play'):
         if getattr(w, '_screen_confirm_diag_prev', None) != _confirmed:
             w._screen_confirm_diag_prev = _confirmed
-            _recog(_log, 'screen confirm: id=%s img=%r menu_active=0x%04X fg_ptr=%s', _confirmed, img_name, _menu_active_now, 'None' if foreground_ptr is None else f'0x{foreground_ptr:04X}')
+            _recog(_log, 'screen confirm: id=%s img=%r menu_active=0x%04X fg_ptr=%s trig=%s', _confirmed, img_name, _menu_active_now, 'None' if foreground_ptr is None else f'0x{foreground_ptr:04X}', int(_trigger_display_active))
     else:
         w._screen_confirm_diag_prev = None
     return result

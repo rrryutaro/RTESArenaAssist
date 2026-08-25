@@ -273,6 +273,7 @@ class AssistWindow(QMainWindow):
         self._last_class_list_activation: str | None = None
         self._pregame_loadsave_seen: bool = False
         self._player_level_prev: int | None = None
+        self._player_level_read_prev: int | None = None
         self._player_bonus_prev: int | None = None
         self._level_up_active: bool = False
         self._level_up_from: int | None = None

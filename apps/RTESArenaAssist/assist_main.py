@@ -23,11 +23,25 @@ def _runtime_resource_dir() -> str:
 _USER_DIR = _runtime_user_dir()
 _RESOURCE_DIR = _runtime_resource_dir()
 _PUBLIC_RUNTIME_I18N = True
+_CRASH_LOG_PATH = os.path.join(_USER_DIR, 'assist_crash.log')
 _crash_log_fp = None
+
+def _discard_crash_log_if_empty() -> None:
+    try:
+        if _crash_log_fp is not None:
+            _crash_log_fp.flush()
+        if os.path.exists(_CRASH_LOG_PATH) and os.path.getsize(_CRASH_LOG_PATH) == 0:
+            os.remove(_CRASH_LOG_PATH)
+    except OSError:
+        pass
 try:
+    import atexit as _atexit
     import faulthandler as _faulthandler
-    _crash_log_fp = open(os.path.join(_USER_DIR, 'assist_crash.log'), 'a', encoding='utf-8')
+    if os.path.exists(_CRASH_LOG_PATH) and os.path.getsize(_CRASH_LOG_PATH) == 0:
+        os.remove(_CRASH_LOG_PATH)
+    _crash_log_fp = open(_CRASH_LOG_PATH, 'a', encoding='utf-8')
     _faulthandler.enable(file=_crash_log_fp)
+    _atexit.register(_discard_crash_log_if_empty)
 except Exception:
     _crash_log_fp = None
 

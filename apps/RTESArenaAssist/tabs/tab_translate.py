@@ -86,8 +86,8 @@ class TabTranslate(QWidget):
     def fallback_map_tab(self) -> TabMap:
         return self._fallback_map_tab
 
-    def update_fallback_map_state(self, *args, **kwargs) -> None:
-        self._fallback_map_tab.update_map_state(*args, **kwargs)
+    def render_fallback_map_view(self, view, *args, **kwargs) -> None:
+        self._fallback_map_tab.render_map_view(view, *args, **kwargs)
 
     def apply_map_settings(self) -> None:
         self._fallback_map_tab.apply_settings()

@@ -1,6 +1,9 @@
 from __future__ import annotations
 import re
+import logging
 import i18n_helper as i18n
+_log = logging.getLogger(__name__)
+_table_state: dict[str, bool] = {}
 _entries: list[dict] = []
 _loaded = False
 _MONSTER_NAMES: dict[str, str] | None = None
@@ -118,11 +121,25 @@ def _rebuild_category(category: str) -> list[dict]:
         rebuilt.append({'key': {'en': en}, 'translations': {'ja': ja_clean}})
     return rebuilt
 
+def _note_table_size(name: str, n: int) -> None:
+    ok = n > 0
+    if _table_state.get(name) == ok:
+        return
+    _table_state[name] = ok
+    if ok:
+        _log.warning('ダンジョンのメッセージ表 %s: %d 件で作られた', name, n)
+    else:
+        _log.warning('ダンジョンのメッセージ表 %s: **空のまま作られた**。このカテゴリの原文が読めていないため、該当メッセージは翻訳されない', name)
+
 def _ensure_loaded() -> None:
     global _entries, _loaded
     if _loaded:
         return
-    _entries = _rebuild_category('dungeon_messages') + _rebuild_category('lock_messages')
+    _dungeon = _rebuild_category('dungeon_messages')
+    _lock = _rebuild_category('lock_messages')
+    _note_table_size('dungeon_messages', len(_dungeon))
+    _note_table_size('lock_messages', len(_lock))
+    _entries = _dungeon + _lock
     _loaded = True
 
 def lookup_item(name: str) -> str:

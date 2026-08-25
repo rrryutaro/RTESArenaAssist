@@ -10,6 +10,7 @@ def reset_level_up_on_load(w) -> None:
         _cur_level = None
     if w._level_up_active or getattr(w, '_panel_owner', '') == 'level_up':
         _log.info('LEVEL UP: load detected → state cleared (prev_level=%s, cur_level=%s)', getattr(w, '_player_level_prev', None), _cur_level)
+    del _cur_level
     w._level_up_active = False
     w._level_up_from = None
     w._level_up_to = None
@@ -21,27 +22,32 @@ def reset_level_up_on_load(w) -> None:
             w._ui_router.clear_if_owner('level_up')
     except (AttributeError, RuntimeError):
         pass
-    w._player_level_prev = _cur_level
+    w._player_level_prev = None
+    w._player_level_read_prev = None
 
 def produce_level_up_state(w, *, loading_active: bool=False, loading_post_settle: bool=False) -> bool:
     try:
         import player_reader as _pr
         _player = _pr.read_all(w._analyzer, w._anchor)
-        _cur_level = _player['level']
+        _raw_level = _player['level']
         _cur_exp = _player['experience']
+        _read_prev = getattr(w, '_player_level_read_prev', None)
+        w._player_level_read_prev = _raw_level
+        _confirmed_level = _raw_level if _raw_level is not None and _raw_level == _read_prev else None
         if loading_active or loading_post_settle:
-            if _cur_level is not None:
-                w._player_level_prev = _cur_level
+            if _confirmed_level is not None:
+                w._player_level_prev = _confirmed_level
             return False
-        if w._player_level_prev is None and _cur_level is not None:
-            w._player_level_prev = _cur_level
-        if _cur_level is not None and w._player_level_prev is not None and (_cur_level > w._player_level_prev):
-            _log.info('LEVEL UP detected: %d → %d (Exp=%s)', w._player_level_prev, _cur_level, _cur_exp)
+        if w._player_level_prev is None and _confirmed_level is not None:
+            w._player_level_prev = _confirmed_level
+        if _confirmed_level is not None and w._player_level_prev is not None and (_confirmed_level > w._player_level_prev):
+            _log.info('LEVEL UP detected: %d → %d (Exp=%s)', w._player_level_prev, _confirmed_level, _cur_exp)
             w._level_up_from = w._player_level_prev
-            w._level_up_to = _cur_level
+            w._level_up_to = _confirmed_level
             w._level_up_active = True
             w._level_up_waiting_for_bonus = True
-        w._player_level_prev = _cur_level
+        if _confirmed_level is not None:
+            w._player_level_prev = _confirmed_level
         return True
     except (ImportError, AttributeError, OSError):
         return False
