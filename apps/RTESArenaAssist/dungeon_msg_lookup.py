@@ -111,8 +111,18 @@ def lookup_spell(name: str) -> str:
     return i18n.value('mages', surface) or _artifact_names().get(surface) or ''
 
 def _rebuild_category(category: str) -> list[dict]:
-    rebuilt: list[dict] = []
-    for _id, e in i18n.originals(category).items():
+    originals = i18n.originals(category)
+    if i18n.v2_public_enabled(category) or (not originals and i18n.v2_public_enabled(None)):
+        rebuilt: list[dict] = []
+        for e in i18n.v2_category_entries(category):
+            en = e.get('original') or ''
+            if not en:
+                continue
+            tr = e.get('text') or ''
+            rebuilt.append({'key': {'en': en}, 'translations': {'ja': tr if tr != en else ''}})
+        return rebuilt
+    rebuilt = []
+    for _id, e in originals.items():
         en = e.get('original', '') if isinstance(e, dict) else ''
         if not en:
             continue

@@ -1,6 +1,7 @@
 from __future__ import annotations
 import json
 import re
+from game_surface import game_surface
 from npc_name_translator import translate_generated_name
 _COMPILED: list[tuple[re.Pattern, str, int, bool, int]] = []
 _LOADED = False
@@ -371,6 +372,7 @@ def _iter_npcd(*, include_untranslated: bool=False):
             except ValueError:
                 key_int = -1
             yield (en_raw, tmpl, entry.get('placeholders', []) or [], key_int, ('id', id_))
+_game_surface = game_surface
 _EXACT_ORIGINALS: list[tuple[str, str]] = []
 
 def _load() -> None:
@@ -384,7 +386,7 @@ def _load() -> None:
     travel_event_entries: list[tuple[re.Pattern, str, int, bool, int]] = []
     exact_originals: list[tuple[str, str]] = []
     for en_raw, tmpl, ph_list, key_int, ref in _iter_npcd():
-        en = ' '.join(en_raw.split())
+        en = _game_surface(en_raw)
         ph_count = len(ph_list)
         is_exact = ph_count == 0
         literal_len = _literal_chars(en)
@@ -1218,7 +1220,7 @@ def _load_body_head() -> None:
     _BODY_HEAD_LOADED = True
     _load_closed_ph()
     for en_raw, tmpl, _ph_list, key_int, _ref in _iter_npcd():
-        en = ' '.join(en_raw.split())
+        en = _game_surface(en_raw)
         anchor = _body_head_anchor_of(en)
         if not anchor:
             continue
@@ -1233,7 +1235,7 @@ def body_head_anchors(keys: frozenset) -> tuple[str, ...]:
     for en_raw, _tmpl, _ph_list, key_int, _ref in _iter_npcd(include_untranslated=True):
         if key_int not in keys:
             continue
-        anchor = _body_head_anchor_of(' '.join(en_raw.split()))
+        anchor = _body_head_anchor_of(_game_surface(en_raw))
         if anchor:
             anchors.append(anchor)
     out = tuple(dict.fromkeys(anchors))
@@ -1309,7 +1311,7 @@ def _body_span_entries(keys: frozenset | None) -> tuple[tuple[str, str], ...]:
     for en_raw, _tmpl, _ph_list, key_int, _ref in _iter_npcd(include_untranslated=True):
         if keys is not None and key_int not in keys:
             continue
-        en = ' '.join(en_raw.split())
+        en = _game_surface(en_raw)
         anchor = _body_head_anchor_of(en)
         if not anchor:
             continue
@@ -1379,7 +1381,7 @@ def _load_fixed_segments() -> None:
     for en_raw, tmpl, _ph_list, key_int, _ref in _iter_npcd():
         if not tmpl:
             continue
-        segs, names = _split_segments(' '.join(en_raw.split()))
+        segs, names = _split_segments(_game_surface(en_raw))
         if not segs:
             continue
         _FIXED_SEG_ENTRIES.append((segs, names, tmpl, key_int))
@@ -1511,6 +1513,78 @@ def lookup_span_by_fixed_parts(text: str) -> tuple[str, dict, str] | None:
         return None
     body = ' '.join(text.split())
     return (found[0], found[1], body[:found[2]])
+_TEMPLATE_ANCHOR = 16
+_MAX_BOUNDARY_GAP = 8
+
+def _walk_template(body: str, text: str):
+    literals = [x for x in re.split('%\\w+', text) if x]
+    if not literals:
+        return (0, 0, 0)
+    body_pos = 0
+    text_pos = 0
+    explained = 0
+    for literal in literals:
+        text_pos = text.index(literal, text_pos)
+        at = body.find(literal[:_TEMPLATE_ANCHOR], body_pos)
+        if at < 0:
+            break
+        same = 0
+        while same < len(literal) and at + same < len(body) and (body[at + same] == literal[same]):
+            same += 1
+        explained += same
+        body_pos = at + same
+        text_pos += same
+        if same < len(literal):
+            break
+    return (explained, body_pos, text_pos)
+
+def _closest_template(body: str):
+    best = None
+    for en, _tmpl, _ph, key, _ref in _iter_npcd():
+        text = _game_surface(en or '')
+        if not text:
+            continue
+        explained, body_pos, text_pos = _walk_template(body, text)
+        if best is None or explained > best[1]:
+            best = (text, explained, body_pos, text_pos, key)
+    return best
+
+def repair_body_at_boundary(body: str) -> str | None:
+    if not body:
+        return None
+    normalized = ' '.join(body.split())
+    if lookup_exact(normalized) is not None:
+        return normalized
+    closest = _closest_template(normalized)
+    if closest is None:
+        return None
+    text, _explained, body_pos, text_pos, _key = closest
+    for gap in range(1, _MAX_BOUNDARY_GAP + 1):
+        filler = text[text_pos:text_pos + gap]
+        if not filler or '%' in filler:
+            break
+        candidate = normalized[:body_pos] + filler + normalized[body_pos:]
+        if lookup_exact(candidate) is not None:
+            return candidate
+    return None
+
+def describe_unmatched_body(body: str) -> str:
+    if not body:
+        return '本文なし'
+    normalized = ' '.join(body.split())
+    _ensure_i18n_bound_caches_current()
+    _load()
+    closest = _closest_template(normalized)
+    if closest is None:
+        return '近いテンプレなし'
+    text, explained, body_pos, _text_pos, key = closest
+    return '最も近いテンプレ=%s 説明できた文字数=%d 食い違い位置=%d 本文=%d文字 テンプレ=%d文字' % (key, explained, body_pos, len(normalized), len(text))
+
+def _template_explains_span(span: str, placeholders: dict) -> bool:
+    if not span:
+        return False
+    filled = sum((len(v) for v in placeholders.values() if v))
+    return len(span) - filled >= filled
 
 def lookup_span_at_chunk_boundaries(chunks: list[str] | tuple[str, ...]) -> tuple[str, dict, str] | None:
     prefix: list[str] = []
@@ -1522,9 +1596,18 @@ def lookup_span_at_chunk_boundaries(chunks: list[str] | tuple[str, ...]) -> tupl
         prefix.append(normalized)
         span = ' '.join(prefix)
         found = lookup_exact(span)
-        if found is not None:
+        if found is not None and _template_explains_span(span, found[1]):
             matches.append((found[0], found[1], span))
-    return matches[0] if len(matches) == 1 else None
+    if matches:
+        return matches[0] if len(matches) == 1 else None
+    joined = ' '.join((' '.join((c or '').split()) for c in chunks))
+    repaired = repair_body_at_boundary(joined)
+    if repaired is None or repaired == joined:
+        return None
+    found = lookup_exact(repaired)
+    if found is None or not _template_explains_span(repaired, found[1]):
+        return None
+    return (found[0], found[1], joined)
 
 def format_japanese(ja_template: str, placeholders: dict, lang: str='ja') -> str:
     result = ja_template

@@ -26,9 +26,9 @@ _META_EXE_HARVEST = 'exe_harvest_enabled'
 _GOLDEN_MANIFEST_PATH = os.path.join(os.path.dirname(__file__), 'arena_golden_manifest.json')
 GOLDEN_VERSION = 1
 _BASE_CONTENT_VERSION = 'be+npcd+atrade+atradeshop+akeyrepair+inf+nnc+chrgnq2+wmap+loc/10'
-_AEXE_CONTENT_VERSION = 'be+npcd+atrade+atradeshop+akeyrepair+inf+nnc+chrgnq2+aexe4+chargenui+akeyui2+aexeman+wmap+chgnprov+loc+citygen+itemmat+monsters+partial2+items+reclass+srcback27+v2pak28+askchrome29+keymat30+citygennames31+akeyrequired32+travel33+questitems34+spellnames35+shopmsg36/36'
+_AEXE_CONTENT_VERSION = 'be+npcd+atrade+atradeshop+akeyrepair+inf+nnc+chrgnq2+aexe4+chargenui+akeyui2+aexeman+wmap+chgnprov+loc+citygen+itemmat+monsters+partial2+items+reclass+srcback27+v2pak28+askchrome29+keymat30+citygennames31+akeyrequired32+travel33+questitems34+spellnames35+shopmsg36+lockmsg37/37'
 _META_CONTENT_VERSION = 'content_version'
-_AEXE_CATEGORIES = ('races', 'calendar', 'titles', 'location_types', 'classes', 'protect_locations', 'spells', 'item_enchantments', 'equipment_suffixes', 'chargen_provinces', 'item_materials', 'monsters', 'equipment', 'character', 'mages', 'dungeon', 'items', 'settlement_types', 'chargen_race_descriptions', 'pronouns', 'relations', 'ask_about_menu', 'status_buffer_text', 'descriptors', 'status_terms', 'npc_traits', 'travel')
+_AEXE_CATEGORIES = ('races', 'calendar', 'titles', 'location_types', 'classes', 'protect_locations', 'spells', 'item_enchantments', 'equipment_suffixes', 'chargen_provinces', 'item_materials', 'monsters', 'equipment', 'character', 'mages', 'dungeon', 'items', 'settlement_types', 'chargen_race_descriptions', 'pronouns', 'relations', 'ask_about_menu', 'status_buffer_text', 'descriptors', 'status_terms', 'npc_traits', 'travel', 'lock_messages')
 _AEXE_TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'i18n', '_aexe_template')
 _V2_LOCALPACK_NAME = 'RTESArenaAssist.localpack'
 _SOURCE_ID_MAP_PATH = os.path.join(os.path.dirname(__file__), 'i18n', 'source_id_map.json')
@@ -607,6 +607,15 @@ def _collect_inf_text_rich(inft: dict) -> dict[str, dict]:
         out[sid] = {f: entry[f] for f in _INF_RICH_FIELDS if f in entry}
     return out
 
+def _localpack_is_harvested(path: str) -> bool:
+    if not os.path.isfile(path):
+        return False
+    try:
+        import i18n_localpack as _ilp
+        return _ilp.open_localpack(path).meta.get(_META_EXE_HARVEST) == '1'
+    except Exception:
+        return False
+
 def _write_v2_localpack(out_path: str, surface_by_source_id: dict[str, str], fp: str, rich_by_source_id: dict[str, dict] | None=None, generated_assets: dict[str, bytes] | None=None, content_version: str | None=None, asset_set_id: str | None=None, asset_hashes: str | None=None, exe_harvested: bool | None=None) -> None:
     try:
         import localpack_builder
@@ -623,6 +632,9 @@ def _write_v2_localpack(out_path: str, surface_by_source_id: dict[str, str], fp:
             if cat.get('category') == 'spell_effect':
                 spell_effect_entries = cat.get('entries', [])
                 break
+        if exe_harvested is False and _localpack_is_harvested(out_path):
+            logger.warning('arena_local_data: 採取できていないため辞書を作り直しません（いまの辞書は採取済み・Arena を起動してからやり直してください）: %s', out_path)
+            return
         tmp_out = out_path + '.tmp'
         if os.path.exists(tmp_out):
             os.remove(tmp_out)
@@ -760,6 +772,8 @@ def v2_localpack_needs_regen(arena_dir: str, user_dir: str, analyzer_available: 
             return True
         cv = meta.get(_META_CONTENT_VERSION)
         if cv == _AEXE_CONTENT_VERSION:
+            return False
+        if not analyzer_available and meta.get(_META_EXE_HARVEST) == '1':
             return False
         if cv == _BASE_CONTENT_VERSION and (not analyzer_available):
             return False

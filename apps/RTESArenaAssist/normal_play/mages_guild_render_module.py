@@ -730,6 +730,21 @@ def _read_story_pointer(w) -> int | None:
         return read_current_text_pointer(w._analyzer, w._anchor)
     except Exception:
         return None
+_story_resolve_state: dict[str, bool] = {}
+
+def _note_story_unresolved(resolved: bool, chunks: list[str]) -> None:
+    if _story_resolve_state.get('ok') is resolved:
+        return
+    _story_resolve_state['ok'] = resolved
+    if resolved:
+        return
+    detail = ''
+    try:
+        import npc_dialog_lookup as _ndl
+        detail = ' / ' + _ndl.describe_unmatched_body(' '.join(chunks))
+    except (ImportError, AttributeError):
+        pass
+    _log.warning('ギルドのストーリー本文の範囲を同定できなかった: チャンク数=%d 長さ=%s%s', len(chunks), [len(c) for c in chunks], detail)
 
 def _resolve_story_from_source(w, source: tuple[int, int]) -> tuple[str, str] | None:
     chunks = _read_story_chunks(w, source[0], source[1])
@@ -753,6 +768,7 @@ def _resolve_story_from_source(w, source: tuple[int, int]) -> tuple[str, str] | 
                 en, ja = (found[2], ja_text)
     except (ImportError, AttributeError):
         pass
+    _note_story_unresolved(bool(ja), chunks)
     resolved = (en, ja) if en else None
     setattr(w, _STORY_RESOLVE_CACHE_ATTR, (cache_key, resolved))
     return resolved

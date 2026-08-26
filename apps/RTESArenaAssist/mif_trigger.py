@@ -1,3 +1,5 @@
+from game_surface import game_surface
+
 def _sound_only(text_index: int) -> bool:
     return text_index == 255
 _RIDDLE_MARKER = '^'
@@ -42,7 +44,7 @@ def riddle_part_ranges(raw_block: bytes) -> list[dict]:
     return out
 
 def _norm_riddle_text(s: str) -> str:
-    return ' '.join((s or '').replace('\r', ' ').replace('\n', ' ').split())
+    return game_surface(s or '')
 
 def find_riddle_group(raw_block: bytes, question_text: str) -> list[dict]:
     target = _norm_riddle_text(question_text)

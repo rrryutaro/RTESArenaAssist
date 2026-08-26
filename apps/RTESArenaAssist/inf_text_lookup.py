@@ -1,6 +1,7 @@
 from __future__ import annotations
 import re
 import i18n_helper as i18n
+from game_surface import game_surface
 _CATEGORY = 'inf_text'
 _KIND_TYPES = frozenset({'key', 'lore', 'riddle', 'lore_once', 'key_lore'})
 _INF_STRUCT_SID_RE = re.compile('^inf:([^:]+):text:(\\d+)$')
@@ -86,7 +87,7 @@ def lookup(inf_name: str, text_index: int) -> dict | None:
     return _index.get((inf_name.upper(), text_index))
 
 def _norm_riddle(s: str) -> str:
-    return ' '.join((s or '').replace('\r', ' ').replace('\n', ' ').split())
+    return game_surface(s or '')
 
 def lookup_riddle_by_text(body: str) -> dict | None:
     _ensure_loaded()
@@ -114,7 +115,7 @@ def lookup_by_text(inf_name: str, body: str, max_prefix: int=50) -> dict | None:
     inf_upper = inf_name.upper()
     best: dict | None = None
     best_len = -1
-    ambiguous = False
+    tied: list[dict] = []
     for (inf, _idx), e in _index.items():
         if inf_upper and inf != inf_upper:
             continue
@@ -125,12 +126,18 @@ def lookup_by_text(inf_name: str, body: str, max_prefix: int=50) -> dict | None:
         if body_norm[:len(cand_norm)].upper() == cand_norm.upper():
             n = len(cand_norm)
             if n > best_len:
-                best, best_len, ambiguous = (e, n, False)
+                best, best_len, tied = (e, n, [e])
             elif n == best_len:
-                ambiguous = True
-    if ambiguous:
+                tied.append(e)
+    if len(tied) > 1 and len({_translation_key(e) for e in tied}) != 1:
         return None
     return best
+
+def _translation_key(entry: dict):
+    translated = get_translation(entry)
+    if isinstance(translated, dict):
+        return tuple(sorted(translated.items()))
+    return translated
 
 def lookup_by_substring(inf_name: str, body: str, min_fragment_len: int=16) -> dict | None:
     _ensure_loaded()
