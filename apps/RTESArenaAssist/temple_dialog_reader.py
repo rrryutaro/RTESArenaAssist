@@ -20,6 +20,21 @@ def _strip_heal_offer_prefix(text: str) -> str:
     if m:
         return ' '.join(m.group(1).split())
     return s
+_PLAYER_NAME_OFFSET = 429
+_PLAYER_NAME_LEN = 26
+
+def read_player_first_name(analyzer, anchor: int) -> str:
+    try:
+        raw = analyzer.read_bytes(anchor + _PLAYER_NAME_OFFSET, _PLAYER_NAME_LEN)
+    except (OSError, AttributeError, TypeError):
+        return ''
+    if not raw:
+        return ''
+    try:
+        name = raw.split(b'\x00', 1)[0].decode('ascii', errors='replace').strip()
+    except Exception:
+        return ''
+    return name.split()[0] if name else ''
 
 def _last_subject_token(prefix: str) -> str:
     tokens = re.findall("[A-Za-z][A-Za-z0-9'_-]*", prefix or '')
@@ -32,7 +47,7 @@ def _last_subject_token(prefix: str) -> str:
                 return token[idx:]
     return token
 
-def _repair_result_subject_prefix(text: str) -> str:
+def _repair_result_subject_prefix(text: str, player_name: str='') -> str:
     s = text or ''
     for rx in (_HEALED_RESULT_RE, _PERFECT_RESULT_RE):
         m = rx.match(s)
@@ -41,6 +56,8 @@ def _repair_result_subject_prefix(text: str) -> str:
         subject = ' '.join((m.group('subject') or '').split()).strip()
         if not subject:
             continue
+        if player_name and subject != player_name and subject.endswith(player_name):
+            return player_name + m.group('suffix')
         if not re.search('[\\s,.;:]', subject):
             return s
         repaired = _last_subject_token(subject)
@@ -48,7 +65,7 @@ def _repair_result_subject_prefix(text: str) -> str:
             return repaired + m.group('suffix')
     return s
 
-def canonicalize_priest_text(text: str, prev_byte: Optional[int]=None) -> str:
+def canonicalize_priest_text(text: str, prev_byte: Optional[int]=None, player_name: str='') -> str:
     s = text or ''
     m = _FMT_PREFIX_RE.match(s)
     if m:
@@ -57,7 +74,7 @@ def canonicalize_priest_text(text: str, prev_byte: Optional[int]=None) -> str:
             s = rest
         elif is_temple_priest_text(rest):
             s = rest
-    return _repair_result_subject_prefix(_strip_heal_offer_prefix(s))
+    return _repair_result_subject_prefix(_strip_heal_offer_prefix(s), player_name)
 
 class TempleResponseRead(NamedTuple):
     candidates: list
@@ -265,8 +282,9 @@ def read_temple_response_candidates(analyzer, anchor: int) -> TempleResponseRead
         ndl = None
     candidates: list[TempleResponseCandidate] = []
     seen: set[tuple[int, str]] = set()
+    player_name = read_player_first_name(analyzer, anchor)
     for off, raw_text, prev_b in _scan_runs(analyzer, anchor):
-        canon = canonicalize_priest_text(raw_text, prev_b)
+        canon = canonicalize_priest_text(raw_text, prev_b, player_name)
         if not is_temple_priest_text(canon):
             continue
         key = (off, canon)
@@ -291,4 +309,4 @@ def read_temple_response_candidates(analyzer, anchor: int) -> TempleResponseRead
 def has_temple_response_surface(analyzer, anchor: int) -> bool:
     read = read_temple_response_candidates(analyzer, anchor)
     return bool(read.candidates)
-__all__ = ['TempleResponseCandidate', 'TempleResponseRead', 'TempleViewState', 'canonicalize_priest_text', 'classify_temple_phase', 'classify_temple_view', 'temple_gate_foreground', 'format_temple_priest_text', 'gate_menu_foreground', 'gate_popup_open', 'has_temple_response_surface', 'is_temple_priest_text', 'is_transient_priest_text', 'lookup_temple_priest_text', 'pointer_in_menu_group', 'read_current_text_pointer', 'read_popup_gate', 'read_temple_result_edge_signature', 'read_temple_response_candidates']
+__all__ = ['TempleResponseCandidate', 'TempleResponseRead', 'TempleViewState', 'canonicalize_priest_text', 'classify_temple_phase', 'classify_temple_view', 'temple_gate_foreground', 'format_temple_priest_text', 'gate_menu_foreground', 'gate_popup_open', 'has_temple_response_surface', 'is_temple_priest_text', 'is_transient_priest_text', 'lookup_temple_priest_text', 'pointer_in_menu_group', 'read_current_text_pointer', 'read_player_first_name', 'read_popup_gate', 'read_temple_result_edge_signature', 'read_temple_response_candidates']

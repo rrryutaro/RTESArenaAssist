@@ -256,7 +256,7 @@
   "settings.wild_show_all_entrances": "Show all building entrances",
   "settings.wild_show_all_entrances_tip": "Also marks house/tavern/temple/city-gate entrances red. When ON they are shown; when OFF only crypt/tower/dungeon are red, like the in-game automap. Crypt/tower/dungeon entrances are always red regardless of this setting.",
   "settings.wild_show_static_flats": "Show landmarks (trees, bushes, etc.)",
-  "settings.wild_show_static_flats_tip": "Shows landmarks in the field and in dungeons (trees, bushes, rocks, graves, ruins) as simplified per-type marks (tree = green triangle, bush = green dot, rock = gray diamond, grave = cross, ruin = square). Marks are overlaid without filling the map. OFF by default (trees are numerous and can clutter the map); turn ON when you want to inspect landmarks. In dungeons they appear only within the area you have revealed.",
+  "settings.wild_show_static_flats_tip": "Shows landmarks in the field, in cities and in dungeons (trees, bushes, rocks, graves, ruins) as simplified per-type marks (tree = green triangle, bush = green dot, rock = gray diamond, grave = cross, ruin = square). Marks are overlaid without filling the map. OFF by default (trees are numerous and can clutter the map); turn ON when you want to inspect landmarks. In dungeons they appear only within the area you have revealed.",
   "settings.translate_fallback_screen": "Fallback display on idle",
   "settings.translate_fallback_screen_tip": "What to show across the Translate tab when the game is in exploration mode with no translation (original text is —). If the game shows a Status or Map screen, that takes priority.",
   "settings.translate_fallback_none": "Don't replace (stay on Translate)",

@@ -31,6 +31,23 @@ def resolve_current_mif(w):
     if not mif or index is None:
         return (None, None)
     return (mif, index)
+_CHEST_LOCK_LEVEL = 6
+
+def _chest_locks(mif) -> tuple:
+    try:
+        from services.inf_file_parser import is_locked_chest_item, parse_inf
+        from services.mif_loader import DEFAULT_INF_DIR, resolve_inf_for_mif
+        inf_path = resolve_inf_for_mif(getattr(mif, 'name', '') or '', getattr(mif, 'info_name', ''), DEFAULT_INF_DIR)
+        if inf_path is None:
+            return ()
+        inf = parse_inf(inf_path)
+        chest_flats = frozenset((fi for fi, item in inf.flat_items.items() if is_locked_chest_item(item)))
+        if not chest_flats:
+            return ()
+        return tuple(((int(e.x), int(e.y), _CHEST_LOCK_LEVEL) for e in mif.entities or [] if int(e.flat_index) in chest_flats))
+    except Exception:
+        _log.exception('lock message: 宝箱セルの読取に失敗')
+        return ()
 
 def _locks_for(w, mif_name: str, level_index: int):
     key = (mif_name.upper(), int(level_index))
@@ -44,7 +61,7 @@ def _locks_for(w, mif_name: str, level_index: int):
         dirs = [d for d in (settings.get('mif_dir', '') or None, DEFAULT_MIF_DIR, resolve_arena_install_dir()) if d]
         mif = load_mif(mif_name, dirs, level_index_override=int(level_index))
         if mif is not None:
-            locks = tuple(((int(e.x), int(e.y), int(e.level)) for e in mif.locks or []))
+            locks = tuple(((int(e.x), int(e.y), int(e.level)) for e in mif.locks or [])) + _chest_locks(mif)
     except Exception:
         _log.exception('lock message: MIF の LOCK 読取に失敗: %s', mif_name)
         locks = ()

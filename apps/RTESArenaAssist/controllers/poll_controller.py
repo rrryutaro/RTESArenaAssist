@@ -102,11 +102,15 @@ def _release_completed_load_screen_owner(w, *, img_name: str, save_detected: boo
         return
     if (getattr(w, '_panel_owner', '') or '') != 'load_screen':
         w._loadscreen_release_pending = False
+        w._loadscreen_confirmed_seen = False
         return
     if save_detected:
         w._loadscreen_release_pending = True
     pending = bool(getattr(w, '_loadscreen_release_pending', False))
-    back_in_idle_gameplay = screen_id == 'game_screen' and npc_idle
+    if screen_id == 'loadsave_in_play':
+        w._loadscreen_confirmed_seen = True
+        return
+    back_in_idle_gameplay = screen_id == 'game_screen' and npc_idle and bool(getattr(w, '_loadscreen_confirmed_seen', False))
     if (img_name or '').upper() == 'LOADSAVE.IMG' and (not (save_detected or pending)) and (not back_in_idle_gameplay):
         return
     if loading_active or loading_post_settle:
@@ -621,6 +625,7 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
     if not in_interior and prev_in_interior:
         _log.info('interior left')
         w._entry_door_pos = None
+        w._entry_door_logged = None
         w._instore_resp_prev = ''
         w._instore_resp_current_key = None
         w._instore_resp_text_by_offset = {}
@@ -649,6 +654,13 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
                 try:
                     from city_viewer_bridge import describe_entered_door
                     _log.info('interior door: pos=%s %s -> mif=%r name=%r', door_pos, describe_entered_door(location_name, *door_pos), interior_mif_name, interior_facility_name)
+                except Exception:
+                    pass
+                try:
+                    from city_viewer_bridge import describe_facility_naming_at
+                    _naming_line = describe_facility_naming_at(location_name, *door_pos)
+                    if _naming_line:
+                        _recog(_log, '%s', _naming_line)
                 except Exception:
                     pass
         if interior_mif_name is None and location_name and (_img_safe == 'PALACE.XMI'):

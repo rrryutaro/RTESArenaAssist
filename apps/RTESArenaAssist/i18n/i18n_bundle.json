@@ -48652,7 +48652,7 @@
         },
         {
           "id": 900469,
-          "text": "Shows landmarks in the field and in dungeons (trees, bushes, rocks, graves, ruins) as simplified per-type marks (tree = green triangle, bush = green dot, rock = gray diamond, grave = cross, ruin = square). Marks are overlaid without filling the map. OFF by default (trees are numerous and can clutter the map); turn ON when you want to inspect landmarks. In dungeons they appear only within the area you have revealed."
+          "text": "Shows landmarks in the field, in cities and in dungeons (trees, bushes, rocks, graves, ruins) as simplified per-type marks (tree = green triangle, bush = green dot, rock = gray diamond, grave = cross, ruin = square). Marks are overlaid without filling the map. OFF by default (trees are numerous and can clutter the map); turn ON when you want to inspect landmarks. In dungeons they appear only within the area you have revealed."
         },
         {
           "id": 900470,
@@ -76353,7 +76353,7 @@
         },
         {
           "id": 900469,
-          "text": "フィールドとダンジョンの木・茂み・岩・墓・廃墟などの地物を、種別ごとの簡略マーク（木＝緑▲ / 茂み＝黄緑● / 岩＝灰◆ / 墓＝十字 / 廃墟＝□）で表示します。地のマップは塗りつぶさずマークだけを重ねます。数が多く地図が見づらくなるため既定は OFF。地物を確認したいとき ON にしてください。ダンジョンでは判明済みの範囲だけに出ます。"
+          "text": "フィールド・街・ダンジョンの木・茂み・岩・墓・廃墟などの地物を、種別ごとの簡略マーク（木＝緑▲ / 茂み＝黄緑● / 岩＝灰◆ / 墓＝十字 / 廃墟＝□）で表示します。地のマップは塗りつぶさずマークだけを重ねます。数が多く地図が見づらくなるため既定は OFF。地物を確認したいとき ON にしてください。ダンジョンでは判明済みの範囲だけに出ます。"
         },
         {
           "id": 900470,
@@ -104862,7 +104862,7 @@
         },
         {
           "id": 900469,
-          "text": "Muestra los puntos de referencia del campo y de las mazmorras (árboles, arbustos, rocas, tumbas, ruinas) con marcas simplificadas por tipo (árbol = triángulo verde, arbusto = punto verde, roca = rombo gris, tumba = cruz, ruina = cuadrado). Las marcas se superponen sin rellenar el mapa. DESACTIVADO de forma predeterminada (los árboles son numerosos y pueden saturar el mapa); actívalo cuando quieras inspeccionar los puntos de referencia. En las mazmorras solo aparecen dentro de la zona ya revelada."
+          "text": "Muestra los puntos de referencia del campo, de las ciudades y de las mazmorras (árboles, arbustos, rocas, tumbas, ruinas) con marcas simplificadas por tipo (árbol = triángulo verde, arbusto = punto verde, roca = rombo gris, tumba = cruz, ruina = cuadrado). Las marcas se superponen sin rellenar el mapa. DESACTIVADO de forma predeterminada (los árboles son numerosos y pueden saturar el mapa); actívalo cuando quieras inspeccionar los puntos de referencia. En las mazmorras solo aparecen dentro de la zona ya revelada."
         },
         {
           "id": 900470,
@@ -132563,7 +132563,7 @@
         },
         {
           "id": 900469,
-          "text": "Zeigt Landmarken im Gelände und in Verliesen (Bäume, Büsche, Felsen, Gräber, Ruinen) als vereinfachte Markierungen je Typ an (Baum = grünes Dreieck, Busch = grüner Punkt, Fels = graue Raute, Grab = Kreuz, Ruine = Quadrat). Markierungen werden überlagert, ohne die Karte zu füllen. Standardmäßig AUS (Bäume sind zahlreich und können die Karte überladen); bei Bedarf zum Prüfen der Landmarken einschalten. In Verliesen erscheinen sie nur im bereits aufgedeckten Bereich."
+          "text": "Zeigt Landmarken im Gelände, in Städten und in Verliesen (Bäume, Büsche, Felsen, Gräber, Ruinen) als vereinfachte Markierungen je Typ an (Baum = grünes Dreieck, Busch = grüner Punkt, Fels = graue Raute, Grab = Kreuz, Ruine = Quadrat). Markierungen werden überlagert, ohne die Karte zu füllen. Standardmäßig AUS (Bäume sind zahlreich und können die Karte überladen); bei Bedarf zum Prüfen der Landmarken einschalten. In Verliesen erscheinen sie nur im bereits aufgedeckten Bereich."
         },
         {
           "id": 900470,
@@ -160264,7 +160264,7 @@
         },
         {
           "id": 900469,
-          "text": "Affiche les points de repère de la région et des donjons (arbres, buissons, rochers, tombes, ruines) sous forme de marques simplifiées par type (arbre = triangle vert, buisson = point vert, rocher = losange gris, tombe = croix, ruine = carré). Les marques se superposent sans remplir la carte. Désactivé par défaut (les arbres sont nombreux et peuvent encombrer la carte) ; activez-le pour examiner les points de repère. Dans les donjons, ils n'apparaissent que dans la zone déjà révélée."
+          "text": "Affiche les points de repère de la région, des villes et des donjons (arbres, buissons, rochers, tombes, ruines) sous forme de marques simplifiées par type (arbre = triangle vert, buisson = point vert, rocher = losange gris, tombe = croix, ruine = carré). Les marques se superposent sans remplir la carte. Désactivé par défaut (les arbres sont nombreux et peuvent encombrer la carte) ; activez-le pour examiner les points de repère. Dans les donjons, ils n'apparaissent que dans la zone déjà révélée."
         },
         {
           "id": 900470,
@@ -187965,7 +187965,7 @@
         },
         {
           "id": 900469,
-          "text": "Mostra i punti di riferimento del campo e dei sotterranei (alberi, cespugli, rocce, tombe, rovine) come contrassegni semplificati per tipo (albero = triangolo verde, cespuglio = punto verde, roccia = rombo grigio, tomba = croce, rovina = quadrato). I contrassegni vengono sovrapposti senza riempire la mappa. Disattivo per impostazione predefinita (gli alberi sono numerosi e possono affollare la mappa); attivalo quando vuoi esaminare i punti di riferimento. Nei sotterranei compaiono solo nell'area già rivelata."
+          "text": "Mostra i punti di riferimento del campo, delle città e dei sotterranei (alberi, cespugli, rocce, tombe, rovine) come contrassegni semplificati per tipo (albero = triangolo verde, cespuglio = punto verde, roccia = rombo grigio, tomba = croce, rovina = quadrato). I contrassegni vengono sovrapposti senza riempire la mappa. Disattivo per impostazione predefinita (gli alberi sono numerosi e possono affollare la mappa); attivalo quando vuoi esaminare i punti di riferimento. Nei sotterranei compaiono solo nell'area già rivelata."
         },
         {
           "id": 900470,
@@ -215666,7 +215666,7 @@
         },
         {
           "id": 900469,
-          "text": "Показывает ориентиры местности и подземелий (деревья, кусты, камни, могилы, руины) упрощёнными метками по типу (дерево = зелёный треугольник, куст = зелёная точка, камень = серый ромб, могила = крест, руины = квадрат). Метки накладываются поверх карты, не заливая её. По умолчанию выключено (деревьев много, они могут загромождать карту); включайте, когда нужно рассмотреть ориентиры. В подземельях они показываются только в уже открытой области."
+          "text": "Показывает ориентиры местности, городов и подземелий (деревья, кусты, камни, могилы, руины) упрощёнными метками по типу (дерево = зелёный треугольник, куст = зелёная точка, камень = серый ромб, могила = крест, руины = квадрат). Метки накладываются поверх карты, не заливая её. По умолчанию выключено (деревьев много, они могут загромождать карту); включайте, когда нужно рассмотреть ориентиры. В подземельях они показываются только в уже открытой области."
         },
         {
           "id": 900470,

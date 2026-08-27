@@ -4,6 +4,7 @@ from typing import Optional
 import numpy as np
 from common_draw.automap_canvas import CanvasData
 from services.city_voxel_assembler import build_city_voxel_grid_by_name, detect_menu_cells
+from services.wild_flats import extract_flat_marks, get_city_flat_category_map
 from normal_play.map.base import MapContext, MapSessionBase
 _log = logging.getLogger('base_location.city')
 
@@ -17,11 +18,14 @@ class CityMapSession(MapSessionBase):
         self._flor: Optional[np.ndarray] = None
         self._bitmap: Optional[np.ndarray] = None
         self._entrance_cells: tuple[tuple[int, int], ...] = ()
+        self._flat_marks: tuple[tuple[int, int, str], ...] = ()
+        self._flat_marks_key: Optional[int] = None
         self._place_text: Optional[str] = None
         self._player_x: Optional[float] = None
         self._player_y: Optional[float] = None
         self._angle: Optional[float] = None
         self._show_grid = True
+        self._show_static_flats = False
 
     def start(self, ctx: MapContext) -> None:
         super().start(ctx)
@@ -37,16 +41,27 @@ class CityMapSession(MapSessionBase):
         self._player_y = ctx.player_tile_y
         self._angle = ctx.angle_deg
         self._show_grid = ctx.show_grid
+        self._show_static_flats = ctx.wild_show_static_flats
         if ctx.location_name and ctx.location_name != self._city_name:
             self._load_city_grid(ctx.location_name)
             self._city_name = ctx.location_name
 
     def get_canvas_data(self) -> CanvasData:
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=None, level_down_index=None, entrance_cells=self._entrance_cells, is_wilderness=False, hidden_door_ids=frozenset(), menu_texture_indices=frozenset(), map_key=f'city:{self._city_name}' if self._city_name else 'city:<unknown>')
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=None, level_down_index=None, entrance_cells=self._entrance_cells, flat_marks=self._city_flat_marks(), is_wilderness=False, hidden_door_ids=frozenset(), menu_texture_indices=frozenset(), map_key=f'city:{self._city_name}' if self._city_name else 'city:<unknown>')
 
     def reset_progress(self) -> None:
         if self._walkable is not None:
             self._bitmap = np.full(self._walkable.shape, 3, dtype=np.uint8)
+
+    def _city_flat_marks(self) -> tuple[tuple[int, int, str], ...]:
+        if self._map1 is None or not self._show_static_flats:
+            return ()
+        key = id(self._map1)
+        if key != self._flat_marks_key:
+            cat_map = get_city_flat_category_map()
+            self._flat_marks = extract_flat_marks(self._map1, cat_map, skip_unmapped=True)
+            self._flat_marks_key = key
+        return self._flat_marks
 
     def _reset_state(self) -> None:
         self._walkable = None
@@ -54,6 +69,8 @@ class CityMapSession(MapSessionBase):
         self._flor = None
         self._bitmap = None
         self._entrance_cells = ()
+        self._flat_marks = ()
+        self._flat_marks_key = None
         self._city_name = None
 
     def _load_city_grid(self, location_name: str) -> None:

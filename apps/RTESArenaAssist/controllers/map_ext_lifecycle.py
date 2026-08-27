@@ -60,6 +60,7 @@ class MapExtLifecycle:
         self._bound_slot: int | None = None
         self._bound_save_id: str | None = None
         self._slot_mtimes: dict[int, int] = {}
+        self._slot_sigs: dict[int, tuple[str | None, str | None]] = {}
         self._live64_mtime: int | None = None
         self._initialized = False
         self._live64_gate_open = False
@@ -94,6 +95,22 @@ class MapExtLifecycle:
         if not save_dir or not os.path.isdir(save_dir):
             return
         cur_mtimes = self._scan_slot_mtimes(save_dir)
+        class_mtimes = cur_mtimes
+        if not self._initialized:
+            for s in cur_mtimes:
+                self._slot_sigs[s] = self._slot_content_sig(save_dir, s)
+        else:
+            for s, m in cur_mtimes.items():
+                if m == self._slot_mtimes.get(s):
+                    continue
+                sig = self._slot_content_sig(save_dir, s)
+                if sig == self._slot_sigs.get(s):
+                    if class_mtimes is cur_mtimes:
+                        class_mtimes = dict(cur_mtimes)
+                    class_mtimes[s] = self._slot_mtimes.get(s, m)
+                    _log.warning('slot touch ignored: slot=#%d mtime progressed without content change', s)
+                else:
+                    self._slot_sigs[s] = sig
         live64 = _find(save_dir, 'SAVEGAME.64')
         try:
             live64_mtime = os.stat(live64).st_mtime_ns if live64 else None
@@ -121,7 +138,7 @@ class MapExtLifecycle:
                         live64_resolved = True
                     else:
                         self._live64_gate_hash = live_hash
-        verdict = classify_lifecycle_event(initialized=self._initialized, prev_mtimes=self._slot_mtimes, cur_mtimes=cur_mtimes, live64_changed=live64_resolved, matched_slot=matched_slot, window_commits=tuple(self._live64_gate_commits))
+        verdict = classify_lifecycle_event(initialized=self._initialized, prev_mtimes=self._slot_mtimes, cur_mtimes=class_mtimes, live64_changed=live64_resolved, matched_slot=matched_slot, window_commits=tuple(self._live64_gate_commits))
         self._slot_mtimes = cur_mtimes
         self._live64_mtime = live64_mtime
         self._initialized = True
@@ -162,6 +179,7 @@ class MapExtLifecycle:
             for st in self._all_stores():
                 try:
                     st.reset_active()
+                    st.bind_slot(None, None)
                     st.bind_slot(slot, save_id)
                 except Exception:
                     _log.warning('load rebind failed: slot=#%d store=%r', slot, st, exc_info=True)
@@ -185,6 +203,9 @@ class MapExtLifecycle:
 
     def on_load(self) -> None:
         return
+
+    def _slot_content_sig(self, save_dir: str, slot: int) -> tuple[str | None, str | None]:
+        return (_hash_file(_find(save_dir, f'SAVEGAME.0{slot}')), _hash_file(_find(save_dir, f'SAVEENGN.0{slot}')))
 
     def _scan_slot_mtimes(self, save_dir: str) -> dict[int, int]:
         out: dict[int, int] = {}

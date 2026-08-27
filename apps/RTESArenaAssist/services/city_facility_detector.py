@@ -30,6 +30,11 @@ class FacilityPlacement:
     marker_voxel: int | None
     mif_name: str | None
     translation: BuildingTranslation
+    race_id: int | None = None
+    ef_seed: int | None = None
+    n_seed: int | None = None
+    ef_name: str | None = None
+    n_name: str | None = None
 
 @dataclass(frozen=True)
 class _MarkerHit:
@@ -75,12 +80,12 @@ def _equipment_with_names(city_seed: int, hits: list[_MarkerHit], city_type_key:
     names = generate_equipment_names(city_seed, len(hits))
     result: list[FacilityPlacement] = []
     for hit, name in zip(hits, names):
-        ef_rng = ArenaRandom((hit.original_y << 16) + hit.original_x)
-        n_rng = ArenaRandom((hit.original_x << 16) + hit.original_y)
-        ef_name = generate_npc_name(race_id, True, ef_rng).split()[0]
-        n_name = generate_npc_name(race_id, True, n_rng)
+        ef_seed = (hit.original_y << 16) + hit.original_x
+        n_seed = (hit.original_x << 16) + hit.original_y
+        ef_name = generate_npc_name(race_id, True, ArenaRandom(ef_seed)).split()[0]
+        n_name = generate_npc_name(race_id, True, ArenaRandom(n_seed))
         named = EquipmentName(prefix_index=name.prefix_index, suffix_index=name.suffix_index, ef_name=ef_name, n_name=n_name)
-        result.append(FacilityPlacement(menu_type=ArenaMenuType.EQUIPMENT, original_x=hit.original_x, original_y=hit.original_y, block_type=hit.block_type, block_mif=hit.block_mif, local_x=hit.local_x, local_y=hit.local_y, marker_voxel=hit.marker_voxel, mif_name=_make_mif_name(hit, ArenaMenuType.EQUIPMENT, city_type), translation=translate_equipment(named, city_type_key)))
+        result.append(FacilityPlacement(menu_type=ArenaMenuType.EQUIPMENT, original_x=hit.original_x, original_y=hit.original_y, block_type=hit.block_type, block_mif=hit.block_mif, local_x=hit.local_x, local_y=hit.local_y, marker_voxel=hit.marker_voxel, mif_name=_make_mif_name(hit, ArenaMenuType.EQUIPMENT, city_type), translation=translate_equipment(named, city_type_key), race_id=race_id, ef_seed=ef_seed, n_seed=n_seed, ef_name=ef_name, n_name=n_name))
     return result
 
 def detect_city_facilities(entries: list[CityBlockEntry], city_seed: int, start_position: tuple[int, int], city_type: ArenaCityType, city_type_key: str | None, province_id: int, coastal: bool, random_after_plan: ArenaRandom) -> list[FacilityPlacement]:
@@ -99,6 +104,24 @@ def detect_city_facilities(entries: list[CityBlockEntry], city_seed: int, start_
         result.append(FacilityPlacement(menu_type=ArenaMenuType.MAGES_GUILD, original_x=hit.original_x, original_y=hit.original_y, block_type=hit.block_type, block_mif=hit.block_mif, local_x=hit.local_x, local_y=hit.local_y, marker_voxel=hit.marker_voxel, mif_name=_make_mif_name(hit, ArenaMenuType.MAGES_GUILD, city_type), translation=translate_mages_guild()))
     order = {ArenaMenuType.EQUIPMENT: 0, ArenaMenuType.TAVERN: 1, ArenaMenuType.TEMPLE: 2, ArenaMenuType.MAGES_GUILD: 3}
     return sorted(result, key=lambda item: (order.get(item.menu_type, 99), item.translation.en, item.original_y, item.original_x))
+
+def describe_facility_naming(facility: FacilityPlacement, facilities: Iterable[FacilityPlacement], door_pos: tuple[int, int]) -> str:
+    parts = ['店名の生成: 扉=(%d,%d)' % (door_pos[0], door_pos[1]), 'マーカー=(%d,%d)' % (facility.original_x, facility.original_y), '種別=%s' % facility.menu_type.value, 'ブロック=%s' % facility.block_mif]
+    if facility.ef_seed is not None and facility.n_seed is not None:
+        parts.append('seed_ef=0x%X(式=(y<<16)+x)' % facility.ef_seed)
+        parts.append('seed_n=0x%X(式=(x<<16)+y)' % facility.n_seed)
+        parts.append('race=%s' % facility.race_id)
+        parts.append('ef=%r n=%r' % (facility.ef_name, facility.n_name))
+    tr = facility.translation
+    parts.append('生成名=%r' % (getattr(tr, 'en', None) or ''))
+    ja = getattr(tr, 'ja', None)
+    if ja:
+        parts.append('表示=%r' % ja)
+    origin = (facility.original_x - facility.local_x, facility.original_y - facility.local_y)
+    siblings = [(f.original_x, f.original_y) for f in facilities if f is not facility and f.menu_type == facility.menu_type and (f.block_mif == facility.block_mif) and ((f.original_x - f.local_x, f.original_y - f.local_y) == origin)]
+    if siblings:
+        parts.append('同建物候補マーカー=%s' % (siblings,))
+    return ' '.join(parts)
 
 def count_by_menu_type(facilities: Iterable[FacilityPlacement]) -> dict[ArenaMenuType, int]:
     counts: dict[ArenaMenuType, int] = {}

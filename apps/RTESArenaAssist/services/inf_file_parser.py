@@ -21,6 +21,10 @@ def is_treasure_pile_item(item_index: int) -> bool:
 
 def treasure_pile_flat_indices(inf: INFData) -> frozenset:
     return frozenset((fi for fi, item in inf.flat_items.items() if is_treasure_pile_item(item)))
+_ITEM_LOCKED_CHEST = 7
+
+def is_locked_chest_item(item_index: int) -> bool:
+    return int(item_index) == _ITEM_LOCKED_CHEST
 _DIRECTIVES_NO_TEXTURE = {'*BOXCAP', '*BOXSIDE', '*DOOR', '*TRANS', '*TRANSWALKTHRU', '*WALKTHRU', '*DRYCHASM', '*LAVACHASM', '*WETCHASM', '*LEVELDOWN', '*LEVELUP'}
 
 def parse_inf(path: str) -> INFData:

@@ -54,6 +54,25 @@ def describe_entered_door(location_name: str, door_x: int, door_y: int) -> str:
             best, best_d2 = (d, d2)
     return 'doors=%d hit=none nearest=(%d,%d) menu=%d %s d2=%d' % (len(doors), best.original_x, best.original_y, best.menu_id, best.menu_type.value, best_d2)
 
+def describe_facility_naming_at(location_name: Optional[str], door_x: Optional[int], door_y: Optional[int]) -> Optional[str]:
+    if not _AVAILABLE or not location_name:
+        return None
+    if door_x is None or door_y is None:
+        return None
+    door_x, door_y = (int(door_x), int(door_y))
+    door = _resolve_entered_door(location_name, door_x, door_y)
+    if door is None:
+        return None
+    try:
+        facilities = get_facilities_by_location_name(location_name) or []
+    except Exception:
+        return None
+    for f in facilities:
+        if f.original_x == door.original_x and f.original_y == door.original_y:
+            from services.city_facility_detector import describe_facility_naming
+            return describe_facility_naming(f, facilities, (door_x, door_y))
+    return None
+
 def _resolve_entered_door(location_name: str, door_x: int, door_y: int):
     try:
         doors = get_city_doors_by_location_name(location_name)
@@ -111,4 +130,4 @@ def get_mif_level_count(mif_name: Optional[str]) -> Optional[int]:
         return count
     except Exception:
         return None
-__all__ = ['InteriorFacilityInfo', 'is_available', 'lookup_interior_facility', 'lookup_interior_mif', 'get_mif_level_count']
+__all__ = ['InteriorFacilityInfo', 'describe_facility_naming_at', 'is_available', 'lookup_interior_facility', 'lookup_interior_mif', 'get_mif_level_count']
