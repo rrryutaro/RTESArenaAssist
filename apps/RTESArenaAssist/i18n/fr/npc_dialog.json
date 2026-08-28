@@ -1238,6 +1238,8 @@
   "npc_dialog.A430.0": "Pixellisation activée/désactivée.",
   "npc_dialog.A431.0": "Vitesse du jeu : PLUS RAPIDE.",
   "npc_dialog.A432.0": "Vitesse du jeu : PLUS LENTE.",
+  "npc_dialog.A433.0": "La fatigue vous submerge et vous envoie dans une tombe aquatique…",
+  "npc_dialog.A434.0": "Vous vous effondrez d'épuisement et devenez vite la proie des monstres…",
   "npc_dialog.A500.0": "Moi donner %nr, pour %a pièces d'or. D'accord ?",
   "npc_dialog.A501.0": "%nr très joli. Toi rester pour %a pièces d'or, oui, d'accord ?",
   "npc_dialog.A502.0": "Bien, toi aimer %nr. Ça coûter seulement %a pièces d'or, d'accord ?",

@@ -31,7 +31,7 @@ def resolve_current_mif(w):
     if not mif or index is None:
         return (None, None)
     return (mif, index)
-_CHEST_LOCK_LEVEL = 6
+_CHEST_LOCK_LEVEL = 5
 
 def _chest_locks(mif) -> tuple:
     try:
@@ -298,7 +298,7 @@ def _decide(w, b30, near, c1_fg):
     original, translated = _resolve_message(tables, index)
     if not original and (not translated):
         return (None, None, f'番号 {index} の文が引けない', False)
-    return (original, translated, '番号=%d 錠=(%d,%d,lv%d) 場所=%s' % (index, lock[0], lock[1], lock[2], near.where), False)
+    return (original, translated, '番号=%d 錠=(%d,%d,lv%d) 場所=%s 除数=%d 知=%d 敏=%d Lv格納値=%d' % (index, lock[0], lock[1], lock[2], near.where, divisor, intelligence, agility, player_level), False)
 
 def _color_index(w):
     watcher = getattr(w, '_lock_msg_watcher', None)

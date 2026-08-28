@@ -2,9 +2,11 @@ from __future__ import annotations
 import base64
 import binascii
 import json
+import logging
 import os
 import numpy as np
 from services.automap_file import pack_bitmap_2bit, unpack_bitmap_2bit
+_log = logging.getLogger('map_ext_store')
 _FILE_VERSION = 3
 SECTION_HIDDEN_DOORS = 'hidden_doors'
 SECTION_TREASURE_PILES = 'treasure_piles'
@@ -236,6 +238,7 @@ class MapExtStore:
         for loc, grid in self._active_reveal.items():
             merged_reveal[loc] = grid.copy()
         self._write_slot_file(slot, save_id, merged, merged_reveal)
+        _log.warning('commit: slot=#%d save_id=%r reveal_nz=%s', slot, save_id, {loc: int((g != 0).sum()) for loc, g in merged_reveal.items()})
         self._active = _empty_cells()
         self._current_slot = slot
         self._current_save_id = save_id

@@ -11,6 +11,10 @@ def is_runtime_message_buffer_pointer(ptr: int | None) -> bool:
     if ptr is None:
         return False
     return any((start <= ptr < start + length for start, length in _RUNTIME_MESSAGE_BUFFER_RANGES))
+_DEATH_POPUP_TEXT_PTRS = frozenset({31535, 31594})
+
+def is_death_popup_text_pointer(ptr: int | None) -> bool:
+    return ptr in _DEATH_POPUP_TEXT_PTRS
 
 def is_response_text_buffer_pointer(ptr: int | None) -> bool:
     if ptr is None:

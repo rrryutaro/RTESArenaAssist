@@ -312,12 +312,14 @@ def poll_red_text(w, *, b30: dict, npc_dialog_changed: bool, c1_fg: str='') -> N
         if b30['red_changed'] or _death_red_new:
             w._ui_router.update_translation(_red_owner, b30['red_str'], _b30_red_jpn or '', speech_role='situation')
             w._dlg_keep_key = (b30['red_str'], _b30_red_jpn or '')
+            _open_red_text_display(w, _red_owner)
             _recog(_log, 'red text accepted: %r → %r', b30['red_str'], _b30_red_jpn)
         elif _b30_red_jpn:
             _keep = (b30['red_str'], _b30_red_jpn)
             if not (getattr(w, '_dlg_keep_key', None) == _keep and w._ui_router.is_owner(_red_owner)):
                 w._dlg_keep_key = _keep
                 w._ui_router.update_translation(_red_owner, b30['red_str'], _b30_red_jpn, speech_role='situation')
+                _open_red_text_display(w, _red_owner)
         if _death_red_allowed:
             w._death_red_text_prev = b30['red_str']
     elif b30['red_changed'] and b30['red_str']:
@@ -329,33 +331,89 @@ def poll_red_text(w, *, b30: dict, npc_dialog_changed: bool, c1_fg: str='') -> N
         if npc_dialog_changed:
             _reason.append('npc-dialog-changed')
         _recog(_log, 'red text skipped (%s): %r', ','.join(_reason) or 'unknown', b30['red_str'])
+_RED_ABSENT_POLLS_TO_END = 10
+
+def _red_text_watcher(w):
+    from screen_detector import ActionTextWatcher
+    watcher = getattr(w, '_red_text_watcher_obj', None)
+    if watcher is None:
+        watcher = ActionTextWatcher()
+        w._red_text_watcher_obj = watcher
+    return watcher
+
+def _open_red_text_display(w, red_owner: str) -> None:
+    w._red_text_open = red_owner
+    w._red_text_close_seen = False
+    w._red_text_drawn_live = True
+    w._red_text_absent = 0
+    try:
+        watcher = _red_text_watcher(w)
+        watcher.ensure(w._analyzer, w._anchor)
+        watcher.set_active(True)
+        watcher.consume()
+    except (OSError, AttributeError, RuntimeError):
+        pass
+
+def _close_red_text_display(w) -> None:
+    w._red_text_open = ''
+    w._red_text_close_seen = False
+    w._red_text_drawn_live = False
+    w._red_text_absent = 0
+    watcher = getattr(w, '_red_text_watcher_obj', None)
+    if watcher is not None:
+        try:
+            watcher.set_active(False)
+        except AttributeError:
+            pass
 
 def poll_red_text_lifetime(w, *, b30: dict) -> None:
     try:
         owner = w._ui_router.current_owner() or ''
     except (AttributeError, RuntimeError):
         return
-    if owner not in ('red_text', 'red_text_dialog'):
+    open_owner = getattr(w, '_red_text_open', '') or ''
+    if not open_owner:
         w._red_text_close_seen = False
         return
     if b30.get('dialog_active_prev') and (not b30.get('dialog_active')):
         w._red_text_close_seen = True
-    if not getattr(w, '_red_text_close_seen', False):
+    try:
+        drawn = _red_text_watcher(w).consume()
+    except (OSError, AttributeError, RuntimeError):
+        drawn = None
+    if drawn:
+        w._red_text_absent = 0
+        w._red_text_drawn_live = True
+    elif drawn is False:
+        absent = int(getattr(w, '_red_text_absent', 0)) + 1
+        w._red_text_absent = absent
+        if absent >= _RED_ABSENT_POLLS_TO_END:
+            w._red_text_drawn_live = False
+    if open_owner == 'red_text_dialog':
+        game_end = bool(getattr(w, '_red_text_close_seen', False))
+    else:
+        game_end = bool(getattr(w, '_red_text_close_seen', False)) or not getattr(w, '_red_text_drawn_live', False)
+    if owner not in ('', 'red_text', 'red_text_dialog'):
+        return
+    if not game_end:
         return
     feed = getattr(w, '_translation_feed', None)
     try:
         speaking_owner = feed.speaking_owner() if feed is not None else None
     except AttributeError:
         speaking_owner = None
-    if speaking_owner == owner:
+    if speaking_owner == open_owner:
         try:
             if w._tts.is_speaking():
                 return
         except AttributeError:
             pass
-    _recog(_log, 'red text display end: owner=%s (表示終了・読み上げ終了)', owner)
-    w._red_text_close_seen = False
-    w._ui_router.clear_if_owner(owner)
+    _recog(_log, 'red text display end: owner=%s (表示終了・読み上げ終了)', open_owner)
+    _close_red_text_display(w)
+    if owner in ('red_text', 'red_text_dialog'):
+        w._ui_router.clear_if_owner(owner)
+    else:
+        w._ui_router.clear_display('', allowed_current_owners=('',))
 
 def poll_dialog_close(w, *, b30: dict, npc_dialog_changed: bool, instore_resp_handled: bool, c1_fg: str='') -> None:
 

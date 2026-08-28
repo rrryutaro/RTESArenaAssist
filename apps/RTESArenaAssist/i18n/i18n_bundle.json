@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:8a0303c4e445bee734a38e26365ffe176eb739e7c8ea32db6b72e6e50fc03b5c",
+  "registry_hash": "sha256:15ffd2dfd957ce0baa6963518cf46d50c10379d258376c2c78e11368e44436a9",
   "categories": [
     {
       "category": "assist_ui",
@@ -32489,6 +32489,20 @@
           "source": {
             "source_id": "aexe:akey:A200.0"
           }
+        },
+        {
+          "id": 112285,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:akey:A433.0"
+          }
+        },
+        {
+          "id": 112286,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:akey:A434.0"
+          }
         }
       ]
     },
@@ -63556,6 +63570,14 @@
           "text": "すみませんが、それには興味がありません..."
         },
         {
+          "id": 112285,
+          "text": "疲労に力尽き、水底の墓へと沈んでいく…"
+        },
+        {
+          "id": 112286,
+          "text": "力尽きて倒れ、たちまちモンスターの餌食となった…"
+        },
+        {
           "id": 115000,
           "text": "テオディ"
         },
@@ -91555,6 +91577,14 @@
         {
           "id": 112284,
           "text": "Lo siento, amigo! Eso no me interesa..."
+        },
+        {
+          "id": 112285,
+          "text": "La fatiga te vence y te arrastra a una tumba acuatica...."
+        },
+        {
+          "id": 112286,
+          "text": "Caes agotado y pronto eres presa de los monstruos...."
         },
         {
           "id": 115000,
@@ -119766,6 +119796,14 @@
           "text": "Tut mir leid, Freund! Daran bin ich nicht interessiert..."
         },
         {
+          "id": 112285,
+          "text": "Die Erschöpfung übermannt Euch und schickt Euch in ein nasses Grab..."
+        },
+        {
+          "id": 112286,
+          "text": "Ihr brecht vor Erschöpfung zusammen und fallt schnell den Monstern zum Opfer..."
+        },
+        {
           "id": 115000,
           "text": "Theod"
         },
@@ -147465,6 +147503,14 @@
         {
           "id": 112284,
           "text": "Désolé, l'ami ! Cela ne m'intéresse pas..."
+        },
+        {
+          "id": 112285,
+          "text": "La fatigue vous submerge et vous envoie dans une tombe aquatique…"
+        },
+        {
+          "id": 112286,
+          "text": "Vous vous effondrez d'épuisement et devenez vite la proie des monstres…"
         },
         {
           "id": 115000,
@@ -175168,6 +175214,14 @@
           "text": "Mi dispiace, amico! Quello non mi interessa..."
         },
         {
+          "id": 112285,
+          "text": "La stanchezza ti sopraffa e ti trascina in una tomba d'acqua...."
+        },
+        {
+          "id": 112286,
+          "text": "Crolli per la stanchezza e diventi presto preda dei mostri...."
+        },
+        {
           "id": 115000,
           "text": "Theod"
         },
@@ -202867,6 +202921,14 @@
         {
           "id": 112284,
           "text": "Извини, приятель! Меня это не интересует..."
+        },
+        {
+          "id": 112285,
+          "text": "Усталость одолевает вас и увлекает в водяную могилу...."
+        },
+        {
+          "id": 112286,
+          "text": "Вы падаете от изнеможения и вскоре становитесь добычей монстров...."
         },
         {
           "id": 115000,

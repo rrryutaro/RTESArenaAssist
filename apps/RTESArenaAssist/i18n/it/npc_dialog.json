@@ -1238,6 +1238,8 @@
   "npc_dialog.A430.0": "Pixelazione attivata/disattivata.",
   "npc_dialog.A431.0": "Velocità di gioco: PIÙ VELOCE.",
   "npc_dialog.A432.0": "Velocità di gioco: PIÙ LENTA.",
+  "npc_dialog.A433.0": "La stanchezza ti sopraffa e ti trascina in una tomba d'acqua....",
+  "npc_dialog.A434.0": "Crolli per la stanchezza e diventi presto preda dei mostri....",
   "npc_dialog.A500.0": "Io darti %nr, per %a oro. Va bene?",
   "npc_dialog.A501.0": "%nr molto bello. Tu stare per %a oro, si, va bene?",
   "npc_dialog.A502.0": "Bene, a te piacere %nr. Costare solo %a oro, va bene?",

@@ -29,7 +29,7 @@ FLAG_UNIDENTIFIED = 2
 ENCHANT_COUNT = 14
 ACCESSORY_MATERIAL_BASE = 3
 SHIELD_SLOT_MIN = 7
-SHIELD_SLOT_MAX = 10
+SHIELD_SLOT_MAX = 11
 ARMOR_PIECE_SLOT_MAX = 6
 _CONDITION_THRESHOLDS = [1, 5, 15, 40, 60, 75, 91]
 _ITEMS_LABEL_SOURCE_IDS = {'items.spellcasting_items.1.0': 'aexe:equipment:spellcasting_item_names:1', 'items.spellcasting_items.3.0': 'aexe:equipment:spellcasting_item_names:3', **{f'items.conditions.{i}.0': f'aexe:equipment:item_condition_names:{i}' for i in range(8)}}
@@ -47,6 +47,20 @@ def _weight_str(weight_raw: int) -> str:
         return '—'
     kg = weight_raw / 256
     return f'{kg:.1f}kg' if kg != int(kg) else f'{int(kg)}.0kg'
+
+def _shield_name_original(sid: int) -> str:
+    try:
+        rec = i18n.originals('items').get(f'items.shields.{sid}.0')
+        if isinstance(rec, dict):
+            return rec.get('original') or ''
+    except Exception:
+        return ''
+    return ''
+
+def is_broken_item(health: int, max_hp: int, hands: int=0) -> bool:
+    if hands > 2 or max_hp <= 1:
+        return False
+    return health * 100 // max_hp < _CONDITION_THRESHOLDS[0]
 
 def _condition_str(item: dict) -> str:
     if item['hands'] > 2:
@@ -128,6 +142,8 @@ def _classify_item(item: dict) -> tuple[str, int]:
         return ('spellcasting', -1)
     if item['x'] == 255 and 0 <= sid <= 3:
         return ('accessory', -1)
+    if SHIELD_SLOT_MIN <= sid <= SHIELD_SLOT_MAX:
+        return ('shield', -1)
     if item['x'] == 255 and 0 <= item['material'] <= 7 and (4 <= sid <= 6):
         return ('armor', 2)
     if 40 <= p1 <= 50:
@@ -136,8 +152,6 @@ def _classify_item(item: dict) -> tuple[str, int]:
         return ('armor', 1)
     if 18 <= p1 <= 28:
         return ('armor', 0)
-    if SHIELD_SLOT_MIN <= sid <= SHIELD_SLOT_MAX:
-        return ('shield', -1)
     return ('accessory', -1)
 
 def _is_empty(item: dict) -> bool:
@@ -228,6 +242,9 @@ def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], 
     elif kind == 'shield':
         if 0 <= sid < len(plate_names):
             return plate_names[sid]
+        dict_name = _shield_name_original(sid)
+        if dict_name:
+            return dict_name
         return f'Shield#{sid}'
     elif kind == 'accessory' and 0 <= sid < len(jewelry_names):
         return jewelry_names[sid]

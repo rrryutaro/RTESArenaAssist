@@ -1238,6 +1238,8 @@
   "npc_dialog.A430.0": "Pixelierung umgeschaltet.",
   "npc_dialog.A431.0": "Spielgeschwindigkeit SCHNELLER.",
   "npc_dialog.A432.0": "Spielgeschwindigkeit LANGSAMER.",
+  "npc_dialog.A433.0": "Die Erschöpfung übermannt Euch und schickt Euch in ein nasses Grab...",
+  "npc_dialog.A434.0": "Ihr brecht vor Erschöpfung zusammen und fallt schnell den Monstern zum Opfer...",
   "npc_dialog.A500.0": "Ich geb dir %nr, für %a Gold. Okay?",
   "npc_dialog.A501.0": "%nr sehr schön. Du bleiben für %a Gold, ja, okay?",
   "npc_dialog.A502.0": "Gut, dir gefällt %nr. Kostet nur %a Gold, okay?",

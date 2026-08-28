@@ -1387,8 +1387,13 @@ def _poll_screen_panel_and_spell_detail(w, _screen_id_stable):
                 _inv_marker = w._analyzer.read_bytes(w._anchor + 530, 19 * 40)
             except (OSError, AttributeError):
                 _inv_marker = None
-            if panel != 'equipment' or _inv_marker != w._equipment_marker:
+            try:
+                _staff_marker = w._analyzer.read_bytes(w._anchor + 4164, 64)
+            except (OSError, AttributeError):
+                _staff_marker = None
+            if panel != 'equipment' or _inv_marker != w._equipment_marker or _staff_marker != getattr(w, '_equipment_staff_marker', None):
                 w._equipment_marker = _inv_marker
+                w._equipment_staff_marker = _staff_marker
                 w._img_screen._show_equipment_screen()
             w._spell_detail_marker = None
             w._spell_detail_text_marker = None

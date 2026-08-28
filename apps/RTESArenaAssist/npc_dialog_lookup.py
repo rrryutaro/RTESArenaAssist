@@ -1579,12 +1579,12 @@ def describe_unmatched_body(body: str) -> str:
         return '近いテンプレなし'
     text, explained, body_pos, _text_pos, key = closest
     return '最も近いテンプレ=%s 説明できた文字数=%d 食い違い位置=%d 本文=%d文字 テンプレ=%d文字' % (key, explained, body_pos, len(normalized), len(text))
+_MAX_PLAUSIBLE_FILL = 64
 
 def _template_explains_span(span: str, placeholders: dict) -> bool:
     if not span:
         return False
-    filled = sum((len(v) for v in placeholders.values() if v))
-    return len(span) - filled >= filled
+    return all((len(v) <= _MAX_PLAUSIBLE_FILL for v in placeholders.values() if v))
 
 def lookup_span_at_chunk_boundaries(chunks: list[str] | tuple[str, ...]) -> tuple[str, dict, str] | None:
     prefix: list[str] = []

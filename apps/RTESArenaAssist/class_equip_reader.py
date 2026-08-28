@@ -1,6 +1,6 @@
 from __future__ import annotations
 import struct
-from inventory_reader import SHIELD_SLOT_MIN, SHIELD_SLOT_MAX
+from inventory_reader import SHIELD_SLOT_MIN, SHIELD_SLOT_MAX, is_broken_item
 CLASS_COUNT = 18
 WEAPON_COUNT = 18
 PLAYER_CLASS_NUMBER_OFFSET = 425
@@ -50,6 +50,9 @@ def can_equip_item(item_summary: dict, rules: dict | None) -> bool | None:
     item_type = item_summary['item_type']
     if item_type == 'potion':
         return False
+    if item_type in ('weapon', 'armor', 'shield'):
+        if is_broken_item(item_summary.get('health', 0), item_summary.get('max_hp', 0), item_summary.get('hands', 0)):
+            return False
     if item_type == 'weapon':
         if rules is None:
             return None
