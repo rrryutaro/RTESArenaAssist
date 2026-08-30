@@ -323,10 +323,14 @@ class AutomapCanvas(QWidget):
         self._build_overlay_buttons()
 
     def set_data(self, data: CanvasData) -> None:
+        prev_x, prev_y = (self._data.player_x, self._data.player_y)
+        prev_map_key = self._data.map_key
         prev_key = self._canvas_data_view_key(self._data)
         next_key = self._canvas_data_view_key(data)
         data_changed = prev_key != next_key
         self._data = data
+        if self._center_on_player and self._user_panned and (not self._fit_mode) and (prev_map_key == data.map_key) and (prev_x is not None) and (prev_y is not None) and (data.player_x is not None) and (data.player_y is not None) and ((prev_x, prev_y) != (data.player_x, data.player_y)):
+            self._user_panned = False
         if data_changed:
             self._data_view_key = next_key
             if not self._fit_mode and self._center_on_player and (not self._user_panned) and (data.player_x is None or data.player_y is None):

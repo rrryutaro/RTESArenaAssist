@@ -31,7 +31,7 @@ def poll_c1_surface_dispatch(w, b30, *, npc_dialog_changed, inf_name, mif_name, 
         return
     _c1_fg = _classify_c1_dialog_substate(w, b30, npc_dialog_changed=npc_dialog_changed)
     w._c1_dialog_foreground = _c1_fg
-    _poll_red_text(w, b30=b30, npc_dialog_changed=npc_dialog_changed, c1_fg=_c1_fg)
+    _poll_red_text(w, b30=b30, c1_fg=_c1_fg)
     _poll_gold_drop(w, b30=b30, inf_name=inf_name, mif_name=mif_name, c1_fg=_c1_fg)
     _poll_dialog_close(w, b30=b30, npc_dialog_changed=npc_dialog_changed, instore_resp_handled=instore_resp_handled, c1_fg=_c1_fg)
     _poll_red_text_lifetime(w, b30=b30)
@@ -418,6 +418,20 @@ def _poll_compute_temple_gate(w, *, _temple_active_now):
         w._temple_gate_stable_value = None
         w._temple_gate_stable_count = 0
 
+def _render_no_session_shop(w, *, shop_state, shop_img_name: str, shop_buy_active: bool, shop_menu_visible: bool) -> tuple[bool, bool]:
+    from session import facility_nodes as _fn
+    from session.facility_node import get_facility_node, registered_facility_names
+    any_buy = shop_buy_active
+    any_menu = shop_menu_visible
+    for _name in registered_facility_names():
+        _node = get_facility_node(_name)
+        if _node is None:
+            continue
+        _buy, _menu = _node.render_no_session_shop(w, shop_state=shop_state, shop_img_name=shop_img_name, shop_buy_active=shop_buy_active, shop_menu_visible=shop_menu_visible)
+        any_buy = any_buy or _buy
+        any_menu = any_menu or _menu
+    return (any_buy, any_menu)
+
 def _poll_shared_negotiation_and_template(w, *, _shop_menu_visible, _shop_buy_active, _shop_img_name, _temple_active_now, _tavern_active_now, _tavern_l4_kind, _poll_hierarchy_area, _negot_handled, _active_tmpl_handled):
     from normal_play.negotiation_module import poll_negotiation as _poll_negotiation, cleanup_if_owner as _cleanup_negotiation
     if _shop_menu_visible:
@@ -529,8 +543,7 @@ def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_
     _phase_record(w, 'facility_render', _t_facility_render)
     _checkpoint(w, 'facility_render')
     if not _story_kind and _unified_node is None and (not _facility_tavern):
-        from session.tavern_node import TAVERN_NODE as _TAVERN_NODE_NS
-        _shop_buy_active, _shop_menu_visible = _TAVERN_NODE_NS.render_no_session_shop(w, shop_state=_shop_state, shop_img_name=_shop_img_name, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible)
+        _shop_buy_active, _shop_menu_visible = _render_no_session_shop(w, shop_state=_shop_state, shop_img_name=_shop_img_name, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible)
         _negot_handled, _active_tmpl_handled = _poll_shared_negotiation_and_template(w, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active, _shop_img_name=_shop_img_name, _temple_active_now=_temple_active_now, _tavern_active_now=_tavern_active_now, _tavern_l4_kind=_tavern_l4_kind, _poll_hierarchy_area=_poll_hierarchy_area, _negot_handled=_negot_handled, _active_tmpl_handled=_active_tmpl_handled)
     return (_negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active)
 

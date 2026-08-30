@@ -186,9 +186,10 @@ def _line_of_sight_blocked(map1: np.ndarray, px: int, py: int, tx: int, ty: int,
         if (cx, cy) == (px, py):
             prev_cx, prev_cy = (cx, cy)
             continue
-        if (cx, cy) == (tx, ty):
-            return False
+        is_target = (cx, cy) == (tx, ty)
         if not (0 <= cx < W and 0 <= cy < H):
+            if is_target:
+                return False
             prev_cx, prev_cy = (cx, cy)
             continue
         step_dx = cx - prev_cx
@@ -204,6 +205,8 @@ def _line_of_sight_blocked(map1: np.ndarray, px: int, py: int, tx: int, ty: int,
                 b_blocked = _is_blocker(int(map1[orth_b[1], orth_b[0]]), raised_sight_threshold)
             if a_blocked or b_blocked:
                 return True
+        if is_target:
+            return False
         if _is_blocker(int(map1[cy, cx]), raised_sight_threshold):
             return True
         prev_cx, prev_cy = (cx, cy)
@@ -247,9 +250,10 @@ def _line_of_sight_blocked_l1(flor: np.ndarray, px: int, py: int, tx: int, ty: i
         if (cx, cy) == (px, py):
             prev_cx, prev_cy = (cx, cy)
             continue
-        if (cx, cy) == (tx, ty):
-            return False
+        is_target = (cx, cy) == (tx, ty)
         if not (0 <= cx < W and 0 <= cy < H):
+            if is_target:
+                return False
             prev_cx, prev_cy = (cx, cy)
             continue
         step_dx = cx - prev_cx
@@ -265,6 +269,8 @@ def _line_of_sight_blocked_l1(flor: np.ndarray, px: int, py: int, tx: int, ty: i
                 b_blocked = not _is_chasm_floor(int(flor[orth_b[1], orth_b[0]]))
             if a_blocked or b_blocked:
                 return True
+        if is_target:
+            return False
         if not _is_chasm_floor(int(flor[cy, cx])):
             return True
         prev_cx, prev_cy = (cx, cy)

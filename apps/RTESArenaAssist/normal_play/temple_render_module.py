@@ -73,4 +73,14 @@ def _render_menu(w, shop_state, img: str) -> bool:
     except Exception:
         _log.exception('temple_menu update failed')
     return True
+
+def render_no_session_menu(w, *, shop_state, shop_img_name: str) -> bool:
+    _is_own = shop_state is not None and getattr(shop_state, 'kind', '') == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'temple')
+    if not _is_own:
+        if getattr(w, MENU_KEY, None) is not None:
+            setattr(w, MENU_KEY, None)
+            if w._panel_owner == MENU_OWNER:
+                w._ui_router.clear_if_owner(MENU_OWNER)
+        return False
+    return _render_menu(w, shop_state, shop_img_name)
 __all__ = ['poll_temple_render', 'classify_temple_view', 'render_temple_view', 'TempleView', 'MENU_OWNER', 'MENU_KEY']

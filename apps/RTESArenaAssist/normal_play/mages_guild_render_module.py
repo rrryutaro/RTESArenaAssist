@@ -127,6 +127,16 @@ def _render_menu(w, shop_state, img: str) -> bool:
         _log.exception('mages_menu update failed')
     return True
 
+def render_no_session_menu(w, *, shop_state, shop_img_name: str) -> bool:
+    _is_own = shop_state is not None and getattr(shop_state, 'kind', '') == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'mages_guild')
+    if not _is_own:
+        if getattr(w, _MENU_KEY, None) is not None:
+            setattr(w, _MENU_KEY, None)
+            if w._panel_owner == MENU_OWNER:
+                w._ui_router.clear_if_owner(MENU_OWNER)
+        return False
+    return _render_menu(w, shop_state, shop_img_name)
+
 def _render_effect_menu(w) -> bool:
     title_en = 'Edit Effects'
     items = ['Add', 'Modify', 'Delete']

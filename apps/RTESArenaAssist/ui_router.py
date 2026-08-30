@@ -379,10 +379,15 @@ class UiRouter:
         _prev_key = getattr(self, '_applied_prev_key', None)
         _mode = intent.mode
         _mode_key = _mode if _mode is not None else '<keep>'
-        _now_key = (intent.panel_owner, _mode_key, intent.en[:160], intent.ja[:160])
+        _panel_en = intent.panel_en or ''
+        _panel_ja = intent.panel_ja or ''
+        _now_key = (intent.panel_owner, _mode_key, intent.en[:160], intent.ja[:160], _panel_en[:160], _panel_ja[:160])
         if _prev_key != _now_key:
             self._applied_prev_key = _now_key
-            _recog(_log, 'panel applied: owner=%r mode=%r en=%r ja=%r', intent.panel_owner, _mode_key, intent.en[:120], intent.ja[:120])
+            if _panel_en or _panel_ja:
+                _recog(_log, 'panel applied: owner=%r mode=%r en=%r ja=%r panel_en=%r panel_ja=%r', intent.panel_owner, _mode_key, intent.en[:120], intent.ja[:120], _panel_en[:120], _panel_ja[:120])
+            else:
+                _recog(_log, 'panel applied: owner=%r mode=%r en=%r ja=%r', intent.panel_owner, _mode_key, intent.en[:120], intent.ja[:120])
         if intent.update_tab:
             w._tab_translate.update_translation(intent.en, intent.ja, suppress_fallback=True)
         if intent.clear_place_list:

@@ -33,6 +33,12 @@ class TempleNode(FacilityNode):
             reset_temple_cost_on_stop(w)
         except Exception:
             pass
+
+    def render_no_session_shop(self, w, *, shop_state, shop_img_name: str, shop_buy_active: bool, shop_menu_visible: bool):
+        from normal_play.temple_render_module import render_no_session_menu
+        if render_no_session_menu(w, shop_state=shop_state, shop_img_name=shop_img_name):
+            shop_menu_visible = True
+        return (shop_buy_active, shop_menu_visible)
 TEMPLE_NODE = TempleNode()
 register_facility_node(TEMPLE_NODE)
 __all__ = ['TempleNode', 'TEMPLE_NODE']

@@ -271,7 +271,7 @@ def compute_b30_state(w, *, screen_id: str | None=None, c_area: str | None=None,
     w._b30_dialog_active_prev = _dialog_text_fg
     return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay}
 
-def poll_red_text(w, *, b30: dict, npc_dialog_changed: bool, c1_fg: str='') -> None:
+def poll_red_text(w, *, b30: dict, c1_fg: str='') -> None:
     _c1_fg_blocks_render = bool(c1_fg and c1_fg not in ('red_text', 'red_text_dialog'))
     _death_red_allowed = _is_death_red_text(b30['red_str']) and _current_hp_is_zero(w)
     if not _death_red_allowed:
@@ -294,9 +294,18 @@ def poll_red_text(w, *, b30: dict, npc_dialog_changed: bool, c1_fg: str='') -> N
     except (AttributeError, RuntimeError):
         _owner_now = getattr(w, '_panel_owner', '') or ''
     _panel_free = _owner_now in ('', 'red_text', 'red_text_dialog')
-    if not _panel_free and b30['red_changed'] and b30['red_str']:
-        _recog(_log, 'red text suppressed: 他の表示が出ている owner=%r text=%r', _owner_now, b30['red_str'][:40])
-    if not _c1_fg_blocks_render and _panel_free and (_current_top_level(w) == 'normal-play') and (not w._npc_conversation_active) and b30['in_gameplay'] and (b30['red_changed'] or _death_red_new or _dlg_on_screen or _c1_red_axis_active) and b30['red_str']:
+    _block_reasons = []
+    if _c1_fg_blocks_render:
+        _block_reasons.append('c1-foreground')
+    if not _panel_free:
+        _block_reasons.append('panel-owner=%s' % (_owner_now or '-'))
+    if _current_top_level(w) != 'normal-play':
+        _block_reasons.append('not-normal-play')
+    if w._npc_conversation_active:
+        _block_reasons.append('npc-conversation-active')
+    if not b30['in_gameplay']:
+        _block_reasons.append('not-in-gameplay')
+    if not _block_reasons and (b30['red_changed'] or _death_red_new or _dlg_on_screen or _c1_red_axis_active) and b30['red_str']:
         import dungeon_msg_lookup as _dml
         _b30_red_jpn = _dml.lookup(b30['red_str'])
         if not _b30_red_jpn:
@@ -323,14 +332,7 @@ def poll_red_text(w, *, b30: dict, npc_dialog_changed: bool, c1_fg: str='') -> N
         if _death_red_allowed:
             w._death_red_text_prev = b30['red_str']
     elif b30['red_changed'] and b30['red_str']:
-        _reason = []
-        if w._npc_conversation_active:
-            _reason.append('npc-conversation-active')
-        if not b30['in_gameplay']:
-            _reason.append('not-in-gameplay')
-        if npc_dialog_changed:
-            _reason.append('npc-dialog-changed')
-        _recog(_log, 'red text skipped (%s): %r', ','.join(_reason) or 'unknown', b30['red_str'])
+        _recog(_log, 'red text skipped (%s): %r', ','.join(_block_reasons) or 'no-trigger', b30['red_str'])
 _RED_ABSENT_POLLS_TO_END = 10
 
 def _red_text_watcher(w):

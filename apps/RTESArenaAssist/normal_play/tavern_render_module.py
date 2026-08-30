@@ -158,7 +158,8 @@ def reset_tavern_render_state(w) -> None:
         pass
 
 def render_no_session_shop(w, *, shop_state, shop_img_name: str, shop_buy_active: bool, shop_menu_visible: bool) -> tuple[bool, bool]:
-    if shop_state is not None:
+    _owner_kind = getattr(shop_state, 'owner_kind', '') or '' if shop_state is not None else ''
+    if shop_state is not None and _owner_kind in ('', 'tavern'):
         _kind = shop_state.kind
         if _kind == 'shop_buy':
             shop_buy_active = True

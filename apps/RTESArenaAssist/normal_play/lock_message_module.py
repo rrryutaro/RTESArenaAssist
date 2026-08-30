@@ -31,7 +31,7 @@ def resolve_current_mif(w):
     if not mif or index is None:
         return (None, None)
     return (mif, index)
-_CHEST_LOCK_LEVEL = 5
+CHEST_LOCK_LEVEL_UNKNOWN = None
 
 def _chest_locks(mif) -> tuple:
     try:
@@ -44,7 +44,7 @@ def _chest_locks(mif) -> tuple:
         chest_flats = frozenset((fi for fi, item in inf.flat_items.items() if is_locked_chest_item(item)))
         if not chest_flats:
             return ()
-        return tuple(((int(e.x), int(e.y), _CHEST_LOCK_LEVEL) for e in mif.entities or [] if int(e.flat_index) in chest_flats))
+        return tuple(((int(e.x), int(e.y), CHEST_LOCK_LEVEL_UNKNOWN) for e in mif.entities or [] if int(e.flat_index) in chest_flats))
     except Exception:
         _log.exception('lock message: 宝箱セルの読取に失敗')
         return ()
@@ -281,6 +281,8 @@ def _decide(w, b30, near, c1_fg):
     if near.lock is None:
         return (None, None, near.reason, False)
     lock = near.lock
+    if lock[2] is CHEST_LOCK_LEVEL_UNKNOWN:
+        return (None, None, '宝箱の施錠レベルが決められない 錠=(%d,%d) 場所=%s' % (lock[0], lock[1], near.where), False)
     tables = _exe_tables(w)
     if tables is None:
         return (None, None, '施錠メッセージの表が読めない', False)

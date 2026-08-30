@@ -2,6 +2,7 @@ import logging
 import re
 import assist_settings as settings
 import i18n_helper as i18n
+from panel_mode_resolver import SCREEN_PANEL_PRIORITY, screen_panel_mode
 from top_level.top_level_dispatcher import current_state as _current_top_level
 from top_level import pregame_render as _pregame_render
 from normal_play.npc_conversation_module import NPC_CONVERSATION_OWNER
@@ -27,7 +28,7 @@ def _read_staff_pieces_row(w) -> dict | None:
             ja = ndl.format_japanese(hit[0], hit[1]) or ''
     except Exception:
         ja = ''
-    return {'en': text, 'ja': ja, 'equipped': False, 'is_unidentified': False, 'can_equip': True, 'slot_label': '', 'weight': None, 'condition': None, 'effect': f'{count} 個'}
+    return {'en': text, 'ja': ja, 'equipped': False, 'is_unidentified': False, 'can_equip': False, 'slot_label': '', 'weight': None, 'condition': None, 'effect': f'{count} 個'}
 TRAVEL_SEARCH_OWNER = 'travel_search'
 
 class ImgScreenController:
@@ -99,9 +100,25 @@ class ImgScreenController:
                 pass
             self._w._set_chargen_ui_state(False)
     _NPC_DIALOG_RELATED_SCREENS = frozenset({'npc_dialog'})
+    _SCREEN_PANEL_OWNERS: dict[str, str] = {'equipment': 'equipment', 'spellbook': 'spellbook', 'spell_detail': 'spell_detail'}
+    _SCREEN_PANEL_OWNER_SET = frozenset(_SCREEN_PANEL_OWNERS.values())
+
+    def _release_screen_panel_owner(self, screen_id: str) -> None:
+        next_owner = self._SCREEN_PANEL_OWNERS.get(screen_id, '')
+        try:
+            current = self._w._ui_router.current_owner()
+        except AttributeError:
+            return
+        if current not in self._SCREEN_PANEL_OWNER_SET or current == next_owner:
+            return
+        mode = screen_panel_mode(screen_id)
+        if mode is None:
+            mode = self._npc_clear_panel_mode()
+        self._w._ui_router.release_if_owner(current, mode=mode, priority=SCREEN_PANEL_PRIORITY, reason='screen:%s_exit' % current)
 
     def on_screen_id_changed(self, screen_id: str) -> None:
         _log.info('screen_id changed: %r', screen_id)
+        self._release_screen_panel_owner(screen_id)
         if _current_top_level(self._w) == 'normal-play' and screen_id not in self._NPC_DIALOG_RELATED_SCREENS:
             self._reset_npc_dialog_display(clear_display=False)
         if screen_id == 'equipment':
@@ -133,7 +150,7 @@ class ImgScreenController:
             if mode == 'load_screen' and img_name_now == 'LOADSAVE.IMG':
                 return None
             screen_id_now = getattr(self._w, '_screen_id_prev', '') or ''
-            if mode == 'choose_attributes' and screen_id_now in ('status_page', 'bonus_screen'):
+            if mode == 'choose_attributes' and screen_panel_mode(screen_id_now) == 'choose_attributes':
                 return 'choose_attributes'
             if _current_top_level(self._w) == 'normal-play':
                 fallback = settings.get('translate_fallback_screen', 'map')
@@ -171,7 +188,7 @@ class ImgScreenController:
                 item_data.append(_staff)
         except Exception:
             _log.exception('equipment read failed')
-        self._w._ui_router.propose_equipment_list('equipment', title, item_data, priority=30, reason='screen:equipment')
+        self._w._ui_router.propose_equipment_list('equipment', title, item_data, priority=SCREEN_PANEL_PRIORITY, reason='screen:equipment')
 
     def _show_spell_detail_screen(self) -> None:
         try:
@@ -197,7 +214,7 @@ class ImgScreenController:
             self._w._spell_detail_text_ready = True
             self._w._spell_detail_last_accepted_name = spell_name
             self._w._spell_detail_last_accepted_text = text_en
-        self._w._ui_router.propose_spell_detail('spell_detail', data, priority=30, reason='screen:spell_detail')
+        self._w._ui_router.propose_spell_detail('spell_detail', data, priority=SCREEN_PANEL_PRIORITY, reason='screen:spell_detail')
 
     def _show_spellbook_screen(self) -> None:
         try:
@@ -208,7 +225,7 @@ class ImgScreenController:
         except Exception:
             _log.exception('spellbook read failed')
             item_data = []
-        self._w._ui_router.propose_spellbook_list('spellbook', item_data, 'Spell Book', i18n.tr('screen.spellbook'), list_title_ja=i18n.tr('spellbook.list_title'), priority=30, reason='screen:spellbook')
+        self._w._ui_router.propose_spellbook_list('spellbook', item_data, 'Spell Book', i18n.tr('screen.spellbook'), list_title_ja=i18n.tr('spellbook.list_title'), priority=SCREEN_PANEL_PRIORITY, reason='screen:spellbook')
 
     def _show_newgame_slide(self, img_name: str) -> None:
         _pregame_render.show_newgame_slide(self._w, img_name)
@@ -222,7 +239,7 @@ class ImgScreenController:
             if mode == 'load_screen' and img_name_now == 'LOADSAVE.IMG':
                 return
             screen_id_now = getattr(self._w, '_screen_id_prev', '') or ''
-            if mode == 'choose_attributes' and screen_id_now in ('status_page', 'bonus_screen'):
+            if mode == 'choose_attributes' and screen_panel_mode(screen_id_now) == 'choose_attributes':
                 return
             self._set_panel_mode('translate')
         except AttributeError:

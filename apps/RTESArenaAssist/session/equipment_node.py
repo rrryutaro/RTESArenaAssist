@@ -42,6 +42,12 @@ class EquipmentNode(FacilityNode):
                     w._ui_router.clear_if_owner(owner, mode='translate')
             except AttributeError:
                 pass
+
+    def render_no_session_shop(self, w, *, shop_state, shop_img_name: str, shop_buy_active: bool, shop_menu_visible: bool):
+        from normal_play.equipment_render_module import render_no_session_menu
+        if render_no_session_menu(w, shop_state=shop_state, shop_img_name=shop_img_name):
+            shop_menu_visible = True
+        return (shop_buy_active, shop_menu_visible)
 EQUIPMENT_NODE = EquipmentNode()
 register_facility_node(EQUIPMENT_NODE)
 __all__ = ['EquipmentNode', 'EQUIPMENT_NODE']

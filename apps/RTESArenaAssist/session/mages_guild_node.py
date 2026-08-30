@@ -94,6 +94,12 @@ class MagesGuildNode(FacilityNode):
                 pass
         _cleanup(w, False, False, False)
         self.on_exit(w)
+
+    def render_no_session_shop(self, w, *, shop_state, shop_img_name: str, shop_buy_active: bool, shop_menu_visible: bool):
+        from normal_play.mages_guild_render_module import render_no_session_menu
+        if render_no_session_menu(w, shop_state=shop_state, shop_img_name=shop_img_name):
+            shop_menu_visible = True
+        return (shop_buy_active, shop_menu_visible)
 MAGES_GUILD_NODE = MagesGuildNode()
 register_facility_node(MAGES_GUILD_NODE)
 __all__ = ['MagesGuildNode', 'MAGES_GUILD_NODE']

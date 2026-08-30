@@ -19,6 +19,9 @@ class FacilityNode:
     def __init__(self) -> None:
         self._parent: Any = None
 
+    def render_no_session_shop(self, w, *, shop_state, shop_img_name: str, shop_buy_active: bool, shop_menu_visible: bool):
+        return (shop_buy_active, shop_menu_visible)
+
     def set_parent(self, parent: Any) -> 'FacilityNode':
         self._parent = parent
         return self

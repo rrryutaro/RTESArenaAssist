@@ -3,6 +3,11 @@ from typing import Optional
 MODE_TRANSLATE = 'translate'
 MODE_FALLBACK_MAP = 'fallback_map'
 MODE_FALLBACK_STATUS = 'fallback_status'
+SCREEN_PANEL_PRIORITY = 30
+SCREEN_PANEL_MODES: dict[str, str] = {'status_page': 'choose_attributes', 'bonus_screen': 'choose_attributes', 'automap': 'map_screen', 'equipment': 'equipment', 'spellbook': 'spellbook', 'spell_detail': 'spell_detail'}
+
+def screen_panel_mode(screen_id: Optional[str]) -> Optional[str]:
+    return SCREEN_PANEL_MODES.get(screen_id or '')
 FOREGROUND_MODES = frozenset({'item_pickup', 'shop_buy', 'facility_list', 'equipment', 'spellbook', 'spell_detail', 'place_list', 'travel_table', 'journal', 'load_screen', 'choose_attributes', 'class_list', 'race_list', 'appearance_faces', 'map_screen'})
 _TRANSLATE_FAMILY = frozenset({MODE_TRANSLATE, MODE_FALLBACK_MAP, MODE_FALLBACK_STATUS})
 OWNER_BOUND_MODES: dict[str, str] = {'load_screen': 'load_screen'}
@@ -31,4 +36,4 @@ def resolve_flush_mode(*, winner_mode: Optional[str], top_level: str, emulate: b
     if emulate and winner_has_content:
         return MODE_TRANSLATE
     return _FALLBACK_SETTING_TO_MODE.get(fallback_setting, MODE_TRANSLATE)
-__all__ = ['resolve_flush_mode', 'required_owner_for_mode', 'is_screen_state_owner', 'FOREGROUND_MODES', 'OWNER_BOUND_MODES', 'SCREEN_STATE_OWNERS', 'MODE_TRANSLATE', 'MODE_FALLBACK_MAP', 'MODE_FALLBACK_STATUS']
+__all__ = ['resolve_flush_mode', 'required_owner_for_mode', 'is_screen_state_owner', 'FOREGROUND_MODES', 'OWNER_BOUND_MODES', 'SCREEN_PANEL_MODES', 'SCREEN_PANEL_PRIORITY', 'screen_panel_mode', 'SCREEN_STATE_OWNERS', 'MODE_TRANSLATE', 'MODE_FALLBACK_MAP', 'MODE_FALLBACK_STATUS']

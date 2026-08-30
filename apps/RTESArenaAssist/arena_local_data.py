@@ -313,6 +313,9 @@ def _build_chargen_ui(tables: dict, template_raw: bytes) -> dict:
         race_descs.append(str(vals[0]) if vals else '')
     return arena_regen.regenerate_chargen_ui(cc, class_names, pref_attrs, race_descs)
 
+def id_carries_original(source_id: str) -> bool:
+    return any((ch.isspace() for ch in source_id or ''))
+
 def load_golden_manifest(path: str | None=None) -> dict | None:
     if path is not None:
         try:
@@ -366,7 +369,7 @@ def _run_golden_check(local_manifests: dict[str, dict], asset_set: str | None, e
     logger.warning('arena_local_data: ゴールデンマニフェスト突合せ不一致 (%s)。欠落/本文ズレのあるカテゴリ: %s', gres['summary'], {c: v for c, v in gres['categories'].items() if v['missing'] or v['drift']})
     return gres['summary']
 
-def build_local_pack(arena_dir: str, user_dir: str, analyzer=None, classification: dict | None=None, progress=None, cancel_check=None) -> str | None:
+def build_local_pack(arena_dir: str, user_dir: str, analyzer=None, classification: dict | None=None, progress=None, cancel_check=None, report: dict | None=None) -> str | None:
     import arena_regen
 
     def _p(frac: float, label: str) -> None:
@@ -481,6 +484,11 @@ def build_local_pack(arena_dir: str, user_dir: str, analyzer=None, classificatio
     _ck()
     _p(0.7, '整合性を検証中…')
     golden_check = _run_golden_check(local_manifests, cls.get('set_id'), exe_harvested)
+    if report is not None:
+        report['manifests'] = local_manifests
+        report['exe_harvest'] = exe_harvested
+        report['asset_set_id'] = cls.get('set_id')
+        report['fingerprint'] = fp
 
     def _J(obj) -> str:
         return json.dumps(obj, ensure_ascii=False, indent=2)

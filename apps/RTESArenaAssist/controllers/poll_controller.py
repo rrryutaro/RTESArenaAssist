@@ -8,6 +8,7 @@ from assist_log import recog as _recog
 import i18n_helper as i18n
 import inf_text_lookup as itl
 from display_intent import PollFrame
+from panel_mode_resolver import SCREEN_PANEL_PRIORITY, screen_panel_mode
 from hierarchy_state import facility_owners_for_session, HierarchyRecognitionInput, SeparationHierarchy
 from normal_play.base_location.base_location_view import resolve_area_with_indoor_fallback as _resolve_area_with_indoor_fallback
 from controllers.chargen_helpers import _CHARGEN_GOYENOW_HINT_ADDR, _CHARGEN_GOYENOW_HINT_CHECKLEN, _CHARGEN_GOYENOW_PREFIX, _CHARGEN_GOYENOW_SCAN_START, _CHARGEN_GOYENOW_SCAN_END
@@ -66,7 +67,7 @@ def _poll_wild_diagnostic(analyzer, anchor: int) -> None:
         _wild_diag_prev[off] = cur
         delta_u16 = u16 - prev[0] if prev else None
         _wild_diag_log.info('wild_diag ax+0x%04X %-12s u16=%5d (Δ%s) u32=%d hex=%s', off, label, u16, f'{delta_u16:+d}' if delta_u16 is not None else '?', u32, raw.hex())
-_SCREEN_PANEL_PRIORITY = 30
+_SCREEN_PANEL_PRIORITY = SCREEN_PANEL_PRIORITY
 
 def _normal_play_idle_panel_mode() -> str:
     fallback = settings.get('translate_fallback_screen', 'map')
@@ -546,8 +547,8 @@ def _poll_status_template_parse(w, *, _entry_handled):
 
 def _propose_automap_screen_mode(w, *, screen_id_stable, top_level):
     try:
-        if screen_id_stable == 'automap' and top_level == 'normal-play':
-            w._ui_router.set_panel_mode('map_screen', priority=_SCREEN_PANEL_PRIORITY, reason='screen:automap')
+        if screen_panel_mode(screen_id_stable) == 'map_screen' and top_level == 'normal-play':
+            w._ui_router.set_panel_mode(screen_panel_mode(screen_id_stable), priority=_SCREEN_PANEL_PRIORITY, reason='screen:automap')
             w._automap_mode_active = True
         elif getattr(w, '_automap_mode_active', False):
             w._ui_router.set_panel_mode('translate', reason='screen:automap_exit')
@@ -1318,8 +1319,8 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
         if w._is_in_chargen != _desired_chargen_ui:
             w._set_chargen_ui_state(_desired_chargen_ui)
         try:
-            if _screen_id_stable in ('status_page', 'bonus_screen') and _current_top_level(w) == 'normal-play':
-                w._ui_router.set_panel_mode('choose_attributes', priority=_SCREEN_PANEL_PRIORITY, reason='screen:status')
+            if screen_panel_mode(_screen_id_stable) == 'choose_attributes' and _current_top_level(w) == 'normal-play':
+                w._ui_router.set_panel_mode(screen_panel_mode(_screen_id_stable), priority=_SCREEN_PANEL_PRIORITY, reason='screen:status')
                 w._b24_status_mode_active = True
             elif getattr(w, '_b24_status_mode_active', False):
                 w._ui_router.set_panel_mode('translate', reason='screen:status_exit')
