@@ -741,5 +741,14 @@
   "manual.guide.answer_item": "・{answer}",
   "map.action.refresh": "マップを更新",
   "map.action.fit": "全体表示",
-  "map.action.actual_size": "100% 表示（既定のサイズ）"
+  "map.action.actual_size": "100% 表示（既定のサイズ）",
+  "equipment.filter.text_placeholder": "名前で絞り込み",
+  "equipment.filter.slot_all": "部位：すべて",
+  "equipment.filter.category_all": "種類：すべて",
+  "equipment.category.weapon": "武器",
+  "equipment.category.armor": "防具",
+  "equipment.category.shield": "盾",
+  "equipment.category.accessory": "装身具",
+  "equipment.category.spellcasting": "呪文具",
+  "equipment.category.potion": "薬"
 }

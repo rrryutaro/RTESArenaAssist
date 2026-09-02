@@ -61,10 +61,28 @@ def is_broken_item(health: int, max_hp: int, hands: int=0) -> bool:
     if hands > 2 or max_hp <= 1:
         return False
     return health * 100 // max_hp < _CONDITION_THRESHOLDS[0]
+SPELL_CHARGE_UNIT = 15
+_SPELL_ENCHANTABLE = ('weapon', 'armor', 'shield')
+SPELL_ENCHANT_ATTR = 255
+
+def _uses_left(item: dict, item_type: str='') -> int | None:
+    hands = item.get('hands')
+    try:
+        hands = int(hands)
+    except (TypeError, ValueError):
+        return None
+    if hands > 2:
+        return hands
+    if item_type not in _SPELL_ENCHANTABLE:
+        return None
+    if item.get('attr') != SPELL_ENCHANT_ATTR:
+        return None
+    try:
+        return int(item.get('health')) // SPELL_CHARGE_UNIT
+    except (TypeError, ValueError):
+        return None
 
 def _condition_str(item: dict) -> str:
-    if item['hands'] > 2:
-        return i18n.text('item.condition.charges_left').replace('{count}', str(item['hands']))
     hp, max_hp = (item['health'], item['max_hp'])
     if max_hp <= 1:
         return ''
@@ -284,7 +302,7 @@ def read_equipment_items_with_status(analyzer, anchor: int) -> tuple[bool, list[
         classification = _classify_item(item)
         item_type, armor_material_id = classification
         en = _get_item_name(item, classification=classification, **tables)
-        items.append({'en': en, 'slot_id': item['slot_id'], 'hands': item['hands'], 'health': item['health'], 'max_hp': item['max_hp'], 'price': item['price'], 'equipped': bool(item['flags'] & 128), 'is_unidentified': _display_unidentified(item), 'item_type': item_type, 'armor_material_id': armor_material_id, 'slot_label': _slot_label(item, classification=classification), 'weight': '' if item_type == 'potion' else _weight_str(item['weight']), 'condition': '' if item_type == 'potion' else _condition_str(item), 'effect': '' if item_type == 'potion' else _effect_str(item), 'count': _potion_count(item) if item_type == 'potion' else None})
+        items.append({'en': en, 'slot_id': item['slot_id'], 'hands': item['hands'], 'health': item['health'], 'max_hp': item['max_hp'], 'price': item['price'], 'equipped': bool(item['flags'] & 128), 'is_unidentified': _display_unidentified(item), 'item_type': item_type, 'armor_material_id': armor_material_id, 'slot_label': _slot_label(item, classification=classification), 'weight': '' if item_type == 'potion' else _weight_str(item['weight']), 'condition': '' if item_type == 'potion' else _condition_str(item), 'uses': None if item_type == 'potion' else _uses_left(item, item_type), 'effect': '' if item_type == 'potion' else _effect_str(item), 'count': _potion_count(item) if item_type == 'potion' else None})
     return (True, items)
 
 def read_equipment_items(analyzer, anchor: int) -> list[dict]:

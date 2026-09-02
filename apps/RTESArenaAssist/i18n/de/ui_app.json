@@ -741,5 +741,14 @@
   "manual.guide.answer_item": "• {answer}",
   "map.action.refresh": "Karte aktualisieren",
   "map.action.fit": "Ganze Karte einpassen",
-  "map.action.actual_size": "Originalgröße (100 %)"
+  "map.action.actual_size": "Originalgröße (100 %)",
+  "equipment.filter.text_placeholder": "Nach Name filtern",
+  "equipment.filter.slot_all": "Slot: alle",
+  "equipment.filter.category_all": "Typ: alle",
+  "equipment.category.weapon": "Waffe",
+  "equipment.category.armor": "Rüstung",
+  "equipment.category.shield": "Schild",
+  "equipment.category.accessory": "Schmuck",
+  "equipment.category.spellcasting": "Zaubergegenstand",
+  "equipment.category.potion": "Trank"
 }

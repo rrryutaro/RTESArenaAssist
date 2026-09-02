@@ -741,5 +741,14 @@
   "manual.guide.answer_item": "• {answer}",
   "map.action.refresh": "Обновить карту",
   "map.action.fit": "Вписать всю карту",
-  "map.action.actual_size": "Реальный размер (100 %)"
+  "map.action.actual_size": "Реальный размер (100 %)",
+  "equipment.filter.text_placeholder": "Фильтр по названию",
+  "equipment.filter.slot_all": "Слот: все",
+  "equipment.filter.category_all": "Тип: все",
+  "equipment.category.weapon": "Оружие",
+  "equipment.category.armor": "Броня",
+  "equipment.category.shield": "Щит",
+  "equipment.category.accessory": "Украшение",
+  "equipment.category.spellcasting": "Магический предмет",
+  "equipment.category.potion": "Зелье"
 }

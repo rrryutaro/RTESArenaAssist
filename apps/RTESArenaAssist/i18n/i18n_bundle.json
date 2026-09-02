@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:15ffd2dfd957ce0baa6963518cf46d50c10379d258376c2c78e11368e44436a9",
+  "registry_hash": "sha256:c9706fc56d43134767398ce8ee89e5670f1ae10276ceb6c9357cc4a9f3ce08c3",
   "categories": [
     {
       "category": "assist_ui",
@@ -3726,6 +3726,51 @@
           "id": 900742,
           "kind": "label",
           "debug_name": "settings.map_raised_sight_threshold_tip"
+        },
+        {
+          "id": 900743,
+          "kind": "label",
+          "debug_name": "equipment.filter.slot_all"
+        },
+        {
+          "id": 900744,
+          "kind": "label",
+          "debug_name": "equipment.filter.text_placeholder"
+        },
+        {
+          "id": 900745,
+          "kind": "label",
+          "debug_name": "equipment.category.accessory"
+        },
+        {
+          "id": 900746,
+          "kind": "label",
+          "debug_name": "equipment.category.armor"
+        },
+        {
+          "id": 900747,
+          "kind": "label",
+          "debug_name": "equipment.category.potion"
+        },
+        {
+          "id": 900748,
+          "kind": "label",
+          "debug_name": "equipment.category.shield"
+        },
+        {
+          "id": 900749,
+          "kind": "label",
+          "debug_name": "equipment.category.spellcasting"
+        },
+        {
+          "id": 900750,
+          "kind": "label",
+          "debug_name": "equipment.category.weapon"
+        },
+        {
+          "id": 900751,
+          "kind": "label",
+          "debug_name": "equipment.filter.category_all"
         }
       ]
     },
@@ -49761,6 +49806,42 @@
           "text": "With the ceiling height as 100%, raised platforms whose top reaches this height or more block line of sight on the map. At 0% (default), every raised platform blocks sight, matching the previous behavior."
         },
         {
+          "id": 900743,
+          "text": "Slot: all"
+        },
+        {
+          "id": 900744,
+          "text": "Filter by name"
+        },
+        {
+          "id": 900745,
+          "text": "Accessory"
+        },
+        {
+          "id": 900746,
+          "text": "Armor"
+        },
+        {
+          "id": 900747,
+          "text": "Potion"
+        },
+        {
+          "id": 900748,
+          "text": "Shield"
+        },
+        {
+          "id": 900749,
+          "text": "Spellcasting"
+        },
+        {
+          "id": 900750,
+          "text": "Weapon"
+        },
+        {
+          "id": 900751,
+          "text": "Type: all"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -77468,6 +77549,42 @@
         {
           "id": 900742,
           "text": "天井の高さを 100% として、上端がこの高さ以上の高台がマップの視線を遮ります。0% (既定) では全ての高台が視線を遮ります (従来の動作)。"
+        },
+        {
+          "id": 900743,
+          "text": "部位：すべて"
+        },
+        {
+          "id": 900744,
+          "text": "名前で絞り込み"
+        },
+        {
+          "id": 900745,
+          "text": "装身具"
+        },
+        {
+          "id": 900746,
+          "text": "防具"
+        },
+        {
+          "id": 900747,
+          "text": "薬"
+        },
+        {
+          "id": 900748,
+          "text": "盾"
+        },
+        {
+          "id": 900749,
+          "text": "呪文具"
+        },
+        {
+          "id": 900750,
+          "text": "武器"
+        },
+        {
+          "id": 900751,
+          "text": "種類：すべて"
         },
         {
           "id": 902000,
@@ -105987,6 +106104,42 @@
           "text": "Tomando la altura del techo como 100%, las plataformas elevadas cuya parte superior alcanza esta altura o más bloquean la línea de visión en el mapa. Con 0% (predeterminado), todas las plataformas elevadas bloquean la visión (comportamiento anterior)."
         },
         {
+          "id": 900743,
+          "text": "Ranura: todas"
+        },
+        {
+          "id": 900744,
+          "text": "Filtrar por nombre"
+        },
+        {
+          "id": 900745,
+          "text": "Accesorio"
+        },
+        {
+          "id": 900746,
+          "text": "Armadura"
+        },
+        {
+          "id": 900747,
+          "text": "Poción"
+        },
+        {
+          "id": 900748,
+          "text": "Escudo"
+        },
+        {
+          "id": 900749,
+          "text": "Objeto mágico"
+        },
+        {
+          "id": 900750,
+          "text": "Arma"
+        },
+        {
+          "id": 900751,
+          "text": "Tipo: todos"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -133694,6 +133847,42 @@
         {
           "id": 900742,
           "text": "Bezogen auf die Deckenhöhe als 100 % blockieren Erhöhungen, deren Oberkante diese Höhe erreicht oder überschreitet, die Sichtlinie auf der Karte. Bei 0 % (Standard) blockieren alle Erhöhungen die Sicht (bisheriges Verhalten)."
+        },
+        {
+          "id": 900743,
+          "text": "Slot: alle"
+        },
+        {
+          "id": 900744,
+          "text": "Nach Name filtern"
+        },
+        {
+          "id": 900745,
+          "text": "Schmuck"
+        },
+        {
+          "id": 900746,
+          "text": "Rüstung"
+        },
+        {
+          "id": 900747,
+          "text": "Trank"
+        },
+        {
+          "id": 900748,
+          "text": "Schild"
+        },
+        {
+          "id": 900749,
+          "text": "Zaubergegenstand"
+        },
+        {
+          "id": 900750,
+          "text": "Waffe"
+        },
+        {
+          "id": 900751,
+          "text": "Typ: alle"
         },
         {
           "id": 902000,
@@ -161405,6 +161594,42 @@
           "text": "La hauteur du plafond valant 100 %, les plateformes surélevées dont le sommet atteint ou dépasse cette hauteur bloquent la ligne de vue sur la carte. À 0 % (par défaut), toutes les plateformes surélevées bloquent la vue (comportement précédent)."
         },
         {
+          "id": 900743,
+          "text": "Emplacement : tous"
+        },
+        {
+          "id": 900744,
+          "text": "Filtrer par nom"
+        },
+        {
+          "id": 900745,
+          "text": "Accessoire"
+        },
+        {
+          "id": 900746,
+          "text": "Armure"
+        },
+        {
+          "id": 900747,
+          "text": "Potion"
+        },
+        {
+          "id": 900748,
+          "text": "Bouclier"
+        },
+        {
+          "id": 900749,
+          "text": "Objet magique"
+        },
+        {
+          "id": 900750,
+          "text": "Arme"
+        },
+        {
+          "id": 900751,
+          "text": "Type : tous"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -189114,6 +189339,42 @@
           "text": "Considerando l'altezza del soffitto come 100%, le piattaforme rialzate la cui sommità raggiunge o supera questa altezza bloccano la linea visiva sulla mappa. Con 0% (predefinito) tutte le piattaforme rialzate bloccano la visuale (comportamento precedente)."
         },
         {
+          "id": 900743,
+          "text": "Slot: tutti"
+        },
+        {
+          "id": 900744,
+          "text": "Filtra per nome"
+        },
+        {
+          "id": 900745,
+          "text": "Accessorio"
+        },
+        {
+          "id": 900746,
+          "text": "Armatura"
+        },
+        {
+          "id": 900747,
+          "text": "Pozione"
+        },
+        {
+          "id": 900748,
+          "text": "Scudo"
+        },
+        {
+          "id": 900749,
+          "text": "Oggetto magico"
+        },
+        {
+          "id": 900750,
+          "text": "Arma"
+        },
+        {
+          "id": 900751,
+          "text": "Tipo: tutti"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -216821,6 +217082,42 @@
         {
           "id": 900742,
           "text": "Если принять высоту потолка за 100%, возвышения, верх которых достигает этой высоты или выше, перекрывают линию обзора на карте. При 0% (по умолчанию) обзор перекрывают все возвышения (прежнее поведение)."
+        },
+        {
+          "id": 900743,
+          "text": "Слот: все"
+        },
+        {
+          "id": 900744,
+          "text": "Фильтр по названию"
+        },
+        {
+          "id": 900745,
+          "text": "Украшение"
+        },
+        {
+          "id": 900746,
+          "text": "Броня"
+        },
+        {
+          "id": 900747,
+          "text": "Зелье"
+        },
+        {
+          "id": 900748,
+          "text": "Щит"
+        },
+        {
+          "id": 900749,
+          "text": "Магический предмет"
+        },
+        {
+          "id": 900750,
+          "text": "Оружие"
+        },
+        {
+          "id": 900751,
+          "text": "Тип: все"
         },
         {
           "id": 902000,

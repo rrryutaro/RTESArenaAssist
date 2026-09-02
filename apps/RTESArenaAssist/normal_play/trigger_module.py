@@ -270,6 +270,7 @@ def compute_b30_state(w, *, screen_id: str | None=None, c_area: str | None=None,
     w._b30_in_gameplay_prev = _in_gameplay
     w._b30_dialog_active_prev = _dialog_text_fg
     return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay}
+_RED_TEXT_REPLACEABLE_OWNERS = frozenset({'', 'red_text', 'red_text_dialog', 'trigger'})
 
 def poll_red_text(w, *, b30: dict, c1_fg: str='') -> None:
     _c1_fg_blocks_render = bool(c1_fg and c1_fg not in ('red_text', 'red_text_dialog'))
@@ -278,22 +279,10 @@ def poll_red_text(w, *, b30: dict, c1_fg: str='') -> None:
         w._death_red_text_prev = ''
     _death_red_new = _death_red_allowed and b30['red_str'] != getattr(w, '_death_red_text_prev', '')
     try:
-        _fg_raw = w._analyzer.read_bytes(w._anchor + 43076, 2)
-        _fg_ptr = _fg_raw[0] | _fg_raw[1] << 8
-        try:
-            from active_template_reader import is_runtime_message_buffer_pointer
-            _dlg_on_screen = is_runtime_message_buffer_pointer(_fg_ptr)
-        except Exception:
-            _dlg_on_screen = 31097 <= _fg_ptr < 31097 + 68
-    except (OSError, AttributeError):
-        _dlg_on_screen = False
-    _axis = b30.get('c1_dialog_axis')
-    _c1_red_axis_active = bool(_axis and _axis.active and (_axis.a845 == 121 or (_axis.current_ptr is not None and 31097 <= _axis.current_ptr < 31097 + 68)))
-    try:
         _owner_now = w._ui_router.current_owner() or ''
     except (AttributeError, RuntimeError):
         _owner_now = getattr(w, '_panel_owner', '') or ''
-    _panel_free = _owner_now in ('', 'red_text', 'red_text_dialog')
+    _panel_free = _owner_now in _RED_TEXT_REPLACEABLE_OWNERS
     _block_reasons = []
     if _c1_fg_blocks_render:
         _block_reasons.append('c1-foreground')
@@ -305,7 +294,7 @@ def poll_red_text(w, *, b30: dict, c1_fg: str='') -> None:
         _block_reasons.append('npc-conversation-active')
     if not b30['in_gameplay']:
         _block_reasons.append('not-in-gameplay')
-    if not _block_reasons and (b30['red_changed'] or _death_red_new or _dlg_on_screen or _c1_red_axis_active) and b30['red_str']:
+    if not _block_reasons and (b30['red_changed'] or _death_red_new) and b30['red_str']:
         import dungeon_msg_lookup as _dml
         _b30_red_jpn = _dml.lookup(b30['red_str'])
         if not _b30_red_jpn:
@@ -318,17 +307,9 @@ def poll_red_text(w, *, b30: dict, c1_fg: str='') -> None:
             except Exception as exc:
                 _log.debug('npc_dialog fallback failed: %s', exc)
         _red_owner = 'red_text_dialog' if b30['dialog_active'] else 'red_text'
-        if b30['red_changed'] or _death_red_new:
-            w._ui_router.update_translation(_red_owner, b30['red_str'], _b30_red_jpn or '', speech_role='situation')
-            w._dlg_keep_key = (b30['red_str'], _b30_red_jpn or '')
-            _open_red_text_display(w, _red_owner)
-            _recog(_log, 'red text accepted: %r → %r', b30['red_str'], _b30_red_jpn)
-        elif _b30_red_jpn:
-            _keep = (b30['red_str'], _b30_red_jpn)
-            if not (getattr(w, '_dlg_keep_key', None) == _keep and w._ui_router.is_owner(_red_owner)):
-                w._dlg_keep_key = _keep
-                w._ui_router.update_translation(_red_owner, b30['red_str'], _b30_red_jpn, speech_role='situation')
-                _open_red_text_display(w, _red_owner)
+        w._ui_router.update_translation(_red_owner, b30['red_str'], _b30_red_jpn or '', speech_role='situation')
+        _open_red_text_display(w, _red_owner)
+        _recog(_log, 'red text accepted: %r → %r', b30['red_str'], _b30_red_jpn)
         if _death_red_allowed:
             w._death_red_text_prev = b30['red_str']
     elif b30['red_changed'] and b30['red_str']:
@@ -414,6 +395,7 @@ def poll_red_text_lifetime(w, *, b30: dict) -> None:
     _close_red_text_display(w)
     if owner in ('red_text', 'red_text_dialog'):
         w._ui_router.clear_if_owner(owner)
+        restore_last_trigger_display(w)
     else:
         w._ui_router.clear_display('', allowed_current_owners=('',))
 

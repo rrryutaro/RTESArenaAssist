@@ -2,6 +2,7 @@ import logging
 from PySide6.QtCore import Signal
 from PySide6.QtWidgets import QFrame, QLabel, QTableWidgetItem, QVBoxLayout, QWidget
 import assist_settings as settings
+import i18n_helper as i18n
 from layout_panel_translate import resolve_pair_texts
 _log = logging.getLogger('RTESArenaAssist')
 from attributes_panel import AttributesPanel
@@ -9,7 +10,7 @@ from appearance_faces_panel import AppearanceFacesPanel
 from tabs.tab_map import TabMap
 from tabs.translate_panels.item_row import ItemRow
 from tabs.translate_panels.shop_item_row import ShopItemRow
-from tabs.translate_panels.equipment_list import render_equipment_list
+from tabs.translate_panels.equipment_list import category_keys, category_label, render_equipment_list, slot_labels
 _MODE_TRANSLATE = 'translate'
 _MODE_CLASS_LIST = 'class_list'
 _MODE_RACE_LIST = 'race_list'
@@ -154,7 +155,49 @@ class TabTranslate(QWidget):
         self._pickup_remaining.setText(f'残り {remaining} 個' if remaining > 0 else '')
 
     def update_equipment_list(self, items: list) -> None:
-        render_equipment_list(self._equip_table, items)
+        self._equip_items = list(items or [])
+        self._sync_equip_filter_choices()
+        self._render_equipment_list()
+
+    def _render_equipment_list(self) -> None:
+        render_equipment_list(self._equip_table, getattr(self, '_equip_items', []), text_filter=self._equip_filter_text.text(), slot_filter=self._equip_filter_slot.currentData() or '', category_filter=self._equip_filter_category.currentData() or '')
+
+    def _sync_equip_filter_choices(self) -> None:
+        items = getattr(self, '_equip_items', [])
+        self._sync_equip_combo(self._equip_filter_category, i18n.tr('equipment.filter.category_all'), [(k, category_label(k)) for k in category_keys(items)])
+        category = self._equip_filter_category.currentData() or ''
+        reset_sub = category != getattr(self, '_equip_filter_category_prev', None)
+        self._equip_filter_category_prev = category
+        slots = slot_labels(items, category=category)
+        self._sync_equip_combo(self._equip_filter_slot, i18n.tr('equipment.filter.slot_all'), [(s, s) for s in slots], reset=reset_sub)
+        self._equip_filter_slot.setEnabled(len(slots) > 1)
+
+    @staticmethod
+    def _sync_equip_combo(combo, all_label: str, choices: list, *, reset: bool=False) -> None:
+        current = '' if reset else combo.currentData() or ''
+        existing = [combo.itemData(i) or '' for i in range(combo.count())]
+        if existing == [''] + [value for value, _label in choices]:
+            if reset and combo.currentIndex() != 0:
+                blocked = combo.blockSignals(True)
+                try:
+                    combo.setCurrentIndex(0)
+                finally:
+                    combo.blockSignals(blocked)
+            return
+        blocked = combo.blockSignals(True)
+        try:
+            combo.clear()
+            combo.addItem(all_label, '')
+            for value, label in choices:
+                combo.addItem(label, value)
+            idx = combo.findData(current) if current else 0
+            combo.setCurrentIndex(idx if idx >= 0 else 0)
+        finally:
+            combo.blockSignals(blocked)
+
+    def _on_equip_filter_changed(self) -> None:
+        self._sync_equip_filter_choices()
+        self._render_equipment_list()
 
     def update_place_list(self, items: list) -> None:
         layout = self._place_rows_layout

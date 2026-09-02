@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from tabs.tab_translate import TabTranslate
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QFrame, QGroupBox, QHeaderView, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QStackedWidget, QTableWidget, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QComboBox, QFrame, QGroupBox, QHeaderView, QHBoxLayout, QLabel, QLineEdit, QPushButton, QScrollArea, QSizePolicy, QStackedWidget, QTableWidget, QVBoxLayout, QWidget
 import assist_settings as settings
 import i18n_helper as i18n
 from class_list_panel import ClassListPanel
@@ -105,7 +105,7 @@ def build_ui(tab: 'TabTranslate') -> None:
     eg_lay = QVBoxLayout(tab._equip_group)
     eg_lay.setContentsMargins(4, 4, 4, 4)
     eg_lay.setSpacing(2)
-    _TOGGLE_DEFS = [('equipped_mark', '装', 0), ('identified', '鑑', 1), ('slot', '部位', 2), ('en', '原文名', 3), ('ja', '翻訳名', 4), ('weight', '重量', 5), ('condition', '状態', 6), ('effect', '性能', 7)]
+    _TOGGLE_DEFS = [('equipped_mark', '装', 0), ('identified', '鑑', 1), ('slot', '部位', 2), ('en', '原文名', 3), ('ja', '翻訳名', 4), ('weight', '重量', 5), ('condition', '状態', 6), ('uses', '回数', 7), ('effect', '性能', 8)]
     tab._equip_col_btns: dict = {}
     equip_cols = settings.get('equipment_columns', {})
     toggle_row = QHBoxLayout()
@@ -122,8 +122,31 @@ def build_ui(tab: 'TabTranslate') -> None:
         tab._equip_col_btns[key] = (col_idx, btn)
     toggle_row.addStretch(1)
     eg_lay.addLayout(toggle_row)
-    tab._equip_table = QTableWidget(0, 8)
-    tab._equip_table.setHorizontalHeaderLabels(['装', '鑑', '部位', '原文名', '翻訳名', '重量', '状態', '性能'])
+    _FILTER_CSS = 'QLineEdit, QComboBox {  padding: 2px 6px;  background: #0e161e; color: #c9d1e0;  border: 1px solid #2a4258; border-radius: 2px;}QComboBox QAbstractItemView {  background: #0e161e; color: #c9d1e0;  selection-background-color: #1f3d5a;}'
+    filter_row = QHBoxLayout()
+    filter_row.setSpacing(4)
+    filter_row.setContentsMargins(0, 0, 0, 0)
+    tab._equip_filter_text = QLineEdit()
+    tab._equip_filter_text.setPlaceholderText(i18n.tr('equipment.filter.text_placeholder'))
+    tab._equip_filter_text.setClearButtonEnabled(True)
+    tab._equip_filter_text.setStyleSheet(_FILTER_CSS)
+    tab._equip_filter_text.textChanged.connect(lambda _t: tab._on_equip_filter_changed())
+    filter_row.addWidget(tab._equip_filter_text, 1)
+    tab._equip_filter_category = QComboBox()
+    tab._equip_filter_category.setMinimumWidth(110)
+    tab._equip_filter_category.setStyleSheet(_FILTER_CSS)
+    tab._equip_filter_category.addItem(i18n.tr('equipment.filter.category_all'), '')
+    tab._equip_filter_category.currentIndexChanged.connect(lambda _i: tab._on_equip_filter_changed())
+    filter_row.addWidget(tab._equip_filter_category, 0)
+    tab._equip_filter_slot = QComboBox()
+    tab._equip_filter_slot.setMinimumWidth(110)
+    tab._equip_filter_slot.setStyleSheet(_FILTER_CSS)
+    tab._equip_filter_slot.addItem(i18n.tr('equipment.filter.slot_all'), '')
+    tab._equip_filter_slot.currentIndexChanged.connect(lambda _i: tab._on_equip_filter_changed())
+    filter_row.addWidget(tab._equip_filter_slot, 0)
+    eg_lay.addLayout(filter_row)
+    tab._equip_table = QTableWidget(0, 9)
+    tab._equip_table.setHorizontalHeaderLabels(['装', '鑑', '部位', '原文名', '翻訳名', '重量', '状態', '回数', '性能'])
     tab._equip_table.setEditTriggers(QTableWidget.EditTrigger.NoEditTriggers)
     tab._equip_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
     tab._equip_table.setAlternatingRowColors(True)
@@ -137,6 +160,7 @@ def build_ui(tab: 'TabTranslate') -> None:
     hdr.setSectionResizeMode(5, QHeaderView.ResizeMode.ResizeToContents)
     hdr.setSectionResizeMode(6, QHeaderView.ResizeMode.ResizeToContents)
     hdr.setSectionResizeMode(7, QHeaderView.ResizeMode.ResizeToContents)
+    hdr.setSectionResizeMode(8, QHeaderView.ResizeMode.ResizeToContents)
     tab._equip_table.setColumnWidth(0, 22)
     tab._equip_table.setColumnWidth(1, 22)
     tab._equip_table.setStyleSheet('QTableWidget {  background: #131c24;  alternate-background-color: #1a2635;  gridline-color: #2a4258;  color: #c9d1e0;  border: none;}QTableWidget::item:selected { background: #1f3d5a; }QHeaderView::section {  background: #0e161e;  color: #7ab8d4;  border: 1px solid #2a4258;  padding: 3px 6px;  font-size: 10px;}')

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional, Tuple
-from screen_detector import is_spell_detail_drawn, _tr, FLAG_STATUS_POPUP_OFFSET, FLAG_EQUIPMENT_OPEN_OFFSET, LOGBOOK_FG_WORD_OFFSET, LOGBOOK_FG_WORD_VALUE, POPUP_OPEN_OFFSET, _read_u8, _read_u16_le
+from screen_detector import is_spell_detail_drawn, _tr, FLAG_STATUS_POPUP_OFFSET, FLAG_EQUIPMENT_OPEN_OFFSET, POPUP_OPEN_OFFSET, _read_u8
 INVENTORY_SCREEN_IMGS = ('MRSHIRT.IMG', 'EQUIP.IMG', 'MPANTS.IMG', 'PAGE2.IMG', 'CHARSTAT.IMG')
 
 def is_inventory_screen_img(img_name: str) -> bool:
@@ -24,14 +24,13 @@ def detect_common_play_screen(analyzer, anchor: int, img_name: str) -> Optional[
         if drawn_detail:
             return ('spell_detail', _tr('spell_detail'))
         return ('spellbook', _tr('spellbook'))
-    if popup_open == 1:
-        if img_upper == 'LOGBOOK.IMG':
+    if img_upper == 'LOGBOOK.IMG':
+        from journal_reader import is_journal_drawn
+        if is_journal_drawn(analyzer, anchor):
             return ('logbook', _tr('logbook'))
+    if popup_open == 1:
         if img_upper in ('AUTOMAP.IMG', 'POINTER.IMG'):
             from template_parser import status_popup_foreground
             if not status_popup_foreground(analyzer, anchor):
                 return ('automap', _tr('automap'))
-    elif img_upper == 'LOGBOOK.IMG':
-        if _read_u16_le(analyzer, anchor + LOGBOOK_FG_WORD_OFFSET) == LOGBOOK_FG_WORD_VALUE:
-            return ('logbook', _tr('logbook'))
     return None

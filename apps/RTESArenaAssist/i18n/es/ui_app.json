@@ -741,5 +741,14 @@
   "manual.guide.answer_item": "• {answer}",
   "map.action.refresh": "Actualizar mapa",
   "map.action.fit": "Ajustar todo el mapa",
-  "map.action.actual_size": "Tamaño real (100 %)"
+  "map.action.actual_size": "Tamaño real (100 %)",
+  "equipment.filter.text_placeholder": "Filtrar por nombre",
+  "equipment.filter.slot_all": "Ranura: todas",
+  "equipment.filter.category_all": "Tipo: todos",
+  "equipment.category.weapon": "Arma",
+  "equipment.category.armor": "Armadura",
+  "equipment.category.shield": "Escudo",
+  "equipment.category.accessory": "Accesorio",
+  "equipment.category.spellcasting": "Objeto mágico",
+  "equipment.category.potion": "Poción"
 }

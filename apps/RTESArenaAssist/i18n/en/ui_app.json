@@ -741,5 +741,14 @@
   "manual.guide.answer_item": "• {answer}",
   "map.action.refresh": "Refresh map",
   "map.action.fit": "Fit whole map",
-  "map.action.actual_size": "Actual size (100%)"
+  "map.action.actual_size": "Actual size (100%)",
+  "equipment.filter.text_placeholder": "Filter by name",
+  "equipment.filter.slot_all": "Slot: all",
+  "equipment.filter.category_all": "Type: all",
+  "equipment.category.weapon": "Weapon",
+  "equipment.category.armor": "Armor",
+  "equipment.category.shield": "Shield",
+  "equipment.category.accessory": "Accessory",
+  "equipment.category.spellcasting": "Spellcasting",
+  "equipment.category.potion": "Potion"
 }

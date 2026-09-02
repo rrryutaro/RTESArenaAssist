@@ -56,9 +56,23 @@ def parse_journal_entries(text: str) -> list[tuple[Optional[str], Optional[str]]
         if not lines:
             continue
         date_line = lines[0]
+        if not is_journal_date_header(date_line):
+            continue
         body_text = _clean_body_text(lines[1:])
         entries.append((date_line or None, body_text or None))
     return entries
+
+def is_journal_date_header(line: str) -> bool:
+    if not (line or '').strip():
+        return False
+    from date_translator import DATE_PATTERN
+    return DATE_PATTERN.match(line) is not None
+
+def is_journal_drawn(analyzer: 'ArenaMemoryAnalyzer', anchor: int) -> bool:
+    text = read_journal_raw(analyzer, anchor)
+    if not text:
+        return False
+    return bool(parse_journal_entries(text))
 
 def split_journal_lines(text: str) -> tuple[Optional[str], Optional[str]]:
     entries = parse_journal_entries(text)
@@ -105,4 +119,4 @@ def translate_journal(date_en: Optional[str], body_en: Optional[str], lang: str=
         except Exception:
             body_ja = None
     return (date_ja, body_ja)
-__all__ = ['read_journal_raw', 'parse_journal_entries', 'split_journal_lines', 'translate_journal']
+__all__ = ['read_journal_raw', 'is_journal_date_header', 'is_journal_drawn', 'parse_journal_entries', 'split_journal_lines', 'translate_journal']

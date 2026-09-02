@@ -28,7 +28,7 @@ def _read_staff_pieces_row(w) -> dict | None:
             ja = ndl.format_japanese(hit[0], hit[1]) or ''
     except Exception:
         ja = ''
-    return {'en': text, 'ja': ja, 'equipped': False, 'is_unidentified': False, 'can_equip': False, 'slot_label': '', 'weight': None, 'condition': None, 'effect': f'{count} 個'}
+    return {'en': text, 'ja': ja, 'equipped': False, 'is_unidentified': False, 'can_equip': False, 'slot_label': '', 'weight': None, 'condition': None, 'uses': None, 'item_type': None, 'effect': f'{count} 個'}
 TRAVEL_SEARCH_OWNER = 'travel_search'
 
 class ImgScreenController:
@@ -182,7 +182,7 @@ class ImgScreenController:
             inventory_ok, items_raw = read_equipment_items_with_status(self._w._analyzer, self._w._anchor)
             if inventory_ok:
                 title = '%s  %d / %d' % (title, len(items_raw), INV_SLOTS)
-            item_data = [{'en': it['en'], 'ja': dml.lookup_item(it['en']), 'equipped': it['equipped'], 'is_unidentified': it['is_unidentified'], 'can_equip': can_equip_item(it, rules), 'slot_label': it['slot_label'], 'weight': it['weight'], 'condition': it['condition'], 'effect': f"{it['count']} 個" if it.get('count') is not None else it['effect']} for it in items_raw]
+            item_data = [{'en': it['en'], 'ja': dml.lookup_item(it['en']), 'equipped': it['equipped'], 'is_unidentified': it['is_unidentified'], 'can_equip': can_equip_item(it, rules), 'slot_label': it['slot_label'], 'weight': it['weight'], 'condition': it['condition'], 'uses': it.get('uses'), 'item_type': it.get('item_type'), 'effect': f"{it['count']} 個" if it.get('count') is not None else it['effect']} for it in items_raw]
             _staff = _read_staff_pieces_row(self._w)
             if _staff is not None:
                 item_data.append(_staff)
