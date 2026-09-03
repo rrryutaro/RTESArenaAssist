@@ -126,7 +126,7 @@ def restore_last_trigger_display(w) -> bool:
     if not payload:
         return False
     en, ja, panel_en, panel_ja = payload
-    w._ui_router.update_translation('trigger', en, ja, panel_en=panel_en, panel_ja=panel_ja, update_tab=not getattr(w, '_last_trigger_tab_off', False), speech_role='situation')
+    w._ui_router.update_translation('trigger', en, ja, panel_en=panel_en, panel_ja=panel_ja, update_tab=not getattr(w, '_last_trigger_tab_off', False), speech_role=None)
     return True
 
 def _is_death_red_text(text: str) -> bool:
@@ -394,41 +394,9 @@ def poll_red_text_lifetime(w, *, b30: dict) -> None:
     _recog(_log, 'red text display end: owner=%s (表示終了・読み上げ終了)', open_owner)
     _close_red_text_display(w)
     if owner in ('red_text', 'red_text_dialog'):
-        w._ui_router.clear_if_owner(owner)
+        w._ui_router.notify_display_unit_closed(owner)
+        w._ui_router.clear_if_owner(owner, notify_close=False)
         restore_last_trigger_display(w)
     else:
         w._ui_router.clear_display('', allowed_current_owners=('',))
-
-def poll_dialog_close(w, *, b30: dict, npc_dialog_changed: bool, instore_resp_handled: bool, c1_fg: str='') -> None:
-
-    def _owner_text_still_on_screen(owner: str) -> bool:
-        try:
-            _fg_raw = w._analyzer.read_bytes(w._anchor + 43076, 2)
-            _fg_ptr = _fg_raw[0] | _fg_raw[1] << 8
-        except (OSError, AttributeError):
-            return False
-        try:
-            from active_template_reader import is_response_text_buffer_pointer, is_runtime_message_buffer_pointer
-            if owner == 'c1_runtime_dialog':
-                return False
-            if owner == 'gold_drop':
-                return is_response_text_buffer_pointer(_fg_ptr)
-        except Exception:
-            if owner == 'c1_runtime_dialog':
-                return False
-            if owner == 'gold_drop':
-                return any((start <= _fg_ptr < start + length for start, length in ((4164, 512), (37534, 512), (39582, 512))))
-        return False
-    if b30['in_gameplay'] and (not w._npc_conversation_active) and b30['dialog_active_prev'] and (not b30['dialog_active']):
-        if c1_fg != '' or instore_resp_handled:
-            _log.info('b30 dialog close detected but C1 surface is foreground / instore resp this poll - skip clear (c1_fg=%r, instore_resp=%s, owner=%r)', c1_fg, instore_resp_handled, w._panel_owner)
-        elif w._ui_router.current_owner() in ('c1_runtime_dialog', 'gold_drop'):
-            _cur_owner = w._ui_router.current_owner()
-            if _owner_text_still_on_screen(_cur_owner):
-                _log.info('b30 dialog close detected but owner text still on screen (owner=%s) - preserve display', _cur_owner)
-                return
-            _log.info('b30 dialog closed (foreground text ptr left known text ranges, owner=%s) - clearing', _cur_owner)
-            w._ui_router.clear_if_owner(_cur_owner)
-        else:
-            _log.info('b30 dialog closed but owner=%r - preserve display', w._panel_owner)
-__all__ = ['poll_trigger', 'riddle_group_holds_ptr', 'compute_b30_state', 'poll_red_text', 'poll_red_text_lifetime', 'poll_dialog_close', 'restore_last_trigger_display', 'classify_c1_dialog_substate']
+__all__ = ['poll_trigger', 'riddle_group_holds_ptr', 'compute_b30_state', 'poll_red_text', 'poll_red_text_lifetime', 'restore_last_trigger_display', 'classify_c1_dialog_substate']

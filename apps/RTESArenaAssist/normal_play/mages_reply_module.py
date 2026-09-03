@@ -218,14 +218,13 @@ def poll_mages_reply(w, *, mages_active: bool, mages_just_started: bool, img_nam
     else:
         en_text, ja_text = _with_yesno_buttons(img, chosen_text, ja)
     key = (img, chosen.source_offset, chosen.text, ja_text)
-    owner_taken = w._panel_owner != REPLY_OWNER
     if reason == 'source_changed':
         w._mages_reply_hold_polls = _RESPONSE_HOLD_POLLS
     elif reason == 'hold':
         w._mages_reply_hold_polls = max(hold_polls - 1, 0)
     else:
         w._mages_reply_hold_polls = 0
-    should_update = key != w._mages_reply_current_key or (owner_taken and reason in ('ptr', 'source_changed', 'hold', 'detect_known', 'detect_cost', 'detect_result'))
+    should_update = key != w._mages_reply_current_key
     if should_update:
         w._mages_reply_current_key = key
         w._mages_reply_current_text = chosen.text

@@ -98,8 +98,7 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
         _ja = _ndl.format_japanese(_ja_tmpl, _ph)
         _tmpl_key = (_active_tmpl, _ja)
         _prev_key = getattr(w, '_active_tmpl_key_prev', None)
-        _owner_taken = w._panel_owner != 'active_template'
-        if _tmpl_key != _prev_key or _owner_taken:
+        if _tmpl_key != _prev_key:
             w._active_tmpl_key_prev = _tmpl_key
             try:
                 w._active_tmpl_surface_kind_prev = template_surface_kind(_selected) if _selected else ''
@@ -112,9 +111,11 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
     return False
 
 def cleanup_if_owner(w) -> None:
+    if getattr(w, '_active_tmpl_key_prev', None) is not None:
+        w._ui_router.notify_display_unit_closed('active_template')
+    w._active_tmpl_key_prev = None
+    w._active_tmpl_surface_kind_prev = ''
     if w._ui_router.is_owner('active_template'):
-        w._active_tmpl_key_prev = None
-        w._active_tmpl_surface_kind_prev = ''
-        w._ui_router.clear_if_owner('active_template')
+        w._ui_router.clear_if_owner('active_template', notify_close=False)
         _log.info('active_template exit')
 __all__ = ['poll_active_template', 'cleanup_if_owner', 'should_poll_active_template']

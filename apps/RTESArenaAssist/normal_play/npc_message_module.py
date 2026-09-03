@@ -88,22 +88,19 @@ def _poll_route_msg_foreground(w, ctx, *, in_interior: bool, facility_active_now
     if not en or not ja:
         return False
     keep = (en, ja)
-    if ctx.dialog_just_opened or not (getattr(w, '_msg_foreground_keep_key', None) == keep and w._ui_router.is_owner(NPC_MESSAGE_OWNER)):
+    if ctx.dialog_just_opened or getattr(w, '_msg_foreground_keep_key', None) != keep:
         w._msg_foreground_keep_key = keep
         w._ui_router.update_translation(NPC_MESSAGE_OWNER, en, ja, speech_role='situation')
         _log.info('npc_message displayed (route=msg_foreground, text=%r)', en[:80])
     return True
 
 def _poll_route3_dungeon_msg(w, ctx, *, npc_dialog: str, npc_dialog_changed: bool, facility_active_now: bool, c_area: str) -> bool:
-    if npc_dialog and c_area != 'dungeon' and (npc_dialog_changed or ctx.dialog_just_opened or ctx.response_text_on_screen) and (not w._npc_conversation_active) and (not facility_active_now):
+    if npc_dialog and c_area != 'dungeon' and (npc_dialog_changed or ctx.dialog_just_opened) and (not w._npc_conversation_active) and (not facility_active_now):
         try:
             import dungeon_msg_lookup as _dml
             _npc_ja = _dml.lookup(npc_dialog)
             if _npc_ja:
-                _keep = (npc_dialog, _npc_ja)
-                if npc_dialog_changed or ctx.dialog_just_opened or (not (getattr(w, '_npc_dialog_keep_key', None) == _keep and w._ui_router.is_owner(NPC_MESSAGE_OWNER))):
-                    w._npc_dialog_keep_key = _keep
-                    w._ui_router.update_translation(NPC_MESSAGE_OWNER, npc_dialog, _npc_ja, speech_role='situation')
+                w._ui_router.update_translation(NPC_MESSAGE_OWNER, npc_dialog, _npc_ja, speech_role='situation')
                 _log.info('panel_owner -> npc_message (route=dungeon_msg, text=%r)', npc_dialog)
                 return True
         except (ImportError, AttributeError):

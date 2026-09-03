@@ -86,8 +86,7 @@ def _format_reply_choice_rows(lines: list[str]) -> list[dict]:
     return rows
 
 def _update(w, *, key, en_display: str, ja_display: str, speech_ja: str='', log_text: str='') -> bool:
-    owner_taken = getattr(w, '_panel_owner', '') != REPLY_OWNER
-    if key == getattr(w, _RENDER_KEY, None) and (not owner_taken):
+    if key == getattr(w, _RENDER_KEY, None):
         return True
     setattr(w, _RENDER_KEY, key)
     if speech_ja:
@@ -153,9 +152,8 @@ def _render_generic_reply(w, snapshot) -> bool:
     choice_lines = _read_active_reply_choice_group(w._analyzer, w._anchor, snapshot.reply_source_offset)
     if choice_lines:
         rows = _format_reply_choice_rows(choice_lines)
-        owner_taken = getattr(w, '_panel_owner', '') != REPLY_OWNER
         key = ('reply_choices', tuple(((r['en'], r['ja']) for r in rows)))
-        if key == getattr(w, _RENDER_KEY, None) and (not owner_taken):
+        if key == getattr(w, _RENDER_KEY, None):
             return True
         setattr(w, _RENDER_KEY, key)
         w._ui_router.update_facility_list(REPLY_OWNER, rows, 'Repair Options', '修理の選択肢')

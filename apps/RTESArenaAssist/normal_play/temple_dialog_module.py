@@ -378,12 +378,11 @@ def poll_temple_dialog(w, *, temple_active: bool, temple_just_started: bool, img
     en_text, ja_text = _with_yesno_buttons(img, kind, chosen.text, ja)
     owner = _owner_for_kind(kind)
     key = (owner, img, chosen.source_offset, chosen.text, ja_text, episode)
-    owner_taken = w._ui_router.current_owner() != owner
     if reason == 'hold':
         w._temple_dialog_hold_polls = max(hold, 1)
     else:
         w._temple_dialog_hold_polls = _RESPONSE_HOLD_POLLS
-    should_update = key != w._temple_dialog_current_key or owner_taken
+    should_update = key != w._temple_dialog_current_key
     if should_update:
         w._temple_dialog_current_key = key
         w._temple_dialog_current_text = chosen.text

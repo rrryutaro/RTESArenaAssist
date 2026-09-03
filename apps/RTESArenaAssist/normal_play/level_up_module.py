@@ -17,6 +17,7 @@ def reset_level_up_on_load(w) -> None:
     w._player_bonus_prev = None
     w._level_up_saw_bonus = False
     w._level_up_waiting_for_bonus = False
+    w._level_up_pushed_key = None
     try:
         if getattr(w, '_ui_router', None) is not None and w._ui_router.is_owner('level_up'):
             w._ui_router.clear_if_owner('level_up')
@@ -58,11 +59,14 @@ def consume_level_up_display(w, *, screen_id_stable: str | None, b30_dialog_acti
         _is_dialog_only = b30_dialog_active and (not _is_bonus_screen)
         if w._level_up_active:
             if _is_dialog_only:
-                _en_panel = 'You have gained a level of experience!'
-                _ja_panel = '経験値レベルが上がった！'
-                _en_tab = 'You have gained a level of experience!'
-                _ja_tab = f'レベルアップ! Level {w._level_up_from} → {w._level_up_to} に上がった。'
-                w._ui_router.update_translation('level_up', _en_tab, _ja_tab, panel_en=_en_panel, panel_ja=_ja_panel, speech_role='situation')
+                _push_key = (w._level_up_from, w._level_up_to)
+                if getattr(w, '_level_up_pushed_key', None) != _push_key:
+                    w._level_up_pushed_key = _push_key
+                    _en_panel = 'You have gained a level of experience!'
+                    _ja_panel = '経験値レベルが上がった！'
+                    _en_tab = 'You have gained a level of experience!'
+                    _ja_tab = f'レベルアップ! Level {w._level_up_from} → {w._level_up_to} に上がった。'
+                    w._ui_router.update_translation('level_up', _en_tab, _ja_tab, panel_en=_en_panel, panel_ja=_ja_panel, speech_role='situation')
             if _is_bonus_screen:
                 import player_reader as _pr
                 _cur_bonus = _pr.read_all(w._analyzer, w._anchor)['bonus_pts']
@@ -80,6 +84,7 @@ def consume_level_up_display(w, *, screen_id_stable: str | None, b30_dialog_acti
                 w._player_bonus_prev = None
                 w._level_up_saw_bonus = False
                 w._level_up_waiting_for_bonus = False
+                w._level_up_pushed_key = None
                 _c1_fg = getattr(w, '_c1_dialog_foreground', '')
                 if _c1_fg == '' and w._ui_router.is_owner('level_up'):
                     w._ui_router.clear_if_owner('level_up')

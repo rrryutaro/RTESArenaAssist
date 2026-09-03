@@ -17,9 +17,10 @@ def poll_lock_message_dispatch(w, b30, *, rt_x, rt_z, in_play: bool):
     _poll_lock_message(w, b30=b30, rt_x=rt_x, rt_z=rt_z, c1_fg=getattr(w, '_c1_dialog_foreground', '') or '')
     _poll_lock_message_lifetime(w, b30=b30)
 
-def poll_c1_surface_dispatch(w, b30, *, npc_dialog_changed, inf_name, mif_name, instore_resp_handled, c_area: str=''):
-    from normal_play.trigger_module import poll_red_text as _poll_red_text, poll_red_text_lifetime as _poll_red_text_lifetime, poll_dialog_close as _poll_dialog_close, classify_c1_dialog_substate as _classify_c1_dialog_substate
-    from normal_play.c1_gold_drop_module import poll_gold_drop as _poll_gold_drop
+def poll_c1_surface_dispatch(w, b30, *, npc_dialog_changed, inf_name, mif_name, c_area: str=''):
+    from normal_play.trigger_module import poll_red_text as _poll_red_text, poll_red_text_lifetime as _poll_red_text_lifetime, classify_c1_dialog_substate as _classify_c1_dialog_substate
+    from normal_play.c1_gold_drop_module import poll_gold_drop as _poll_gold_drop, poll_gold_drop_lifetime as _poll_gold_drop_lifetime, release_gold_drop as _release_gold_drop
+    from normal_play.c1_runtime_dialog_module import poll_c1_runtime_dialog_lifetime as _poll_c1_runtime_dialog_lifetime, release_c1_runtime_dialog as _release_c1_runtime_dialog
     if c_area != 'dungeon':
         w._c1_dialog_foreground = ''
         try:
@@ -28,13 +29,16 @@ def poll_c1_surface_dispatch(w, b30, *, npc_dialog_changed, inf_name, mif_name, 
             _owner = getattr(w, '_panel_owner', '') or ''
         if _owner in ('c1_runtime_dialog', 'gold_drop', 'red_text_dialog'):
             w._ui_router.clear_if_owner(_owner)
+        _release_gold_drop(w)
+        _release_c1_runtime_dialog(w)
         return
     _c1_fg = _classify_c1_dialog_substate(w, b30, npc_dialog_changed=npc_dialog_changed)
     w._c1_dialog_foreground = _c1_fg
     _poll_red_text(w, b30=b30, c1_fg=_c1_fg)
     _poll_gold_drop(w, b30=b30, inf_name=inf_name, mif_name=mif_name, c1_fg=_c1_fg)
-    _poll_dialog_close(w, b30=b30, npc_dialog_changed=npc_dialog_changed, instore_resp_handled=instore_resp_handled, c1_fg=_c1_fg)
     _poll_red_text_lifetime(w, b30=b30)
+    _poll_gold_drop_lifetime(w)
+    _poll_c1_runtime_dialog_lifetime(w)
 _ASK_ABOUT_MAIN_BLOCKING_LIST_STATES = frozenset({'where_is_list', 'dynamic_place_list', 'npc_response'})
 _ASK_ABOUT_MENU_PTR_MIN = 32768
 _ASK_ABOUT_MENU_PTR_MAX = 36864
@@ -547,7 +551,7 @@ def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_
         _negot_handled, _active_tmpl_handled = _poll_shared_negotiation_and_template(w, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active, _shop_img_name=_shop_img_name, _temple_active_now=_temple_active_now, _tavern_active_now=_tavern_active_now, _tavern_l4_kind=_tavern_l4_kind, _poll_hierarchy_area=_poll_hierarchy_area, _negot_handled=_negot_handled, _active_tmpl_handled=_active_tmpl_handled)
     return (_negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active)
 
-def _poll_l4_dialog_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog_changed, _npc_phase_raw, _img_name_now, _building_entry_active, _entry_phase_prev, _shop_state, _shop_img_name, _shop_menu_visible, _shop_buy_active, _facility_active_now, _poll_hierarchy_area, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _negot_handled, _active_tmpl_handled, _inventory_screen=False):
+def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog_changed, _npc_phase_raw, _img_name_now, _building_entry_active, _entry_phase_prev, _shop_state, _shop_img_name, _shop_menu_visible, _shop_buy_active, _facility_active_now, _poll_hierarchy_area, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _negot_handled, _active_tmpl_handled, _inventory_screen=False):
     from arena_bridge import NPC_PHASE_BUILDING_ENTRY, NPC_PHASE_RESPONDING, NPC_PHASE_IDLE, NPC_PHASE_ASKING
     from normal_play.building_entry_module import poll_building_entry as _poll_building_entry
     from normal_play.npc_message_module import poll_travel_event_lifecycle as _poll_travel_event_lifecycle
@@ -612,7 +616,7 @@ def _poll_l4_dialog_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog
             _entry_handled = True
     if _poll_hierarchy_area == 'dungeon' and (not _entry_handled) and (not _inventory_screen):
         from normal_play.c1_runtime_dialog_module import poll_c1_runtime_dialog as _poll_c1_runtime_dialog
-        if _poll_c1_runtime_dialog(w, npc_dialog=npc_dialog, npc_dialog_changed=_npc_dialog_changed, facility_active_now=_facility_active_now, msg_buf=msg_buf):
+        if _poll_c1_runtime_dialog(w, npc_dialog=npc_dialog, facility_active_now=_facility_active_now, msg_buf=msg_buf):
             _instore_resp_handled = True
             _entry_handled = True
     return (_entry_handled, _instore_resp_handled)

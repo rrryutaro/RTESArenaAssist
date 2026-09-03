@@ -54,6 +54,7 @@ def _literal_chars(en: str) -> int:
     return len(re.sub('%[a-z][a-z0-9]*', '', en))
 _DOC_VALUES: dict[str, dict[str, str]] = {}
 _DOC_COMPILED: list[tuple[re.Pattern, str, int]] = []
+_DOC_COMPILED_LAX: list[tuple[re.Pattern, str, int]] = []
 _PH_VALUES: dict[tuple[str, str], dict[str, str]] = {}
 _CLASS_VALUES: dict[str, str] = {}
 _PH_LOADED = False
@@ -195,6 +196,7 @@ def _i18n_runtime_signature() -> tuple:
 def _reset_i18n_bound_caches() -> None:
     global _COMPILED, _LOADED, _CLOSED_PH_ALT, _CLOSED_PH_LOADED
     global _DOC_VALUES, _DOC_COMPILED, _PH_VALUES, _CLASS_VALUES, _PH_LOADED
+    global _DOC_COMPILED_LAX
     global _TRAIT_VALUES, _TRAITS_LOADED, _DRINKS_VALUES, _DRINKS_LOADED
     global _ROOMS_VALUES, _ROOMS_LOADED, _ITEMS_FLAT, _ITEMS_FLAT_LOADED
     global _KEY_MATERIALS, _KEY_MATERIALS_LOADED, _PP_RULES
@@ -220,6 +222,7 @@ def _reset_i18n_bound_caches() -> None:
     _CLOSED_PH_LOADED = False
     _DOC_VALUES = {}
     _DOC_COMPILED = []
+    _DOC_COMPILED_LAX = []
     _PH_VALUES = {}
     _CLASS_VALUES = {}
     _PH_LOADED = False
@@ -287,30 +290,49 @@ def _preprocess_placeholder_value(name: str, value: str, lang: str) -> str:
 _DS_PATTERN = re.compile('^(.+?)\\s+(\\w+)\\s+called\\s+(.+)$')
 _PLACEHOLDER_NAMES: frozenset[str] = frozenset(['a', 'a2', 'adn', 'amn', 'an', 'apr', 'arc', 'art', 'ba', 'ccs', 'cll', 'cn', 'cn2', 'cp', 'ct', 'da', 'de', 'di', 'dit', 'doc', 'ds', 'du', 'en', 'fn', 'fq', 'g', 'g2', 'g3', 'hc', 'hod', 'i', 'jok', 'lp', 'mi', 'mn', 'mpr', 'mt', 'n', 'nap', 'nc', 'nc2', 'nd', 'ne', 'nh', 'nhd', 'ni', 'nk', 'nr', 'nt', 'o', 'oap', 'oc', 'omq', 'opp', 'oth', 'pcf', 'pcn', 'qc', 'qmn', 'qt', 'r', 'ra', 'rcn', 'rf', 's', 'sn', 'st', 't', 'ta', 'tan', 'tc', 'tem', 'tg', 'ti', 'tl', 'tq', 'tt', 'u'])
 
-def _template_to_regex(en_template: str, *, anchor_end: bool=True) -> re.Pattern | None:
+def _template_to_regex(en_template: str, *, anchor_end: bool=True, allow_empty: bool=False) -> re.Pattern | None:
     seen: set[str] = set()
     pattern_parts: list[str] = []
     pos = 0
     text = en_template
     token_re = re.compile('%([a-z][a-z0-9]*)')
+
+    def _literal(part: str, *, before_ph: bool, after_ph: bool) -> str:
+        if not allow_empty:
+            return re.escape(part)
+        lead = ''
+        tail = ''
+        if after_ph:
+            stripped = part.lstrip(' ')
+            if stripped != part:
+                lead = '\\s*'
+            part = stripped
+        if before_ph:
+            stripped = part.rstrip(' ')
+            if stripped != part:
+                tail = '\\s*'
+            part = stripped
+        return lead + re.escape(part) + tail
     last = 0
+    after_ph = False
     for m in token_re.finditer(text):
         name = m.group(1)
-        pattern_parts.append(re.escape(text[last:m.start()]))
+        pattern_parts.append(_literal(text[last:m.start()], before_ph=True, after_ph=after_ph))
+        after_ph = True
         if name in _PLACEHOLDER_NAMES:
             if name not in seen:
                 alt = _CLOSED_PH_ALT.get(name)
                 if alt:
                     pattern_parts.append(f'(?P<{name}>(?i:{alt}))(?![A-Za-z])')
                 else:
-                    pattern_parts.append(f'(?P<{name}>.+?)')
+                    pattern_parts.append(f'(?P<{name}>.*?)' if allow_empty else f'(?P<{name}>.+?)')
                 seen.add(name)
             else:
                 pattern_parts.append(f'(?P={name})')
         else:
             pattern_parts.append('.+?')
         last = m.end()
-    pattern_parts.append(re.escape(text[last:]))
+    pattern_parts.append(_literal(text[last:], before_ph=False, after_ph=after_ph))
     full_pattern = '^' + ''.join(pattern_parts) + ('$' if anchor_end else '')
     try:
         return re.compile(full_pattern, re.DOTALL)
@@ -377,12 +399,13 @@ _EXACT_ORIGINALS: list[tuple[str, str]] = []
 
 def _load() -> None:
     global _COMPILED, _LOADED, _DOC_VALUES, _DOC_COMPILED, _EXACT_ORIGINALS
-    global _TRAVEL_EVENT_COMPILED
+    global _TRAVEL_EVENT_COMPILED, _DOC_COMPILED_LAX
     if _LOADED:
         return
     _load_closed_ph()
     entries: list[tuple[re.Pattern, str, int, bool, int]] = []
     doc_entries: list[tuple[re.Pattern, str, int]] = []
+    doc_entries_lax: list[tuple[re.Pattern, str, int]] = []
     travel_event_entries: list[tuple[re.Pattern, str, int, bool, int]] = []
     exact_originals: list[tuple[str, str]] = []
     for en_raw, tmpl, ph_list, key_int, ref in _iter_npcd():
@@ -403,10 +426,15 @@ def _load() -> None:
                 _DOC_VALUES[en] = {'ref': ref}
             else:
                 doc_entries.append((compiled, tmpl, ph_count))
+                lax = _template_to_regex(en, allow_empty=True)
+                if lax is not None:
+                    doc_entries_lax.append((lax, tmpl, ph_count))
     entries.sort(key=lambda x: (not x[3], -x[4], -x[2]))
     _COMPILED = entries
     doc_entries.sort(key=lambda x: -x[2])
     _DOC_COMPILED = doc_entries
+    doc_entries_lax.sort(key=lambda x: -x[2])
+    _DOC_COMPILED_LAX = doc_entries_lax
     travel_event_entries.sort(key=lambda x: (not x[3], -x[4], -x[2]))
     _TRAVEL_EVENT_COMPILED = travel_event_entries
     _EXACT_ORIGINALS = exact_originals
@@ -753,6 +781,18 @@ def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
                         translated_val = translate_placeholder(ph_name, ph_val, lang)
                         result = result.replace(f'%{ph_name}', translated_val)
                 return result
+        for compiled, ja_tmpl, _ in _DOC_COMPILED_LAX:
+            m = compiled.match(normalized)
+            if not m:
+                continue
+            nested = m.groupdict()
+            if all(nested.values()):
+                continue
+            result = ja_tmpl
+            for ph_name, ph_val in nested.items():
+                translated_val = translate_placeholder(ph_name, ph_val, lang) if ph_val else ''
+                result = result.replace(f'%{ph_name}', translated_val)
+            return result
         return value
     if name in ('mn', 'mt'):
         if lang == 'en':

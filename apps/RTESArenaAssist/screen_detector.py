@@ -47,6 +47,32 @@ def is_spell_detail_drawn(analyzer, anchor: int) -> bool | None:
     if row is None or len(row) < SCREEN_ROW_BYTES:
         return None
     return 0 in row
+POPUP_FRAME_OFFSET = 36724
+POPUP_FRAME_FULLSCREEN = (0, 308, 0, 199)
+POPUP_FRAME_ABSENT_POLLS_TO_END = 3
+
+def read_popup_frame(analyzer, anchor: int) -> tuple[int, int, int, int] | None:
+    try:
+        raw = analyzer.read_bytes(anchor + POPUP_FRAME_OFFSET, 8)
+    except (OSError, AttributeError):
+        return None
+    if raw is None or len(raw) < 8:
+        return None
+    return (raw[0] | raw[1] << 8, raw[2] | raw[3] << 8, raw[4] | raw[5] << 8, raw[6] | raw[7] << 8)
+
+def is_popup_frame_drawn(analyzer, anchor: int) -> bool | None:
+    frame = read_popup_frame(analyzer, anchor)
+    if frame is None:
+        return None
+    if frame == POPUP_FRAME_FULLSCREEN:
+        return False
+    left, right, top, bottom = frame
+    _, full_right, _, full_bottom = POPUP_FRAME_FULLSCREEN
+    if not 0 < left < right <= full_right:
+        return None
+    if not 0 < top < bottom <= full_bottom:
+        return None
+    return right < full_right or bottom < full_bottom
 
 def read_palette(analyzer, anchor: int) -> bytes | None:
     try:

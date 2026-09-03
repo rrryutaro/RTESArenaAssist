@@ -1349,7 +1349,7 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
     except (ImportError, OSError, AttributeError):
         pass
 from normal_play import normal_play_render as _normal_play_render
-from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_surface_dispatch, poll_lock_message_dispatch as _poll_lock_message_dispatch, poll_cinematic_dispatch as _poll_cinematic_dispatch, _poll_npc_popup_display, _poll_facility_render_dispatch, _poll_l4_dialog_dispatch, _close_facility_story_units
+from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_surface_dispatch, poll_lock_message_dispatch as _poll_lock_message_dispatch, poll_cinematic_dispatch as _poll_cinematic_dispatch, _poll_npc_popup_display, _poll_facility_render_dispatch, _poll_dialog_unit_dispatch, _close_facility_story_units
 from normal_play.travel_map_module import STATE_NONE as _TRAVEL_STATE_NONE, classify_travel_l4 as _classify_travel_l4, render_travel_l4 as _render_travel_l4
 from screen_detector_play_common import is_inventory_screen_img as _is_inventory_screen_img
 _ASK_ABOUT_MAIN_RECOVERY_STATE = _normal_play_render._ASK_ABOUT_MAIN_RECOVERY_STATE
@@ -1568,7 +1568,7 @@ class PollController:
                 elif w._travel_l4_active:
                     _close_facility_story_units(w)
                 else:
-                    _entry_handled, _instore_resp_handled = _poll_l4_dialog_dispatch(w, in_interior=in_interior, msg_buf=msg_buf, npc_dialog=npc_dialog, _npc_dialog_changed=_npc_dialog_changed, _npc_phase_raw=_npc_phase_raw, _img_name_now=_img_name_now, _building_entry_active=_building_entry_active, _entry_phase_prev=_entry_phase_prev, _shop_state=_shop_state, _shop_img_name=_shop_img_name, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active, _facility_active_now=_facility_active_now, _poll_hierarchy_area=_poll_hierarchy_area, _temple_active_now=_temple_active_now, _temple_just_started=_temple_just_started, _equipment_active_now=_equipment_active_now, _equipment_just_started=_equipment_just_started, _mages_active_now=_mages_active_now, _mages_just_started=_mages_just_started, _negot_handled=_negot_handled, _active_tmpl_handled=_active_tmpl_handled, _inventory_screen=_inventory_screen_now)
+                    _entry_handled, _instore_resp_handled = _poll_dialog_unit_dispatch(w, in_interior=in_interior, msg_buf=msg_buf, npc_dialog=npc_dialog, _npc_dialog_changed=_npc_dialog_changed, _npc_phase_raw=_npc_phase_raw, _img_name_now=_img_name_now, _building_entry_active=_building_entry_active, _entry_phase_prev=_entry_phase_prev, _shop_state=_shop_state, _shop_img_name=_shop_img_name, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active, _facility_active_now=_facility_active_now, _poll_hierarchy_area=_poll_hierarchy_area, _temple_active_now=_temple_active_now, _temple_just_started=_temple_just_started, _equipment_active_now=_equipment_active_now, _equipment_just_started=_equipment_just_started, _mages_active_now=_mages_active_now, _mages_just_started=_mages_just_started, _negot_handled=_negot_handled, _active_tmpl_handled=_active_tmpl_handled, _inventory_screen=_inventory_screen_now)
             else:
                 _close_facility_story_units(w)
             from top_level.chargen_state import handle_npc_dialog as _chargen_handle_npc_dialog
@@ -1589,7 +1589,7 @@ class PollController:
             _b30_in_gameplay = _b30['in_gameplay']
             _poll_cinematic_dispatch(w, _b30)
             if not _screen_display_active:
-                _poll_c1_surface_dispatch(w, _b30, npc_dialog_changed=_npc_dialog_changed, inf_name=inf_name, mif_name=mif_name, instore_resp_handled=_instore_resp_handled, c_area=_poll_hierarchy_area)
+                _poll_c1_surface_dispatch(w, _b30, npc_dialog_changed=_npc_dialog_changed, inf_name=inf_name, mif_name=mif_name, c_area=_poll_hierarchy_area)
             _poll_lock_message_dispatch(w, _b30, rt_x=rt_x, rt_z=rt_z, in_play=_top_is_normal_play and (not _screen_display_active))
             from normal_play.level_up_module import produce_level_up_state as _produce_level_up_state
             _level_up_continue = _produce_level_up_state(w, loading_active=w._loading_state_active, loading_post_settle=_loading_post_settle)

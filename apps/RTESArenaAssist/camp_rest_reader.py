@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import NamedTuple, Optional
+from screen_detector import POPUP_FRAME_ABSENT_POLLS_TO_END as _POPUP_FRAME_ABSENT_POLLS_TO_END, is_popup_frame_drawn as _is_popup_frame_drawn, read_popup_frame as _read_popup_frame
 CAMP_BLOCK_OFFSET = 18740
 CAMP_BLOCK_LEN = 128
 CURRENT_TEXT_PTR_OFFSET = 43076
@@ -8,13 +9,7 @@ CAMP_HOURS_TEMPLATE_OFFSET = 18820
 CAMP_INPUT_SLOT_OFFSET = 64184
 CAMP_RESPONSE_OFFSET = 37534
 CAMP_RESPONSE_READ_LEN = 64
-POPUP_FRAME_LEFT_OFFSET = 36724
-POPUP_FRAME_RIGHT_OFFSET = 36726
-POPUP_FRAME_TOP_OFFSET = 36728
-POPUP_FRAME_BOTTOM_OFFSET = 36730
-SCREEN_FRAME_RIGHT = 308
-SCREEN_FRAME_BOTTOM = 199
-MENU_RELEASE_FULLSCREEN_POLLS = 3
+MENU_RELEASE_FULLSCREEN_POLLS = _POPUP_FRAME_ABSENT_POLLS_TO_END
 CAMP_CONFIRM_OFFSET = 4164
 CAMP_CONFIRM_READ_LEN = 96
 CAMP_CONFIRM_MARKER = 'remaining hours'
@@ -118,26 +113,6 @@ def ptr_in_camp_block(ptr: Optional[int]) -> bool:
     lo, hi = CAMP_BLOCK_SPAN
     return lo <= ptr < hi
 
-def _popup_frame_shown(analyzer, anchor: int) -> bool:
-    left = _read_u16(analyzer, anchor, POPUP_FRAME_LEFT_OFFSET)
-    right = _read_u16(analyzer, anchor, POPUP_FRAME_RIGHT_OFFSET)
-    top = _read_u16(analyzer, anchor, POPUP_FRAME_TOP_OFFSET)
-    bottom = _read_u16(analyzer, anchor, POPUP_FRAME_BOTTOM_OFFSET)
-    if None in (left, right, top, bottom):
-        return False
-    if not 0 < left < right <= SCREEN_FRAME_RIGHT:
-        return False
-    if not 0 < top < bottom <= SCREEN_FRAME_BOTTOM:
-        return False
-    return right < SCREEN_FRAME_RIGHT or bottom < SCREEN_FRAME_BOTTOM
-
-def _popup_frame_fullscreen(analyzer, anchor: int) -> bool:
-    left = _read_u16(analyzer, anchor, POPUP_FRAME_LEFT_OFFSET)
-    right = _read_u16(analyzer, anchor, POPUP_FRAME_RIGHT_OFFSET)
-    top = _read_u16(analyzer, anchor, POPUP_FRAME_TOP_OFFSET)
-    bottom = _read_u16(analyzer, anchor, POPUP_FRAME_BOTTOM_OFFSET)
-    return left == 0 and right == SCREEN_FRAME_RIGHT and (top == 0) and (bottom == SCREEN_FRAME_BOTTOM)
-
 def _confirm_record_live(analyzer, anchor: int) -> bool:
     try:
         head = analyzer.read_bytes(anchor + CAMP_CONFIRM_OFFSET, 2)
@@ -162,9 +137,10 @@ def classify_camp_view(analyzer, anchor: int, *, menu_release_streak: int=0) -> 
     if tmpl != CAMP_HOURS_PROMPT_TEXT:
         return CampView(kind='none', reason='hours template mismatch')
     ptr = _read_u16(analyzer, anchor, CURRENT_TEXT_PTR_OFFSET)
+    frame_drawn = _is_popup_frame_drawn(analyzer, anchor)
     _released_streak = 0
     if ptr is not None and any((it.start <= ptr < it.end for it in items)):
-        if not _popup_frame_fullscreen(analyzer, anchor):
+        if frame_drawn is not False:
             return CampView(kind='menu', title=CAMP_TITLE_TEXT, items=items, reason=f'ptr=0x{ptr:04X} in camp item span')
         streak = min(max(int(menu_release_streak), 0) + 1, MENU_RELEASE_FULLSCREEN_POLLS)
         if streak < MENU_RELEASE_FULLSCREEN_POLLS:
@@ -174,10 +150,11 @@ def classify_camp_view(analyzer, anchor: int, *, menu_release_streak: int=0) -> 
     slot = _read_u16(analyzer, anchor, CAMP_INPUT_SLOT_OFFSET)
     if resp == CAMP_HOURS_PROMPT_TEXT and slot == CAMP_HOURS_ECHO_OFFSET:
         return CampView(kind='hours_prompt', title=CAMP_TITLE_TEXT, items=items, prompt_text=resp, reason='response matches hours prompt + input slot on echo')
-    if _popup_frame_shown(analyzer, anchor) and _confirm_record_live(analyzer, anchor):
+    if frame_drawn is True and _confirm_record_live(analyzer, anchor):
         confirm = _read_confirm_text(analyzer, anchor)
         if CAMP_CONFIRM_MARKER in confirm:
-            left = _read_u16(analyzer, anchor, POPUP_FRAME_LEFT_OFFSET)
+            frame = _read_popup_frame(analyzer, anchor)
+            left = frame[0] if frame is not None else None
             return CampView(kind='rest_confirm', title=CAMP_TITLE_TEXT, items=items, prompt_text=confirm, reason=f'popup frame (left={left}) + confirm text')
     if _released_streak:
         return CampView(kind='none', menu_release_streak=_released_streak, reason=f'menu released: stale ptr=0x{ptr:04X} + fullscreen frame x{_released_streak}')

@@ -77,6 +77,7 @@ def read_game_state(analyzer, anchor: int) -> dict:
     except OSError:
         result['PlayerAngle'] = None
     return result
+UNDRAWN_CONTROL_BYTES = frozenset({8})
 
 def read_live_buffer(analyzer, addr: int, maxlen: int) -> str:
     try:
@@ -87,7 +88,8 @@ def read_live_buffer(analyzer, addr: int, maxlen: int) -> str:
         start = 0
         while start < len(raw) and (not 32 <= raw[start] <= 126):
             start += 1
-        text = raw[start:].decode('ascii', errors='replace').strip()
+        body = bytes((b for b in raw[start:] if b not in UNDRAWN_CONTROL_BYTES))
+        text = body.decode('ascii', errors='replace').strip()
         if not text:
             return ''
         ratio = sum((32 <= ord(c) <= 126 for c in text)) / len(text)

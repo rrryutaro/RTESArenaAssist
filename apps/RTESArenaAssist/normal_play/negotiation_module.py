@@ -147,7 +147,7 @@ def poll_negotiation(w, *, img_name: str, top_level_state: str, owner: str='nego
     _ja_text = '\n'.join(_ja_lines)
     _key = (_text or '', _ja_body, tuple(_active_prompts_pairs))
     _owner_taken = w._ui_router.current_owner() != owner
-    if _key != w._negot_key_prev or _owner_taken:
+    if _key != w._negot_key_prev:
         w._negot_key_prev = _key
         _body_lines = [ln.strip() for ln in _ja_lines[1:] if ln.strip()]
         _new_lines = compute_speech_diff(_body_lines, w._negot_speech_prev, owner_taken=_owner_taken)
