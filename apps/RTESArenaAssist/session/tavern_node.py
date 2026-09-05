@@ -1,6 +1,10 @@
 from __future__ import annotations
 from typing import Optional
+import logging
+from hierarchy_state import facility_owners_for_session
 from .facility_node import FacilityNode, register_facility_node
+_log = logging.getLogger('RTESArenaAssist')
+_PLACE_LIST_OWNERS = frozenset({'npc_dialog', 'npc_conversation', 'npc_message'})
 
 class TavernNode(FacilityNode):
     name = 'tavern'
@@ -42,6 +46,13 @@ class TavernNode(FacilityNode):
         return poll_tavern_render(w, tview=view, shop_state=shop_state, shop_img_name=shop_img_name, top_level_state=top_level_state)
 
     def on_exit(self, w) -> None:
+        current = getattr(w, '_panel_owner', '') or ''
+        if current in facility_owners_for_session(self.name):
+            _log.info('facility session stopped -> clearing L4 display (session=%s owner=%r)', self.name, current)
+            try:
+                w._ui_router.clear_if_owner(current, mode='translate', clear_place_list=current in _PLACE_LIST_OWNERS)
+            except (AttributeError, RuntimeError) as exc:
+                _log.debug('facility stop display clear skipped: %s', exc)
         try:
             from normal_play.tavern_render_module import reset_tavern_render_state
             reset_tavern_render_state(w)

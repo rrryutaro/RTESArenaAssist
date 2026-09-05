@@ -2,7 +2,7 @@ from __future__ import annotations
 import logging
 import re
 import i18n_helper as i18n
-from normal_play.mages_render_common import _SPELLDETAIL_KEY, _NPC_DIALOG_OFFSET, _PROMPT_EXTRA_SCAN_OFFSETS, _read_cost_string, _casting_cost_from_spell_cost, _buy_price_for
+from normal_play.mages_render_common import _SPELLDETAIL_KEY, _NPC_DIALOG_OFFSET, _PROMPT_EXTRA_SCAN_OFFSETS, _read_cost_string, _casting_cost_from_spell_cost, _buy_price_for, _translate_ui
 from normal_play.mages_spellmaker_render import _SPELL_KEY, _SPELLMAKER_LIST_TITLES, _SPELLMAKER_PROMPT_LITERALS, _SPELLMAKER_PROMPT_FRAGMENT_LITERALS, _SPELLMAKER_REFRESH_DETAIL_PROMPTS, _read_spellmaker_live_spell_cost, _resolve_spellmaker_spell_cost, _resolve_spellmaker_prompt
 _log = logging.getLogger('RTESArenaAssist')
 MENU_OWNER = 'mages_menu'
@@ -14,7 +14,7 @@ SPELLMAKER_IMG = 'SPELLMKR.IMG'
 BUYSPELL_IMG = 'BUYSPELL.IMG'
 MENU_OWNER_CONFIRM = 'mages_confirm'
 MENU_OWNER_SPELLDETAIL = 'mages_spelldetail'
-NEGOTIATION_OWNER = 'mages_negotiation'
+from normal_play.mages_negotiation_module import NEGOTIATION_OWNER
 _CONFIRM_FAMILY = 75
 _CONFIRM_DIALOG_OFFSET = 19280
 _CONFIRM_TR = {'Are you sure ?': '本当によろしいですか？', 'Are you sure': '本当によろしいですか？', 'Yes': 'はい', 'No': 'いいえ'}
@@ -114,15 +114,14 @@ def _render_menu(w, shop_state, img: str) -> bool:
         items = shop_state.menu_items
         hotkeys = shop_state.menu_item_hotkeys
         key_now = (tuple(items), tuple(hotkeys))
-        owner_taken = w._panel_owner != MENU_OWNER
-        if key_now != getattr(w, _MENU_KEY, None) or owner_taken:
+        if key_now != getattr(w, _MENU_KEY, None):
             setattr(w, _MENU_KEY, key_now)
             menu_tr = translate_shop_menu_items(items, owner_kind='mages_guild')
             title_en = shop_state.menu_title_en or ''
             title_ja = translate_ui_text('mages_guild', title_en) or title_en if title_en else ''
             tab_en, tab_ja, panel_en, panel_ja = build_menu_display(menu_tr, hotkeys, title_en, title_ja)
             w._ui_router.update_translation(MENU_OWNER, tab_en, tab_ja, panel_en=panel_en, panel_ja=panel_ja)
-            _log.info('mages_menu update (img=%r title=%r items=%r owner_taken=%s)', img, title_en, items, owner_taken)
+            _log.info('mages_menu update (img=%r title=%r items=%r)', img, title_en, items)
     except Exception:
         _log.exception('mages_menu update failed')
     return True
@@ -145,10 +144,11 @@ def _render_effect_menu(w) -> bool:
     ja = title_ja + ''.join((f'\n  {_translate_ui(item)}' for item in items))
     try:
         key_now = ('effect_menu', en)
-        if key_now != getattr(w, _EFFECT_MENU_KEY, None):
+        changed = key_now != getattr(w, _EFFECT_MENU_KEY, None)
+        if changed:
             setattr(w, _EFFECT_MENU_KEY, key_now)
             _log.info('mages_effect_menu update')
-        if not _render_spellmaker_detail(w, panel_en=en, panel_ja=ja, reason='mages_effect_menu_overlay'):
+        if not _render_spellmaker_detail(w, panel_en=en, panel_ja=ja, reason='mages_effect_menu_overlay') and changed:
             w._ui_router.update_translation(EFFECT_MENU_OWNER, en, ja, panel_en=en, panel_ja=ja, update_tab=False, update_panel=True, keep_owner=True, mode=None, priority=95, reason='mages_effect_menu')
     except Exception:
         _log.exception('mages_effect_menu update failed')
@@ -264,16 +264,15 @@ def _render_list(w, sig: dict, img: str) -> bool:
     setattr(w, _LIST_TITLE_ATTR, title_en)
     items = _stabilize_list(w, title_en, items)
     try:
-        owner_taken = w._panel_owner != LIST_OWNER
         if items:
             key_now = ('list', title_en, tuple(((it.get('en', ''), it.get('price_display', ''), it.get('is_unidentified', False)) for it in items)))
-            if key_now != getattr(w, _LIST_KEY, None) or owner_taken:
+            if key_now != getattr(w, _LIST_KEY, None):
                 setattr(w, _LIST_KEY, key_now)
                 w._ui_router.update_facility_list(LIST_OWNER, items, title_en, title_ja, priority=90, reason=f'mages_list:{title_en}')
                 _log.info('mages_list update (img=%r title=%r items=%d)', img, title_en, len(items))
         else:
             key_now = ('unparsed', img)
-            if key_now != getattr(w, _LIST_KEY, None) or owner_taken:
+            if key_now != getattr(w, _LIST_KEY, None):
                 setattr(w, _LIST_KEY, key_now)
                 w._ui_router.update_translation(LIST_OWNER, f'{title_en} (list parsing...)', i18n.text('mages_list.parsing_format').replace('{title}', title_ja), priority=90, reason=f'mages_list_unparsed:{title_en}')
                 _log.info('mages_list unparsed placeholder (img=%r)', img)
@@ -290,9 +289,8 @@ def _render_spellmaker(w, sig: dict, form_img: str='') -> bool:
         _log.exception('mages_spellmaker form display failed')
         return _render_spellmaker_detail(w)
     try:
-        owner_taken = w._panel_owner != SPELLMAKER_OWNER
         key_now = ('spellmaker_form', panel_en, tuple(((r.get('en', ''), r.get('ja', '')) for r in rows)))
-        if key_now != getattr(w, _SPELL_KEY, None) or owner_taken:
+        if key_now != getattr(w, _SPELL_KEY, None):
             setattr(w, _SPELL_KEY, key_now)
             w._ui_router.update_facility_list(SPELLMAKER_OWNER, rows, panel_en, panel_ja, list_title_ja=tab_title, priority=90, reason='mages_form')
             _log.info('mages_spellmaker form update: %r', panel_en[:60])
@@ -327,16 +325,10 @@ def _render_spellmaker_detail(w, *, panel_en: str='', panel_ja: str='', reason: 
         panel_en = 'Spellmaker'
         panel_ja = '呪文作成'
     try:
-        key_now = ('spellmaker_detail', data.get('name'), data.get('target_id'), data.get('element_id'), tuple(data.get('effects', [])), data.get('cost'), data.get('spell_cost'), data.get('casting_cost'), data.get('text_en'), tuple(((d.get('effect_en', ''), d.get('text_en', ''), d.get('text_ja', '')) for d in data.get('effect_details') or [] if isinstance(d, dict))))
-        key_changed = key_now != getattr(w, _SPELL_KEY, None)
-        owner_taken = w._panel_owner != SPELLMAKER_OWNER
-        try:
-            mode_taken = w._tab_translate.panel_mode() != 'spell_detail'
-        except (AttributeError, RuntimeError):
-            mode_taken = False
-        setattr(w, _SPELL_KEY, key_now)
-        w._ui_router.propose_spell_detail(SPELLMAKER_OWNER, data, panel_en=panel_en, panel_ja=panel_ja, priority=90, reason=reason)
-        if key_changed or owner_taken or mode_taken:
+        key_now = ('spellmaker_detail', data.get('name'), data.get('target_id'), data.get('element_id'), tuple(data.get('effects', [])), data.get('cost'), data.get('spell_cost'), data.get('casting_cost'), data.get('text_en'), tuple(((d.get('effect_en', ''), d.get('text_en', ''), d.get('text_ja', '')) for d in data.get('effect_details') or [] if isinstance(d, dict))), panel_en, panel_ja)
+        if key_now != getattr(w, _SPELL_KEY, None):
+            setattr(w, _SPELL_KEY, key_now)
+            w._ui_router.propose_spell_detail(SPELLMAKER_OWNER, data, panel_en=panel_en, panel_ja=panel_ja, priority=90, reason=reason)
             _log.info('mages_spellmaker detail update: %r', name)
     except Exception:
         _log.exception('mages_spellmaker detail update failed')
@@ -395,7 +387,7 @@ def _render_spellmaker_prompt_overlay(w, sig: dict) -> bool:
         if key_now != getattr(w, _PROMPT_KEY, None):
             setattr(w, _PROMPT_KEY, key_now)
             _log.info('mages_prompt overlay update: %r', en[:50])
-        w._ui_router.update_translation(MENU_OWNER_PROMPT, en, ja, panel_en=en, panel_ja=ja, update_tab=False, update_panel=True, keep_owner=True, mode=None, priority=95, reason='mages_prompt_overlay')
+            w._ui_router.update_translation(MENU_OWNER_PROMPT, en, ja, panel_en=en, panel_ja=ja, update_tab=False, update_panel=True, keep_owner=True, mode=None, priority=95, reason='mages_prompt_overlay')
     except Exception:
         _log.exception('mages_prompt overlay update failed')
     return True
@@ -423,10 +415,10 @@ def _is_negotiation_img(img: str) -> bool:
 
 def _render_negotiation(w, img: str, top_level_state: str) -> bool:
     try:
-        from normal_play.negotiation_module import poll_negotiation, cleanup_if_owner as cleanup_negotiation
-        handled = poll_negotiation(w, img_name=img, top_level_state=top_level_state, owner=NEGOTIATION_OWNER)
+        from normal_play.mages_negotiation_module import poll_mages_negotiation, cleanup_mages_negotiation_if_owner
+        handled = poll_mages_negotiation(w, img_name=img, top_level_state=top_level_state)
         if not handled:
-            cleanup_negotiation(w, owner=NEGOTIATION_OWNER)
+            cleanup_mages_negotiation_if_owner(w)
         return handled
     except Exception:
         _log.exception('mages_negotiation update failed')
@@ -467,15 +459,9 @@ def _render_buyspell_detail(w) -> bool:
     data['name_ja'] = translate_name(name)
     try:
         key_now = ('spelldetail', name, data.get('cost'), data.get('spell_cost'), data.get('casting_cost'), data.get('text_en'))
-        key_changed = key_now != getattr(w, _SPELLDETAIL_KEY, None)
-        owner_taken = w._panel_owner != MENU_OWNER_SPELLDETAIL
-        try:
-            mode_taken = w._tab_translate.panel_mode() != 'spell_detail'
-        except (AttributeError, RuntimeError):
-            mode_taken = False
-        setattr(w, _SPELLDETAIL_KEY, key_now)
-        w._ui_router.propose_spell_detail(MENU_OWNER_SPELLDETAIL, data, priority=90, reason='mages_buyspell_detail')
-        if key_changed or owner_taken or mode_taken:
+        if key_now != getattr(w, _SPELLDETAIL_KEY, None):
+            setattr(w, _SPELLDETAIL_KEY, key_now)
+            w._ui_router.propose_spell_detail(MENU_OWNER_SPELLDETAIL, data, priority=90, reason='mages_buyspell_detail')
             _log.info('mages_spelldetail update: %r', name)
     except Exception:
         _log.exception('mages_spelldetail update failed')
@@ -507,10 +493,11 @@ def _render_confirm(w) -> bool:
         ja_title = _CONFIRM_TR.get(title) or _CONFIRM_TR.get(title.rstrip(' ?').strip(), title)
         ja = ja_title + ''.join((f'\n  {_CONFIRM_TR.get(b, b)}' for b in buttons))
         key_now = ('confirm', en)
-        if key_now != getattr(w, _CONFIRM_KEY, None):
+        changed = key_now != getattr(w, _CONFIRM_KEY, None)
+        if changed:
             setattr(w, _CONFIRM_KEY, key_now)
             _log.info('mages_confirm update: %r', en[:40])
-        if not _render_spellmaker_detail(w, panel_en=en, panel_ja=ja, reason='mages_confirm_overlay'):
+        if not _render_spellmaker_detail(w, panel_en=en, panel_ja=ja, reason='mages_confirm_overlay') and changed:
             w._ui_router.update_translation(MENU_OWNER_CONFIRM, en, ja, panel_en=en, panel_ja=ja, update_tab=False, update_panel=True, keep_owner=True, mode=None, priority=95, reason='mages_confirm')
     except Exception:
         _log.exception('mages_confirm update failed')
@@ -612,22 +599,14 @@ def _render_buy_prompt(w, *, foreground_ptr=_PROMPT_PTR_UNSET) -> bool:
         return False
     en, ja = info
     try:
-        owner_taken = w._panel_owner != MENU_OWNER_PROMPT
         key_now = ('prompt', en)
-        if key_now != getattr(w, _PROMPT_KEY, None) or owner_taken:
+        if key_now != getattr(w, _PROMPT_KEY, None):
             setattr(w, _PROMPT_KEY, key_now)
             w._ui_router.update_translation(MENU_OWNER_PROMPT, en, ja)
             _log.info('mages_prompt update: %r', en[:50])
     except Exception:
         _log.exception('mages_prompt update failed')
     return True
-
-def _translate_ui(en: str) -> str:
-    try:
-        from shop_menu_reader import translate_ui_text
-        return translate_ui_text('mages_guild', en) or en
-    except Exception:
-        return en
 
 def _last_spellmaker_list_title(w) -> str:
     title = (getattr(w, _LIST_TITLE_ATTR, '') or '').strip()
@@ -846,7 +825,7 @@ def _render_story(w, *, foreground_ptr=_POINTER_UNSET) -> bool:
     kind = _story_display_unit(w, occurrence, source, resolved)
     if kind == 'hold':
         return True
-    if kind == 'same' and w._ui_router.is_owner(STORY_OWNER):
+    if kind == 'same':
         return True
     en, ja = resolved
     if kind == 'new' and getattr(w, _STORY_KEY_ATTR, None) is not None:
@@ -856,12 +835,10 @@ def _render_story(w, *, foreground_ptr=_POINTER_UNSET) -> bool:
             pass
     display_ja = _story_display_text(ja) if source[2] else ja
     keep = (en, display_ja, source[2])
-    keep_changed = getattr(w, _STORY_KEY_ATTR, None) != keep
-    if keep_changed or not w._ui_router.is_owner(STORY_OWNER):
+    if getattr(w, _STORY_KEY_ATTR, None) != keep:
         setattr(w, _STORY_KEY_ATTR, keep)
         w._ui_router.update_translation(STORY_OWNER, en, display_ja, speech_role='conversation' if ja else None, speech_text=ja if ja else None)
-        if keep_changed:
-            _log.info('mages story displayed (len=%d translated=%s choices=%s)', len(en), bool(ja), source[2])
+        _log.info('mages story displayed (len=%d translated=%s choices=%s)', len(en), bool(ja), source[2])
     unit = getattr(w, _STORY_UNIT_ATTR, None)
     accepted = occurrence if kind == 'new' or unit is None else unit[0]
     setattr(w, _STORY_UNIT_ATTR, (accepted, source[0], source[2], en))
@@ -895,8 +872,8 @@ def _cleanup(w, menu_visible: bool, list_visible: bool, spell_visible: bool, con
             pass
     if not negot_visible and w._panel_owner == NEGOTIATION_OWNER:
         try:
-            from normal_play.negotiation_module import cleanup_if_owner
-            cleanup_if_owner(w, owner=NEGOTIATION_OWNER)
+            from normal_play.mages_negotiation_module import cleanup_mages_negotiation_if_owner
+            cleanup_mages_negotiation_if_owner(w)
         except Exception:
             pass
     if not detail_visible and getattr(w, _SPELLDETAIL_KEY, None) is not None:

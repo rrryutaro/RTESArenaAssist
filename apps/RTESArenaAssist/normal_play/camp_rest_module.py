@@ -34,11 +34,10 @@ def _render_camp_menu(w, view) -> None:
             panel_ja_lines.append(ja)
         _key = (title_en, tuple(tab_ja_lines))
         _prev_key = getattr(w, '_camp_menu_key_prev', None)
-        _owner_taken = w._panel_owner != CAMP_MENU_OWNER
-        if _key != _prev_key or _owner_taken:
+        if _key != _prev_key:
             w._camp_menu_key_prev = _key
             w._ui_router.update_translation(CAMP_MENU_OWNER, '\n'.join(tab_en_lines), '\n'.join(tab_ja_lines), panel_en='\n'.join(panel_en_lines), panel_ja='\n'.join(panel_ja_lines))
-            _log.info('camp_menu update (title=%r items=%r owner_taken=%s)', title_en, [it.text for it in view.items], _owner_taken)
+            _log.info('camp_menu update (title=%r items=%r)', title_en, [it.text for it in view.items])
     except Exception:
         _log.exception('camp_menu update failed')
 
@@ -58,11 +57,10 @@ def _render_camp_prompt(w, view) -> None:
             ja = i18n.text_opt(_HOURS_PROMPT_ID) or en
         _key = (en, ja)
         _prev_key = getattr(w, '_camp_prompt_key_prev', None)
-        _owner_taken = w._panel_owner != CAMP_PROMPT_OWNER
-        if _key != _prev_key or _owner_taken:
+        if _key != _prev_key:
             w._camp_prompt_key_prev = _key
             w._ui_router.update_translation(CAMP_PROMPT_OWNER, en, ja, speech_role='situation')
-            _log.info('camp_prompt update (en=%r ja=%r owner_taken=%s)', en[:60], ja[:60], _owner_taken)
+            _log.info('camp_prompt update (en=%r ja=%r)', en[:60], ja[:60])
     except Exception:
         _log.exception('camp_prompt update failed')
 
@@ -80,11 +78,10 @@ def _render_camp_confirm(w, view) -> None:
         ja_display = f'{body_ja}\nはい\nいいえ'
         _key = (en_display, ja_display)
         _prev_key = getattr(w, '_camp_prompt_key_prev', None)
-        _owner_taken = w._panel_owner != CAMP_PROMPT_OWNER
-        if _key != _prev_key or _owner_taken:
+        if _key != _prev_key:
             w._camp_prompt_key_prev = _key
             w._ui_router.update_translation(CAMP_PROMPT_OWNER, en_display, ja_display, speech_role='situation')
-            _log.info('camp_confirm update (en=%r ja=%r owner_taken=%s)', en_display[:60], ja_display[:60], _owner_taken)
+            _log.info('camp_confirm update (en=%r ja=%r)', en_display[:60], ja_display[:60])
     except Exception:
         _log.exception('camp_confirm update failed')
 

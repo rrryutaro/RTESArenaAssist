@@ -1,9 +1,11 @@
 from __future__ import annotations
 import logging
+from hierarchy_state import FACILITY_OWNER_SETS_BY_SESSION
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 _RESPONSE_PTR_RANGES = ((4164, 512), (31097, 68), (37534, 512), (39582, 512))
 _TAVERN_SHOP_L4_KINDS = frozenset({'menu', 'rooms', 'drinks', 'rumor_type'})
+_ACTIVE_TEMPLATE_REPLACEABLE_OWNERS = frozenset({'', 'active_template'}) | FACILITY_OWNER_SETS_BY_SESSION['tavern']
 
 def should_poll_active_template(*, shop_menu_visible: bool, shop_buy_active: bool, active_facility: str, allow_during_shop_menu: bool, response_active: bool, in_negotiation: bool, top_level_state: str, tavern_l4_kind: str='') -> bool:
     if active_facility == 'tavern' and (tavern_l4_kind or '') in _TAVERN_SHOP_L4_KINDS:
@@ -21,13 +23,6 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
         _response_active = is_response_buffer_pointer(_ptr_val)
     except Exception:
         _response_active = any((start <= _ptr_val < start + length for start, length in _RESPONSE_PTR_RANGES))
-    _c1_axis = getattr(w, '_c1_dialog_axis_now', None)
-    if _c1_axis is not None and _c1_axis.active:
-        _block_key = (_c1_axis.a845, _c1_axis.a84d, _c1_axis.a847, _c1_axis.current_ptr, _c1_axis.reason)
-        if _block_key != getattr(w, '_active_tmpl_c1_axis_block_key', None):
-            w._active_tmpl_c1_axis_block_key = _block_key
-            _log.info('active_template blocked by C1 dialog axis (a845=0x%02X a84d=0x%02X a847=0x%02X ptr=%s reason=%s)', _c1_axis.a845, _c1_axis.a84d, _c1_axis.a847, f'0x{_c1_axis.current_ptr:04X}' if _c1_axis.current_ptr is not None else 'None', _c1_axis.reason or 'unknown')
-        return False
     try:
         from negotiation_reader import NEGOTIATION_PROFILES as _NPF
         _in_negot = shop_img_name in _NPF and (shop_img_name or '').upper() != 'YESNO.IMG'
@@ -105,6 +100,13 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
             except Exception:
                 w._active_tmpl_surface_kind_prev = ''
             _orig_clean = _active_tmpl.rstrip()
+            try:
+                _owner_now = w._ui_router.current_owner() or ''
+            except (AttributeError, RuntimeError):
+                _owner_now = getattr(w, '_panel_owner', '') or ''
+            if _owner_now not in _ACTIVE_TEMPLATE_REPLACEABLE_OWNERS:
+                _log.info('active_template withheld (panel-owner=%s): en=%r', _owner_now, _orig_clean[:80])
+                return True
             w._ui_router.update_translation('active_template', _orig_clean, _ja, speech_role='situation')
             _log.info('active_template translated: src=%s en=%r ja=%r', _active_tmpl_src, _orig_clean[:80], _ja[:80])
         return True

@@ -59,12 +59,11 @@ def _render_shop_drinks(w, shop_state) -> None:
             pass
         _buy_key_now = tuple(((it['en'], it['price_display']) for it in _seen))
         _prev_buy_key = getattr(w, '_shop_buy_key_prev', None)
-        _owner_taken = w._panel_owner != 'shop_buy'
-        if _buy_key_now != _prev_buy_key or _owner_taken:
+        if _buy_key_now != _prev_buy_key:
             w._shop_buy_key_prev = _buy_key_now
             w._ui_router.update_shop_buy_list('shop_buy', _seen, 'Buy Drinks', '酒を買う')
-            if _added or _owner_taken:
-                _log.info('shop_buy update (seen=%d added=%r visible=%r owner_taken=%s)', len(_seen), _added, [it['en'] for it in _buy_now_tr], _owner_taken)
+            if _added:
+                _log.info('shop_buy update (seen=%d added=%r visible=%r)', len(_seen), _added, [it['en'] for it in _buy_now_tr])
     except Exception:
         _log.exception('shop_buy update failed')
 
@@ -81,11 +80,10 @@ def _render_shop_rooms(w, shop_state) -> None:
             pass
         _room_key_now = tuple(((it['en'], it['price_display']) for it in _room_tr))
         _prev_buy_key = getattr(w, '_shop_buy_key_prev', None)
-        _owner_taken = w._panel_owner != 'shop_buy'
-        if _room_key_now != _prev_buy_key or _owner_taken:
+        if _room_key_now != _prev_buy_key:
             w._shop_buy_key_prev = _room_key_now
             w._ui_router.update_shop_buy_list('shop_buy', _room_tr, 'Get a Room', '部屋を取る')
-            _log.info('shop_rooms update (rooms=%d items=%r owner_taken=%s)', len(_room_tr), [it['en'] for it in _room_tr], _owner_taken)
+            _log.info('shop_rooms update (rooms=%d items=%r)', len(_room_tr), [it['en'] for it in _room_tr])
     except Exception:
         _log.exception('shop_rooms update failed')
 
@@ -98,8 +96,7 @@ def _render_shop_menu(w, shop_state, shop_img_name: str) -> None:
         _menu_hotkeys = shop_state.menu_item_hotkeys
         _menu_key = (_shop_kind, tuple(_menu_items), tuple(_menu_hotkeys))
         _prev_menu_key = getattr(w, '_shop_menu_key_prev', None)
-        _owner_taken = w._panel_owner != _shop_kind
-        if _menu_key != _prev_menu_key or _owner_taken:
+        if _menu_key != _prev_menu_key:
             w._shop_menu_key_prev = _menu_key
             _menu_owner = getattr(shop_state, 'owner_kind', '') or 'tavern'
             _menu_tr = translate_shop_menu_items(_menu_items, owner_kind=_menu_owner)
@@ -107,7 +104,7 @@ def _render_shop_menu(w, shop_state, shop_img_name: str) -> None:
             _title_ja = translate_ui_text(_menu_owner, _title_en) or _title_en if _title_en else ''
             _tab_en_text, _tab_ja_text, _panel_en_text, _panel_ja_text = build_menu_display(_menu_tr, _menu_hotkeys, _title_en, _title_ja)
             w._ui_router.update_translation(_shop_kind, _tab_en_text, _tab_ja_text, panel_en=_panel_en_text, panel_ja=_panel_ja_text)
-            _log.info('%s update (img=%r title=%r items=%r hotkeys=%r owner_taken=%s)', _shop_kind, shop_img_name, _title_en, _menu_items, _menu_hotkeys, _owner_taken)
+            _log.info('%s update (img=%r title=%r items=%r hotkeys=%r)', _shop_kind, shop_img_name, _title_en, _menu_items, _menu_hotkeys)
     except Exception:
         _log.exception('%s update failed', _shop_kind)
 

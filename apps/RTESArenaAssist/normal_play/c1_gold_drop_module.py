@@ -29,8 +29,6 @@ def _poll_gold_inf_fragment(w, b131_str: str, inf_name: str, mif_name: str) -> N
         _skip_reason = 'excluded by special pattern'
     elif _newpop_open_now:
         _skip_reason = 'NEWPOP open'
-    elif w._npc_conversation_active:
-        _skip_reason = 'NPC conversation active'
     elif b131_str == _inf_fragment_pushed:
         _skip_reason = 'same as last pushed'
     elif len(b131_str.strip()) < 16:
@@ -57,8 +55,7 @@ def _poll_gold_inf_fragment(w, b131_str: str, inf_name: str, mif_name: str) -> N
     else:
         _log.debug('b131 INF fragment fallback skipped (%s): %r', _skip_reason, b131_str[:48])
 
-def poll_gold_drop(w, *, b30: dict, inf_name: str, mif_name: str, c1_fg: str='') -> None:
-    _c1_fg_blocks_gold = bool(c1_fg and c1_fg != GOLD_DROP_OWNER)
+def poll_gold_drop(w, *, b30: dict, inf_name: str, mif_name: str) -> None:
     try:
         _b131_raw = w._analyzer.read_bytes(w._anchor + 37534, 64)
         _b131_str = _b131_raw.split(b'\x00', 1)[0].decode('ascii', errors='replace')
@@ -74,14 +71,10 @@ def poll_gold_drop(w, *, b30: dict, inf_name: str, mif_name: str, c1_fg: str='')
         except (AttributeError, RuntimeError):
             _owner_now = getattr(w, '_panel_owner', '') or ''
         _block_reasons = []
-        if _c1_fg_blocks_gold:
-            _block_reasons.append('c1-foreground')
         if _owner_now not in _GOLD_DROP_REPLACEABLE_OWNERS:
             _block_reasons.append('panel-owner=%s' % (_owner_now or '-'))
         if not b30['in_gameplay']:
             _block_reasons.append('not-in-gameplay')
-        if w._npc_conversation_active:
-            _block_reasons.append('npc-conversation-active')
         if _block_reasons:
             _recog(_log, 'gold drop skipped (%s): %r', ','.join(_block_reasons), _b131_str[:64])
             return

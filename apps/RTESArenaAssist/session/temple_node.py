@@ -1,5 +1,9 @@
 from __future__ import annotations
+import logging
+from hierarchy_state import facility_owners_for_session
 from .facility_node import FacilityNode, register_facility_node
+_log = logging.getLogger('RTESArenaAssist')
+_PLACE_LIST_OWNERS = frozenset({'npc_dialog', 'npc_conversation', 'npc_message'})
 
 class TempleNode(FacilityNode):
     name = 'temple'
@@ -18,14 +22,16 @@ class TempleNode(FacilityNode):
         return render_temple_view(w, view=view, shop_state=shop_state, shop_img_name=shop_img_name)
 
     def on_exit(self, w) -> None:
-        from normal_play.temple_render_module import MENU_OWNER, MENU_KEY
+        from normal_play.temple_render_module import MENU_KEY
+        current = getattr(w, '_panel_owner', '') or ''
+        if current in facility_owners_for_session(self.name):
+            _log.info('facility session stopped -> clearing L4 display (session=%s owner=%r)', self.name, current)
+            try:
+                w._ui_router.clear_if_owner(current, mode='translate', clear_place_list=current in _PLACE_LIST_OWNERS)
+            except (AttributeError, RuntimeError) as exc:
+                _log.debug('facility stop display clear skipped: %s', exc)
         try:
             setattr(w, MENU_KEY, None)
-        except AttributeError:
-            pass
-        try:
-            if w._panel_owner == MENU_OWNER:
-                w._ui_router.clear_if_owner(MENU_OWNER)
         except AttributeError:
             pass
         try:

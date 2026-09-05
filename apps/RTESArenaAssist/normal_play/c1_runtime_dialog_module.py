@@ -78,8 +78,6 @@ def poll_c1_runtime_dialog(w, *, npc_dialog: str, facility_active_now: bool, msg
     except (AttributeError, RuntimeError):
         _owner_now = getattr(w, '_panel_owner', '') or ''
     _block_reasons = []
-    if bool(getattr(w, '_npc_conversation_active', False)):
-        _block_reasons.append('npc-conversation-active')
     if facility_active_now:
         _block_reasons.append('facility-active')
     if _owner_now not in _C1_RUNTIME_DIALOG_REPLACEABLE_OWNERS:

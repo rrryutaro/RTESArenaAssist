@@ -4,7 +4,6 @@ from popup11_response_reader import ResponseCandidate
 _log = logging.getLogger('RTESArenaAssist')
 REPLY_OWNER = 'mages_reply'
 _ALLOWED_IMGS = frozenset({'', 'MENU_RT.IMG', 'YESNO.IMG', 'NEWPOP.IMG', 'FACES00.CIF'})
-_RESPONSE_HOLD_POLLS = 18
 _MAGES_MENU_TEXT_OFFSET = 28508
 _MAGES_MENU_PTR_START = 28416
 _MAGES_MENU_PTR_END = 28736
@@ -23,7 +22,6 @@ def _reset_state(w) -> None:
     w._mages_reply_current_key = None
     w._mages_reply_current_text = None
     w._mages_reply_baselined = False
-    w._mages_reply_hold_polls = 0
 
 def _clear_reply_owner(w) -> None:
     _reset_state(w)
@@ -45,8 +43,6 @@ def _ensure_state(w) -> None:
         w._mages_reply_current_text = None
     if not hasattr(w, '_mages_reply_baselined'):
         w._mages_reply_baselined = False
-    if not hasattr(w, '_mages_reply_hold_polls'):
-        w._mages_reply_hold_polls = 0
 
 def _with_yesno_buttons(img_name: str, en: str, ja: str) -> tuple[str, str]:
     if (img_name or '').upper() != 'YESNO.IMG':
@@ -148,7 +144,6 @@ def poll_mages_reply(w, *, mages_active: bool, mages_just_started: bool, img_nam
         return False
     prev_by_offset = dict(getattr(w, '_mages_reply_text_by_offset', {}))
     baselined = bool(getattr(w, '_mages_reply_baselined', False))
-    hold_polls = int(getattr(w, '_mages_reply_hold_polls', 0) or 0)
     if img == 'MENU_RT.IMG' and shop_menu_visible:
         _clear_reply_owner(w)
         return False
@@ -186,23 +181,9 @@ def poll_mages_reply(w, *, mages_active: bool, mages_just_started: bool, img_nam
         chosen = changed_hits[0]
         reason = 'source_changed'
     else:
-        current_text = getattr(w, '_mages_reply_current_text', None)
-        if hold_polls > 0 and current_text:
-            for c in candidates:
-                if c.text == current_text:
-                    chosen = c
-                    reason = 'hold'
-                    break
-            else:
-                chosen = None
-                reason = ''
-        else:
-            chosen = None
-            reason = ''
+        chosen = None
+        reason = ''
     if chosen is None:
-        w._mages_reply_hold_polls = 0
-        if img == 'MENU_RT.IMG':
-            _clear_reply_owner(w)
         return False
     chosen_text = _normalize_reply_text(chosen.text)
     try:
@@ -218,12 +199,6 @@ def poll_mages_reply(w, *, mages_active: bool, mages_just_started: bool, img_nam
     else:
         en_text, ja_text = _with_yesno_buttons(img, chosen_text, ja)
     key = (img, chosen.source_offset, chosen.text, ja_text)
-    if reason == 'source_changed':
-        w._mages_reply_hold_polls = _RESPONSE_HOLD_POLLS
-    elif reason == 'hold':
-        w._mages_reply_hold_polls = max(hold_polls - 1, 0)
-    else:
-        w._mages_reply_hold_polls = 0
     should_update = key != w._mages_reply_current_key
     if should_update:
         w._mages_reply_current_key = key

@@ -1,8 +1,14 @@
 from __future__ import annotations
 import logging
 _log = logging.getLogger('RTESArenaAssist')
-NEGOTIATION_OWNER = 'negotiation'
+NEGOTIATION_OWNER = 'mages_negotiation'
 _EMPTY_POLLS_THRESHOLD = 2
+_KEY_PREV = '_mages_negot_key_prev'
+_DIAG_KEY_PREV = '_mages_negot_diag_key_prev'
+_PROMPTS_CTX_PREV = '_mages_negot_prompts_ctx_prev'
+_EMPTY_POLLS = '_mages_negot_empty_polls'
+_COUNTER_ACTIVE = '_mages_negot_counter_active'
+_SPEECH_PREV = '_mages_negot_speech_prev'
 
 def compute_speech_diff(body_lines: list[str], prev_lines) -> list[str]:
     prev = prev_lines or []
@@ -18,60 +24,50 @@ def _get_profile(img_name: str):
     return get_negotiation_profile((img_name or '').upper())
 
 def _ensure_state(w) -> None:
-    if not hasattr(w, '_negot_key_prev'):
-        w._negot_key_prev = None
-    if not hasattr(w, '_negot_diag_key_prev'):
-        w._negot_diag_key_prev = None
-    if not hasattr(w, '_negot_prompts_ctx_prev'):
-        w._negot_prompts_ctx_prev = None
-    if not hasattr(w, '_negot_empty_polls'):
-        w._negot_empty_polls = 0
-    if not hasattr(w, '_negot_counter_active'):
-        w._negot_counter_active = False
-    if not hasattr(w, '_negot_speech_prev'):
-        w._negot_speech_prev = []
+    if not hasattr(w, _KEY_PREV):
+        setattr(w, _KEY_PREV, None)
+    if not hasattr(w, _DIAG_KEY_PREV):
+        setattr(w, _DIAG_KEY_PREV, None)
+    if not hasattr(w, _PROMPTS_CTX_PREV):
+        setattr(w, _PROMPTS_CTX_PREV, None)
+    if not hasattr(w, _EMPTY_POLLS):
+        setattr(w, _EMPTY_POLLS, 0)
+    if not hasattr(w, _COUNTER_ACTIVE):
+        setattr(w, _COUNTER_ACTIVE, False)
+    if not hasattr(w, _SPEECH_PREV):
+        setattr(w, _SPEECH_PREV, [])
 
-def _reset_state(w) -> None:
-    w._negot_key_prev = None
-    w._negot_diag_key_prev = None
-    w._negot_prompts_ctx_prev = None
-    w._negot_empty_polls = 0
-    w._negot_counter_active = False
-    w._negot_speech_prev = []
+def reset_mages_negotiation_state(w) -> None:
+    setattr(w, _KEY_PREV, None)
+    setattr(w, _DIAG_KEY_PREV, None)
+    setattr(w, _PROMPTS_CTX_PREV, None)
+    setattr(w, _EMPTY_POLLS, 0)
+    setattr(w, _COUNTER_ACTIVE, False)
+    setattr(w, _SPEECH_PREV, [])
 
-def poll_negotiation(w, *, img_name: str, top_level_state: str) -> bool:
+def poll_mages_negotiation(w, *, img_name: str, top_level_state: str) -> bool:
     _ensure_state(w)
-    w._negot_counter_active = False
+    setattr(w, _COUNTER_ACTIVE, False)
     if top_level_state != 'normal-play':
         return False
     profile = _get_profile(img_name)
     if profile is None:
         return False
-    if getattr(w, '_tavern_rumor_flow_active', False):
-        return False
-    try:
-        from active_template_reader import read_active_template_candidates, template_surface_kind
-        for _c in read_active_template_candidates(w._analyzer, w._anchor):
-            _k = template_surface_kind(_c)
-            if _k and _k.startswith('tavern_'):
-                return False
-    except Exception:
-        pass
     try:
         from negotiation_reader import read_negotiation_diagnostic
         _raw, _canon, _rendered, _text = read_negotiation_diagnostic(w._analyzer, w._anchor)
     except Exception:
-        _log.exception('negotiation_reader failed')
+        _log.exception('mages negotiation_reader failed')
         _raw = _canon = _rendered = _text = None
     _diag_key = (_raw, _rendered, _text)
-    if w._negot_diag_key_prev != _diag_key:
-        w._negot_diag_key_prev = _diag_key
+    if getattr(w, _DIAG_KEY_PREV) != _diag_key:
+        setattr(w, _DIAG_KEY_PREV, _diag_key)
         _suffix = ''
         if _text and _rendered:
             _suffix = _rendered[len(_text):][:32]
         elif _rendered:
             _suffix = _rendered[:32]
-        _log.info('negotiation template raw=%r canonical=%r rendered=%r matched=%r suffix=%r', (_raw or '')[:80], (_canon or '')[:80], (_rendered or '')[:80], (_text or '')[:80], _suffix)
+        _log.info('mages negotiation template raw=%r canonical=%r rendered=%r matched=%r suffix=%r', (_raw or '')[:80], (_canon or '')[:80], (_rendered or '')[:80], (_text or '')[:80], _suffix)
     try:
         import npc_dialog_lookup as _ndl
     except ImportError:
@@ -81,16 +77,16 @@ def poll_negotiation(w, *, img_name: str, top_level_state: str) -> bool:
         try:
             _r = _ndl.lookup(_text)
         except Exception:
-            _log.exception('negotiation lookup failed')
+            _log.exception('mages negotiation lookup failed')
             _r = None
     _active_prompts_pairs: list[tuple[str, str]] = []
     _counter_rendered = False
     if _ndl is not None:
         try:
             from active_template_reader import read_active_template_candidates, template_surface_kind
-            _ap_ctx_key = (img_name, top_level_state, 'negot')
-            _allow_slot = _ap_ctx_key != w._negot_prompts_ctx_prev
-            w._negot_prompts_ctx_prev = _ap_ctx_key
+            _ap_ctx_key = (img_name, top_level_state, 'mages_negot')
+            _allow_slot = _ap_ctx_key != getattr(w, _PROMPTS_CTX_PREV)
+            setattr(w, _PROMPTS_CTX_PREV, _ap_ctx_key)
             for c in read_active_template_candidates(w._analyzer, w._anchor):
                 try:
                     _is_counter = template_surface_kind(c) == 'negotiation_counter'
@@ -110,16 +106,16 @@ def poll_negotiation(w, *, img_name: str, top_level_state: str) -> bool:
                 if _is_counter:
                     _counter_rendered = True
         except Exception:
-            _log.exception('negotiation prompts read failed')
-    w._negot_counter_active = _counter_rendered
+            _log.exception('mages negotiation prompts read failed')
+    setattr(w, _COUNTER_ACTIVE, _counter_rendered)
     _has_body = _r is not None
     _has_prompts = bool(_active_prompts_pairs)
     if _has_body or _has_prompts:
-        w._negot_empty_polls = 0
+        setattr(w, _EMPTY_POLLS, 0)
     else:
-        w._negot_empty_polls += 1
-    if w._negot_empty_polls >= _EMPTY_POLLS_THRESHOLD:
-        _log.info('negotiation exit: empty body+prompts for %d polls (img=%r)', w._negot_empty_polls, img_name)
+        setattr(w, _EMPTY_POLLS, getattr(w, _EMPTY_POLLS) + 1)
+    if getattr(w, _EMPTY_POLLS) >= _EMPTY_POLLS_THRESHOLD:
+        _log.info('mages negotiation exit: empty body+prompts for %d polls (img=%r)', getattr(w, _EMPTY_POLLS), img_name)
         return False
     if not (_has_body or _has_prompts):
         return w._ui_router.current_owner() == NEGOTIATION_OWNER
@@ -140,23 +136,23 @@ def poll_negotiation(w, *, img_name: str, top_level_state: str) -> bool:
     _en_text = '\n'.join(_en_lines)
     _ja_text = '\n'.join(_ja_lines)
     _key = (_text or '', _ja_body, tuple(_active_prompts_pairs))
-    if _key != w._negot_key_prev:
-        w._negot_key_prev = _key
+    if _key != getattr(w, _KEY_PREV):
+        setattr(w, _KEY_PREV, _key)
         _body_lines = [ln.strip() for ln in _ja_lines[1:] if ln.strip()]
-        _new_lines = compute_speech_diff(_body_lines, w._negot_speech_prev)
-        w._negot_speech_prev = _body_lines
+        _new_lines = compute_speech_diff(_body_lines, getattr(w, _SPEECH_PREV))
+        setattr(w, _SPEECH_PREV, _body_lines)
         _speech_text = '\n'.join(_new_lines).strip()
         w._ui_router.update_translation(NEGOTIATION_OWNER, _en_text, _ja_text, speech_role='conversation', speech_text=_speech_text)
-        _log.info('negotiation translated: body=%r prompts=%d', (_text or '')[:80], len(_active_prompts_pairs))
+        _log.info('mages negotiation translated: body=%r prompts=%d', (_text or '')[:80], len(_active_prompts_pairs))
     return True
 
-def cleanup_if_owner(w) -> None:
+def cleanup_mages_negotiation_if_owner(w) -> None:
     _ensure_state(w)
     try:
         if w._ui_router.is_owner(NEGOTIATION_OWNER):
             w._ui_router.clear_if_owner(NEGOTIATION_OWNER)
-            _log.info('negotiation exit (cleanup)')
+            _log.info('mages negotiation exit (cleanup)')
     except AttributeError:
         pass
-    _reset_state(w)
-__all__ = ['NEGOTIATION_OWNER', 'poll_negotiation', 'cleanup_if_owner', 'compute_speech_diff']
+    reset_mages_negotiation_state(w)
+__all__ = ['NEGOTIATION_OWNER', 'poll_mages_negotiation', 'cleanup_mages_negotiation_if_owner', 'reset_mages_negotiation_state', 'compute_speech_diff']

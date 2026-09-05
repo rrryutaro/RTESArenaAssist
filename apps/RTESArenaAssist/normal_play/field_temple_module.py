@@ -37,12 +37,7 @@ def poll_field_temple_session(w, ctx) -> None:
     if sess.is_active():
         sess.try_stop(ctx)
     else:
-        try:
-            mgr_active = w._session_manager.active_session()
-        except AttributeError:
-            mgr_active = None
-        if mgr_active is None:
-            sess.try_start(ctx)
+        sess.try_start(ctx)
     _store_latch(w, sess.is_active(), prev)
 
 def poll_field_temple_render(w, *, shop_state=None, shop_img_name: str='', foreground_ptr=None):

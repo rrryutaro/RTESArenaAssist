@@ -134,12 +134,6 @@ class TempleSession(SessionBase):
         if extras_flag is not None:
             return bool(extras_flag)
         w = ctx.extras.get('window') if ctx.extras else None
-        if w is not None:
-            try:
-                if int(getattr(w, '_temple_dialog_hold_polls', 0) or 0) > 0:
-                    return True
-            except (TypeError, ValueError):
-                pass
         if ctx.analyzer is None:
             return False
         try:

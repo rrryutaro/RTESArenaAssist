@@ -106,13 +106,55 @@ def _is_response_text_ptr(w) -> bool:
     except Exception:
         return False
 _TABLE_STATES = (STATE_REGION_SELECT, STATE_DETAIL, STATE_HOVER_NAME, STATE_ESTIMATE)
+_SEARCH_PROMPT_EN = 'Enter the name of the city or press Enter key for a list.'
+_SEARCH_PROMPT_JA = '都市名を入力するか、Enter キーで一覧を表示します。'
+
+def show_travel_city_list(w) -> None:
+    try:
+        from travel_search_list_reader import read_travel_city_list
+        from location_lookup import lookup as _loc_lookup
+        items_en = read_travel_city_list(w._analyzer, w._anchor)
+        if not items_en:
+            return
+        item_data = [{'en': en, 'ja': _loc_lookup(en) or ''} for en in items_en]
+        w._ui_router.update_place_list(TRAVEL_SEARCH_OWNER, item_data, title='', panel_en='', panel_ja='')
+    except Exception:
+        _log.exception('show_travel_city_list failed')
+
+def read_travel_search_prompt(w) -> tuple[str, str]:
+    clean_en, ja = (_SEARCH_PROMPT_EN, _SEARCH_PROMPT_JA)
+    try:
+        from arena_logic import read_live_buffer
+        from viewer_constants import NPC_DIALOG_OFFSET, NPC_DIALOG_MAXLEN
+        import npc_dialog_lookup as _ndl
+        raw = read_live_buffer(w._analyzer, w._anchor + NPC_DIALOG_OFFSET, NPC_DIALOG_MAXLEN)
+        res = _ndl.lookup_prompt_prefix_tolerant(raw)
+        if res:
+            lk_en, lk_ja = res
+            return (lk_en or clean_en, lk_ja or ja)
+    except Exception:
+        pass
+    return (clean_en, ja)
+
+def show_travel_search_prompt(w) -> None:
+    try:
+        panel_en, panel_ja = read_travel_search_prompt(w)
+        w._ui_router.update_place_list(TRAVEL_SEARCH_OWNER, [], title='', panel_en=panel_en, panel_ja=panel_ja)
+    except Exception:
+        _log.exception('show_travel_search_prompt failed')
+
+def clear_travel_city_list(w) -> None:
+    try:
+        w._ui_router.clear_if_owner(TRAVEL_SEARCH_OWNER, mode='translate', clear_place_list=True)
+    except Exception:
+        pass
 
 def _clear_state_owner(w, state: str) -> None:
     try:
         if state in _TABLE_STATES:
             w._ui_router.clear_if_owner(TRAVEL_TABLE_OWNER, mode='translate', clear_travel_table=True)
         elif state in (STATE_INPUT, STATE_LIST):
-            w._img_screen._clear_travel_city_list()
+            clear_travel_city_list(w)
     except Exception:
         pass
 
@@ -309,12 +351,12 @@ def _compose_estimate_fallback_ja(est, dep_en, arr_en) -> str:
 def _render_state(w, state: str, *, hover, full_text: str, list_key=None, dest_loc=None, dialog_panel=None) -> None:
     if state == STATE_INPUT:
         if state != getattr(w, '_travel_l4_render_key', None):
-            w._img_screen._show_travel_search_prompt()
+            show_travel_search_prompt(w)
             w._travel_l4_render_key = state
         return
     if state == STATE_LIST:
         if list_key is not None and list_key != getattr(w, '_travel_l4_render_key', None):
-            w._img_screen._show_travel_city_list()
+            show_travel_city_list(w)
             w._travel_l4_render_key = list_key
         return
     speech_role = None

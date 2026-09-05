@@ -216,9 +216,8 @@ class TavernSession(SessionBase):
                 return
             w._tavern_rumor_flow_active = True
             _rt_key = ('tavern_rumor_type', tuple((s.get('title', '') for s in _aa_parsed.get('sub_menus', []))))
-            _rt_owner_taken = w._ui_router.current_owner() != 'tavern_rumor_type'
             _rt_prev_key = getattr(w, '_tavern_rumor_key_prev', None)
-            if _rt_key == _rt_prev_key and (not _rt_owner_taken):
+            if _rt_key == _rt_prev_key:
                 return
             w._tavern_rumor_key_prev = _rt_key
             _rt_tab_en, _rt_tab_ja = build_display_sub(_aa_parsed, sub_title='Rumor Type')

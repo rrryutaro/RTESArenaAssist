@@ -8,7 +8,7 @@ from normal_play.equipment_list_reader import _read_list_items, _stabilize_list_
 _log = logging.getLogger('RTESArenaAssist')
 MENU_OWNER = 'equipment_menu'
 LIST_OWNER = 'equipment_list'
-NEGOTIATION_OWNER = 'equipment_negotiation'
+from normal_play.equipment_negotiation_module import NEGOTIATION_OWNER
 REPAIR_OWNER = 'equipment_repair'
 from normal_play.equipment_reply_module import REPLY_OWNER
 LIST_IMGS = ('POPUP3.IMG', 'POPUP4.IMG', 'NEWPOP.IMG')
@@ -148,10 +148,10 @@ def _fallback_equipment_menu_group(groups, w):
 
 def _render_negotiation(w, img: str, top_level_state: str) -> bool:
     try:
-        from normal_play.negotiation_module import poll_negotiation, cleanup_if_owner as cleanup_negotiation
-        handled = poll_negotiation(w, img_name=img, top_level_state=top_level_state, owner=NEGOTIATION_OWNER)
+        from normal_play.equipment_negotiation_module import poll_equipment_negotiation, cleanup_equipment_negotiation_if_owner
+        handled = poll_equipment_negotiation(w, img_name=img, top_level_state=top_level_state)
         if not handled:
-            cleanup_negotiation(w, owner=NEGOTIATION_OWNER)
+            cleanup_equipment_negotiation_if_owner(w)
         return handled
     except Exception:
         _log.exception('equipment_negotiation update failed')
@@ -164,15 +164,14 @@ def _render_menu(w, shop_state, img: str) -> bool:
         items = shop_state.menu_items
         hotkeys = shop_state.menu_item_hotkeys
         key_now = (tuple(items), tuple(hotkeys))
-        owner_taken = w._panel_owner != MENU_OWNER
-        if key_now != getattr(w, _MENU_KEY, None) or owner_taken:
+        if key_now != getattr(w, _MENU_KEY, None):
             setattr(w, _MENU_KEY, key_now)
             menu_tr = translate_shop_menu_items(items, owner_kind='equipment')
             title_en = shop_state.menu_title_en or ''
             title_ja = translate_ui_text('equipment', title_en) or title_en if title_en else ''
             tab_en, tab_ja, panel_en, panel_ja = build_menu_display(menu_tr, hotkeys, title_en, title_ja)
             w._ui_router.update_translation(MENU_OWNER, tab_en, tab_ja, panel_en=panel_en, panel_ja=panel_ja)
-            _log.info('equipment_menu update (img=%r title=%r items=%r owner_taken=%s)', img, title_en, items, owner_taken)
+            _log.info('equipment_menu update (img=%r title=%r items=%r)', img, title_en, items)
     except Exception:
         _log.exception('equipment_menu update failed')
     return True
@@ -191,7 +190,6 @@ def _render_list(w, img: str) -> bool:
     title_en, title_ja = _LIST_TITLES.get(img, ('Items', 'アイテム'))
     items = _stabilize_list_items(w, img, _read_list_items(w, img))
     try:
-        owner_taken = w._panel_owner != LIST_OWNER
         tr = []
         source = ''
         if items:
@@ -202,13 +200,13 @@ def _render_list(w, img: str) -> bool:
             source = 'static_weapons'
         if tr:
             key_now = ('list', img, tuple(((it.get('en', ''), it.get('hands', ''), it.get('protects', ''), it.get('protects_ja', ''), it.get('weight', ''), it.get('price_display', '')) for it in tr)))
-            if key_now != getattr(w, _LIST_KEY, None) or owner_taken:
+            if key_now != getattr(w, _LIST_KEY, None):
                 setattr(w, _LIST_KEY, key_now)
                 w._ui_router.update_facility_list(LIST_OWNER, tr, title_en, title_ja)
                 _log.info('equipment_list update (img=%r items=%d source=%s)', img, len(tr), source)
         else:
             key_now = ('unparsed', img)
-            if key_now != getattr(w, _LIST_KEY, None) or owner_taken:
+            if key_now != getattr(w, _LIST_KEY, None):
                 setattr(w, _LIST_KEY, key_now)
                 w._ui_router.update_translation(LIST_OWNER, f'{title_en} (list parsing...)', f'{title_ja} (解析中)')
                 _log.info('equipment_list unparsed placeholder (img=%r)', img)
@@ -220,9 +218,8 @@ def _render_repair_jobs(w, job_names) -> bool:
     try:
         from equipment_shop_list_reader import translate_equipment_shop_name
         items = [{'en': en, 'ja': translate_equipment_shop_name(en) or en} for en in job_names]
-        owner_taken = w._panel_owner != REPAIR_OWNER
         key_now = ('repair', tuple(job_names))
-        if key_now != getattr(w, _REPAIR_KEY, None) or owner_taken:
+        if key_now != getattr(w, _REPAIR_KEY, None):
             setattr(w, _REPAIR_KEY, key_now)
             w._ui_router.update_facility_list(REPAIR_OWNER, items, '', '', list_title_ja='')
             _log.info('equipment_repair update (jobs=%d)', len(items))
@@ -281,8 +278,8 @@ def _cleanup(w, menu_visible: bool, list_visible: bool, negot_visible: bool=Fals
             _log.exception('equipment_reply cleanup failed')
     if not negot_visible:
         try:
-            from normal_play.negotiation_module import cleanup_if_owner as cleanup_negotiation
-            cleanup_negotiation(w, owner=NEGOTIATION_OWNER)
+            from normal_play.equipment_negotiation_module import cleanup_equipment_negotiation_if_owner
+            cleanup_equipment_negotiation_if_owner(w)
         except Exception:
             _log.exception('equipment_negotiation cleanup failed')
 __all__ = ['poll_equipment_render', 'classify_equipment_view', 'render_equipment_view', 'EquipmentView', 'MENU_OWNER', 'LIST_OWNER', 'LIST_IMGS', 'REPAIR_OWNER', 'NEGOTIATION_OWNER', 'is_main_equipment_menu_state', 'is_equipment_menu_foreground', 'has_equipment_negotiation_foreground', 'read_menu_rt_equipment_menu_state', 'reset_equipment_render_keys']

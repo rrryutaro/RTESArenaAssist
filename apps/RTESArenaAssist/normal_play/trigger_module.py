@@ -131,31 +131,6 @@ def restore_last_trigger_display(w) -> bool:
 
 def _is_death_red_text(text: str) -> bool:
     return (text or '').strip() in _DEATH_RED_TEXTS
-_C1_DIALOG_A845_TO_SLOT = {121: 'runtime_msg', 146: 'corpse_gold', 16: 'dungeon_msg'}
-_C1_DIALOG_BUFFER_RANGES = {'runtime_msg': ((31097, 68),), 'corpse_gold': ((37534, 512),), 'dungeon_msg': ((4164, 512), (39582, 512))}
-
-def classify_c1_dialog_substate(w, b30, *, npc_dialog_changed: bool=False) -> str:
-    axis = b30.get('c1_dialog_axis') if isinstance(b30, dict) else None
-    if axis is not None and (not getattr(axis, 'active', True)):
-        return 'c1_runtime_dialog' if npc_dialog_changed else ''
-    a845 = getattr(axis, 'a845', 0) if axis is not None else 0
-    ptr = getattr(axis, 'current_ptr', None) if axis is not None else None
-    slot = _C1_DIALOG_A845_TO_SLOT.get(a845, '')
-    if not slot and ptr is not None:
-        for name, ranges in _C1_DIALOG_BUFFER_RANGES.items():
-            if any((start <= ptr < start + length for start, length in ranges)):
-                slot = name
-                break
-    if npc_dialog_changed and slot != 'corpse_gold':
-        return 'c1_runtime_dialog'
-    if slot == 'runtime_msg':
-        dialog_active = bool(b30.get('dialog_active')) if isinstance(b30, dict) else False
-        return 'red_text_dialog' if dialog_active else 'red_text'
-    if slot == 'corpse_gold':
-        return 'gold_drop'
-    if slot == 'dungeon_msg':
-        return 'c1_runtime_dialog'
-    return ''
 
 def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, inf_name: str) -> None:
     if trigger_flag != 0:
@@ -210,6 +185,11 @@ def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, in
     elif trig_fell:
         w._last_trigger_active = False
         w._riddle_display = None
+
+def idle_b30_state(w) -> dict:
+    w._b30_in_gameplay_prev = False
+    w._b30_dialog_active_prev = False
+    return {'dialog_flag': getattr(w, '_b30_dialog_flag_prev', 41729), 'dialog_flag_prev': getattr(w, '_b30_dialog_flag_prev', 41729), 'red_str': getattr(w, '_b30_red_str_prev', ''), 'red_changed': False, 'dialog_active': False, 'dialog_active_prev': False, 'c1_dialog_axis': None, 'c1_dialog_axis_active': False, 'img_name': '', 'in_gameplay': False}
 
 def compute_b30_state(w, *, screen_id: str | None=None, c_area: str | None=None, c1_axis=None) -> dict:
     _screen_id = screen_id if screen_id is not None else getattr(w, '_screen_id_prev', None)
@@ -272,8 +252,7 @@ def compute_b30_state(w, *, screen_id: str | None=None, c_area: str | None=None,
     return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay}
 _RED_TEXT_REPLACEABLE_OWNERS = frozenset({'', 'red_text', 'red_text_dialog', 'trigger'})
 
-def poll_red_text(w, *, b30: dict, c1_fg: str='') -> None:
-    _c1_fg_blocks_render = bool(c1_fg and c1_fg not in ('red_text', 'red_text_dialog'))
+def poll_red_text(w, *, b30: dict) -> None:
     _death_red_allowed = _is_death_red_text(b30['red_str']) and _current_hp_is_zero(w)
     if not _death_red_allowed:
         w._death_red_text_prev = ''
@@ -284,14 +263,10 @@ def poll_red_text(w, *, b30: dict, c1_fg: str='') -> None:
         _owner_now = getattr(w, '_panel_owner', '') or ''
     _panel_free = _owner_now in _RED_TEXT_REPLACEABLE_OWNERS
     _block_reasons = []
-    if _c1_fg_blocks_render:
-        _block_reasons.append('c1-foreground')
     if not _panel_free:
         _block_reasons.append('panel-owner=%s' % (_owner_now or '-'))
     if _current_top_level(w) != 'normal-play':
         _block_reasons.append('not-normal-play')
-    if w._npc_conversation_active:
-        _block_reasons.append('npc-conversation-active')
     if not b30['in_gameplay']:
         _block_reasons.append('not-in-gameplay')
     if not _block_reasons and (b30['red_changed'] or _death_red_new) and b30['red_str']:
@@ -399,4 +374,4 @@ def poll_red_text_lifetime(w, *, b30: dict) -> None:
         restore_last_trigger_display(w)
     else:
         w._ui_router.clear_display('', allowed_current_owners=('',))
-__all__ = ['poll_trigger', 'riddle_group_holds_ptr', 'compute_b30_state', 'poll_red_text', 'poll_red_text_lifetime', 'restore_last_trigger_display', 'classify_c1_dialog_substate']
+__all__ = ['poll_trigger', 'riddle_group_holds_ptr', 'compute_b30_state', 'poll_red_text', 'poll_red_text_lifetime', 'restore_last_trigger_display']

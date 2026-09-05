@@ -1,5 +1,9 @@
 from __future__ import annotations
+import logging
+from hierarchy_state import facility_owners_for_session
 from .facility_node import FacilityNode, register_facility_node
+_log = logging.getLogger('RTESArenaAssist')
+_PLACE_LIST_OWNERS = frozenset({'npc_dialog', 'npc_conversation', 'npc_message'})
 
 class EquipmentNode(FacilityNode):
     name = 'equipment'
@@ -21,7 +25,7 @@ class EquipmentNode(FacilityNode):
         return read_sell_repair_item_list(analyzer, anchor)
 
     def on_exit(self, w) -> None:
-        from normal_play.equipment_l4_state import EQUIPMENT_OWNERS, reset_equipment_l4_state
+        from normal_play.equipment_l4_state import reset_equipment_l4_state
         try:
             from normal_play.equipment_reply_module import reset_equipment_reply_state
             reset_equipment_reply_state(w)
@@ -36,12 +40,13 @@ class EquipmentNode(FacilityNode):
             reset_equipment_l4_state(w)
         except Exception:
             pass
-        for owner in EQUIPMENT_OWNERS:
+        current = getattr(w, '_panel_owner', '') or ''
+        if current in facility_owners_for_session(self.name):
+            _log.info('facility session stopped -> clearing L4 display (session=%s owner=%r)', self.name, current)
             try:
-                if w._panel_owner == owner:
-                    w._ui_router.clear_if_owner(owner, mode='translate')
-            except AttributeError:
-                pass
+                w._ui_router.clear_if_owner(current, mode='translate', clear_place_list=current in _PLACE_LIST_OWNERS)
+            except (AttributeError, RuntimeError) as exc:
+                _log.debug('facility stop display clear skipped: %s', exc)
 
     def render_no_session_shop(self, w, *, shop_state, shop_img_name: str, shop_buy_active: bool, shop_menu_visible: bool):
         from normal_play.equipment_render_module import render_no_session_menu

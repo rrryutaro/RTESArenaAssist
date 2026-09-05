@@ -13,7 +13,6 @@ class TempleView(FacilityView):
     shop_state: object = None
     menu_fg: bool = False
     has_menu: bool = False
-    reply_foreground: bool = False
     cost_eligible: bool = False
     cure_foreground: bool = False
     cure_view: object = None
@@ -22,8 +21,7 @@ def classify_temple_view(w, *, shop_state=None, shop_img_name: str='', **_ignore
     img = (shop_img_name or '').upper()
     menu_fg = bool(getattr(w, '_temple_menu_fg', False))
     has_menu = shop_state is not None and shop_state.kind == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'temple')
-    reply_foreground = int(getattr(w, '_temple_dialog_hold_polls', 0) or 0) > 0
-    cost_eligible = not menu_fg and (not reply_foreground)
+    cost_eligible = not menu_fg
     cure_view = cure_foreground_view(w, img=img, shop_state=shop_state)
     cure_foreground = cure_view is not None
     if cure_foreground:
@@ -32,7 +30,7 @@ def classify_temple_view(w, *, shop_state=None, shop_img_name: str='', **_ignore
         l4_kind, owner, reason = ('menu', MENU_OWNER, 'temple_menu')
     else:
         l4_kind, owner, reason = ('none', '', 'temple:seam')
-    return TempleView(l4_kind=l4_kind, render_owner=owner, l4_visible=l4_kind != 'none', reason=reason, img=img, shop_state=shop_state, menu_fg=menu_fg, has_menu=has_menu, reply_foreground=reply_foreground, cost_eligible=cost_eligible, cure_foreground=cure_foreground, cure_view=cure_view)
+    return TempleView(l4_kind=l4_kind, render_owner=owner, l4_visible=l4_kind != 'none', reason=reason, img=img, shop_state=shop_state, menu_fg=menu_fg, has_menu=has_menu, cost_eligible=cost_eligible, cure_foreground=cure_foreground, cure_view=cure_view)
 
 def render_temple_view(w, *, view, shop_state=None, shop_img_name: str='', **_ignored) -> tuple[bool, bool, bool, bool]:
     img = view.img
@@ -61,18 +59,27 @@ def _render_menu(w, shop_state, img: str) -> bool:
         items = shop_state.menu_items
         hotkeys = shop_state.menu_item_hotkeys
         key_now = (tuple(items), tuple(hotkeys))
-        owner_taken = w._panel_owner != MENU_OWNER
-        if key_now != getattr(w, MENU_KEY, None) or owner_taken:
+        if key_now != getattr(w, MENU_KEY, None):
             setattr(w, MENU_KEY, key_now)
             menu_tr = translate_shop_menu_items(items, owner_kind='temple')
             title_en = shop_state.menu_title_en or ''
             title_ja = translate_ui_text('temple', title_en) or title_en if title_en else ''
             tab_en, tab_ja, panel_en, panel_ja = build_menu_display(menu_tr, hotkeys, title_en, title_ja)
             w._ui_router.update_translation(MENU_OWNER, tab_en, tab_ja, panel_en=panel_en, panel_ja=panel_ja)
-            _log.info('temple_menu update (img=%r title=%r items=%r owner_taken=%s)', img, title_en, items, owner_taken)
+            _log.info('temple_menu update (img=%r title=%r items=%r)', img, title_en, items)
     except Exception:
         _log.exception('temple_menu update failed')
     return True
+
+def reset_keys_on_img_transition(w, *, img_name: str, temple_active_now: bool) -> None:
+    img_now = (img_name or '').upper()
+    img_prev = (getattr(w, '_temple_last_img_prev', '') or '').upper()
+    if temple_active_now and img_prev == 'YESNO.IMG' and (img_now == 'MENU_RT.IMG'):
+        setattr(w, MENU_KEY, None)
+        from normal_play.temple_dialog_module import forget_reply_key
+        forget_reply_key(w)
+        _log.info('temple IMG transition YESNO.IMG -> MENU_RT.IMG: owner keys reset for menu redraw')
+    w._temple_last_img_prev = img_now
 
 def render_no_session_menu(w, *, shop_state, shop_img_name: str) -> bool:
     _is_own = shop_state is not None and getattr(shop_state, 'kind', '') == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'temple')

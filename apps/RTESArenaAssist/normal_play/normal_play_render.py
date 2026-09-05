@@ -2,6 +2,7 @@ from __future__ import annotations
 import logging
 from types import SimpleNamespace
 from controllers.poll_diag import _checkpoint, _phase_record, _phase_start
+from normal_play import npc_conversation_module as _npc_conversation
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('normal_play_render')
 
@@ -14,15 +15,14 @@ def poll_lock_message_dispatch(w, b30, *, rt_x, rt_z, in_play: bool):
     if not in_play:
         _release_lock_message(w)
         return
-    _poll_lock_message(w, b30=b30, rt_x=rt_x, rt_z=rt_z, c1_fg=getattr(w, '_c1_dialog_foreground', '') or '')
+    _poll_lock_message(w, b30=b30, rt_x=rt_x, rt_z=rt_z)
     _poll_lock_message_lifetime(w, b30=b30)
 
-def poll_c1_surface_dispatch(w, b30, *, npc_dialog_changed, inf_name, mif_name, c_area: str=''):
-    from normal_play.trigger_module import poll_red_text as _poll_red_text, poll_red_text_lifetime as _poll_red_text_lifetime, classify_c1_dialog_substate as _classify_c1_dialog_substate
+def poll_c1_surface_dispatch(w, b30, *, inf_name, mif_name, c_area: str=''):
+    from normal_play.trigger_module import poll_red_text as _poll_red_text, poll_red_text_lifetime as _poll_red_text_lifetime
     from normal_play.c1_gold_drop_module import poll_gold_drop as _poll_gold_drop, poll_gold_drop_lifetime as _poll_gold_drop_lifetime, release_gold_drop as _release_gold_drop
     from normal_play.c1_runtime_dialog_module import poll_c1_runtime_dialog_lifetime as _poll_c1_runtime_dialog_lifetime, release_c1_runtime_dialog as _release_c1_runtime_dialog
     if c_area != 'dungeon':
-        w._c1_dialog_foreground = ''
         try:
             _owner = w._ui_router.current_owner()
         except (AttributeError, RuntimeError):
@@ -32,10 +32,8 @@ def poll_c1_surface_dispatch(w, b30, *, npc_dialog_changed, inf_name, mif_name, 
         _release_gold_drop(w)
         _release_c1_runtime_dialog(w)
         return
-    _c1_fg = _classify_c1_dialog_substate(w, b30, npc_dialog_changed=npc_dialog_changed)
-    w._c1_dialog_foreground = _c1_fg
-    _poll_red_text(w, b30=b30, c1_fg=_c1_fg)
-    _poll_gold_drop(w, b30=b30, inf_name=inf_name, mif_name=mif_name, c1_fg=_c1_fg)
+    _poll_red_text(w, b30=b30)
+    _poll_gold_drop(w, b30=b30, inf_name=inf_name, mif_name=mif_name)
     _poll_red_text_lifetime(w, b30=b30)
     _poll_gold_drop_lifetime(w)
     _poll_c1_runtime_dialog_lifetime(w)
@@ -89,7 +87,7 @@ def ask_about_main_display_allowed(list_state: str, img_name: str, current_ptr: 
 
 def _render_ask_about_main_recovery(w, prev_list_state: str) -> None:
     if prev_list_state != _ASK_ABOUT_MAIN_RECOVERY_STATE:
-        w._img_screen._show_ask_about_menu()
+        _npc_conversation.show_ask_about_menu(w)
     w._popup11_list_state_prev = _ASK_ABOUT_MAIN_RECOVERY_STATE
     w._popup11_exit_pending_ask_about = False
     _clear_popup11_place_response_lock(w)
@@ -239,7 +237,7 @@ def _render_popup11_substate(w, _img_name, sub):
         if _diag_changed:
             _log.info('cap162 diag: branch=ASK_ABOUT_MAIN img=%r prev_list=%r item_dyn=%r resp_off=0x%X resp_text=%r', _img_name, _prev_list_state, _item_dyn_now, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
         if _prev_list_state != _ASK_ABOUT_MAIN_STATE:
-            w._img_screen._show_ask_about_menu()
+            _npc_conversation.show_ask_about_menu(w)
         w._popup11_list_state_prev = _ASK_ABOUT_MAIN_STATE
         w._popup11_exit_pending_ask_about = False
         _clear_popup11_place_response_lock(w)
@@ -247,21 +245,21 @@ def _render_popup11_substate(w, _img_name, sub):
         if _diag_changed:
             _log.info('cap159 diag: branch=RUMOR_TYPE img=%r list_state=%r prev_list=%r resp_off=0x%X resp_text=%r', _img_name, _list_state, _prev_list_state, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
         if _prev_list_state != 'rumor_type':
-            w._img_screen._show_ask_about_menu()
+            _npc_conversation.show_ask_about_menu(w)
         w._popup11_list_state_prev = 'rumor_type'
         _clear_popup11_place_response_lock(w)
     elif _list_state == 'where_is_list':
         if _diag_changed:
             _log.info('cap159 diag: branch=WHERE_IS_LIST img=%r list_state=%r prev_list=%r resp_off=0x%X resp_text=%r', _img_name, _list_state, _prev_list_state, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
         if _prev_list_state != 'where_is_list':
-            w._img_screen._show_where_is_list()
+            _npc_conversation.show_where_is_list(w)
         w._popup11_list_state_prev = 'where_is_list'
         _clear_popup11_place_response_lock(w)
     elif _list_state == 'dynamic_place_list':
         if _diag_changed:
             _log.info('cap159 diag: branch=DYNAMIC_PLACE_LIST img=%r list_state=%r prev_list=%r resp_off=0x%X resp_text=%r', _img_name, _list_state, _prev_list_state, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
         if _prev_list_state != 'dynamic_place_list':
-            w._img_screen._show_dynamic_place_list()
+            _npc_conversation.show_dynamic_place_list(w)
         w._popup11_list_state_prev = 'dynamic_place_list'
         _clear_popup11_place_response_lock(w)
     elif _response_lookup_hit:
@@ -270,7 +268,7 @@ def _render_popup11_substate(w, _img_name, sub):
         _needs_redraw = _fresh_response_text != w._npc_dialog_text_prev or _prev_list_state != 'npc_response'
         if _needs_redraw:
             w._npc_dialog_text_prev = _fresh_response_text
-            w._img_screen._show_npc_dialog(text_override=_fresh_response_text)
+            _npc_conversation.show_npc_dialog(w, text_override=_fresh_response_text)
         w._popup11_list_state_prev = 'npc_response'
         _set_popup11_place_response_lock(w, _prev_list_state, _item_dyn_now, _fresh_response_text, force=_place_response_lock_hit or (_img_name == 'POPUP11.IMG' and _is_popup11_where_is_response_text(_fresh_response_text)))
     elif _response_is_new or _state_transition_to_response:
@@ -281,7 +279,7 @@ def _render_popup11_substate(w, _img_name, sub):
             if _fresh_response_text:
                 w._npc_dialog_text_prev = _fresh_response_text
             w._popup11_list_state_prev = 'npc_response'
-            w._img_screen._show_npc_dialog(text_override=_fresh_response_text)
+            _npc_conversation.show_npc_dialog(w, text_override=_fresh_response_text)
             _set_popup11_place_response_lock(w, _prev_list_state, _item_dyn_now, _fresh_response_text, force=_place_response_lock_hit or (_img_name == 'POPUP11.IMG' and _is_popup11_where_is_response_text(_fresh_response_text)))
         else:
             if _diag_changed:
@@ -344,7 +342,7 @@ def _poll_npc_conversation_foreground(w, _img_name, _shop_menu_visible, _shop_bu
             w._popup11_list_state_prev = ''
         elif _sub is not None:
             w._popup11_list_state_prev = _predicted_lsp
-        w._img_screen._show_ask_about_menu()
+        _npc_conversation.show_ask_about_menu(w)
         w._popup11_exit_pending_ask_about = False
         _clear_popup11_place_response_lock(w)
     elif _npc_popup_active:
@@ -359,7 +357,7 @@ def _poll_npc_conversation_foreground(w, _img_name, _shop_menu_visible, _shop_bu
         w._ask_about_menu_active_prev = _ask_about_active
         _city_npc_was_nonzero = getattr(w, '_city_npc_active_was_nonzero_prev', False)
         if _current_top_level(w) == 'normal-play' and _city_npc_was_nonzero and (_city_npc == 0):
-            w._img_screen._reset_npc_dialog_display()
+            _npc_conversation.reset_npc_dialog_display(w)
         w._city_npc_active_was_nonzero_prev = _city_npc != 0
 
 def _poll_npc_popup_display(w, _img_name, _shop_menu_visible, _shop_buy_active):

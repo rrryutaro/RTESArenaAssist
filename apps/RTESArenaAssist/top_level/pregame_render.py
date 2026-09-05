@@ -15,10 +15,10 @@ def show_startup_intro(w, img_name: str) -> None:
     w._set_chargen_ui_state(True)
     update_panel = not w._startup_layout_pushed and w._layout_translate_panel is not None
     if update_panel:
-        w._ui_router.update_translation('top_level_startup_intro', slide_en, slide_ja, panel_en=all_en, panel_ja=all_ja, speech_role='situation', speech_text=all_ja)
+        w._ui_router.update_translation('pregame_startup_intro', slide_en, slide_ja, panel_en=all_en, panel_ja=all_ja, speech_role='situation', speech_text=all_ja)
         w._startup_layout_pushed = True
     else:
-        w._ui_router.update_translation('top_level_startup_intro', slide_en, slide_ja, update_panel=False, speech_role='situation', speech_text=all_ja)
+        w._ui_router.update_translation('pregame_startup_intro', slide_en, slide_ja, update_panel=False, speech_role='situation', speech_text=all_ja)
 
 def show_menu_screen(w) -> None:
     from intro_texts import MENU_ITEM_IDS, source_text, display_text
@@ -33,7 +33,7 @@ def show_menu_screen(w) -> None:
     layout_en = '\n'.join((source_text(nid) for nid, _did in MENU_ITEM_IDS))
     layout_ja = '\n'.join((display_text(nid) for nid, _did in MENU_ITEM_IDS))
     w._set_chargen_ui_state(True)
-    w._ui_router.update_translation('top_level_menu', main_en, main_ja, panel_en=layout_en, panel_ja=layout_ja)
+    w._ui_router.update_translation('pregame_menu', main_en, main_ja, panel_en=layout_en, panel_ja=layout_ja)
 
 def show_load_screen(w) -> None:
     import save_manager as sm
@@ -73,8 +73,8 @@ def show_newgame_slide(w, img_name: str) -> None:
     w._set_chargen_ui_state(True)
     update_panel = not w._newgame_layout_pushed and w._layout_translate_panel is not None
     if update_panel:
-        w._ui_router.update_translation('top_level_newgame_slide', slide_en, slide_ja, panel_en=all_en, panel_ja=all_ja, speech_role='situation', speech_text=all_ja)
+        w._ui_router.update_translation('pregame_newgame_slide', slide_en, slide_ja, panel_en=all_en, panel_ja=all_ja, speech_role='situation', speech_text=all_ja)
         w._newgame_layout_pushed = True
     else:
-        w._ui_router.update_translation('top_level_newgame_slide', slide_en, slide_ja, update_panel=False, speech_role='situation', speech_text=all_ja)
+        w._ui_router.update_translation('pregame_newgame_slide', slide_en, slide_ja, update_panel=False, speech_role='situation', speech_text=all_ja)
 __all__ = ['show_startup_intro', 'show_menu_screen', 'show_load_screen', 'show_newgame_slide']

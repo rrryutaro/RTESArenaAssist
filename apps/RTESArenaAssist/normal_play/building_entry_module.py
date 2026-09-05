@@ -158,10 +158,10 @@ def _push_entry_original(w, msg_buf: str) -> bool:
     _en = _normalize_for_lookup(msg_buf).strip() if msg_buf else ''
     if not _en:
         return False
-    w._ui_router.update_translation('building_entry', _en, '')
     _entry_log_key = ('original_fallback', None, _en[:40])
     if getattr(w, '_building_entry_log_key', None) != _entry_log_key:
         w._building_entry_log_key = _entry_log_key
+        w._ui_router.update_translation('building_entry', _en, '')
         _log.info('panel_owner -> building_entry (src=original_fallback en=%r)', _en[:40])
     return True
 
@@ -179,7 +179,11 @@ def poll_building_entry(w, *, building_entry_active: bool, entry_phase_prev: boo
                 if _entry_result is None:
                     continue
                 _entry_ja, _entry_meta = _entry_result
-                w._ui_router.update_translation('building_entry', _txt, _entry_ja, speech_role='situation')
+                _entry_log_key = (_src, _entry_meta.get('matched_key'), _txt[:40])
+                if getattr(w, '_building_entry_log_key', None) != _entry_log_key:
+                    w._building_entry_log_key = _entry_log_key
+                    w._ui_router.update_translation('building_entry', _txt, _entry_ja, speech_role='situation')
+                    _log.info('panel_owner -> building_entry (src=%s key=%s en=%r)', _src, _entry_meta.get('matched_key'), _txt[:40])
                 try:
                     from normal_play.copy_selector_observation import observe as _observe_copy
                     _observe_copy(w, _entry_meta, _txt, src=_src)
@@ -187,10 +191,6 @@ def poll_building_entry(w, *, building_entry_active: bool, entry_phase_prev: boo
                     pass
                 w._building_entry_pending = False
                 w._building_entry_msg_buf_written = False
-                _entry_log_key = (_src, _entry_meta.get('matched_key'), _txt[:40])
-                if getattr(w, '_building_entry_log_key', None) != _entry_log_key:
-                    w._building_entry_log_key = _entry_log_key
-                    _log.info('panel_owner -> building_entry (src=%s key=%s en=%r)', _src, _entry_meta.get('matched_key'), _txt[:40])
                 entry_handled = True
                 break
         except Exception:

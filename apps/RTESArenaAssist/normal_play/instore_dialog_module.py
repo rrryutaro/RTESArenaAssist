@@ -102,4 +102,11 @@ def _poll_route1_instore_response(w, ctx, *, entry_handled: bool, npc_overlay_ac
         elif entry_handled:
             _log.debug('in_store_resp skipped: _entry_handled=True (phase=0x%s)', f'{npc_phase_raw:02X}' if npc_phase_raw is not None else '??')
     return (instore_resp_handled, entry_handled)
-__all__ = ['_poll_route1_instore_response']
+INSTORE_DIALOG_OWNER = 'npc_dialog'
+
+def close_on_modal_overlay(w) -> None:
+    try:
+        w._ui_router.clear_if_owner(INSTORE_DIALOG_OWNER, mode='translate', clear_place_list=True)
+    except (AttributeError, RuntimeError):
+        pass
+__all__ = ['INSTORE_DIALOG_OWNER', 'close_on_modal_overlay', '_poll_route1_instore_response']

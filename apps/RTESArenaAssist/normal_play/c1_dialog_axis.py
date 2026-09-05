@@ -61,7 +61,7 @@ def read_c1_dialog_axis(w, *, c_area: str | None, in_gameplay: bool=True, update
     strong_signal = bool(reason_parts)
     if a847 != 0 and strong_signal:
         reason_parts.append('a847')
-    active = in_c1 and in_gameplay and (not bool(getattr(w, '_npc_conversation_active', False))) and strong_signal
+    active = in_c1 and in_gameplay and strong_signal
     prev_active = bool(getattr(w, '_c1_dialog_axis_active_prev', False))
     opened = active and (not prev_active)
     closed = prev_active and (not active)

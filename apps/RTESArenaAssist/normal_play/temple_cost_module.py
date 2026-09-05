@@ -85,8 +85,7 @@ def poll_temple_cost(w, *, img_name: str) -> bool:
     w._temple_cost_current_surface = kind
     w._temple_cost_current_text = en
     key = (owner, en_text, ja_text)
-    owner_taken = w._panel_owner != owner
-    if key != getattr(w, _KEY, None) or owner_taken:
+    if key != getattr(w, _KEY, None):
         setattr(w, _KEY, key)
         w._ui_router.update_translation(owner, en_text, ja_text)
         _log.info('temple_cost translated: owner=%s kind=%s img=%r en=%r ja=%r', owner, kind, img, en[:80], ja[:80])

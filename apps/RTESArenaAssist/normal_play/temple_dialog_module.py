@@ -3,7 +3,6 @@ import logging
 from assist_log import recog as _recog
 _log = logging.getLogger('RTESArenaAssist')
 _ALLOWED_IMGS = frozenset({'', 'MENU_RT.IMG', 'YESNO.IMG', 'NEWPOP.IMG', 'FACES00.CIF'})
-_RESPONSE_HOLD_POLLS = 18
 _BLESSING_TEMPLATE_PTR = 30115
 _BLESSING_TEMPLATE_TEXT = 'Receive our blessings...'
 _BLESSING_TEMPLATE_IMGS = frozenset({'MENU_RT.IMG', 'YESNO.IMG', 'NEWPOP.IMG'})
@@ -129,7 +128,6 @@ def _reset_state(w) -> None:
     w._temple_dialog_current_text = None
     w._temple_dialog_current_owner = None
     w._temple_dialog_baselined = False
-    w._temple_dialog_hold_polls = 0
     w._temple_reply_armed = False
     w._temple_reply_episode_id = 0
     w._temple_reply_episode_baseline = {}
@@ -140,13 +138,17 @@ def _reset_state(w) -> None:
 def reset_temple_dialog_state(w) -> None:
     _reset_state(w)
 
+def forget_reply_key(w) -> None:
+    w._temple_dialog_current_key = None
+    w._temple_dialog_current_text = None
+
 def reset_temple_reply_on_stop(w) -> None:
     if getattr(w, '_temple_dialog_baselined', False):
         _release_reply(w)
         _reset_state(w)
 
 def _ensure_state(w) -> None:
-    for attr, default in (('_temple_dialog_text_by_offset', {}), ('_temple_dialog_current_key', None), ('_temple_dialog_current_text', None), ('_temple_dialog_current_owner', None), ('_temple_dialog_baselined', False), ('_temple_dialog_hold_polls', 0), ('_temple_reply_armed', False), ('_temple_reply_episode_id', 0), ('_temple_reply_episode_baseline', {}), ('_temple_reply_edge_baseline', None), ('_temple_reply_edge_consumed', None), ('_temple_dialog_last_diag_key', None)):
+    for attr, default in (('_temple_dialog_text_by_offset', {}), ('_temple_dialog_current_key', None), ('_temple_dialog_current_text', None), ('_temple_dialog_current_owner', None), ('_temple_dialog_baselined', False), ('_temple_reply_armed', False), ('_temple_reply_episode_id', 0), ('_temple_reply_episode_baseline', {}), ('_temple_reply_edge_baseline', None), ('_temple_reply_edge_consumed', None), ('_temple_dialog_last_diag_key', None)):
         if not hasattr(w, attr):
             setattr(w, attr, default)
 
@@ -169,7 +171,6 @@ def _release_reply(w) -> None:
     w._temple_dialog_current_key = None
     w._temple_dialog_current_text = None
     w._temple_dialog_current_owner = None
-    w._temple_dialog_hold_polls = 0
     if not owner:
         return
     try:
@@ -206,7 +207,6 @@ def poll_temple_dialog(w, *, temple_active: bool, temple_just_started: bool, img
     _intent_hint_value = _read_result_intent_hint(w)
     _result_intent = _result_intent_name(_intent_hint_value)
     result_sig = _result_episode_signature(edge_sig, _p8f6e)
-    hold = int(getattr(w, '_temple_dialog_hold_polls', 0) or 0)
     armed = bool(getattr(w, '_temple_reply_armed', False))
     candidates = _extend_current_template_candidate(w, list(read.candidates), phase=phase, armed=armed, img_name=img)
     episode = int(getattr(w, '_temple_reply_episode_id', 0) or 0)
@@ -256,7 +256,6 @@ def poll_temple_dialog(w, *, temple_active: bool, temple_just_started: bool, img
     if phase == 'out':
         _release_reply(w)
         w._temple_reply_armed = False
-        w._temple_dialog_hold_polls = 0
         _diag('release_phase_out')
         return False
 
@@ -303,7 +302,7 @@ def poll_temple_dialog(w, *, temple_active: bool, temple_just_started: bool, img
         if current_text and any((c.text == current_text for c in blessing_results)):
             for c in blessing_results:
                 if c.text == current_text:
-                    chosen, reason = (c, 'hold')
+                    chosen, reason = (c, 'blessing_current')
                     break
         elif donation_blessing_state:
             chosen, reason = (_append_synth_blessing(), 'donation_blessing')
@@ -320,7 +319,6 @@ def poll_temple_dialog(w, *, temple_active: bool, temple_just_started: bool, img
         elif new_prompts:
             chosen, reason = (_rank(new_prompts)[0], 'prompt_new')
         else:
-            w._temple_dialog_hold_polls = 0
             _diag(f'select_input_no_reply(results={len(results)},costs={len(costs)},prompts={len(prompts)})')
             return False
     elif new_costs:
@@ -329,11 +327,6 @@ def poll_temple_dialog(w, *, temple_active: bool, temple_just_started: bool, img
         chosen, reason = (_rank(new_prompts)[0], 'prompt_new')
     elif new_results:
         chosen, reason, new_episode = (_rank(new_results, result_intent=_result_intent)[0], 'result_new', True)
-    elif hold > 0 and current_text and any((c.text == current_text for c in candidates)):
-        for c in candidates:
-            if c.text == current_text:
-                chosen, reason = (c, 'hold')
-                break
     elif yesno_cost_prompt_present and (costs or prompts) and result_edge and (not _result_intent):
         chosen, reason = (_rank(costs or prompts)[0], 'yesno_cost_prompt_present')
     elif new_transients:
@@ -351,7 +344,6 @@ def poll_temple_dialog(w, *, temple_active: bool, temple_just_started: bool, img
     w._temple_dialog_text_by_offset = now_by_offset
     w._temple_dialog_baselined = True
     if chosen is None:
-        w._temple_dialog_hold_polls = max(hold - 1, 0)
         _diag(f'none(results={len(results)},new_res={len(new_results)},costs={len(costs)},prompts={len(prompts)})')
         return False
     kind = 'transient' if is_transient_priest_text(chosen.text) else _classify_kind(chosen.text)
@@ -372,16 +364,11 @@ def poll_temple_dialog(w, *, temple_active: bool, temple_just_started: bool, img
         _snapshot_edge_baseline(w, result_sig)
     ja = format_temple_priest_text(chosen.text)
     if ja is None:
-        w._temple_dialog_hold_polls = max(hold - 1, 0)
         _diag(f'lookup_miss:{chosen.text[:22]}')
         return False
     en_text, ja_text = _with_yesno_buttons(img, kind, chosen.text, ja)
     owner = _owner_for_kind(kind)
     key = (owner, img, chosen.source_offset, chosen.text, ja_text, episode)
-    if reason == 'hold':
-        w._temple_dialog_hold_polls = max(hold, 1)
-    else:
-        w._temple_dialog_hold_polls = _RESPONSE_HOLD_POLLS
     should_update = key != w._temple_dialog_current_key
     if should_update:
         w._temple_dialog_current_key = key
@@ -392,4 +379,4 @@ def poll_temple_dialog(w, *, temple_active: bool, temple_just_started: bool, img
         _log.info('temple_dialog translated: owner=%s src=0x%X reason=%s ep=%d img=%r text=%r', owner, chosen.source_offset, reason, episode, img, chosen.text[:80])
     _diag(f'render:{reason}:{owner}:{chosen.text[:22]}')
     return True
-__all__ = ['poll_temple_dialog', 'reset_temple_dialog_state']
+__all__ = ['poll_temple_dialog', 'reset_temple_dialog_state', 'forget_reply_key']

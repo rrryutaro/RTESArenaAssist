@@ -26,6 +26,20 @@ def reset_level_up_on_load(w) -> None:
     w._player_level_prev = None
     w._player_level_read_prev = None
 
+def suspend_level_up_state(w) -> None:
+    w._player_level_prev = None
+    w._player_level_read_prev = None
+    if getattr(w, '_level_up_active', False):
+        w._level_up_active = False
+        w._level_up_saw_bonus = False
+        w._level_up_waiting_for_bonus = False
+        w._level_up_pushed_key = None
+        try:
+            if getattr(w, '_ui_router', None) is not None and w._ui_router.is_owner('level_up'):
+                w._ui_router.clear_if_owner('level_up')
+        except (AttributeError, RuntimeError):
+            pass
+
 def produce_level_up_state(w, *, loading_active: bool=False, loading_post_settle: bool=False) -> bool:
     try:
         import player_reader as _pr
@@ -85,9 +99,7 @@ def consume_level_up_display(w, *, screen_id_stable: str | None, b30_dialog_acti
                 w._level_up_saw_bonus = False
                 w._level_up_waiting_for_bonus = False
                 w._level_up_pushed_key = None
-                _c1_fg = getattr(w, '_c1_dialog_foreground', '')
-                if _c1_fg == '' and w._ui_router.is_owner('level_up'):
-                    w._ui_router.clear_if_owner('level_up')
+                w._ui_router.clear_if_owner('level_up')
     except (ImportError, AttributeError, OSError):
         pass
 
@@ -96,4 +108,4 @@ def poll_level_up(w, *, b30_dialog_active: bool, b30_dialog_active_prev: bool, b
     if not _continue:
         return
     consume_level_up_display(w, screen_id_stable=getattr(w, '_screen_id_prev', None), b30_dialog_active=b30_dialog_active, b30_dialog_active_prev=b30_dialog_active_prev, b30_red_changed=b30_red_changed, npc_dialog_changed=npc_dialog_changed)
-__all__ = ['poll_level_up', 'produce_level_up_state', 'consume_level_up_display']
+__all__ = ['poll_level_up', 'produce_level_up_state', 'suspend_level_up_state', 'consume_level_up_display']

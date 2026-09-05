@@ -264,14 +264,10 @@ def detect_rising_edge(w, drawn: bool | None) -> bool:
     live = update_live(w, drawn)
     return live and (not prev)
 
-def _decide(w, b30, near, c1_fg):
+def _decide(w, b30, near):
     owner_now = _panel_owner(w)
     if owner_now not in ('', OWNER):
         return (None, None, f'他の表示が持ち主 owner={owner_now!r}', True)
-    if c1_fg == 'red_text' and b30.get('red_str'):
-        return (None, None, f"バッファに本文あり={b30['red_str'][:30]!r}", True)
-    if c1_fg not in ('', 'red_text'):
-        return (None, None, f'別の面が前景 c1_fg={c1_fg!r}', True)
     if not b30.get('in_gameplay'):
         return (None, None, 'in_gameplay=False', True)
     if getattr(w, '_npc_conversation_active', False):
@@ -316,7 +312,7 @@ def _watch_stats(w):
     except AttributeError:
         return None
 
-def poll_lock_message(w, *, b30: dict, rt_x=None, rt_z=None, c1_fg: str='') -> None:
+def poll_lock_message(w, *, b30: dict, rt_x=None, rt_z=None) -> None:
     near = resolve_nearby_lock(w, rt_x, rt_z)
     armed = update_watch(w, near)
     drawn = read_drawn(w) if armed else None
@@ -330,7 +326,7 @@ def poll_lock_message(w, *, b30: dict, rt_x=None, rt_z=None, c1_fg: str='') -> N
     if pending <= 0:
         return
     w._lock_msg_pending = pending - 1
-    original, translated, why, transient = _decide(w, b30, near, c1_fg)
+    original, translated, why, transient = _decide(w, b30, near)
     if original is None and translated is None:
         if not transient:
             w._lock_msg_pending = 0

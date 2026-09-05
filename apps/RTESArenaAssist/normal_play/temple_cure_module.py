@@ -52,12 +52,11 @@ def poll_temple_cure(w, *, cure) -> bool:
     try:
         rows = [{'en': r.en, 'ja': _tr_name(r.en), 'price_raw': str(r.price), 'price_display': f'{r.price} gp'} for r in cure.rows]
         key_now = (cure.title_en, tuple(((r['en'], r['price_raw']) for r in rows)))
-        owner_taken = w._panel_owner != CURE_OWNER
-        if key_now != getattr(w, CURE_KEY, None) or owner_taken:
+        if key_now != getattr(w, CURE_KEY, None):
             setattr(w, CURE_KEY, key_now)
             import i18n_helper as i18n
             w._ui_router.update_facility_list(CURE_OWNER, rows, cure.title_en, _title_ja(cure.char_name), list_title_ja=i18n.text_opt(_LIST_TITLE_KEY) or '')
-            _log.info('temple_cure update (name=%r rows=%r owner_taken=%s)', cure.char_name, [r['en'] for r in rows], owner_taken)
+            _log.info('temple_cure update (name=%r rows=%r)', cure.char_name, [r['en'] for r in rows])
         return True
     except Exception:
         _log.exception('temple_cure update failed')

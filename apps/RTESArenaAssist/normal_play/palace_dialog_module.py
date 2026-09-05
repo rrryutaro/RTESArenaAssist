@@ -180,7 +180,7 @@ def poll_palace_dialog(w, *, palace_active: bool, foreground_ptr=_POINTER_UNSET)
     if kind == 'hold':
         if not _is_settled_page_body(getattr(w, _UNIT_ATTR, None), getattr(w, _KEY_ATTR, None), resolved):
             return True
-    if kind == 'same' and w._ui_router.is_owner(_OWNER):
+    if kind == 'same':
         return True
     en, base_ja = resolved
     if kind == 'new' and getattr(w, _KEY_ATTR, None) is not None:
@@ -193,13 +193,11 @@ def poll_palace_dialog(w, *, palace_active: bool, foreground_ptr=_POINTER_UNSET)
     if yesno and base_ja:
         display_ja = f'{base_ja}\n\n  はい\n  いいえ'
     key = (en, display_ja, yesno)
-    key_changed = getattr(w, _KEY_ATTR, None) != key
-    if key_changed or not w._ui_router.is_owner(_OWNER):
+    if getattr(w, _KEY_ATTR, None) != key:
         setattr(w, _KEY_ATTR, key)
         w._palace_dialog_last_off = source[0]
         w._ui_router.update_translation(_OWNER, en, display_ja, speech_role='conversation' if base_ja else None, speech_text=base_ja if base_ja else None)
-        if key_changed:
-            _log.info('palace dialog displayed (len=%d translated=%s yesno=%s)', len(en), bool(base_ja), yesno)
+        _log.info('palace dialog displayed (len=%d translated=%s yesno=%s)', len(en), bool(base_ja), yesno)
     unit = getattr(w, _UNIT_ATTR, None)
     accepted = occurrence if kind == 'new' or unit is None else unit[0]
     setattr(w, _UNIT_ATTR, (accepted, source[0], source[2], en))

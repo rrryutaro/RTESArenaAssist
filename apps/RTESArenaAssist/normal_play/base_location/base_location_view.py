@@ -42,18 +42,10 @@ def area_name(l2_code: str) -> str:
     return _L2_TO_AREA.get(l2_code or '', '')
 
 def classify_map_axis(analyzer, anchor: Optional[int], *, mif_name: Optional[str], interior_mif_name: Optional[str], in_interior: Optional[bool]=None, area: Optional[str]=None) -> Optional[str]:
-    if in_interior is None:
-        from arena_bridge import read_interior_flag
-        from play_area_classifier import resolve_in_interior, _WILDERNESS_FLAG_OFFSET
-        try:
-            _place = analyzer.read_bytes(anchor + _WILDERNESS_FLAG_OFFSET, 1)[0]
-        except (OSError, IndexError, AttributeError):
-            _place = None
-        in_interior = resolve_in_interior(read_interior_flag(analyzer, anchor), _place, mif_name)
+    if in_interior is None or area is None:
+        return None
     if in_interior and interior_mif_name:
         return 'interior'
-    if area is None:
-        area = detect_play_area(analyzer, anchor, mif_name)
     if in_interior:
         return 'dungeon' if area == 'dungeon' else 'interior'
     if area in _AREA_TO_L2:

@@ -157,4 +157,10 @@ def poll_travel_event_lifecycle(w, *, npc_dialog: str, screen_img: str, facility
         return True
     except (ImportError, AttributeError):
         return False
-__all__ = ['NPC_MESSAGE_OWNER', '_poll_route_msg_foreground', '_poll_route3_dungeon_msg', '_poll_route4a_arrival', 'poll_travel_event_lifecycle']
+
+def close_on_modal_overlay(w) -> None:
+    try:
+        w._ui_router.clear_if_owner(NPC_MESSAGE_OWNER, mode='translate', clear_place_list=True)
+    except (AttributeError, RuntimeError):
+        pass
+__all__ = ['NPC_MESSAGE_OWNER', 'close_on_modal_overlay', '_poll_route_msg_foreground', '_poll_route3_dungeon_msg', '_poll_route4a_arrival', 'poll_travel_event_lifecycle']

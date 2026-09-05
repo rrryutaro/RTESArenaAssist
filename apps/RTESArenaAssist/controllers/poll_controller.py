@@ -9,11 +9,16 @@ import i18n_helper as i18n
 import inf_text_lookup as itl
 from display_intent import PollFrame
 from panel_mode_resolver import SCREEN_PANEL_PRIORITY, screen_panel_mode
-from hierarchy_state import facility_owners_for_session, HierarchyRecognitionInput, SeparationHierarchy
+from hierarchy_state import HierarchyRecognitionInput, SeparationHierarchy
 from normal_play.base_location.base_location_view import resolve_area_with_indoor_fallback as _resolve_area_with_indoor_fallback
 from controllers.chargen_helpers import _CHARGEN_GOYENOW_HINT_ADDR, _CHARGEN_GOYENOW_HINT_CHECKLEN, _CHARGEN_GOYENOW_PREFIX, _CHARGEN_GOYENOW_SCAN_START, _CHARGEN_GOYENOW_SCAN_END
 from controllers.coord_transition_gate import arrival_consumption_due as _arrival_consumption_due, resolve_coord_transition as _resolve_coord_transition
 from controllers.map_fallback_suppression import arm_city_load_fallback_suppression as _arm_city_load_fallback_suppression, city_load_fallback_suppression as _city_load_fallback_suppression
+from normal_play import char_screen_module as _char_screen
+from normal_play import npc_conversation_module as _npc_conversation
+from normal_play import npc_message_module as _npc_message
+from normal_play import temple_render_module as _temple_render
+from normal_play import instore_dialog_module as _instore_dialog
 from top_level.normal_play_state import poll_sessions as _poll_normal_play_sessions
 from top_level.top_level_dispatcher import build_session_context as _build_session_context, current_state as _current_top_level
 from controllers.poll_diag import _checkpoint, _phase_record, _phase_start
@@ -170,7 +175,6 @@ def _format_place_text(state: dict, in_interior: bool, interior_mif_name: str | 
     if weather:
         return f'{location}  {weather}'.strip()
     return location
-from play_area_classifier import detect_play_area as _detect_play_area
 _WILDERNESS_FLAG_OFFSET = 19408
 _TAVERN_VIEW_DESC_OFFSET = 36718
 _TAVERN_VIEW_FLAG_OFFSET = 36724
@@ -189,22 +193,6 @@ def _active_session_name_for_log(w) -> str:
     except (AttributeError, RuntimeError):
         return ''
     return getattr(active, 'name', '') if active is not None else ''
-
-def _clear_stopped_facility_display(w, session_name: str) -> None:
-    try:
-        owner = w._ui_router.current_owner()
-    except (AttributeError, RuntimeError):
-        owner = getattr(w, '_panel_owner', '') or ''
-    if owner not in facility_owners_for_session(session_name):
-        return
-    key = (session_name, owner, getattr(w, '_screen_id_prev', None), getattr(w, '_img_name_prev', '') or '')
-    if key != getattr(w, '_b351_facility_stop_clear_key', None):
-        w._b351_facility_stop_clear_key = key
-        _log.info('facility session stopped -> clearing L4 display (session=%s owner=%r screen=%r img=%r)', session_name, owner, getattr(w, '_screen_id_prev', None), getattr(w, '_img_name_prev', '') or '')
-    try:
-        w._ui_router.clear_if_owner(owner, mode='translate', clear_place_list=owner in ('npc_dialog', 'npc_conversation', 'npc_message'))
-    except (AttributeError, RuntimeError) as exc:
-        _log.debug('facility stop display clear skipped: %s', exc)
 
 def _poll_update_npc_conversation_latch(w, *, _facility_active_now, _facility_just_started, _npc_phase_early):
     from arena_bridge import NPC_PHASE_ASKING, NPC_PHASE_IDLE, NPC_PHASE_RESPONDING
@@ -229,7 +217,7 @@ def _poll_update_npc_conversation_latch(w, *, _facility_active_now, _facility_ju
                 w._npc_phase_unknown_prev = _npc_phase_early
     if _npc_state_prev and (not w._npc_conversation_active):
         try:
-            w._img_screen._reset_npc_dialog_display()
+            _npc_conversation.reset_npc_dialog_display(w)
         except (AttributeError, RuntimeError) as exc:
             _log.debug('NPC state transition reset failed: %s', exc)
 
@@ -239,22 +227,6 @@ def _poll_log_hierarchy_recognition_post_session(w, *, _resolved_area, in_interi
     _hierarchy_npc_active = bool(getattr(w, '_npc_conversation_active', False)) or bool(_hierarchy_session_name)
     _hierarchy_now = SeparationHierarchy.from_parts(top_level_state=_current_top_level(w), c_area=_hierarchy_area_now, in_interior=in_interior, npc_active=_hierarchy_npc_active)
     _log_hierarchy_recognition(w, stage='post_session', hierarchy=_hierarchy_now, decision=HierarchyRecognitionInput(top_level_state=_current_top_level(w), c_area=_hierarchy_area_now, in_interior=in_interior, npc_active=_hierarchy_npc_active, npc_phase=_npc_phase_early, mif_name=mif_name, img_name=_img_name_early, screen_id=getattr(w, '_screen_id_prev', None), panel_owner=getattr(w, '_panel_owner', '') or '', active_session=_hierarchy_session_name, interior_mif_name=interior_mif_name or '', interior_raw=interior_raw))
-
-def _poll_reset_temple_keys_on_img_transition(w, *, _img_name_early, _temple_active_now):
-    _temple_img_now = (_img_name_early or '').upper()
-    _temple_img_prev = (w._temple_last_img_prev or '').upper()
-    _temple_img_transition_to_menu = _temple_active_now and _temple_img_prev == 'YESNO.IMG' and (_temple_img_now == 'MENU_RT.IMG')
-    if _temple_img_transition_to_menu:
-        w._negot_key_prev = None
-        w._active_tmpl_key_prev = None
-        w._active_tmpl_ctx_prev = None
-        w._negot_prompts_ctx_prev = None
-        w._temple_menu_key_prev = None
-        w._temple_dialog_current_key = None
-        w._temple_dialog_current_text = None
-        w._temple_dialog_hold_polls = 0
-        _log.info('temple IMG transition YESNO.IMG -> MENU_RT.IMG: owner keys reset for menu redraw')
-    w._temple_last_img_prev = _temple_img_now
 
 def _poll_track_facility_latch(w):
     _active_facility_sess = w._session_manager.active_session()
@@ -278,31 +250,24 @@ def _poll_track_facility_latch(w):
     _facility_active_now = _tavern_active_now or _temple_active_now or _equipment_active_now or _mages_active_now
     _facility_just_started = _tavern_just_started or _temple_just_started or _equipment_just_started or _mages_just_started
     if _tavern_just_stopped:
-        _clear_stopped_facility_display(w, 'tavern')
         try:
             from session.tavern_node import TAVERN_NODE
             TAVERN_NODE.on_exit(w)
         except Exception:
             _log.exception('tavern on_exit cleanup failed')
     if _temple_just_stopped:
-        _clear_stopped_facility_display(w, 'temple')
         try:
             from session.temple_node import TEMPLE_NODE
             TEMPLE_NODE.on_exit(w)
         except Exception:
             _log.exception('temple on_exit cleanup failed')
     if _equipment_just_stopped:
-        _clear_stopped_facility_display(w, 'equipment')
         try:
             from session.equipment_node import EQUIPMENT_NODE
             EQUIPMENT_NODE.on_exit(w)
         except Exception:
             _log.exception('equipment on_exit cleanup failed')
     if _mages_just_stopped:
-        _clear_stopped_facility_display(w, 'mages_guild')
-        if getattr(w, '_mages_reply_baselined', False):
-            from normal_play.mages_reply_module import reset_mages_reply_state as _reset_mages_reply
-            _reset_mages_reply(w)
         try:
             from session.mages_guild_node import MAGES_GUILD_NODE
             MAGES_GUILD_NODE.on_exit(w)
@@ -515,35 +480,6 @@ def _poll_handle_triggers(w, *, rt_x, rt_z, inf_name, coord_valid=True):
     w._trigger_disp_ptr_prev = disp_ptr
     from normal_play.trigger_module import poll_trigger as _poll_trigger
     _poll_trigger(w, new_trigger=_new_trigger, trig_fell=_trig_fell, trigger_flag=trigger_flag, inf_name=inf_name)
-
-def _poll_status_template_parse(w, *, _entry_handled):
-    try:
-        from template_parser import parse_filled, render_status, status_popup_foreground
-        _status_fg = status_popup_foreground(w._analyzer, w._anchor)
-        _status_fg_was = getattr(w, '_b21_status_fg_was', False)
-        try:
-            _flag_popup = w._analyzer.read_bytes(w._anchor + 31012, 1)[0]
-        except (OSError, AttributeError):
-            _flag_popup = 0
-        _popup_active = _flag_popup == 1
-        _popup_was = getattr(w, '_b21_popup_was_open', False)
-        if _status_fg_was and (not _status_fg) or (_popup_was and (not _popup_active)):
-            if getattr(w, '_b21_owns_panel', False):
-                w._ui_router.clear_if_owner('status')
-                w._b21_owns_panel = False
-                w._last_status_vkey = None
-        w._b21_popup_was_open = _popup_active
-        w._b21_status_fg_was = _status_fg
-        _parsed = parse_filled(w._analyzer, w._anchor)
-        if _parsed is not None:
-            _vkey = (_parsed.get('location', ''), _parsed.get('time', ''), _parsed.get('date', ''), _parsed.get('weight', ''), _parsed.get('weight_max', ''), _parsed.get('states', ()))
-            _full_en, _full_ja, _ = render_status(_parsed)
-            if _status_fg and (not _entry_handled) and (_vkey != getattr(w, '_last_status_vkey', None)):
-                w._last_status_vkey = _vkey
-                w._ui_router.update_translation('status', _full_en, _full_ja)
-                w._b21_owns_panel = w._ui_router.is_owner('status')
-    except (ImportError, AttributeError, OSError):
-        pass
 
 def _propose_automap_screen_mode(w, *, screen_id_stable, top_level):
     try:
@@ -859,7 +795,6 @@ def _poll_run_session_manager(w, *, _img_name_early, _npc_phase_early, in_interi
         if _session_ctx is not None:
             poll_field_temple_session(w, _session_ctx)
         if getattr(w, '_field_temple_just_stopped', False):
-            _clear_stopped_facility_display(w, 'temple')
             try:
                 from session.temple_node import TEMPLE_NODE
                 TEMPLE_NODE.on_exit(w)
@@ -1002,14 +937,13 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
         try:
             place_text = _format_place_text(state, in_interior, interior_mif_name, _resolved_area, int(effective_floor), interior_facility_name=interior_facility_name)
             w._log_location_hint = _format_place_text(state, in_interior, interior_mif_name, _resolved_area, int(effective_floor), interior_facility_name=interior_facility_name, include_weather=False)
-            diag_area = _detect_play_area(w._analyzer, w._anchor, display_mif_name)
-            if diag_area == 'wilderness':
+            if _resolved_area == 'wilderness':
                 try:
                     _dump_wild_diag_hex(w._analyzer, w._anchor)
                     _poll_wild_diagnostic(w._analyzer, w._anchor)
                 except Exception:
                     _log.exception('wild_diag failed')
-            wild_location_name = gs.get('MapName') or '' if diag_area in ('city', 'wilderness') else None
+            wild_location_name = gs.get('MapName') or '' if _resolved_area in ('city', 'wilderness') else None
             _map_view = tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, treasure_pickup_open=_treasure_pickup_open, dungeon_floor_fresh=dungeon_level_hyp)
             if _map_view is not None:
                 try:
@@ -1132,7 +1066,7 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
                 _eq_snap = peek_equipment_l4_state(w)
                 _eq_state = _eq_snap.state if _eq_snap is not None else ''
                 _eq_surface = getattr(w, '_active_tmpl_surface_kind_prev', '') or ''
-                _eq_sub_key = equipment_sub_state_key(_eq_state, active_template_surface=_eq_surface, img_name=_shop_img_name, negot_counter_active=bool(getattr(w, '_negot_counter_active', False)))
+                _eq_sub_key = equipment_sub_state_key(_eq_state, active_template_surface=_eq_surface, img_name=_shop_img_name, negot_counter_active=bool(getattr(w, '_equipment_negot_counter_active', False)))
                 if _eq_sub_key:
                     _conv_label = _conv_label + i18n.tr(_eq_sub_key)
             except (AttributeError, ImportError):
@@ -1287,9 +1221,7 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
             _log.info('bonus_screen hold START (level-up character screen)')
         w._bonus_screen_hold = _bonus_res.hold_active
         if _bonus_res.clear_spell_markers:
-            w._spell_detail_marker = None
-            w._spell_detail_text_marker = None
-            w._spell_detail_text_ready = True
+            _char_screen.reset_spell_detail_markers(w)
         if _bonus_res.log_end:
             _log.info('bonus_screen hold END (flag_status=%d in_levelup=%s bonus_pts=%d)', _b126_flag_status, _in_levelup, _b126_bonus_pts)
         if _bonus_res.log_override:
@@ -1338,7 +1270,7 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
         if _screen_id_stable != w._screen_id_prev:
             w._screen_id_prev = _screen_id_stable
             w._img_screen.on_screen_id_changed(_screen_id_stable)
-        _poll_screen_panel_and_spell_detail(w, _screen_id_stable)
+        _char_screen.poll_char_screen_pages(w, _screen_id_stable)
         if _level_up_continue:
             from normal_play.level_up_module import consume_level_up_display as _consume_level_up_display
             _consume_level_up_display(w, screen_id_stable=_screen_id_stable, b30_dialog_active=_b30_dialog_active, b30_dialog_active_prev=_b30_dialog_active_prev, b30_red_changed=_b30_red_changed, npc_dialog_changed=_npc_dialog_changed)
@@ -1350,6 +1282,7 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
         pass
 from normal_play import normal_play_render as _normal_play_render
 from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_surface_dispatch, poll_lock_message_dispatch as _poll_lock_message_dispatch, poll_cinematic_dispatch as _poll_cinematic_dispatch, _poll_npc_popup_display, _poll_facility_render_dispatch, _poll_dialog_unit_dispatch, _close_facility_story_units
+from normal_play.status_popup_module import poll_status_popup as _poll_status_popup
 from normal_play.travel_map_module import STATE_NONE as _TRAVEL_STATE_NONE, classify_travel_l4 as _classify_travel_l4, render_travel_l4 as _render_travel_l4
 from screen_detector_play_common import is_inventory_screen_img as _is_inventory_screen_img
 _ASK_ABOUT_MAIN_RECOVERY_STATE = _normal_play_render._ASK_ABOUT_MAIN_RECOVERY_STATE
@@ -1363,60 +1296,6 @@ _unified_facility_node = _normal_play_render._unified_facility_node
 _UNIFIED_DISPATCH_FACILITIES = _normal_play_render._UNIFIED_DISPATCH_FACILITIES
 _poll_compute_temple_gate = _normal_play_render._poll_compute_temple_gate
 _poll_shared_negotiation_and_template = _normal_play_render._poll_shared_negotiation_and_template
-
-def _poll_screen_panel_and_spell_detail(w, _screen_id_stable):
-    try:
-        panel = w._tab_translate.panel_mode()
-        if _screen_id_stable == 'spell_detail':
-            try:
-                marker = w._analyzer.read_bytes(w._anchor + 22554, 16)
-            except (OSError, AttributeError):
-                marker = b''
-            try:
-                text_marker = w._analyzer.read_bytes(w._anchor + 4164, 96)
-            except (OSError, AttributeError):
-                text_marker = b''
-            marker_prev = getattr(w, '_spell_detail_marker', None)
-            text_marker_prev = getattr(w, '_spell_detail_text_marker', None)
-            text_ready = getattr(w, '_spell_detail_text_ready', True)
-            if panel != 'spell_detail' or marker != marker_prev or text_marker != text_marker_prev or (not text_ready):
-                w._spell_detail_marker = marker
-                w._spell_detail_text_marker = text_marker
-                w._img_screen._show_spell_detail_screen()
-        elif _screen_id_stable == 'equipment':
-            try:
-                _inv_marker = w._analyzer.read_bytes(w._anchor + 530, 19 * 40)
-            except (OSError, AttributeError):
-                _inv_marker = None
-            try:
-                _staff_marker = w._analyzer.read_bytes(w._anchor + 4164, 64)
-            except (OSError, AttributeError):
-                _staff_marker = None
-            if panel != 'equipment' or _inv_marker != w._equipment_marker or _staff_marker != getattr(w, '_equipment_staff_marker', None):
-                w._equipment_marker = _inv_marker
-                w._equipment_staff_marker = _staff_marker
-                w._img_screen._show_equipment_screen()
-            w._spell_detail_marker = None
-            w._spell_detail_text_marker = None
-            w._spell_detail_text_ready = True
-        elif _screen_id_stable == 'spellbook':
-            if panel != 'equipment':
-                w._img_screen._show_spellbook_screen()
-            w._spell_detail_marker = None
-            w._spell_detail_text_marker = None
-            w._spell_detail_text_ready = True
-        elif _screen_id_stable == 'race_select':
-            w._spell_detail_marker = None
-            w._spell_detail_text_marker = None
-            w._spell_detail_text_ready = True
-        else:
-            if panel in ('race_list', 'equipment', 'spell_detail'):
-                w._ui_router.set_panel_mode('translate', reason='screen:exit')
-            w._spell_detail_marker = None
-            w._spell_detail_text_marker = None
-            w._spell_detail_text_ready = True
-    except (AttributeError, RuntimeError):
-        pass
 
 class PollController:
 
@@ -1458,7 +1337,7 @@ class PollController:
                     _temple_just_started = _temple_just_started or _field_temple_just_started
                     _facility_active_now = True
                     _facility_just_started = _facility_just_started or _field_temple_just_started
-                _poll_reset_temple_keys_on_img_transition(w, _img_name_early=_img_name_early, _temple_active_now=_temple_active_now)
+                _temple_render.reset_keys_on_img_transition(w, img_name=_img_name_early, temple_active_now=_temple_active_now)
                 _poll_update_npc_conversation_latch(w, _facility_active_now=_facility_active_now, _facility_just_started=_facility_just_started, _npc_phase_early=_npc_phase_early)
             else:
                 _active_facility_name, _tavern_active_now, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _facility_active_now, _facility_just_started = ('', False, False, False, False, False, False, False, False, False)
@@ -1555,16 +1434,10 @@ class PollController:
                     _close_facility_story_units(w)
                 elif _screen_id == 'system_menu':
                     _close_facility_story_units(w)
-                    try:
-                        for _owner in ('npc_conversation', 'npc_dialog', 'npc_message'):
-                            w._ui_router.clear_if_owner(_owner, mode='translate', clear_place_list=True)
-                        w._npc_conversation_active = False
-                        w._ask_about_menu_active_prev = False
-                        w._ask_about_current_ptr_prev = -1
-                        w._popup11_list_state_prev = ''
-                        w._popup11_exit_pending_ask_about = False
-                    except Exception:
-                        pass
+                    _npc_conversation.close_on_modal_overlay(w)
+                    _instore_dialog.close_on_modal_overlay(w)
+                    _npc_message.close_on_modal_overlay(w)
+                    w._npc_conversation_active = False
                 elif w._travel_l4_active:
                     _close_facility_story_units(w)
                 else:
@@ -1575,11 +1448,13 @@ class PollController:
             _chargen_handle_npc_dialog(w, npc_dialog=npc_dialog, entry_handled=False, is_corpse_loot=_is_corpse_loot)
             if _npc_dialog_changed:
                 w._npc_dialog_prev = npc_dialog
-                w._b21_owns_panel = False
             if _top_is_normal_play:
-                _poll_status_template_parse(w, _entry_handled=_entry_handled)
-            from normal_play.trigger_module import compute_b30_state as _compute_b30_state
-            _b30 = _compute_b30_state(w, screen_id=getattr(w, '_screen_id_prev', None), c_area=_poll_hierarchy_area, c1_axis=getattr(w, '_c1_dialog_axis_now', None))
+                _poll_status_popup(w, entry_handled=_entry_handled)
+            from normal_play.trigger_module import compute_b30_state as _compute_b30_state, idle_b30_state as _idle_b30_state
+            if _top_is_normal_play:
+                _b30 = _compute_b30_state(w, screen_id=getattr(w, '_screen_id_prev', None), c_area=_poll_hierarchy_area, c1_axis=getattr(w, '_c1_dialog_axis_now', None))
+            else:
+                _b30 = _idle_b30_state(w)
             _b30_dialog_flag = _b30['dialog_flag']
             _b30_red_str = _b30['red_str']
             _b30_red_changed = _b30['red_changed']
@@ -1587,12 +1462,17 @@ class PollController:
             _b30_dialog_active_prev = _b30['dialog_active_prev']
             _b30_img_name = _b30['img_name']
             _b30_in_gameplay = _b30['in_gameplay']
-            _poll_cinematic_dispatch(w, _b30)
+            if _top_is_normal_play:
+                _poll_cinematic_dispatch(w, _b30)
             if not _screen_display_active:
-                _poll_c1_surface_dispatch(w, _b30, npc_dialog_changed=_npc_dialog_changed, inf_name=inf_name, mif_name=mif_name, c_area=_poll_hierarchy_area)
+                _poll_c1_surface_dispatch(w, _b30, inf_name=inf_name, mif_name=mif_name, c_area=_poll_hierarchy_area)
             _poll_lock_message_dispatch(w, _b30, rt_x=rt_x, rt_z=rt_z, in_play=_top_is_normal_play and (not _screen_display_active))
-            from normal_play.level_up_module import produce_level_up_state as _produce_level_up_state
-            _level_up_continue = _produce_level_up_state(w, loading_active=w._loading_state_active, loading_post_settle=_loading_post_settle)
+            from normal_play.level_up_module import produce_level_up_state as _produce_level_up_state, suspend_level_up_state as _suspend_level_up_state
+            if _top_is_normal_play:
+                _level_up_continue = _produce_level_up_state(w, loading_active=w._loading_state_active, loading_post_settle=_loading_post_settle)
+            else:
+                _suspend_level_up_state(w)
+                _level_up_continue = False
             from normal_play.item_pickup_module import poll_item_pickup as _poll_item_pickup
             _poll_item_pickup(w, newpop_gate=_newpop_gate, b30_img_name=_b30_img_name, npc_dialog=npc_dialog, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, screen_id=getattr(w, '_screen_id_prev', None), facility_active=bool(_active_facility_name), inventory_screen=_inventory_screen_now)
             w._treasure_pickup_open_prev = bool(getattr(w, '_b32_newpop_open', False) and (not getattr(w, '_b32_was_corpse', False)))

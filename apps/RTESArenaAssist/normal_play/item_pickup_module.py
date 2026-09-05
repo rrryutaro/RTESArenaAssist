@@ -144,9 +144,6 @@ def _clear_item_pickup_owner(w, *, restore_trigger: bool=False) -> None:
         except (ImportError, AttributeError, RuntimeError) as exc:
             _log.debug('NEWPOP trigger restore skipped: %s', exc)
 
-def _claim_item_pickup_owner(w) -> None:
-    w._ui_router.claim_owner('item_pickup', mode='item_pickup')
-
 def _finalize_remaining_taken(w) -> None:
     _seen_final = getattr(w, '_b32_seen_items', []) or []
     _final_changed = False
@@ -176,7 +173,6 @@ def _gate_close_step(w, *, count: int, names_present: bool, corpse_item: bool, i
     w._b32_pending_close_count = _pending
     if _pending < _CLOSE_DEBOUNCE_POLLS:
         _log.info('NEWPOP gate transient-close ignored (pending=%d/%d img=%r count=%d names_present=%s corpse_item=%s)', _pending, _CLOSE_DEBOUNCE_POLLS, (img_name or '').upper(), count, names_present, corpse_item)
-        _claim_item_pickup_owner(w)
         return
     _no_content = count == 0 and (not names_present) and (not corpse_item)
     if _no_content:
@@ -251,7 +247,6 @@ def _poll_open_chest(w, *, gate_open: bool, container_n: int | None, display_n: 
         _gate_close_step(w, count=count, names_present=names_present, corpse_item=corpse_item, img_name=img_name, screen_id=screen_id)
         return
     w._b32_pending_close_count = 0
-    _claim_item_pickup_owner(w)
     _disp_prev = getattr(w, '_b32_disp_n_prev', display_n)
     if display_n < _disp_prev and display_n > 0 and names_present:
         _seen = getattr(w, '_b32_seen_items', [])
@@ -272,7 +267,6 @@ def _poll_open_corpse(w, *, gate_open: bool, count: int, names_present: bool, np
         _gate_close_step(w, count=count, names_present=names_present, corpse_item=corpse_item, img_name=img_name, screen_id=screen_id)
         return
     w._b32_pending_close_count = 0
-    _claim_item_pickup_owner(w)
     if not corpse_item:
         return
     _names_now = _corpse_item_names(w, npc_dialog)
