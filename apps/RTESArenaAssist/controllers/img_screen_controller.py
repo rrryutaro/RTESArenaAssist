@@ -4,6 +4,7 @@ from top_level.top_level_dispatcher import current_state as _current_top_level
 from top_level import pregame_render as _pregame_render
 from normal_play import char_screen_module as _char_screen
 from normal_play import npc_conversation_module as _npc_conversation
+from ui_router import SCREEN_CHANGE_CLEAR_PRIORITY
 _log = logging.getLogger('img_screen_controller')
 
 class ImgScreenController:
@@ -43,7 +44,7 @@ class ImgScreenController:
             if _current_top_level(self._w) == 'chargen':
                 self._w._chargen_opening_text_prev = ''
             try:
-                self._w._ui_router.clear_display('')
+                self._w._ui_router.clear_display('', priority=SCREEN_CHANGE_CLEAR_PRIORITY)
             except AttributeError:
                 pass
             return

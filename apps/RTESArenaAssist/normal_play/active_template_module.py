@@ -7,7 +7,9 @@ _RESPONSE_PTR_RANGES = ((4164, 512), (31097, 68), (37534, 512), (39582, 512))
 _TAVERN_SHOP_L4_KINDS = frozenset({'menu', 'rooms', 'drinks', 'rumor_type'})
 _ACTIVE_TEMPLATE_REPLACEABLE_OWNERS = frozenset({'', 'active_template'}) | FACILITY_OWNER_SETS_BY_SESSION['tavern']
 
-def should_poll_active_template(*, shop_menu_visible: bool, shop_buy_active: bool, active_facility: str, allow_during_shop_menu: bool, response_active: bool, in_negotiation: bool, top_level_state: str, tavern_l4_kind: str='') -> bool:
+def should_poll_active_template(*, shop_menu_visible: bool, shop_buy_active: bool, active_facility: str, allow_during_shop_menu: bool, response_active: bool, in_negotiation: bool, top_level_state: str, tavern_l4_kind: str='', c_area: str='') -> bool:
+    if c_area == 'dungeon':
+        return False
     if active_facility == 'tavern' and (tavern_l4_kind or '') in _TAVERN_SHOP_L4_KINDS:
         return False
     return not shop_buy_active and (not shop_menu_visible or allow_during_shop_menu) and (not response_active) and (not in_negotiation) and (top_level_state == 'normal-play')
@@ -29,7 +31,7 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
     except Exception:
         _in_negot = False
     _top_level = _current_top_level(w)
-    _gate_ok = should_poll_active_template(shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, active_facility=active_facility, allow_during_shop_menu=allow_during_shop_menu, response_active=_response_active, in_negotiation=_in_negot, top_level_state=_top_level, tavern_l4_kind=tavern_l4_kind)
+    _gate_ok = should_poll_active_template(shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, active_facility=active_facility, allow_during_shop_menu=allow_during_shop_menu, response_active=_response_active, in_negotiation=_in_negot, top_level_state=_top_level, tavern_l4_kind=tavern_l4_kind, c_area=c_area)
     if not _gate_ok:
         if active_facility == 'tavern' and (tavern_l4_kind or '') in _TAVERN_SHOP_L4_KINDS:
             _block_key = (shop_img_name, tavern_l4_kind)

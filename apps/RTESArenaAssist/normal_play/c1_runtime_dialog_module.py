@@ -121,7 +121,7 @@ def release_c1_runtime_dialog(w) -> None:
     _close_c1_runtime_dialog_display(w)
     w._c1_runtime_dialog_body_prev = None
 
-def poll_c1_runtime_dialog_lifetime(w) -> None:
+def poll_c1_runtime_dialog_lifetime(w, *, in_gameplay: bool=True) -> None:
     if not getattr(w, '_c1_runtime_dialog_open', False):
         return
     from screen_detector import is_popup_frame_drawn, POPUP_FRAME_ABSENT_POLLS_TO_END
@@ -130,10 +130,13 @@ def poll_c1_runtime_dialog_lifetime(w) -> None:
         owner = w._ui_router.current_owner() or ''
     except (AttributeError, RuntimeError):
         return
-    try:
-        drawn = is_popup_frame_drawn(w._analyzer, w._anchor)
-    except (OSError, AttributeError, RuntimeError):
+    if not in_gameplay:
         drawn = None
+    else:
+        try:
+            drawn = is_popup_frame_drawn(w._analyzer, w._anchor)
+        except (OSError, AttributeError, RuntimeError):
+            drawn = None
     if drawn:
         w._c1_runtime_dialog_frame_seen = True
         w._c1_runtime_dialog_frame_absent = 0

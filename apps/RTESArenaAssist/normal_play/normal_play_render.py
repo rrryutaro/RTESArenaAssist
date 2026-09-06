@@ -35,8 +35,8 @@ def poll_c1_surface_dispatch(w, b30, *, inf_name, mif_name, c_area: str=''):
     _poll_red_text(w, b30=b30)
     _poll_gold_drop(w, b30=b30, inf_name=inf_name, mif_name=mif_name)
     _poll_red_text_lifetime(w, b30=b30)
-    _poll_gold_drop_lifetime(w)
-    _poll_c1_runtime_dialog_lifetime(w)
+    _poll_gold_drop_lifetime(w, in_gameplay=bool(b30.get('in_gameplay')))
+    _poll_c1_runtime_dialog_lifetime(w, in_gameplay=bool(b30.get('in_gameplay')))
 _ASK_ABOUT_MAIN_BLOCKING_LIST_STATES = frozenset({'where_is_list', 'dynamic_place_list', 'npc_response'})
 _ASK_ABOUT_MENU_PTR_MIN = 32768
 _ASK_ABOUT_MENU_PTR_MAX = 36864

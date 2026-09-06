@@ -555,9 +555,8 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
     _just_entered_interior = in_interior and (not prev_in_interior)
     if _just_entered_interior:
         w._entry_door_pos = getattr(w, '_last_outside_rt', None)
-        w._building_entry_pending = True
-        w._building_entry_msg_buf_written = False
-        w._b288_entry_diag_count = 0
+        from normal_play.building_entry_module import begin_entry_episode as _begin_entry_episode
+        _begin_entry_episode(w)
         _log.info('interior entered, door_pos=%s map=%s interior_raw=%s', getattr(w, '_entry_door_pos', None), gs.get('MapName'), interior_raw)
     if not in_interior and prev_in_interior:
         _log.info('interior left')
@@ -566,8 +565,8 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
         w._instore_resp_prev = ''
         w._instore_resp_current_key = None
         w._instore_resp_text_by_offset = {}
-        w._building_entry_pending = False
-        w._building_entry_msg_buf_written = False
+        from normal_play.building_entry_module import end_entry_episode as _end_entry_episode
+        _end_entry_episode(w)
     w._in_interior_prev = in_interior
     display_mif_name = mif_name
     interior_mif_name: str | None = None
@@ -1396,8 +1395,9 @@ class PollController:
             _msg_buf_prev = getattr(w, '_msg_buf_prev', '')
             _msg_buf_changed = msg_buf != _msg_buf_prev
             w._msg_buf_prev = msg_buf
-            if _msg_buf_changed and getattr(w, '_building_entry_pending', False):
-                w._building_entry_msg_buf_written = True
+            if _msg_buf_changed:
+                from normal_play.building_entry_module import note_msg_buf_written as _note_entry_msg_buf_written
+                _note_entry_msg_buf_written(w)
             if _top_is_normal_play:
                 _newpop_gate, _is_corpse_loot = _poll_compute_newpop_gate(w, npc_dialog=npc_dialog)
             else:

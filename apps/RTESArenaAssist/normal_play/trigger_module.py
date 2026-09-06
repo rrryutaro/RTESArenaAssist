@@ -250,7 +250,7 @@ def compute_b30_state(w, *, screen_id: str | None=None, c_area: str | None=None,
     w._b30_in_gameplay_prev = _in_gameplay
     w._b30_dialog_active_prev = _dialog_text_fg
     return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay}
-_RED_TEXT_REPLACEABLE_OWNERS = frozenset({'', 'red_text', 'red_text_dialog', 'trigger'})
+_RED_TEXT_REPLACEABLE_OWNERS = frozenset({'', 'red_text', 'red_text_dialog', 'trigger', 'gold_drop', 'c1_runtime_dialog'})
 
 def poll_red_text(w, *, b30: dict) -> None:
     _death_red_allowed = _is_death_red_text(b30['red_str']) and _current_hp_is_zero(w)

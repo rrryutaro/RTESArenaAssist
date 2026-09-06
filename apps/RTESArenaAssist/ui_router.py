@@ -9,6 +9,7 @@ from display_intent import DisplayIntent, PollFrame
 from hierarchy_state import active_facility_session_name, facility_owners_for_session, CONVERSATION_PANEL_OWNERS
 from panel_mode_resolver import panel_is_effective, required_owner_for_mode, resolve_flush_mode
 _log = logging.getLogger('RTESArenaAssist')
+SCREEN_CHANGE_CLEAR_PRIORITY = -1
 _CONVERSATION_TAB_OWNERS = CONVERSATION_PANEL_OWNERS
 
 class UiRouter:
@@ -434,6 +435,12 @@ class UiRouter:
     def current_owner(self) -> str:
         return getattr(self._window, '_panel_owner', '') or ''
 
+    def applied_owner(self) -> str:
+        frame = self._poll_frame
+        if frame is not None:
+            return frame.panel_owner or ''
+        return self.current_owner()
+
     def is_owner(self, panel_owner: str) -> bool:
         return self.current_owner() == panel_owner
 
@@ -445,8 +452,8 @@ class UiRouter:
     def clear_if_owner(self, panel_owner: str, *, mode: Optional[str]=None, clear_place_list: bool=False, clear_travel_table: bool=False, notify_close: bool=True) -> None:
         self.propose_display(DisplayIntent.clear_if_owner(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, notify_close=notify_close))
 
-    def clear_display(self, panel_owner: str='', *, mode: Optional[str]='translate', clear_place_list: bool=False, clear_travel_table: bool=False, allowed_current_owners: Optional[tuple]=None) -> None:
-        self.propose_display(DisplayIntent.clear(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, allowed_current_owners=allowed_current_owners))
+    def clear_display(self, panel_owner: str='', *, mode: Optional[str]='translate', clear_place_list: bool=False, clear_travel_table: bool=False, allowed_current_owners: Optional[tuple]=None, priority: int=0) -> None:
+        self.propose_display(DisplayIntent.clear(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, priority=priority, allowed_current_owners=allowed_current_owners))
 
     def update_panel_translation(self, panel_en: str, panel_ja: str, *, speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True, priority: int=0) -> None:
         self.propose_display(DisplayIntent.panel_translation(panel_en, panel_ja, priority=priority, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled))

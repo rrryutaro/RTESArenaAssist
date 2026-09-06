@@ -104,7 +104,7 @@ def _close_gold_drop_display(w) -> None:
 def release_gold_drop(w) -> None:
     _close_gold_drop_display(w)
 
-def poll_gold_drop_lifetime(w) -> None:
+def poll_gold_drop_lifetime(w, *, in_gameplay: bool=True) -> None:
     if not getattr(w, '_gold_drop_open', False):
         return
     from screen_detector import is_popup_frame_drawn, POPUP_FRAME_ABSENT_POLLS_TO_END
@@ -112,10 +112,13 @@ def poll_gold_drop_lifetime(w) -> None:
         owner = w._ui_router.current_owner() or ''
     except (AttributeError, RuntimeError):
         return
-    try:
-        drawn = is_popup_frame_drawn(w._analyzer, w._anchor)
-    except (OSError, AttributeError, RuntimeError):
+    if not in_gameplay:
         drawn = None
+    else:
+        try:
+            drawn = is_popup_frame_drawn(w._analyzer, w._anchor)
+        except (OSError, AttributeError, RuntimeError):
+            drawn = None
     if drawn:
         w._gold_drop_frame_seen = True
         w._gold_drop_frame_absent = 0

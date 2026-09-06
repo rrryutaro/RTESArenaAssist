@@ -5,6 +5,46 @@ _MAX_DIAG_DUMPS = 6
 _DIALOG_MENU_IMGS = frozenset({'MENU_RT.IMG', 'POPUP11.IMG', 'NEGOTBUT.IMG', 'YESNO.IMG', 'NEWPOP.IMG'})
 _NON_ENTRY_XMI_IMGS = frozenset({'VISION.XMI'})
 _ENTRY_CIF_IMGS = frozenset({'FACES00.CIF'})
+OWNER = 'building_entry'
+
+def begin_entry_episode(w) -> None:
+    w._building_entry_pending = True
+    w._building_entry_msg_buf_written = False
+    w._b288_entry_diag_count = 0
+    w._building_entry_push_key = None
+    w._building_entry_delivered = False
+    w._building_entry_log_key = None
+
+def end_entry_episode(w) -> None:
+    w._building_entry_pending = False
+    w._building_entry_msg_buf_written = False
+    w._building_entry_push_key = None
+    w._building_entry_delivered = False
+    w._building_entry_log_key = None
+
+def note_msg_buf_written(w) -> None:
+    if getattr(w, '_building_entry_pending', False):
+        w._building_entry_msg_buf_written = True
+
+def _push_entry(w, key: tuple, en: str, ja: str, *, speech_role: str | None) -> bool:
+    router = w._ui_router
+    kwargs = {'speech_role': speech_role} if speech_role else {}
+    if getattr(w, '_building_entry_push_key', None) != key:
+        w._building_entry_push_key = key
+        w._building_entry_delivered = False
+        router.update_translation(OWNER, en, ja, **kwargs)
+        return True
+    if getattr(w, '_building_entry_delivered', False):
+        return False
+    applied = getattr(router, 'applied_owner', None)
+    applied_owner = applied() if callable(applied) else ''
+    if applied_owner == OWNER:
+        w._building_entry_delivered = True
+        return False
+    if applied_owner == '':
+        router.update_translation(OWNER, en, ja, **kwargs)
+        return True
+    return False
 
 def should_poll_building_entry(*, entry_phase: bool, panel_owner: str, pending: bool, img_name: str) -> bool:
     img_upper = (img_name or '').upper()
@@ -158,10 +198,10 @@ def _push_entry_original(w, msg_buf: str) -> bool:
     _en = _normalize_for_lookup(msg_buf).strip() if msg_buf else ''
     if not _en:
         return False
-    _entry_log_key = ('original_fallback', None, _en[:40])
-    if getattr(w, '_building_entry_log_key', None) != _entry_log_key:
-        w._building_entry_log_key = _entry_log_key
-        w._ui_router.update_translation('building_entry', _en, '')
+    _entry_key = ('original_fallback', None, _en[:40])
+    _push_entry(w, _entry_key, _en, '', speech_role=None)
+    if getattr(w, '_building_entry_log_key', None) != _entry_key:
+        w._building_entry_log_key = _entry_key
         _log.info('panel_owner -> building_entry (src=original_fallback en=%r)', _en[:40])
     return True
 
@@ -179,10 +219,10 @@ def poll_building_entry(w, *, building_entry_active: bool, entry_phase_prev: boo
                 if _entry_result is None:
                     continue
                 _entry_ja, _entry_meta = _entry_result
-                _entry_log_key = (_src, _entry_meta.get('matched_key'), _txt[:40])
-                if getattr(w, '_building_entry_log_key', None) != _entry_log_key:
-                    w._building_entry_log_key = _entry_log_key
-                    w._ui_router.update_translation('building_entry', _txt, _entry_ja, speech_role='situation')
+                _entry_key = (_src, _entry_meta.get('matched_key'), _txt[:40])
+                _push_entry(w, _entry_key, _txt, _entry_ja, speech_role='situation')
+                if getattr(w, '_building_entry_log_key', None) != _entry_key:
+                    w._building_entry_log_key = _entry_key
                     _log.info('panel_owner -> building_entry (src=%s key=%s en=%r)', _src, _entry_meta.get('matched_key'), _txt[:40])
                 try:
                     from normal_play.copy_selector_observation import observe as _observe_copy
@@ -200,11 +240,9 @@ def poll_building_entry(w, *, building_entry_active: bool, entry_phase_prev: boo
             if _entry_original_allowed(pending=getattr(w, '_building_entry_pending', False), msg_buf_written=getattr(w, '_building_entry_msg_buf_written', False)):
                 entry_handled = _push_entry_original(w, msg_buf)
     elif entry_phase_prev or getattr(w, '_building_entry_pending', False):
-        w._building_entry_pending = False
-        w._building_entry_msg_buf_written = False
-        w._building_entry_log_key = None
-        if w._ui_router.is_owner('building_entry'):
-            w._ui_router.release_if_owner('building_entry')
+        end_entry_episode(w)
+        if w._ui_router.is_owner(OWNER):
+            w._ui_router.release_if_owner(OWNER)
             _log.info("panel_owner -> '' (entry phase exited)")
     return entry_handled
-__all__ = ['poll_building_entry', 'should_poll_building_entry']
+__all__ = ['OWNER', 'begin_entry_episode', 'end_entry_episode', 'note_msg_buf_written', 'poll_building_entry', 'should_poll_building_entry']
