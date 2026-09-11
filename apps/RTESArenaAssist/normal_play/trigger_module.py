@@ -210,7 +210,7 @@ def compute_b30_state(w, *, screen_id: str | None=None, c_area: str | None=None,
     _red_prev = getattr(w, '_b30_red_str_prev', '')
     _red_changed = _red_str != _red_prev
     if _red_changed:
-        _log.debug('b30 0x7979 changed: %r → %r', _red_prev, _red_str)
+        _recog(_log, 'b30 0x7979 changed: %r → %r', _red_prev, _red_str)
     w._b30_red_str_prev = _red_str
     try:
         _fg_raw = w._analyzer.read_bytes(w._anchor + 43076, 2)

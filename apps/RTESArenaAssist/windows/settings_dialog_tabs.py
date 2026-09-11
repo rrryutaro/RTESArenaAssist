@@ -125,6 +125,42 @@ def build_general_tab(dlg: '_SettingsDialog', *, poll_ms_default: int) -> QWidge
     sr_lay.addWidget(dlg._cap_se_preview_btn)
     se_form.addRow('', se_row)
     outer.addWidget(se_grp)
+    from services.capture_hotkey import DEFAULT_HOTKEY, KEY_CHOICES, MODIFIER_ORDER, parse_hotkey
+    hk_grp = QGroupBox(i18n.tr('settings.group_capture_hotkey'))
+    hk_form = QFormLayout(hk_grp)
+    hk_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    hk_form.setSpacing(6)
+    hk_row = QWidget()
+    hk_lay = QHBoxLayout(hk_row)
+    hk_lay.setContentsMargins(0, 0, 0, 0)
+    dlg._cap_hk_cb = QCheckBox(i18n.tr('settings.capture_hotkey_enabled'))
+    dlg._cap_hk_cb.setChecked(bool(settings.get('capture_hotkey_enabled', True)))
+    cur_spec = str(settings.get('capture_hotkey', DEFAULT_HOTKEY) or DEFAULT_HOTKEY)
+    try:
+        cur_mods, cur_key = parse_hotkey(cur_spec)
+    except ValueError:
+        cur_mods, cur_key = (frozenset(), DEFAULT_HOTKEY)
+    dlg._cap_hk_mod_cbs = {}
+    for _m in MODIFIER_ORDER:
+        _cb = QCheckBox(_m)
+        _cb.setChecked(_m in cur_mods)
+        dlg._cap_hk_mod_cbs[_m] = _cb
+    dlg._cap_hk_key_combo = QComboBox()
+    dlg._cap_hk_key_items = [name for name, _vk in KEY_CHOICES]
+    dlg._cap_hk_key_combo.addItems(dlg._cap_hk_key_items)
+    dlg._cap_hk_key_combo.setCurrentIndex(dlg._cap_hk_key_items.index(cur_key))
+    hk_lay.addWidget(dlg._cap_hk_cb)
+    hk_lay.addSpacing(8)
+    for _m in MODIFIER_ORDER:
+        hk_lay.addWidget(dlg._cap_hk_mod_cbs[_m])
+    hk_lay.addSpacing(4)
+    hk_lay.addWidget(QLabel(i18n.tr('settings.capture_hotkey_key') + ':'))
+    hk_lay.addWidget(dlg._cap_hk_key_combo, 1)
+    hk_form.addRow('', hk_row)
+    hk_note = QLabel(i18n.tr('settings.capture_hotkey_note'))
+    hk_note.setWordWrap(True)
+    hk_form.addRow('', hk_note)
+    outer.addWidget(hk_grp)
     outer.addStretch()
     return page
 

@@ -387,6 +387,18 @@ class _SettingsDialog(QDialog):
         return 'phone_camera'
 
     @property
+    def capture_hotkey_enabled(self) -> bool:
+        return self._cap_hk_cb.isChecked()
+
+    @property
+    def capture_hotkey(self) -> str:
+        from services.capture_hotkey import DEFAULT_HOTKEY, format_hotkey
+        mods = {m for m, cb in self._cap_hk_mod_cbs.items() if cb.isChecked()}
+        idx = self._cap_hk_key_combo.currentIndex()
+        key = self._cap_hk_key_items[idx] if 0 <= idx < len(self._cap_hk_key_items) else DEFAULT_HOTKEY
+        return format_hotkey(mods, key)
+
+    @property
     def equipment_mark_equipped(self) -> str:
         return self._mark_equipped.text()
 

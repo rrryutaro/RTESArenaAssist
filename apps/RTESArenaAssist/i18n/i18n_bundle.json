@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:c9706fc56d43134767398ce8ee89e5670f1ae10276ceb6c9357cc4a9f3ce08c3",
+  "registry_hash": "sha256:3af193f8a8bcf391936bfff5511cce173d2c92713693044befb339f93ac0ac14",
   "categories": [
     {
       "category": "assist_ui",
@@ -3771,6 +3771,41 @@
           "id": 900751,
           "kind": "label",
           "debug_name": "equipment.filter.category_all"
+        },
+        {
+          "id": 900752,
+          "kind": "label",
+          "debug_name": "capture.hotkey_failed"
+        },
+        {
+          "id": 900753,
+          "kind": "label",
+          "debug_name": "settings.capture_hotkey_enabled"
+        },
+        {
+          "id": 900754,
+          "kind": "label",
+          "debug_name": "settings.capture_hotkey_key"
+        },
+        {
+          "id": 900755,
+          "kind": "label",
+          "debug_name": "settings.capture_hotkey_note"
+        },
+        {
+          "id": 900756,
+          "kind": "label",
+          "debug_name": "settings.group_capture_hotkey"
+        },
+        {
+          "id": 900757,
+          "kind": "label",
+          "debug_name": "capture.hotkey_fallback"
+        },
+        {
+          "id": 900758,
+          "kind": "label",
+          "debug_name": "capture.hotkey_registered"
         }
       ]
     },
@@ -48015,7 +48050,7 @@
         },
         {
           "id": 900295,
-          "text": " (Dungeon {n}F)"
+          "text": " (Dungeon {floor})"
         },
         {
           "id": 900296,
@@ -49842,6 +49877,30 @@
           "text": "Type: all"
         },
         {
+          "id": 900752,
+          "text": "Could not register hotkey {hotkey} (in use by another app). The capture button still works."
+        },
+        {
+          "id": 900753,
+          "text": "Enabled"
+        },
+        {
+          "id": 900754,
+          "text": "Key"
+        },
+        {
+          "id": 900755,
+          "text": "Works while DOSBox has focus. The chosen key is not passed to the game."
+        },
+        {
+          "id": 900756,
+          "text": "Capture hotkey"
+        },
+        {
+          "id": 900758,
+          "text": "Hotkey {hotkey} registered"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -50924,7 +50983,7 @@
         },
         {
           "id": 103050,
-          "text": "クリスタルタワーの回廊に入る。\n奇妙な音と光景に迎えられる……"
+          "text": "クリスタルの塔の回廊に入る。\n奇妙な音と光景に迎えられる……"
         },
         {
           "id": 103054,
@@ -59976,7 +60035,7 @@
         },
         {
           "id": 111366,
-          "text": "あなたの大陸地図には、サマーセット島地方にある魔法の坩堝、クリスタルタワーとして知られる場所が記されている……"
+          "text": "あなたの大陸地図には、サマーセット島地方にある魔法の坩堝、クリスタルの塔として知られる場所が記されている……"
         },
         {
           "id": 111367,
@@ -75760,7 +75819,7 @@
         },
         {
           "id": 900295,
-          "text": "（ダンジョン {n}F）"
+          "text": "（ダンジョン {floor}）"
         },
         {
           "id": 900296,
@@ -77585,6 +77644,30 @@
         {
           "id": 900751,
           "text": "種類：すべて"
+        },
+        {
+          "id": 900752,
+          "text": "ショートカットキー {hotkey} を登録できません（他のアプリが使用中）。ボタンからの撮影は使えます"
+        },
+        {
+          "id": 900753,
+          "text": "有効"
+        },
+        {
+          "id": 900754,
+          "text": "キー"
+        },
+        {
+          "id": 900755,
+          "text": "DOSBox にフォーカスがある間も効きます。選んだキーはゲームへ渡りません。"
+        },
+        {
+          "id": 900756,
+          "text": "キャプチャのショートカットキー"
+        },
+        {
+          "id": 900758,
+          "text": "ショートカットキー {hotkey} を登録しました"
         },
         {
           "id": 902000,
@@ -104313,7 +104396,7 @@
         },
         {
           "id": 900295,
-          "text": " (Mazmorra {n}F)"
+          "text": " (Mazmorra {floor})"
         },
         {
           "id": 900296,
@@ -106138,6 +106221,30 @@
         {
           "id": 900751,
           "text": "Tipo: todos"
+        },
+        {
+          "id": 900752,
+          "text": "No se pudo registrar la tecla {hotkey} (la usa otra aplicación). El botón de captura sigue funcionando."
+        },
+        {
+          "id": 900753,
+          "text": "Activado"
+        },
+        {
+          "id": 900754,
+          "text": "Tecla"
+        },
+        {
+          "id": 900755,
+          "text": "Funciona aunque DOSBox tenga el foco. La tecla elegida no se envía al juego."
+        },
+        {
+          "id": 900756,
+          "text": "Tecla de captura"
+        },
+        {
+          "id": 900758,
+          "text": "Tecla {hotkey} registrada"
         },
         {
           "id": 902000,
@@ -132058,7 +132165,7 @@
         },
         {
           "id": 900295,
-          "text": " (Verlies {n}F)"
+          "text": " (Verlies {floor})"
         },
         {
           "id": 900296,
@@ -133883,6 +133990,30 @@
         {
           "id": 900751,
           "text": "Typ: alle"
+        },
+        {
+          "id": 900752,
+          "text": "Tastenkürzel {hotkey} konnte nicht registriert werden (von einer anderen App belegt). Die Aufnahme-Schaltfläche funktioniert weiterhin."
+        },
+        {
+          "id": 900753,
+          "text": "Aktiviert"
+        },
+        {
+          "id": 900754,
+          "text": "Taste"
+        },
+        {
+          "id": 900755,
+          "text": "Wirkt auch, wenn DOSBox den Fokus hat. Die gewählte Taste wird nicht an das Spiel weitergegeben."
+        },
+        {
+          "id": 900756,
+          "text": "Tastenkürzel für Aufnahme"
+        },
+        {
+          "id": 900758,
+          "text": "Tastenkürzel {hotkey} registriert"
         },
         {
           "id": 902000,
@@ -159803,7 +159934,7 @@
         },
         {
           "id": 900295,
-          "text": " (Donjon {n}F)"
+          "text": " (Donjon {floor})"
         },
         {
           "id": 900296,
@@ -161628,6 +161759,30 @@
         {
           "id": 900751,
           "text": "Type : tous"
+        },
+        {
+          "id": 900752,
+          "text": "Impossible d'enregistrer le raccourci {hotkey} (utilisé par une autre application). Le bouton de capture reste utilisable."
+        },
+        {
+          "id": 900753,
+          "text": "Activé"
+        },
+        {
+          "id": 900754,
+          "text": "Touche"
+        },
+        {
+          "id": 900755,
+          "text": "Fonctionne même quand DOSBox a le focus. La touche choisie n'est pas transmise au jeu."
+        },
+        {
+          "id": 900756,
+          "text": "Raccourci de capture"
+        },
+        {
+          "id": 900758,
+          "text": "Raccourci {hotkey} enregistré"
         },
         {
           "id": 902000,
@@ -187548,7 +187703,7 @@
         },
         {
           "id": 900295,
-          "text": " (Dungeon {n}F)"
+          "text": " (Dungeon {floor})"
         },
         {
           "id": 900296,
@@ -189373,6 +189528,30 @@
         {
           "id": 900751,
           "text": "Tipo: tutti"
+        },
+        {
+          "id": 900752,
+          "text": "Impossibile registrare il tasto {hotkey} (usato da un'altra app). Il pulsante di cattura funziona comunque."
+        },
+        {
+          "id": 900753,
+          "text": "Attivo"
+        },
+        {
+          "id": 900754,
+          "text": "Tasto"
+        },
+        {
+          "id": 900755,
+          "text": "Funziona anche quando DOSBox ha il focus. Il tasto scelto non viene passato al gioco."
+        },
+        {
+          "id": 900756,
+          "text": "Tasto di scelta rapida per la cattura"
+        },
+        {
+          "id": 900758,
+          "text": "Tasto {hotkey} registrato"
         },
         {
           "id": 902000,
@@ -215293,7 +215472,7 @@
         },
         {
           "id": 900295,
-          "text": " (Подземелье {n}F)"
+          "text": " (Подземелье {floor})"
         },
         {
           "id": 900296,
@@ -217118,6 +217297,30 @@
         {
           "id": 900751,
           "text": "Тип: все"
+        },
+        {
+          "id": 900752,
+          "text": "Не удалось зарегистрировать клавишу {hotkey} (занята другим приложением). Кнопка снимка по-прежнему работает."
+        },
+        {
+          "id": 900753,
+          "text": "Включено"
+        },
+        {
+          "id": 900754,
+          "text": "Клавиша"
+        },
+        {
+          "id": 900755,
+          "text": "Работает, даже когда DOSBox в фокусе. Выбранная клавиша не передаётся в игру."
+        },
+        {
+          "id": 900756,
+          "text": "Горячая клавиша снимка"
+        },
+        {
+          "id": 900758,
+          "text": "Клавиша {hotkey} зарегистрирована"
         },
         {
           "id": 902000,

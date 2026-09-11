@@ -34,9 +34,9 @@ def resolve_in_interior(interior_flag: Optional[int], place_byte: Optional[int],
         return False
     return True
 
-def area_suffix_ja(area: PlayArea, player_floor: int=0) -> str:
+def area_suffix_ja(area: PlayArea, floor_label: str='') -> str:
     if area == 'dungeon':
-        if player_floor > 0:
-            return _i18n.tr('screen.area_suffix.dungeon', n=player_floor)
+        if floor_label:
+            return _i18n.tr('screen.area_suffix.dungeon', floor=floor_label)
         return _i18n.tr('screen.area_suffix.dungeon_no_floor')
     return _i18n.tr(f'screen.area_suffix.{area}')

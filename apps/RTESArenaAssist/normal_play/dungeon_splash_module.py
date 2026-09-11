@@ -60,9 +60,6 @@ def _read_splash_entry(analyzer, anchor: int, slug: str) -> tuple[str, str]:
     for title, body in entries:
         if _body_hash(body) == want:
             return (title, body)
-    index = _SLUG_ENTRY_INDEX.get(slug)
-    if index is not None and len(entries) == _ENTRY_MAX:
-        return entries[index]
     for title, body in _parse_entries(_read_block_text(analyzer, anchor, _WIDE_OFFSET, _WIDE_READ_LEN)):
         if _body_hash(body) == want:
             return (title, body)
@@ -75,6 +72,13 @@ def _lookup_translation(slug: str) -> str:
     try:
         import i18n_helper as i18n
         return i18n.text_opt(f'dungeon_splash.{slug}.0') or ''
+    except Exception:
+        return ''
+
+def _canonical_original(source_id: str, category: str) -> str:
+    try:
+        import i18n_helper as i18n
+        return i18n.original_by_source_id(source_id, category=category) or ''
     except Exception:
         return ''
 
@@ -95,6 +99,9 @@ def classify_dungeon_splash_view(w, *, screen_img: str | None, facility_active_n
     if not body_tr:
         return None
     title_en, body_en = _read_splash_entry(w._analyzer, w._anchor, slug)
+    if not body_en:
+        body_en = _canonical_original(f'dungeon_splash.{slug}.0', 'dungeon_splash')
+        title_en = title_en or _canonical_original(f'glossary.{slug}.0', 'glossary')
     if not body_en:
         return None
     name_tr = _lookup_name(slug)

@@ -56,6 +56,7 @@ class MifMap:
     height: int = 18
     level_index: int = 0
     level_count: int = 1
+    starting_level_index: int = 0
     raw_map1_size: int = 0
     mif_name: str = ''
     info_name: str = ''
@@ -134,7 +135,7 @@ def _parse_mif_structured(data: bytes, mif_path: Path, level_index_override: int
     else:
         selected_index = 0
     selected = levels[selected_index]
-    return MifMap(path=mif_path, flor=selected.flor, map1=selected.map1, trigs=selected.trigs, targs=selected.targs, locks=selected.locks, entities=selected.entities, chunks=[('MHDR', header_size), *selected.chunks], width=width, height=height, level_index=selected_index, level_count=max(len(levels), level_count_hint), raw_map1_size=selected.raw_map1_size, mif_name=selected.mif_name, info_name=selected.info_name)
+    return MifMap(path=mif_path, flor=selected.flor, map1=selected.map1, trigs=selected.trigs, targs=selected.targs, locks=selected.locks, entities=selected.entities, chunks=[('MHDR', header_size), *selected.chunks], width=width, height=height, level_index=selected_index, level_count=max(len(levels), level_count_hint), starting_level_index=int(starting_level), raw_map1_size=selected.raw_map1_size, mif_name=selected.mif_name, info_name=selected.info_name)
 
 def _parse_level(data: bytes, mif_path: Path, width: int, height: int, level_index: int) -> MifMap:
     flor: list[int] = []

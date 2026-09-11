@@ -289,6 +289,9 @@ class AssistWindow(QMainWindow):
         self._shutter_se_wav = None
         self._shutter_se_kind = None
         self._reload_shutter_se()
+        self._capture_hotkey = None
+        self._capture_hotkey_notice = None
+        self._apply_capture_hotkey()
         if settings.get('always_on_top', False):
             self.setWindowFlag(Qt.WindowType.WindowStaysOnTopHint, True)
         QApplication.instance().installEventFilter(self)
@@ -308,6 +311,8 @@ class AssistWindow(QMainWindow):
         settings.set_val('capture_se_enabled', dlg.capture_se_enabled)
         settings.set_val('capture_se_volume', dlg.capture_se_volume)
         settings.set_val('capture_se_kind', dlg.capture_se_kind)
+        settings.set_val('capture_hotkey_enabled', dlg.capture_hotkey_enabled)
+        settings.set_val('capture_hotkey', dlg.capture_hotkey)
         self._reload_shutter_se()
         settings.set_val('equipment_mark_equipped', dlg.equipment_mark_equipped)
         settings.set_val('equipment_mark_equippable', dlg.equipment_mark_equippable)
@@ -798,6 +803,42 @@ class AssistWindow(QMainWindow):
         except Exception:
             self._shutter_se_wav = None
 
+    def _apply_capture_hotkey(self) -> None:
+        try:
+            from services.capture_hotkey import DEFAULT_HOTKEY, CaptureHotkey
+        except Exception:
+            return
+        if self._capture_hotkey is None:
+            self._capture_hotkey = CaptureHotkey(self._capture)
+        enabled = bool(settings.get('capture_hotkey_enabled', True))
+        spec = str(settings.get('capture_hotkey', DEFAULT_HOTKEY) or DEFAULT_HOTKEY)
+        ok, used = self._capture_hotkey.apply(enabled, spec)
+        if not enabled:
+            return
+        if ok:
+            self._sb.showMessage(i18n.tr('capture.hotkey_registered', hotkey=used), 4000)
+        else:
+            text = i18n.tr('capture.hotkey_failed', hotkey=used)
+            self._sb.showMessage(text, 10000)
+            self._notify_capture_hotkey(text)
+
+    def _notify_capture_hotkey(self, text: str) -> None:
+        if not self.isVisible():
+            self._capture_hotkey_notice = text
+            return
+        self._capture_hotkey_notice = None
+        box = QMessageBox(QMessageBox.Icon.Warning, i18n.tr('capture.error'), text, QMessageBox.StandardButton.Ok, self)
+        box.setModal(False)
+        box.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
+        box.show()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        notice = getattr(self, '_capture_hotkey_notice', None)
+        if notice:
+            self._capture_hotkey_notice = None
+            QTimer.singleShot(0, lambda: self._notify_capture_hotkey(notice))
+
     def _capture(self):
         if settings.get('capture_se_enabled', True):
             self._reload_shutter_se()
@@ -864,6 +905,8 @@ class AssistWindow(QMainWindow):
 
     def closeEvent(self, event):
         QApplication.instance().removeEventFilter(self)
+        if getattr(self, '_capture_hotkey', None) is not None:
+            self._capture_hotkey.unregister()
         try:
             self._tts.shutdown()
         except (AttributeError, RuntimeError):

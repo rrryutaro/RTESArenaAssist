@@ -145,21 +145,66 @@ def _interior_kind_label(interior_mif_name: str | None) -> str:
             return label or en
     return ''
 
-def _format_place_text(state: dict, in_interior: bool, interior_mif_name: str | None, area: str, player_floor: int, interior_facility_name: str | None=None, include_weather: bool=True) -> str:
+def dungeon_floor_label(level_index, start_level) -> str:
+    try:
+        idx = int(level_index)
+    except (TypeError, ValueError):
+        return ''
+    if idx < 0:
+        return ''
+    if start_level is None:
+        return f'B{idx + 1}'
+    try:
+        start = int(start_level)
+    except (TypeError, ValueError):
+        return f'B{idx + 1}'
+    if start <= 0:
+        return f'B{idx + 1}'
+    rel = idx - start
+    if rel < 0:
+        return f'{-rel + 1}F'
+    if rel == 0:
+        return '1F'
+    return f'B{rel}'
+
+def _dungeon_start_level(w, mif_name: str | None) -> int | None:
+    name = (mif_name or '').strip().upper()
+    if not name:
+        return None
+    cache = getattr(w, '_dungeon_start_level_cache', None)
+    if cache is None:
+        cache = {}
+        w._dungeon_start_level_cache = cache
+    if name in cache:
+        return cache[name]
+    start: int | None = None
+    try:
+        from services.mif_loader import DEFAULT_MIF_DIR, load_mif
+        from runtime_paths import resolve_arena_install_dir
+        dirs = [d for d in (DEFAULT_MIF_DIR, resolve_arena_install_dir()) if d is not None]
+        mif = load_mif(name, dirs)
+        if mif is not None:
+            start = int(getattr(mif, 'starting_level_index', 0) or 0)
+    except Exception:
+        start = None
+    cache[name] = start
+    return start
+
+def _format_place_text(state: dict, in_interior: bool, interior_mif_name: str | None, area: str, player_floor: int, interior_facility_name: str | None=None, include_weather: bool=True, dungeon_start_level: int | None=None) -> str:
     location = state.get('location') or ''
     weather = state.get('weather') or '' if include_weather else ''
-    try:
-        floor_n = int(player_floor) + 1
-    except (TypeError, ValueError):
-        floor_n = None
-    if floor_n is None or floor_n <= 0:
-        floor_s = ''
-    elif in_interior:
-        floor_s = f'  {floor_n}F'
-    elif area == 'dungeon':
-        floor_s = f'  B{floor_n}'
+    if area == 'dungeon':
+        label = dungeon_floor_label(player_floor, dungeon_start_level)
+        floor_s = f'  {label}' if label else ''
     else:
-        floor_s = f'  {floor_n}F'
+        try:
+            floor_n = int(player_floor) + 1
+        except (TypeError, ValueError):
+            floor_n = None
+        if floor_n is None or floor_n <= 0:
+            floor_s = ''
+        else:
+            floor_s = f'  {floor_n}F'
     if in_interior:
         kind = _interior_kind_label(interior_mif_name)
         name = (interior_facility_name or '').strip()
@@ -551,14 +596,14 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
         _img_safe = ''
     if not in_interior and rt_x is not None and (rt_z is not None):
         w._last_outside_rt = (rt_x, rt_z)
-    prev_in_interior = getattr(w, '_in_interior_prev', False)
-    _just_entered_interior = in_interior and (not prev_in_interior)
+    prev_in_interior = getattr(w, '_in_interior_prev', None)
+    _just_entered_interior = in_interior and prev_in_interior is False
     if _just_entered_interior:
         w._entry_door_pos = getattr(w, '_last_outside_rt', None)
         from normal_play.building_entry_module import begin_entry_episode as _begin_entry_episode
         _begin_entry_episode(w)
         _log.info('interior entered, door_pos=%s map=%s interior_raw=%s', getattr(w, '_entry_door_pos', None), gs.get('MapName'), interior_raw)
-    if not in_interior and prev_in_interior:
+    if not in_interior and prev_in_interior is True:
         _log.info('interior left')
         w._entry_door_pos = None
         w._entry_door_logged = None
@@ -934,8 +979,10 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
         _treasure_pickup_open = bool(getattr(w, '_treasure_pickup_open_prev', False))
         _fallback_suppress_map, _fallback_suppress_reason = _city_load_fallback_suppression(w, area=_resolved_area, coord_source='raw', player_x=_show_player_x, player_y=_show_player_y, surface_owner=_map_surface_owner, is_loading=_is_loading_for_map)
         try:
-            place_text = _format_place_text(state, in_interior, interior_mif_name, _resolved_area, int(effective_floor), interior_facility_name=interior_facility_name)
-            w._log_location_hint = _format_place_text(state, in_interior, interior_mif_name, _resolved_area, int(effective_floor), interior_facility_name=interior_facility_name, include_weather=False)
+            _dungeon_start = _dungeon_start_level(w, display_mif_name) if _resolved_area == 'dungeon' else None
+            w._dungeon_floor_label = dungeon_floor_label(effective_floor, _dungeon_start) if _resolved_area == 'dungeon' else ''
+            place_text = _format_place_text(state, in_interior, interior_mif_name, _resolved_area, int(effective_floor), interior_facility_name=interior_facility_name, dungeon_start_level=_dungeon_start)
+            w._log_location_hint = _format_place_text(state, in_interior, interior_mif_name, _resolved_area, int(effective_floor), interior_facility_name=interior_facility_name, include_weather=False, dungeon_start_level=_dungeon_start)
             if _resolved_area == 'wilderness':
                 try:
                     _dump_wild_diag_hex(w._analyzer, w._anchor)
@@ -1001,8 +1048,10 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
             _screen_name = i18n.tr('screen.game_screen')
         from play_area_classifier import area_suffix_ja
         _suffix_area = _resolved_area
-        if _screen_id == 'game_screen' and _suffix_area == 'dungeon' and (player_floor > 0):
-            _screen_name += area_suffix_ja(_suffix_area, player_floor)
+        if _screen_id == 'game_screen' and _suffix_area == 'dungeon':
+            _floor_label = getattr(w, '_dungeon_floor_label', '') or ''
+            if _floor_label:
+                _screen_name += area_suffix_ja(_suffix_area, floor_label=_floor_label)
         w._loading_data_select_active = _screen_id == 'loadsave_in_play'
         if w._loading_data_select_active:
             _screen_name = i18n.tr('screen.loadsave_in_play')
@@ -1392,8 +1441,8 @@ class PollController:
                 msg_buf = read_live_buffer(w._analyzer, w._anchor + 39582, 512)
             except (OSError, AttributeError):
                 msg_buf = ''
-            _msg_buf_prev = getattr(w, '_msg_buf_prev', '')
-            _msg_buf_changed = msg_buf != _msg_buf_prev
+            _msg_buf_prev = getattr(w, '_msg_buf_prev', None)
+            _msg_buf_changed = _msg_buf_prev is not None and msg_buf != _msg_buf_prev
             w._msg_buf_prev = msg_buf
             if _msg_buf_changed:
                 from normal_play.building_entry_module import note_msg_buf_written as _note_entry_msg_buf_written
