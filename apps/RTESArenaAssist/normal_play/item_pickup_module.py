@@ -314,4 +314,10 @@ def poll_item_pickup(w, *, newpop_gate: bool, b30_img_name: str, npc_dialog: str
     else:
         _poll_open_chest(w, gate_open=newpop_gate, container_n=_container_n, display_n=_display_n, names_present=_names_present, count=_count, img_name=b30_img_name, screen_id=_screen_id, corpse_item=_corpse_item_name)
     w._b32_disp_n_prev = _display_n
-__all__ = ['poll_item_pickup', 'corpse_item_message']
+
+def pickup_list_open(w) -> bool:
+    return bool(getattr(w, '_b32_newpop_open', False))
+
+def treasure_list_open(w) -> bool:
+    return pickup_list_open(w) and (not bool(getattr(w, '_b32_was_corpse', False)))
+__all__ = ['poll_item_pickup', 'corpse_item_message', 'pickup_list_open', 'treasure_list_open']

@@ -1,8 +1,15 @@
 from __future__ import annotations
 import logging
+from assist_log import recog as _recog
 from hierarchy_state import facility_owners_for_session
 from .facility_node import FacilityNode, FacilityView, register_facility_node
 _log = logging.getLogger('RTESArenaAssist')
+
+def _hex8(value) -> str:
+    return f'{int(value):#04x}' if isinstance(value, int) else 'None'
+
+def _hex16(value) -> str:
+    return f'{int(value):#06x}' if isinstance(value, int) else 'None'
 _PLACE_LIST_OWNERS = frozenset({'npc_dialog', 'npc_conversation', 'npc_message'})
 
 class MagesGuildNode(FacilityNode):
@@ -10,9 +17,7 @@ class MagesGuildNode(FacilityNode):
     menu_signatures = ((frozenset({'Buy', 'Detect Magic', 'Spellmaker', 'Steal', 'Exit'}), 'shop_menu', 'MENU OPTIONS'), (frozenset({'Potions', 'Magic items', 'Spells'}), 'shop_menu', 'PICK ITEM'), (frozenset({'Potion', 'Magic item'}), 'shop_menu', 'PICK ITEM'))
 
     def classify_view(self, w, *, shop_state=None, shop_img_name: str='', **_signals) -> FacilityView:
-        from normal_play.mages_guild_render_module import MENU_OWNER, LIST_OWNER, SPELLMAKER_OWNER, EFFECT_MENU_OWNER, MENU_OWNER_CONFIRM, MENU_OWNER_SPELLDETAIL, MENU_OWNER_PROMPT, NEGOTIATION_OWNER, LIST_IMGS, SPELLMAKER_IMG, BUYSPELL_IMG, _CONFIRM_FAMILY, _is_negotiation_img, _last_spellmaker_list_title, _is_spellmaker_return_from_residual_list, _resolve_response_prompt
-        from normal_play.mages_reply_module import REPLY_OWNER
-        from mages_signals import classify, detect_magic_reply_kind_from_memory, read_signals, LIST_ON
+        from mages_signals import read_signals
         img = (shop_img_name or '').upper()
         has_foreground_snapshot = 'foreground_ptr' in _signals
         foreground_ptr = _signals.get('foreground_ptr')
@@ -26,6 +31,27 @@ class MagesGuildNode(FacilityNode):
             sig = read_signals(w._analyzer, w._anchor, foreground_ptr=foreground_ptr)
         except Exception:
             sig = {}
+        view = self._classify_view_from_signals(w, shop_state=shop_state, img=img, sig=sig, foreground_ptr=foreground_ptr)
+        self._log_view_diag(w, img=img, sig=sig, view=view, foreground_ptr=foreground_ptr)
+        return view
+
+    @staticmethod
+    def _log_view_diag(w, *, img: str, sig: dict, view: FacilityView, foreground_ptr) -> None:
+        key = (img, getattr(view, 'reason', ''), sig.get('view'), sig.get('type'), sig.get('list'), sig.get('dialog'), sig.get('family'), sig.get('sub'), sig.get('view_desc_lo'), sig.get('result_hint'))
+        if key == getattr(w, '_mages_l4_diag_prev', None):
+            return
+        w._mages_l4_diag_prev = key
+        try:
+            from mages_signals import detect_magic_text_flags
+            cost, identified, known = detect_magic_text_flags(w._analyzer, w._anchor)
+        except Exception:
+            cost = identified = known = None
+        _recog(_log, 'mages L4 view: img=%r reason=%s view=%s type=%s list=%s dialog=%s family=%s sub=%s desc_lo=%s hint=%s ptr=%s cost_txt=%s ident_txt=%s known_txt=%s', img, key[1], _hex8(sig.get('view')), _hex8(sig.get('type')), _hex8(sig.get('list')), _hex8(sig.get('dialog')), _hex8(sig.get('family')), _hex8(sig.get('sub')), _hex8(sig.get('view_desc_lo')), _hex8(sig.get('result_hint')), _hex16(foreground_ptr), cost, identified, known)
+
+    def _classify_view_from_signals(self, w, *, shop_state, img: str, sig: dict, foreground_ptr) -> FacilityView:
+        from normal_play.mages_guild_render_module import MENU_OWNER, LIST_OWNER, SPELLMAKER_OWNER, EFFECT_MENU_OWNER, MENU_OWNER_CONFIRM, MENU_OWNER_SPELLDETAIL, MENU_OWNER_PROMPT, NEGOTIATION_OWNER, LIST_IMGS, SPELLMAKER_IMG, BUYSPELL_IMG, _CONFIRM_FAMILY, _is_negotiation_img, _last_spellmaker_list_title, _is_spellmaker_return_from_residual_list, _resolve_response_prompt
+        from normal_play.mages_reply_module import REPLY_OWNER
+        from mages_signals import classify, detect_magic_reply_kind_from_memory, LIST_ON
 
         def _view(**kwargs) -> FacilityView:
             return FacilityView(signals_snapshot=sig, **kwargs)

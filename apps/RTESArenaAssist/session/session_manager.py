@@ -23,6 +23,14 @@ class SessionManager:
     def is_any_active(self) -> bool:
         return self._active is not None
 
+    def stop_active(self, name: str, ctx: Optional[SessionContext]=None) -> bool:
+        s = self._active
+        if s is None or getattr(s, 'name', '') != name:
+            return False
+        s.force_stop(ctx)
+        self._active = None
+        return True
+
     @staticmethod
     def _facility_area_blocked(session: SessionBase, ctx: SessionContext) -> bool:
         return getattr(session, 'name', '') in FACILITY_CONVERSATION_SESSION_NAMES and is_facility_session_area_blocked(ctx.area)

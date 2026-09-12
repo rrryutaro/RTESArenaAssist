@@ -22,47 +22,8 @@ _DEATH_GOOD_JA = 'お前とともに、正義への最後の希望も死んだ�
 _DEATH_BAD_JA = '愚かにも私に立ち向かい、ついに究極の代償を払ったな。今この時も、我が僕が貴様の朽ちた肉体を取りに向かっている。貴様は皇帝となった我が年月において、アンデッドとしてよく仕えることになる。もしかすると記憶の一部を残してやるかもしれん。そうすれば、失敗の代償が貴様にも意味を持つだろう....'
 
 def _read_cinematic_block(w, address: int) -> str:
-    data = b''
-    for size in (_CINEMATIC_FULLREAD, 2048, 1024, 512, 256):
-        try:
-            data = w._analyzer.read_bytes(address, size)
-            if data:
-                break
-        except (OSError, AttributeError):
-            continue
-    if not data:
-        return ''
-    parts = data.split(b'\x00')
-    text_parts: list[str] = []
-    empty_run = 0
-    for raw in parts:
-        if not raw:
-            empty_run += 1
-            if empty_run >= 4 and text_parts:
-                break
-            continue
-        empty_run = 0
-        try:
-            s = raw.decode('ascii', errors='replace').strip()
-        except Exception:
-            if text_parts:
-                break
-            continue
-        if not s:
-            continue
-        printable = sum((1 for c in s if 32 <= ord(c) < 127))
-        if printable / max(len(s), 1) < 0.7:
-            if text_parts:
-                break
-            continue
-        if len(s) < 3 and text_parts:
-            continue
-        text_parts.append(s)
-    text = ' '.join(text_parts).strip()
-    if not text:
-        return ''
-    trimmed = npcd.body_head_trim(text, keys=_CINEMATIC_TEMPLATE_KEYS)
-    return trimmed if trimmed is not None else text
+    from cinematic_text import read_block
+    return read_block(w._analyzer, address, sizes=(_CINEMATIC_FULLREAD, 2048, 1024, 512, 256), template_keys=_CINEMATIC_TEMPLATE_KEYS)
 
 def _read_screen_img_name(w) -> str:
     try:

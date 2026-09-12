@@ -14,7 +14,8 @@ _GOLD_DROP_REPLACEABLE_OWNERS = frozenset({'', GOLD_DROP_OWNER, 'trigger', 'red_
 def _poll_gold_inf_fragment(w, b131_str: str, inf_name: str, mif_name: str) -> None:
     _log.debug('b131 0x929E changed but not gold-drop format: %r', b131_str[:64])
     _inf_fragment_pushed = getattr(w, '_b131_inf_fragment_pushed', '')
-    _newpop_open_now = getattr(w, '_b32_newpop_open', False)
+    from normal_play.item_pickup_module import pickup_list_open
+    _newpop_open_now = pickup_list_open(w)
     try:
         _inf_excluded = bool(_INF_FRAG_EXCLUDE_RE.match(b131_str))
     except Exception:

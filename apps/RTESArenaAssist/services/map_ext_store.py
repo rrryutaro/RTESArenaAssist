@@ -25,35 +25,6 @@ def ext_data_dir() -> str:
 
 def slot_filename(slot: int) -> str:
     return f'map_ext.0{int(slot)}'
-_PAIRS_FILENAME = 'map_level_pairs.json'
-
-def load_hash_floor_pairs() -> dict[str, dict[int, int]]:
-    path = os.path.join(ext_data_dir(), _PAIRS_FILENAME)
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-    except (OSError, ValueError):
-        return {}
-    out: dict[str, dict[int, int]] = {}
-    for mif, pairs in (data.get('pairs') or {}).items():
-        if not isinstance(pairs, dict):
-            continue
-        m: dict[int, int] = {}
-        for hex_hash, floor in pairs.items():
-            try:
-                m[int(str(hex_hash), 16)] = int(floor)
-            except (TypeError, ValueError):
-                continue
-        if m:
-            out[str(mif)] = m
-    return out
-
-def save_hash_floor_pairs(pairs: dict[str, dict[int, int]]) -> None:
-    os.makedirs(ext_data_dir(), exist_ok=True)
-    path = os.path.join(ext_data_dir(), _PAIRS_FILENAME)
-    obj = {'version': 1, 'pairs': {mif: {f'{h:08X}': int(fl) for h, fl in m.items()} for mif, m in pairs.items()}}
-    with open(path, 'w', encoding='utf-8') as f:
-        json.dump(obj, f, ensure_ascii=False, indent=2)
 
 def _loc_dict_to_sets(raw: dict) -> dict[str, set[tuple[int, int]]]:
     out: dict[str, set[tuple[int, int]]] = {}
@@ -200,6 +171,15 @@ class MapExtStore:
     def replace_reveal(self, location_key: str, grid) -> None:
         target = self.reveal_grid_for_update(location_key)
         target[:] = np.asarray(grid, dtype=np.uint8)[:REVEAL_SHAPE[0], :REVEAL_SHAPE[1]]
+
+    def location_keys(self, prefix: str='') -> list[str]:
+        keys: set[str] = set()
+        for section in _SECTIONS:
+            for layer in (self._active, self._persist):
+                keys.update(layer.get(section, {}).keys())
+        keys.update(self._active_reveal.keys())
+        keys.update(self._persist_reveal.keys())
+        return sorted((k for k in keys if k.startswith(prefix)))
 
     def migrate_location_key(self, old_key: str, new_key: str) -> bool:
         if not old_key or not new_key or old_key == new_key:

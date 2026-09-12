@@ -63,6 +63,12 @@ def _aexe_part(key: str, index: int) -> str:
         return ''
     return arr[index]
 
+def equipment_name_parts(prefix_index: int, suffix_index: int) -> tuple[str, str]:
+    return (_aexe_part('equipment_prefixes', prefix_index), _aexe_part('equipment_suffixes', suffix_index))
+
+def translate_place_name(en: str, category: str) -> Optional[str]:
+    return _lookup_place_ja(en, category)
+
 def _lookup_place_ja(en: str, category: str) -> Optional[str]:
     try:
         if _ASSIST_DIR not in sys.path:

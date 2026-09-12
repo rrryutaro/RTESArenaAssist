@@ -479,14 +479,10 @@ class AssistWindow(QMainWindow):
 
     def _disconnect(self):
         self._poll_timer.stop()
-        _watcher = getattr(self, '_lock_msg_watcher', None)
-        if _watcher is not None:
-            try:
-                _watcher.stop()
-            except Exception:
-                pass
-            self._lock_msg_watcher = None
-            self._lock_msg_armed = False
+        from normal_play.action_text_band import shutdown_band as _shutdown_band
+        from normal_play.lock_message_module import release_watch as _release_lock_watch
+        _shutdown_band(self)
+        _release_lock_watch(self)
         if self._analyzer:
             try:
                 self._analyzer.detach()

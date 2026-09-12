@@ -67,7 +67,7 @@ def produce_level_up_state(w, *, loading_active: bool=False, loading_post_settle
     except (ImportError, AttributeError, OSError):
         return False
 
-def consume_level_up_display(w, *, screen_id_stable: str | None, b30_dialog_active: bool, b30_dialog_active_prev: bool, b30_red_changed: bool, npc_dialog_changed: bool) -> None:
+def consume_level_up_display(w, *, screen_id_stable: str | None, b30_dialog_active: bool, b30_dialog_active_prev: bool) -> None:
     try:
         _is_bonus_screen = screen_id_stable == 'bonus_screen'
         _is_dialog_only = b30_dialog_active and (not _is_bonus_screen)
@@ -103,9 +103,12 @@ def consume_level_up_display(w, *, screen_id_stable: str | None, b30_dialog_acti
     except (ImportError, AttributeError, OSError):
         pass
 
-def poll_level_up(w, *, b30_dialog_active: bool, b30_dialog_active_prev: bool, b30_red_changed: bool, npc_dialog_changed: bool, loading_active: bool=False, loading_post_settle: bool=False) -> None:
+def poll_level_up(w, *, b30_dialog_active: bool, b30_dialog_active_prev: bool, loading_active: bool=False, loading_post_settle: bool=False) -> None:
     _continue = produce_level_up_state(w, loading_active=loading_active, loading_post_settle=loading_post_settle)
     if not _continue:
         return
-    consume_level_up_display(w, screen_id_stable=getattr(w, '_screen_id_prev', None), b30_dialog_active=b30_dialog_active, b30_dialog_active_prev=b30_dialog_active_prev, b30_red_changed=b30_red_changed, npc_dialog_changed=npc_dialog_changed)
-__all__ = ['poll_level_up', 'produce_level_up_state', 'suspend_level_up_state', 'consume_level_up_display']
+    consume_level_up_display(w, screen_id_stable=getattr(w, '_screen_id_prev', None), b30_dialog_active=b30_dialog_active, b30_dialog_active_prev=b30_dialog_active_prev)
+
+def level_up_active(w) -> bool:
+    return bool(getattr(w, '_level_up_active', False))
+__all__ = ['poll_level_up', 'produce_level_up_state', 'suspend_level_up_state', 'consume_level_up_display', 'level_up_active']

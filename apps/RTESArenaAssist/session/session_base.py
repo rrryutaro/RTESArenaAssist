@@ -17,6 +17,9 @@ class SessionContext:
     facility_kind: str = ''
     area: str = ''
     hierarchy: Optional[SeparationHierarchy] = None
+    shop_state: Optional[object] = None
+    yesno_menu_recovery: bool = False
+    loading: bool = False
     extras: dict = None
 
     def __post_init__(self) -> None:

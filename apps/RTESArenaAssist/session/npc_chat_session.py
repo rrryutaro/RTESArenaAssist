@@ -12,6 +12,8 @@ class NpcChatSession(SessionBase):
     def try_start(self, ctx: SessionContext) -> bool:
         if ctx.top_level_state != 'normal-play':
             return False
+        if getattr(ctx, 'loading', False):
+            return False
         if ctx.npc_phase == NPC_PHASE_ASKING:
             self._set_active(True)
             return True
@@ -21,6 +23,8 @@ class NpcChatSession(SessionBase):
         if ctx.top_level_state != 'normal-play':
             self._set_active(False)
             return True
+        if getattr(ctx, 'loading', False):
+            return False
         if ctx.npc_phase == NPC_PHASE_IDLE:
             self._set_active(False)
             return True

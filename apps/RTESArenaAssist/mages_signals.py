@@ -149,4 +149,10 @@ def detect_magic_reply_kind_from_memory(analyzer, anchor: int, img_name: str='',
     if img == 'YESNO.IMG' and is_popup_reply and (DETECT_MAGIC_QUOTE_PREFIX in response_text):
         return 'detect_cost'
     return ''
-__all__ = ['VIEW_FLAG_OFFSET', 'VIEW_TYPE_OFFSET', 'LIST_FLAG_OFFSET', 'DIALOG_ACTIVE_OFFSET', 'TEXT_FAMILY_OFFSET', 'SUBSTATE_OFFSET', 'VIEW_DESC_OFFSET', 'RESULT_HINT_OFFSET', 'CURRENT_TEXT_PTR_OFFSET', 'RESPONSE_TEXT_OFFSET', 'MAGES_MENU_TEXT_OFFSET', 'NEGOTIATION_TEXT_OFFSET', 'VIEW_MENU', 'VIEW_SUBMENU', 'VIEW_EDIT_EFFECTS', 'VIEW_POPUP', 'TYPE_POPUP', 'DIALOG_NORMAL', 'FAMILY_MENU_DETECT_CREATE', 'DETECT_KNOWN_HINT', 'DETECT_COST_HINT', 'DETECT_MAGIC_QUOTE_PREFIX', 'DETECT_MAGIC_ALREADY_KNOWN', 'DETECT_MAGIC_IDENTIFIED', 'MENU_STATES', 'read_signals', 'classify', 'detect_magic_reply_kind', 'detect_magic_reply_kind_from_memory', 'is_detect_magic_reply_foreground']
+
+def detect_magic_text_flags(analyzer, anchor: int) -> tuple[bool, bool, bool]:
+    cost = _contains_normalized(analyzer, anchor, RESPONSE_TEXT_OFFSET, 160, DETECT_MAGIC_QUOTE_PREFIX)
+    identified = _contains_normalized(analyzer, anchor, NEGOTIATION_TEXT_OFFSET, 256, DETECT_MAGIC_IDENTIFIED)
+    known = _ascii_cstr(analyzer, anchor, MAGES_MENU_TEXT_OFFSET, 96) == DETECT_MAGIC_ALREADY_KNOWN
+    return (cost, identified, known)
+__all__ = ['VIEW_FLAG_OFFSET', 'VIEW_TYPE_OFFSET', 'LIST_FLAG_OFFSET', 'DIALOG_ACTIVE_OFFSET', 'TEXT_FAMILY_OFFSET', 'SUBSTATE_OFFSET', 'VIEW_DESC_OFFSET', 'RESULT_HINT_OFFSET', 'CURRENT_TEXT_PTR_OFFSET', 'RESPONSE_TEXT_OFFSET', 'MAGES_MENU_TEXT_OFFSET', 'NEGOTIATION_TEXT_OFFSET', 'VIEW_MENU', 'VIEW_SUBMENU', 'VIEW_EDIT_EFFECTS', 'VIEW_POPUP', 'TYPE_POPUP', 'DIALOG_NORMAL', 'FAMILY_MENU_DETECT_CREATE', 'DETECT_KNOWN_HINT', 'DETECT_COST_HINT', 'DETECT_MAGIC_QUOTE_PREFIX', 'DETECT_MAGIC_ALREADY_KNOWN', 'DETECT_MAGIC_IDENTIFIED', 'MENU_STATES', 'read_signals', 'classify', 'detect_magic_reply_kind', 'detect_magic_reply_kind_from_memory', 'is_detect_magic_reply_foreground', 'detect_magic_text_flags']

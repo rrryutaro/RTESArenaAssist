@@ -18,6 +18,9 @@ class InteriorFacilityInfo:
     mif_name: str
     name_en: str
     name_ja: Optional[str]
+    name_suffix_en: str = ''
+    name_category: str = ''
+    name_template: str = ''
 
 def lookup_interior_facility(location_name: Optional[str], door_x: Optional[int], door_y: Optional[int]) -> Optional[InteriorFacilityInfo]:
     if not _AVAILABLE:
@@ -31,8 +34,8 @@ def lookup_interior_facility(location_name: Optional[str], door_x: Optional[int]
     mif_name = _mif_for_door(location_name, door) or ''
     if not mif_name:
         return None
-    name_en, name_ja = _facility_name_at(location_name, door)
-    return InteriorFacilityInfo(mif_name=mif_name, name_en=name_en, name_ja=name_ja)
+    name_en, name_ja, suffix_en, category, template = _facility_name_at(location_name, door)
+    return InteriorFacilityInfo(mif_name=mif_name, name_en=name_en, name_ja=name_ja, name_suffix_en=suffix_en, name_category=category, name_template=template)
 
 def describe_entered_door(location_name: str, door_x: int, door_y: int) -> str:
     if not _AVAILABLE or not location_name:
@@ -53,6 +56,30 @@ def describe_entered_door(location_name: str, door_x: int, door_y: int) -> str:
         if best is None or d2 < best_d2:
             best, best_d2 = (d, d2)
     return 'doors=%d hit=none nearest=(%d,%d) menu=%d %s d2=%d' % (len(doors), best.original_x, best.original_y, best.menu_id, best.menu_type.value, best_d2)
+
+def read_shop_sign(analyzer, anchor: Optional[int], info: Optional[InteriorFacilityInfo]) -> Optional[str]:
+    suffix_en = getattr(info, 'name_suffix_en', '') or ''
+    category = getattr(info, 'name_category', '') or ''
+    if info is None or not suffix_en or (not category):
+        return None
+    template = getattr(info, 'name_template', '') or ''
+    if not template:
+        return None
+    try:
+        from services.shop_sign_name import read_displayed_name
+        return read_displayed_name(analyzer, anchor, suffix_en, (template,))
+    except Exception:
+        return None
+
+def translate_shop_sign(shown_en: str, info: Optional[InteriorFacilityInfo]) -> str:
+    category = getattr(info, 'name_category', '') or ''
+    if not shown_en or not category:
+        return ''
+    try:
+        from services.dynamic_translation import translate_place_name
+        return translate_place_name(shown_en, category) or ''
+    except Exception:
+        return ''
 
 def describe_facility_naming_at(location_name: Optional[str], door_x: Optional[int], door_y: Optional[int]) -> Optional[str]:
     if not _AVAILABLE or not location_name:
@@ -92,16 +119,22 @@ def _mif_for_door(location_name: str, door) -> Optional[str]:
     city_type, ruler_seed = ct
     return get_door_voxel_mif_name(x=door.original_x, y=door.original_y, menu_id=door.menu_id, ruler_seed=ruler_seed, palace_is_main_quest_dungeon=False, city_type=city_type, map_type=MapType.CITY)
 
-def _facility_name_at(location_name: str, door) -> tuple[str, Optional[str]]:
+def _facility_name_at(location_name: str, door) -> tuple[str, Optional[str], str, str, str]:
     try:
         facilities = get_facilities_by_location_name(location_name)
     except Exception:
-        return ('', None)
+        return ('', None, '', '', None)
     for f in facilities or ():
         if f.original_x == door.original_x and f.original_y == door.original_y:
             tr = getattr(f, 'translation', None)
-            return (tr.en or '' if tr is not None else '', tr.ja if tr is not None else None)
-    return ('', None)
+            en = tr.en or '' if tr is not None else ''
+            from services.facility_name_parts import category_of
+            category = category_of(getattr(f, 'menu_type', None))
+            suffix_en = getattr(f, 'name_suffix_en', '') or ''
+            prefix_en = getattr(f, 'name_prefix_en', '') or ''
+            template = prefix_en if '%ef' in prefix_en or '%n' in prefix_en else ''
+            return (en, tr.ja if tr is not None else None, suffix_en, category, template)
+    return ('', None, '', '', '')
 
 def lookup_interior_mif(location_name: Optional[str], door_x: Optional[int], door_y: Optional[int]) -> Optional[str]:
     info = lookup_interior_facility(location_name, door_x, door_y)
@@ -130,4 +163,4 @@ def get_mif_level_count(mif_name: Optional[str]) -> Optional[int]:
         return count
     except Exception:
         return None
-__all__ = ['InteriorFacilityInfo', 'describe_facility_naming_at', 'is_available', 'lookup_interior_facility', 'lookup_interior_mif', 'get_mif_level_count']
+__all__ = ['InteriorFacilityInfo', 'describe_facility_naming_at', 'read_shop_sign', 'translate_shop_sign', 'is_available', 'lookup_interior_facility', 'lookup_interior_mif', 'get_mif_level_count']

@@ -38,26 +38,23 @@ class EquipmentSession(SessionBase):
             return True
         return False
 
-    def _detect_shop_state(self, ctx: SessionContext) -> tuple[str, str]:
+    def _shop_state_of(self, ctx: SessionContext) -> tuple[str, str]:
         extras_kind = ctx.extras.get('shop_kind') if ctx.extras else None
         extras_owner = ctx.extras.get('owner_kind') if ctx.extras else None
         if extras_kind is not None or extras_owner is not None:
             kind = extras_kind if extras_kind is not None else 'none'
             owner = extras_owner if extras_owner is not None else ''
             return (kind or 'none', owner or '')
-        try:
-            from shop_popup_detector import detect_shop_popup_state
-        except ImportError:
-            return ('none', '')
         if ctx.top_level_state != 'normal-play':
             return ('none', '')
         if not ctx.in_interior:
             return ('none', '')
-        try:
-            state = detect_shop_popup_state(ctx.analyzer, ctx.anchor, top_level_state=ctx.top_level_state, img_name=ctx.img_name, in_interior=ctx.in_interior, screen_id=ctx.screen_id, interior_mif_name=ctx.interior_mif_name or '', area=ctx.area, active_facility_name='equipment' if self._active or self._is_equipment_context(ctx) else '')
-            return (state.kind or 'none', state.owner_kind or '')
-        except Exception:
+        state = ctx.shop_state
+        if state is None:
             return ('none', '')
+        kind = getattr(state, 'kind', '') or 'none'
+        owner = getattr(state, 'owner_kind', '') or ''
+        return (kind, owner)
 
     @staticmethod
     def _resolve_l4_state(ctx: SessionContext):
@@ -99,7 +96,7 @@ class EquipmentSession(SessionBase):
             return False
         if ctx.top_level_state != 'normal-play' or not ctx.in_interior:
             return False
-        kind, owner = self._detect_shop_state(ctx)
+        kind, owner = self._shop_state_of(ctx)
         if owner == 'equipment' and kind in _EQUIPMENT_OWNER_KINDS:
             self._none_shop_polls = 0
             self._last_img = ctx.img_name or ''

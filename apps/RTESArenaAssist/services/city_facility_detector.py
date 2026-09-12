@@ -33,6 +33,8 @@ class FacilityPlacement:
     race_id: int | None = None
     ef_seed: int | None = None
     n_seed: int | None = None
+    name_prefix_en: str = ''
+    name_suffix_en: str = ''
     ef_name: str | None = None
     n_name: str | None = None
 
@@ -85,7 +87,9 @@ def _equipment_with_names(city_seed: int, hits: list[_MarkerHit], city_type_key:
         ef_name = generate_npc_name(race_id, True, ArenaRandom(ef_seed)).split()[0]
         n_name = generate_npc_name(race_id, True, ArenaRandom(n_seed))
         named = EquipmentName(prefix_index=name.prefix_index, suffix_index=name.suffix_index, ef_name=ef_name, n_name=n_name)
-        result.append(FacilityPlacement(menu_type=ArenaMenuType.EQUIPMENT, original_x=hit.original_x, original_y=hit.original_y, block_type=hit.block_type, block_mif=hit.block_mif, local_x=hit.local_x, local_y=hit.local_y, marker_voxel=hit.marker_voxel, mif_name=_make_mif_name(hit, ArenaMenuType.EQUIPMENT, city_type), translation=translate_equipment(named, city_type_key), race_id=race_id, ef_seed=ef_seed, n_seed=n_seed, ef_name=ef_name, n_name=n_name))
+        from .dynamic_translation import equipment_name_parts
+        _pre_en, _suf_en = equipment_name_parts(name.prefix_index, name.suffix_index)
+        result.append(FacilityPlacement(menu_type=ArenaMenuType.EQUIPMENT, original_x=hit.original_x, original_y=hit.original_y, block_type=hit.block_type, block_mif=hit.block_mif, local_x=hit.local_x, local_y=hit.local_y, marker_voxel=hit.marker_voxel, mif_name=_make_mif_name(hit, ArenaMenuType.EQUIPMENT, city_type), translation=translate_equipment(named, city_type_key), race_id=race_id, ef_seed=ef_seed, n_seed=n_seed, ef_name=ef_name, n_name=n_name, name_prefix_en=_pre_en, name_suffix_en=_suf_en))
     return result
 
 def detect_city_facilities(entries: list[CityBlockEntry], city_seed: int, start_position: tuple[int, int], city_type: ArenaCityType, city_type_key: str | None, province_id: int, coastal: bool, random_after_plan: ArenaRandom) -> list[FacilityPlacement]:

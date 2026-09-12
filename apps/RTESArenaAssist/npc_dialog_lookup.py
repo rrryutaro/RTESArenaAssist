@@ -1,6 +1,13 @@
 from __future__ import annotations
 import json
 import re
+import logging
+_log = logging.getLogger('RTESArenaAssist')
+_GRAMMATICAL_CASE_NAMES = ('g', 'g2', 'g3')
+_UNRESOLVED_PLACEHOLDERS: set[str] = set()
+
+def unresolved_placeholder_names() -> list[str]:
+    return sorted(_UNRESOLVED_PLACEHOLDERS)
 from game_surface import game_surface
 from npc_name_translator import translate_generated_name
 _COMPILED: list[tuple[re.Pattern, str, int, bool, int]] = []
@@ -747,193 +754,225 @@ def _translate_ds(value: str, lang: str) -> str:
         return i18n.text('status_buffer_text.ds_format_ask_about').replace('{trait}', trait_ja).replace('{occupation}', occupation_ja).replace('{title}', title_ja).replace('{name}', name_ja)
     return value
 
+def _ph_n_fn_rf_an_nc(name: str, value: str, lang: str) -> str:
+    if lang != 'en':
+        return translate_generated_name(value, lang)
+    return value
+
+def _ph_doc(name: str, value: str, lang: str) -> str:
+    _load()
+    normalized = ' '.join(value.split())
+    doc_entry = _DOC_VALUES.get(normalized)
+    if doc_entry is not None:
+        resolved = _resolve_npcd_ref(doc_entry['ref'])
+        if resolved:
+            return resolved
+    for compiled, ja_tmpl, _ in _DOC_COMPILED:
+        m = compiled.match(normalized)
+        if m:
+            nested = m.groupdict()
+            result = ja_tmpl
+            for ph_name, ph_val in nested.items():
+                if ph_val:
+                    translated_val = translate_placeholder(ph_name, ph_val, lang)
+                    result = result.replace(f'%{ph_name}', translated_val)
+            return result
+    for compiled, ja_tmpl, _ in _DOC_COMPILED_LAX:
+        m = compiled.match(normalized)
+        if not m:
+            continue
+        nested = m.groupdict()
+        if all(nested.values()):
+            continue
+        result = ja_tmpl
+        for ph_name, ph_val in nested.items():
+            translated_val = translate_placeholder(ph_name, ph_val, lang) if ph_val else ''
+            result = result.replace(f'%{ph_name}', translated_val)
+        return result
+    return value
+
+def _ph_mn_mt(name: str, value: str, lang: str) -> str:
+    if lang == 'en':
+        return value
+    from dungeon_msg_lookup import lookup_monster_name
+    return lookup_monster_name(value) or value
+
+def _ph_ra_t_oc_ct_oth_di_lp_cn_tem(name: str, value: str, lang: str) -> str:
+    _load_ph()
+    result = _PH_VALUES.get((name, value), {}).get(lang)
+    if result is not None:
+        return result
+    if name in _PH_DIRECT_ID_NAMES:
+        direct = _ph_direct_id(name, value)
+        if direct is not None:
+            return direct
+    if name == 'oth':
+        import i18n_helper as i18n
+        nd = i18n.value('npc_dialog', value)
+        if nd is not None:
+            return nd
+    if name == 'oc':
+        cls = _CLASS_VALUES.get(value)
+        if cls is not None:
+            return cls
+        import i18n_helper as i18n
+        cls_v2 = i18n.value_in('classes', value, lang)
+        if cls_v2 is not None:
+            return cls_v2
+        return value
+    if name == 'ra':
+        import i18n_helper as i18n
+        races_ja = i18n.value_in('races', value, lang)
+        if races_ja is not None:
+            return races_ja
+    if name == 'ct' and lang != 'en':
+        _st = _translate_settlement_type(value.strip().title(), lang)
+        if _st:
+            return _st
+    if name in ('lp', 'tem'):
+        if lang != 'en':
+            from dynamic_place_lookup import lookup as _place_lookup
+            translated = _place_lookup(value)
+            if translated:
+                return translated
+    if name == 'cn' and lang != 'en':
+        _static = _translate_static_place(value, lang)
+        if _static != value:
+            return _static
+    return value
+
+def _ph_tq(name: str, value: str, lang: str) -> str:
+    return translate_placeholder('t', value, lang)
+
+def _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan(name: str, value: str, lang: str) -> str:
+    return _translate_static_place(value, lang)
+
+def _ph_st(name: str, value: str, lang: str) -> str:
+    if lang == 'en':
+        return value
+    import i18n_helper as i18n
+    return i18n.value_in('status_terms', value.lower(), lang) or i18n.value_in('status_terms', value, lang) or value
+
+def _ph_nh(name: str, value: str, lang: str) -> str:
+    return _translate_calendar_label(value, lang)
+
+def _ph_nhd(name: str, value: str, lang: str) -> str:
+    return _translate_date(value, lang)
+
+def _ph_hod_jok(name: str, value: str, lang: str) -> str:
+    return _translate_nested_npc_dialog(value, lang)
+
+def _ph_nt(name: str, value: str, lang: str) -> str:
+    return _translate_nt(value, lang)
+
+def _ph_ds(name: str, value: str, lang: str) -> str:
+    return _translate_ds(value, lang)
+
+def _ph_a_a2_oap(name: str, value: str, lang: str) -> str:
+    return value
+
+def _ph_da(name: str, value: str, lang: str) -> str:
+    return _translate_date(value, lang)
+
+def _ph_omq_mi(name: str, value: str, lang: str) -> str:
+    translated = _translate_quest_item(value, lang)
+    return translated if translated is not None else value
+
+def _ph_r(name: str, value: str, lang: str) -> str:
+    import i18n_helper as i18n
+    key = _clean_placeholder_value(value).lower()
+    direct = i18n.value_in('relations', key, lang)
+    if direct is not None:
+        return direct
+    parts = key.split()
+    if parts:
+        base = i18n.value_in('relations', parts[-1], lang)
+        if base is not None:
+            return base
+    return value
+
+def _ph_g_g2_g3(name: str, value: str, lang: str) -> str:
+    _load_ph()
+    result = _PH_VALUES.get((name, value), {}).get(lang)
+    if result is not None:
+        return result
+    direct = _ph_direct_id(name, value)
+    if direct is not None:
+        return direct
+    import i18n_helper as i18n
+    return i18n.value_in('pronouns', value.lower(), lang) or value
+
+def _ph_fq_ne(name: str, value: str, lang: str) -> str:
+    cleaned = _clean_placeholder_value(value).rstrip('-~')
+    if lang != 'en':
+        return translate_generated_name(cleaned, lang)
+    return cleaned
+
+def _ph_o_pcn(name: str, value: str, lang: str) -> str:
+    return value
+
+def _ph_tl_en(name: str, value: str, lang: str) -> str:
+    if lang != 'en':
+        from dynamic_place_lookup import lookup as _place_lookup
+        translated = _place_lookup(value)
+        return translated if translated else value
+    return value
+
+def _ph_nd(name: str, value: str, lang: str) -> str:
+    if lang == 'en':
+        return value
+    _load_drinks()
+    return _DRINKS_VALUES.get(value, value)
+
+def _ph_nr(name: str, value: str, lang: str) -> str:
+    if lang == 'en':
+        return value
+    _load_rooms()
+    return _ROOMS_VALUES.get(value, value)
+
+def _ph_ni_i(name: str, value: str, lang: str) -> str:
+    if lang == 'en':
+        return value
+    _load_items_flat()
+    translated = _ITEMS_FLAT.get(value)
+    if translated:
+        return translated
+    try:
+        from equipment_shop_list_reader import translate_equipment_shop_name
+        translated = translate_equipment_shop_name(value)
+        return translated if translated else value
+    except Exception:
+        return value
+
+def _ph_nk(name: str, value: str, lang: str) -> str:
+    if lang == 'en':
+        return value
+    _load_key_materials()
+    return _lookup_key_material(value) or value
+
+def _ph_nc2(name: str, value: str, lang: str) -> str:
+    return value
+_PLACEHOLDER_RESOLVERS = {'n': _ph_n_fn_rf_an_nc, 'fn': _ph_n_fn_rf_an_nc, 'rf': _ph_n_fn_rf_an_nc, 'an': _ph_n_fn_rf_an_nc, 'nc': _ph_n_fn_rf_an_nc, 'doc': _ph_doc, 'mn': _ph_mn_mt, 'mt': _ph_mn_mt, 'ra': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 't': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'oc': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'ct': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'oth': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'di': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'lp': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'cn': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'tem': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'tq': _ph_tq, 'cp': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'cll': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'ccs': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'rcn': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'cn2': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'hc': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'qc': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'tan': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'st': _ph_st, 'nh': _ph_nh, 'nhd': _ph_nhd, 'hod': _ph_hod_jok, 'jok': _ph_hod_jok, 'nt': _ph_nt, 'ds': _ph_ds, 'a': _ph_a_a2_oap, 'a2': _ph_a_a2_oap, 'oap': _ph_a_a2_oap, 'da': _ph_da, 'omq': _ph_omq_mi, 'mi': _ph_omq_mi, 'r': _ph_r, 'g': _ph_g_g2_g3, 'g2': _ph_g_g2_g3, 'g3': _ph_g_g2_g3, 'fq': _ph_fq_ne, 'ne': _ph_fq_ne, 'o': _ph_o_pcn, 'pcn': _ph_o_pcn, 'tl': _ph_tl_en, 'en': _ph_tl_en, 'nd': _ph_nd, 'nr': _ph_nr, 'ni': _ph_ni_i, 'i': _ph_ni_i, 'nk': _ph_nk, 'nc2': _ph_nc2}
+
 def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
     if not value:
         return value
     _ensure_i18n_bound_caches_current()
     value = _preprocess_placeholder_value(name, value, lang)
-    if name in _PV_VALUE_SUBGROUPS or name in ('g', 'g2', 'g3'):
+    if name in _PV_VALUE_SUBGROUPS or name in _GRAMMATICAL_CASE_NAMES:
         import i18n_helper as i18n
         if i18n.v2_public_enabled('placeholder_values'):
-            section = f'%{name}' if name in ('g', 'g2', 'g3') else None
+            section = f'%{name}' if name in _GRAMMATICAL_CASE_NAMES else None
             v2 = i18n.value_by_surface('placeholder_values', value, section=section, lang=lang)
             if v2 is not None:
                 return v2
-    if name in ('n', 'fn', 'rf', 'an', 'nc'):
-        if lang != 'en':
-            return translate_generated_name(value, lang)
+    resolver = _PLACEHOLDER_RESOLVERS.get(name)
+    if resolver is None:
+        if name not in _UNRESOLVED_PLACEHOLDERS:
+            _UNRESOLVED_PLACEHOLDERS.add(name)
+            _log.warning('placeholder %%%s に解決器が無い（原文のまま表示する）', name)
         return value
-    if name == 'doc':
-        _load()
-        normalized = ' '.join(value.split())
-        doc_entry = _DOC_VALUES.get(normalized)
-        if doc_entry is not None:
-            resolved = _resolve_npcd_ref(doc_entry['ref'])
-            if resolved:
-                return resolved
-        for compiled, ja_tmpl, _ in _DOC_COMPILED:
-            m = compiled.match(normalized)
-            if m:
-                nested = m.groupdict()
-                result = ja_tmpl
-                for ph_name, ph_val in nested.items():
-                    if ph_val:
-                        translated_val = translate_placeholder(ph_name, ph_val, lang)
-                        result = result.replace(f'%{ph_name}', translated_val)
-                return result
-        for compiled, ja_tmpl, _ in _DOC_COMPILED_LAX:
-            m = compiled.match(normalized)
-            if not m:
-                continue
-            nested = m.groupdict()
-            if all(nested.values()):
-                continue
-            result = ja_tmpl
-            for ph_name, ph_val in nested.items():
-                translated_val = translate_placeholder(ph_name, ph_val, lang) if ph_val else ''
-                result = result.replace(f'%{ph_name}', translated_val)
-            return result
-        return value
-    if name in ('mn', 'mt'):
-        if lang == 'en':
-            return value
-        from dungeon_msg_lookup import lookup_monster_name
-        return lookup_monster_name(value) or value
-    if name in ('ra', 't', 'oc', 'ct', 'oth', 'di', 'lp', 'cn', 'tem'):
-        _load_ph()
-        result = _PH_VALUES.get((name, value), {}).get(lang)
-        if result is not None:
-            return result
-        if name in _PH_DIRECT_ID_NAMES:
-            direct = _ph_direct_id(name, value)
-            if direct is not None:
-                return direct
-        if name == 'oth':
-            import i18n_helper as i18n
-            nd = i18n.value('npc_dialog', value)
-            if nd is not None:
-                return nd
-        if name == 'oc':
-            cls = _CLASS_VALUES.get(value)
-            if cls is not None:
-                return cls
-            import i18n_helper as i18n
-            cls_v2 = i18n.value_in('classes', value, lang)
-            if cls_v2 is not None:
-                return cls_v2
-            return value
-        if name == 'ra':
-            import i18n_helper as i18n
-            races_ja = i18n.value_in('races', value, lang)
-            if races_ja is not None:
-                return races_ja
-        if name == 'ct' and lang != 'en':
-            _st = _translate_settlement_type(value.strip().title(), lang)
-            if _st:
-                return _st
-        if name in ('lp', 'tem'):
-            if lang != 'en':
-                from dynamic_place_lookup import lookup as _place_lookup
-                translated = _place_lookup(value)
-                if translated:
-                    return translated
-        if name == 'cn' and lang != 'en':
-            _static = _translate_static_place(value, lang)
-            if _static != value:
-                return _static
-        return value
-    if name == 'tq':
-        return translate_placeholder('t', value, lang)
-    if name in ('cp', 'cll', 'ccs', 'rcn', 'cn2', 'hc', 'qc', 'tan'):
-        return _translate_static_place(value, lang)
-    if name == 'st':
-        if lang == 'en':
-            return value
-        import i18n_helper as i18n
-        return i18n.value_in('status_terms', value.lower(), lang) or i18n.value_in('status_terms', value, lang) or value
-    if name == 'nh':
-        return _translate_calendar_label(value, lang)
-    if name == 'nhd':
-        return _translate_date(value, lang)
-    if name in ('hod', 'jok'):
-        return _translate_nested_npc_dialog(value, lang)
-    if name == 'nt':
-        return _translate_nt(value, lang)
-    if name == 'ds':
-        return _translate_ds(value, lang)
-    if name in ('a', 'a2', 'oap'):
-        return value
-    if name == 'da':
-        return _translate_date(value, lang)
-    if name in ('omq', 'mi'):
-        translated = _translate_quest_item(value, lang)
-        return translated if translated is not None else value
-    if name == 'r':
-        import i18n_helper as i18n
-        key = _clean_placeholder_value(value).lower()
-        direct = i18n.value_in('relations', key, lang)
-        if direct is not None:
-            return direct
-        parts = key.split()
-        if parts:
-            base = i18n.value_in('relations', parts[-1], lang)
-            if base is not None:
-                return base
-        return value
-    if name in ('g', 'g2', 'g3'):
-        _load_ph()
-        result = _PH_VALUES.get((name, value), {}).get(lang)
-        if result is not None:
-            return result
-        direct = _ph_direct_id(name, value)
-        if direct is not None:
-            return direct
-        import i18n_helper as i18n
-        return i18n.value_in('pronouns', value.lower(), lang) or value
-    if name in ('fq', 'ne'):
-        cleaned = _clean_placeholder_value(value).rstrip('-~')
-        if lang != 'en':
-            return translate_generated_name(cleaned, lang)
-        return cleaned
-    if name in ('o', 'pcn'):
-        return value
-    if name in ('tl', 'en'):
-        if lang != 'en':
-            from dynamic_place_lookup import lookup as _place_lookup
-            translated = _place_lookup(value)
-            return translated if translated else value
-        return value
-    if name == 'nd':
-        if lang == 'en':
-            return value
-        _load_drinks()
-        return _DRINKS_VALUES.get(value, value)
-    if name == 'nr':
-        if lang == 'en':
-            return value
-        _load_rooms()
-        return _ROOMS_VALUES.get(value, value)
-    if name in ('ni', 'i'):
-        if lang == 'en':
-            return value
-        _load_items_flat()
-        translated = _ITEMS_FLAT.get(value)
-        if translated:
-            return translated
-        try:
-            from equipment_shop_list_reader import translate_equipment_shop_name
-            translated = translate_equipment_shop_name(value)
-            return translated if translated else value
-        except Exception:
-            return value
-    if name == 'nk':
-        if lang == 'en':
-            return value
-        _load_key_materials()
-        return _lookup_key_material(value) or value
-    if name == 'nc2':
-        return value
-    return value
+    return resolver(name, value, lang)
 _ARRIVAL_RE = re.compile('^You have arrived in (?P<loc>.+?) in (?P<prov>.+?) Province\\.\\s*The date is (?P<date>.+?)\\s+It took (?P<days>\\d+) days? to reach your goal\\.\\s*(?P<flavor>.*)$', re.DOTALL)
 _SETTLEMENT_RE = re.compile('^The (?P<type>Village|Town|City-State|City) of (?P<name>.+)$')
 _SETTLEMENT_TYPE_IDS = {'Village': 'settlement_types.0.0', 'Town': 'settlement_types.1.0', 'City': 'settlement_types.2.0', 'City-State': 'settlement_types.3.0'}

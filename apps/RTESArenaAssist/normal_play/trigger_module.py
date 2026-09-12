@@ -1,6 +1,6 @@
 from __future__ import annotations
 import logging
-from arena_bridge import SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN, TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, get_trigger_text_by_index
+from arena_bridge import TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, get_trigger_text_by_index
 import inf_text_lookup as itl
 import mif_trigger
 from viewer_constants import CURRENT_TRIGGER_TEXT_PTR_OFFSET
@@ -189,10 +189,13 @@ def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, in
 def idle_b30_state(w) -> dict:
     w._b30_in_gameplay_prev = False
     w._b30_dialog_active_prev = False
-    return {'dialog_flag': getattr(w, '_b30_dialog_flag_prev', 41729), 'dialog_flag_prev': getattr(w, '_b30_dialog_flag_prev', 41729), 'red_str': getattr(w, '_b30_red_str_prev', ''), 'red_changed': False, 'dialog_active': False, 'dialog_active_prev': False, 'c1_dialog_axis': None, 'c1_dialog_axis_active': False, 'img_name': '', 'in_gameplay': False}
+    return {'dialog_flag': getattr(w, '_b30_dialog_flag_prev', 41729), 'dialog_flag_prev': getattr(w, '_b30_dialog_flag_prev', 41729), 'red_str': getattr(w, '_b30_red_str_prev', ''), 'red_changed': False, 'dialog_active': False, 'dialog_active_prev': False, 'c1_dialog_axis': None, 'c1_dialog_axis_active': False, 'img_name': '', 'in_gameplay': False, 'fg_ptr': None, 'dialog_text_fg': False, 'dialog_text_fg_prev': False}
+GAMEPLAY_SCREEN_IDS = frozenset({'game_screen', 'combat', 'npc_dialog', 'shop', 'loading'})
 
-def compute_b30_state(w, *, screen_id: str | None=None, c_area: str | None=None, c1_axis=None) -> dict:
-    _screen_id = screen_id if screen_id is not None else getattr(w, '_screen_id_prev', None)
+def gameplay_screen(screen_id: str | None) -> bool:
+    return screen_id is None or screen_id in GAMEPLAY_SCREEN_IDS
+
+def compute_b30_state(w, *, in_gameplay: bool, c_area: str | None=None, c1_axis=None, img_name: str | None=None) -> dict:
     try:
         _dialog_flag_raw = w._analyzer.read_bytes(w._anchor + 4732, 2)
         _dialog_flag = int.from_bytes(_dialog_flag_raw, 'little')
@@ -224,12 +227,9 @@ def compute_b30_state(w, *, screen_id: str | None=None, c_area: str | None=None,
         _dialog_text_fg = _fg_ptr is not None and (4164 <= _fg_ptr < 4164 + 512 or 16384 <= _fg_ptr < 49152)
     _dialog_active = _dialog_text_fg
     _dialog_active_prev = getattr(w, '_b30_dialog_active_prev', False)
-    try:
-        _img_raw = w._analyzer.read_bytes(w._anchor + SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN)
-        _img_name = _img_raw.split(b'\x00', 1)[0].decode('ascii', errors='replace').upper()
-    except (OSError, AttributeError, ImportError):
-        _img_name = ''
-    _in_gameplay = _screen_id in (None, 'game_screen', 'combat', 'npc_dialog', 'shop', 'loading') and _img_name not in ('MRSHIRT.IMG', 'PAGE2.IMG', 'CHARSTAT.IMG')
+    _dialog_text_fg_prev = bool(_dialog_active_prev)
+    _img_name = (img_name or '').upper()
+    _in_gameplay = bool(in_gameplay)
     _was_in_gameplay = getattr(w, '_b30_in_gameplay_prev', False)
     if _in_gameplay and (not _was_in_gameplay):
         _log.info('b30 gameplay entry: seeding prev state red=%r dialog_active=%s', _red_str, _dialog_active)
@@ -238,21 +238,18 @@ def compute_b30_state(w, *, screen_id: str | None=None, c_area: str | None=None,
         _red_changed = False
         _dialog_active_prev = _dialog_active
     _c1_axis = c1_axis
-    if c_area == 'dungeon':
+    if c_area == 'dungeon' and _c1_axis is not None:
         try:
-            if _c1_axis is None:
-                from normal_play.c1_dialog_axis import read_c1_dialog_axis
-                _c1_axis = read_c1_dialog_axis(w, c_area=c_area, in_gameplay=_in_gameplay, update_prev=True)
             _dialog_active = _c1_axis.active
             _dialog_active_prev = _c1_axis.prev_active
-        except Exception as exc:
-            _log.debug('C1 dialog axis read failed: %s', exc)
+        except AttributeError as exc:
+            _log.debug('C1 dialog axis unusable: %s', exc)
     w._b30_in_gameplay_prev = _in_gameplay
     w._b30_dialog_active_prev = _dialog_text_fg
-    return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay}
+    return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay, 'fg_ptr': _fg_ptr, 'dialog_text_fg': bool(_dialog_text_fg), 'dialog_text_fg_prev': _dialog_text_fg_prev}
 _RED_TEXT_REPLACEABLE_OWNERS = frozenset({'', 'red_text', 'red_text_dialog', 'trigger', 'gold_drop', 'c1_runtime_dialog'})
 
-def poll_red_text(w, *, b30: dict) -> None:
+def poll_red_text(w, *, b30: dict, message_taken: bool=False) -> None:
     _death_red_allowed = _is_death_red_text(b30['red_str']) and _current_hp_is_zero(w)
     if not _death_red_allowed:
         w._death_red_text_prev = ''
@@ -265,6 +262,8 @@ def poll_red_text(w, *, b30: dict) -> None:
     _block_reasons = []
     if not _panel_free:
         _block_reasons.append('panel-owner=%s' % (_owner_now or '-'))
+    if message_taken:
+        _block_reasons.append('message-taken')
     if _current_top_level(w) != 'normal-play':
         _block_reasons.append('not-normal-play')
     if not b30['in_gameplay']:
@@ -283,7 +282,7 @@ def poll_red_text(w, *, b30: dict) -> None:
                 _log.debug('npc_dialog fallback failed: %s', exc)
         _red_owner = 'red_text_dialog' if b30['dialog_active'] else 'red_text'
         w._ui_router.update_translation(_red_owner, b30['red_str'], _b30_red_jpn or '', speech_role='situation')
-        _open_red_text_display(w, _red_owner)
+        _open_red_text_display(w, _red_owner, b30['red_str'])
         _recog(_log, 'red text accepted: %r → %r', b30['red_str'], _b30_red_jpn)
         if _death_red_allowed:
             w._death_red_text_prev = b30['red_str']
@@ -291,40 +290,25 @@ def poll_red_text(w, *, b30: dict) -> None:
         _recog(_log, 'red text skipped (%s): %r', ','.join(_block_reasons) or 'no-trigger', b30['red_str'])
 _RED_ABSENT_POLLS_TO_END = 10
 
-def _red_text_watcher(w):
-    from screen_detector import ActionTextWatcher
-    watcher = getattr(w, '_red_text_watcher_obj', None)
-    if watcher is None:
-        watcher = ActionTextWatcher()
-        w._red_text_watcher_obj = watcher
-    return watcher
-
-def _open_red_text_display(w, red_owner: str) -> None:
+def _open_red_text_display(w, red_owner: str, text: str='') -> None:
     w._red_text_open = red_owner
     w._red_text_close_seen = False
-    w._red_text_drawn_live = True
-    w._red_text_absent = 0
-    try:
-        watcher = _red_text_watcher(w)
-        watcher.ensure(w._analyzer, w._anchor)
-        watcher.set_active(True)
-        watcher.consume()
-    except (OSError, AttributeError, RuntimeError):
-        pass
+    w._red_text_band_seen = False
+    w._red_text_polls_open = 0
 
 def _close_red_text_display(w) -> None:
     w._red_text_open = ''
     w._red_text_close_seen = False
-    w._red_text_drawn_live = False
-    w._red_text_absent = 0
-    watcher = getattr(w, '_red_text_watcher_obj', None)
-    if watcher is not None:
-        try:
-            watcher.set_active(False)
-        except AttributeError:
-            pass
+    w._red_text_band_seen = False
+    w._red_text_polls_open = 0
 
-def poll_red_text_lifetime(w, *, b30: dict) -> None:
+def band_wanted(w) -> bool:
+    return bool(getattr(w, '_red_text_open', ''))
+
+def release_red_text(w) -> None:
+    _close_red_text_display(w)
+
+def poll_red_text_lifetime(w, *, b30: dict, band=None) -> None:
     try:
         owner = w._ui_router.current_owner() or ''
     except (AttributeError, RuntimeError):
@@ -335,22 +319,20 @@ def poll_red_text_lifetime(w, *, b30: dict) -> None:
         return
     if b30.get('dialog_active_prev') and (not b30.get('dialog_active')):
         w._red_text_close_seen = True
-    try:
-        drawn = _red_text_watcher(w).consume()
-    except (OSError, AttributeError, RuntimeError):
-        drawn = None
-    if drawn:
-        w._red_text_absent = 0
-        w._red_text_drawn_live = True
-    elif drawn is False:
-        absent = int(getattr(w, '_red_text_absent', 0)) + 1
-        w._red_text_absent = absent
-        if absent >= _RED_ABSENT_POLLS_TO_END:
-            w._red_text_drawn_live = False
+    if band is None:
+        from normal_play.action_text_band import current_band
+        band = current_band(w)
+    polls_open = int(getattr(w, '_red_text_polls_open', 0)) + 1
+    w._red_text_polls_open = polls_open
+    if band.live:
+        w._red_text_band_seen = True
+    band_seen = bool(getattr(w, '_red_text_band_seen', False))
+    band_gone = band_seen and (not band.live) or (not band_seen and polls_open >= _RED_ABSENT_POLLS_TO_END)
+    close_seen = bool(getattr(w, '_red_text_close_seen', False))
     if open_owner == 'red_text_dialog':
-        game_end = bool(getattr(w, '_red_text_close_seen', False))
+        game_end = close_seen
     else:
-        game_end = bool(getattr(w, '_red_text_close_seen', False)) or not getattr(w, '_red_text_drawn_live', False)
+        game_end = close_seen or band_gone
     if owner not in ('', 'red_text', 'red_text_dialog'):
         return
     if not game_end:
@@ -374,4 +356,4 @@ def poll_red_text_lifetime(w, *, b30: dict) -> None:
         restore_last_trigger_display(w)
     else:
         w._ui_router.clear_display('', allowed_current_owners=('',))
-__all__ = ['poll_trigger', 'riddle_group_holds_ptr', 'compute_b30_state', 'poll_red_text', 'poll_red_text_lifetime', 'restore_last_trigger_display']
+__all__ = ['poll_trigger', 'riddle_group_holds_ptr', 'GAMEPLAY_SCREEN_IDS', 'gameplay_screen', 'compute_b30_state', 'poll_red_text', 'poll_red_text_lifetime', 'band_wanted', 'release_red_text', 'restore_last_trigger_display']

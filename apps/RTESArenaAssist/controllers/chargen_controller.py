@@ -1,6 +1,6 @@
 import logging
 import inf_text_lookup as itl
-from controllers.chargen_helpers import _CHARGEN_OPENING_HINT_ADDR, _CHARGEN_OPENING_MAXLEN, _CHARGEN_OPENING_FULLREAD, _CHARGEN_OPENING_SCAN_START, _CHARGEN_OPENING_SCAN_END, _CHARGEN_OPENING_PREFIXES, _is_garbage_npc_buffer, _looks_like_cinematic, _CHARGEN_NAME_RE, _CHARGEN_CLASS_JA, _CHARGEN_DYNAMIC_PATTERNS
+from controllers.chargen_helpers import _CHARGEN_OPENING_HINT_ADDR, _CHARGEN_OPENING_MAXLEN, _CHARGEN_OPENING_FULLREAD, _CHARGEN_OPENING_SCAN_START, _CHARGEN_OPENING_SCAN_END, _CHARGEN_OPENING_PREFIXES, _CHARGEN_OPENING_TEMPLATE_KEYS, _is_garbage_npc_buffer, _looks_like_cinematic, _CHARGEN_NAME_RE, _CHARGEN_CLASS_JA, _CHARGEN_DYNAMIC_PATTERNS
 _log = logging.getLogger('chargen_controller')
 
 class ChargenController:
@@ -87,47 +87,8 @@ class ChargenController:
         return ''
 
     def _read_cinematic_block(self, address: int) -> str:
-        w = self._w
-        data = b''
-        for size in (_CHARGEN_OPENING_FULLREAD, 2048, 1024, 512, 256):
-            try:
-                data = w._analyzer.read_bytes(address, size)
-                if data:
-                    break
-            except OSError:
-                continue
-        if not data:
-            return ''
-        parts = data.split(b'\x00')
-        text_parts: list[str] = []
-        empty_run = 0
-        for raw in parts:
-            if not raw:
-                empty_run += 1
-                if empty_run >= 4 and text_parts:
-                    break
-                continue
-            empty_run = 0
-            try:
-                s = raw.decode('ascii', errors='replace').strip()
-            except Exception:
-                if text_parts:
-                    break
-                continue
-            if not s:
-                if text_parts:
-                    break
-                continue
-            printable = sum((1 for c in s if 32 <= ord(c) < 127))
-            ratio = printable / max(len(s), 1)
-            if ratio < 0.7:
-                if text_parts:
-                    break
-                continue
-            if len(s) < 3 and text_parts:
-                continue
-            text_parts.append(s)
-        return ' '.join(text_parts).strip()
+        from cinematic_text import read_block
+        return read_block(self._w._analyzer, address, sizes=(_CHARGEN_OPENING_FULLREAD, 2048, 1024, 512, 256), template_keys=_CHARGEN_OPENING_TEMPLATE_KEYS)
 
     def _read_player_name(self) -> str:
         w = self._w

@@ -48,19 +48,18 @@ def _resolve_runtime_dialog_body(w, *, npc_dialog: str, msg_buf: str, fg_ptr: in
         return ''
     if _ptr_targets_msg_buf(fg_ptr):
         return msg_buf or ''
-    if dlgflg_active and fg_ptr is not None and (fg_ptr >= 256) and (not _ptr_targets_runtime_dialog(fg_ptr)) and (not bool(getattr(w, '_level_up_active', False))) and (not bool(getattr(w, '_b32_newpop_open', False))):
-        return _read_static_dialog_text(w, fg_ptr)
+    if dlgflg_active and fg_ptr is not None and (fg_ptr >= 256) and (not _ptr_targets_runtime_dialog(fg_ptr)):
+        from normal_play.level_up_module import level_up_active
+        from normal_play.item_pickup_module import pickup_list_open
+        if not level_up_active(w) and (not pickup_list_open(w)):
+            return _read_static_dialog_text(w, fg_ptr)
+        return ''
     if _ptr_in(fg_ptr, _NPC_DIALOG_RANGE):
         return npc_dialog or ''
     return ''
 
 def poll_c1_runtime_dialog(w, *, npc_dialog: str, facility_active_now: bool, msg_buf: str='') -> bool:
-    _c1_axis = None
-    try:
-        from normal_play.c1_dialog_axis import read_c1_dialog_axis
-        _c1_axis = read_c1_dialog_axis(w, c_area='dungeon', in_gameplay=True, update_prev=False)
-    except Exception:
-        pass
+    _c1_axis = getattr(w, '_c1_dialog_axis_now', None)
     if _c1_axis is not None:
         _fg_ptr = getattr(_c1_axis, 'current_ptr', None)
         _dlgflg_active = getattr(_c1_axis, 'a84d', 0) == _DLGFLG_A84D_VALUE

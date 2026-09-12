@@ -98,6 +98,47 @@ def resolve_action_text_color_index(analyzer, anchor: int) -> int | None:
 def action_text_probe_addr(anchor: int) -> tuple[int, int]:
     return (anchor + SCREEN_BUFFER_OFFSET + ACTION_TEXT_ROW * SCREEN_ROW_BYTES + ACTION_TEXT_COL_FIRST, ACTION_TEXT_COL_LAST - ACTION_TEXT_COL_FIRST + 1)
 
+def action_text_band_addr(anchor: int) -> tuple[int, int]:
+    width = ACTION_TEXT_COL_LAST - ACTION_TEXT_COL_FIRST + 1
+    rows = ACTION_TEXT_ROW_LAST - ACTION_TEXT_ROW_FIRST + 1
+    return (anchor + SCREEN_BUFFER_OFFSET + ACTION_TEXT_ROW_FIRST * SCREEN_ROW_BYTES + ACTION_TEXT_COL_FIRST, (rows - 1) * SCREEN_ROW_BYTES + width)
+
+def action_text_band_rows(block: bytes) -> bytes:
+    width = ACTION_TEXT_COL_LAST - ACTION_TEXT_COL_FIRST + 1
+    rows = ACTION_TEXT_ROW_LAST - ACTION_TEXT_ROW_FIRST + 1
+    return b''.join((block[r * SCREEN_ROW_BYTES:r * SCREEN_ROW_BYTES + width] for r in range(rows)))
+_MASK_TABLES: dict[int, bytes] = {}
+
+def action_text_band_mask(rows: bytes, color: int) -> tuple[int, int]:
+    table = _MASK_TABLES.get(color)
+    if table is None:
+        table = bytes((1 if i == color else 0 for i in range(256)))
+        _MASK_TABLES[color] = table
+    marks = rows.translate(table)
+    return (int.from_bytes(marks, 'big'), marks.count(1))
+
+def band_mask_within(mask: int, reference: int) -> bool:
+    return mask != 0 and mask & ~reference == 0
+_BAND_SIGNATURES_MAX = 16
+
+def note_band_signature(w, text: str, mask: int, count: int) -> None:
+    if not text or not mask:
+        return
+    table = getattr(w, '_band_signature_by_text', None)
+    if table is None:
+        table = {}
+        w._band_signature_by_text = table
+    table.pop(text, None)
+    table[text] = (int(mask), int(count))
+    while len(table) > _BAND_SIGNATURES_MAX:
+        table.pop(next(iter(table)))
+
+def band_signature(w, text: str):
+    table = getattr(w, '_band_signature_by_text', None)
+    if not table or not text:
+        return None
+    return table.get(text)
+
 def is_action_text_drawn(analyzer, anchor: int) -> bool | None:
     color = resolve_action_text_color_index(analyzer, anchor)
     if color is None:
@@ -130,6 +171,34 @@ class ActionTextWatcher:
         self._active = True
         self._fine = False
         self._color = None
+        self._episode = 0
+        self._ep_mask = 0
+        self._ep_count = 0
+        self._ep_repeat = 0
+
+    def episode(self) -> tuple[int, int, int, bool]:
+        with self._lock:
+            return (self._episode, self._ep_mask, self._ep_count, self._ep_repeat >= 1)
+
+    def reset_episode(self) -> None:
+        with self._lock:
+            self._episode += 1
+            self._ep_mask = 0
+            self._ep_count = 0
+            self._ep_repeat = 0
+
+    def _note_band(self, mask: int, count: int) -> None:
+        if self._ep_count == 0:
+            self._ep_mask, self._ep_count, self._ep_repeat = (mask, count, 0)
+        elif mask == self._ep_mask:
+            self._ep_repeat += 1
+        elif mask & ~self._ep_mask == 0:
+            return
+        elif self._ep_mask & ~mask == 0:
+            self._ep_mask, self._ep_count, self._ep_repeat = (mask, count, 0)
+        else:
+            self._episode += 1
+            self._ep_mask, self._ep_count, self._ep_repeat = (mask, count, 0)
 
     def ensure(self, analyzer, anchor: int) -> None:
         key = (id(analyzer), anchor)
@@ -192,7 +261,9 @@ class ActionTextWatcher:
                 self._fine = False
 
     def _loop(self, analyzer, anchor: int, stop) -> None:
-        addr, size = action_text_probe_addr(anchor)
+        addr, size = action_text_band_addr(anchor)
+        probe_off = (ACTION_TEXT_ROW - ACTION_TEXT_ROW_FIRST) * SCREEN_ROW_BYTES
+        probe_len = ACTION_TEXT_COL_LAST - ACTION_TEXT_COL_FIRST + 1
         color = None
         next_palette = 0.0
         while not stop.is_set():
@@ -221,6 +292,10 @@ class ActionTextWatcher:
                 except (OSError, AttributeError, RuntimeError):
                     ok = False
                     band = None
+            hit = bool(ok and color in band[probe_off:probe_off + probe_len])
+            mask = count = 0
+            if hit:
+                mask, count = action_text_band_mask(action_text_band_rows(band), color)
             with self._lock:
                 self._readable = ok
                 if ok:
@@ -228,9 +303,10 @@ class ActionTextWatcher:
                     if self._first_sample_at is None:
                         self._first_sample_at = now
                     self._last_sample_at = now
-                    if color in band:
+                    if hit:
                         self._seen = True
                         self._hits += 1
+                        self._note_band(mask, count)
             stop.wait(self.INTERVAL_SEC)
 
 def _read_u16_le(analyzer, addr: int) -> int:

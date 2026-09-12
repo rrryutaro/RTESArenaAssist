@@ -5,28 +5,13 @@ from typing import Optional
 import numpy as np
 from common_draw.automap_canvas import CanvasData, _classify_cell, _is_hidden_door_cell, _is_wall_passage_cell, facing_delta, facing_target_cell
 from services.map_ext_store import SECTION_TREASURE_PILES, SECTION_WALL_PASSAGES
-from services.automap_file import AutomapCache, EXPECTED_FILE_SIZE, cache_for_level_hash, parse_automap_file, read_current_level_hash
+from services.automap_file import AutomapCache, EXPECTED_FILE_SIZE, cache_for_level_hash, level_index_of_hash, parse_automap_file, read_current_level_hash
 from services.arena_reveal_stencil import apply_reveal_stencil, apply_reveal_stencil_with_los, rebuild_seen_cells_from_bitmap, resolve_first_block, wall_passage_cell_visible
 from runtime_paths import resolve_arena_install_dir
 from services.mif_loader import DEFAULT_INF_DIR, DEFAULT_MIF_DIR, load_mif, parse_inf_level_transitions, parse_inf_menu_indices, parse_inf_walls_hidden_door_ids, resolve_inf_for_mif
 from normal_play.map.base import MapContext, MapSessionBase
 from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
 _log = logging.getLogger('base_location.dungeon')
-_PAIR_CONFIRM_POLLS = 3
-
-def _load_persisted_pairs() -> dict[str, dict[int, int]]:
-    try:
-        from services.map_ext_store import load_hash_floor_pairs
-        return load_hash_floor_pairs()
-    except Exception:
-        return {}
-
-def _persist_pairs(pairs: dict[str, dict[int, int]]) -> None:
-    try:
-        from services.map_ext_store import save_hash_floor_pairs
-        save_hash_floor_pairs(pairs)
-    except Exception:
-        _log.exception('pair persist failed')
 
 class DungeonMapSession(MapSessionBase):
 
@@ -40,9 +25,7 @@ class DungeonMapSession(MapSessionBase):
         self._map1: Optional[np.ndarray] = None
         self._flor: Optional[np.ndarray] = None
         self._bitmap: Optional[np.ndarray] = None
-        self._level_hash: Optional[int] = None
         self._level_store_key: Optional[str] = None
-        self._level_hash_fresh: Optional[int] = None
         self._seen_cells: set[tuple[int, int]] = set()
         self._notes: list[tuple[int, int, str]] = []
         self._level_up_index: Optional[int] = None
@@ -52,14 +35,10 @@ class DungeonMapSession(MapSessionBase):
         self._ext_store = None
         self._private_store = None
         self._location_key: Optional[str] = None
-        self._hash_floor_pairs: dict[str, dict[int, int]] = {}
         self._await_axis_reconfirm: bool = False
         self._record_ok: bool = False
         self._stair_cells: frozenset[tuple[int, int]] = frozenset()
-        self._axis_aligned: bool = False
-        self._pair_candidate: tuple[int, int] | None = None
-        self._pair_streak: int = 0
-        self._hash_floor_pairs.update(_load_persisted_pairs())
+        self._migrated_mifs: set[str] = set()
         self._mif_level_count: int = 1
         self._discovered_hd: frozenset[tuple[int, int]] = frozenset()
         self._discovered_wp: frozenset[tuple[int, int]] = frozenset()
@@ -111,21 +90,16 @@ class DungeonMapSession(MapSessionBase):
         if upd_key != self._diag_prev_update:
             self._diag_prev_update = upd_key
             _log.info('dungeon_diag[id=%x]: update ctx_mif=%r self_mif=%r player=(%s,%s) bitmap=%s', id(self), ctx.mif_name, self._mif_name, ctx.player_tile_x, ctx.player_tile_y, 'set' if self._bitmap is not None else 'None')
-        self._refresh_level_axis(ctx)
-        if self._diag_reset_first.get('hash') and self._level_hash_fresh is not None:
-            self._diag_reset_first['hash'] = False
-            _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: first hash after reset (%08X)', id(self), self._level_hash_fresh)
-        if self._diag_reset_first.get('hyp') and ctx.dungeon_floor_fresh is not None:
-            self._diag_reset_first['hyp'] = False
-            _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: first hyp after reset (#%d)', id(self), int(ctx.dungeon_floor_fresh))
-        self._learn_hash_floor_pair(ctx)
-        target_floor = self._resolve_target_floor(ctx)
-        if ctx.mif_name and (ctx.mif_name != self._mif_name or (target_floor is not None and target_floor != self._floor)):
-            self._load_mif(ctx.mif_name, target_floor if target_floor is not None else ctx.player_floor)
+        if self._diag_reset_first.get('level') and ctx.dungeon_floor_fresh is not None:
+            self._diag_reset_first['level'] = False
+            _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: first level after reset (#%d)', id(self), int(ctx.dungeon_floor_fresh))
+        floor = ctx.dungeon_floor
+        if ctx.mif_name and floor is not None and (ctx.mif_name != self._mif_name or floor != self._floor):
+            self._load_mif(ctx.mif_name, int(floor))
             self._mif_name = ctx.mif_name
-            self._floor = target_floor if target_floor is not None else ctx.player_floor
+            self._floor = int(floor)
+        self._refresh_level_axis(ctx)
         self._location_key = self._level_store_key
-        self._refresh_axis_alignment(ctx)
         self._update_record_gate(ctx)
         if self._import_request:
             self._import_request = False
@@ -162,7 +136,7 @@ class DungeonMapSession(MapSessionBase):
                 self._await_axis_reconfirm = True
 
     def get_canvas_data(self) -> CanvasData:
-        if self._await_axis_reconfirm or not self._axis_aligned or self._location_key is None:
+        if self._await_axis_reconfirm or self._location_key is None:
             return CanvasData(walkable=None, map1=None, flor=None, bitmap_grid=None, notes=[], player_x=None, player_y=None, player_angle_deg=None, level_up_index=None, level_down_index=None, entrance_cells=(), is_wilderness=False, hidden_door_ids=frozenset(), menu_texture_indices=frozenset(), treasure_pile_cells=frozenset(), discovered_hidden_door_cells=frozenset(), discovered_wall_passage_cells=frozenset(), map_key='dungeon:<transition>', cache_index=None)
         return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, treasure_pile_cells=self._known_treasure, discovered_hidden_door_cells=self._discovered_hd, discovered_wall_passage_cells=self._discovered_wp, flat_marks=self._visible_flat_marks(), map_key=f'dungeon:{self._location_key}' if self._location_key else 'dungeon:<unknown>', cache_index=self._active_cache_index)
 
@@ -213,15 +187,10 @@ class DungeonMapSession(MapSessionBase):
     def reset_progress(self) -> None:
         self._bitmap = None
         self._private_store = None
-        self._level_hash = None
-        self._level_hash_fresh = None
         self._level_store_key = None
         self._location_key = None
         self._await_axis_reconfirm = True
-        self._axis_aligned = False
-        self._pair_candidate = None
-        self._pair_streak = 0
-        self._diag_reset_first = {'hash': True, 'hyp': True}
+        self._diag_reset_first = {'level': True}
         self._view_scan_key = None
         self._in_first_block = False
         self._seen_cells.clear()
@@ -251,7 +220,6 @@ class DungeonMapSession(MapSessionBase):
             self._wall_passage_cells = ()
             self._location_key = None
             self._level_store_key = None
-            self._level_hash = None
             return
         map1 = np.array(mif.map1, dtype=np.uint16).reshape(mif.height, mif.width)
         self._map1 = map1
@@ -324,56 +292,34 @@ class DungeonMapSession(MapSessionBase):
             except Exception:
                 self._flat_marks_all = ()
 
-    def _resolve_target_floor(self, ctx: MapContext) -> Optional[int]:
-        if self._level_hash is None:
-            return None
-        mif = (ctx.mif_name or self._mif_name or '').upper()
-        pairs = self._hash_floor_pairs.get(mif)
-        if pairs is not None and self._level_hash in pairs:
-            return pairs[self._level_hash]
-        return None
-
-    def _learn_hash_floor_pair(self, ctx: MapContext) -> None:
-        fresh = self._level_hash_fresh
-        if fresh is None or ctx.dungeon_floor_fresh is None or (not self._mif_name):
-            return
-        cand = (int(fresh), int(ctx.dungeon_floor_fresh))
-        if cand != self._pair_candidate:
-            self._pair_candidate = cand
-            self._pair_streak = 1
-            return
-        self._pair_streak += 1
-        if self._pair_streak < _PAIR_CONFIRM_POLLS:
+    def _migrate_hash_keys(self) -> None:
+        if self._ext_store is None or not self._mif_name:
             return
         mif = self._mif_name.upper()
-        fresh, floor = cand
-        pairs = self._hash_floor_pairs.setdefault(mif, {})
-        if pairs.get(fresh) != floor:
-            pairs[fresh] = floor
-            _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: hash-floor pair confirmed %s: %08X -> #%d (streak=%d)', id(self), mif, fresh, floor, self._pair_streak)
-            _persist_pairs(self._hash_floor_pairs)
-        if self._ext_store is None:
+        if mif in self._migrated_mifs:
             return
-        old_key = f'{mif}#{floor}'
-        new_key = f'{mif}#{fresh:08X}'
+        self._migrated_mifs.add(mif)
         try:
-            if self._ext_store.migrate_location_key(old_key, new_key):
-                _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: ext discoveries migrated %r -> %r', id(self), old_key, new_key)
-        except Exception:
-            _log.exception('ext key migration failed')
-
-    def _refresh_axis_alignment(self, ctx: MapContext) -> None:
-        prev = self._axis_aligned
-        if (self._mif_level_count or 1) <= 1:
-            aligned = self._location_key is not None
-        else:
-            pairs = self._hash_floor_pairs.get((self._mif_name or '').upper()) or {}
-            mapped = pairs.get(self._level_hash) if self._level_hash is not None else None
-            conflict = ctx.dungeon_floor_fresh is not None and mapped is not None and (int(ctx.dungeon_floor_fresh) != mapped)
-            aligned = self._location_key is not None and mapped is not None and (mapped == self._floor) and (not conflict)
-        self._axis_aligned = aligned
-        if aligned != prev:
-            _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: axis %s key=%r floor=#%d', id(self), 'aligned' if aligned else 'transition', self._location_key, self._floor)
+            keys = self._ext_store.location_keys(f'{mif}#')
+        except AttributeError:
+            return
+        for old_key in keys:
+            suffix = old_key[len(mif) + 1:]
+            if len(suffix) != 8:
+                continue
+            try:
+                level_hash = int(suffix, 16)
+            except ValueError:
+                continue
+            idx = level_index_of_hash(level_hash)
+            if idx is None:
+                continue
+            new_key = f'{mif}#{idx}'
+            try:
+                if self._ext_store.migrate_location_key(old_key, new_key):
+                    _log.log(_RECOG_LEVEL, 'dungeon_diag[id=%x]: ext discoveries migrated %r -> %r', id(self), old_key, new_key)
+            except Exception:
+                _log.exception('ext key migration failed')
 
     def _update_record_gate(self, ctx: MapContext) -> None:
         pos = None
@@ -384,22 +330,21 @@ class DungeonMapSession(MapSessionBase):
         if pos is not None and self._last_player_pos is not None and (abs(pos[0] - self._last_player_pos[0]) + abs(pos[1] - self._last_player_pos[1]) > 6):
             self._await_axis_reconfirm = True
             self._in_first_block = False
-        if self._await_axis_reconfirm and self._level_hash_fresh is not None:
+        if self._await_axis_reconfirm and ctx.dungeon_floor_fresh is not None and (self._location_key is not None):
             self._await_axis_reconfirm = False
-        self._record_ok = not self._await_axis_reconfirm and self._axis_aligned and (self._location_key is not None)
+        self._record_ok = not self._await_axis_reconfirm and self._location_key is not None
 
     def _refresh_level_axis(self, ctx: MapContext) -> None:
-        fresh = read_current_level_hash(ctx.analyzer, ctx.anchor)
-        self._level_hash_fresh = fresh
-        if fresh is None or not self._mif_name:
+        floor = ctx.dungeon_floor
+        if floor is None or not self._mif_name:
             return
-        key = f'{self._mif_name.upper()}#{fresh:08X}'
+        if int(floor) != self._floor:
+            return
+        key = f'{self._mif_name.upper()}#{int(floor)}'
         if key == self._level_store_key:
             return
-        self._level_hash = fresh
         self._level_store_key = key
-        self._pair_candidate = None
-        self._pair_streak = 0
+        self._migrate_hash_keys()
         bm = self._reveal_store().reveal_grid_for_update(key)
         self._bitmap = bm
         self._seen_cells = rebuild_seen_cells_from_bitmap(bm)
@@ -436,9 +381,12 @@ class DungeonMapSession(MapSessionBase):
         if not save_dir:
             self._diag_log_skip('no_save_dir')
             return False
-        cur_hash = self._level_hash_fresh
-        if cur_hash is None or cur_hash != self._level_hash:
+        cur_hash = read_current_level_hash(ctx.analyzer, ctx.anchor)
+        if cur_hash is None:
             self._diag_log_skip('level_hash_unread')
+            return False
+        if self._location_key is None or level_index_of_hash(cur_hash) != self._floor:
+            self._diag_log_skip('level_hash_mismatch')
             return False
         if self._bitmap is None:
             self._diag_log_skip('bitmap_none')

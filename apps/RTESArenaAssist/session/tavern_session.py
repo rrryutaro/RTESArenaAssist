@@ -33,32 +33,25 @@ class TavernSession(SessionBase):
             return True
         return False
 
-    def _detect_shop_state(self, ctx: SessionContext) -> tuple[str, str]:
+    def _shop_state_of(self, ctx: SessionContext) -> tuple[str, str]:
         extras_kind = ctx.extras.get('shop_kind') if ctx.extras else None
         extras_owner = ctx.extras.get('owner_kind') if ctx.extras else None
         if extras_kind is not None or extras_owner is not None:
             kind = extras_kind if extras_kind is not None else 'none'
             owner = extras_owner if extras_owner is not None else 'tavern' if kind in _TAVERN_OWNER_KINDS else ''
             return (kind or 'none', owner or '')
-        try:
-            from shop_popup_detector import detect_shop_popup_state
-        except ImportError:
-            return ('none', '')
         if ctx.top_level_state != 'normal-play':
             return ('none', '')
         if not ctx.in_interior:
             return ('none', '')
-        w = ctx.extras.get('window') if ctx.extras else None
-        _allow_recovery = bool(getattr(w, '_yesno_menu_recovery_last', False)) if w else False
-        try:
-            state = detect_shop_popup_state(ctx.analyzer, ctx.anchor, top_level_state=ctx.top_level_state, img_name=ctx.img_name, in_interior=ctx.in_interior, screen_id=ctx.screen_id, allow_yesno_menu_recovery=_allow_recovery, interior_mif_name=ctx.interior_mif_name or '', area=ctx.area, active_facility_name='tavern' if self._active or self._is_tavern_context(ctx) else '')
-            kind = state.kind or 'none'
-            owner = state.owner_kind or ''
-            if _allow_recovery and (not owner) and (kind in _TAVERN_OWNER_KINDS):
-                owner = 'tavern'
-            return (kind, owner)
-        except Exception:
+        state = ctx.shop_state
+        if state is None:
             return ('none', '')
+        kind = getattr(state, 'kind', '') or 'none'
+        owner = getattr(state, 'owner_kind', '') or ''
+        if ctx.yesno_menu_recovery and (not owner) and (kind in _TAVERN_OWNER_KINDS):
+            owner = 'tavern'
+        return (kind, owner)
 
     @staticmethod
     def _is_negotiation_active(ctx: SessionContext) -> bool:
@@ -101,22 +94,31 @@ class TavernSession(SessionBase):
             return bool(extras_flag)
         if ctx.npc_phase != NPC_PHASE_ASKING:
             return False
+        marker, _parsed, title = self._observe_ask_about(ctx)
+        if not marker:
+            return False
+        return title == 'Rumor Type'
+
+    @staticmethod
+    def _observe_ask_about(ctx: SessionContext):
+        key = '_tavern_ask_about_obs'
+        if ctx.extras is not None and key in ctx.extras:
+            return ctx.extras[key]
+        obs = (None, None, None)
         try:
             from arena_bridge import read_ask_about_menu
             from ask_about_menu_parser import parse_menu, detect_active_sub_menu_title
             from popup11_list_detector import read_active_menu_marker
-        except ImportError:
-            return False
-        try:
             marker = read_active_menu_marker(ctx.analyzer, ctx.anchor)
-            if not marker:
-                return False
             raw = read_ask_about_menu(ctx.analyzer, ctx.anchor)
             parsed = parse_menu(raw)
             title = detect_active_sub_menu_title(parsed, marker)
-            return title == 'Rumor Type'
+            obs = (marker, parsed, title)
         except Exception:
-            return False
+            obs = (None, None, None)
+        if ctx.extras is not None:
+            ctx.extras[key] = obs
+        return obs
 
     def _stop(self, ctx: SessionContext | None=None) -> bool:
         self._none_shop_polls = 0
@@ -139,7 +141,7 @@ class TavernSession(SessionBase):
             return False
         if not (self._is_tavern_context(ctx) or self._facility_info_unknown(ctx)):
             return False
-        kind, owner = self._detect_shop_state(ctx)
+        kind, owner = self._shop_state_of(ctx)
         if owner == 'tavern' and kind in _TAVERN_OWNER_KINDS:
             self._none_shop_polls = 0
             self._set_active(True)
@@ -153,7 +155,7 @@ class TavernSession(SessionBase):
             return self._stop(ctx)
         if self._known_non_tavern_context(ctx):
             return self._stop(ctx)
-        kind, owner = self._detect_shop_state(ctx)
+        kind, owner = self._shop_state_of(ctx)
         if owner == 'tavern' and kind == 'shop_menu':
             w = ctx.extras.get('window') if ctx.extras else None
             if w is not None and getattr(w, '_tavern_rumor_flow_active', False):
@@ -189,18 +191,12 @@ class TavernSession(SessionBase):
         if w is None:
             return
         try:
-            from arena_bridge import read_ask_about_menu
-            from ask_about_menu_parser import parse_menu, build_display_sub, build_panel_display_sub, detect_active_sub_menu_title
-            from popup11_list_detector import read_active_menu_marker
+            from ask_about_menu_parser import build_display_sub, build_panel_display_sub
         except ImportError:
             return
-        try:
-            _aa_marker = read_active_menu_marker(w._analyzer, w._anchor)
-            _aa_raw = read_ask_about_menu(w._analyzer, w._anchor)
-            _aa_parsed = parse_menu(_aa_raw)
-            _aa_active_sub = detect_active_sub_menu_title(_aa_parsed, _aa_marker)
-        except Exception:
-            _aa_active_sub = None
+        _aa_marker, _aa_parsed, _aa_active_sub = self._observe_ask_about(ctx)
+        if _aa_parsed is None:
+            _aa_parsed = {}
         _rumor_type_visible = _aa_active_sub == 'Rumor Type'
         if not _rumor_type_visible:
             if w._ui_router.is_owner('tavern_rumor_type'):
@@ -208,7 +204,7 @@ class TavernSession(SessionBase):
                 w._ui_router.clear_if_owner('tavern_rumor_type')
         if ctx.npc_phase != NPC_PHASE_ASKING:
             return
-        kind, _ = self._detect_shop_state(ctx)
+        kind, _ = self._shop_state_of(ctx)
         if kind in ('shop_menu', 'shop_buy', 'shop_rumor_type'):
             return
         try:

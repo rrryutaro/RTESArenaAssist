@@ -11,7 +11,6 @@ _ARM_RANGE = 5
 _ARM_RANGE_D2_OUT = 8
 _FIELD_JUDGE_RANGE = 1
 _DISARM_POLLS = 30
-_ABSENT_POLLS_TO_END = 10
 _PENDING_POLLS = 15
 
 def _panel_owner(w) -> str:
@@ -209,15 +208,8 @@ def _resolve_message(tables, index: int) -> tuple[str, str]:
         translated = ''
     return (original, translated)
 
-def _watcher(w):
-    from screen_detector import ActionTextWatcher
-    watcher = getattr(w, '_lock_msg_watcher', None)
-    if watcher is None:
-        watcher = ActionTextWatcher()
-        w._lock_msg_watcher = watcher
-    return watcher
-
 def update_watch(w, near) -> bool:
+    from normal_play.action_text_band import current_band
     armed = bool(getattr(w, '_lock_msg_armed', False))
     if near.known:
         if near.near:
@@ -226,43 +218,12 @@ def update_watch(w, near) -> bool:
         else:
             count = int(getattr(w, '_lock_msg_disarm_count', 0)) + 1
             w._lock_msg_disarm_count = count
-            hold = bool(getattr(w, '_lock_msg_live', False)) or int(getattr(w, '_lock_msg_pending', 0)) > 0 or count < _DISARM_POLLS
+            hold = current_band(w).live or int(getattr(w, '_lock_msg_pending', 0)) > 0 or count < _DISARM_POLLS
             armed = hold and armed
     if armed != bool(getattr(w, '_lock_msg_armed', False)):
         _recog(_log, '赤文字の見張り: %s（%s）', '開始' if armed else '休止', near.where or near.reason)
     w._lock_msg_armed = armed
-    if armed or getattr(w, '_lock_msg_watcher', None) is not None:
-        try:
-            watcher = _watcher(w)
-            watcher.ensure(w._analyzer, w._anchor)
-            watcher.set_active(armed)
-        except (OSError, AttributeError, ImportError, RuntimeError):
-            return False
     return armed
-
-def read_drawn(w) -> bool | None:
-    try:
-        return _watcher(w).consume()
-    except (OSError, AttributeError, ImportError, RuntimeError):
-        return None
-
-def update_live(w, drawn: bool | None) -> bool:
-    if drawn is None:
-        return bool(getattr(w, '_lock_msg_live', False))
-    if drawn:
-        w._lock_msg_absent = 0
-        w._lock_msg_live = True
-        return True
-    absent = int(getattr(w, '_lock_msg_absent', 0)) + 1
-    w._lock_msg_absent = absent
-    if absent >= _ABSENT_POLLS_TO_END:
-        w._lock_msg_live = False
-    return bool(getattr(w, '_lock_msg_live', False))
-
-def detect_rising_edge(w, drawn: bool | None) -> bool:
-    prev = bool(getattr(w, '_lock_msg_live', False))
-    live = update_live(w, drawn)
-    return live and (not prev)
 
 def _decide(w, b30, near):
     owner_now = _panel_owner(w)
@@ -298,34 +259,34 @@ def _decide(w, b30, near):
         return (None, None, f'番号 {index} の文が引けない', False)
     return (original, translated, '番号=%d 錠=(%d,%d,lv%d) 場所=%s 除数=%d 知=%d 敏=%d Lv格納値=%d' % (index, lock[0], lock[1], lock[2], near.where, divisor, intelligence, agility, player_level), False)
 
-def _color_index(w):
-    watcher = getattr(w, '_lock_msg_watcher', None)
-    try:
-        return watcher.color_index() if watcher is not None else None
-    except AttributeError:
-        return None
-
-def _watch_stats(w):
-    watcher = getattr(w, '_lock_msg_watcher', None)
-    try:
-        return watcher.stats() if watcher is not None else None
-    except AttributeError:
-        return None
-
-def poll_lock_message(w, *, b30: dict, rt_x=None, rt_z=None) -> None:
-    near = resolve_nearby_lock(w, rt_x, rt_z)
-    armed = update_watch(w, near)
-    drawn = read_drawn(w) if armed else None
-    _obs = (drawn, bool(b30.get('red_str')), bool(b30.get('in_gameplay')), armed, near.where, near.lock is not None)
+def poll_lock_message(w, *, b30: dict, near, band) -> None:
+    armed = bool(getattr(w, '_lock_msg_armed', False))
+    _obs = (band.seen, bool(b30.get('red_str')), bool(b30.get('in_gameplay')), armed, near.where, near.lock is not None)
     if _obs != getattr(w, '_lock_msg_obs_prev', None):
         w._lock_msg_obs_prev = _obs
-        _recog(_log, '赤文字の描画: drawn=%s バッファ本文=%s in_gameplay=%s 見張り=%s 場所=%s 近くの錠=%s 色番号=%s (読/当/間隔ms)=%s', drawn, _obs[1], _obs[2], '動作' if armed else '休止', near.where or '-', near.lock or near.reason, _color_index(w), _watch_stats(w))
-    if detect_rising_edge(w, drawn):
+        _recog(_log, '赤文字の描画: drawn=%s バッファ本文=%s in_gameplay=%s 見張り=%s 場所=%s 近くの錠=%s', band.seen, _obs[1], _obs[2], '動作' if armed else '休止', near.where or '-', near.lock or near.reason)
+    seen_ep = getattr(w, '_lock_msg_episode_seen', None)
+    new_event = band.rising or (band.live and seen_ep is not None and (band.episode != seen_ep))
+    w._lock_msg_episode_seen = band.episode if band.live else None
+    if new_event:
         w._lock_msg_pending = _PENDING_POLLS
+        w._lock_msg_band_verdict = None
     pending = int(getattr(w, '_lock_msg_pending', 0))
     if pending <= 0:
         return
     w._lock_msg_pending = pending - 1
+    verdict = getattr(w, '_lock_msg_band_verdict', None)
+    if verdict is None:
+        if band.attribution == 'pending':
+            return
+        verdict = band.attribution
+        w._lock_msg_band_verdict = verdict
+        if verdict == 'buffer':
+            w._lock_msg_pending = 0
+            _recog(_log, '錠前メッセージ: 出さない（赤文字の帯は実行時バッファの本文 %r の描画）', band.buffer_text)
+            return
+    elif verdict == 'buffer':
+        return
     original, translated, why, transient = _decide(w, b30, near)
     if original is None and translated is None:
         if not transient:
@@ -339,7 +300,7 @@ def poll_lock_message(w, *, b30: dict, rt_x=None, rt_z=None) -> None:
     w._ui_router.update_translation(OWNER, original, translated, speech_role='situation', speech_action='reannounce')
     _recog(_log, '錠前メッセージ: 出す %s → %r', why, translated or original)
 
-def poll_lock_message_lifetime(w, *, b30: dict) -> None:
+def poll_lock_message_lifetime(w, *, b30: dict, band) -> None:
     if _panel_owner(w) != OWNER:
         w._lock_msg_spoken_seen = False
         return
@@ -360,25 +321,22 @@ def poll_lock_message_lifetime(w, *, b30: dict) -> None:
         w._lock_msg_spoken_seen = False
         w._ui_router.clear_if_owner(OWNER)
         return
-    if not bool(getattr(w, '_lock_msg_live', False)):
+    if not band.live:
         _recog(_log, '錠前メッセージ: 表示終了（ゲーム側の表示が消えた・読み上げなし）')
         w._ui_router.clear_if_owner(OWNER)
 
-def release_lock_message(w) -> None:
+def release_watch(w) -> None:
     w._lock_msg_armed = False
     w._lock_msg_disarm_count = 0
-    watcher = getattr(w, '_lock_msg_watcher', None)
-    if watcher is not None:
-        try:
-            watcher.set_active(False)
-        except AttributeError:
-            pass
-    w._lock_msg_live = False
-    w._lock_msg_absent = 0
+
+def release_lock_message(w) -> None:
+    release_watch(w)
     w._lock_msg_pending = 0
     w._lock_msg_spoken_seen = False
     w._lock_msg_level_key = None
     w._lock_msg_locks = ()
+    w._lock_msg_episode_seen = None
+    w._lock_msg_band_verdict = None
     if _panel_owner(w) == OWNER:
         w._ui_router.clear_if_owner(OWNER)
-__all__ = ['OWNER', 'read_drawn', 'update_live', 'detect_rising_edge', 'resolve_current_mif', 'poll_lock_message', 'poll_lock_message_lifetime', 'release_lock_message']
+__all__ = ['OWNER', 'resolve_nearby_lock', 'update_watch', 'release_watch', 'resolve_current_mif', 'poll_lock_message', 'poll_lock_message_lifetime', 'release_lock_message']

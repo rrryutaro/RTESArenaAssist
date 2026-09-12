@@ -99,6 +99,19 @@ def read_current_level_hash(analyzer, anchor: int | None) -> int | None:
         return None
     value = int.from_bytes(raw, 'little')
     return value if value != 0 else None
+LEVEL_INDEX_BITS_SHIFT = 24
+LEVEL_INDEX_BITS_MASK = 7
+
+def level_index_of_hash(level_hash) -> int | None:
+    if level_hash is None:
+        return None
+    try:
+        value = int(level_hash)
+    except (TypeError, ValueError):
+        return None
+    if value <= 0:
+        return None
+    return value >> LEVEL_INDEX_BITS_SHIFT & LEVEL_INDEX_BITS_MASK
 
 def cache_for_level_hash(automap: AutomapFile, level_hash: int) -> AutomapCache | None:
     for c in automap.caches:
