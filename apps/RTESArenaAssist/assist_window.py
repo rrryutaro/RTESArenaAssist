@@ -185,15 +185,8 @@ class AssistWindow(QMainWindow):
         self._cached_rt_z: int | None = None
         self._mif_matcher = None
         self._npc_dialog_prev: str = ''
-        self._npc_dialog_text_prev: str = ''
-        self._ask_about_menu_active_prev: bool = False
-        self._ask_about_current_ptr_prev: int = -1
-        self._popup11_list_state_prev: str = ''
-        self._popup11_exit_pending_ask_about: bool = False
-        self._popup11_ask_recovery: bool = False
-        self._popup11_item_dyn_prev: tuple = (-1, -1)
-        self._popup11_place_response_lock = None
-        self._cap159_diag_prev = None
+        self._npc_conversation_shown = None
+        self._popup11_substate_diag_prev = None
         self._city_npc_active_was_nonzero_prev: bool = False
         self._npc_phase: int | None = None
         self._npc_conversation_active: bool = False

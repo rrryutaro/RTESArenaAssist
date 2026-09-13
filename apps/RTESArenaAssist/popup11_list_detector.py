@@ -14,8 +14,6 @@ NPC_RESPONSE_BUFFER_PTR = 4164
 MENU_TEMPLATE_RANGE = (32768, 36864)
 ASK_ABOUT_MAIN_STATE_VALUE = 159
 ASK_ABOUT_MAIN_FLAG_VALUE = 175
-POPUP11_LIST_LIVE_OFFSET = 47044
-POPUP11_LIST_LIVE_VALUE = 0
 _LIST_PTR_RANGE = (32768, 45056)
 _MAX_LIST_ITEM_BYTES = 64
 
@@ -58,9 +56,9 @@ def _has_popup11_list_payload(analyzer, anchor: int, item_count: int) -> bool:
         return False
     return bool(_read_first_nul_ascii(analyzer, anchor + ptr))
 
-def _is_place_list_popup_live(analyzer, anchor: int) -> bool:
-    v = _read_u8(analyzer, anchor + POPUP11_LIST_LIVE_OFFSET)
-    return v == POPUP11_LIST_LIVE_VALUE
+def _is_ask_about_menu_box_drawn(frame) -> bool | None:
+    from screen_detector import popup_frame_is_drawn
+    return popup_frame_is_drawn(frame)
 
 def _decode_arena_menu_item(raw: bytes) -> str:
     out: list[str] = []
@@ -130,14 +128,18 @@ def detect_popup11_list_state(analyzer, anchor: int) -> str:
     item_count = _read_u8(analyzer, anchor + POPUP11_ITEM_COUNT_OFFSET)
     dyn_count = _read_u8(analyzer, anchor + POPUP11_DYN_COUNT_OFFSET)
     if item_count is None or dyn_count is None:
-        return 'npc_response'
+        return 'undecided'
+    from screen_detector import read_popup_frame
     sub_marker = read_active_menu_marker(analyzer, anchor)
-    list_popup_live = _is_place_list_popup_live(analyzer, anchor)
+    frame = read_popup_frame(analyzer, anchor)
+    menu_box = _is_ask_about_menu_box_drawn(frame)
     if sub_marker == 'Work':
         result = 'rumor_type'
     elif sub_marker != 'Exit':
         result = 'npc_response'
-    elif not list_popup_live:
+    elif menu_box is None:
+        result = 'undecided'
+    elif menu_box:
         result = 'ask_about_main'
     elif dyn_count > 0 and dyn_count == item_count:
         result = 'dynamic_place_list'
@@ -145,9 +147,8 @@ def detect_popup11_list_state(analyzer, anchor: int) -> str:
         result = 'where_is_list'
     else:
         result = 'npc_response'
-    list_live_raw = _read_u8(analyzer, anchor + POPUP11_LIST_LIVE_OFFSET)
-    key = (item_count, dyn_count, sub_marker, list_live_raw, result)
+    key = (item_count, dyn_count, sub_marker, frame, result)
     if _LAST_STATE_LOG.get('key') != key:
         _LAST_STATE_LOG['key'] = key
-        _log.info('detect_popup11_list_state: item_count=%d dyn_count=%d sub_marker=%r list_live=0x%02X -> %s', item_count, dyn_count, sub_marker, list_live_raw if list_live_raw is not None else 255, result)
+        _log.info('detect_popup11_list_state: item_count=%d dyn_count=%d sub_marker=%r frame=%s -> %s', item_count, dyn_count, sub_marker, frame, result)
     return result

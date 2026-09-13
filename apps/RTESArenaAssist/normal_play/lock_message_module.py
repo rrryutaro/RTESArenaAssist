@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+import arena_font
 import i18n_helper as i18n
 from assist_log import recog as _recog
 from normal_play import lock_difficulty
@@ -225,6 +226,11 @@ def update_watch(w, near) -> bool:
     w._lock_msg_armed = armed
     return armed
 
+def _band_shows(band, original: str) -> bool:
+    if not original or not band.text:
+        return False
+    return arena_font.matches(band.text, original)
+
 def _decide(w, b30, near):
     owner_now = _panel_owner(w)
     if owner_now not in ('', OWNER):
@@ -270,23 +276,10 @@ def poll_lock_message(w, *, b30: dict, near, band) -> None:
     w._lock_msg_episode_seen = band.episode if band.live else None
     if new_event:
         w._lock_msg_pending = _PENDING_POLLS
-        w._lock_msg_band_verdict = None
     pending = int(getattr(w, '_lock_msg_pending', 0))
     if pending <= 0:
         return
     w._lock_msg_pending = pending - 1
-    verdict = getattr(w, '_lock_msg_band_verdict', None)
-    if verdict is None:
-        if band.attribution == 'pending':
-            return
-        verdict = band.attribution
-        w._lock_msg_band_verdict = verdict
-        if verdict == 'buffer':
-            w._lock_msg_pending = 0
-            _recog(_log, '錠前メッセージ: 出さない（赤文字の帯は実行時バッファの本文 %r の描画）', band.buffer_text)
-            return
-    elif verdict == 'buffer':
-        return
     original, translated, why, transient = _decide(w, b30, near)
     if original is None and translated is None:
         if not transient:
@@ -294,6 +287,10 @@ def poll_lock_message(w, *, b30: dict, near, band) -> None:
             _recog(_log, '錠前メッセージ: 出さない（%s）', why)
         elif w._lock_msg_pending <= 0:
             _recog(_log, '錠前メッセージ: 出せないまま持ち越しが切れた（%s）', why)
+        return
+    if not _band_shows(band, original):
+        w._lock_msg_pending = 0
+        _recog(_log, '錠前メッセージ: 出さない（帯の文 %r は自分の文 %r ではない）', band.text, original)
         return
     w._lock_msg_pending = 0
     w._lock_msg_spoken_seen = False
@@ -336,7 +333,6 @@ def release_lock_message(w) -> None:
     w._lock_msg_level_key = None
     w._lock_msg_locks = ()
     w._lock_msg_episode_seen = None
-    w._lock_msg_band_verdict = None
     if _panel_owner(w) == OWNER:
         w._ui_router.clear_if_owner(OWNER)
 __all__ = ['OWNER', 'resolve_nearby_lock', 'update_watch', 'release_watch', 'resolve_current_mif', 'poll_lock_message', 'poll_lock_message_lifetime', 'release_lock_message']

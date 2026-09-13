@@ -553,12 +553,6 @@ def _poll_detect_img_name(w):
         w._img_name_prev = _img_name
         if _img_name:
             w._img_screen.on_img_name_changed(_img_name)
-        if _img_name != 'POPUP11.IMG' and (not (_img_name.endswith('.CIF') and _current_top_level(w) == 'normal-play')):
-            w._npc_dialog_text_prev = ''
-            if getattr(w, '_popup11_list_state_prev', ''):
-                w._popup11_exit_pending_ask_about = True
-            w._popup11_list_state_prev = ''
-            w._popup11_place_response_lock = None
     return _img_name
 
 def _field_entrance_hint(w):
@@ -1344,10 +1338,8 @@ from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_
 from normal_play.status_popup_module import poll_status_popup as _poll_status_popup
 from normal_play.travel_map_module import STATE_NONE as _TRAVEL_STATE_NONE, classify_travel_l4 as _classify_travel_l4, render_travel_l4 as _render_travel_l4
 from screen_detector_play_common import is_inventory_screen_img as _is_inventory_screen_img
-_ASK_ABOUT_MAIN_RECOVERY_STATE = _normal_play_render._ASK_ABOUT_MAIN_RECOVERY_STATE
 blocks_ask_about_main = _normal_play_render.blocks_ask_about_main
 ask_about_main_display_allowed = _normal_play_render.ask_about_main_display_allowed
-_render_ask_about_main_recovery = _normal_play_render._render_ask_about_main_recovery
 _classify_popup11_substate = _normal_play_render._classify_popup11_substate
 _render_popup11_substate = _normal_play_render._render_popup11_substate
 _poll_npc_conversation_foreground = _normal_play_render._poll_npc_conversation_foreground

@@ -57,17 +57,17 @@ def describe_entered_door(location_name: str, door_x: int, door_y: int) -> str:
             best, best_d2 = (d, d2)
     return 'doors=%d hit=none nearest=(%d,%d) menu=%d %s d2=%d' % (len(doors), best.original_x, best.original_y, best.menu_id, best.menu_type.value, best_d2)
 
-def read_shop_sign(analyzer, anchor: Optional[int], info: Optional[InteriorFacilityInfo]) -> Optional[str]:
+def extract_shop_sign(text: str, info: Optional[InteriorFacilityInfo]) -> Optional[str]:
     suffix_en = getattr(info, 'name_suffix_en', '') or ''
     category = getattr(info, 'name_category', '') or ''
-    if info is None or not suffix_en or (not category):
+    if info is None or not suffix_en or (not category) or (not text):
         return None
     template = getattr(info, 'name_template', '') or ''
     if not template:
         return None
     try:
-        from services.shop_sign_name import read_displayed_name
-        return read_displayed_name(analyzer, anchor, suffix_en, (template,))
+        from services.shop_sign_name import extract_displayed_name
+        return extract_displayed_name(text, suffix_en, (template,))
     except Exception:
         return None
 
@@ -163,4 +163,4 @@ def get_mif_level_count(mif_name: Optional[str]) -> Optional[int]:
         return count
     except Exception:
         return None
-__all__ = ['InteriorFacilityInfo', 'describe_facility_naming_at', 'read_shop_sign', 'translate_shop_sign', 'is_available', 'lookup_interior_facility', 'lookup_interior_mif', 'get_mif_level_count']
+__all__ = ['InteriorFacilityInfo', 'describe_facility_naming_at', 'extract_shop_sign', 'translate_shop_sign', 'is_available', 'lookup_interior_facility', 'lookup_interior_mif', 'get_mif_level_count']

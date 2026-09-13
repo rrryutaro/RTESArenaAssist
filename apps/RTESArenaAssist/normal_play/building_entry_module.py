@@ -14,6 +14,7 @@ def begin_entry_episode(w) -> None:
     w._building_entry_push_key = None
     w._building_entry_delivered = False
     w._building_entry_log_key = None
+    w._building_entry_text = ''
 
 def end_entry_episode(w) -> None:
     w._building_entry_pending = False
@@ -21,12 +22,18 @@ def end_entry_episode(w) -> None:
     w._building_entry_push_key = None
     w._building_entry_delivered = False
     w._building_entry_log_key = None
+    w._building_entry_text = ''
 
 def note_msg_buf_written(w) -> None:
     if getattr(w, '_building_entry_pending', False):
         w._building_entry_msg_buf_written = True
 
+def current_entry_text(w) -> str:
+    return str(getattr(w, '_building_entry_text', '') or '')
+
 def _push_entry(w, key: tuple, en: str, ja: str, *, speech_role: str | None) -> bool:
+    if en:
+        w._building_entry_text = en
     router = w._ui_router
     kwargs = {'speech_role': speech_role} if speech_role else {}
     if getattr(w, '_building_entry_push_key', None) != key:

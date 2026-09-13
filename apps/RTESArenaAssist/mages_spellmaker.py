@@ -8,7 +8,7 @@ EFFECT_TO_FORM = {'Damage': 'FORM1', 'Continuous Damage': 'FORM2', 'Cause Diseas
 FORM_FIELDS = {'FORM1': {0: 'Range min', 1: 'Range max', 2: 'Increase min', 3: 'Increase max', 4: 'Levels'}, 'FORM2': {0: 'Range min', 1: 'Range max', 2: 'Increase min', 3: 'Increase max', 4: 'Levels', 5: 'Strikes'}, 'FORM3': {0: 'Chance', 1: 'Increase', 4: 'per Levels'}, 'FORM4': {0: 'Chance', 1: 'Increase', 2: 'Deterioration', 3: 'per Rnds', 4: 'per Levels', 5: 'Duration'}, 'FORM5': {0: 'Chance', 1: 'Increase', 2: 'Duration per Lv', 4: 'Increase per Lv', 5: 'Duration'}, 'FORM6': {0: 'Increase', 1: 'Rate of Release', 4: 'Release per Rnds', 5: 'Duration'}, 'FORM6A': {0: 'Decrease', 1: 'Rate of Recovery', 4: 'Recovery per Rnds', 5: 'Duration'}, 'FORM7': {0: 'Decrease'}, 'FORM8': {0: 'Light level', 5: 'Duration'}, 'FORM9': {0: 'Strength', 1: 'Increase', 4: 'Levels'}, 'FORM10': {0: 'Chance', 1: 'Increase', 2: 'Duration per Lv', 4: 'Increase per Lv', 5: 'Duration'}, 'FORM11': {0: 'Base Time', 1: 'Increase', 4: 'per Levels'}, 'FORM13': {0: 'Number'}, 'FORM15': {0: 'Gain', 1: 'Every', 4: 'For'}}
 FORM_ALIASES = {'FORM4A': 'FORM4', 'FORM12': 'FORM3', 'FORM14': 'FORM5'}
 FORM_CHOICES = {'FORM8': {'label': {'en': 'Type', 'id': 'spellmaker.form_label_type'}, 'options': [{'en': 'Follows caster', 'id': 'mages.Follows caster'}, {'en': 'Projectile', 'id': 'mages.Projectile'}]}}
-FORM_FIELD_JA = {'Range min': '射程 最小', 'Range max': '射程 最大', 'Increase min': '増加 最小', 'Increase max': '増加 最大', 'Levels': 'レベル', 'Strikes': '回数', 'Chance': '確率', 'Increase': '増加', 'Deterioration': '悪化', 'per Rnds': '毎ラウンド', 'per Levels': '毎レベル', 'Duration': '持続', 'Duration per Lv': '持続/レベル', 'Increase per Lv': '増加/レベル', 'Rate of Release': '解放率', 'Release per Rnds': '解放/ラウンド', 'Rate of Recovery': '回復率', 'Recovery per Rnds': '回復/ラウンド', 'Decrease': '減少', 'Light level': '光量', 'Strength': '強度', 'Base Time': '基本時間', 'Number': '数', 'Gain': '獲得', 'Every': '毎', 'For': '期間'}
+FORM_FIELD_JA = {'Range min': '効果量 最小', 'Range max': '効果量 最大', 'Increase min': '増加 最小', 'Increase max': '増加 最大', 'Levels': 'レベル', 'Strikes': '回数', 'Chance': '確率', 'Increase': '増加', 'Deterioration': '悪化', 'per Rnds': '毎ラウンド', 'per Levels': '毎レベル', 'Duration': '持続', 'Duration per Lv': '持続/レベル', 'Increase per Lv': '増加/レベル', 'Rate of Release': '解放率', 'Release per Rnds': '解放/ラウンド', 'Rate of Recovery': '回復率', 'Recovery per Rnds': '回復/ラウンド', 'Decrease': '減少', 'Light level': '光量', 'Strength': '強度', 'Base Time': '基本時間', 'Number': '数', 'Gain': '獲得', 'Every': '毎', 'For': '期間'}
 
 def field_label_ja(label_en: str) -> str:
     return FORM_FIELD_JA.get(label_en, label_en)
@@ -31,18 +31,24 @@ def resolve_form(effect_title: str) -> str | None:
             return form
     return None
 
+def read_record_values(analyzer, anchor: int, slot: int=0) -> dict[int, int]:
+    col = 0 if slot <= 0 else min(slot, 2) * 2
+    out: dict[int, int] = {}
+    for grp, base in enumerate(_GRP_OFFS):
+        v = _u16(analyzer, anchor, base + col)
+        if v is not None:
+            out[grp] = v
+    if out and all((v == 0 for v in out.values())):
+        return {}
+    return out
+
 def read_form_values(analyzer, anchor: int, form: str, slot: int=0) -> dict[str, int]:
     form = FORM_ALIASES.get(form, form)
     fields = FORM_FIELDS.get(form)
     if not fields:
         return {}
-    col = 0 if slot <= 0 else min(slot, 2) * 2
-    out: dict[str, int] = {}
-    for grp, label in fields.items():
-        base = _GRP_OFFS[grp]
-        v = _u16(analyzer, anchor, base + col)
-        if v is not None:
-            out[label] = v
+    values = read_record_values(analyzer, anchor, slot)
+    out = {label: values[grp] for grp, label in fields.items() if grp in values}
     if out and all((v == 0 for v in out.values())):
         return {}
     return out
@@ -53,7 +59,7 @@ def all_form_labels() -> set[str]:
         out.update(fields.values())
     return out
 FORM_LAYOUT_EN: dict[str, list[str]] = {'FORM1': ['Range: {Range min} to {Range max}', 'Increase: {Increase min} to {Increase max} per {Levels} Levels'], 'FORM2': ['Range: {Range min} to {Range max}', 'Increase: {Increase min} to {Increase max} per {Levels} Levels', 'Strikes: {Strikes} times'], 'FORM3': ['Chance: {Chance}%', 'Increase: {Increase}% per {per Levels} Levels'], 'FORM4': ['Chance: {Chance}%', 'Increase: {Increase}% per {per Levels} Levels', 'Deterioration: {Deterioration} pts per {per Rnds} Rnds', 'Duration: {Duration} Rnds per level'], 'FORM5': ['Chance: {Chance}%', 'Increase: {Increase}% per {Increase per Lv} Levels', 'Duration: {Duration} Rnds per {Duration per Lv} level'], 'FORM6': ['Increase: {Increase} pts', 'Duration: {Duration} Rnds', 'Rate of Release: {Rate of Release} pts per {Release per Rnds} Rnds'], 'FORM6A': ['Decrease: {Decrease} pts', 'Duration: {Duration} Rnds', 'Rate of Recovery: {Rate of Recovery} pts per {Recovery per Rnds} Rnds'], 'FORM7': ['Decrease: {Decrease} pts'], 'FORM8': ['Light level: {Light level}', 'Duration: {Duration} Rnds'], 'FORM9': ['Strength: {Strength} Hit Points', 'Increase: {Increase} Hits per {Levels} Levels'], 'FORM10': ['Chance: {Chance}%', 'Increase: {Increase}% per {Increase per Lv} Levels', 'Duration: {Duration} Rnds per {Duration per Lv} level'], 'FORM11': ['Base Time: {Base Time} Rnds', 'Increase: {Increase} Rnds per {per Levels} Levels'], 'FORM13': ['Number: {Number}'], 'FORM15': ['Gain: {Gain} Hit Points', 'Every: {Every} Rnds', 'For: {For} Rnds per level']}
-FORM_LAYOUT_JA: dict[str, list[str]] = {'FORM1': ['射程: {Range min}〜{Range max}', '増加: {Increase min}〜{Increase max} / {Levels}レベルごと'], 'FORM2': ['射程: {Range min}〜{Range max}', '増加: {Increase min}〜{Increase max} / {Levels}レベルごと', '回数: {Strikes}回'], 'FORM3': ['確率: {Chance}%', '増加: {Increase}% / {per Levels}レベルごと'], 'FORM4': ['確率: {Chance}%', '増加: {Increase}% / {per Levels}レベルごと', '悪化: {Deterioration}ポイント / {per Rnds}ラウンドごと', '持続: {Duration}ラウンド / レベルごと'], 'FORM5': ['確率: {Chance}%', '増加: {Increase}% / {Increase per Lv}レベルごと', '持続: {Duration}ラウンド / {Duration per Lv}レベルごと'], 'FORM6': ['強化: {Increase}ポイント', '持続: {Duration}ラウンド', '放出率: {Rate of Release}ポイント / {Release per Rnds}ラウンドごと'], 'FORM6A': ['減少: {Decrease}ポイント', '持続: {Duration}ラウンド', '回復率: {Rate of Recovery}ポイント / {Recovery per Rnds}ラウンドごと'], 'FORM7': ['減少: {Decrease}ポイント'], 'FORM8': ['光レベル: {Light level}', '持続: {Duration}ラウンド'], 'FORM9': ['強度: {Strength}ヒットポイント', '増加: {Increase}ヒット / {Levels}レベルごと'], 'FORM10': ['確率: {Chance}%', '増加: {Increase}% / {Increase per Lv}レベルごと', '持続: {Duration}ラウンド / {Duration per Lv}レベルごと'], 'FORM11': ['基本時間: {Base Time}ラウンド', '増加: {Increase}ラウンド / {per Levels}レベルごと'], 'FORM13': ['数: {Number}'], 'FORM15': ['回復: {Gain}ヒットポイント', '間隔: {Every}ラウンドごと', '持続: {For}ラウンド/レベル']}
+FORM_LAYOUT_JA: dict[str, list[str]] = {'FORM1': ['効果量: {Range min}〜{Range max}', '増加: {Increase min}〜{Increase max} / {Levels}レベルごと'], 'FORM2': ['効果量: {Range min}〜{Range max}', '増加: {Increase min}〜{Increase max} / {Levels}レベルごと', '回数: {Strikes}回'], 'FORM3': ['確率: {Chance}%', '増加: {Increase}% / {per Levels}レベルごと'], 'FORM4': ['確率: {Chance}%', '増加: {Increase}% / {per Levels}レベルごと', '悪化: {Deterioration}ポイント / {per Rnds}ラウンドごと', '持続: {Duration}ラウンド / レベルごと'], 'FORM5': ['確率: {Chance}%', '増加: {Increase}% / {Increase per Lv}レベルごと', '持続: {Duration}ラウンド / {Duration per Lv}レベルごと'], 'FORM6': ['強化: {Increase}ポイント', '持続: {Duration}ラウンド', '放出率: {Rate of Release}ポイント / {Release per Rnds}ラウンドごと'], 'FORM6A': ['減少: {Decrease}ポイント', '持続: {Duration}ラウンド', '回復率: {Rate of Recovery}ポイント / {Recovery per Rnds}ラウンドごと'], 'FORM7': ['減少: {Decrease}ポイント'], 'FORM8': ['光レベル: {Light level}', '持続: {Duration}ラウンド'], 'FORM9': ['強度: {Strength}ヒットポイント', '増加: {Increase}ヒット / {Levels}レベルごと'], 'FORM10': ['確率: {Chance}%', '増加: {Increase}% / {Increase per Lv}レベルごと', '持続: {Duration}ラウンド / {Duration per Lv}レベルごと'], 'FORM11': ['基本時間: {Base Time}ラウンド', '増加: {Increase}ラウンド / {per Levels}レベルごと'], 'FORM13': ['数: {Number}'], 'FORM15': ['回復: {Gain}ヒットポイント', '間隔: {Every}ラウンドごと', '持続: {For}ラウンド/レベル']}
 for _src, _dsts in {'FORM4': ['FORM4A'], 'FORM3': ['FORM12'], 'FORM5': ['FORM14']}.items():
     for _dst in _dsts:
         FORM_LAYOUT_EN[_dst] = FORM_LAYOUT_EN[_src]

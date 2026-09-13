@@ -131,6 +131,10 @@ def _split_nul_strings(data: bytes, start: int, max_len: int) -> list[str]:
 _TITLE_LEGACY_ID = 'ask_about_menu.title_ask_about.0'
 _OPT_LEGACY_IDS = ('ask_about_menu.opt_who_are_you.0', 'ask_about_menu.opt_where_is.0', 'ask_about_menu.opt_rumors.0', 'ask_about_menu.opt_exit.0')
 _CHROME_SURFACE_LEGACY_IDS = {'ASK ABOUT ?': 'ask_about_menu.title_ask_about.0', 'Who are you?': 'ask_about_menu.opt_who_are_you.0', 'Where is...': 'ask_about_menu.opt_where_is.0', 'Rumors': 'ask_about_menu.opt_rumors.0', 'Exit': 'ask_about_menu.opt_exit.0', 'Rumor Type': 'ask_about_menu.title_rumor_type.0', 'General': 'ask_about_menu.opt_general.0', 'Work': 'ask_about_menu.opt_work.0', 'Inn': 'ask_about_menu.place_inn.0', 'Temple': 'ask_about_menu.place_temple.0', 'Equipment Store': 'ask_about_menu.place_equipment_store.0', 'Mages Guild': 'ask_about_menu.place_mages_guild.0', 'Palace': 'ask_about_menu.place_palace.0', 'City gates': 'ask_about_menu.place_city_gates.0', 'Nearest Inn': 'ask_about_menu.place_nearest_inn.0', 'Nearest Temple': 'ask_about_menu.place_nearest_temple.0', 'Nearest Store': 'ask_about_menu.place_nearest_store.0', 'Nearest Dungeon': 'ask_about_menu.place_nearest_dungeon.0'}
+KNOWN_PLACE_NAMES = frozenset((en for en, _id in _CHROME_SURFACE_LEGACY_IDS.items() if _id.startswith('ask_about_menu.place_')))
+
+def is_known_place_name(text: str) -> bool:
+    return bool(text) and text in KNOWN_PLACE_NAMES
 
 def translate(en_text: str, lang: str='ja', legacy_id: str | None=None) -> str:
     s = en_text.strip()

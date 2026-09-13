@@ -1,12 +1,35 @@
 from __future__ import annotations
 import logging
+import sys
 import assist_settings as settings
 from panel_mode_resolver import closing_panel_mode, screen_panel_mode
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 NPC_CONVERSATION_OWNER = 'npc_conversation'
+_SHOWN_ATTR = '_npc_conversation_shown'
+_LAST_FAILURE: dict[str, str] = {}
 
-def poll_npc_conversation(w, ctx, *, npc_dialog: str, npc_dialog_changed: bool, dialog_just_opened: bool, in_interior: bool, facility_active_now: bool, npc_translated: bool, c_area: str='', screen_img: str='') -> None:
+def _normalized(text: str) -> str:
+    return ' '.join((text or '').split())
+
+def _is_shown(w, key: tuple) -> bool:
+    return getattr(w, _SHOWN_ATTR, None) == key
+
+def _mark_shown(w, key: tuple) -> None:
+    setattr(w, _SHOWN_ATTR, key)
+
+def _log_failure_once(where: str) -> None:
+    exc = sys.exc_info()[1]
+    key = f'{type(exc).__name__}: {exc}'
+    if _LAST_FAILURE.get(where) == key:
+        return
+    _LAST_FAILURE[where] = key
+    _log.exception('%s failed', where)
+
+def forget_shown(w) -> None:
+    setattr(w, _SHOWN_ATTR, None)
+
+def poll_npc_conversation(w, ctx, *, npc_dialog: str, npc_dialog_changed: bool, dialog_just_opened: bool, in_interior: bool, facility_active_now: bool, npc_translated: bool, c_area: str='') -> None:
     _response_surface_active = bool(getattr(ctx, 'response_text_on_screen', False) or getattr(ctx, 'panel_only_interior_message', False))
     _route4_eligible = not npc_translated and bool(npc_dialog) and (c_area != 'dungeon') and (npc_dialog_changed or dialog_just_opened) and (w._npc_conversation_active or in_interior) and (not facility_active_now) and _response_surface_active
     if _route4_eligible:
@@ -20,8 +43,7 @@ def poll_npc_conversation(w, ctx, *, npc_dialog: str, npc_dialog_changed: bool, 
                     w._ui_router.update_panel_translation(npc_dialog, _ndl_ja, speech_role='conversation')
                 else:
                     w._ui_router.update_translation(NPC_CONVERSATION_OWNER, npc_dialog, _ndl_ja, clear_place_list=True, speech_role='conversation')
-                    from normal_play.normal_play_render import latch_popup11_place_response_from_conversation
-                    latch_popup11_place_response_from_conversation(w, npc_dialog, screen_img=screen_img)
+                    _mark_shown(w, ('response', _normalized(npc_dialog)))
                 _log.info('npc_dialog message displayed (route=ask_about panel_only=%s text=%r)', ctx.panel_only_interior_message, npc_dialog)
             else:
                 _log.info('route4 lookup miss (npc_conv=%s in_interior=%s changed=%s just_opened=%s text=%r)', w._npc_conversation_active, in_interior, npc_dialog_changed, dialog_just_opened, npc_dialog[:120])
@@ -41,9 +63,9 @@ def poll_npc_conversation(w, ctx, *, npc_dialog: str, npc_dialog_changed: bool, 
             _r4_reasons.append('response_not_on_screen')
         if _r4_reasons:
             _route4_skip_key = (tuple(_r4_reasons), npc_dialog[:80])
-            _prev_skip_key = getattr(w, '_b263_route4_skip_prev', None)
+            _prev_skip_key = getattr(w, '_route4_skip_diag_prev', None)
             if _route4_skip_key != _prev_skip_key:
-                w._b263_route4_skip_prev = _route4_skip_key
+                w._route4_skip_diag_prev = _route4_skip_key
                 _log.info('route4 skipped (reasons=%s text=%r)', '|'.join(_r4_reasons), npc_dialog[:80])
 
 def npc_clear_panel_mode(w) -> str | None:
@@ -70,7 +92,6 @@ def restore_translate_mode(w) -> None:
 def show_npc_dialog(w, text_override: str | None=None) -> None:
     try:
         import npc_dialog_lookup as ndl
-        restore_translate_mode(w)
         text = (text_override or '').strip()
         if not text:
             from popup11_response_reader import read_response_candidate
@@ -78,6 +99,10 @@ def show_npc_dialog(w, text_override: str | None=None) -> None:
             text = cand.text if cand else ''
         if not text:
             return
+        key = ('response', _normalized(text))
+        if _is_shown(w, key):
+            return
+        restore_translate_mode(w)
         result = ndl.lookup(text)
         if result:
             ja_template, placeholders = result
@@ -85,30 +110,27 @@ def show_npc_dialog(w, text_override: str | None=None) -> None:
         else:
             ja_text = ''
         w._ui_router.update_translation(NPC_CONVERSATION_OWNER, text, ja_text, clear_place_list=True, speech_role='conversation')
+        _mark_shown(w, key)
     except Exception:
-        _log.exception('show_npc_dialog failed')
+        _log_failure_once('show_npc_dialog')
 
 def detect_active_sub_menu_title(w, parsed: dict) -> str:
     try:
         from popup11_list_detector import read_active_menu_marker
         from ask_about_menu_parser import detect_active_sub_menu_title as _detect
         marker = read_active_menu_marker(w._analyzer, w._anchor)
-        title = _detect(parsed, marker)
-        _log.info('detect_active_sub_menu_title: marker=%r title=%r', marker, title)
-        return title
+        return _detect(parsed, marker)
     except Exception:
-        _log.exception('detect_active_sub_menu_title failed')
+        _log_failure_once('detect_active_sub_menu_title')
         return ''
 
 def show_ask_about_menu(w) -> None:
     try:
         from arena_bridge import read_ask_about_menu
         from ask_about_menu_parser import build_display, build_display_sub, build_panel_display, build_panel_display_sub, parse_menu
-        restore_translate_mode(w)
         raw = read_ask_about_menu(w._analyzer, w._anchor)
         parsed = parse_menu(raw)
         active_sub_title = detect_active_sub_menu_title(w, parsed)
-        _log.info('show_ask_about_menu: active_sub_title=%r', active_sub_title)
         if active_sub_title:
             en_tab, ja_tab = build_display_sub(parsed, sub_title=active_sub_title)
         else:
@@ -119,9 +141,15 @@ def show_ask_about_menu(w) -> None:
                 en_panel, ja_panel = build_panel_display_sub(parsed, sub_title=active_sub_title)
             else:
                 en_panel, ja_panel = build_panel_display(parsed)
+        key = ('menu', en_tab, en_panel)
+        if _is_shown(w, key):
+            return
+        _log.info('show_ask_about_menu: active_sub_title=%r', active_sub_title)
+        restore_translate_mode(w)
         w._ui_router.update_translation(NPC_CONVERSATION_OWNER, en_tab, ja_tab, panel_en=en_panel, panel_ja=ja_panel)
+        _mark_shown(w, key)
     except Exception:
-        _log.exception('show_ask_about_menu failed')
+        _log_failure_once('show_ask_about_menu')
 
 def translate_where_is_item(opt_en: str, translate) -> str:
     ja = translate(opt_en)
@@ -145,12 +173,16 @@ def show_where_is_list(w) -> None:
         items_en = parse_where_is_list(w._analyzer, w._anchor, item_count)
         if not items_en:
             return
+        key = ('where_is_list', tuple(items_en))
+        if _is_shown(w, key):
+            return
         item_data = [{'en': opt_en, 'ja': translate_where_is_item(opt_en, translate)} for opt_en in items_en]
         title_en = 'Where is...'
         title_ja = translate(title_en)
         w._ui_router.update_place_list(NPC_CONVERSATION_OWNER, item_data, title='', panel_en=title_en, panel_ja=title_ja)
+        _mark_shown(w, key)
     except Exception:
-        _log.exception('show_where_is_list failed')
+        _log_failure_once('show_where_is_list')
 
 def show_dynamic_place_list(w) -> None:
     try:
@@ -161,22 +193,22 @@ def show_dynamic_place_list(w) -> None:
         items_en = parse_dynamic_place_list(w._analyzer, w._anchor, item_count)
         if not items_en:
             return
+        key = ('dynamic_place_list', tuple(items_en))
+        if _is_shown(w, key):
+            return
         import dynamic_place_lookup as dpl
         category = dpl.detect_category(items_en[0]) if items_en else None
         item_data = [{'en': opt_en, 'ja': dpl.lookup(opt_en, category)} for opt_en in items_en]
         title_en = 'Where is...'
         title_ja = translate(title_en)
         w._ui_router.update_place_list(NPC_CONVERSATION_OWNER, item_data, title='', panel_en=title_en, panel_ja=title_ja)
+        _mark_shown(w, key)
     except Exception:
-        _log.exception('show_dynamic_place_list failed')
+        _log_failure_once('show_dynamic_place_list')
 
 def _reset_internal_state(w) -> None:
-    w._ask_about_menu_active_prev = False
-    w._ask_about_current_ptr_prev = -1
-    w._popup11_list_state_prev = ''
-    w._popup11_exit_pending_ask_about = False
-    w._popup11_place_response_lock = None
-    w._npc_dialog_text_prev = ''
+    setattr(w, _SHOWN_ATTR, None)
+    w._popup11_substate_diag_prev = None
 
 def reset_npc_dialog_display(w, *, clear_display: bool=True) -> None:
     try:
@@ -194,4 +226,8 @@ def close_on_modal_overlay(w) -> None:
     except (AttributeError, RuntimeError):
         pass
     _reset_internal_state(w)
-__all__ = ['poll_npc_conversation', 'NPC_CONVERSATION_OWNER', 'npc_clear_panel_mode', 'restore_translate_mode', 'show_npc_dialog', 'show_ask_about_menu', 'detect_active_sub_menu_title', 'translate_where_is_item', 'show_where_is_list', 'show_dynamic_place_list', 'reset_npc_dialog_display', 'close_on_modal_overlay']
+
+def reset_on_connect(w) -> None:
+    _reset_internal_state(w)
+    w._city_npc_active_was_nonzero_prev = False
+__all__ = ['poll_npc_conversation', 'NPC_CONVERSATION_OWNER', 'npc_clear_panel_mode', 'restore_translate_mode', 'show_npc_dialog', 'show_ask_about_menu', 'detect_active_sub_menu_title', 'translate_where_is_item', 'show_where_is_list', 'show_dynamic_place_list', 'forget_shown', 'reset_npc_dialog_display', 'close_on_modal_overlay', 'reset_on_connect']

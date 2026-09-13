@@ -39,6 +39,35 @@ def _en_templates() -> dict[int, str]:
         pass
     _note_source(False)
     return {}
+_EN_CACHE: dict[int, str] = {}
+
+def template_en(idx: int) -> str | None:
+    global _EN_CACHE
+    if not _EN_CACHE:
+        _EN_CACHE = _en_templates()
+    return _EN_CACHE.get(idx)
+
+def render_en(idx: int, numbers: dict[str, int], words: dict[str, str]) -> str | None:
+    en = template_en(idx)
+    if not en:
+        return None
+    parts: list[str] = []
+    last = 0
+    for m in re.finditer('%%|%(\\d|a|b|c|f)', en):
+        parts.append(en[last:m.start()])
+        if m.group(0) == '%%':
+            parts.append('%')
+        else:
+            name = m.group(1)
+            if name in numbers:
+                parts.append(str(numbers[name]))
+            elif name in words:
+                parts.append(words[name])
+            else:
+                return None
+        last = m.end()
+    parts.append(en[last:])
+    return ' '.join(''.join(parts).split())
 _COMPILED: list[tuple[re.Pattern, list[str], int]] | None = None
 
 def _build() -> list[tuple[re.Pattern, list[str], int]]:
@@ -90,17 +119,21 @@ def _candidate_prefixes(text_en: str) -> list[str]:
         if cand and cand not in out:
             out.append(cand)
     return sorted(out, key=len, reverse=True)
+_SLOT_VALUE_IDS: dict[str, str] = {'Strength': 'spell_effect_text.slot_c.0', 'Intelligence': 'spell_effect_text.slot_c.1', 'Willpower': 'spell_effect_text.slot_c.2', 'Agility': 'spell_effect_text.slot_c.3', 'Speed': 'spell_effect_text.slot_c.4', 'Endurance': 'spell_effect_text.slot_c.5', 'Personality': 'spell_effect_text.slot_c.6', 'Luck': 'spell_effect_text.slot_c.7', 'Fire': 'spell_effect_text.slot_c.8', 'Frost': 'spell_effect_text.slot_c.9', 'Cold': 'spell_effect_text.slot_c.10', 'Shock': 'spell_effect_text.slot_c.11', 'Magic': 'spell_effect_text.slot_c.12', 'Poison': 'spell_effect_text.slot_c.13', 'Acid': 'spell_effect_text.slot_c.14', 'Energy': 'spell_effect_text.slot_c.15', 'Health': 'spell_effect_text.slot_c.16', 'Fatigue': 'spell_effect_text.slot_c.17', 'follows the caster': 'spell_effect_text.slot_w.0', 'is stationary': 'spell_effect_text.slot_w.1', 'not': 'spell_effect_text.slot_w.2'}
 
 def _translate_value(name: str, value: str) -> str:
     import i18n_helper as i18n
-    if name == 'c':
-        return i18n.value('spell_effect_text', value) or value
-    if name in ('b', 'f'):
-        v = value.strip()
-        if name == 'b' and v == '':
-            return i18n.text_opt('spell_effect_text.slot_b_absent') or ''
-        return i18n.value('spell_effect_text', v) or v
-    return value
+    if name not in ('c', 'b', 'f'):
+        return value
+    v = value.strip() if name in ('b', 'f') else value
+    if name == 'b' and v == '':
+        return i18n.text_opt('spell_effect_text.slot_b_absent') or ''
+    _id = _SLOT_VALUE_IDS.get(v)
+    if _id:
+        t = i18n.text_opt(_id)
+        if t:
+            return t
+    return i18n.value('spell_effect_text', v) or v
 
 def match_template(text_en: str) -> tuple[int, str, str] | None:
     global _COMPILED
@@ -130,4 +163,4 @@ def normalize(text_en: str) -> str:
 def translate(text_en: str) -> str:
     matched = match_template(text_en)
     return matched[2] if matched else ''
-__all__ = ['match_template', 'normalize', 'translate']
+__all__ = ['match_template', 'normalize', 'render_en', 'template_en', 'translate']

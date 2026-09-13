@@ -116,14 +116,25 @@ def _decode_spell_effect_text(raw: bytes) -> str:
 
 def _effect_template_ids(effect_en: str) -> set[int]:
     effect = (effect_en or '').strip()
-    table = {'Cause Disease': {0}, 'Cause Poison': {1}, 'Cause Paralyzation': {3}, 'Cause Curse': {4}, 'Continuous Damage Health': {6}, 'Continuous Damage Fatigue': {7}, 'Continuous Damage Spell Points': {8}, 'Create Shield': {9, 32}, 'Create Wall': {10}, 'Create Floor': {11}, 'Cure Disease': {12}, 'Cure Poison': {13}, 'Cure Paralyzation': {15}, 'Cure Curse': {16}, 'Damage Health': {18, 24}, 'Damage Fatigue': {19}, 'Damage Spell Points': {20}, 'Designate as Non-Target': {21}, 'Destroy Wall': {22}, 'Destroy Floor': {23}, 'Drain Attribute': {27}, 'Elemental Resistance': {28}, 'Fortify Attribute': {29}, 'Heal Fatigue': {30}, 'Heal Health': {30}, 'Heal Spell Points': {30}, 'Transfer Attribute': {31}, 'Invisibility': {33}, 'Levitate': {34}, 'Light': {35}, 'Lock': {36}, 'Open': {37}, 'Regenerate': {38}, 'Silence': {39}, 'Spell Absorption': {40}, 'Spell Reflection': {41}, 'Spell Resistance': {42}}
+    table = {'Cause Disease': {0}, 'Cause Poison': {1}, 'Cause Paralyzation': {3}, 'Cause Curse': {4}, 'Continuous Damage Health': {6}, 'Continuous Damage Fatigue': {7}, 'Continuous Damage Spell Points': {8}, 'Create Shield': {9, 32}, 'Create Wall': {10}, 'Create Floor': {11}, 'Cure Disease': {12}, 'Cure Poison': {13}, 'Cure Paralyzation': {15}, 'Cure Curse': {16}, 'Damage Health': {18, 24}, 'Damage Fatigue': {19}, 'Damage Spell Points': {20}, 'Designate as Non-Target': {21}, 'Destroy Wall': {22}, 'Destroy Floor': {23}, 'Disintegrate': {25}, 'Dispel': {26}, 'Drain Attribute': {27}, 'Elemental Resistance': {28}, 'Fortify Attribute': {29}, 'Heal Fatigue': {30}, 'Heal Health': {30}, 'Heal Spell Points': {30}, 'Transfer Attribute': {31}, 'Invisibility': {33}, 'Levitate': {34}, 'Light': {35}, 'Lock': {36}, 'Open': {37}, 'Regenerate': {38}, 'Silence': {39}, 'Spell Absorption': {40}, 'Spell Reflection': {41}, 'Spell Resistance': {42}}
     if effect.startswith('Elemental Resistance '):
         return {28}
     if effect.startswith('Drain Attribute '):
         return {27}
     if effect.startswith('Fortify Attribute '):
         return {29}
+    if effect.startswith('Transfer Attribute '):
+        return {31}
     return table.get(effect, set())
+_SAME_SENTENCE_TEMPLATE = {'Damage Health': 18}
+
+def _synthesis_template_id(effect_en: str) -> int | None:
+    effect = (effect_en or '').strip()
+    candidates = _effect_template_ids(effect)
+    if len(candidates) == 1:
+        return next(iter(candidates))
+    template_id = _SAME_SENTENCE_TEMPLATE.get(effect)
+    return template_id if template_id in candidates else None
 
 def _normalize_spell_effect_text(text_en: str, effect_en: str, *, allow_mismatch_fallback: bool=False) -> tuple[str, str]:
     if not text_en:
@@ -321,48 +332,36 @@ def _attach_effect_texts(text_en: str, details: list[dict], segments: list[str] 
         detail['text_en'] = normalized_en
         detail['text_ja'] = text_ja
     return out
+_COMPONENT_PREFIXES = ('Drain Attribute ', 'Fortify Attribute ', 'Transfer Attribute ', 'Elemental Resistance ', 'Heal ')
+
+def _component_word(effect_en: str) -> str:
+    for prefix in _COMPONENT_PREFIXES:
+        if effect_en.startswith(prefix):
+            return effect_en[len(prefix):].strip()
+    return ''
 
 def _synthesize_spellmaker_effect_text(detail: dict, analyzer, anchor: int):
-    effect = detail.get('effect_en', '')
+    effect = (detail.get('effect_en') or '').strip()
+    template_id = _synthesis_template_id(effect)
+    if template_id is None:
+        return ('', '')
     slot = max(0, min(int(detail.get('slot', 0) or 0), 2))
     try:
-        from mages_spellmaker import read_form_values
+        from mages_spellmaker import read_record_values
+        from spell_effect_text import render_en
+        values = read_record_values(analyzer, anchor, slot)
+        if not values:
+            return ('', '')
+        numbers = {str(grp): v for grp, v in values.items()}
+        if 5 in values:
+            numbers['a'] = values[5]
+        word = _component_word(effect)
+        text = render_en(template_id, numbers, {'c': word} if word else {})
     except Exception:
         return ('', '')
-    try:
-        if effect == 'Cause Poison':
-            vals = read_form_values(analyzer, anchor, 'FORM4', slot=slot)
-            needed = ('Chance', 'Deterioration', 'per Rnds', 'Increase', 'per Levels', 'Duration')
-            if not all((k in vals for k in needed)):
-                return ('', '')
-            text = f"{vals['Chance']}% chance to inflict poison. Damage is {vals['Deterioration']} pts per {vals['per Rnds']} rnd(s). +{vals['Increase']}% every {vals['per Levels']} level(s). Spell duration is {vals['Duration']} rnd(s) per level."
-            return _normalize_spell_effect_text(text, effect, allow_mismatch_fallback=True)
-        if effect == 'Damage Health':
-            vals = read_form_values(analyzer, anchor, 'FORM1', slot=slot)
-            needed = ('Range min', 'Range max', 'Increase min', 'Increase max', 'Levels')
-            if not all((k in vals for k in needed)):
-                return ('', '')
-            text = f"{vals['Range min']} to {vals['Range max']} pts damage to health +{vals['Increase min']} to {vals['Increase max']} pts per {vals['Levels']} level(s)."
-            return _normalize_spell_effect_text(text, effect, allow_mismatch_fallback=True)
-        if effect.startswith('Continuous Damage '):
-            vals = read_form_values(analyzer, anchor, 'FORM2', slot=slot)
-            needed = ('Range min', 'Range max', 'Increase min', 'Increase max', 'Levels', 'Strikes')
-            if not all((k in vals for k in needed)):
-                return ('', '')
-            target = effect.removeprefix('Continuous Damage ').lower()
-            text = f"Cause {vals['Range min']} to {vals['Range max']} pts of damage to {target} every {vals['Strikes']} rnd(s). Duration is {vals['Strikes']} rnd(s). Damage is + {vals['Increase min']} to {vals['Increase max']} pts every {vals['Levels']} level(s)."
-            return _normalize_spell_effect_text(text, effect, allow_mismatch_fallback=True)
-        if effect.startswith('Drain Attribute '):
-            vals = read_form_values(analyzer, anchor, 'FORM6A', slot=slot)
-            needed = ('Decrease', 'Rate of Recovery', 'Recovery per Rnds', 'Duration')
-            if not all((k in vals for k in needed)):
-                return ('', '')
-            attr = effect.removeprefix('Drain Attribute ')
-            text = f"{vals['Decrease']} pts of {attr} drained from target(s) for {vals['Duration']} rnd(s) per level. Target(s) recover {attr} at {vals['Rate of Recovery']} pts per {vals['Recovery per Rnds']} rnd(s)."
-            return _normalize_spell_effect_text(text, effect, allow_mismatch_fallback=True)
-    except Exception:
+    if not text:
         return ('', '')
-    return ('', '')
+    return _normalize_spell_effect_text(text, effect, allow_mismatch_fallback=True)
 
 def _fill_missing_spellmaker_effect_texts(details: list[dict], analyzer, anchor: int) -> list[dict]:
     out = [dict(d) for d in details]

@@ -16,16 +16,8 @@ def on_connect_done(win, pid: int, anchor: int):
     win._analyzer = win._worker.analyzer
     win._anchor = anchor
     win._npc_dialog_prev = ''
-    win._npc_dialog_text_prev = ''
-    win._ask_about_menu_active_prev = False
-    win._ask_about_current_ptr_prev = -1
-    win._popup11_list_state_prev = ''
-    win._popup11_exit_pending_ask_about = False
-    win._popup11_ask_recovery = False
-    win._popup11_item_dyn_prev = (-1, -1)
-    win._popup11_place_response_lock = None
-    win._cap159_diag_prev = None
-    win._city_npc_active_was_nonzero_prev = False
+    from normal_play import npc_conversation_module as _npc_conversation
+    _npc_conversation.reset_on_connect(win)
     win._interior_facility_kind = ''
     itl.load()
     win._conn_btn.setEnabled(True)

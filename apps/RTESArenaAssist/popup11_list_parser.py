@@ -35,9 +35,24 @@ def parse_popup11_list(analyzer, anchor: int, item_count: int) -> list[str]:
     except (OSError, struct.error):
         _log.exception('parse_popup11_list failed')
         return []
+_LAST_REJECTED_HEAD: dict[str, str] = {}
 
 def parse_where_is_list(analyzer, anchor: int, item_count: int) -> list[str]:
-    return parse_popup11_list(analyzer, anchor, item_count)
+    items = parse_popup11_list(analyzer, anchor, item_count)
+    if not items:
+        return []
+    try:
+        from ask_about_menu_parser import is_known_place_name
+    except Exception:
+        return []
+    if not is_known_place_name(items[0]):
+        head = items[0][:40]
+        if _LAST_REJECTED_HEAD.get('where_is') != head:
+            _LAST_REJECTED_HEAD['where_is'] = head
+            _log.info('場所一覧ではない（先頭 %r）ため出さない', head)
+        return []
+    _LAST_REJECTED_HEAD.pop('where_is', None)
+    return items
 
 def parse_dynamic_place_list(analyzer, anchor: int, item_count: int) -> list[str]:
     return parse_popup11_list(analyzer, anchor, item_count)

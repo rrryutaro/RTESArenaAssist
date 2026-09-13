@@ -14,9 +14,6 @@ SCREEN_ROWS = 200
 PALETTE_OFFSET = 3089872
 PALETTE_BYTES = 256 * 3
 PALETTE_IS_VGA_6BIT = True
-ACTION_TEXT_ROW = 24
-ACTION_TEXT_COL_FIRST = 148
-ACTION_TEXT_COL_LAST = 171
 ACTION_TEXT_ROW_FIRST = 20
 ACTION_TEXT_ROW_LAST = 28
 ACTION_TEXT_RGB = (195, 0, 0)
@@ -60,8 +57,7 @@ def read_popup_frame(analyzer, anchor: int) -> tuple[int, int, int, int] | None:
         return None
     return (raw[0] | raw[1] << 8, raw[2] | raw[3] << 8, raw[4] | raw[5] << 8, raw[6] | raw[7] << 8)
 
-def is_popup_frame_drawn(analyzer, anchor: int) -> bool | None:
-    frame = read_popup_frame(analyzer, anchor)
+def popup_frame_is_drawn(frame: tuple[int, int, int, int] | None) -> bool | None:
     if frame is None:
         return None
     if frame == POPUP_FRAME_FULLSCREEN:
@@ -73,6 +69,9 @@ def is_popup_frame_drawn(analyzer, anchor: int) -> bool | None:
     if not 0 < top < bottom <= full_bottom:
         return None
     return right < full_right or bottom < full_bottom
+
+def is_popup_frame_drawn(analyzer, anchor: int) -> bool | None:
+    return popup_frame_is_drawn(read_popup_frame(analyzer, anchor))
 
 def read_palette(analyzer, anchor: int) -> bytes | None:
     try:
@@ -94,220 +93,73 @@ def resolve_action_text_color_index(analyzer, anchor: int) -> int | None:
         if pal[index * 3:index * 3 + 3] == want:
             return index
     return None
+_DISPLAY_KEY_ROW_FIRST = 170
+_DISPLAY_KEY_ROWS = 10
+_DISPLAY_SCAN_RANGE = (65536, 2147418112)
 
-def action_text_probe_addr(anchor: int) -> tuple[int, int]:
-    return (anchor + SCREEN_BUFFER_OFFSET + ACTION_TEXT_ROW * SCREEN_ROW_BYTES + ACTION_TEXT_COL_FIRST, ACTION_TEXT_COL_LAST - ACTION_TEXT_COL_FIRST + 1)
-
-def action_text_band_addr(anchor: int) -> tuple[int, int]:
-    width = ACTION_TEXT_COL_LAST - ACTION_TEXT_COL_FIRST + 1
-    rows = ACTION_TEXT_ROW_LAST - ACTION_TEXT_ROW_FIRST + 1
-    return (anchor + SCREEN_BUFFER_OFFSET + ACTION_TEXT_ROW_FIRST * SCREEN_ROW_BYTES + ACTION_TEXT_COL_FIRST, (rows - 1) * SCREEN_ROW_BYTES + width)
-
-def action_text_band_rows(block: bytes) -> bytes:
-    width = ACTION_TEXT_COL_LAST - ACTION_TEXT_COL_FIRST + 1
-    rows = ACTION_TEXT_ROW_LAST - ACTION_TEXT_ROW_FIRST + 1
-    return b''.join((block[r * SCREEN_ROW_BYTES:r * SCREEN_ROW_BYTES + width] for r in range(rows)))
-_MASK_TABLES: dict[int, bytes] = {}
-
-def action_text_band_mask(rows: bytes, color: int) -> tuple[int, int]:
-    table = _MASK_TABLES.get(color)
-    if table is None:
-        table = bytes((1 if i == color else 0 for i in range(256)))
-        _MASK_TABLES[color] = table
-    marks = rows.translate(table)
-    return (int.from_bytes(marks, 'big'), marks.count(1))
-
-def band_mask_within(mask: int, reference: int) -> bool:
-    return mask != 0 and mask & ~reference == 0
-_BAND_SIGNATURES_MAX = 16
-
-def note_band_signature(w, text: str, mask: int, count: int) -> None:
-    if not text or not mask:
-        return
-    table = getattr(w, '_band_signature_by_text', None)
-    if table is None:
-        table = {}
-        w._band_signature_by_text = table
-    table.pop(text, None)
-    table[text] = (int(mask), int(count))
-    while len(table) > _BAND_SIGNATURES_MAX:
-        table.pop(next(iter(table)))
-
-def band_signature(w, text: str):
-    table = getattr(w, '_band_signature_by_text', None)
-    if not table or not text:
-        return None
-    return table.get(text)
-
-def is_action_text_drawn(analyzer, anchor: int) -> bool | None:
-    color = resolve_action_text_color_index(analyzer, anchor)
-    if color is None:
-        return None
-    addr, size = action_text_probe_addr(anchor)
+def _read_display_key(analyzer, comp_base: int) -> bytes | None:
+    key_len = _DISPLAY_KEY_ROWS * SCREEN_ROW_BYTES
     try:
-        line = analyzer.read_bytes(addr, size)
-    except (OSError, AttributeError):
+        key = analyzer.read_bytes(comp_base + _DISPLAY_KEY_ROW_FIRST * SCREEN_ROW_BYTES, key_len)
+    except (OSError, AttributeError, RuntimeError):
         return None
-    if len(line) < size:
+    if not key or len(key) < key_len or len(set(key)) < 8:
         return None
-    return color in line
+    return bytes(key)
 
-class ActionTextWatcher:
-    INTERVAL_SEC = 0.004
-    IDLE_INTERVAL_SEC = 0.2
-    PALETTE_REFRESH_SEC = 0.5
-
-    def __init__(self) -> None:
-        self._thread = None
-        self._stop = None
-        self._lock = threading.Lock()
-        self._seen = False
-        self._readable = False
-        self._key = None
-        self._samples = 0
-        self._hits = 0
-        self._first_sample_at = None
-        self._last_sample_at = None
-        self._active = True
-        self._fine = False
-        self._color = None
-        self._episode = 0
-        self._ep_mask = 0
-        self._ep_count = 0
-        self._ep_repeat = 0
-
-    def episode(self) -> tuple[int, int, int, bool]:
-        with self._lock:
-            return (self._episode, self._ep_mask, self._ep_count, self._ep_repeat >= 1)
-
-    def reset_episode(self) -> None:
-        with self._lock:
-            self._episode += 1
-            self._ep_mask = 0
-            self._ep_count = 0
-            self._ep_repeat = 0
-
-    def _note_band(self, mask: int, count: int) -> None:
-        if self._ep_count == 0:
-            self._ep_mask, self._ep_count, self._ep_repeat = (mask, count, 0)
-        elif mask == self._ep_mask:
-            self._ep_repeat += 1
-        elif mask & ~self._ep_mask == 0:
-            return
-        elif self._ep_mask & ~mask == 0:
-            self._ep_mask, self._ep_count, self._ep_repeat = (mask, count, 0)
-        else:
-            self._episode += 1
-            self._ep_mask, self._ep_count, self._ep_repeat = (mask, count, 0)
-
-    def ensure(self, analyzer, anchor: int) -> None:
-        key = (id(analyzer), anchor)
-        if self._thread is not None and self._thread.is_alive() and (self._key == key):
-            return
-        self.stop()
-        self._key = key
-        self._stop = threading.Event()
-        self._thread = threading.Thread(target=self._run, args=(analyzer, anchor, self._stop), name='action-text-watch', daemon=True)
-        self._thread.start()
-
-    def set_active(self, active: bool) -> None:
-        with self._lock:
-            self._active = bool(active)
-
-    def stop(self) -> None:
-        if self._stop is not None:
-            self._stop.set()
-        self._thread = None
-        self._stop = None
-        with self._lock:
-            self._seen = False
-            self._readable = False
-
-    def consume(self) -> bool | None:
-        with self._lock:
-            if not self._readable:
-                return None
-            seen = self._seen
-            self._seen = False
-            return seen
-
-    def color_index(self):
-        with self._lock:
-            return self._color
-
-    def stats(self) -> tuple[int, int, int]:
-        with self._lock:
-            span = 0.0
-            if self._first_sample_at is not None and self._last_sample_at is not None and (self._samples > 1):
-                span = self._last_sample_at - self._first_sample_at
-            ms = int(round(span * 1000.0 / (self._samples - 1))) if self._samples > 1 and span > 0 else 0
-            return (self._samples, self._hits, ms)
-
-    @staticmethod
-    def _timer_resolution(enter: bool) -> None:
+def resolve_display_buffer(analyzer, anchor: int) -> int | None:
+    if analyzer is None or not anchor:
+        return None
+    comp_base = anchor + SCREEN_BUFFER_OFFSET
+    key = _read_display_key(analyzer, comp_base)
+    if key is None:
+        return None
+    key_off = _DISPLAY_KEY_ROW_FIRST * SCREEN_ROW_BYTES
+    frame_len = SCREEN_ROWS * SCREEN_ROW_BYTES
+    try:
+        regions = analyzer._enum_readable_regions(*_DISPLAY_SCAN_RANGE)
+    except (OSError, AttributeError, RuntimeError):
+        return None
+    for base, size in regions:
+        if size < frame_len:
+            continue
         try:
-            import ctypes
-            fn = ctypes.windll.winmm.timeBeginPeriod if enter else ctypes.windll.winmm.timeEndPeriod
-            fn(1)
-        except Exception:
-            pass
+            buf = analyzer.read_bytes(base, size)
+        except (OSError, AttributeError, RuntimeError):
+            continue
+        if not buf:
+            continue
+        pos = buf.find(key)
+        while pos >= 0:
+            start = pos - key_off
+            if start >= 0 and start + frame_len <= len(buf) and (base + start != comp_base):
+                return base + start
+            pos = buf.find(key, pos + 1)
+    return None
 
-    def _run(self, analyzer, anchor: int, stop) -> None:
-        try:
-            self._loop(analyzer, anchor, stop)
-        finally:
-            if self._fine:
-                self._timer_resolution(False)
-                self._fine = False
+def display_buffer_matches(analyzer, anchor: int, base: int) -> bool | None:
+    if analyzer is None or not anchor:
+        return None
+    key = _read_display_key(analyzer, anchor + SCREEN_BUFFER_OFFSET)
+    if key is None:
+        return None
+    try:
+        got = analyzer.read_bytes(base + _DISPLAY_KEY_ROW_FIRST * SCREEN_ROW_BYTES, len(key))
+    except (OSError, AttributeError, RuntimeError):
+        return False
+    return bool(got) and bytes(got) == key
 
-    def _loop(self, analyzer, anchor: int, stop) -> None:
-        addr, size = action_text_band_addr(anchor)
-        probe_off = (ACTION_TEXT_ROW - ACTION_TEXT_ROW_FIRST) * SCREEN_ROW_BYTES
-        probe_len = ACTION_TEXT_COL_LAST - ACTION_TEXT_COL_FIRST + 1
-        color = None
-        next_palette = 0.0
-        while not stop.is_set():
-            with self._lock:
-                active = self._active
-            if active != self._fine:
-                self._timer_resolution(active)
-                self._fine = active
-            if not active:
-                with self._lock:
-                    self._readable = False
-                stop.wait(self.IDLE_INTERVAL_SEC)
-                continue
-            now = time.monotonic()
-            if now >= next_palette:
-                next_palette = now + self.PALETTE_REFRESH_SEC
-                color = resolve_action_text_color_index(analyzer, anchor)
-                with self._lock:
-                    self._color = color
-            ok = False
-            band = None
-            if color is not None:
-                try:
-                    band = analyzer.read_bytes(addr, size)
-                    ok = len(band) >= size
-                except (OSError, AttributeError, RuntimeError):
-                    ok = False
-                    band = None
-            hit = bool(ok and color in band[probe_off:probe_off + probe_len])
-            mask = count = 0
-            if hit:
-                mask, count = action_text_band_mask(action_text_band_rows(band), color)
-            with self._lock:
-                self._readable = ok
-                if ok:
-                    self._samples += 1
-                    if self._first_sample_at is None:
-                        self._first_sample_at = now
-                    self._last_sample_at = now
-                    if hit:
-                        self._seen = True
-                        self._hits += 1
-                        self._note_band(mask, count)
-            stop.wait(self.INTERVAL_SEC)
+def action_text_full_band_addr(screen_base: int) -> tuple[int, int]:
+    rows = ACTION_TEXT_ROW_LAST - ACTION_TEXT_ROW_FIRST + 1
+    return (screen_base + ACTION_TEXT_ROW_FIRST * SCREEN_ROW_BYTES, rows * SCREEN_ROW_BYTES)
+
+def action_text_ink_rows(block: bytes, color: int) -> tuple[tuple[int, ...], ...]:
+    rows = ACTION_TEXT_ROW_LAST - ACTION_TEXT_ROW_FIRST + 1
+    out = []
+    for r in range(rows):
+        seg = block[r * SCREEN_ROW_BYTES:(r + 1) * SCREEN_ROW_BYTES]
+        out.append(tuple((c for c, v in enumerate(seg) if v == color)))
+    return tuple(out)
 
 def _read_u16_le(analyzer, addr: int) -> int:
     try:

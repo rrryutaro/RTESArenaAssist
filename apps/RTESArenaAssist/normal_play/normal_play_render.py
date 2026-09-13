@@ -38,39 +38,11 @@ def poll_c1_surface_dispatch(w, b30, *, inf_name, mif_name, c_area: str='', band
     _poll_red_text_lifetime(w, b30=b30, band=band)
     _poll_gold_drop_lifetime(w, in_gameplay=bool(b30.get('in_gameplay')))
     _poll_c1_runtime_dialog_lifetime(w, in_gameplay=bool(b30.get('in_gameplay')))
-_ASK_ABOUT_MAIN_BLOCKING_LIST_STATES = frozenset({'where_is_list', 'dynamic_place_list', 'npc_response'})
+_ASK_ABOUT_MAIN_STATE = 'ask_about_main'
+_UNDECIDED_STATE = 'undecided'
+_ASK_ABOUT_MAIN_BLOCKING_LIST_STATES = frozenset({'where_is_list', 'dynamic_place_list', 'npc_response', _UNDECIDED_STATE})
 _ASK_ABOUT_MENU_PTR_MIN = 32768
 _ASK_ABOUT_MENU_PTR_MAX = 36864
-_ASK_ABOUT_MAIN_STATE = 'ask_about_main'
-_ASK_ABOUT_MAIN_RECOVERY_STATE = 'ask_about_main_recovery'
-_PLACE_RESPONSE_LIST_STATES = frozenset({'where_is_list', 'dynamic_place_list'})
-_DIRECTION_WORDS = ('northwest', 'northeast', 'southwest', 'southeast', 'north', 'south', 'east', 'west')
-_WHERE_RESPONSE_DIRECTION_TEMPLATES = ("Oh, you'll find that {direction} of here.", "Now, I might be wrong but I'd look {direction} of here.", "I'm pretty sure it's {direction} of here...", "That's a bit {direction} of here, I'm sure of it.", 'I would check to the {direction} if I were you.', "I'm not really sure. Go {direction} for a while and ask there.", "That's easy - it's {direction} of here.", "That's {direction} of here, last time I checked.")
-_WHERE_RESPONSE_UNKNOWN_EXACT = ("You're asking the wrong person. Try someone else.", "I wish I could help you, but I haven't any idea.", 'Sorry, I wish I could help you. You should ask someone else.', "I'm certain someone else could give directions, but not I.")
-_WHERE_RESPONSE_UNKNOWN_PARTS = (('Sorry, ', "I'm afraid I don't know where that is."), ('Wish I could help you, ', 'You ought to ask someone else.'), ('I thought I knew ', 'but I have no idea where that is.'))
-
-def _normalize_popup11_response_text(text: str) -> str:
-    return ' '.join((text or '').split())
-
-def _is_popup11_where_is_map_response_text(text: str) -> bool:
-    t = _normalize_popup11_response_text(text)
-    if not t:
-        return False
-    if t.startswith('Without hesitation ') and t.endswith(' asks for your map to inscribe the exact location.'):
-        return True
-    if t.startswith("It'd be easy if I just showed you, ") and t.endswith(' says and inscribes the precise location on your map.'):
-        return True
-    if t.startswith('Let me see your map, ') and t.endswith(" says. It's so nearby, it's easier just to show you."):
-        return True
-    if t.startswith("Why don't I just inscribe the exact location on your map? ") and t.endswith(' says, pulling out a feather pen.'):
-        return True
-    if t.startswith("If I could see your map, I'll show you just how close you are. ") and ' takes a pen from ' in t and t.endswith(' pocket.'):
-        return True
-    if t.startswith("It's very near, ") and t.endswith(' says, reaching for your map. Let me show you how close you are.'):
-        return True
-    if t.startswith('Here, give me your map, ') and t.endswith(" says. I'll show you how close you are."):
-        return True
-    return t.startswith("Give me just a moment and I'll show right on your map how close you are, ") and t.endswith(' says.')
 
 def blocks_ask_about_main(list_state: str) -> bool:
     return list_state in _ASK_ABOUT_MAIN_BLOCKING_LIST_STATES
@@ -86,115 +58,15 @@ def ask_about_main_display_allowed(list_state: str, img_name: str, current_ptr: 
         return False
     return _ASK_ABOUT_MENU_PTR_MIN <= ptr < _ASK_ABOUT_MENU_PTR_MAX
 
-def _render_ask_about_main_recovery(w, prev_list_state: str) -> None:
-    if prev_list_state != _ASK_ABOUT_MAIN_RECOVERY_STATE:
-        _npc_conversation.show_ask_about_menu(w)
-    w._popup11_list_state_prev = _ASK_ABOUT_MAIN_RECOVERY_STATE
-    w._popup11_exit_pending_ask_about = False
-    _clear_popup11_place_response_lock(w)
-
-def _clear_popup11_place_response_lock(w) -> None:
-    try:
-        w._popup11_place_response_lock = None
-    except AttributeError:
-        pass
-
-def _set_popup11_place_response_lock(w, prev_list_state: str, item_dyn_now, response_text: str, *, force: bool=False) -> None:
-    if not force and prev_list_state not in _PLACE_RESPONSE_LIST_STATES or not response_text:
-        _clear_popup11_place_response_lock(w)
-        return
-    try:
-        item_dyn = tuple(item_dyn_now) if item_dyn_now is not None else (-1, -1)
-    except TypeError:
-        item_dyn = (-1, -1)
-    w._popup11_place_response_lock = {'item_dyn': item_dyn, 'text': response_text}
-
-def _is_popup11_where_is_response_text(text: str) -> bool:
-    t = _normalize_popup11_response_text(text)
-    if not t:
-        return False
-    for direction in _DIRECTION_WORDS:
-        for tmpl in _WHERE_RESPONSE_DIRECTION_TEMPLATES:
-            if t == tmpl.format(direction=direction):
-                return True
-    if t in _WHERE_RESPONSE_UNKNOWN_EXACT:
-        return True
-    for prefix, suffix in _WHERE_RESPONSE_UNKNOWN_PARTS:
-        if t.startswith(prefix) and t.endswith(suffix):
-            return True
-    if _is_popup11_where_is_map_response_text(t):
-        return True
-    return False
-
-def _popup11_place_response_lock_matches(w, list_state: str, item_dyn_now) -> tuple[bool, str]:
-    if list_state not in _PLACE_RESPONSE_LIST_STATES:
-        return (False, '')
-    lock = getattr(w, '_popup11_place_response_lock', None)
-    if not isinstance(lock, dict):
-        return (False, '')
-    try:
-        lock_item_dyn = tuple(lock.get('item_dyn', (-1, -1)))
-        current_item_dyn = tuple(item_dyn_now) if item_dyn_now is not None else (-1, -1)
-    except TypeError:
-        return (False, '')
-    if lock_item_dyn == (-1, -1) or lock_item_dyn != current_item_dyn:
-        return (False, '')
-    return (True, str(lock.get('text', '') or ''))
-
-def latch_popup11_place_response_from_conversation(w, response_text: str, *, screen_img: str='') -> None:
-    text = (response_text or '').strip()
-    if not text:
-        return
-    if (screen_img or '').upper() != 'POPUP11.IMG':
-        return
-    try:
-        from popup11_list_detector import detect_popup11_list_state, POPUP11_ITEM_COUNT_OFFSET, POPUP11_DYN_COUNT_OFFSET
-        list_state = detect_popup11_list_state(w._analyzer, w._anchor)
-        ic_raw = w._analyzer.read_bytes(w._anchor + POPUP11_ITEM_COUNT_OFFSET, 1)
-        dc_raw = w._analyzer.read_bytes(w._anchor + POPUP11_DYN_COUNT_OFFSET, 1)
-        item_dyn_now = (ic_raw[0], dc_raw[0])
-    except Exception:
-        list_state = ''
-        item_dyn_now = (-1, -1)
-    if list_state == _ASK_ABOUT_MAIN_STATE:
-        _clear_popup11_place_response_lock(w)
-        return
-    prev_list_state = getattr(w, '_popup11_list_state_prev', '')
-    text_is_where_response = _is_popup11_where_is_response_text(text)
-    if not text_is_where_response and list_state not in _PLACE_RESPONSE_LIST_STATES and (prev_list_state not in _PLACE_RESPONSE_LIST_STATES):
-        return
-    _set_popup11_place_response_lock(w, list_state if list_state in _PLACE_RESPONSE_LIST_STATES else prev_list_state, item_dyn_now, text, force=True)
-    w._popup11_list_state_prev = 'npc_response'
-
 def _classify_popup11_substate(w, _img_name, _list_state_eligible):
     if _list_state_eligible:
         try:
-            from popup11_list_detector import detect_popup11_list_state, POPUP11_ITEM_COUNT_OFFSET, POPUP11_DYN_COUNT_OFFSET
+            from popup11_list_detector import detect_popup11_list_state
             _list_state = detect_popup11_list_state(w._analyzer, w._anchor)
-            try:
-                _ic_raw = w._analyzer.read_bytes(w._anchor + POPUP11_ITEM_COUNT_OFFSET, 1)
-                _dc_raw = w._analyzer.read_bytes(w._anchor + POPUP11_DYN_COUNT_OFFSET, 1)
-                _item_dyn_now = (_ic_raw[0], _dc_raw[0])
-            except (OSError, AttributeError, IndexError):
-                _item_dyn_now = (-1, -1)
         except Exception:
-            _list_state = 'npc_response'
-            _item_dyn_now = (-1, -1)
+            _list_state = _UNDECIDED_STATE
     else:
         _list_state = 'npc_response'
-        _item_dyn_now = (-1, -1)
-    _prev_list_state_for_recovery = getattr(w, '_popup11_list_state_prev', '')
-    _prev_item_dyn_for_recovery = getattr(w, '_popup11_item_dyn_prev', (-1, -1))
-    _item_dyn_changed = _prev_item_dyn_for_recovery != (-1, -1) and _prev_item_dyn_for_recovery != _item_dyn_now
-    if _prev_list_state_for_recovery == 'npc_response' and _list_state == 'dynamic_place_list' and (not _item_dyn_changed):
-        w._popup11_ask_recovery = True
-    elif _list_state in (_ASK_ABOUT_MAIN_STATE, 'where_is_list', 'rumor_type', 'npc_response'):
-        w._popup11_ask_recovery = False
-    elif _list_state == 'dynamic_place_list' and _item_dyn_changed:
-        w._popup11_ask_recovery = False
-    w._popup11_item_dyn_prev = _item_dyn_now
-    if w._popup11_ask_recovery and _list_state == 'dynamic_place_list':
-        _list_state = _ASK_ABOUT_MAIN_RECOVERY_STATE
     try:
         from popup11_response_reader import candidate_contains_pointer, read_current_text_pointer, read_response_candidate
         _resp_cand = read_response_candidate(w._analyzer, w._anchor)
@@ -202,94 +74,33 @@ def _classify_popup11_substate(w, _img_name, _list_state_eligible):
         _response_pointer_hit = bool(_resp_cand and candidate_contains_pointer(_resp_cand, _resp_ptr))
     except Exception:
         _resp_cand = None
-        _resp_ptr = None
         _response_pointer_hit = False
     _fresh_response_text = _resp_cand.text if _resp_cand else ''
     _response_lookup_hit = bool(_resp_cand and _resp_cand.lookup_hit)
-    _prev_list_state = getattr(w, '_popup11_list_state_prev', '')
-    _response_is_new = _fresh_response_text and _fresh_response_text != w._npc_dialog_text_prev
-    _state_transition_to_response = _list_state == 'npc_response' and _prev_list_state in ('where_is_list', 'dynamic_place_list')
     _diag_resp_off = _resp_cand.source_offset if _resp_cand else -1
     _diag_resp_text = _resp_cand.text[:48] if _resp_cand else ''
-    _diag_key = (_img_name, _list_state, _response_lookup_hit, _prev_list_state, _diag_resp_off, _diag_resp_text)
-    _diag_prev_key = getattr(w, '_cap159_diag_prev', None)
-    _diag_changed = _diag_prev_key != _diag_key
+    _diag_key = (_img_name, _list_state, _response_lookup_hit, _response_pointer_hit, _diag_resp_off, _diag_resp_text)
+    _diag_changed = getattr(w, '_popup11_substate_diag_prev', None) != _diag_key
     if _diag_changed:
-        w._cap159_diag_prev = _diag_key
-    return SimpleNamespace(list_state=_list_state, prev_list_state=_prev_list_state, item_dyn_now=_item_dyn_now, diag_resp_off=_diag_resp_off, diag_resp_text=_diag_resp_text, diag_changed=_diag_changed, fresh_response_text=_fresh_response_text, response_lookup_hit=_response_lookup_hit, response_is_new=_response_is_new, state_transition_to_response=_state_transition_to_response)
+        w._popup11_substate_diag_prev = _diag_key
+    return SimpleNamespace(list_state=_list_state, fresh_response_text=_fresh_response_text, response_lookup_hit=_response_lookup_hit, response_pointer_hit=_response_pointer_hit, diag_resp_off=_diag_resp_off, diag_resp_text=_diag_resp_text, diag_changed=_diag_changed)
 
 def _render_popup11_substate(w, _img_name, sub):
     _list_state = sub.list_state
-    _prev_list_state = sub.prev_list_state
-    _item_dyn_now = sub.item_dyn_now
-    _diag_resp_off = sub.diag_resp_off
-    _diag_resp_text = sub.diag_resp_text
-    _diag_changed = sub.diag_changed
-    _fresh_response_text = sub.fresh_response_text
-    _response_lookup_hit = sub.response_lookup_hit
-    _response_is_new = sub.response_is_new
-    _state_transition_to_response = sub.state_transition_to_response
-    _place_response_lock_hit = getattr(sub, 'place_response_lock_hit', False)
-    if _list_state == _ASK_ABOUT_MAIN_RECOVERY_STATE:
-        if _diag_changed:
-            _log.info('cap162 diag: branch=ASK_MAIN_RECOVERY img=%r prev_list=%r item_dyn=%r resp_off=0x%X resp_text=%r', _img_name, _prev_list_state, _item_dyn_now, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
-        _render_ask_about_main_recovery(w, _prev_list_state)
-    elif _list_state == _ASK_ABOUT_MAIN_STATE:
-        if _diag_changed:
-            _log.info('cap162 diag: branch=ASK_ABOUT_MAIN img=%r prev_list=%r item_dyn=%r resp_off=0x%X resp_text=%r', _img_name, _prev_list_state, _item_dyn_now, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
-        if _prev_list_state != _ASK_ABOUT_MAIN_STATE:
-            _npc_conversation.show_ask_about_menu(w)
-        w._popup11_list_state_prev = _ASK_ABOUT_MAIN_STATE
-        w._popup11_exit_pending_ask_about = False
-        _clear_popup11_place_response_lock(w)
-    elif _list_state == 'rumor_type':
-        if _diag_changed:
-            _log.info('cap159 diag: branch=RUMOR_TYPE img=%r list_state=%r prev_list=%r resp_off=0x%X resp_text=%r', _img_name, _list_state, _prev_list_state, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
-        if _prev_list_state != 'rumor_type':
-            _npc_conversation.show_ask_about_menu(w)
-        w._popup11_list_state_prev = 'rumor_type'
-        _clear_popup11_place_response_lock(w)
+    if sub.diag_changed:
+        _log.info('popup11 substate diag: list_state=%r img=%r lookup_hit=%s pointer_hit=%s resp_off=0x%X resp_text=%r', _list_state, _img_name, sub.response_lookup_hit, sub.response_pointer_hit, sub.diag_resp_off if sub.diag_resp_off >= 0 else 0, sub.diag_resp_text)
+    if _list_state in (_ASK_ABOUT_MAIN_STATE, 'rumor_type'):
+        _npc_conversation.show_ask_about_menu(w)
+    elif _list_state == _UNDECIDED_STATE:
+        pass
     elif _list_state == 'where_is_list':
-        if _diag_changed:
-            _log.info('cap159 diag: branch=WHERE_IS_LIST img=%r list_state=%r prev_list=%r resp_off=0x%X resp_text=%r', _img_name, _list_state, _prev_list_state, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
-        if _prev_list_state != 'where_is_list':
-            _npc_conversation.show_where_is_list(w)
-        w._popup11_list_state_prev = 'where_is_list'
-        _clear_popup11_place_response_lock(w)
+        _npc_conversation.show_where_is_list(w)
     elif _list_state == 'dynamic_place_list':
-        if _diag_changed:
-            _log.info('cap159 diag: branch=DYNAMIC_PLACE_LIST img=%r list_state=%r prev_list=%r resp_off=0x%X resp_text=%r', _img_name, _list_state, _prev_list_state, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
-        if _prev_list_state != 'dynamic_place_list':
-            _npc_conversation.show_dynamic_place_list(w)
-        w._popup11_list_state_prev = 'dynamic_place_list'
-        _clear_popup11_place_response_lock(w)
-    elif _response_lookup_hit:
-        if _diag_changed:
-            _log.info('cap159 diag: branch=RESPONSE_LOOKUP_HIT img=%r list_state=%r prev_list=%r resp_off=0x%X resp_text=%r', _img_name, _list_state, _prev_list_state, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
-        _needs_redraw = _fresh_response_text != w._npc_dialog_text_prev or _prev_list_state != 'npc_response'
-        if _needs_redraw:
-            w._npc_dialog_text_prev = _fresh_response_text
-            _npc_conversation.show_npc_dialog(w, text_override=_fresh_response_text)
-        w._popup11_list_state_prev = 'npc_response'
-        _set_popup11_place_response_lock(w, _prev_list_state, _item_dyn_now, _fresh_response_text, force=_place_response_lock_hit or (_img_name == 'POPUP11.IMG' and _is_popup11_where_is_response_text(_fresh_response_text)))
-    elif _response_is_new or _state_transition_to_response:
-        _confirmed_npc_context = _img_name == 'POPUP11.IMG' or _prev_list_state in (_ASK_ABOUT_MAIN_STATE, _ASK_ABOUT_MAIN_RECOVERY_STATE, 'npc_response', 'rumor_type', 'where_is_list', 'dynamic_place_list')
-        if _confirmed_npc_context:
-            if _diag_changed:
-                _log.info('cap159 diag: branch=RESPONSE_NEW_CONFIRMED img=%r list_state=%r prev_list=%r resp_off=0x%X resp_text=%r', _img_name, _list_state, _prev_list_state, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
-            if _fresh_response_text:
-                w._npc_dialog_text_prev = _fresh_response_text
-            w._popup11_list_state_prev = 'npc_response'
-            _npc_conversation.show_npc_dialog(w, text_override=_fresh_response_text)
-            _set_popup11_place_response_lock(w, _prev_list_state, _item_dyn_now, _fresh_response_text, force=_place_response_lock_hit or (_img_name == 'POPUP11.IMG' and _is_popup11_where_is_response_text(_fresh_response_text)))
-        else:
-            if _diag_changed:
-                _log.info('cap159 diag: branch=RESPONSE_NEW_UNCONFIRMED img=%r list_state=%r prev_list=%r resp_off=0x%X resp_text=%r', _img_name, _list_state, _prev_list_state, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
-            _log.debug('NPC response lookup miss in unconfirmed context (img=%r prev=%r) - skip display: %r', _img_name, _prev_list_state, _fresh_response_text[:48])
-    else:
-        if _diag_changed:
-            _log.info('cap159 diag: branch=FALLBACK_NPC_RESPONSE img=%r list_state=%r prev_list=%r resp_off=0x%X resp_text=%r', _img_name, _list_state, _prev_list_state, _diag_resp_off if _diag_resp_off >= 0 else 0, _diag_resp_text)
-        w._popup11_list_state_prev = 'npc_response'
+        _npc_conversation.show_dynamic_place_list(w)
+    elif sub.fresh_response_text and (sub.response_lookup_hit or sub.response_pointer_hit or _img_name == 'POPUP11.IMG'):
+        _npc_conversation.show_npc_dialog(w, text_override=sub.fresh_response_text)
+    elif sub.diag_changed and sub.fresh_response_text:
+        _log.debug('NPC response not identified (img=%r) - skip display: %r', _img_name, sub.fresh_response_text[:48])
 
 def _cif_response_pointer_active(analyzer, anchor) -> bool:
     try:
@@ -304,13 +115,11 @@ def _cif_response_pointer_active(analyzer, anchor) -> bool:
 def _npc_response_continuation_active(w, img_name, top_level) -> bool:
     if top_level != 'normal-play':
         return False
-    if img_name.endswith('.CIF') and getattr(w, '_popup11_list_state_prev', ''):
-        return True
     return _cif_response_pointer_active(w._analyzer, w._anchor)
 
 def _poll_npc_conversation_foreground(w, _img_name, _shop_menu_visible, _shop_buy_active, _npc_popup_active, _list_state_eligible, _npc_detection_allowed):
     _sub = _classify_popup11_substate(w, _img_name, _list_state_eligible) if _npc_popup_active else None
-    _predicted_lsp = _sub.list_state if _sub is not None else getattr(w, '_popup11_list_state_prev', '')
+    _list_state = _sub.list_state if _sub is not None else ''
     _ok = True
     _city_npc = -1
     try:
@@ -318,12 +127,7 @@ def _poll_npc_conversation_foreground(w, _img_name, _shop_menu_visible, _shop_bu
         _city_npc = _read_u16_le(w._analyzer, w._anchor + CITY_NPC_ACTIVE_OFFSET)
     except Exception:
         _ok = False
-    _ask_about_active = False
-    _cur_ptr = -1
-    _ptr_changed = False
-    _blocking = False
-    _fire = False
-    _skip = False
+    _menu_foreground = False
     if _ok:
         _ask_about_active = _city_npc == 17285 and _npc_detection_allowed and (not _shop_menu_visible) and (not _shop_buy_active)
         if _ask_about_active:
@@ -332,30 +136,14 @@ def _poll_npc_conversation_foreground(w, _img_name, _shop_menu_visible, _shop_bu
                 _cur_ptr = _ptr_raw[0] | _ptr_raw[1] << 8
             except (OSError, AttributeError, IndexError):
                 _cur_ptr = -1
-        _ptr_changed = _ask_about_active and _cur_ptr != getattr(w, '_ask_about_current_ptr_prev', -1)
-        _refire = not w._ask_about_menu_active_prev or getattr(w, '_popup11_exit_pending_ask_about', False) or _ptr_changed
-        _blocking = blocks_ask_about_main(_predicted_lsp)
-        _allowed = ask_about_main_display_allowed(_predicted_lsp, _img_name, _cur_ptr)
-        _fire = _ask_about_active and _refire and _allowed
-        _skip = _ask_about_active and _refire and (not _allowed)
-    if _fire:
-        if _blocking:
-            w._popup11_list_state_prev = ''
-        elif _sub is not None:
-            w._popup11_list_state_prev = _predicted_lsp
+            _menu_foreground = ask_about_main_display_allowed(_list_state, _img_name, _cur_ptr)
+    if _menu_foreground:
         _npc_conversation.show_ask_about_menu(w)
-        w._popup11_exit_pending_ask_about = False
-        _clear_popup11_place_response_lock(w)
     elif _npc_popup_active:
         _render_popup11_substate(w, _img_name, _sub)
-    if _skip:
-        _log.info('cap160 diag: ASK_ABOUT_SKIP (list_state=%r img=%r ptr=0x%04X ptr_changed=%s)', _predicted_lsp, _img_name, _cur_ptr if _cur_ptr >= 0 else 0, _ptr_changed)
+    else:
+        _npc_conversation.forget_shown(w)
     if _ok:
-        if _ask_about_active:
-            w._ask_about_current_ptr_prev = _cur_ptr
-        else:
-            w._ask_about_current_ptr_prev = -1
-        w._ask_about_menu_active_prev = _ask_about_active
         _city_npc_was_nonzero = getattr(w, '_city_npc_active_was_nonzero_prev', False)
         if _current_top_level(w) == 'normal-play' and _city_npc_was_nonzero and (_city_npc == 0):
             _npc_conversation.reset_npc_dialog_display(w)
@@ -369,11 +157,11 @@ def _poll_npc_popup_display(w, _img_name, _shop_menu_visible, _shop_buy_active):
     _npc_popup_active = _npc_detection_allowed and (_img_name == 'POPUP11.IMG' or _cif_continuation)
     try:
         if w._npc_conversation_active and (not _npc_popup_active):
-            _diag_b263_key = (_img_name, _npc_detection_allowed, _cif_continuation, getattr(w, '_popup11_list_state_prev', ''))
-            _diag_b263_prev = getattr(w, '_b263_npc_popup_active_diag_prev', None)
-            if _diag_b263_key != _diag_b263_prev:
-                w._b263_npc_popup_active_diag_prev = _diag_b263_key
-                _log.info('npc_popup_active=False during npc_conv (img=%r detect_allowed=%s cif_cont=%s list_state_prev=%r)', _img_name, _npc_detection_allowed, _cif_continuation, getattr(w, '_popup11_list_state_prev', ''))
+            _diag_popup_active_key = (_img_name, _npc_detection_allowed, _cif_continuation)
+            _diag_popup_active_prev = getattr(w, '_npc_popup_active_diag_prev', None)
+            if _diag_popup_active_key != _diag_popup_active_prev:
+                w._npc_popup_active_diag_prev = _diag_popup_active_key
+                _log.info('npc_popup_active=False during npc_conv (img=%r detect_allowed=%s cif_cont=%s)', _img_name, _npc_detection_allowed, _cif_continuation)
     except (AttributeError, OSError):
         pass
     _list_state_eligible = _npc_popup_active and _img_name == 'POPUP11.IMG'
@@ -385,10 +173,10 @@ def _poll_npc_popup_display(w, _img_name, _shop_menu_visible, _shop_buy_active):
             _diag_off = _diag_cand.source_offset if _diag_cand else -1
             _diag_hit = bool(_diag_cand and _diag_cand.lookup_hit)
             if _diag_text:
-                _diag_b263_resp_key = (_diag_off, _diag_hit, _diag_text[:80])
-                _diag_b263_resp_prev = getattr(w, '_b263_unpicked_resp_prev', None)
-                if _diag_b263_resp_key != _diag_b263_resp_prev:
-                    w._b263_unpicked_resp_prev = _diag_b263_resp_key
+                _diag_unpicked_resp_key = (_diag_off, _diag_hit, _diag_text[:80])
+                _diag_unpicked_resp_prev = getattr(w, '_unpicked_resp_diag_prev', None)
+                if _diag_unpicked_resp_key != _diag_unpicked_resp_prev:
+                    w._unpicked_resp_diag_prev = _diag_unpicked_resp_key
                     _log.info('unpicked response candidate (img=%r src_off=0x%X lookup_hit=%s text=%r)', _img_name, _diag_off if _diag_off >= 0 else 0, _diag_hit, _diag_text[:120])
         except Exception:
             pass
@@ -610,7 +398,7 @@ def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dial
     from normal_play.npc_dialog_module import poll_npc_dialog as _poll_npc_dialog
     _instore_resp_handled = False
     if not _entry_handled:
-        _instore_resp_handled = _poll_npc_dialog(w, b30=_b30, entry_handled=False, npc_overlay_active=_npc_overlay_active, in_interior=in_interior, screen_img=_img_name_now, npc_phase_raw=_npc_phase_raw, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, facility_active_now=_facility_active_now, npc_dialog=npc_dialog, npc_dialog_changed=_npc_dialog_changed, c_area=_poll_hierarchy_area, internalized_facility_active=_temple_active_now or _equipment_active_now or _mages_active_now, shop_state_kind=_shop_state.kind if _shop_state is not None else 'none', negot_handled=_negot_handled, active_tmpl_handled=_active_tmpl_handled)
+        _instore_resp_handled = _poll_npc_dialog(w, b30=_b30, entry_handled=False, npc_overlay_active=_npc_overlay_active, in_interior=in_interior, npc_phase_raw=_npc_phase_raw, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, facility_active_now=_facility_active_now, npc_dialog=npc_dialog, npc_dialog_changed=_npc_dialog_changed, c_area=_poll_hierarchy_area, internalized_facility_active=_temple_active_now or _equipment_active_now or _mages_active_now, shop_state_kind=_shop_state.kind if _shop_state is not None else 'none', negot_handled=_negot_handled, active_tmpl_handled=_active_tmpl_handled)
         if _instore_resp_handled:
             _entry_handled = True
     if _poll_hierarchy_area == 'dungeon' and (not _entry_handled) and (not _inventory_screen):
