@@ -252,7 +252,7 @@ def _read_facility_story_pointer(w) -> int | None:
     except Exception:
         return None
 
-def _classify_facility_story_axis(w, *, facility_view_active: bool, foreground_ptr=_FACILITY_PTR_UNSET) -> tuple[str, int | None]:
+def _classify_facility_story_axis(w, *, facility_view_active: bool, foreground_ptr=_FACILITY_PTR_UNSET, temple_view_visible: bool=False) -> tuple[str, int | None]:
     ptr = _read_facility_story_pointer(w) if foreground_ptr is _FACILITY_PTR_UNSET else foreground_ptr
     mif_name = getattr(w, '_interior_mif_name', None)
     try:
@@ -266,6 +266,12 @@ def _classify_facility_story_axis(w, *, facility_view_active: bool, foreground_p
         strong_story_ptr = ptr in (_STORY_BUF_OFFSET, _STORY_CHOICE_OVERLAY_PTR)
         if is_mages_interior_mif(mif_name) and (_story_body_source(ptr) or _story_hold_pointer(ptr)) and (strong_story_ptr or not facility_view_active):
             return ('mages', ptr)
+    except (ImportError, AttributeError):
+        pass
+    try:
+        from normal_play.temple_story_module import is_temple_interior_mif, is_strong_story_pointer, _dialog_body_source as _temple_body_source, _dialog_hold_pointer as _temple_hold_pointer
+        if is_temple_interior_mif(mif_name) and (_temple_body_source(ptr) or _temple_hold_pointer(ptr)) and (is_strong_story_pointer(ptr) or not temple_view_visible):
+            return ('temple', ptr)
     except (ImportError, AttributeError):
         pass
     return ('', ptr)
@@ -283,24 +289,38 @@ def _close_facility_story_units(w) -> None:
         poll_mages_story(w, guild_active=False)
     except (ImportError, AttributeError):
         pass
+    try:
+        from normal_play.temple_story_module import poll_temple_story
+        poll_temple_story(w, temple_active=False)
+    except (ImportError, AttributeError):
+        pass
 
 def _poll_facility_story_dispatch(w, *, blocked: bool, in_interior: bool, story_kind: str, story_ptr: int | None) -> bool:
     from normal_play.palace_dialog_module import poll_palace_dialog
     from normal_play.mages_guild_render_module import poll_mages_story
+    from normal_play.temple_story_module import poll_temple_story
     if blocked or not in_interior:
         poll_palace_dialog(w, palace_active=False)
         poll_mages_story(w, guild_active=False)
+        poll_temple_story(w, temple_active=False)
         w._facility_story_kind_now = ''
         w._facility_story_ptr_now = None
         return False
     if story_kind == 'palace':
         poll_mages_story(w, guild_active=False)
+        poll_temple_story(w, temple_active=False)
         return bool(poll_palace_dialog(w, palace_active=True, foreground_ptr=story_ptr))
     if story_kind == 'mages':
         poll_palace_dialog(w, palace_active=False)
+        poll_temple_story(w, temple_active=False)
         return bool(poll_mages_story(w, guild_active=True, foreground_ptr=story_ptr))
+    if story_kind == 'temple':
+        poll_palace_dialog(w, palace_active=False)
+        poll_mages_story(w, guild_active=False)
+        return bool(poll_temple_story(w, temple_active=True, foreground_ptr=story_ptr))
     poll_palace_dialog(w, palace_active=False)
     poll_mages_story(w, guild_active=False)
+    poll_temple_story(w, temple_active=False)
     return False
 
 def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_tavern, _tview, _temple_active_now, _tavern_active_now, _tavern_l4_kind, _poll_hierarchy_area, _shop_menu_visible, _shop_buy_active, _facility_foreground_ptr=_FACILITY_PTR_UNSET):
@@ -312,7 +332,7 @@ def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_
         _uview = _unified_node.classify_view(w, shop_state=_shop_state, shop_img_name=_shop_img_name, foreground_ptr=_story_ptr)
         if getattr(_unified_node, 'name', '') == 'mages_guild':
             w._mages_view_signals_snapshot = getattr(_uview, 'signals_snapshot', None)
-    _story_kind, _story_ptr = _classify_facility_story_axis(w, facility_view_active=bool(_uview is not None and _uview.message_source_owned), foreground_ptr=_story_ptr)
+    _story_kind, _story_ptr = _classify_facility_story_axis(w, facility_view_active=bool(_uview is not None and _uview.message_source_owned), foreground_ptr=_story_ptr, temple_view_visible=bool(_uview is not None and getattr(_unified_node, 'name', '') == 'temple' and getattr(_uview, 'l4_visible', False)))
     w._facility_story_kind_now = _story_kind
     w._facility_story_ptr_now = _story_ptr
     _poll_compute_temple_gate(w, _temple_active_now=_temple_active_now)

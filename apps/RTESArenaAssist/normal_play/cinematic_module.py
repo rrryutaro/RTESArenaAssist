@@ -11,19 +11,21 @@ _CINEMATIC_SCAN_START = 268435456
 _CINEMATIC_SCAN_END = 301989888
 _DEATH_GOOD_PREFIX = 'With you died our last hope for justice.'
 _DEATH_BAD_PREFIX = 'You were a fool to confront me,'
-_VISION_TEMPLATE_KEYS = frozenset({*range(1294, 1303), *range(1392, 1400), 1400, 1500})
+_VISION_TEMPLATE_KEYS = frozenset({*range(1294, 1303), *range(1392, 1400), 1400, 1447, 1500})
 _DEATH_TEMPLATE_KEYS = frozenset({1402, 1403})
 _CINEMATIC_TEMPLATE_KEYS = frozenset(_VISION_TEMPLATE_KEYS | _DEATH_TEMPLATE_KEYS)
+_ENDING_TEMPLATE_KEYS = frozenset({1401})
 _CINEMATIC_SCREEN_NAMES = frozenset({'VISION.XMI', 'VISION.FLC', 'JAGAR.FLC'})
+_ENDING_SCREEN_NAMES = frozenset({'END01.FLC', 'END02.FLC', 'WINGAME.XMI'})
 _PLAYER_HP_CURRENT_OFFSET = 509
 _PLAYER_NAME_OFFSET = 429
 _PLAYER_NAME_LEN = 26
 _DEATH_GOOD_JA = 'お前とともに、正義への最後の希望も死んだ。サーンは今や望むままに振る舞うだろう。美しいタムリエルの地が内側から腐っていくのを見るのは悲しい。さようなら、[名前]。来世で安らぎを得られますように...'
 _DEATH_BAD_JA = '愚かにも私に立ち向かい、ついに究極の代償を払ったな。今この時も、我が僕が貴様の朽ちた肉体を取りに向かっている。貴様は皇帝となった我が年月において、アンデッドとしてよく仕えることになる。もしかすると記憶の一部を残してやるかもしれん。そうすれば、失敗の代償が貴様にも意味を持つだろう....'
 
-def _read_cinematic_block(w, address: int) -> str:
+def _read_cinematic_block(w, address: int, *, template_keys: frozenset=_CINEMATIC_TEMPLATE_KEYS) -> str:
     from cinematic_text import read_block
-    return read_block(w._analyzer, address, sizes=(_CINEMATIC_FULLREAD, 2048, 1024, 512, 256), template_keys=_CINEMATIC_TEMPLATE_KEYS)
+    return read_block(w._analyzer, address, sizes=(_CINEMATIC_FULLREAD, 2048, 1024, 512, 256), template_keys=template_keys)
 
 def _read_screen_img_name(w) -> str:
     try:
@@ -38,6 +40,10 @@ def _read_screen_img_name(w) -> str:
 def _is_cinematic_screen_active(w, *, img_name: str | None=None) -> bool:
     name = img_name if img_name is not None else _read_screen_img_name(w)
     return (name or '').upper() in _CINEMATIC_SCREEN_NAMES
+
+def _is_ending_screen_active(w, *, img_name: str | None=None) -> bool:
+    name = img_name if img_name is not None else _read_screen_img_name(w)
+    return (name or '').upper() in _ENDING_SCREEN_NAMES
 
 def _read_player_name(w) -> str:
     try:
@@ -69,6 +75,13 @@ def _detect_cinematic_text(text: str) -> bool:
     anchors = npcd.body_head_anchors(_VISION_TEMPLATE_KEYS)
     return bool(anchors) and body.startswith(anchors)
 
+def _detect_ending_text(text: str) -> bool:
+    if not text:
+        return False
+    body = ' '.join(text.split())
+    anchors = npcd.body_head_anchors(_ENDING_TEMPLATE_KEYS)
+    return bool(anchors) and body.startswith(anchors)
+
 def _lookup_vision_cinematic_payload(w, text: str) -> tuple[str, str, str] | None:
     if not text:
         return None
@@ -95,24 +108,24 @@ def _candidate_text_addrs(w) -> tuple[int, ...]:
         return (latched, _CINEMATIC_TEXT_ADDR_OBSERVED)
     return (latched or _CINEMATIC_TEXT_ADDR_OBSERVED,)
 
-def _probe_cinematic_text(w, resolver) -> tuple[str, int]:
+def _probe_cinematic_text(w, resolver, *, template_keys: frozenset=_CINEMATIC_TEMPLATE_KEYS) -> tuple[str, int]:
     for addr in _candidate_text_addrs(w):
-        block = _read_cinematic_block(w, addr)
+        block = _read_cinematic_block(w, addr, template_keys=template_keys)
         if block and resolver(block):
             w._cinematic_text_addr = addr
             return (block, addr)
     return ('', 0)
 
-def _cinematic_scan_prefixes() -> tuple[str, ...]:
-    return npcd.body_head_anchors(_CINEMATIC_TEMPLATE_KEYS)
+def _cinematic_scan_prefixes(template_keys: frozenset=_CINEMATIC_TEMPLATE_KEYS) -> tuple[str, ...]:
+    return npcd.body_head_anchors(template_keys)
 
-def _scan_vision_cinematic_text(w, resolver) -> tuple[str, int]:
-    for prefix in _cinematic_scan_prefixes():
+def _scan_vision_cinematic_text(w, resolver, *, template_keys: frozenset=_CINEMATIC_TEMPLATE_KEYS, error_attr: str='_cinematic_scan_error_logged') -> tuple[str, int]:
+    for prefix in _cinematic_scan_prefixes(template_keys):
         try:
             results = w._analyzer.scan_string(prefix, _CINEMATIC_SCAN_START, _CINEMATIC_SCAN_END)
         except (OSError, RuntimeError, AttributeError) as exc:
-            if not getattr(w, '_cinematic_scan_error_logged', False):
-                w._cinematic_scan_error_logged = True
+            if not getattr(w, error_attr, False):
+                setattr(w, error_attr, True)
                 _log.info('cinematic scan_string error: %s', exc)
             continue
         if not results:
@@ -121,7 +134,7 @@ def _scan_vision_cinematic_text(w, resolver) -> tuple[str, int]:
             addr = getattr(result, 'address', 0)
             if not addr:
                 continue
-            block = _read_cinematic_block(w, addr)
+            block = _read_cinematic_block(w, addr, template_keys=template_keys)
             if block and resolver(block):
                 w._cinematic_text_addr = addr
                 return (block, addr)
@@ -153,6 +166,31 @@ def _poll_vision_state(w) -> None:
         w._ui_router.propose_translation(owner, en, ja, priority=46, reason='vision_cinematic', speech_role='situation')
     except AttributeError:
         w._ui_router.update_translation(owner, en, ja, speech_role='situation')
+
+def _poll_ending_state(w) -> None:
+    text, addr = _probe_cinematic_text(w, _detect_ending_text, template_keys=_ENDING_TEMPLATE_KEYS)
+    if not text:
+        text, addr = _scan_vision_cinematic_text(w, _detect_ending_text, template_keys=_ENDING_TEMPLATE_KEYS, error_attr='_ending_scan_error_logged')
+    if not text:
+        return
+    ja = ''
+    resolved = npcd.lookup_body_head(text, keys=_ENDING_TEMPLATE_KEYS)
+    if resolved is not None:
+        ja_template, placeholders = resolved
+        ja = npcd.format_japanese(ja_template, placeholders) or ''
+    if not ja:
+        if text != getattr(w, '_ending_unresolved_prev', ''):
+            w._ending_unresolved_prev = text
+            _log.info('ending cinematic detected but unresolved addr=0x%08X', addr)
+        return
+    if text == getattr(w, '_ending_cinematic_text_prev', ''):
+        return
+    w._ending_cinematic_text_prev = text
+    _log.info('ending cinematic accepted addr=0x%08X len=%d', addr, len(text))
+    try:
+        w._ui_router.propose_translation('vision_cinematic', text, ja, priority=46, reason='ending_cinematic', speech_role='situation')
+    except AttributeError:
+        w._ui_router.update_translation('vision_cinematic', text, ja, speech_role='situation')
 
 def _poll_death_text_probe(w) -> None:
     text, addr = _probe_cinematic_text(w, lambda block: bool(_death_cinematic_translation(block)))
@@ -193,12 +231,24 @@ def poll_cinematic(w, *, b30: dict | None=None) -> None:
         return
     _log_death_gate_once(w)
     img_name = b30.get('img_name') if isinstance(b30, dict) else None
-    if _is_cinematic_screen_active(w, img_name=img_name):
+    if img_name is None:
+        img_name = _read_screen_img_name(w)
+    in_vision = _is_cinematic_screen_active(w, img_name=img_name)
+    in_ending = not in_vision and _is_ending_screen_active(w, img_name=img_name)
+    if not in_vision:
+        w._vision_cinematic_text_prev = ''
+        w._cinematic_unresolved_prev = ''
+        w._cinematic_scan_error_logged = False
+    if not in_ending:
+        w._ending_cinematic_text_prev = ''
+        w._ending_unresolved_prev = ''
+        w._ending_scan_error_logged = False
+    if in_vision:
         _poll_vision_state(w)
         return
-    w._vision_cinematic_text_prev = ''
-    w._cinematic_unresolved_prev = ''
-    w._cinematic_scan_error_logged = False
+    if in_ending:
+        _poll_ending_state(w)
+        return
     _poll_death_text_probe(w)
 
 def _current_hp_is_zero(w) -> bool:

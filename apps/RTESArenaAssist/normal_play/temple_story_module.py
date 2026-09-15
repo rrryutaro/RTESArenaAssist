@@ -5,16 +5,19 @@ _FG_PTR_OFFSET = 43076
 _DIALOG_BUF_OFFSET = 38434
 _DIALOG_BUF_READ = 4096
 _CHOICE_OVERLAY_PTR = 33384
-_OWNER = 'palace_dialog'
-_KEY_ATTR = '_palace_dialog_prev_key'
-_UNIT_ATTR = '_palace_dialog_accepted_unit'
-_RESOLVE_CACHE_ATTR = '_palace_dialog_resolve_cache'
+_OWNER = 'temple_story'
+_KEY_ATTR = '_temple_story_prev_key'
+_UNIT_ATTR = '_temple_story_accepted_unit'
+_RESOLVE_CACHE_ATTR = '_temple_story_resolve_cache'
 _POINTER_UNSET = object()
 _TEXT_BYTES = frozenset(bytes(range(32, 127)) + b'\n\r\t')
+_resolve_state: dict[str, bool] = {}
 
-def is_palace_interior_mif(interior_mif_name: str | None) -> bool:
-    u = (interior_mif_name or '').upper()
-    return u.startswith(('PALACE', 'TOWNPAL', 'VILPAL', 'IMPPAL'))
+def is_temple_interior_mif(interior_mif_name: str | None) -> bool:
+    return (interior_mif_name or '').upper().startswith('TEMPLE')
+
+def is_strong_story_pointer(ptr: int | None) -> bool:
+    return ptr in (_DIALOG_BUF_OFFSET, _CHOICE_OVERLAY_PTR)
 
 def _is_text_bytes(seg: bytes) -> bool:
     return bool(seg) and all((b in _TEXT_BYTES for b in seg))
@@ -68,9 +71,6 @@ def _dialog_chunks(raw: bytes) -> list[str]:
             return []
         chunks.append(text)
     return chunks
-
-def assemble_dialog_text(raw: bytes) -> str:
-    return ' '.join(_dialog_chunks(raw))
 _fit_state: dict[str, bool] = {}
 
 def _note_body_fit(fits: bool, off: int, size: int) -> None:
@@ -78,7 +78,7 @@ def _note_body_fit(fits: bool, off: int, size: int) -> None:
         return
     _fit_state['ok'] = fits
     if not fits:
-        _log.warning('宮殿の進行会話の本文が読み取り範囲に収まらなかった: 所在=+0x%04X 読取=%d', off, size)
+        _log.warning('神殿の進行会話の本文が読み取り範囲に収まらなかった: 所在=+0x%04X 読取=%d', off, size)
 
 def _read_dialog_chunks(w, off: int, size: int) -> list[str]:
     try:
@@ -100,6 +100,20 @@ def _is_building_entry_chunks(chunks: list[str]) -> bool:
         return any((_tbl.is_building_entry_message(' '.join(chunks[:end])) for end in range(1, len(chunks) + 1)))
     except (ImportError, AttributeError):
         return False
+
+def _note_unresolved(resolved: bool, chunks: list[str]) -> None:
+    if _resolve_state.get('ok') is resolved:
+        return
+    _resolve_state['ok'] = resolved
+    if resolved:
+        return
+    detail = ''
+    try:
+        import npc_dialog_lookup as _ndl
+        detail = ' / ' + _ndl.describe_unmatched_body(' '.join(chunks))
+    except (ImportError, AttributeError):
+        pass
+    _log.warning('神殿の進行会話の本文の範囲を同定できなかった: チャンク数=%d 長さ=%s%s', len(chunks), [len(c) for c in chunks], detail)
 
 def _resolve_dialog(w, source: tuple[int, int, bool]) -> tuple[str, str] | None:
     chunks = _read_dialog_chunks(w, source[0], source[1])
@@ -123,6 +137,7 @@ def _resolve_dialog(w, source: tuple[int, int, bool]) -> tuple[str, str] | None:
                 en, ja = (found[2], ja_text)
     except (ImportError, AttributeError):
         pass
+    _note_unresolved(bool(ja), chunks)
     resolved = (en, ja) if en else None
     setattr(w, _RESOLVE_CACHE_ATTR, (cache_key, resolved))
     return resolved
@@ -138,7 +153,7 @@ def _is_settled_page_body(unit, prev_key, resolved) -> bool:
     accepted_en = unit[3]
     return bool(accepted_en) and bool(current_en) and (accepted_en.startswith(current_en) or current_en.startswith(accepted_en))
 
-def _close_palace_unit(w) -> None:
+def _close_temple_story_unit(w) -> None:
     shown = getattr(w, _KEY_ATTR, None) is not None
     if shown:
         try:
@@ -149,7 +164,6 @@ def _close_palace_unit(w) -> None:
         w._ui_router.clear_if_owner(_OWNER, notify_close=False)
     setattr(w, _KEY_ATTR, None)
     setattr(w, _UNIT_ATTR, None)
-    w._palace_dialog_last_off = None
 
 def _read_dialog_occurrence(w) -> int | None:
     try:
@@ -173,16 +187,16 @@ def _dialog_display_unit(w, occurrence: int, source: tuple[int, int, bool], reso
         return 'page'
     return 'same'
 
-def poll_palace_dialog(w, *, palace_active: bool, foreground_ptr=_POINTER_UNSET) -> bool:
-    if not palace_active:
-        _close_palace_unit(w)
+def poll_temple_story(w, *, temple_active: bool, foreground_ptr=_POINTER_UNSET) -> bool:
+    if not temple_active:
+        _close_temple_story_unit(w)
         return False
     ptr = _read_dialog_pointer(w) if foreground_ptr is _POINTER_UNSET else foreground_ptr
     source = _dialog_body_source(ptr)
     if source is None:
         if _dialog_hold_pointer(ptr) and getattr(w, _UNIT_ATTR, None) is not None:
             return True
-        _close_palace_unit(w)
+        _close_temple_story_unit(w)
         return False
     resolved = _resolve_dialog(w, source)
     occurrence = _read_dialog_occurrence(w)
@@ -207,11 +221,10 @@ def poll_palace_dialog(w, *, palace_active: bool, foreground_ptr=_POINTER_UNSET)
     key = (en, display_ja, yesno)
     if getattr(w, _KEY_ATTR, None) != key:
         setattr(w, _KEY_ATTR, key)
-        w._palace_dialog_last_off = source[0]
         w._ui_router.update_translation(_OWNER, en, display_ja, speech_role='conversation' if base_ja else None, speech_text=base_ja if base_ja else None)
-        _log.info('palace dialog displayed (len=%d translated=%s yesno=%s)', len(en), bool(base_ja), yesno)
+        _log.info('temple story displayed (len=%d translated=%s yesno=%s)', len(en), bool(base_ja), yesno)
     unit = getattr(w, _UNIT_ATTR, None)
     accepted = occurrence if kind == 'new' or unit is None else unit[0]
     setattr(w, _UNIT_ATTR, (accepted, source[0], source[2], en))
     return True
-__all__ = ['poll_palace_dialog', 'is_palace_interior_mif', 'assemble_dialog_text']
+__all__ = ['poll_temple_story', 'is_temple_interior_mif', 'is_strong_story_pointer']

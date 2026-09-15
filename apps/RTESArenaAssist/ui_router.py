@@ -423,7 +423,7 @@ class UiRouter:
         owner = self.current_owner()
         if owner and owner in facility_owners_for_session(session_name):
             return
-        story_owner = {'mages': 'mages_story', 'palace': 'palace_dialog'}.get(getattr(w, '_facility_story_kind_now', ''), '')
+        story_owner = {'mages': 'mages_story', 'palace': 'palace_dialog', 'temple': 'temple_story'}.get(getattr(w, '_facility_story_kind_now', ''), '')
         if owner and owner == story_owner:
             return
         key = (session_name, owner, getattr(w, '_screen_id_prev', None), getattr(w, '_img_name_prev', '') or '', frame.top_level if frame is not None else '')

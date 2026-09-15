@@ -629,9 +629,8 @@ def _story_body_source(ptr: int | None) -> tuple[int, int, bool] | None:
         from active_template_reader import message_buffer_remaining
     except ImportError:
         return None
-    remaining = message_buffer_remaining(ptr)
-    if remaining is not None:
-        return (ptr, remaining, False)
+    if message_buffer_remaining(ptr) is not None:
+        return (ptr, _STORY_BUF_OFFSET + _STORY_BUF_READ - ptr, False)
     if ptr == _STORY_BUF_OFFSET:
         return (_STORY_BUF_OFFSET, _STORY_BUF_READ, False)
     if ptr == _STORY_CHOICE_OVERLAY_PTR:
@@ -656,6 +655,14 @@ _TEXT_BYTES = frozenset(bytes(range(32, 127)) + b'\n\r\t')
 
 def _is_text_bytes(seg: bytes) -> bool:
     return bool(seg) and all((b in _TEXT_BYTES for b in seg))
+_story_fit_state: dict[str, bool] = {}
+
+def _note_story_fit(fits: bool, off: int, size: int) -> None:
+    if _story_fit_state.get('ok', True) is fits:
+        return
+    _story_fit_state['ok'] = fits
+    if not fits:
+        _log.warning('ギルドのストーリー本文が読み取り範囲に収まらなかった: 所在=+0x%04X 読取=%d', off, size)
 
 def _read_story_chunks(w, off: int=_STORY_BUF_OFFSET, size: int=_STORY_BUF_READ) -> list[str]:
     try:
@@ -671,6 +678,8 @@ def _read_story_chunks(w, off: int=_STORY_BUF_OFFSET, size: int=_STORY_BUF_READ)
         if index == len(segments) - 1 and (not final_is_terminated):
             if parts:
                 break
+            if _is_text_bytes(seg):
+                _note_story_fit(False, off, size)
             return []
         if not seg:
             if parts:
@@ -687,6 +696,8 @@ def _read_story_chunks(w, off: int=_STORY_BUF_OFFSET, size: int=_STORY_BUF_READ)
             break
         else:
             return []
+    if parts:
+        _note_story_fit(True, off, size)
     return parts
 
 def _read_story_body(w, off: int=_STORY_BUF_OFFSET, size: int=_STORY_BUF_READ) -> str:

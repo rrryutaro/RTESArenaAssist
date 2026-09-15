@@ -40,6 +40,15 @@ class TempleNode(FacilityNode):
         except Exception:
             pass
 
+    def suspend_for_story(self, w) -> None:
+        current = getattr(w, '_panel_owner', '') or ''
+        if current in facility_owners_for_session(self.name):
+            try:
+                w._ui_router.notify_display_unit_replaced(current)
+            except AttributeError:
+                pass
+        self.on_exit(w)
+
     def render_no_session_shop(self, w, *, shop_state, shop_img_name: str, shop_buy_active: bool, shop_menu_visible: bool):
         from normal_play.temple_render_module import render_no_session_menu
         if render_no_session_menu(w, shop_state=shop_state, shop_img_name=shop_img_name):
