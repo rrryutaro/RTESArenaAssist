@@ -13,15 +13,32 @@ class INFData:
     menus: Dict[int, int] = field(default_factory=dict)
     menu_ranges: Dict[int, tuple] = field(default_factory=dict)
     flat_items: Dict[int, int] = field(default_factory=dict)
-_ITEM_TREASURE_PILE_MIN = 2
-_ITEM_TREASURE_PILE_MAX = 6
-
-def is_treasure_pile_item(item_index: int) -> bool:
-    return _ITEM_TREASURE_PILE_MIN <= int(item_index) <= _ITEM_TREASURE_PILE_MAX
-
-def treasure_pile_flat_indices(inf: INFData) -> frozenset:
-    return frozenset((fi for fi, item in inf.flat_items.items() if is_treasure_pile_item(item)))
+_ITEM_KEY = 1
+_ITEM_CONTAINER_MIN = 2
 _ITEM_LOCKED_CHEST = 7
+_ITEM_CONTAINER_MAX = 8
+_ITEM_QUEST_ITEM = 13
+ITEM_POINT_CONTAINER = 'container'
+ITEM_POINT_KEY = 'key'
+ITEM_POINT_QUEST_ITEM = 'quest_item'
+
+def item_point_kind(item_index: int) -> str | None:
+    index = int(item_index)
+    if _ITEM_CONTAINER_MIN <= index <= _ITEM_CONTAINER_MAX:
+        return ITEM_POINT_CONTAINER
+    if index == _ITEM_KEY:
+        return ITEM_POINT_KEY
+    if index == _ITEM_QUEST_ITEM:
+        return ITEM_POINT_QUEST_ITEM
+    return None
+
+def item_point_flat_kinds(inf: INFData) -> dict[int, str]:
+    kinds: dict[int, str] = {}
+    for flat_index, item in inf.flat_items.items():
+        kind = item_point_kind(item)
+        if kind is not None:
+            kinds[flat_index] = kind
+    return kinds
 
 def is_locked_chest_item(item_index: int) -> bool:
     return int(item_index) == _ITEM_LOCKED_CHEST

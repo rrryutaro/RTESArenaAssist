@@ -1,4 +1,5 @@
 from __future__ import annotations
+import functools
 import logging
 import struct
 from dataclasses import dataclass
@@ -7,6 +8,9 @@ FONT_NAME = 'ARENAFNT.DAT'
 _GLYPH_COUNT = 96
 _GLYPH_DATA_OFFSET = 95
 SCREEN_COLS = 320
+SPACE_ADVANCES = (4, 3, 5)
+_CENTER_SLACK = 2
+_MIN_BACKGROUND_UNLIT = 0.1
 
 @dataclass(frozen=True)
 class ActionFont:
@@ -100,4 +104,71 @@ def matches(decoded: str, expected: str) -> bool:
         if d != e:
             return False
     return True
-__all__ = ['ActionFont', 'FONT_NAME', 'parse', 'load', 'decode_band', 'matches', 'SCREEN_COLS']
+
+def row_masks(ink_by_row) -> tuple[int, ...]:
+    out = []
+    for row in ink_by_row:
+        mask = 0
+        for c in row:
+            mask |= 1 << int(c)
+        out.append(mask)
+    return tuple(out)
+
+@functools.lru_cache(maxsize=256)
+def _line_template(font: ActionFont, text: str, space_advance: int) -> tuple[tuple[int, ...], int]:
+    rows = [0] * font.height
+    x = 0
+    right = -1
+    for ch in text:
+        gi = ord(ch) - 32
+        if not 0 <= gi < _GLYPH_COUNT:
+            return ((), 0)
+        if gi == 0:
+            x += space_advance
+            continue
+        for r, v in enumerate(font.glyphs[gi]):
+            for c in range(16):
+                if v & 32768 >> c:
+                    rows[r] |= 1 << x + c
+                    right = max(right, x + c)
+        x += font.widths[gi]
+    return (tuple(rows), right + 1)
+
+def _background_is_distinct(template, masks, x: int, width: int) -> bool:
+    box = (1 << width) - 1 << x
+    total = unlit = 0
+    for t, m in zip(template, masks):
+        background = box & ~(t << x)
+        count = background.bit_count()
+        total += count
+        unlit += count - (m & background).bit_count()
+    return total > 0 and unlit >= total * _MIN_BACKGROUND_UNLIT
+
+def line_is_drawn(font: ActionFont, masks, text: str, *, center: int=SCREEN_COLS // 2) -> bool:
+    if font is None or not text or len(masks) != font.height:
+        return False
+    for space_advance in SPACE_ADVANCES:
+        template, width = _line_template(font, text, space_advance)
+        if width <= 0 or not any(template):
+            continue
+        left = center - width // 2
+        for x in range(left - _CENTER_SLACK, left + _CENTER_SLACK + 1):
+            if x < 0 or x + width > SCREEN_COLS:
+                continue
+            if all((t << x & ~m == 0 for t, m in zip(template, masks))) and _background_is_distinct(template, masks, x, width):
+                return True
+    return False
+
+def drawn_line_index(font: ActionFont, masks_list, texts) -> int | None:
+    if font is None:
+        return None
+    found = None
+    for i, text in enumerate(texts):
+        if not text:
+            continue
+        if any((line_is_drawn(font, masks, text) for masks in masks_list)):
+            if found is not None:
+                return None
+            found = i
+    return found
+__all__ = ['ActionFont', 'FONT_NAME', 'parse', 'load', 'decode_band', 'matches', 'SCREEN_COLS', 'SPACE_ADVANCES', 'row_masks', 'line_is_drawn', 'drawn_line_index']

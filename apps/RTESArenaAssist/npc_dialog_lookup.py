@@ -835,7 +835,7 @@ def _ph_ra_t_oc_ct_oth_di_lp_cn_tem(name: str, value: str, lang: str) -> str:
             translated = _place_lookup(value)
             if translated:
                 return translated
-    if name == 'cn' and lang != 'en':
+    if name in ('cn', 'lp') and lang != 'en':
         _static = _translate_static_place(value, lang)
         if _static != value:
             return _static

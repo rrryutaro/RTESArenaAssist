@@ -120,6 +120,19 @@ def detect_magic_reply_kind(sig: dict, img_name: str='') -> str:
 def is_detect_magic_reply_foreground(sig: dict, img_name: str='') -> bool:
     return bool(detect_magic_reply_kind(sig, img_name))
 
+def _identify_result_foreground(analyzer, anchor: int, sig: dict, current_ptr) -> bool:
+    if sig.get('view') != VIEW_POPUP:
+        return False
+    if sig.get('type') not in (None, TYPE_POPUP):
+        return False
+    if not _contains_normalized(analyzer, anchor, NEGOTIATION_TEXT_OFFSET, 256, DETECT_MAGIC_IDENTIFIED):
+        return False
+    if sig.get('list') not in (None, LIST_ON):
+        return True
+    if sig.get('list') is None or not isinstance(current_ptr, int):
+        return False
+    return _normalize_text(_ascii_cstr(analyzer, anchor, current_ptr, 96)) == DETECT_MAGIC_IDENTIFIED
+
 def detect_magic_reply_kind_from_memory(analyzer, anchor: int, img_name: str='', sig: dict | None=None, *, current_ptr=_CURRENT_PTR_UNSET) -> str:
     sig = sig if sig is not None else read_signals(analyzer, anchor)
     img = (img_name or '').upper()
@@ -128,20 +141,20 @@ def detect_magic_reply_kind_from_memory(analyzer, anchor: int, img_name: str='',
     if sig.get('dialog') != DIALOG_NORMAL:
         return ''
     state = classify(sig)
-    if state == 'list':
-        return ''
     if state in MENU_STATES:
         return ''
-    is_popup_reply = sig.get('view') == VIEW_POPUP and sig.get('type') in (None, TYPE_POPUP) and (sig.get('list') not in (None, LIST_ON))
-    if img == 'YESNO.IMG' and is_popup_reply and _contains_normalized(analyzer, anchor, NEGOTIATION_TEXT_OFFSET, 256, DETECT_MAGIC_IDENTIFIED):
+    if current_ptr is _CURRENT_PTR_UNSET:
+        current_ptr = _u16(analyzer, anchor, CURRENT_TEXT_PTR_OFFSET)
+    if img == 'YESNO.IMG' and _identify_result_foreground(analyzer, anchor, sig, current_ptr):
         return 'detect_result'
+    if state == 'list':
+        return ''
+    is_popup_reply = sig.get('view') == VIEW_POPUP and sig.get('type') in (None, TYPE_POPUP) and (sig.get('list') not in (None, LIST_ON))
     if sig.get('family') != FAMILY_MENU_DETECT_CREATE:
         return ''
     old_kind = detect_magic_reply_kind(sig, img_name)
     if old_kind:
         return old_kind
-    if current_ptr is _CURRENT_PTR_UNSET:
-        current_ptr = _u16(analyzer, anchor, CURRENT_TEXT_PTR_OFFSET)
     known_text = _ascii_cstr(analyzer, anchor, MAGES_MENU_TEXT_OFFSET, 96)
     response_text = _normalize_text(_ascii_cstr(analyzer, anchor, RESPONSE_TEXT_OFFSET, 160))
     if img == 'NEWPOP.IMG' and sig.get('list') not in (None, LIST_ON) and isinstance(current_ptr, int) and (MAGES_MENU_PTR_START <= current_ptr < MAGES_MENU_PTR_END) and (known_text == DETECT_MAGIC_ALREADY_KNOWN):

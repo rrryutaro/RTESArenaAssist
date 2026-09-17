@@ -491,6 +491,8 @@ def _fallback_map_tab_or_none(w):
 
 def reset_trigger_axis_on_load(w) -> None:
     w._trigger_axis_live_prev = False
+    from normal_play.trigger_module import reset_trigger_identification
+    reset_trigger_identification(w)
 
 def reset_floor_holds_on_load(w) -> None:
     w._dungeon_level_held = None
@@ -528,7 +530,8 @@ def _poll_handle_triggers(w, *, rt_x, rt_z, inf_name, coord_valid=True):
     w._trigger_flag_prev = trigger_flag
     w._trigger_disp_ptr_prev = disp_ptr
     from normal_play.trigger_module import poll_trigger as _poll_trigger
-    _poll_trigger(w, new_trigger=_new_trigger, trig_fell=_trig_fell, trigger_flag=trigger_flag, inf_name=inf_name)
+    _position = (rt_x, rt_z) if coord_valid and (not _npc_talking) and (rt_x is not None) and (rt_z is not None) else None
+    _poll_trigger(w, new_trigger=_new_trigger, trig_fell=_trig_fell, trigger_flag=trigger_flag, inf_name=inf_name, position=_position)
 
 def _propose_automap_screen_mode(w, *, screen_id_stable, top_level):
     try:
@@ -980,7 +983,7 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
             _map_area_eff, _map_mif_eff, _map_in_interior_eff, _map_interior_mif_eff = _map_bg_last
         elif not _is_loading_for_map:
             w._map_bg_last = (_map_area_eff, _map_mif_eff, _map_in_interior_eff, _map_interior_mif_eff)
-        _treasure_pickup_open = bool(getattr(w, '_treasure_pickup_open_prev', False))
+        _item_pickup_kinds = getattr(w, '_item_pickup_kinds_prev', frozenset())
         _fallback_suppress_map, _fallback_suppress_reason = _city_load_fallback_suppression(w, area=_resolved_area, coord_source='raw', player_x=_show_player_x, player_y=_show_player_y, surface_owner=_map_surface_owner, is_loading=_is_loading_for_map)
         try:
             _dungeon_start = _dungeon_start_level(w, display_mif_name) if _resolved_area == 'dungeon' else None
@@ -994,7 +997,7 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
                 except Exception:
                     _log.exception('wild_diag failed')
             wild_location_name = gs.get('MapName') or '' if _resolved_area in ('city', 'wilderness') else None
-            _map_view = tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, treasure_pickup_open=_treasure_pickup_open, dungeon_floor=dungeon_floor, dungeon_floor_fresh=dungeon_level_hyp)
+            _map_view = tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, item_pickup_kinds=_item_pickup_kinds, dungeon_floor=dungeon_floor, dungeon_floor_fresh=dungeon_level_hyp)
             if _map_view is not None:
                 try:
                     w._tab_translate.render_fallback_map_view(_map_view, place_text=place_text, suppress_map=_fallback_suppress_map, suppress_reason=_fallback_suppress_reason)
@@ -1388,8 +1391,11 @@ def _poll_level_up_and_item_pickup(w, *, _top_is_normal_play, _loading_post_sett
         _level_up_continue = False
     from normal_play.item_pickup_module import poll_item_pickup as _poll_item_pickup
     _poll_item_pickup(w, newpop_gate=_newpop_gate, b30_img_name=_b30_img_name, npc_dialog=npc_dialog, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, screen_id=getattr(w, '_screen_id_prev', None), facility_active=bool(_active_facility_name), inventory_screen=_inventory_screen_now)
-    from normal_play.item_pickup_module import treasure_list_open as _treasure_list_open
-    w._treasure_pickup_open_prev = _treasure_list_open(w)
+    from normal_play.c1_runtime_dialog_module import runtime_dialog_display_open as _runtime_dialog_display_open
+    from normal_play.item_pickup_module import pickup_list_open as _pickup_list_open
+    from normal_play.map.item_points import pickup_kinds as _pickup_kinds
+    from normal_play.trigger_module import red_text_display_open as _red_text_display_open
+    w._item_pickup_kinds_prev = _pickup_kinds(pickup_list_open=_pickup_list_open(w), red_text_open=_red_text_display_open(w), runtime_dialog_open=_runtime_dialog_display_open(w))
     return _level_up_continue
 
 class PollController:

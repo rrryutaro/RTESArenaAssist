@@ -145,9 +145,8 @@ def _ensure_loaded() -> None:
     global _entries, _loaded
     if _loaded:
         return
-    _dungeon = _rebuild_category('dungeon_messages')
+    _dungeon = [dict(e, exact_only=True) for e in _rebuild_category('dungeon_messages')]
     _lock = _rebuild_category('lock_messages')
-    _note_table_size('dungeon_messages', len(_dungeon))
     _note_table_size('lock_messages', len(_lock))
     _entries = _dungeon + _lock
     _loaded = True
@@ -223,6 +222,8 @@ def lookup(text: str) -> str:
     best_len = 0
     best_jpn = ''
     for e in _entries:
+        if e.get('exact_only'):
+            continue
         eng = e.get('key', {}).get('en', '')
         if eng and text.startswith(eng) and (len(eng) > best_len):
             best_len = len(eng)

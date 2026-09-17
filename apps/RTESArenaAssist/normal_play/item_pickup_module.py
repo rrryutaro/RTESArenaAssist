@@ -317,7 +317,4 @@ def poll_item_pickup(w, *, newpop_gate: bool, b30_img_name: str, npc_dialog: str
 
 def pickup_list_open(w) -> bool:
     return bool(getattr(w, '_b32_newpop_open', False))
-
-def treasure_list_open(w) -> bool:
-    return pickup_list_open(w) and (not bool(getattr(w, '_b32_was_corpse', False)))
-__all__ = ['poll_item_pickup', 'corpse_item_message', 'pickup_list_open', 'treasure_list_open']
+__all__ = ['poll_item_pickup', 'corpse_item_message', 'pickup_list_open']

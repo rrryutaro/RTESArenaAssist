@@ -219,6 +219,10 @@ class MifTriggerMatcher:
         return self._loaded_mif
 
     @property
+    def active_level(self) -> int | None:
+        return self._active_level
+
+    @property
     def last_status(self) -> str:
         return self._last_status
 

@@ -132,52 +132,61 @@ def restore_last_trigger_display(w) -> bool:
 def _is_death_red_text(text: str) -> bool:
     return (text or '').strip() in _DEATH_RED_TEXTS
 
-def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, inf_name: str) -> None:
+def _map_context(w):
+    matcher = getattr(w, '_mif_matcher', None)
+    if matcher is None:
+        return None
+    return (matcher.loaded_mif, matcher.active_level)
+
+def reset_trigger_identification(w) -> None:
+    w._trigger_unresolved = None
+
+def _identify_fired_text(w, rt_x, rt_z, inf_name: str, *, retry: bool) -> bool:
+    text_index = None
+    correct_body = ''
+    if w._mif_matcher and rt_x is not None and (rt_z is not None):
+        text_index = w._mif_matcher.find_text_index(rt_x, rt_z)
+        if text_index is not None:
+            try:
+                raw_b = w._analyzer.read_bytes(w._anchor + TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ)
+                correct_body = get_trigger_text_by_index(raw_b, text_index)
+            except OSError:
+                correct_body = ''
+    if text_index is None and retry:
+        return False
+    declared_inf = ''
+    if w._mif_matcher is not None:
+        declared_inf = w._mif_matcher.declared_inf_name() or ''
+    lookup_inf = declared_inf or inf_name
+    try:
+        _disp_ptr = int.from_bytes(w._analyzer.read_bytes(w._anchor + CURRENT_TRIGGER_TEXT_PTR_OFFSET, 2), 'little')
+    except (OSError, AttributeError):
+        _disp_ptr = None
+    _recog(_log, 'trigger %s: inf_live=%r inf_mif=%r coord=%r text_index=%s match=%s disp_ptr=%s correct_body=%r', 're-identified' if retry else 'fired', inf_name, declared_inf, (rt_x, rt_z), text_index, w._mif_matcher.last_status if w._mif_matcher else 'no-matcher', f'0x{_disp_ptr:04X}' if _disp_ptr is not None else 'n/a', (correct_body or '')[:60])
+    if text_index is None:
+        _reset_trigger_display(w)
+        return False
+    _render_identified_text(w, lookup_inf, text_index, correct_body)
+    return True
+
+def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, inf_name: str, position: tuple | None=None) -> None:
     if trigger_flag != 0:
         w._sb.showMessage(f"Trigger: flag=0x{trigger_flag:02X}  INF={inf_name or '(none)'}", 4000)
     poll_riddle_display(w)
     if new_trigger:
-        text_index = None
-        correct_body = ''
-        if w._mif_matcher and w._cached_rt_x is not None and (w._cached_rt_z is not None):
-            text_index = w._mif_matcher.find_text_index(w._cached_rt_x, w._cached_rt_z)
-            if text_index is not None:
-                try:
-                    raw_b = w._analyzer.read_bytes(w._anchor + TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ)
-                    correct_body = get_trigger_text_by_index(raw_b, text_index)
-                except OSError:
-                    correct_body = ''
-        declared_inf = ''
-        if w._mif_matcher is not None:
-            declared_inf = w._mif_matcher.declared_inf_name() or ''
-        lookup_inf = declared_inf or inf_name
-        try:
-            _disp_ptr = int.from_bytes(w._analyzer.read_bytes(w._anchor + CURRENT_TRIGGER_TEXT_PTR_OFFSET, 2), 'little')
-        except (OSError, AttributeError):
-            _disp_ptr = None
-        _recog(_log, 'trigger fired: inf_live=%r inf_mif=%r coord=%r text_index=%s match=%s disp_ptr=%s correct_body=%r', inf_name, declared_inf, (w._cached_rt_x, w._cached_rt_z), text_index, w._mif_matcher.last_status if w._mif_matcher else 'no-matcher', f'0x{_disp_ptr:04X}' if _disp_ptr is not None else 'n/a', (correct_body or '')[:60])
-        if text_index is None:
-            _reset_trigger_display(w)
-            return
-        entry = itl.lookup(lookup_inf, text_index)
-        index_state = 'present' if entry is not None else _static_text_index_state(lookup_inf, text_index)
-        if entry is not None and entry.get('type') == 'key':
-            entry = None
-        if entry is None and index_state == 'not_text':
-            _recog(_log, 'trigger is not a text trigger: inf=%r text_index=%s (index not defined as text; display held)', lookup_inf, text_index)
-            return
-        if entry is None and correct_body:
-            entry = itl.lookup_riddle_by_text(correct_body)
-        if entry is None and correct_body:
-            entry = itl.lookup_by_text(lookup_inf, correct_body)
-        if entry is None and correct_body and lookup_inf:
-            entry = itl.lookup_by_substring(lookup_inf, correct_body)
-        if entry is not None:
-            _render_trigger_entry(w, entry)
-        elif index_state == 'present' and correct_body:
-            _push_raw_trigger_body(w, correct_body)
-        else:
-            _reset_trigger_display(w)
+        w._trigger_unresolved = None
+        at = (w._cached_rt_x, w._cached_rt_z)
+        if not _identify_fired_text(w, at[0], at[1], inf_name, retry=False):
+            w._trigger_unresolved = {'at': at, 'map': _map_context(w)}
+    else:
+        pending = getattr(w, '_trigger_unresolved', None)
+        if pending and trigger_flag != 0 and (not trig_fell) and (position is not None) and (position != pending['at']) and (_map_context(w) == pending['map']):
+            pending['at'] = position
+            if _identify_fired_text(w, position[0], position[1], inf_name, retry=True):
+                w._trigger_unresolved = None
+    if trig_fell and getattr(w, '_trigger_unresolved', None):
+        _recog(_log, 'trigger unresolved: 同定できないまま表示が終わった 座標=%r', w._trigger_unresolved['at'])
+        w._trigger_unresolved = None
     if trig_fell and (not settings.get('keep_trigger_on_panel', False)):
         w._last_trigger_active = False
         w._riddle_display = None
@@ -185,6 +194,27 @@ def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, in
     elif trig_fell:
         w._last_trigger_active = False
         w._riddle_display = None
+
+def _render_identified_text(w, lookup_inf: str, text_index: int, correct_body: str) -> None:
+    entry = itl.lookup(lookup_inf, text_index)
+    index_state = 'present' if entry is not None else _static_text_index_state(lookup_inf, text_index)
+    if entry is not None and entry.get('type') == 'key':
+        entry = None
+    if entry is None and index_state == 'not_text':
+        _recog(_log, 'trigger is not a text trigger: inf=%r text_index=%s (index not defined as text; display held)', lookup_inf, text_index)
+        return
+    if entry is None and correct_body:
+        entry = itl.lookup_riddle_by_text(correct_body)
+    if entry is None and correct_body:
+        entry = itl.lookup_by_text(lookup_inf, correct_body)
+    if entry is None and correct_body and lookup_inf:
+        entry = itl.lookup_by_substring(lookup_inf, correct_body)
+    if entry is not None:
+        _render_trigger_entry(w, entry)
+    elif index_state == 'present' and correct_body:
+        _push_raw_trigger_body(w, correct_body)
+    else:
+        _reset_trigger_display(w)
 
 def idle_b30_state(w) -> dict:
     w._b30_in_gameplay_prev = False
@@ -305,6 +335,9 @@ def _close_red_text_display(w) -> None:
 def band_wanted(w) -> bool:
     return bool(getattr(w, '_red_text_open', ''))
 
+def red_text_display_open(w) -> bool:
+    return bool(getattr(w, '_red_text_open', ''))
+
 def release_red_text(w) -> None:
     _close_red_text_display(w)
 
@@ -356,4 +389,4 @@ def poll_red_text_lifetime(w, *, b30: dict, band=None) -> None:
         restore_last_trigger_display(w)
     else:
         w._ui_router.clear_display('', allowed_current_owners=('',))
-__all__ = ['poll_trigger', 'riddle_group_holds_ptr', 'GAMEPLAY_SCREEN_IDS', 'gameplay_screen', 'compute_b30_state', 'poll_red_text', 'poll_red_text_lifetime', 'band_wanted', 'release_red_text', 'restore_last_trigger_display']
+__all__ = ['poll_trigger', 'riddle_group_holds_ptr', 'GAMEPLAY_SCREEN_IDS', 'gameplay_screen', 'compute_b30_state', 'poll_red_text', 'poll_red_text_lifetime', 'band_wanted', 'red_text_display_open', 'release_red_text', 'restore_last_trigger_display']

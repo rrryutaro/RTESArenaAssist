@@ -18,7 +18,7 @@ class MapContext:
     save_dir: str
     in_interior: Optional[bool] = None
     area: Optional[str] = None
-    treasure_pickup_open: bool = False
+    item_pickup_kinds: frozenset = frozenset()
     dungeon_floor: Optional[int] = None
     dungeon_floor_fresh: Optional[int] = None
     ext_store: Any = None

@@ -23,6 +23,9 @@ def _get_profile(img_name: str):
         return None
     return get_negotiation_profile((img_name or '').upper())
 
+def _same_sentence(a: str | None, b: str | None) -> bool:
+    return bool(a) and bool(b) and (' '.join(a.split()) == ' '.join(b.split()))
+
 def _ensure_state(w) -> None:
     if not hasattr(w, _KEY_PREV):
         setattr(w, _KEY_PREV, None)
@@ -99,6 +102,8 @@ def poll_equipment_negotiation(w, *, img_name: str, top_level_state: str) -> boo
                     continue
                 _ap_clean = c.text.rstrip()
                 if not _ap_clean:
+                    continue
+                if _same_sentence(_ap_clean, _text):
                     continue
                 _apr = _ndl.lookup(_ap_clean)
                 if _apr is None:

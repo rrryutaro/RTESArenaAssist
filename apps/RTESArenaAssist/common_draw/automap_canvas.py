@@ -67,7 +67,7 @@ class CanvasData:
     wilderness_compact_view: bool = False
     wild_distinguish_road: bool = True
     wild_show_edge: bool = True
-    treasure_pile_cells: frozenset = frozenset()
+    treasure_cells: frozenset = frozenset()
     hidden_door_ids: frozenset[int] = frozenset()
     menu_texture_indices: frozenset[int] = frozenset()
     discovered_hidden_door_cells: frozenset[tuple[int, int]] = frozenset()
@@ -880,7 +880,7 @@ class AutomapCanvas(QWidget):
                 cells_drawn.append((x, y, rect))
         if pipe_cells:
             self._paint_pipes(painter, pipe_cells, hole_cells, {(cx, cy): crect for cx, cy, crect in cells_drawn})
-        treasure_cells = d.treasure_pile_cells or frozenset() if self._express_treasure else frozenset()
+        treasure_cells = d.treasure_cells or frozenset() if self._express_treasure else frozenset()
         mark = self._treasure_mark[:1]
         if treasure_cells and mark and (self._zoom >= 4):
             font = QFont()

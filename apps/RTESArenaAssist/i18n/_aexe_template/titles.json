@@ -6,8 +6,8 @@
     "index": 0,
     "_meta": {
       "gender": "male",
-      "verified_official": true,
-      "note": "TES5 ja: Lord Harkon 等で「ロード」使用"
+      "note": "TES5 ja: Lord Harkon 等で「ロード」使用",
+      "official_check": "2026-09-17 照合: 公式サイトの本文で確かめられなかった（旧記録: 出典の記載なし）"
     }
   },
   "titles.title_duke.0": {
@@ -40,7 +40,10 @@
     "_meta": {
       "gender": "male",
       "verified_official": true,
-      "note": "TES4 Oblivion 日本語版で「伯爵」が公式表記"
+      "note": "TES4 Oblivion 日本語版で「伯爵」が公式表記",
+      "official_sources": [
+        "DMM ESO ja (https://eso.dmm.com/news/detail/8094, 2026-09-17 検証)"
+      ]
     }
   },
   "titles.title_prince.0": {
@@ -62,7 +65,10 @@
     "_meta": {
       "gender": "male",
       "verified_official": true,
-      "note": "TES5 ja: High King→高王、King→王"
+      "note": "TES5 ja: High King→高王、King→王",
+      "official_sources": [
+        "DMM ESO ja (https://eso.dmm.com/game-guide/alliances/daggerfall-covenant, 2026-09-17 検証)"
+      ]
     }
   },
   "titles.title_emperor.0": {
@@ -73,7 +79,10 @@
     "_meta": {
       "gender": "male",
       "verified_official": true,
-      "note": "TES4/5 ja 公式"
+      "note": "TES4/5 ja 公式",
+      "official_sources": [
+        "DMM ESO ja (https://eso.dmm.com/news/detail/8094, 2026-09-17 検証)"
+      ]
     }
   },
   "titles.title_lady.0": {
@@ -139,7 +148,10 @@
     "_meta": {
       "gender": "female",
       "verified_official": true,
-      "note": "TES5 ja 公式"
+      "note": "TES5 ja 公式",
+      "official_sources": [
+        "DMM ESO ja (https://eso.dmm.com/news/detail/7984, 2026-09-17 検証)"
+      ]
     }
   },
   "titles.title_empress.0": {
@@ -149,8 +161,8 @@
     "index": 13,
     "_meta": {
       "gender": "female",
-      "verified_official": true,
-      "note": "TES4 ja: Empress Katariah で「女帝」使用"
+      "note": "TES4 ja: Empress Katariah で「女帝」使用",
+      "official_check": "2026-09-17 照合: 公式サイトの本文で確かめられなかった（旧記録: 出典の記載なし）"
     }
   }
 }

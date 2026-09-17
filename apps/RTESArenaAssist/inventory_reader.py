@@ -215,6 +215,8 @@ def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], 
             return f'{material_names[mat_id]} {base}'
         ei = _ench_index(item)
         if ei is not None and ei < len(weapon_enchant_names):
+            if 0 <= mat_id < len(material_names):
+                base = f'{material_names[mat_id]} {base}'
             return f'{base} {weapon_enchant_names[ei]}'
         return base
     if kind == 'spellcasting':
@@ -259,11 +261,14 @@ def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], 
                 return leather_names[sid]
     elif kind == 'shield':
         if 0 <= sid < len(plate_names):
-            return plate_names[sid]
-        dict_name = _shield_name_original(sid)
-        if dict_name:
-            return dict_name
-        return f'Shield#{sid}'
+            base = plate_names[sid]
+        else:
+            base = _shield_name_original(sid)
+        if not base:
+            return f'Shield#{sid}'
+        if item['x'] == 255 and 0 <= mat_id < len(material_names):
+            return f'{material_names[mat_id]} {base}'
+        return base
     elif kind == 'accessory' and 0 <= sid < len(jewelry_names):
         return jewelry_names[sid]
     elif kind == 'accessory':

@@ -1,6 +1,5 @@
 from __future__ import annotations
 import logging
-import arena_font
 import i18n_helper as i18n
 from assist_log import recog as _recog
 from normal_play import lock_difficulty
@@ -210,7 +209,6 @@ def _resolve_message(tables, index: int) -> tuple[str, str]:
     return (original, translated)
 
 def update_watch(w, near) -> bool:
-    from normal_play.action_text_band import current_band
     armed = bool(getattr(w, '_lock_msg_armed', False))
     if near.known:
         if near.near:
@@ -219,19 +217,23 @@ def update_watch(w, near) -> bool:
         else:
             count = int(getattr(w, '_lock_msg_disarm_count', 0)) + 1
             w._lock_msg_disarm_count = count
-            hold = current_band(w).live or int(getattr(w, '_lock_msg_pending', 0)) > 0 or count < _DISARM_POLLS
+            hold = getattr(w, '_lock_msg_shown', None) is not None or int(getattr(w, '_lock_msg_pending', 0)) > 0 or count < _DISARM_POLLS
             armed = hold and armed
     if armed != bool(getattr(w, '_lock_msg_armed', False)):
         _recog(_log, '赤文字の見張り: %s（%s）', '開始' if armed else '休止', near.where or near.reason)
     w._lock_msg_armed = armed
     return armed
 
-def _band_shows(band, original: str) -> bool:
-    if not original or not band.text:
-        return False
-    return arena_font.matches(band.text, original)
+def _sentence_on_band(w, band) -> int | None:
+    if band.seen is not True:
+        return getattr(w, '_lock_msg_shown', None)
+    tables = _exe_tables(w)
+    messages = tuple((tables or {}).get('messages') or ())
+    shown = band.drawn_line(messages) if messages else None
+    w._lock_msg_shown = shown
+    return shown
 
-def _decide(w, b30, near):
+def _decide(w, b30, near, index: int):
     owner_now = _panel_owner(w)
     if owner_now not in ('', OWNER):
         return (None, None, f'他の表示が持ち主 owner={owner_now!r}', True)
@@ -244,11 +246,14 @@ def _decide(w, b30, near):
     if near.lock is None:
         return (None, None, near.reason, False)
     lock = near.lock
-    if lock[2] is CHEST_LOCK_LEVEL_UNKNOWN:
-        return (None, None, '宝箱の施錠レベルが決められない 錠=(%d,%d) 場所=%s' % (lock[0], lock[1], near.where), False)
     tables = _exe_tables(w)
     if tables is None:
         return (None, None, '施錠メッセージの表が読めない', False)
+    if lock[2] is CHEST_LOCK_LEVEL_UNKNOWN:
+        original, translated = _resolve_message(tables, index)
+        if not original and (not translated):
+            return (None, None, f'番号 {index} の文が引けない', False)
+        return (original, translated, '番号=%d（画面の文・宝箱の施錠レベルは不明） 錠=(%d,%d) 場所=%s' % (index, lock[0], lock[1], near.where), False)
     divisor = _thieving_divisor(w, tables)
     if divisor is None:
         return (None, None, 'クラスが決まらない', False)
@@ -257,40 +262,44 @@ def _decide(w, b30, near):
         return (None, None, '能力値が読めない', False)
     player_level, intelligence, agility = stats
     try:
-        index = lock_difficulty.lock_difficulty_index(lock[2], divisor, player_level, intelligence, agility)
+        computed = lock_difficulty.lock_difficulty_index(lock[2], divisor, player_level, intelligence, agility)
     except ValueError as exc:
         return (None, None, f'番号を計算できない: {exc}', False)
+    inputs = '錠=(%d,%d,lv%d) 場所=%s 除数=%d 知=%d 敏=%d Lv格納値=%d' % (lock[0], lock[1], lock[2], near.where, divisor, intelligence, agility, player_level)
+    if computed != index:
+        return (None, None, '画面の文の番号 %d が計算の番号 %d と違う %s' % (index, computed, inputs), False)
     original, translated = _resolve_message(tables, index)
     if not original and (not translated):
         return (None, None, f'番号 {index} の文が引けない', False)
-    return (original, translated, '番号=%d 錠=(%d,%d,lv%d) 場所=%s 除数=%d 知=%d 敏=%d Lv格納値=%d' % (index, lock[0], lock[1], lock[2], near.where, divisor, intelligence, agility, player_level), False)
+    return (original, translated, '番号=%d %s' % (index, inputs), False)
 
 def poll_lock_message(w, *, b30: dict, near, band) -> None:
     armed = bool(getattr(w, '_lock_msg_armed', False))
-    _obs = (band.seen, bool(b30.get('red_str')), bool(b30.get('in_gameplay')), armed, near.where, near.lock is not None)
+    prev_shown = getattr(w, '_lock_msg_shown', None)
+    shown = _sentence_on_band(w, band)
+    _obs = (band.seen, shown, bool(b30.get('red_str')), bool(b30.get('in_gameplay')), armed, near.where, near.lock is not None)
     if _obs != getattr(w, '_lock_msg_obs_prev', None):
         w._lock_msg_obs_prev = _obs
-        _recog(_log, '赤文字の描画: drawn=%s バッファ本文=%s in_gameplay=%s 見張り=%s 場所=%s 近くの錠=%s', band.seen, _obs[1], _obs[2], '動作' if armed else '休止', near.where or '-', near.lock or near.reason)
-    seen_ep = getattr(w, '_lock_msg_episode_seen', None)
-    new_event = band.rising or (band.live and seen_ep is not None and (band.episode != seen_ep))
-    w._lock_msg_episode_seen = band.episode if band.live else None
-    if new_event:
+        _recog(_log, '赤文字の描画: drawn=%s 錠前の文=%s バッファ本文=%s in_gameplay=%s 見張り=%s 場所=%s 近くの錠=%s', band.seen, '-' if shown is None else '番号%d' % shown, _obs[2], _obs[3], '動作' if armed else '休止', near.where or '-', near.lock or near.reason)
+    if shown is not None and shown != prev_shown:
         w._lock_msg_pending = _PENDING_POLLS
+        w._lock_msg_pending_index = shown
     pending = int(getattr(w, '_lock_msg_pending', 0))
     if pending <= 0:
         return
+    index = getattr(w, '_lock_msg_pending_index', None)
+    if shown != index:
+        w._lock_msg_pending = 0
+        _recog(_log, '錠前メッセージ: 出さない（持ち越し中に画面の文が消えた 番号=%s）', index)
+        return
     w._lock_msg_pending = pending - 1
-    original, translated, why, transient = _decide(w, b30, near)
+    original, translated, why, transient = _decide(w, b30, near, index)
     if original is None and translated is None:
         if not transient:
             w._lock_msg_pending = 0
             _recog(_log, '錠前メッセージ: 出さない（%s）', why)
         elif w._lock_msg_pending <= 0:
             _recog(_log, '錠前メッセージ: 出せないまま持ち越しが切れた（%s）', why)
-        return
-    if not _band_shows(band, original):
-        w._lock_msg_pending = 0
-        _recog(_log, '錠前メッセージ: 出さない（帯の文 %r は自分の文 %r ではない）', band.text, original)
         return
     w._lock_msg_pending = 0
     w._lock_msg_spoken_seen = False
@@ -318,21 +327,23 @@ def poll_lock_message_lifetime(w, *, b30: dict, band) -> None:
         w._lock_msg_spoken_seen = False
         w._ui_router.clear_if_owner(OWNER)
         return
-    if not band.live:
+    if band.seen is True and getattr(w, '_lock_msg_shown', None) is None:
         _recog(_log, '錠前メッセージ: 表示終了（ゲーム側の表示が消えた・読み上げなし）')
         w._ui_router.clear_if_owner(OWNER)
 
 def release_watch(w) -> None:
     w._lock_msg_armed = False
     w._lock_msg_disarm_count = 0
+    w._lock_msg_shown = None
 
 def release_lock_message(w) -> None:
     release_watch(w)
     w._lock_msg_pending = 0
+    w._lock_msg_pending_index = None
+    w._lock_msg_shown = None
     w._lock_msg_spoken_seen = False
     w._lock_msg_level_key = None
     w._lock_msg_locks = ()
-    w._lock_msg_episode_seen = None
     if _panel_owner(w) == OWNER:
         w._ui_router.clear_if_owner(OWNER)
 __all__ = ['OWNER', 'resolve_nearby_lock', 'update_watch', 'release_watch', 'resolve_current_mif', 'poll_lock_message', 'poll_lock_message_lifetime', 'release_lock_message']

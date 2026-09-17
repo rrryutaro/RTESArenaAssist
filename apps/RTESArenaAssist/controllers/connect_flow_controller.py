@@ -69,6 +69,8 @@ def on_connect_done(win, pid: int, anchor: int):
     win._trigger_flag_prev = 0
     win._trigger_axis_live_prev = False
     win._cached_rt_x = win._cached_rt_z = None
+    from normal_play.trigger_module import reset_trigger_identification
+    reset_trigger_identification(win)
     win._panel_owner: str = ''
     win._ui_router = UiRouter(win)
     _feed = getattr(win, '_translation_feed', None)

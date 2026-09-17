@@ -7,6 +7,7 @@ from assist_log import recog as _recog
 from screen_detector import SCREEN_BUFFER_OFFSET, action_text_full_band_addr, action_text_ink_rows, display_buffer_matches, resolve_action_text_color_index, resolve_display_buffer
 _log = logging.getLogger('RTESArenaAssist')
 _DISPLAY_SCANS_PER_CONNECTION = 2
+_EXTRA_COPIES = 3
 
 @dataclass(frozen=True)
 class BandObservation:
@@ -17,6 +18,13 @@ class BandObservation:
     count: int
     text: str
     buffer_text: str
+    masks: tuple = ()
+    font: Optional[arena_font.ActionFont] = None
+
+    def drawn_line(self, texts) -> Optional[int]:
+        if not self.masks or self.font is None:
+            return None
+        return arena_font.drawn_line_index(self.font, self.masks, texts)
 IDLE = BandObservation(seen=None, live=False, rising=False, episode=0, count=0, text='', buffer_text='')
 
 def _font(w) -> arena_font.ActionFont | None:
@@ -41,10 +49,19 @@ def _scan_display(w, analyzer, anchor: int) -> int | None:
 def _can_scan(w) -> bool:
     return int(getattr(w, '_band_screen_scans', 0)) < _DISPLAY_SCANS_PER_CONNECTION
 
+def _switch_display_base(w, anchor: int, new_base: int, *, keep_old: bool=True) -> None:
+    old = getattr(w, '_band_screen_base', None)
+    extras = [b for b in getattr(w, '_band_screen_extras', ()) if b not in (new_base, old)]
+    if keep_old and old is not None and (old != new_base) and (old != anchor + SCREEN_BUFFER_OFFSET):
+        extras.insert(0, old)
+    w._band_screen_extras = tuple(extras[:_EXTRA_COPIES])
+    w._band_screen_base = new_base
+
 def _display_base(w, analyzer, anchor: int) -> int:
     if getattr(w, '_band_screen_anchor', None) != anchor:
         w._band_screen_anchor = anchor
         w._band_screen_base = None
+        w._band_screen_extras = ()
         w._band_screen_scans = 0
         w._band_screen_mismatch_noted = False
     cached = getattr(w, '_band_screen_base', None)
@@ -60,15 +77,37 @@ def _display_base(w, analyzer, anchor: int) -> int:
     w._band_screen_base = base
     return base
 
+def _hex_list(bases) -> str:
+    return '[' + ', '.join(('0x%X' % b for b in bases)) + ']'
+
+def _forget_extra(w, base) -> None:
+    extras = tuple((b for b in getattr(w, '_band_screen_extras', ()) if b != base))
+    w._band_screen_extras = extras
+
+def _read_extra_inks(w, analyzer, color: int) -> tuple:
+    inks = []
+    for base in tuple(getattr(w, '_band_screen_extras', ())):
+        addr, size = action_text_full_band_addr(base)
+        try:
+            block = analyzer.read_bytes(addr, size)
+        except (OSError, AttributeError, RuntimeError):
+            block = None
+        if not block or len(block) < size:
+            _forget_extra(w, base)
+            _recog(_log, '帯の読取: 前の写し 0x%X が読めないため読むのをやめる', base)
+            continue
+        inks.append(action_text_ink_rows(block, color))
+    return tuple(inks)
+
 def _display_copy_lost(w, analyzer, anchor: int, *, keep: bool) -> None:
     if _can_scan(w):
         found = _scan_display(w, analyzer, anchor)
         if found is not None:
-            w._band_screen_base = found
-            _recog(_log, '帯の読取: 表示バッファを探し直した 0x%X', found)
+            _switch_display_base(w, anchor, found, keep_old=keep)
+            _recog(_log, '帯の読取: 表示バッファを探し直した 0x%X（一緒に読む写し %s）', found, _hex_list(getattr(w, '_band_screen_extras', ())))
             return
     if not keep:
-        w._band_screen_base = anchor + SCREEN_BUFFER_OFFSET
+        _switch_display_base(w, anchor, anchor + SCREEN_BUFFER_OFFSET, keep_old=False)
         _recog(_log, '帯の読取: 表示バッファが読めないため合成側を読む')
     elif not getattr(w, '_band_screen_mismatch_noted', False):
         w._band_screen_mismatch_noted = True
@@ -84,7 +123,7 @@ def _verify_display_copy(w, analyzer, anchor) -> None:
         if _can_scan(w):
             found = _scan_display(w, analyzer, anchor)
             if found is not None:
-                w._band_screen_base = found
+                _switch_display_base(w, anchor, found)
                 _recog(_log, '帯の読取: 表示バッファ 0x%X（探し直して見つけた）', found)
         return
     if display_buffer_matches(analyzer, anchor, base) is False:
@@ -108,7 +147,7 @@ def _read_ink(w, b30: dict):
         if base != anchor + SCREEN_BUFFER_OFFSET:
             _display_copy_lost(w, analyzer, anchor, keep=False)
         return None
-    return action_text_ink_rows(block, color)
+    return (action_text_ink_rows(block, color), _read_extra_inks(w, analyzer, color))
 
 def poll_action_text_band(w, *, b30: dict, active: bool, in_play: bool=True) -> BandObservation:
     buffer_text = b30.get('red_str') or ''
@@ -123,11 +162,13 @@ def poll_action_text_band(w, *, b30: dict, active: bool, in_play: bool=True) -> 
         return obs
     if not requested_before:
         _verify_display_copy(w, getattr(w, '_analyzer', None), getattr(w, '_anchor', None))
-    ink = _read_ink(w, b30)
-    if ink is None:
+    read = _read_ink(w, b30)
+    if read is None:
         obs = BandObservation(seen=None, live=bool(getattr(w, '_band_live', False)), rising=False, episode=int(getattr(w, '_band_episode', 0)), count=int(getattr(w, '_band_count', 0)), text=str(getattr(w, '_band_text', '')), buffer_text=buffer_text)
         w._band_obs = obs
         return obs
+    ink, extra_inks = read
+    masks = tuple((arena_font.row_masks(rows) for rows in (ink, *extra_inks)))
     count = sum((len(r) for r in ink))
     live = count > 0
     live_prev = bool(getattr(w, '_band_live', False))
@@ -152,7 +193,7 @@ def poll_action_text_band(w, *, b30: dict, active: bool, in_play: bool=True) -> 
     w._band_live = live
     w._band_count = count
     w._band_episode = episode
-    obs = BandObservation(seen=True, live=live, rising=rising, episode=episode, count=count, text=text, buffer_text=buffer_text)
+    obs = BandObservation(seen=True, live=live, rising=rising, episode=episode, count=count, text=text, buffer_text=buffer_text, masks=masks, font=_font(w))
     w._band_obs = obs
     return obs
 
@@ -170,6 +211,7 @@ def release_band(w) -> None:
 def shutdown_band(w) -> None:
     release_band(w)
     w._band_screen_base = None
+    w._band_screen_extras = ()
     w._band_screen_anchor = None
     w._band_screen_scans = 0
     w._band_screen_mismatch_noted = False

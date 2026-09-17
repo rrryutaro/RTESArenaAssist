@@ -39,11 +39,7 @@
         "allowed_shields",
         "allowed_weapons"
       ],
-      "verified_official": true,
-      "official_sources": [
-        "TES5 ja (Mage archetype)",
-        "arena_classes.json"
-      ]
+      "official_check": "2026-09-17 照合: 公式サイトの本文で確かめられなかった（旧記録: TES5 ja (Mage archetype)・arena_classes.json）"
     },
     "terms": [
       "glossary.mage_context_dependent.0"
@@ -155,12 +151,7 @@
         "allowed_shields",
         "allowed_weapons"
       ],
-      "verified_official": true,
-      "official_sources": [
-        "TES5 ja",
-        "Oblivion ja",
-        "ESO ja"
-      ]
+      "official_check": "2026-09-17 照合: 公式サイトの本文で確かめられなかった（旧記録: TES5 ja・Oblivion ja・ESO ja）"
     }
   },
   "classes.3.0": {
@@ -204,7 +195,7 @@
       ],
       "verified_official": true,
       "official_sources": [
-        "ESO ja (class name)"
+        "DMM ESO ja (https://eso.dmm.com/game-guide/class, 2026-09-17 検証)"
       ]
     }
   },
@@ -304,8 +295,7 @@
       ],
       "verified_official": true,
       "official_sources": [
-        "ESO ja (class name)",
-        "gaming.net Oblivion Remastered ja"
+        "DMM ESO ja (https://eso.dmm.com/game-guide/class, 2026-09-17 検証)"
       ]
     }
   },
@@ -550,11 +540,7 @@
         "allowed_shields",
         "allowed_weapons"
       ],
-      "verified_official": true,
-      "official_sources": [
-        "arena_classes.json",
-        "TES5 Thieves Guild ja"
-      ]
+      "official_check": "2026-09-17 照合: 公式サイトの本文で確かめられなかった（旧記録: arena_classes.json・TES5 Thieves Guild ja）"
     }
   },
   "classes.11.0": {
@@ -608,9 +594,7 @@
       ],
       "verified_official": true,
       "official_sources": [
-        "TES5 ja",
-        "ESO ja",
-        "arena_classes.json"
+        "DMM ESO ja (https://eso.dmm.com/news/detail/5408, 2026-09-17 検証)"
       ]
     }
   },
@@ -966,11 +950,7 @@
         "allowed_shields",
         "allowed_weapons"
       ],
-      "verified_official": true,
-      "official_sources": [
-        "arena_classes.json",
-        "TES5 ja"
-      ]
+      "official_check": "2026-09-17 照合: 公式サイトの本文で確かめられなかった（旧記録: arena_classes.json・TES5 ja）"
     }
   }
 }

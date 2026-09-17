@@ -116,6 +116,9 @@ def _close_c1_runtime_dialog_display(w) -> None:
     w._c1_runtime_dialog_frame_absent = 0
     w._c1_runtime_dialog_frame_unseen_polls = 0
 
+def runtime_dialog_display_open(w) -> bool:
+    return bool(getattr(w, '_c1_runtime_dialog_open', False))
+
 def release_c1_runtime_dialog(w) -> None:
     _close_c1_runtime_dialog_display(w)
     w._c1_runtime_dialog_body_prev = None
@@ -170,4 +173,4 @@ def poll_c1_runtime_dialog_lifetime(w, *, in_gameplay: bool=True) -> None:
         restore_last_trigger_display(w)
     else:
         w._ui_router.clear_display('', allowed_current_owners=('',))
-__all__ = ['C1_RUNTIME_DIALOG_OWNER', 'poll_c1_runtime_dialog', 'poll_c1_runtime_dialog_lifetime', 'release_c1_runtime_dialog']
+__all__ = ['C1_RUNTIME_DIALOG_OWNER', 'poll_c1_runtime_dialog', 'poll_c1_runtime_dialog_lifetime', 'runtime_dialog_display_open', 'release_c1_runtime_dialog']
