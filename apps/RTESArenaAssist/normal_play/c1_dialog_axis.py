@@ -1,11 +1,39 @@
 from __future__ import annotations
+import logging
 from dataclasses import dataclass
-A845_OFFSET = 43077
-A847_OFFSET = 43079
-A84D_OFFSET = 43085
+from active_template_reader import TEMPLATE_RANGE_HIGH, TEMPLATE_RANGE_LOW, is_dialog_text_pointer
+from assist_log import recog as _recog
+_log = logging.getLogger('RTESArenaAssist')
 CURRENT_TEXT_PTR_OFFSET = 43076
-KNOWN_C1_A845_VALUES = frozenset({16, 79, 121, 146, 154})
-KNOWN_C1_A84D_VALUES = frozenset({64})
+A84D_OFFSET = 43085
+DLGFLG_VALUE = 64
+AREA_NPC_DIALOG = 'npc_dialog'
+AREA_RUNTIME_MSG = 'runtime_msg'
+AREA_GOLD = 'gold'
+AREA_MSG_BUF = 'msg_buf'
+AREA_STATIC = 'static'
+
+@dataclass(frozen=True)
+class DialogTextArea:
+    name: str
+    start: int
+    length: int
+    close_confirmed: bool
+
+    def contains(self, ptr: int | None) -> bool:
+        return ptr is not None and self.start <= ptr < self.start + self.length
+C1_DIALOG_TEXT_AREAS: tuple[DialogTextArea, ...] = (DialogTextArea(AREA_NPC_DIALOG, 4164, 512, close_confirmed=True), DialogTextArea(AREA_RUNTIME_MSG, 31097, 68, close_confirmed=True), DialogTextArea(AREA_GOLD, 37534, 512, close_confirmed=False), DialogTextArea(AREA_MSG_BUF, 39582, 512, close_confirmed=False), DialogTextArea(AREA_STATIC, TEMPLATE_RANGE_LOW, TEMPLATE_RANGE_HIGH - TEMPLATE_RANGE_LOW, close_confirmed=False))
+_AREAS_BY_NAME = {a.name: a for a in C1_DIALOG_TEXT_AREAS}
+
+def area_of(ptr: int | None) -> str:
+    for area in C1_DIALOG_TEXT_AREAS:
+        if area.contains(ptr):
+            return area.name
+    return ''
+
+def close_confirmed(area: str) -> bool:
+    found = _AREAS_BY_NAME.get(area)
+    return bool(found is not None and found.close_confirmed)
 
 @dataclass(frozen=True)
 class C1DialogAxis:
@@ -13,12 +41,17 @@ class C1DialogAxis:
     prev_active: bool
     opened: bool
     closed: bool
-    a845: int
-    a84d: int
-    a847: int
     current_ptr: int | None
-    ptr_is_runtime: bool
-    reason: str
+    area: str
+    a84d: int
+
+    @property
+    def a845(self) -> int:
+        return (self.current_ptr or 0) >> 8 & 255
+
+    @property
+    def dlgflg(self) -> bool:
+        return self.a84d == DLGFLG_VALUE
 
 def _read_u8(w, offset: int) -> int:
     try:
@@ -26,47 +59,20 @@ def _read_u8(w, offset: int) -> int:
     except (OSError, AttributeError, TypeError, IndexError):
         return 0
 
-def _read_ptr(w) -> int | None:
-    try:
-        raw = w._analyzer.read_bytes(w._anchor + CURRENT_TEXT_PTR_OFFSET, 2)
-    except (OSError, AttributeError, TypeError):
-        return None
-    if len(raw) < 2:
-        return None
-    return raw[0] | raw[1] << 8
-
-def _is_runtime_ptr(ptr: int | None) -> bool:
-    try:
-        from active_template_reader import is_response_buffer_pointer
-        return is_response_buffer_pointer(ptr)
-    except Exception:
-        if ptr is None:
-            return False
-        return any((start <= ptr < start + length for start, length in ((4164, 512), (31097, 68), (37534, 512), (39582, 512))))
-
-def read_c1_dialog_axis(w, *, c_area: str | None, in_gameplay: bool=True, update_prev: bool=False) -> C1DialogAxis:
-    a845 = _read_u8(w, A845_OFFSET)
+def read_c1_dialog_axis(w, *, ptr: int | None, c_area: str | None, in_gameplay: bool=True, update_prev: bool=False) -> C1DialogAxis:
     a84d = _read_u8(w, A84D_OFFSET)
-    a847 = _read_u8(w, A847_OFFSET)
-    current_ptr = _read_ptr(w)
-    ptr_is_runtime = _is_runtime_ptr(current_ptr)
+    area = area_of(ptr)
     in_c1 = c_area == 'dungeon'
-    reason_parts: list[str] = []
-    if ptr_is_runtime:
-        reason_parts.append('ptr')
-    if a845 in KNOWN_C1_A845_VALUES:
-        reason_parts.append('a845')
-    if a84d in KNOWN_C1_A84D_VALUES:
-        reason_parts.append('a84d')
-    strong_signal = bool(reason_parts)
-    if a847 != 0 and strong_signal:
-        reason_parts.append('a847')
-    active = in_c1 and in_gameplay and strong_signal
+    active = in_c1 and in_gameplay and is_dialog_text_pointer(ptr)
     prev_active = bool(getattr(w, '_c1_dialog_axis_active_prev', False))
     opened = active and (not prev_active)
     closed = prev_active and (not active)
     if update_prev:
         w._c1_dialog_axis_active_prev = active
-        w._c1_dialog_axis_prev = (a845, a84d, a847, current_ptr)
-    return C1DialogAxis(active=active, prev_active=prev_active, opened=opened, closed=closed, a845=a845, a84d=a84d, a847=a847, current_ptr=current_ptr, ptr_is_runtime=ptr_is_runtime, reason='+'.join(reason_parts))
-__all__ = ['A845_OFFSET', 'A847_OFFSET', 'A84D_OFFSET', 'C1DialogAxis', 'read_c1_dialog_axis']
+        if opened or closed:
+            _recog(_log, 'c1 dialog axis %s: ptr=%s area=%s a84d=0x%02X', 'opened' if opened else 'closed', '0x%04X' % ptr if ptr is not None else 'n/a', area or '-', a84d)
+    return C1DialogAxis(active=active, prev_active=prev_active, opened=opened, closed=closed, current_ptr=ptr, area=area, a84d=a84d)
+
+def release_c1_dialog_axis(w) -> None:
+    w._c1_dialog_axis_active_prev = False
+__all__ = ['A84D_OFFSET', 'AREA_GOLD', 'AREA_MSG_BUF', 'AREA_NPC_DIALOG', 'AREA_RUNTIME_MSG', 'AREA_STATIC', 'C1DialogAxis', 'C1_DIALOG_TEXT_AREAS', 'CURRENT_TEXT_PTR_OFFSET', 'DLGFLG_VALUE', 'DialogTextArea', 'area_of', 'close_confirmed', 'read_c1_dialog_axis', 'release_c1_dialog_axis']

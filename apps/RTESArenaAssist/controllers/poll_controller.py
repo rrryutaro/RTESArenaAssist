@@ -1261,10 +1261,6 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
         except (OSError, AttributeError):
             _b126_flag_status = 0
         try:
-            _b126_dialog_byte = w._analyzer.read_bytes(w._anchor + 43077, 1)[0]
-        except (OSError, AttributeError):
-            _b126_dialog_byte = 0
-        try:
             _b126_bonus_pts = w._analyzer.read_bytes(w._anchor + 4764, 1)[0]
         except (OSError, AttributeError):
             _b126_bonus_pts = 0
@@ -1351,18 +1347,23 @@ _UNIFIED_DISPATCH_FACILITIES = _normal_play_render._UNIFIED_DISPATCH_FACILITIES
 _poll_compute_temple_gate = _normal_play_render._poll_compute_temple_gate
 _poll_shared_negotiation_and_template = _normal_play_render._poll_shared_negotiation_and_template
 
-def _poll_read_c1_axis_and_b30(w, *, _top_is_normal_play, _poll_hierarchy_area, _in_gameplay_now, _img_name_early_upper):
-    _c1_dialog_axis_now = None
-    if _poll_hierarchy_area == 'dungeon':
-        try:
-            from normal_play.c1_dialog_axis import read_c1_dialog_axis
-            _c1_dialog_axis_now = read_c1_dialog_axis(w, c_area=_poll_hierarchy_area, in_gameplay=_in_gameplay_now, update_prev=True)
-        except Exception:
-            _c1_dialog_axis_now = None
-    w._c1_dialog_axis_now = _c1_dialog_axis_now
+def _poll_read_c1_axis_and_b30(w, *, _top_is_normal_play, _poll_hierarchy_area, _in_gameplay_now, _img_name_early_upper, _foreground_ptr_early):
+    from normal_play.c1_dialog_axis import read_c1_dialog_axis as _read_c1_dialog_axis, release_c1_dialog_axis as _release_c1_dialog_axis
     from normal_play.trigger_module import compute_b30_state as _compute_b30_state, idle_b30_state as _idle_b30_state
+    _c1_dialog_axis_now = None
     if _top_is_normal_play:
-        _b30 = _compute_b30_state(w, in_gameplay=_in_gameplay_now, c_area=_poll_hierarchy_area, c1_axis=_c1_dialog_axis_now, img_name=_img_name_early_upper)
+        if _poll_hierarchy_area == 'dungeon':
+            try:
+                _c1_dialog_axis_now = _read_c1_dialog_axis(w, ptr=_foreground_ptr_early, c_area=_poll_hierarchy_area, in_gameplay=_in_gameplay_now, update_prev=True)
+            except Exception:
+                _c1_dialog_axis_now = None
+        else:
+            _release_c1_dialog_axis(w)
+    else:
+        _release_c1_dialog_axis(w)
+    w._c1_dialog_axis_now = _c1_dialog_axis_now
+    if _top_is_normal_play:
+        _b30 = _compute_b30_state(w, in_gameplay=_in_gameplay_now, c_area=_poll_hierarchy_area, c1_axis=_c1_dialog_axis_now, img_name=_img_name_early_upper, fg_ptr=_foreground_ptr_early)
     else:
         _b30 = _idle_b30_state(w)
     return _b30
@@ -1391,12 +1392,18 @@ def _poll_level_up_and_item_pickup(w, *, _top_is_normal_play, _loading_post_sett
         _level_up_continue = False
     from normal_play.item_pickup_module import poll_item_pickup as _poll_item_pickup
     _poll_item_pickup(w, newpop_gate=_newpop_gate, b30_img_name=_b30_img_name, npc_dialog=npc_dialog, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, screen_id=getattr(w, '_screen_id_prev', None), facility_active=bool(_active_facility_name), inventory_screen=_inventory_screen_now)
-    from normal_play.c1_runtime_dialog_module import runtime_dialog_display_open as _runtime_dialog_display_open
     from normal_play.item_pickup_module import pickup_list_open as _pickup_list_open
     from normal_play.map.item_points import pickup_kinds as _pickup_kinds
     from normal_play.trigger_module import red_text_display_open as _red_text_display_open
-    w._item_pickup_kinds_prev = _pickup_kinds(pickup_list_open=_pickup_list_open(w), red_text_open=_red_text_display_open(w), runtime_dialog_open=_runtime_dialog_display_open(w))
+    w._item_pickup_kinds_prev = _pickup_kinds(pickup_list_open=_pickup_list_open(w), red_text_open=_red_text_display_open(w), runtime_dialog_accepted=_runtime_dialog_accepted_since_last_poll(w))
     return _level_up_continue
+
+def _runtime_dialog_accepted_since_last_poll(w) -> bool:
+    from normal_play.c1_runtime_dialog_module import runtime_dialog_accept_seq
+    seq = runtime_dialog_accept_seq(w)
+    seen = getattr(w, '_item_pickup_dialog_seq_seen', seq)
+    w._item_pickup_dialog_seq_seen = seq
+    return seq != seen
 
 class PollController:
 
@@ -1464,7 +1471,7 @@ class PollController:
                 _tview, _tavern_l4_kind, _facility_tavern = (None, '', False)
             from normal_play.trigger_module import gameplay_screen as _gameplay_screen
             _in_gameplay_now = _gameplay_screen(getattr(w, '_screen_id_prev', None))
-            _b30 = _poll_read_c1_axis_and_b30(w, _top_is_normal_play=_top_is_normal_play, _poll_hierarchy_area=_poll_hierarchy_area, _in_gameplay_now=_in_gameplay_now, _img_name_early_upper=_img_name_early_upper)
+            _b30 = _poll_read_c1_axis_and_b30(w, _top_is_normal_play=_top_is_normal_play, _poll_hierarchy_area=_poll_hierarchy_area, _in_gameplay_now=_in_gameplay_now, _img_name_early_upper=_img_name_early_upper, _foreground_ptr_early=_foreground_ptr_early)
             _b30_red_changed = _b30['red_changed']
             _b30_dialog_active = _b30['dialog_active']
             _b30_dialog_active_prev = _b30['dialog_active_prev']

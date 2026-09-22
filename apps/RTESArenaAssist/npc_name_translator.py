@@ -192,7 +192,10 @@ def _translate_parts(parts: list[dict], lang: str) -> str | None:
             out.append(t)
     return ''.join(out)
 
-def translate_generated_name(name: str, lang: str='ja') -> str:
+def translate_generated_name(name: str, lang: str | None=None) -> str:
+    if lang is None:
+        import i18n_helper as i18n
+        lang = i18n.current_lang()
     _load()
     if not name:
         return name

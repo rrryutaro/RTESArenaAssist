@@ -3,13 +3,13 @@ from common_draw.automap_canvas import facing_target_cell
 from services.inf_file_parser import ITEM_POINT_CONTAINER, ITEM_POINT_KEY, ITEM_POINT_QUEST_ITEM, item_point_flat_kinds, parse_inf
 from services.map_ext_store import SECTION_TREASURE_PILES
 
-def pickup_kinds(*, pickup_list_open: bool, red_text_open: bool, runtime_dialog_open: bool) -> frozenset:
+def pickup_kinds(*, pickup_list_open: bool, red_text_open: bool, runtime_dialog_accepted: bool) -> frozenset:
     kinds = set()
     if pickup_list_open:
         kinds.add(ITEM_POINT_CONTAINER)
     if red_text_open:
         kinds.add(ITEM_POINT_KEY)
-    if runtime_dialog_open:
+    if runtime_dialog_accepted:
         kinds.add(ITEM_POINT_QUEST_ITEM)
     return frozenset(kinds)
 

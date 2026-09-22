@@ -133,7 +133,7 @@ def _translate_placeholder(name: str, value: str) -> str:
     delegate_name = 'cn' if name == 'cn2' else name
     try:
         from npc_dialog_lookup import translate_placeholder as _npc_tp
-        return _npc_tp(delegate_name, value, lang='ja')
+        return _npc_tp(delegate_name, value)
     except ImportError:
         return value
 

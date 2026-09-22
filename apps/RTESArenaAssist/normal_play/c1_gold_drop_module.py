@@ -3,6 +3,7 @@ import logging
 import re as _re
 import inf_text_lookup as itl
 from top_level.top_level_dispatcher import current_state as _current_top_level
+from normal_play.c1_dialog_axis import close_confirmed as _close_confirmed
 from normal_play.trigger_module import _render_trigger_entry, restore_last_trigger_display
 from assist_log import recog as _recog
 _log = logging.getLogger('RTESArenaAssist')
@@ -85,55 +86,48 @@ def poll_gold_drop(w, *, b30: dict, inf_name: str, mif_name: str) -> None:
         if not _b131_ja:
             return
         w._ui_router.update_translation(GOLD_DROP_OWNER, _b131_str, _b131_ja, speech_role='situation')
-        _open_gold_drop_display(w)
-        _recog(_log, 'gold drop accepted: %r → %r', _b131_str, _b131_ja)
+        _axis = b30.get('c1_dialog_axis')
+        _ptr = getattr(_axis, 'current_ptr', None)
+        _open_gold_drop_display(w, area=getattr(_axis, 'area', '') or '')
+        _recog(_log, 'gold drop accepted (ptr=%s area=%s): %r → %r', '0x%04X' % _ptr if _ptr is not None else 'n/a', getattr(_axis, 'area', '') or '-', _b131_str, _b131_ja)
     elif _b131_changed and _b131_str:
         _poll_gold_inf_fragment(w, _b131_str, inf_name, mif_name)
 
-def _open_gold_drop_display(w) -> None:
+def _open_gold_drop_display(w, *, area: str='') -> None:
     w._gold_drop_open = True
-    w._gold_drop_frame_seen = False
-    w._gold_drop_frame_absent = 0
-    w._gold_drop_frame_unseen_polls = 0
+    w._gold_drop_area = area
+    w._gold_drop_closed = False
+    w._gold_drop_left_noted = False
 
 def _close_gold_drop_display(w) -> None:
     w._gold_drop_open = False
-    w._gold_drop_frame_seen = False
-    w._gold_drop_frame_absent = 0
-    w._gold_drop_frame_unseen_polls = 0
+    w._gold_drop_area = ''
+    w._gold_drop_closed = False
+    w._gold_drop_left_noted = False
 
 def release_gold_drop(w) -> None:
     _close_gold_drop_display(w)
 
-def poll_gold_drop_lifetime(w, *, in_gameplay: bool=True) -> None:
+def poll_gold_drop_lifetime(w, *, axis=None) -> None:
     if not getattr(w, '_gold_drop_open', False):
         return
-    from screen_detector import is_popup_frame_drawn, POPUP_FRAME_ABSENT_POLLS_TO_END
     try:
         owner = w._ui_router.current_owner() or ''
     except (AttributeError, RuntimeError):
         return
-    if not in_gameplay:
-        drawn = None
-    else:
-        try:
-            drawn = is_popup_frame_drawn(w._analyzer, w._anchor)
-        except (OSError, AttributeError, RuntimeError):
-            drawn = None
-    if drawn:
-        w._gold_drop_frame_seen = True
-        w._gold_drop_frame_absent = 0
-    elif drawn is False and getattr(w, '_gold_drop_frame_seen', False):
-        w._gold_drop_frame_absent = int(getattr(w, '_gold_drop_frame_absent', 0)) + 1
-    elif drawn is False:
-        unseen = int(getattr(w, '_gold_drop_frame_unseen_polls', 0)) + 1
-        w._gold_drop_frame_unseen_polls = unseen
-        if unseen == POPUP_FRAME_ABSENT_POLLS_TO_END:
-            _recog(_log, 'gold drop: popup frame not observed since open (display end deferred to replacement)')
-    game_end = bool(getattr(w, '_gold_drop_frame_seen', False)) and int(getattr(w, '_gold_drop_frame_absent', 0)) >= POPUP_FRAME_ABSENT_POLLS_TO_END
+    area_open = getattr(w, '_gold_drop_area', '') or ''
+    if axis is not None and axis.area != area_open:
+        ptr_text = '0x%04X' % axis.current_ptr if axis.current_ptr is not None else 'n/a'
+        if _close_confirmed(area_open):
+            if not getattr(w, '_gold_drop_closed', False):
+                w._gold_drop_closed = True
+                _recog(_log, 'gold drop: closed (pointer left %s, ptr=%s area=%s)', area_open, ptr_text, axis.area or '-')
+        elif not getattr(w, '_gold_drop_left_noted', False):
+            w._gold_drop_left_noted = True
+            _recog(_log, 'gold drop: pointer left %s (ptr=%s area=%s) but the close signal for this kind is not confirmed; display end deferred to replacement', area_open or '-', ptr_text, axis.area or '-')
     if owner not in ('', GOLD_DROP_OWNER):
         return
-    if not game_end:
+    if not getattr(w, '_gold_drop_closed', False):
         return
     feed = getattr(w, '_translation_feed', None)
     try:

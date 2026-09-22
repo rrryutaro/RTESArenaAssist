@@ -224,8 +224,9 @@ GAMEPLAY_SCREEN_IDS = frozenset({'game_screen', 'combat', 'npc_dialog', 'shop', 
 
 def gameplay_screen(screen_id: str | None) -> bool:
     return screen_id is None or screen_id in GAMEPLAY_SCREEN_IDS
+_FG_PTR_UNREAD = object()
 
-def compute_b30_state(w, *, in_gameplay: bool, c_area: str | None=None, c1_axis=None, img_name: str | None=None) -> dict:
+def compute_b30_state(w, *, in_gameplay: bool, c_area: str | None=None, c1_axis=None, img_name: str | None=None, fg_ptr=_FG_PTR_UNREAD) -> dict:
     try:
         _dialog_flag_raw = w._analyzer.read_bytes(w._anchor + 4732, 2)
         _dialog_flag = int.from_bytes(_dialog_flag_raw, 'little')
@@ -245,11 +246,17 @@ def compute_b30_state(w, *, in_gameplay: bool, c_area: str | None=None, c1_axis=
     if _red_changed:
         _recog(_log, 'b30 0x7979 changed: %r → %r', _red_prev, _red_str)
     w._b30_red_str_prev = _red_str
-    try:
-        _fg_raw = w._analyzer.read_bytes(w._anchor + 43076, 2)
-        _fg_ptr = _fg_raw[0] | _fg_raw[1] << 8
-    except (OSError, AttributeError):
-        _fg_ptr = None
+    _c1_axis = c1_axis if c_area == 'dungeon' else None
+    if _c1_axis is not None:
+        _fg_ptr = getattr(_c1_axis, 'current_ptr', None)
+    elif fg_ptr is not _FG_PTR_UNREAD:
+        _fg_ptr = fg_ptr
+    else:
+        try:
+            _fg_raw = w._analyzer.read_bytes(w._anchor + 43076, 2)
+            _fg_ptr = _fg_raw[0] | _fg_raw[1] << 8
+        except (OSError, AttributeError):
+            _fg_ptr = None
     try:
         from active_template_reader import is_dialog_text_pointer
         _dialog_text_fg = is_dialog_text_pointer(_fg_ptr)
@@ -267,8 +274,7 @@ def compute_b30_state(w, *, in_gameplay: bool, c_area: str | None=None, c1_axis=
         w._b30_dialog_flag_prev = _dialog_flag
         _red_changed = False
         _dialog_active_prev = _dialog_active
-    _c1_axis = c1_axis
-    if c_area == 'dungeon' and _c1_axis is not None:
+    if _c1_axis is not None:
         try:
             _dialog_active = _c1_axis.active
             _dialog_active_prev = _c1_axis.prev_active
@@ -278,6 +284,13 @@ def compute_b30_state(w, *, in_gameplay: bool, c_area: str | None=None, c1_axis=
     w._b30_dialog_active_prev = _dialog_text_fg
     return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay, 'fg_ptr': _fg_ptr, 'dialog_text_fg': bool(_dialog_text_fg), 'dialog_text_fg_prev': _dialog_text_fg_prev}
 _RED_TEXT_REPLACEABLE_OWNERS = frozenset({'', 'red_text', 'red_text_dialog', 'trigger', 'gold_drop', 'c1_runtime_dialog'})
+
+def _red_text_is_framed(b30: dict) -> bool:
+    from normal_play.c1_dialog_axis import AREA_RUNTIME_MSG, area_of
+    axis = b30.get('c1_dialog_axis')
+    if axis is not None:
+        return bool(axis.active) and axis.area == AREA_RUNTIME_MSG
+    return area_of(b30.get('fg_ptr')) == AREA_RUNTIME_MSG
 
 def poll_red_text(w, *, b30: dict, message_taken: bool=False) -> None:
     _death_red_allowed = _is_death_red_text(b30['red_str']) and _current_hp_is_zero(w)
@@ -310,7 +323,7 @@ def poll_red_text(w, *, b30: dict, message_taken: bool=False) -> None:
                     _b30_red_jpn = _ndl.format_japanese(_ja_tmpl, _ph)
             except Exception as exc:
                 _log.debug('npc_dialog fallback failed: %s', exc)
-        _red_owner = 'red_text_dialog' if b30['dialog_active'] else 'red_text'
+        _red_owner = 'red_text_dialog' if _red_text_is_framed(b30) else 'red_text'
         w._ui_router.update_translation(_red_owner, b30['red_str'], _b30_red_jpn or '', speech_role='situation')
         _open_red_text_display(w, _red_owner, b30['red_str'])
         _recog(_log, 'red text accepted: %r → %r', b30['red_str'], _b30_red_jpn)

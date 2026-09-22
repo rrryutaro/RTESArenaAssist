@@ -954,9 +954,12 @@ def _ph_nc2(name: str, value: str, lang: str) -> str:
     return value
 _PLACEHOLDER_RESOLVERS = {'n': _ph_n_fn_rf_an_nc, 'fn': _ph_n_fn_rf_an_nc, 'rf': _ph_n_fn_rf_an_nc, 'an': _ph_n_fn_rf_an_nc, 'nc': _ph_n_fn_rf_an_nc, 'doc': _ph_doc, 'mn': _ph_mn_mt, 'mt': _ph_mn_mt, 'ra': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 't': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'oc': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'ct': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'oth': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'di': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'lp': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'cn': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'tem': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'tq': _ph_tq, 'cp': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'cll': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'ccs': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'rcn': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'cn2': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'hc': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'qc': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'tan': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'st': _ph_st, 'nh': _ph_nh, 'nhd': _ph_nhd, 'hod': _ph_hod_jok, 'jok': _ph_hod_jok, 'nt': _ph_nt, 'ds': _ph_ds, 'a': _ph_a_a2_oap, 'a2': _ph_a_a2_oap, 'oap': _ph_a_a2_oap, 'da': _ph_da, 'omq': _ph_omq_mi, 'mi': _ph_omq_mi, 'r': _ph_r, 'g': _ph_g_g2_g3, 'g2': _ph_g_g2_g3, 'g3': _ph_g_g2_g3, 'fq': _ph_fq_ne, 'ne': _ph_fq_ne, 'o': _ph_o_pcn, 'pcn': _ph_o_pcn, 'tl': _ph_tl_en, 'en': _ph_tl_en, 'nd': _ph_nd, 'nr': _ph_nr, 'ni': _ph_ni_i, 'i': _ph_ni_i, 'nk': _ph_nk, 'nc2': _ph_nc2}
 
-def translate_placeholder(name: str, value: str, lang: str='ja') -> str:
+def translate_placeholder(name: str, value: str, lang: str | None=None) -> str:
     if not value:
         return value
+    if lang is None:
+        import i18n_helper as i18n
+        lang = i18n.current_lang()
     _ensure_i18n_bound_caches_current()
     value = _preprocess_placeholder_value(name, value, lang)
     if name in _PV_VALUE_SUBGROUPS or name in _GRAMMATICAL_CASE_NAMES:
@@ -1201,16 +1204,18 @@ def lookup(text: str) -> tuple[str, dict] | None:
     _ensure_i18n_bound_caches_current()
     text = ' '.join(text.split())
     _load()
-    arrival = _translate_arrival(text, 'ja')
+    import i18n_helper as i18n
+    lang = i18n.current_lang()
+    arrival = _translate_arrival(text, lang)
     if arrival is not None:
         return (arrival, {})
-    already = _translate_already_in(text, 'ja')
+    already = _translate_already_in(text, lang)
     if already is not None:
         return (already, {})
-    condition = _translate_condition_warning(text, 'ja')
+    condition = _translate_condition_warning(text, lang)
     if condition is not None:
         return (condition, {})
-    travel = _translate_travel_estimate(text, 'ja')
+    travel = _translate_travel_estimate(text, lang)
     if travel is not None:
         return (travel, {})
     compiled = _lookup_compiled_full(text)
@@ -1688,7 +1693,10 @@ def lookup_span_at_chunk_boundaries(chunks: list[str] | tuple[str, ...]) -> tupl
         return None
     return (found[0], found[1], joined)
 
-def format_japanese(ja_template: str, placeholders: dict, lang: str='ja') -> str:
+def format_japanese(ja_template: str, placeholders: dict, lang: str | None=None) -> str:
+    if lang is None:
+        import i18n_helper as i18n
+        lang = i18n.current_lang()
     result = ja_template
     for name, value in sorted(placeholders.items(), key=lambda item: len(item[0]), reverse=True):
         if value:

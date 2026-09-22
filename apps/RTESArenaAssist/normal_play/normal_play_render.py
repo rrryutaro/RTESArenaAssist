@@ -35,9 +35,10 @@ def poll_c1_surface_dispatch(w, b30, *, inf_name, mif_name, c_area: str='', band
         return
     _poll_red_text(w, b30=b30, message_taken=message_taken)
     _poll_gold_drop(w, b30=b30, inf_name=inf_name, mif_name=mif_name)
+    _c1_axis = b30.get('c1_dialog_axis')
     _poll_red_text_lifetime(w, b30=b30, band=band)
-    _poll_gold_drop_lifetime(w, in_gameplay=bool(b30.get('in_gameplay')))
-    _poll_c1_runtime_dialog_lifetime(w, in_gameplay=bool(b30.get('in_gameplay')))
+    _poll_gold_drop_lifetime(w, axis=_c1_axis)
+    _poll_c1_runtime_dialog_lifetime(w, axis=_c1_axis)
 _ASK_ABOUT_MAIN_STATE = 'ask_about_main'
 _UNDECIDED_STATE = 'undecided'
 _ASK_ABOUT_MAIN_BLOCKING_LIST_STATES = frozenset({'where_is_list', 'dynamic_place_list', 'npc_response', _UNDECIDED_STATE})
@@ -423,7 +424,7 @@ def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dial
             _entry_handled = True
     if _poll_hierarchy_area == 'dungeon' and (not _entry_handled) and (not _inventory_screen):
         from normal_play.c1_runtime_dialog_module import poll_c1_runtime_dialog as _poll_c1_runtime_dialog
-        if _poll_c1_runtime_dialog(w, npc_dialog=npc_dialog, facility_active_now=_facility_active_now, msg_buf=msg_buf):
+        if _poll_c1_runtime_dialog(w, npc_dialog=npc_dialog, facility_active_now=_facility_active_now, msg_buf=msg_buf, axis=_b30.get('c1_dialog_axis') if _b30 else None):
             _instore_resp_handled = True
             _entry_handled = True
     return (_entry_handled, _instore_resp_handled)

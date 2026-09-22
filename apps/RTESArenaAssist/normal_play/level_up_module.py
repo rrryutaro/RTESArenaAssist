@@ -1,6 +1,22 @@
 from __future__ import annotations
 import logging
 _log = logging.getLogger('RTESArenaAssist')
+LEVEL_UP_MESSAGE_EN = 'You have gained a level of experience!'
+
+def is_level_up_message(text: str | None) -> bool:
+    if not text:
+        return False
+    return ' '.join(text.split()) == LEVEL_UP_MESSAGE_EN
+
+def _level_up_message_translation() -> str:
+    try:
+        import npc_dialog_lookup as _ndl
+        _found = _ndl.lookup_exact(LEVEL_UP_MESSAGE_EN)
+        if _found is not None:
+            return _ndl.format_japanese(_found[0], _found[1])
+    except Exception as exc:
+        _log.debug('level-up message lookup failed: %s', exc)
+    return LEVEL_UP_MESSAGE_EN
 
 def reset_level_up_on_load(w) -> None:
     try:
@@ -76,11 +92,10 @@ def consume_level_up_display(w, *, screen_id_stable: str | None, b30_dialog_acti
                 _push_key = (w._level_up_from, w._level_up_to)
                 if getattr(w, '_level_up_pushed_key', None) != _push_key:
                     w._level_up_pushed_key = _push_key
-                    _en_panel = 'You have gained a level of experience!'
-                    _ja_panel = '経験値レベルが上がった！'
-                    _en_tab = 'You have gained a level of experience!'
-                    _ja_tab = f'レベルアップ! Level {w._level_up_from} → {w._level_up_to} に上がった。'
-                    w._ui_router.update_translation('level_up', _en_tab, _ja_tab, panel_en=_en_panel, panel_ja=_ja_panel, speech_role='situation')
+                    import i18n_helper as _i18n
+                    _translated = _level_up_message_translation()
+                    _levels = '%s %s → %s' % (_i18n.tr('status.stat.level'), w._level_up_from, w._level_up_to)
+                    w._ui_router.update_translation('level_up', LEVEL_UP_MESSAGE_EN, f'{_translated}\n({_levels})', panel_en=LEVEL_UP_MESSAGE_EN, panel_ja=_translated, speech_role='situation', speech_text=_translated)
             if _is_bonus_screen:
                 import player_reader as _pr
                 _cur_bonus = _pr.read_all(w._analyzer, w._anchor)['bonus_pts']
@@ -111,4 +126,4 @@ def poll_level_up(w, *, b30_dialog_active: bool, b30_dialog_active_prev: bool, l
 
 def level_up_active(w) -> bool:
     return bool(getattr(w, '_level_up_active', False))
-__all__ = ['poll_level_up', 'produce_level_up_state', 'suspend_level_up_state', 'consume_level_up_display', 'level_up_active']
+__all__ = ['poll_level_up', 'produce_level_up_state', 'suspend_level_up_state', 'consume_level_up_display', 'level_up_active', 'is_level_up_message', 'LEVEL_UP_MESSAGE_EN']

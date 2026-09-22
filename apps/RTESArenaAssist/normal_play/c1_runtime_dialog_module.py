@@ -1,18 +1,10 @@
 from __future__ import annotations
 import logging
 from assist_log import recog as _recog
+from normal_play.c1_dialog_axis import close_confirmed as _close_confirmed
 _log = logging.getLogger('RTESArenaAssist')
 C1_RUNTIME_DIALOG_OWNER = 'c1_runtime_dialog'
 _C1_RUNTIME_DIALOG_REPLACEABLE_OWNERS = frozenset({'', C1_RUNTIME_DIALOG_OWNER, 'gold_drop', 'trigger', 'red_text', 'red_text_dialog'})
-
-def _read_foreground_ptr(w) -> int | None:
-    try:
-        _fg_raw = w._analyzer.read_bytes(w._anchor + 43076, 2)
-    except (OSError, AttributeError):
-        return None
-    if len(_fg_raw) < 2:
-        return None
-    return _fg_raw[0] | _fg_raw[1] << 8
 _NPC_DIALOG_RANGE = (4164, 512)
 _MSG_BUF_RANGE = (39582, 512)
 
@@ -28,7 +20,6 @@ def _ptr_targets_runtime_dialog(ptr: int | None) -> bool:
 def _ptr_targets_msg_buf(ptr: int | None) -> bool:
     return _ptr_in(ptr, _MSG_BUF_RANGE)
 _OTHER_C1_SURFACE_RANGES = ((31097, 68), (37534, 512))
-_DLGFLG_A84D_VALUE = 64
 _STATIC_TEXT_READ_LEN = 256
 
 def _ptr_targets_other_c1_surface(ptr: int | None) -> bool:
@@ -58,15 +49,13 @@ def _resolve_runtime_dialog_body(w, *, npc_dialog: str, msg_buf: str, fg_ptr: in
         return npc_dialog or ''
     return ''
 
-def poll_c1_runtime_dialog(w, *, npc_dialog: str, facility_active_now: bool, msg_buf: str='') -> bool:
-    _c1_axis = getattr(w, '_c1_dialog_axis_now', None)
-    if _c1_axis is not None:
-        _fg_ptr = getattr(_c1_axis, 'current_ptr', None)
-        _dlgflg_active = getattr(_c1_axis, 'a84d', 0) == _DLGFLG_A84D_VALUE
-    else:
-        _fg_ptr = _read_foreground_ptr(w)
-        _dlgflg_active = False
-    _body = _resolve_runtime_dialog_body(w, npc_dialog=npc_dialog, msg_buf=msg_buf, fg_ptr=_fg_ptr, dlgflg_active=_dlgflg_active)
+def poll_c1_runtime_dialog(w, *, npc_dialog: str, facility_active_now: bool, msg_buf: str='', axis=None) -> bool:
+    if axis is None:
+        return False
+    _body = _resolve_runtime_dialog_body(w, npc_dialog=npc_dialog, msg_buf=msg_buf, fg_ptr=axis.current_ptr, dlgflg_active=axis.dlgflg)
+    from normal_play.level_up_module import is_level_up_message
+    if is_level_up_message(_body):
+        _body = ''
     _prev = getattr(w, '_c1_runtime_dialog_body_prev', None)
     w._c1_runtime_dialog_body_prev = _body
     _changed = _prev is not None and _body != _prev
@@ -100,59 +89,51 @@ def poll_c1_runtime_dialog(w, *, npc_dialog: str, facility_active_now: bool, msg
     if not _npc_ja:
         return False
     w._ui_router.update_translation(C1_RUNTIME_DIALOG_OWNER, _body, _npc_ja, speech_role='situation')
-    _open_c1_runtime_dialog_display(w)
-    _recog(_log, 'c1 runtime dialog accepted: %r → %r', _body[:64], _npc_ja[:64])
+    _open_c1_runtime_dialog_display(w, area=axis.area)
+    _recog(_log, 'c1 runtime dialog accepted (ptr=%s area=%s): %r → %r', '0x%04X' % axis.current_ptr if axis.current_ptr is not None else 'n/a', axis.area or '-', _body[:64], _npc_ja[:64])
     return True
 
-def _open_c1_runtime_dialog_display(w) -> None:
+def _open_c1_runtime_dialog_display(w, *, area: str='') -> None:
     w._c1_runtime_dialog_open = True
-    w._c1_runtime_dialog_frame_seen = False
-    w._c1_runtime_dialog_frame_absent = 0
-    w._c1_runtime_dialog_frame_unseen_polls = 0
+    w._c1_runtime_dialog_accept_seq = int(getattr(w, '_c1_runtime_dialog_accept_seq', 0)) + 1
+    w._c1_runtime_dialog_area = area
+    w._c1_runtime_dialog_closed = False
+    w._c1_runtime_dialog_left_noted = False
 
 def _close_c1_runtime_dialog_display(w) -> None:
     w._c1_runtime_dialog_open = False
-    w._c1_runtime_dialog_frame_seen = False
-    w._c1_runtime_dialog_frame_absent = 0
-    w._c1_runtime_dialog_frame_unseen_polls = 0
+    w._c1_runtime_dialog_area = ''
+    w._c1_runtime_dialog_closed = False
+    w._c1_runtime_dialog_left_noted = False
 
-def runtime_dialog_display_open(w) -> bool:
-    return bool(getattr(w, '_c1_runtime_dialog_open', False))
+def runtime_dialog_accept_seq(w) -> int:
+    return int(getattr(w, '_c1_runtime_dialog_accept_seq', 0))
 
 def release_c1_runtime_dialog(w) -> None:
     _close_c1_runtime_dialog_display(w)
     w._c1_runtime_dialog_body_prev = None
 
-def poll_c1_runtime_dialog_lifetime(w, *, in_gameplay: bool=True) -> None:
+def poll_c1_runtime_dialog_lifetime(w, *, axis=None) -> None:
     if not getattr(w, '_c1_runtime_dialog_open', False):
         return
-    from screen_detector import is_popup_frame_drawn, POPUP_FRAME_ABSENT_POLLS_TO_END
     from normal_play.trigger_module import restore_last_trigger_display
     try:
         owner = w._ui_router.current_owner() or ''
     except (AttributeError, RuntimeError):
         return
-    if not in_gameplay:
-        drawn = None
-    else:
-        try:
-            drawn = is_popup_frame_drawn(w._analyzer, w._anchor)
-        except (OSError, AttributeError, RuntimeError):
-            drawn = None
-    if drawn:
-        w._c1_runtime_dialog_frame_seen = True
-        w._c1_runtime_dialog_frame_absent = 0
-    elif drawn is False and getattr(w, '_c1_runtime_dialog_frame_seen', False):
-        w._c1_runtime_dialog_frame_absent = int(getattr(w, '_c1_runtime_dialog_frame_absent', 0)) + 1
-    elif drawn is False:
-        unseen = int(getattr(w, '_c1_runtime_dialog_frame_unseen_polls', 0)) + 1
-        w._c1_runtime_dialog_frame_unseen_polls = unseen
-        if unseen == POPUP_FRAME_ABSENT_POLLS_TO_END:
-            _recog(_log, 'c1 runtime dialog: popup frame not observed since open (display end deferred to replacement)')
-    game_end = bool(getattr(w, '_c1_runtime_dialog_frame_seen', False)) and int(getattr(w, '_c1_runtime_dialog_frame_absent', 0)) >= POPUP_FRAME_ABSENT_POLLS_TO_END
+    area_open = getattr(w, '_c1_runtime_dialog_area', '') or ''
+    if axis is not None and axis.area != area_open:
+        ptr_text = '0x%04X' % axis.current_ptr if axis.current_ptr is not None else 'n/a'
+        if _close_confirmed(area_open):
+            if not getattr(w, '_c1_runtime_dialog_closed', False):
+                w._c1_runtime_dialog_closed = True
+                _recog(_log, 'c1 runtime dialog: closed (pointer left %s, ptr=%s area=%s)', area_open, ptr_text, axis.area or '-')
+        elif not getattr(w, '_c1_runtime_dialog_left_noted', False):
+            w._c1_runtime_dialog_left_noted = True
+            _recog(_log, 'c1 runtime dialog: pointer left %s (ptr=%s area=%s) but the close signal for this kind is not confirmed; display end deferred to replacement', area_open or '-', ptr_text, axis.area or '-')
     if owner not in ('', C1_RUNTIME_DIALOG_OWNER):
         return
-    if not game_end:
+    if not getattr(w, '_c1_runtime_dialog_closed', False):
         return
     feed = getattr(w, '_translation_feed', None)
     try:
@@ -173,4 +154,4 @@ def poll_c1_runtime_dialog_lifetime(w, *, in_gameplay: bool=True) -> None:
         restore_last_trigger_display(w)
     else:
         w._ui_router.clear_display('', allowed_current_owners=('',))
-__all__ = ['C1_RUNTIME_DIALOG_OWNER', 'poll_c1_runtime_dialog', 'poll_c1_runtime_dialog_lifetime', 'runtime_dialog_display_open', 'release_c1_runtime_dialog']
+__all__ = ['C1_RUNTIME_DIALOG_OWNER', 'poll_c1_runtime_dialog', 'poll_c1_runtime_dialog_lifetime', 'runtime_dialog_accept_seq', 'release_c1_runtime_dialog']
