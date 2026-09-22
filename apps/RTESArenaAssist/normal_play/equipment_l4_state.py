@@ -1,6 +1,9 @@
 from __future__ import annotations
+import logging
 from dataclasses import dataclass
 from enum import Enum
+from assist_log import recog as _recog
+_log = logging.getLogger('RTESArenaAssist')
 EQUIPMENT_OWNERS = frozenset({'equipment_menu', 'equipment_list', 'equipment_negotiation', 'equipment_reply', 'equipment_repair'})
 
 class EquipmentL4State(str, Enum):
@@ -262,6 +265,10 @@ def _decide(w, img: str) -> EquipmentL4Snapshot:
         return EquipmentL4Snapshot(state=S.BUY_LIST, img=img, reason='list_img')
     return EquipmentL4Snapshot(state=S.NONE, img=img, reason='none')
 
+def _log_state_edge(w, prev_state, snap: EquipmentL4Snapshot) -> None:
+    flag = getattr(w, '_equipment_l4_flag_value', None)
+    _recog(_log, 'equipment L4 state: %s -> %s reason=%s img=%r flag=%s menu_flag_polls=%s none_streak=%s', getattr(prev_state, 'value', None), snap.state.value, snap.reason, snap.img, 'None' if flag is None else f'0x{int(flag):02X}', getattr(w, '_equipment_l4_menu_flag_polls', 0), getattr(w, '_equipment_l4_none_streak', 0))
+
 def _compute(w, img: str) -> EquipmentL4Snapshot:
     snap = _decide(w, img)
     prev_state = getattr(w, '_equipment_l4_prev_state', None)
@@ -273,6 +280,8 @@ def _compute(w, img: str) -> EquipmentL4Snapshot:
             snap = prev_snap
     else:
         w._equipment_l4_none_streak = 0
+    if snap.state is not prev_state:
+        _log_state_edge(w, prev_state, snap)
     w._equipment_l4_prev_state = snap.state
     w._equipment_l4_prev_snapshot = snap
     if snap.state is EquipmentL4State.REPLY:

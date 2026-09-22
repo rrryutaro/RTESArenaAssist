@@ -45,7 +45,7 @@ def get_facilities_for(province_id: int, location_id: int) -> Optional[list[Faci
     city_dim = _CITY_DIM[location_type]
     city_seed = location.city_seed()
     entries, random_after = expand_city_plan_with_random(city_seed, city_dim, reserved)
-    return detect_city_facilities(entries=entries, city_seed=city_seed, start_position=start_pos, city_type=_CITY_TYPE_ENUM[location_type], city_type_key=_CITY_TYPE_KEY[location_type], province_id=province_id, coastal=is_coastal, random_after_plan=random_after)
+    return detect_city_facilities(entries=entries, city_seed=city_seed, start_position=start_pos, city_type=_CITY_TYPE_ENUM[location_type], city_type_key=_CITY_TYPE_KEY[location_type], province_id=province_id, coastal=is_coastal, random_after_plan=random_after, global_city_id=global_city_id)
 
 def get_city_doors_for(province_id: int, location_id: int) -> Optional[list]:
     if not (is_data_available() and is_world_map_available()):

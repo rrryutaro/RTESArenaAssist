@@ -275,6 +275,12 @@ def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], 
         return f'Jewelry#{sid}'
     return f'Armor#{p1}'
 
+def read_potion_names(analyzer, anchor: int) -> list[str]:
+    try:
+        return _read_null_strings(analyzer.read_bytes(anchor + POTION_NAMES_OFFSET, POTION_NAMES_SIZE), POTION_COUNT)
+    except (OSError, AttributeError, TypeError):
+        return []
+
 def read_item_name_tables(analyzer, anchor: int) -> dict:
 
     def _s(offset: int, size: int, count: int) -> list[str]:
@@ -282,7 +288,7 @@ def read_item_name_tables(analyzer, anchor: int) -> dict:
             return _read_null_strings(analyzer.read_bytes(anchor + offset, size), count)
         except (OSError, AttributeError, TypeError):
             return []
-    return {'weapon_names': _s(WEAPON_NAMES_OFFSET, 400, 18), 'plate_names': _s(PLATE_NAMES_OFFSET, 300, 11), 'chain_names': _s(CHAIN_NAMES_OFFSET, 300, 11), 'leather_names': _s(LEATHER_NAMES_OFFSET, 300, 11), 'jewelry_names': _s(JEWELRY_NAMES_OFFSET, 100, 4), 'spellcasting_names': _s(SPELLCASTING_NAMES_OFFSET, 64, 4), 'material_names': _s(MATERIAL_NAMES_OFFSET, 100, 8), 'base_armor_names': _s(BASE_ARMOR_NAMES_OFFSET, 200, 11), 'armor_enchant_names': _s(ARMOR_ENCHANT_NAMES_OFFSET, 300, ENCHANT_COUNT), 'weapon_enchant_names': _s(WEAPON_ENCHANT_NAMES_OFFSET, 300, ENCHANT_COUNT), 'spell_attack_names': _s(SPELL_ATTACK_NAMES_OFFSET, 400, SPELL_ATTACK_COUNT), 'spell_defense_names': _s(SPELL_DEFENSE_NAMES_OFFSET, 300, SPELL_DEFENSE_COUNT), 'spell_misc_names': _s(SPELL_MISC_NAMES_OFFSET, 300, SPELL_MISC_COUNT), 'potion_names': _s(POTION_NAMES_OFFSET, POTION_NAMES_SIZE, POTION_COUNT), 'unidentified_potion_name': _s(UNIDENT_POTION_NAME_OFFSET, 16, 1)}
+    return {'weapon_names': _s(WEAPON_NAMES_OFFSET, 400, 18), 'plate_names': _s(PLATE_NAMES_OFFSET, 300, 11), 'chain_names': _s(CHAIN_NAMES_OFFSET, 300, 11), 'leather_names': _s(LEATHER_NAMES_OFFSET, 300, 11), 'jewelry_names': _s(JEWELRY_NAMES_OFFSET, 100, 4), 'spellcasting_names': _s(SPELLCASTING_NAMES_OFFSET, 64, 4), 'material_names': _s(MATERIAL_NAMES_OFFSET, 100, 8), 'base_armor_names': _s(BASE_ARMOR_NAMES_OFFSET, 200, 11), 'armor_enchant_names': _s(ARMOR_ENCHANT_NAMES_OFFSET, 300, ENCHANT_COUNT), 'weapon_enchant_names': _s(WEAPON_ENCHANT_NAMES_OFFSET, 300, ENCHANT_COUNT), 'spell_attack_names': _s(SPELL_ATTACK_NAMES_OFFSET, 400, SPELL_ATTACK_COUNT), 'spell_defense_names': _s(SPELL_DEFENSE_NAMES_OFFSET, 300, SPELL_DEFENSE_COUNT), 'spell_misc_names': _s(SPELL_MISC_NAMES_OFFSET, 300, SPELL_MISC_COUNT), 'potion_names': read_potion_names(analyzer, anchor), 'unidentified_potion_name': _s(UNIDENT_POTION_NAME_OFFSET, 16, 1)}
 
 def name_from_item_bytes(item_bytes: bytes, tables: dict) -> str:
     item = _parse_item(item_bytes, 0)

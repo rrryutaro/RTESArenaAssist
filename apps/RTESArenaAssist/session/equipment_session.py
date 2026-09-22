@@ -1,14 +1,12 @@
 from __future__ import annotations
-from normal_play.equipment_l4_state import EQUIPMENT_OWNERS, EquipmentL4State, REPLY_STATES, get_equipment_l4_state
+from normal_play.equipment_l4_state import EQUIPMENT_OWNERS, EquipmentL4State, get_equipment_l4_state
 from .session_base import SessionBase, SessionContext
 
 def _norm_facility_kind(fk: str) -> str:
     return (fk or '').upper().replace('_', '').replace(' ', '')
 _EQUIPMENT_MIF_PREFIXES = ('EQUIP', 'ARMOR')
 _OTHER_FACILITY_MIF_PREFIXES = ('TAVERN', 'TEMPLE', 'MAGE', 'PALACE')
-_EQUIPMENT_OWNER_KINDS = frozenset({'shop_menu', 'equipment_list'})
 _EQUIPMENT_PANEL_OWNERS = EQUIPMENT_OWNERS
-_EQUIPMENT_MIDFLOW_START_STATES = frozenset(REPLY_STATES) | frozenset({EquipmentL4State.REPAIR_JOBS})
 _EQUIPMENT_NONE_HYSTERESIS_POLLS = 3
 
 class EquipmentSession(SessionBase):
@@ -96,18 +94,16 @@ class EquipmentSession(SessionBase):
             return False
         if ctx.top_level_state != 'normal-play' or not ctx.in_interior:
             return False
-        kind, owner = self._shop_state_of(ctx)
-        if owner == 'equipment' and kind in _EQUIPMENT_OWNER_KINDS:
-            self._none_shop_polls = 0
-            self._last_img = ctx.img_name or ''
-            self._set_active(True)
-            return True
-        if not self._known_non_equipment_context(ctx) and self._is_confirmed_equipment_facility(ctx) and (self._resolve_l4_state(ctx) in _EQUIPMENT_MIDFLOW_START_STATES):
-            self._none_shop_polls = 0
-            self._last_img = ctx.img_name or ''
-            self._set_active(True)
-            return True
-        return False
+        if self._known_non_equipment_context(ctx):
+            return False
+        if not self._is_confirmed_equipment_facility(ctx):
+            return False
+        if self._resolve_l4_state(ctx) is EquipmentL4State.NONE:
+            return False
+        self._none_shop_polls = 0
+        self._last_img = ctx.img_name or ''
+        self._set_active(True)
+        return True
 
     def try_stop(self, ctx: SessionContext) -> bool:
         if not self._active:

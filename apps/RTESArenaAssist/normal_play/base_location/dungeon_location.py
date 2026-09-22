@@ -6,7 +6,7 @@ import numpy as np
 from common_draw.automap_canvas import CanvasData, _classify_cell, _is_hidden_door_cell, _is_wall_passage_cell, facing_delta
 from services.map_ext_store import SECTION_TREASURE_PILES, SECTION_WALL_PASSAGES
 from services.automap_file import AutomapCache, EXPECTED_FILE_SIZE, cache_for_level_hash, level_index_of_hash, parse_automap_file, read_current_level_hash
-from services.arena_reveal_stencil import apply_reveal_stencil, apply_reveal_stencil_with_los, rebuild_seen_cells_from_bitmap, resolve_first_block, wall_passage_cell_visible
+from services.arena_reveal_stencil import apply_reveal_stencil, apply_reveal_stencil_with_los, resolve_first_block, wall_passage_cell_visible
 from runtime_paths import resolve_arena_install_dir
 from services.mif_loader import DEFAULT_INF_DIR, DEFAULT_MIF_DIR, load_mif, parse_inf_level_transitions, parse_inf_menu_indices, parse_inf_walls_hidden_door_ids, resolve_inf_for_mif
 from normal_play.map.base import MapContext, MapSessionBase
@@ -27,7 +27,6 @@ class DungeonMapSession(MapSessionBase):
         self._flor: Optional[np.ndarray] = None
         self._bitmap: Optional[np.ndarray] = None
         self._level_store_key: Optional[str] = None
-        self._seen_cells: set[tuple[int, int]] = set()
         self._notes: list[tuple[int, int, str]] = []
         self._level_up_index: Optional[int] = None
         self._level_down_index: Optional[int] = None
@@ -113,12 +112,10 @@ class DungeonMapSession(MapSessionBase):
             if 0 <= ix < 128 and 0 <= iy < 128:
                 pos = (ix, iy)
                 if pos != self._last_player_pos:
-                    if pos not in self._seen_cells:
-                        self._seen_cells.add(pos)
-                        if self._wall_los_enabled:
-                            apply_reveal_stencil(self._bitmap, ix, iy)
-                        else:
-                            apply_reveal_stencil_with_los(self._bitmap, self._map1, ix, iy, flor=self._flor, in_first_block=self._in_first_block)
+                    if self._wall_los_enabled:
+                        apply_reveal_stencil(self._bitmap, ix, iy)
+                    else:
+                        apply_reveal_stencil_with_los(self._bitmap, self._map1, ix, iy, flor=self._flor, in_first_block=self._in_first_block)
                     self._note_hidden_door_if_any(ix, iy)
                     self._last_player_pos = pos
         self._note_wall_passages_in_view(ctx)
@@ -187,7 +184,6 @@ class DungeonMapSession(MapSessionBase):
         self._diag_reset_first = {'level': True}
         self._view_scan_key = None
         self._in_first_block = False
-        self._seen_cells.clear()
         self._last_player_pos = None
         self._active_cache_index = None
         self._notes = []
@@ -208,7 +204,6 @@ class DungeonMapSession(MapSessionBase):
             self._level_up_index = None
             self._level_down_index = None
             self._bitmap = None
-            self._seen_cells.clear()
             self._last_player_pos = None
             self._stair_cells = frozenset()
             self._wall_passage_cells = ()
@@ -337,7 +332,6 @@ class DungeonMapSession(MapSessionBase):
         self._migrate_hash_keys()
         bm = self._reveal_store().reveal_grid_for_update(key)
         self._bitmap = bm
-        self._seen_cells = rebuild_seen_cells_from_bitmap(bm)
         self._last_player_pos = None
         self._active_cache_index = None
         self._notes = []
@@ -410,7 +404,6 @@ class DungeonMapSession(MapSessionBase):
             self._diag_log_skip('degenerate_full_bitmap')
             return False
         self._bitmap[:] = active.bitmap_grid
-        self._seen_cells = rebuild_seen_cells_from_bitmap(self._bitmap)
         self._notes = [(n.x, n.y, n.text) for n in active.valid_notes]
         self._last_player_pos = None
         self._active_cache_index = new_active_index

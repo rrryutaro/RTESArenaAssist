@@ -21,6 +21,21 @@ class EquipmentName:
     ef_name: Optional[str] = None
     n_name: Optional[str] = None
 TEMPLE_MODEL_SUFFIX_COUNTS = (5, 9, 10)
+MAIN_QUEST_TEMPLE_OVERRIDES: dict[int, tuple[int, int, int]] = {2: (1, 7, 23), 224: (2, 8, 32)}
+
+def apply_main_quest_temple_override(names: list[TempleName], *, global_city_id: int | None, first_temple_name_index: int) -> list[TempleName]:
+    if global_city_id is None:
+        return names
+    override = MAIN_QUEST_TEMPLE_OVERRIDES.get(global_city_id)
+    if override is None:
+        return names
+    model, suffix_index, menu_names_index = override
+    ordinal = menu_names_index - first_temple_name_index
+    if not 0 <= ordinal < len(names):
+        return names
+    out = list(names)
+    out[ordinal] = TempleName(model, suffix_index)
+    return out
 
 def generate_tavern_names(random: ArenaRandom, block_count: int, coastal: bool) -> list[TavernName]:
     result: list[TavernName] = []

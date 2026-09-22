@@ -8,7 +8,7 @@ from .arena_level_utils import get_door_voxel_mif_name
 from .arena_random import ArenaRandom
 from .arena_types import ArenaCityType, ArenaMenuType
 from .arena_voxel_utils import MapType
-from .building_name_generator import EquipmentName, generate_equipment_names, generate_tavern_names, generate_temple_names
+from .building_name_generator import EquipmentName, apply_main_quest_temple_override, generate_equipment_names, generate_tavern_names, generate_temple_names
 from .dynamic_translation import BuildingTranslation, translate_equipment, translate_mages_guild, translate_tavern, translate_temple
 from .mif_utils import BlockType
 from .npc_name_generator import generate_npc_name
@@ -92,7 +92,7 @@ def _equipment_with_names(city_seed: int, hits: list[_MarkerHit], city_type_key:
         result.append(FacilityPlacement(menu_type=ArenaMenuType.EQUIPMENT, original_x=hit.original_x, original_y=hit.original_y, block_type=hit.block_type, block_mif=hit.block_mif, local_x=hit.local_x, local_y=hit.local_y, marker_voxel=hit.marker_voxel, mif_name=_make_mif_name(hit, ArenaMenuType.EQUIPMENT, city_type), translation=translate_equipment(named, city_type_key), race_id=race_id, ef_seed=ef_seed, n_seed=n_seed, ef_name=ef_name, n_name=n_name, name_prefix_en=_pre_en, name_suffix_en=_suf_en))
     return result
 
-def detect_city_facilities(entries: list[CityBlockEntry], city_seed: int, start_position: tuple[int, int], city_type: ArenaCityType, city_type_key: str | None, province_id: int, coastal: bool, random_after_plan: ArenaRandom) -> list[FacilityPlacement]:
+def detect_city_facilities(entries: list[CityBlockEntry], city_seed: int, start_position: tuple[int, int], city_type: ArenaCityType, city_type_key: str | None, province_id: int, coastal: bool, random_after_plan: ArenaRandom, global_city_id: int | None=None) -> list[FacilityPlacement]:
     result: list[FacilityPlacement] = []
     tavern_hits = _iter_marker_hits(entries, start_position, _SERVICE_MARKERS[ArenaMenuType.TAVERN])
     tavern_rng = ArenaRandom(random_after_plan.get_seed())
@@ -101,7 +101,8 @@ def detect_city_facilities(entries: list[CityBlockEntry], city_seed: int, start_
     equipment_hits = _iter_marker_hits(entries, start_position, _SERVICE_MARKERS[ArenaMenuType.EQUIPMENT])
     result.extend(_equipment_with_names(city_seed, equipment_hits, city_type_key, city_type, province_id))
     temple_hits = _iter_marker_hits(entries, start_position, _SERVICE_MARKERS[ArenaMenuType.TEMPLE])
-    for hit, name in zip(temple_hits, generate_temple_names(city_seed, len(temple_hits))):
+    temple_names = apply_main_quest_temple_override(generate_temple_names(city_seed, len(temple_hits)), global_city_id=global_city_id, first_temple_name_index=len(tavern_hits) + len(equipment_hits))
+    for hit, name in zip(temple_hits, temple_names):
         result.append(FacilityPlacement(menu_type=ArenaMenuType.TEMPLE, original_x=hit.original_x, original_y=hit.original_y, block_type=hit.block_type, block_mif=hit.block_mif, local_x=hit.local_x, local_y=hit.local_y, marker_voxel=hit.marker_voxel, mif_name=_make_mif_name(hit, ArenaMenuType.TEMPLE, city_type), translation=translate_temple(name)))
     mages_hits = _iter_marker_hits(entries, start_position, _SERVICE_MARKERS[ArenaMenuType.MAGES_GUILD])
     for hit in mages_hits:

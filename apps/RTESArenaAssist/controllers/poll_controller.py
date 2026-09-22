@@ -949,6 +949,7 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
         _map_surface_owner = getattr(w, '_panel_owner', '') or ''
         _gate_loc = (_resolved_area or '', gs.get('MapName') or '', interior_mif_name or '', int(player_floor or 0))
         _load_arrival_coord = None
+        _load_started = False
         try:
             from controllers.map_ext_lifecycle import get_lifecycle
             _arr_entry = get_lifecycle().last_load_arrival()
@@ -958,12 +959,17 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
             _arr_seq, _arr = _arr_entry
             if getattr(w, '_load_arrival_consumed_seq', None) != _arr_seq:
                 _load_arrival_coord = (_arr['tile_x'], _arr['tile_y'])
+            if getattr(w, '_coord_gate_load_seq_seen', None) != _arr_seq:
+                w._coord_gate_load_seq_seen = _arr_seq
+                _load_started = _load_arrival_coord is not None
         _gate_loc_was = getattr(w, '_coord_gate_loc_prev', None)
         _gate_active_was = bool(getattr(w, '_coord_gate_active', False))
-        _gate = _resolve_coord_transition(loc=_gate_loc, prev_loc=_gate_loc_was, in_transition=_gate_active_was, pre_coord=getattr(w, '_coord_gate_pre_coord', None), coord=(rt_x, rt_z), prev_coord=getattr(w, '_coord_gate_coord_prev', None), is_loading=_is_loading_for_map, arrival_coord=_load_arrival_coord)
+        _gate = _resolve_coord_transition(loc=_gate_loc, prev_loc=_gate_loc_was, in_transition=_gate_active_was, pre_coord=getattr(w, '_coord_gate_pre_coord', None), coord=(rt_x, rt_z), prev_coord=getattr(w, '_coord_gate_coord_prev', None), is_loading=_is_loading_for_map, arrival_coord=_load_arrival_coord, pre_loc=getattr(w, '_coord_gate_pre_loc', None), load_pending=bool(getattr(w, '_coord_gate_load_pending', False)), load_started=_load_started)
         w._coord_gate_loc_prev = _gate_loc
         w._coord_gate_active = _gate.in_transition
         w._coord_gate_pre_coord = _gate.pre_coord
+        w._coord_gate_pre_loc = _gate.pre_loc
+        w._coord_gate_load_pending = _gate.load_pending
         w._coord_gate_coord_prev = (rt_x, rt_z)
         if _arrival_consumption_due(arrival_supplied=_load_arrival_coord is not None, is_loading=_is_loading_for_map, gate_in_transition=_gate.in_transition, gate_was_in_transition=_gate_active_was, loc=_gate_loc, prev_loc=_gate_loc_was):
             w._load_arrival_consumed_seq = _arr_seq
@@ -1040,13 +1046,34 @@ def _poll_confirm_screen_id(w, *, img_name, mif_name, area, foreground_ptr) -> t
     _trigger_display_active = getattr(w, '_trigger_flag_prev', 0) != 0
     result = detect_screen(w._analyzer, w._anchor, img_name, chargen_hint, menu_active_was_zero=_menu_active_was_zero, top_level_state=_current_top_level(w), last_chargen_subscreen=w._chargen_subscreen_last, mif_name=mif_name, area=area or None, foreground_ptr=foreground_ptr, trigger_display_active=_trigger_display_active)
     _confirmed = result[0]
+    _diag_prev = getattr(w, '_screen_confirm_diag_prev', None)
     if _confirmed in ('system_menu', 'loadsave_in_play'):
-        if getattr(w, '_screen_confirm_diag_prev', None) != _confirmed:
+        if _diag_prev != _confirmed:
             w._screen_confirm_diag_prev = _confirmed
             _recog(_log, 'screen confirm: id=%s img=%r menu_active=0x%04X fg_ptr=%s trig=%s', _confirmed, img_name, _menu_active_now, 'None' if foreground_ptr is None else f'0x{foreground_ptr:04X}', int(_trigger_display_active))
+    elif _confirmed == 'automap' or _diag_prev == 'automap':
+        if _diag_prev != _confirmed:
+            w._screen_confirm_diag_prev = _confirmed
+            _log_automap_edge(w, _confirmed, img_name, foreground_ptr)
     else:
         w._screen_confirm_diag_prev = None
     return result
+
+def _log_automap_edge(w, confirmed, img_name, foreground_ptr) -> None:
+    try:
+        from screen_detector import POPUP_OPEN_OFFSET, _read_u8
+        _popup_open = _read_u8(w._analyzer, w._anchor + POPUP_OPEN_OFFSET)
+    except Exception:
+        _popup_open = None
+    try:
+        _fg_word2 = int.from_bytes(w._analyzer.read_bytes(w._anchor + 43078, 2), 'little')
+    except Exception:
+        _fg_word2 = None
+    try:
+        _mode_word = int.from_bytes(w._analyzer.read_bytes(w._anchor + 43122, 2), 'little')
+    except Exception:
+        _mode_word = None
+    _recog(_log, 'screen confirm: id=%s img=%r popup_open=%s fg_ptr=%s fg_word2=%s mode_word=%s', confirmed, img_name, _popup_open, 'None' if foreground_ptr is None else f'0x{foreground_ptr:04X}', 'None' if _fg_word2 is None else f'0x{_fg_word2:04X}', 'None' if _mode_word is None else f'0x{_mode_word:04X}')
 
 def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_name, _resolved_area, player_floor, in_interior, _shop_state, _shop_img_name, _level_up_continue, _b30_dialog_active, _b30_dialog_active_prev, _b30_red_changed, _npc_dialog_changed):
     try:

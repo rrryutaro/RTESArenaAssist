@@ -13,7 +13,8 @@ EFFECT_PICK_OFFSET = 4164
 ACTIVE_LIST_PTR_OFFSET = 20520
 _READ_LEN = 1024
 _MAX_ITEMS = 64
-_BOUNDARY_FFFD_MIN = 4
+LIST_KIND_POTION = 'potion'
+LIST_KIND_SPELL = 'spell'
 _MAGIC_NAME_SIG = b'\t031'
 _MAGIC_SCAN_RANGES = ((2097152, 3145728), (0, 8388608))
 _MAGIC_RE = re.compile('\\d{3}([^\\n]+)\\n\\D*?(\\d+)\\s*gp', re.DOTALL)
@@ -49,9 +50,16 @@ def _segments(raw: bytes) -> list[str]:
         out.append(seg.decode('ascii', errors='replace'))
     return out
 
-def read_priced_list(analyzer, anchor: int, offset: int) -> list[dict]:
+def read_priced_list(analyzer, anchor: int, offset: int, *, potion_names=None) -> list[dict]:
+    if potion_names is None:
+        from inventory_reader import read_potion_names
+        potion_names = read_potion_names(analyzer, anchor)
+    potion_set = {n for n in potion_names if n}
+    if not potion_set:
+        return []
     raw = _read_raw(analyzer, anchor, offset)
     items: list[dict] = []
+    list_kind = ''
     blanks = 0
     for seg in _segments(raw):
         m = _PRICE_RE.search(seg)
@@ -61,16 +69,19 @@ def read_priced_list(analyzer, anchor: int, offset: int) -> list[dict]:
                 if blanks >= 3:
                     break
             continue
-        if items and seg[:m.start(1)].count('�') >= _BOUNDARY_FFFD_MIN:
-            break
         blanks = 0
         name = _clean(m.group(2))
         if not _is_name(name):
             if items:
                 break
             continue
+        kind = LIST_KIND_POTION if name in potion_set else LIST_KIND_SPELL
+        if not items:
+            list_kind = kind
+        elif kind != list_kind:
+            break
         price = _strip_coord(m.group(1))
-        items.append({'en': name, 'ja': translate_name(name), 'price_display': f'{price} gp'})
+        items.append({'en': name, 'ja': translate_name(name), 'price_display': f'{price} gp', 'kind': kind})
         if len(items) >= _MAX_ITEMS:
             break
     return items
@@ -91,7 +102,7 @@ def read_active_priced_list(analyzer, anchor: int) -> list[dict]:
     return read_priced_list(analyzer, anchor, off)
 
 def looks_like_potion_list(items: list[dict]) -> bool:
-    return bool(items) and items[0].get('en', '').startswith('Potion of')
+    return bool(items) and items[0].get('kind') == LIST_KIND_POTION
 
 def _parse_magic_entries(raw: bytes) -> list[dict]:
     items: list[dict] = []
@@ -218,4 +229,4 @@ def translate_name(en: str) -> str:
     key = (en or '').strip()
     translated = _translate_name_opt(key)
     return translated if translated is not None else key
-__all__ = ['POTION_LIST_OFFSET', 'SPELL_LIST_OFFSET', 'INVENTORY_LIST_OFFSET', 'SPELLMAKER_TARGET_OFFSET', 'SPELLMAKER_EFFECT_OFFSET', 'SPELLMAKER_SUBLIST_OFFSET', 'EFFECT_PICK_OFFSET', 'read_priced_list', 'read_name_list', 'read_magic_item_list', 'read_active_priced_list', 'read_active_list_offset', 'looks_like_potion_list', 'ACTIVE_LIST_PTR_OFFSET', 'translate_name', 'enrich_unidentified_by_index', 'filter_known_items', 'classify_spellmaker_name_items', 'SPELLMAKER_TARGET_NAMES', 'SPELLMAKER_EFFECT_CATEGORY_NAMES', 'SPELLMAKER_EFFECT_OPTION_NAMES', 'SPELLMAKER_EFFECT_FULL_NAMES']
+__all__ = ['POTION_LIST_OFFSET', 'SPELL_LIST_OFFSET', 'INVENTORY_LIST_OFFSET', 'SPELLMAKER_TARGET_OFFSET', 'SPELLMAKER_EFFECT_OFFSET', 'SPELLMAKER_SUBLIST_OFFSET', 'EFFECT_PICK_OFFSET', 'read_priced_list', 'read_name_list', 'read_magic_item_list', 'read_active_priced_list', 'read_active_list_offset', 'looks_like_potion_list', 'LIST_KIND_POTION', 'LIST_KIND_SPELL', 'ACTIVE_LIST_PTR_OFFSET', 'translate_name', 'enrich_unidentified_by_index', 'filter_known_items', 'classify_spellmaker_name_items', 'SPELLMAKER_TARGET_NAMES', 'SPELLMAKER_EFFECT_CATEGORY_NAMES', 'SPELLMAKER_EFFECT_OPTION_NAMES', 'SPELLMAKER_EFFECT_FULL_NAMES']

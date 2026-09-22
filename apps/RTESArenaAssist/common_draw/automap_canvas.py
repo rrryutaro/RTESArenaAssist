@@ -7,7 +7,7 @@ from PySide6.QtCore import QPoint, QPointF, QRect, QSize, Qt, Signal
 from PySide6.QtGui import QAction, QColor, QFont, QMouseEvent, QPainter, QPainterPath, QPen, QPixmap, QPolygon, QWheelEvent
 from PySide6.QtWidgets import QMenu, QToolButton, QWidget
 from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
-from services.arena_reveal_stencil import _map1_kind, is_full_height_raised, resolve_full_raised_as_wall
+from services.arena_reveal_stencil import _map1_kind, is_full_height_raised, map1_diagonal_is_slash, resolve_full_raised_as_wall
 _log = logging.getLogger('common_draw.automap_canvas')
 _BG_DARK = QColor(26, 26, 46)
 _PARCHMENT = QColor(170, 130, 81)
@@ -80,7 +80,7 @@ class CanvasData:
 _DOOR_TEXTURE_MASK = 63
 
 def diagonal_shape(map1_val: int, north: int, south: int, east: int, west: int) -> tuple[bool, str | None]:
-    is_slash = map1_val & 256 != 0
+    is_slash = map1_diagonal_is_slash(map1_val)
 
     def _wall(v: int) -> bool:
         return _map1_kind(v) in ('wall', 'raised')
