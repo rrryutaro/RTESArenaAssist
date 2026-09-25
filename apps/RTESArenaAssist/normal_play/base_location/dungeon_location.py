@@ -10,7 +10,7 @@ from services.arena_reveal_stencil import apply_reveal_stencil, apply_reveal_ste
 from runtime_paths import resolve_arena_install_dir
 from services.mif_loader import DEFAULT_INF_DIR, DEFAULT_MIF_DIR, load_mif, parse_inf_level_transitions, parse_inf_menu_indices, parse_inf_walls_hidden_door_ids, resolve_inf_for_mif
 from normal_play.map.base import MapContext, MapSessionBase
-from normal_play.map.item_points import item_point_cells, note_item_pickups
+from normal_play.map.item_points import all_item_point_cells, item_point_cells, note_item_pickups
 from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
 _log = logging.getLogger('base_location.dungeon')
 
@@ -136,7 +136,7 @@ class DungeonMapSession(MapSessionBase):
     def get_canvas_data(self) -> CanvasData:
         if self._await_axis_reconfirm or self._location_key is None:
             return CanvasData(walkable=None, map1=None, flor=None, bitmap_grid=None, notes=[], player_x=None, player_y=None, player_angle_deg=None, level_up_index=None, level_down_index=None, entrance_cells=(), is_wilderness=False, hidden_door_ids=frozenset(), menu_texture_indices=frozenset(), treasure_cells=frozenset(), discovered_hidden_door_cells=frozenset(), discovered_wall_passage_cells=frozenset(), map_key='dungeon:<transition>', cache_index=None)
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, treasure_cells=self._known_treasure, discovered_hidden_door_cells=self._discovered_hd, discovered_wall_passage_cells=self._discovered_wp, flat_marks=self._visible_flat_marks(), map_key=f'dungeon:{self._location_key}' if self._location_key else 'dungeon:<unknown>', cache_index=self._active_cache_index)
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, treasure_cells=self._known_treasure, all_treasure_cells=all_item_point_cells(self._item_point_cells), discovered_hidden_door_cells=self._discovered_hd, discovered_wall_passage_cells=self._discovered_wp, flat_marks=self._visible_flat_marks(), map_key=f'dungeon:{self._location_key}' if self._location_key else 'dungeon:<unknown>', cache_index=self._active_cache_index)
 
     def _note_item_pickups_if_any(self, ctx: MapContext) -> None:
         kinds = frozenset(ctx.item_pickup_kinds or ())

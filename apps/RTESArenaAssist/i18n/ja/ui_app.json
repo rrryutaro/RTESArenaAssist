@@ -565,6 +565,8 @@
   "settings.tts_engine": "エンジン",
   "settings.tts_engine_sapi": "Windows標準（SAPI5）",
   "settings.tts_engine_voicevox": "VOICEVOX",
+  "settings.tts_fallback_sapi": "VOICEVOX が使えない場合は Windows の音声で読み上げる",
+  "settings.tts_fallback_sapi_label": "代替の読み上げ",
   "settings.tts_engine_voicevox_unavail": "VOICEVOX（未検出）",
   "settings.tts_vv_character": "キャラクター",
   "settings.tts_vv_style": "スタイル",

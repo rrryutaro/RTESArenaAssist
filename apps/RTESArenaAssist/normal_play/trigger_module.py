@@ -311,7 +311,8 @@ def poll_red_text(w, *, b30: dict, message_taken: bool=False) -> None:
         _block_reasons.append('not-normal-play')
     if not b30['in_gameplay']:
         _block_reasons.append('not-in-gameplay')
-    if not _block_reasons and (b30['red_changed'] or _death_red_new) and b30['red_str']:
+    _dialog_reopened = bool(b30.get('dialog_active') and (not b30.get('dialog_active_prev')) and _red_text_is_framed(b30))
+    if not _block_reasons and (b30['red_changed'] or _death_red_new or _dialog_reopened) and b30['red_str']:
         import dungeon_msg_lookup as _dml
         _b30_red_jpn = _dml.lookup(b30['red_str'])
         if not _b30_red_jpn:

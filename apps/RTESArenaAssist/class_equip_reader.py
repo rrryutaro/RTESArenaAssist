@@ -1,10 +1,8 @@
 from __future__ import annotations
 import struct
 from inventory_reader import SHIELD_SLOT_MIN, SHIELD_SLOT_MAX, is_broken_item
-CLASS_COUNT = 18
+from player_class_reader import CLASS_COUNT, read_class_index
 WEAPON_COUNT = 18
-PLAYER_CLASS_NUMBER_OFFSET = 425
-CLASS_INDEX_MASK = 31
 ALLOWED_ARMORS_OFFSET = -22012
 ALLOWED_SHIELDS_OFFSET = -22063
 ALLOWED_WEAPONS_OFFSET = -22139
@@ -30,9 +28,8 @@ def _read_allowed_list(analyzer, anchor: int, table_offset: int, class_index: in
 
 def read_class_equip_rules(analyzer, anchor: int) -> dict | None:
     try:
-        cls_num = analyzer.read_bytes(anchor + PLAYER_CLASS_NUMBER_OFFSET, 1)[0]
-        class_index = cls_num & CLASS_INDEX_MASK
-        if class_index >= CLASS_COUNT:
+        class_index = read_class_index(analyzer, anchor)
+        if class_index is None:
             return None
         armor_level = analyzer.read_bytes(anchor + ALLOWED_ARMORS_OFFSET + class_index, 1)[0]
         armor_materials = _ARMOR_MATERIALS_BY_LEVEL.get(armor_level)

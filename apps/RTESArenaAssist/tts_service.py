@@ -118,6 +118,7 @@ class TTSService:
         self._voice_desc = ''
         self._engine = 'sapi5'
         self._vv_speaker = 0
+        self._fallback_sapi = True
         self._lock = threading.RLock()
         self._pause_cond = threading.Condition(self._lock)
         self._paused = False
@@ -182,6 +183,10 @@ class TTSService:
     def set_engine(self, value: str) -> None:
         with self._lock:
             self._engine = 'voicevox' if str(value) == 'voicevox' else 'sapi5'
+
+    def set_fallback_sapi(self, value: bool) -> None:
+        with self._lock:
+            self._fallback_sapi = bool(value)
 
     def set_vv_speaker(self, value: int) -> None:
         try:
@@ -387,6 +392,10 @@ class TTSService:
         with self._lock:
             return self._paused
 
+    def _sapi_fallback_enabled(self) -> bool:
+        with self._lock:
+            return bool(self._fallback_sapi)
+
     def _run(self) -> None:
         speaker = None
         had_sapi = False
@@ -404,19 +413,29 @@ class TTSService:
                 segments = self._split_sentences(request.text)
                 if not any(segments):
                     continue
+
+                def _sapi_speaker():
+                    nonlocal speaker, had_sapi
+                    if speaker is None:
+                        speaker = self._init_sapi5()
+                        had_sapi = speaker is not None
+                        if had_sapi:
+                            logging.getLogger('poll_controller').warning('TTS backend: SAPI5 (win32com, in-process・外部プロセス無し)')
+                        else:
+                            logging.getLogger('poll_controller').warning('TTS unavailable: SAPI5(win32com) を初期化できないため読み上げを行いません（外部プロセスは起動しません）。pywin32 を確認してください')
+                    return speaker
                 try:
                     if engine == 'voicevox':
-                        self._speak_voicevox(request.text, segments, request.generation)
+                        unspoken = self._speak_voicevox(request.text, segments, request.generation)
+                        if unspoken and self._sapi_fallback_enabled():
+                            logging.getLogger('poll_controller').warning('TTS fallback: VOICEVOX で読めなかった %d 文を Windows 標準（SAPI5）で読みます', len(unspoken))
+                            _sp = _sapi_speaker()
+                            if _sp is not None:
+                                self._speak_sapi5_segments(_sp, request.text, unspoken, request.generation)
                     else:
-                        if speaker is None:
-                            speaker = self._init_sapi5()
-                            had_sapi = speaker is not None
-                            if had_sapi:
-                                logging.getLogger('poll_controller').warning('TTS backend: SAPI5 (win32com, in-process・外部プロセス無し)')
-                            else:
-                                logging.getLogger('poll_controller').warning('TTS unavailable: SAPI5(win32com) を初期化できないため読み上げを行いません（外部プロセスは起動しません）。pywin32 を確認してください')
-                        if speaker is not None:
-                            self._speak_sapi5_segments(speaker, request.text, segments, request.generation)
+                        _sp = _sapi_speaker()
+                        if _sp is not None:
+                            self._speak_sapi5_segments(_sp, request.text, segments, request.generation)
                 finally:
                     self._notify_segment(None, None)
             except Exception:
@@ -497,31 +516,31 @@ class TTSService:
                 pass
             return None
 
-    def _speak_voicevox(self, full_text: str, segments: list[str], generation: int) -> None:
+    def _speak_voicevox(self, full_text: str, segments: list[str], generation: int) -> list[str]:
         index = self._next_segment_index(segments, 0)
         if index < 0:
-            return
+            return []
         ctx = {'full': full_text, 'segments': segments, 'playing': None, 'requested': set(), 'lock': threading.Lock(), 'generation': generation}
         result_queue, buffer_state = self._start_voicevox_prefetch(segments, index, generation, ctx)
         try:
             while self._is_generation_current(generation):
                 if not self._wait_if_paused(generation):
-                    return
+                    return []
                 try:
                     item = result_queue.get(timeout=0.05)
                 except queue.Empty:
                     continue
                 if item is _VOICEVOX_PREFETCH_DONE:
-                    return
+                    return []
                 result = item
                 if result.error:
                     _log_tts(f'VOICEVOX synthesize error: speaker={result.speaker} chars={result.chars}\n{result.error}')
-                    return
+                    return list(segments[result.index:])
                 if not result.data:
                     _log_tts(f'VOICEVOX synthesize returned no audio: speaker={result.speaker} chars={result.chars}')
-                    return
+                    return list(segments[result.index:])
                 if not self._wait_if_paused(generation):
-                    return
+                    return []
                 try:
                     if result.starts_segment:
                         ctx['playing'] = result.index
@@ -533,20 +552,21 @@ class TTSService:
                         buffer_state.finish_playback()
                 except Exception:
                     _log_tts('VOICEVOX playback error:\n' + traceback.format_exc())
-                    return
+                    return list(segments[result.index:])
                 if not self._is_generation_current(generation):
-                    return
+                    return []
                 if not result.ends_segment:
                     continue
                 next_index = self._next_segment_index(segments, result.index + 1)
                 gap_end = next_index if next_index >= 0 else len(segments)
                 for gap in segments[result.index + 1:gap_end]:
                     if not self._is_generation_current(generation):
-                        return
+                        return []
                     if not self._wait_if_paused(generation):
-                        return
+                        return []
                     if not gap:
                         time.sleep(0.25)
+            return []
         finally:
             buffer_state.close()
 

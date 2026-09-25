@@ -565,6 +565,8 @@
   "settings.tts_engine": "Motore",
   "settings.tts_engine_sapi": "Windows (SAPI5)",
   "settings.tts_engine_voicevox": "VOICEVOX",
+  "settings.tts_fallback_sapi": "Leggere con la voce di Windows quando VOICEVOX non è disponibile",
+  "settings.tts_fallback_sapi_label": "Voce alternativa",
   "settings.tts_engine_voicevox_unavail": "VOICEVOX (non rilevato)",
   "settings.tts_vv_character": "Personaggio",
   "settings.tts_vv_style": "Stile",

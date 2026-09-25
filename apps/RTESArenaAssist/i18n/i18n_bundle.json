@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:e3161ae3c8a870cf2b8c974dcceb42da40dff844ff0c0c6ec0adc1cc1c2b8928",
+  "registry_hash": "sha256:b501d7946335c0fd8b876ae57330586e105cfd719bd87804c74d45360232b582",
   "categories": [
     {
       "category": "assist_ui",
@@ -3866,6 +3866,16 @@
           "id": 900770,
           "kind": "label",
           "debug_name": "settings.map_facility_colors_note"
+        },
+        {
+          "id": 900771,
+          "kind": "label",
+          "debug_name": "settings.tts_fallback_sapi"
+        },
+        {
+          "id": 900772,
+          "kind": "label",
+          "debug_name": "settings.tts_fallback_sapi_label"
         }
       ]
     },
@@ -50017,6 +50027,14 @@
           "text": "Colors apply only to building cells touching a target entrance. The red entrance remains unchanged."
         },
         {
+          "id": 900771,
+          "text": "Read with the Windows voice when VOICEVOX is unavailable"
+        },
+        {
+          "id": 900772,
+          "text": "Fallback voice"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -77840,6 +77858,14 @@
         {
           "id": 900770,
           "text": "対象入口に接する建物色のセルだけを施設色に置き換えます。赤い入口は変わりません。"
+        },
+        {
+          "id": 900771,
+          "text": "VOICEVOX が使えない場合は Windows の音声で読み上げる"
+        },
+        {
+          "id": 900772,
+          "text": "代替の読み上げ"
         },
         {
           "id": 902000,
@@ -106475,6 +106501,14 @@
           "text": "Solo se colorean las celdas del edificio junto a una entrada objetivo. La entrada roja no cambia."
         },
         {
+          "id": 900771,
+          "text": "Leer con la voz de Windows cuando VOICEVOX no esté disponible"
+        },
+        {
+          "id": 900772,
+          "text": "Voz alternativa"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -134298,6 +134332,14 @@
         {
           "id": 900770,
           "text": "Nur Gebäudefelder neben einem Zieleingang werden eingefärbt. Der rote Eingang bleibt unverändert."
+        },
+        {
+          "id": 900771,
+          "text": "Mit der Windows-Stimme vorlesen, wenn VOICEVOX nicht verfügbar ist"
+        },
+        {
+          "id": 900772,
+          "text": "Ersatzstimme"
         },
         {
           "id": 902000,
@@ -162125,6 +162167,14 @@
           "text": "Seules les cases de bâtiment attenantes à une entrée ciblée sont colorées. L’entrée rouge reste inchangée."
         },
         {
+          "id": 900771,
+          "text": "Lire avec la voix de Windows lorsque VOICEVOX est indisponible"
+        },
+        {
+          "id": 900772,
+          "text": "Voix de secours"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -189950,6 +190000,14 @@
           "text": "Vengono colorate solo le celle dell’edificio adiacenti a un ingresso interessato. L’ingresso rosso resta invariato."
         },
         {
+          "id": 900771,
+          "text": "Leggere con la voce di Windows quando VOICEVOX non è disponibile"
+        },
+        {
+          "id": 900772,
+          "text": "Voce alternativa"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -217773,6 +217831,14 @@
         {
           "id": 900770,
           "text": "Окрашиваются только клетки здания рядом с целевым входом. Красный вход не изменяется."
+        },
+        {
+          "id": 900771,
+          "text": "Читать голосом Windows, когда VOICEVOX недоступен"
+        },
+        {
+          "id": 900772,
+          "text": "Запасной голос"
         },
         {
           "id": 902000,

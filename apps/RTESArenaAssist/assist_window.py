@@ -412,6 +412,7 @@ class AssistWindow(QMainWindow):
         settings.set_val('tts_volume', dlg.tts_volume)
         settings.set_val('tts_interrupt', dlg.tts_interrupt)
         settings.set_val('tts_cancel_on_close', dlg.tts_cancel_on_close)
+        settings.set_val('tts_fallback_sapi', dlg.tts_fallback_sapi)
         settings.set_val('tts_suppress_repeat', dlg.tts_suppress_repeat)
         settings.set_val('tts_highlight_reading', dlg.tts_highlight_reading)
         settings.set_val('tts_target_situation', dlg.tts_target_situation)
@@ -550,10 +551,6 @@ class AssistWindow(QMainWindow):
                 pass
         if new_state == 'normal-play':
             self._chargen_subscreen_last = None
-            try:
-                self._save_play_class_id_mapping(getattr(self, '_chargen_class_en', None))
-            except AttributeError:
-                pass
         if new_state != 'chargen':
             self._chargen_status_display_armed = False
             self._chargen_attrs_state_anchor = None
@@ -714,24 +711,6 @@ class AssistWindow(QMainWindow):
             settings.set_val('arena_class_id_map', mapping)
             _log.info('chargen: arena_class_id_map updated: %d → %s', cls_id, cls_en)
 
-    def _save_play_class_id_mapping(self, cls_en: str | None) -> None:
-        if not cls_en and getattr(self, '_chargen_class_ja', None):
-            for en_name, ja_name in _CHARGEN_CLASS_JA.items():
-                if ja_name == self._chargen_class_ja:
-                    cls_en = en_name
-                    break
-        if self._analyzer is None or not cls_en:
-            return
-        try:
-            cls_id = self._analyzer.read_bytes(self._anchor + 425, 1)[0]
-        except OSError:
-            return
-        mapping = dict(settings.get('arena_play_class_id_map', {}) or {})
-        if mapping.get(str(cls_id)) != cls_en:
-            mapping[str(cls_id)] = cls_en
-            settings.set_val('arena_play_class_id_map', mapping)
-            _log.info('normal-play: arena_play_class_id_map updated: %d → %s', cls_id, cls_en)
-
     def _set_chargen_ui_state(self, in_chargen: bool) -> None:
         if self._is_in_chargen == in_chargen:
             return
@@ -766,6 +745,7 @@ class AssistWindow(QMainWindow):
         tts.set_volume(int(settings.get('tts_volume', 100)))
         tts.set_voice(settings.get('tts_voice', '') or '')
         tts.set_engine(settings.get('tts_engine', 'sapi5') or 'sapi5')
+        tts.set_fallback_sapi(settings.get('tts_fallback_sapi', True))
         tts.set_vv_speaker(int(settings.get('tts_vv_speaker', 0) or 0))
         try:
             from tts_prewarm import reset_prewarm_state

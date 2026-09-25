@@ -16,7 +16,6 @@ OFF_HEALTH_MAX_U16 = 511
 OFF_SPELL_PTS_CURR = 522
 OFF_SPELL_PTS_MAX = 524
 OFF_RACE_INDEX = 424
-OFF_CLASS_INDEX = 425
 OFF_LEVEL_U16 = 541
 OFF_LEVEL_U8 = 426
 OFF_GOLD_U32 = 1474
@@ -32,38 +31,6 @@ DERIVED_COL2_BY_ATTR: dict[int, str] = {0: 'damage', 1: 'spell_pts', 2: 'magic_d
 DERIVED_COL3_BY_ATTR: dict[int, str] = {0: 'max_kilos', 3: 'to_defend', 5: 'heal_mod'}
 DERIVED_LABEL_KEYS: dict[str, str] = {'damage': 'status.derived.damage', 'spell_pts': 'status.derived.spell_pts', 'magic_def': 'status.derived.magic_def', 'to_hit': 'status.derived.to_hit', 'to_defend': 'status.derived.to_defend', 'health': 'status.derived.health', 'charisma': 'status.derived.charisma', 'heal_mod': 'status.derived.heal_mod', 'max_kilos': 'status.derived.max_kilos', 'bonus_pts': 'status.derived.bonus_pts'}
 STAT_LABEL_KEYS: dict[str, str] = {'hp': 'status.stat.health', 'fatigue': 'status.stat.fatigue', 'gold': 'status.stat.gold', 'experience': 'status.stat.experience', 'level': 'status.stat.level'}
-
-def resolve_class_en_from_label(label: Optional[str]) -> Optional[str]:
-    text = (label or '').strip()
-    if not text:
-        return None
-
-    def _canonical_from_en(value: str) -> Optional[str]:
-        value_norm = value.strip().lower()
-        try:
-            from class_list_panel import CLASS_LIST_ORDER
-            for canonical in CLASS_LIST_ORDER:
-                if value_norm == canonical.lower():
-                    return canonical
-        except ImportError:
-            pass
-        return None
-    direct = _canonical_from_en(text)
-    if direct:
-        return direct
-    m = re.search('[（(]\\s*([A-Za-z ]+)\\s*[)）]', text)
-    if m:
-        from_paren = _canonical_from_en(m.group(1))
-        if from_paren:
-            return from_paren
-    try:
-        from class_list_panel import resolve_class_from_display_name
-        resolved = resolve_class_from_display_name(text)
-        if resolved:
-            return resolved
-    except ImportError:
-        pass
-    return None
 from attribute_formulas import _scale_100_to_256, _scale_256_to_100
 import attribute_formulas as _attribute_formulas
 calc_damage_bonus = _attribute_formulas.calc_damage_bonus
@@ -328,23 +295,18 @@ class AttributesPanel(QWidget):
         if current_level is None or self._chargen_mode:
             return None
         try:
-            cls_byte = self._analyzer.read_bytes(self._anchor + OFF_CLASS_INDEX, 1)[0]
-            mapping = settings.get('arena_play_class_id_map', {}) or {}
-            class_en = mapping.get(str(cls_byte))
-            if not class_en:
-                class_en = resolve_class_en_from_label(self._class_label)
-            if not class_en:
-                class_en = resolve_class_en_from_label(self._class_lbl.text())
-            if not class_en:
+            from experience_calc import exp_threshold_for_next_level
+            from player_class_reader import read_class_index
+            index = read_class_index(self._analyzer, self._anchor)
+            if index is None:
                 return None
-            from experience_calc import exp_threshold_for_next_level_by_name
-            return exp_threshold_for_next_level_by_name(class_en, current_level)
+            return exp_threshold_for_next_level(index, current_level)
         except (OSError, AttributeError, ImportError):
             return None
 
     def _lookup_class_display(self, cls_idx: int) -> Optional[str]:
-        mapping = settings.get('arena_play_class_id_map', {}) or {}
-        en = mapping.get(str(cls_idx))
+        from player_class_reader import class_en_of
+        en = class_en_of(cls_idx)
         if not en:
             return None
         name = i18n.value('classes', en)

@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Optional
 import arena_data
 import i18n_helper as i18n
-from attributes_panel import OFF_BONUS_PTS_U8, OFF_CLASS_INDEX, OFF_DAMAGE_I16, OFF_EXP_U32, OFF_FATIGUE_U16, OFF_GOLD_U32, OFF_HEALTH_CURR_U16, OFF_HEALTH_MAX_U16, OFF_LEVEL_U8, OFF_NAME, OFF_PRIMARY_1, OFF_RACE_INDEX, OFF_SPELL_PTS_CURR, OFF_SPELL_PTS_MAX, PRIMARY_LEN, UNKNOWN, _signed
+from attributes_panel import OFF_BONUS_PTS_U8, OFF_DAMAGE_I16, OFF_EXP_U32, OFF_FATIGUE_U16, OFF_GOLD_U32, OFF_HEALTH_CURR_U16, OFF_HEALTH_MAX_U16, OFF_LEVEL_U8, OFF_NAME, OFF_PRIMARY_1, OFF_RACE_INDEX, OFF_SPELL_PTS_CURR, OFF_SPELL_PTS_MAX, PRIMARY_LEN, UNKNOWN, _signed
 from attribute_formulas import calc_bonus_to_health, calc_bonus_to_health_256, calc_bonus_to_hit, calc_damage_bonus, calc_magic_defense, calc_max_kilos, calc_max_stamina
 
 def poll_attributes(panel) -> None:
@@ -32,8 +32,9 @@ def poll_attributes(panel) -> None:
         if panel._race_label:
             panel._race_lbl.setText(panel._race_label)
     try:
-        cls_idx = panel._analyzer.read_bytes(panel._anchor + OFF_CLASS_INDEX, 1)[0]
-        ja_text = panel._lookup_class_display(cls_idx)
+        from player_class_reader import read_class_index
+        cls_idx = read_class_index(panel._analyzer, panel._anchor)
+        ja_text = panel._lookup_class_display(cls_idx) if cls_idx is not None else None
         if ja_text:
             panel._class_lbl.setText(ja_text)
         elif panel._class_label:

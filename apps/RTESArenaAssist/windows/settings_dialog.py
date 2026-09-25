@@ -605,10 +605,7 @@ class _SettingsDialog(QDialog):
 
     @property
     def tts_engine(self) -> str:
-        cur = self._tts_engine_combo.currentData() or 'sapi5'
-        if not getattr(self, '_tts_vv_available', False) and getattr(self, '_tts_engine_saved', 'sapi5') == 'voicevox':
-            return 'voicevox'
-        return cur
+        return self._tts_engine_combo.currentData() or 'sapi5'
 
     @property
     def tts_voice(self) -> str:
@@ -636,6 +633,10 @@ class _SettingsDialog(QDialog):
     @property
     def tts_cancel_on_close(self) -> bool:
         return self._tts_cancel_on_close_cb.isChecked()
+
+    @property
+    def tts_fallback_sapi(self) -> bool:
+        return self._tts_fallback_sapi_cb.isChecked()
 
     @property
     def tts_suppress_repeat(self) -> bool:

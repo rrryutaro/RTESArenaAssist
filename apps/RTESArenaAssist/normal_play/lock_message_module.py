@@ -170,12 +170,10 @@ def _exe_tables(w):
 
 def _thieving_divisor(w, tables) -> int | None:
     try:
-        import assist_settings as settings
-        from attributes_panel import OFF_CLASS_INDEX
-        cls_id = w._analyzer.read_bytes(w._anchor + OFF_CLASS_INDEX, 1)[0]
+        from player_class_reader import read_class_en
+        class_en = read_class_en(w._analyzer, w._anchor)
     except (OSError, AttributeError, IndexError, ImportError):
         return None
-    class_en = (settings.get('arena_play_class_id_map', {}) or {}).get(str(cls_id))
     if not class_en:
         return None
     idx = lock_difficulty.class_index_from_name(class_en, tables['class_names'])

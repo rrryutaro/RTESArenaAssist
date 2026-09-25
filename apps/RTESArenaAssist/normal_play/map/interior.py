@@ -10,7 +10,7 @@ from services.map_ext_store import SECTION_TREASURE_PILES, SECTION_WALL_PASSAGES
 from runtime_paths import resolve_arena_install_dir
 from services.mif_loader import DEFAULT_INF_DIR, DEFAULT_MIF_DIR, load_mif, parse_inf_level_transitions, parse_inf_menu_indices, parse_inf_walls_hidden_door_ids, resolve_inf_for_mif
 from .base import MapContext, MapSessionBase
-from .item_points import item_point_cells, note_item_pickups
+from .item_points import all_item_point_cells, item_point_cells, note_item_pickups
 _log = logging.getLogger('map.interior')
 
 class InteriorMapSession(MapSessionBase):
@@ -129,7 +129,7 @@ class InteriorMapSession(MapSessionBase):
         angle = self._angle
         if not self._coord_in_bounds(px, py) and self._entry_center is not None:
             px, py = self._entry_center
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=px, player_y=py, player_angle_deg=angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=self._entrance_cells, is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, discovered_hidden_door_cells=self._discovered_hd, discovered_wall_passage_cells=self._discovered_wp, treasure_cells=self._known_treasure, map_key=f'interior:{self._mif_name}#{self._floor}' if self._mif_name else 'interior:<unknown>')
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=px, player_y=py, player_angle_deg=angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=self._entrance_cells, is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, discovered_hidden_door_cells=self._discovered_hd, discovered_wall_passage_cells=self._discovered_wp, treasure_cells=self._known_treasure, all_treasure_cells=all_item_point_cells(self._item_point_cells), map_key=f'interior:{self._mif_name}#{self._floor}' if self._mif_name else 'interior:<unknown>')
 
     def reset_progress(self) -> None:
         if self._walkable is not None:

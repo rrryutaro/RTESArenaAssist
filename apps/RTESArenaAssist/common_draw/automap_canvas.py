@@ -80,6 +80,7 @@ class CanvasData:
     wild_distinguish_road: bool = True
     wild_show_edge: bool = True
     treasure_cells: frozenset = frozenset()
+    all_treasure_cells: frozenset = frozenset()
     hidden_door_ids: frozenset[int] = frozenset()
     menu_texture_indices: frozenset[int] = frozenset()
     discovered_hidden_door_cells: frozenset[tuple[int, int]] = frozenset()
@@ -277,6 +278,13 @@ def _classify_cell(map1_val: int, flor_val: int, level_up_index: int | None=None
             return 'exit_door'
         return 'wild_wall' if is_wilderness else 'wall'
     return 'floor'
+
+def treasure_marks_to_draw(data, *, reveal_all: bool, express_treasure: bool) -> frozenset:
+    if not express_treasure:
+        return frozenset()
+    if reveal_all:
+        return frozenset(getattr(data, 'all_treasure_cells', None) or frozenset())
+    return frozenset(data.treasure_cells or frozenset())
 
 def _blend_color(base: QColor, vis: int, reveal_all: bool) -> QColor:
     alpha = _REVEAL_ALL_ALPHA if reveal_all else _VIS_ALPHA.get(vis, 255)
@@ -928,7 +936,7 @@ class AutomapCanvas(QWidget):
         self._facility_hit_cells = rendered_facility_hits
         if pipe_cells:
             self._paint_pipes(painter, pipe_cells, hole_cells, {(cx, cy): crect for cx, cy, crect in cells_drawn})
-        treasure_cells = d.treasure_cells or frozenset() if self._express_treasure else frozenset()
+        treasure_cells = treasure_marks_to_draw(d, reveal_all=self._reveal_all, express_treasure=self._express_treasure)
         mark = self._treasure_mark[:1]
         if treasure_cells and mark and (self._zoom >= 4):
             font = QFont()
