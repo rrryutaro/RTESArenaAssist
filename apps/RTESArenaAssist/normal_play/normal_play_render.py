@@ -362,8 +362,16 @@ def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_
 def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog_changed, _npc_phase_raw, _img_name_now, _building_entry_active, _entry_phase_prev, _shop_state, _shop_img_name, _shop_menu_visible, _shop_buy_active, _facility_active_now, _poll_hierarchy_area, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _negot_handled, _active_tmpl_handled, _inventory_screen=False, _b30=None):
     from arena_bridge import NPC_PHASE_BUILDING_ENTRY, NPC_PHASE_RESPONDING, NPC_PHASE_IDLE, NPC_PHASE_ASKING
     from normal_play.building_entry_module import poll_building_entry as _poll_building_entry
-    from normal_play.npc_message_module import poll_travel_event_lifecycle as _poll_travel_event_lifecycle
+    from normal_play.npc_message_module import poll_npc_message_popup_lifetime as _poll_npc_message_popup_lifetime, poll_travel_event_lifecycle as _poll_travel_event_lifecycle
     from normal_play.dungeon_splash_module import poll_dungeon_splash_lifecycle as _poll_dungeon_splash_lifecycle
+    try:
+        from screen_detector import read_popup_frame, popup_frame_is_drawn
+        _popup_frame = read_popup_frame(w._analyzer, w._anchor)
+        _popup_frame_drawn = popup_frame_is_drawn(_popup_frame)
+    except (ImportError, AttributeError, OSError):
+        _popup_frame = None
+        _popup_frame_drawn = None
+    _npc_message_popup_closed = _poll_npc_message_popup_lifetime(w, popup_frame=_popup_frame, popup_frame_drawn=_popup_frame_drawn, screen_img=_img_name_now)
     _travel_event_active = _poll_travel_event_lifecycle(w, npc_dialog=npc_dialog, screen_img=_img_name_now, facility_active_now=_facility_active_now)
     _dungeon_splash_active = _poll_dungeon_splash_lifecycle(w, screen_img=_img_name_now, facility_active_now=_facility_active_now)
     _phase_overlay = _npc_phase_raw in (NPC_PHASE_BUILDING_ENTRY, NPC_PHASE_RESPONDING)
@@ -419,7 +427,7 @@ def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dial
     from normal_play.npc_dialog_module import poll_npc_dialog as _poll_npc_dialog
     _instore_resp_handled = False
     if not _entry_handled:
-        _instore_resp_handled = _poll_npc_dialog(w, b30=_b30, entry_handled=False, npc_overlay_active=_npc_overlay_active, in_interior=in_interior, npc_phase_raw=_npc_phase_raw, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, facility_active_now=_facility_active_now, npc_dialog=npc_dialog, npc_dialog_changed=_npc_dialog_changed, c_area=_poll_hierarchy_area, internalized_facility_active=_temple_active_now or _equipment_active_now or _mages_active_now, shop_state_kind=_shop_state.kind if _shop_state is not None else 'none', negot_handled=_negot_handled, active_tmpl_handled=_active_tmpl_handled)
+        _instore_resp_handled = _poll_npc_dialog(w, b30=_b30, entry_handled=False, npc_overlay_active=_npc_overlay_active, in_interior=in_interior, npc_phase_raw=_npc_phase_raw, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, facility_active_now=_facility_active_now, npc_dialog=npc_dialog, npc_dialog_changed=_npc_dialog_changed, c_area=_poll_hierarchy_area, internalized_facility_active=_temple_active_now or _equipment_active_now or _mages_active_now, shop_state_kind=_shop_state.kind if _shop_state is not None else 'none', negot_handled=_negot_handled, active_tmpl_handled=_active_tmpl_handled, popup_observation=(_popup_frame, _popup_frame_drawn, True, _npc_message_popup_closed, _img_name_now))
         if _instore_resp_handled:
             _entry_handled = True
     if _poll_hierarchy_area == 'dungeon' and (not _entry_handled) and (not _inventory_screen):

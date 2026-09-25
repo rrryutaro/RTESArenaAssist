@@ -3,12 +3,13 @@ import copy
 import logging
 from pathlib import Path
 from typing import Literal, Optional
-from PySide6.QtCore import Qt
+from PySide6.QtCore import QPointF, Qt
 from PySide6.QtWidgets import QLabel, QVBoxLayout, QWidget
 LocationType = Literal['dungeon', 'city', 'interior', 'wilderness', 'unknown']
 import assist_settings as settings
+import i18n_helper as i18n
 from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
-from common_draw.automap_canvas import AutomapCanvas, CanvasData
+from common_draw.automap_canvas import AutomapCanvas, CanvasData, FacilityEntranceMarker
 from controllers.map_ext_lifecycle import get_lifecycle
 from normal_play.map import MapContext
 from normal_play.map.dispatcher import get_dispatcher
@@ -20,6 +21,7 @@ class TabMap(QWidget):
     def __init__(self, parent: Optional[QWidget]=None, name: str='map') -> None:
         super().__init__(parent)
         self._name = name
+        self._current_view = CanvasData()
         self._place_label = QLabel('', self)
         self._place_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._place_label.setObjectName('mapPlaceLabel')
@@ -27,6 +29,12 @@ class TabMap(QWidget):
         self._canvas = AutomapCanvas(self)
         self._canvas.setObjectName(f'AssistMapCanvas:{name}')
         self._canvas.refresh_requested.connect(self.request_automap_import)
+        self._canvas.facility_selected.connect(self._show_facility_selection)
+        self._facility_popup = QLabel('', self._canvas)
+        self._facility_popup.setTextFormat(Qt.TextFormat.PlainText)
+        self._facility_popup.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._facility_popup.setStyleSheet('padding: 6px 9px; color: #f0e6d2; background: #202b3a;border: 1px solid #6f8299; border-radius: 4px;font-weight: bold;')
+        self._facility_popup.setVisible(False)
         layout = QVBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
@@ -48,11 +56,40 @@ class TabMap(QWidget):
         self._canvas.set_show_chunk_coords(bool(settings.get('map_show_chunk_coords', True)))
         self._canvas.set_show_recenter_lines(bool(settings.get('map_show_recenter_lines', False)))
         self._canvas.set_chunk_coord_font_size(int(settings.get('map_chunk_coord_font_size', 10)))
-        self._canvas.set_map_expression(hidden_door=bool(settings.get('map_express_hidden_door', True)), wall_chasm=bool(settings.get('map_express_wall_chasm', True)), wall_passage=bool(settings.get('map_express_wall_passage', True)), wall_lava=bool(settings.get('map_express_wall_lava', True)), treasure=bool(settings.get('map_express_treasure', True)))
+        self._canvas.set_map_expression(hidden_door=bool(settings.get('map_express_hidden_door', True)), wall_chasm=bool(settings.get('map_express_wall_chasm', True)), wall_passage=bool(settings.get('map_express_wall_passage', True)), wall_lava=bool(settings.get('map_express_wall_lava', True)), treasure=bool(settings.get('map_express_treasure', True)), facilities=bool(settings.get('map_express_facilities', True)))
         self._canvas.set_pipe_under(enabled=bool(settings.get('map_pipe_under', True)), opacity=int(settings.get('map_pipe_opacity', 100)))
         self._canvas.set_color_overrides(settings.get('map_colors', {}))
         self._canvas.set_treasure_mark(str(settings.get('map_treasure_mark', '') or ''))
         self._canvas.retranslate_ui()
+
+    def _facility_type_text(self, kind: str) -> str:
+        return i18n.tr(f'map.facility_{kind}')
+
+    def _show_facility_selection(self, selection: tuple[FacilityEntranceMarker, QPointF] | None) -> None:
+        if selection is None:
+            self._facility_popup.clear()
+            self._facility_popup.setVisible(False)
+            return
+        marker, position = selection
+        facility = self._facility_type_text(marker.kind)
+        if marker.display_name is None:
+            text = facility
+        else:
+            name = marker.display_name or i18n.tr('map.facility_name_unavailable')
+            text = i18n.tr('map.facility_selected', facility=facility, name=name)
+        self._facility_popup.setText(text)
+        self._facility_popup.adjustSize()
+        margin = 4
+        gap = 10
+        x = int(position.x()) + gap
+        y = int(position.y()) + gap
+        x = max(margin, min(x, self._canvas.width() - self._facility_popup.width() - margin))
+        if y + self._facility_popup.height() + margin > self._canvas.height():
+            y = int(position.y()) - self._facility_popup.height() - gap
+        y = max(margin, min(y, self._canvas.height() - self._facility_popup.height() - margin))
+        self._facility_popup.move(x, y)
+        self._facility_popup.raise_()
+        self._facility_popup.setVisible(True)
 
     def request_automap_import(self) -> None:
         self._dispatcher.request_automap_import()
@@ -63,6 +100,9 @@ class TabMap(QWidget):
             get_lifecycle().on_load()
         except Exception:
             _log.exception('map_ext on_load failed')
+
+    def reset_coordinate_continuity(self) -> None:
+        self._dispatcher.reset_coordinate_continuity()
 
     def update_map_state(self, mif_name: Optional[str], player_tile_x: Optional[float], player_tile_y: Optional[float], angle_deg: Optional[float], player_floor: int=0, place_text: Optional[str]=None, location_name: Optional[str]=None, analyzer=None, anchor: Optional[int]=None, interior_mif_name: Optional[str]=None, in_interior: Optional[bool]=None, area: Optional[str]=None, item_pickup_kinds: frozenset=frozenset(), dungeon_floor: Optional[int]=None, dungeon_floor_fresh: Optional[int]=None, suppress_map: bool=False, suppress_reason: str='') -> Optional[CanvasData]:
         _save_dir = str(settings.get('save_dir', ''))
@@ -82,6 +122,7 @@ class TabMap(QWidget):
         _cd = copy.copy(view)
         _cd.suppress_map = bool(suppress_map)
         _cd.suppress_reason = suppress_reason if suppress_map else ''
+        self._current_view = _cd
         self._canvas.set_data(_cd)
         _w = None if _cd.walkable is None else _cd.walkable.shape
         _base_active = self._dispatcher.base_location.active_key()
@@ -93,9 +134,11 @@ class TabMap(QWidget):
 
     def clear_map(self) -> None:
         try:
+            self._current_view = CanvasData()
             self._canvas.set_data(CanvasData())
             self._canvas.setVisible(False)
             self._place_label.setVisible(False)
+            self._facility_popup.setVisible(False)
         except (AttributeError, RuntimeError):
             pass
 

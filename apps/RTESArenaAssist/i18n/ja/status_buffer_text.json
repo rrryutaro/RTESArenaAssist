@@ -41,6 +41,7 @@
   "status_buffer_text.settlement_format": "{type}「{name}」",
   "status_buffer_text.travel_location_format": "{province}地方の{location}",
   "status_buffer_text.travel_arrival_format": "{province}地方の{location}に到着した。日付は{date}。目的地まで{days}日かかった。",
+  "status_buffer_text.travel_arrival_no_province_format": "{location}に到着した。日付は{date}。目的地まで{days}日かかった。",
   "status_buffer_text.already_in_format": "あなたは既に{place}にいます。",
   "status_buffer_text.travel_estimate_format": "{province}地方の{location}。日付は{date1}。現在の天候から、移動に{days}日かかる。総距離は{km} km。到着予定は{date2}。",
   "status_buffer_text.travel_condition_warning": "今のあなたの状態では、この旅を生き延びられないかもしれません。それでも旅に出ますか？",

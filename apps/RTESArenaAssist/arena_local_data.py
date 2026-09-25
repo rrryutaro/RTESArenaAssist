@@ -519,7 +519,10 @@ def build_local_pack(arena_dir: str, user_dir: str, analyzer=None, classificatio
     if city_gen_json is not None:
         gen_assets['city_generation.json'] = _J(city_gen_json).encode('utf-8')
     _p(0.98, 'データパックを書込中…')
-    _write_v2_localpack(v2_localpack_path(user_dir), surface_by_sid, fp, inf_rich, generated_assets=gen_assets or None, content_version=content_version, asset_set_id=_asset_set_id, asset_hashes=_asset_hashes_json, exe_harvested=exe_harvested)
+    written = _write_v2_localpack(v2_localpack_path(user_dir), surface_by_sid, fp, inf_rich, generated_assets=gen_assets or None, content_version=content_version, asset_set_id=_asset_set_id, asset_hashes=_asset_hashes_json, exe_harvested=exe_harvested)
+    if not written:
+        _p(1.0, '辞書を書き込めませんでした')
+        return None
     _p(1.0, '完了')
     return fp
 
@@ -624,7 +627,7 @@ def _localpack_is_harvested(path: str) -> bool:
     except Exception:
         return False
 
-def _write_v2_localpack(out_path: str, surface_by_source_id: dict[str, str], fp: str, rich_by_source_id: dict[str, dict] | None=None, generated_assets: dict[str, bytes] | None=None, content_version: str | None=None, asset_set_id: str | None=None, asset_hashes: str | None=None, exe_harvested: bool | None=None) -> None:
+def _write_v2_localpack(out_path: str, surface_by_source_id: dict[str, str], fp: str, rich_by_source_id: dict[str, dict] | None=None, generated_assets: dict[str, bytes] | None=None, content_version: str | None=None, asset_set_id: str | None=None, asset_hashes: str | None=None, exe_harvested: bool | None=None) -> bool:
     try:
         import localpack_builder
         smap_txt = _read_owned_text(_SOURCE_ID_MAP_PATH, 'i18n/source_id_map.json')
@@ -642,7 +645,7 @@ def _write_v2_localpack(out_path: str, surface_by_source_id: dict[str, str], fp:
                 break
         if exe_harvested is False and _localpack_is_harvested(out_path):
             logger.warning('arena_local_data: 採取できていないため辞書を作り直しません（いまの辞書は採取済み・Arena を起動してからやり直してください）: %s', out_path)
-            return
+            return False
         tmp_out = out_path + '.tmp'
         if os.path.exists(tmp_out):
             os.remove(tmp_out)
@@ -669,8 +672,10 @@ def _write_v2_localpack(out_path: str, surface_by_source_id: dict[str, str], fp:
             _key = 'aexe:' + _sid.split(':', 2)[1] if _sid.startswith('aexe:') else _sid.split(':', 1)[0]
             _grp[_key] = _grp.get(_key, 0) + 1
         logger.info('arena_local_data: built v2 localpack %s (originals=%d, source_ids=%d, warnings=%d, registry_version=%s, builder_version=%d, groups=%s)', out_path, summary.get('originals', 0), len(surface_by_source_id), len(summary.get('warnings', [])), bundle.get('registry_version'), _V2_BUILDER_VERSION, _grp)
+        return True
     except Exception as e:
         logger.warning('arena_local_data: v2 localpack 生成失敗: %s', e)
+        return False
 
 def rebuild_v2_localpack_standalone(user_dir: str) -> bool:
     lp_path = v2_localpack_path(user_dir)
@@ -688,8 +693,9 @@ def rebuild_v2_localpack_standalone(user_dir: str) -> bool:
         return False
     rich = dict(lp.v2_rich) or None
     gen_assets = dict(lp.generated_assets) or None
-    _write_v2_localpack(lp_path, surface, lp.arena_fingerprint, rich, generated_assets=gen_assets)
-    return True
+    meta = lp.meta
+    harvested = meta.get(_META_EXE_HARVEST)
+    return _write_v2_localpack(lp_path, surface, lp.arena_fingerprint, rich, generated_assets=gen_assets, content_version=meta.get(_META_CONTENT_VERSION), asset_set_id=meta.get(_META_ASSET_SET), asset_hashes=meta.get(_META_ASSET_HASHES), exe_harvested=harvested == '1' if harvested is not None else None)
 
 def v2_localpack_update_status(user_dir: str) -> dict | None:
     lp_path = v2_localpack_path(user_dir)

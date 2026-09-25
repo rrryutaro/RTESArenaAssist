@@ -41,6 +41,7 @@
   "status_buffer_text.settlement_format": "{type} di {name}",
   "status_buffer_text.travel_location_format": "{location}, provincia di {province}",
   "status_buffer_text.travel_arrival_format": "Giungi a {location}, nella provincia di {province}. La data è {date}. Per raggiungere la tua meta ci sono voluti {days} giorni.",
+  "status_buffer_text.travel_arrival_no_province_format": "Giungi a {location}. La data è {date}. Per raggiungere la tua meta ci sono voluti {days} giorni.",
   "status_buffer_text.already_in_format": "Ti trovi già a {place}.",
   "status_buffer_text.travel_estimate_format": "{location}, nella provincia di {province}. La data è {date1}. Viste le condizioni atmosferiche attuali, il viaggio richiederà {days} giorni. La distanza totale è di {km} km. Dovresti arrivare il {date2}.",
   "status_buffer_text.travel_condition_warning": "Viste le tue condizioni, potresti non sopravvivere a questo viaggio. Vuoi tentare il viaggio?",

@@ -19,8 +19,18 @@ class CityDoor:
     local_y: int
 
 def voxel_texture_index(map1_voxel: int) -> Optional[int]:
+    high_nibble = map1_voxel >> 12 & 15
     most = (map1_voxel & 32512) >> 8
     least = map1_voxel & 255
+    if high_nibble == 8:
+        return None
+    if high_nibble == 9:
+        return least - 1 if least else None
+    if high_nibble == 10:
+        edge = least & 63
+        return edge - 1 if edge else None
+    if high_nibble >= 8:
+        return None
     if most != least or most == 0:
         return None
     return most - 1
@@ -36,28 +46,32 @@ def city_menu_map() -> dict[int, int]:
 def texture_to_menu_id() -> dict[int, int]:
     return {tex: mid for mid, tex in city_menu_map().items()}
 
-def detect_city_doors(entries: Iterable, start_position: tuple[int, int], load_block_mif) -> list[CityDoor]:
+def _placement_at(placements: Iterable, x: int, y: int):
+    for placement in reversed(tuple(placements)):
+        if placement.original_x <= x < placement.original_x + placement.width and placement.original_y <= y < placement.original_y + placement.depth:
+            return placement
+    return None
+
+def detect_city_doors(map1, placements: Iterable) -> list[CityDoor]:
     tex_to_menu = texture_to_menu_id()
-    start_x, start_y = start_position
     doors: list[CityDoor] = []
-    for entry in entries:
-        if entry.block_mif is None:
-            continue
-        mif = load_block_mif(entry.block_mif)
-        if mif is None or not mif.levels:
-            continue
-        for local_y, row in enumerate(mif.levels[0].map1):
-            for local_x, voxel in enumerate(row):
-                tex = voxel_texture_index(voxel)
-                if tex is None:
-                    continue
-                menu_id = tex_to_menu.get(tex)
-                if menu_id is None:
-                    continue
-                menu_type = CITY_MENU_TYPES.get(menu_id)
-                if menu_type is None:
-                    continue
-                doors.append(CityDoor(original_x=start_x + entry.x_dim * 20 + local_x, original_y=start_y + entry.z_dim * 20 + local_y, menu_id=menu_id, menu_type=menu_type, block_mif=entry.block_mif, local_x=local_x, local_y=local_y))
+    sources = tuple(placements)
+    depth, width = map1.shape
+    for y in range(depth):
+        for x in range(width):
+            tex = voxel_texture_index(int(map1[y, x]))
+            if tex is None:
+                continue
+            menu_id = tex_to_menu.get(tex)
+            if menu_id is None:
+                continue
+            menu_type = CITY_MENU_TYPES.get(menu_id)
+            if menu_type is None:
+                continue
+            placement = _placement_at(sources, x, y)
+            if placement is None:
+                continue
+            doors.append(CityDoor(original_x=x, original_y=y, menu_id=menu_id, menu_type=menu_type, block_mif=placement.mif_name, local_x=x - placement.original_x, local_y=y - placement.original_y))
     return sorted(doors, key=lambda d: (d.original_y, d.original_x))
 
 def door_at(doors: Iterable[CityDoor], x: int, y: int, max_d2: int=2) -> Optional[CityDoor]:

@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:3af193f8a8bcf391936bfff5511cce173d2c92713693044befb339f93ac0ac14",
+  "registry_hash": "sha256:e3161ae3c8a870cf2b8c974dcceb42da40dff844ff0c0c6ec0adc1cc1c2b8928",
   "categories": [
     {
       "category": "assist_ui",
@@ -3806,6 +3806,66 @@
           "id": 900758,
           "kind": "label",
           "debug_name": "capture.hotkey_registered"
+        },
+        {
+          "id": 900759,
+          "kind": "label",
+          "debug_name": "map.facility_equipment"
+        },
+        {
+          "id": 900760,
+          "kind": "label",
+          "debug_name": "map.facility_mages_guild"
+        },
+        {
+          "id": 900761,
+          "kind": "label",
+          "debug_name": "map.facility_name_unavailable"
+        },
+        {
+          "id": 900762,
+          "kind": "label",
+          "debug_name": "map.facility_selected"
+        },
+        {
+          "id": 900763,
+          "kind": "label",
+          "debug_name": "map.facility_tavern"
+        },
+        {
+          "id": 900764,
+          "kind": "label",
+          "debug_name": "map.facility_temple"
+        },
+        {
+          "id": 900765,
+          "kind": "label",
+          "debug_name": "settings.map_color_facility_equipment"
+        },
+        {
+          "id": 900766,
+          "kind": "label",
+          "debug_name": "settings.map_color_facility_mages_guild"
+        },
+        {
+          "id": 900767,
+          "kind": "label",
+          "debug_name": "settings.map_color_facility_tavern"
+        },
+        {
+          "id": 900768,
+          "kind": "label",
+          "debug_name": "settings.map_color_facility_temple"
+        },
+        {
+          "id": 900769,
+          "kind": "label",
+          "debug_name": "settings.map_express_facilities"
+        },
+        {
+          "id": 900770,
+          "kind": "label",
+          "debug_name": "settings.map_facility_colors_note"
         }
       ]
     },
@@ -12967,6 +13027,10 @@
         },
         {
           "id": 406330,
+          "kind": "label"
+        },
+        {
+          "id": 406339,
           "kind": "label"
         }
       ]
@@ -42170,6 +42234,10 @@
         {
           "id": 452094,
           "kind": "label"
+        },
+        {
+          "id": 452095,
+          "kind": "label"
         }
       ]
     },
@@ -49899,6 +49967,54 @@
         {
           "id": 900758,
           "text": "Hotkey {hotkey} registered"
+        },
+        {
+          "id": 900759,
+          "text": "Equipment shop"
+        },
+        {
+          "id": 900760,
+          "text": "Mages Guild"
+        },
+        {
+          "id": 900761,
+          "text": "Name unavailable"
+        },
+        {
+          "id": 900762,
+          "text": "{facility}: {name}"
+        },
+        {
+          "id": 900763,
+          "text": "Tavern"
+        },
+        {
+          "id": 900764,
+          "text": "Temple"
+        },
+        {
+          "id": 900765,
+          "text": "Equipment shop"
+        },
+        {
+          "id": 900766,
+          "text": "Mages Guild"
+        },
+        {
+          "id": 900767,
+          "text": "Tavern"
+        },
+        {
+          "id": 900768,
+          "text": "Temple"
+        },
+        {
+          "id": 900769,
+          "text": "Facility entrance colors"
+        },
+        {
+          "id": 900770,
+          "text": "Colors apply only to building cells touching a target entrance. The red entrance remains unchanged."
         },
         {
           "id": 902000,
@@ -71666,6 +71782,10 @@
           "text": "西"
         },
         {
+          "id": 406339,
+          "text": "帝都"
+        },
+        {
           "id": 407000,
           "text": "非常に攻撃的な"
         },
@@ -74636,6 +74756,10 @@
         {
           "id": 452094,
           "text": "{trait}{occupation}の{name}"
+        },
+        {
+          "id": 452095,
+          "text": "{location}に到着した。日付は{date}。目的地まで{days}日かかった。"
         },
         {
           "id": 900000,
@@ -77668,6 +77792,54 @@
         {
           "id": 900758,
           "text": "ショートカットキー {hotkey} を登録しました"
+        },
+        {
+          "id": 900759,
+          "text": "装備品店"
+        },
+        {
+          "id": 900760,
+          "text": "魔術師ギルド"
+        },
+        {
+          "id": 900761,
+          "text": "固有名を取得できません"
+        },
+        {
+          "id": 900762,
+          "text": "{facility}：{name}"
+        },
+        {
+          "id": 900763,
+          "text": "宿屋"
+        },
+        {
+          "id": 900764,
+          "text": "神殿"
+        },
+        {
+          "id": 900765,
+          "text": "装備品店"
+        },
+        {
+          "id": 900766,
+          "text": "魔術師ギルド"
+        },
+        {
+          "id": 900767,
+          "text": "宿屋"
+        },
+        {
+          "id": 900768,
+          "text": "神殿"
+        },
+        {
+          "id": 900769,
+          "text": "施設入口を色分け"
+        },
+        {
+          "id": 900770,
+          "text": "対象入口に接する建物色のセルだけを施設色に置き換えます。赤い入口は変わりません。"
         },
         {
           "id": 902000,
@@ -100243,6 +100415,10 @@
           "text": "Oeste"
         },
         {
+          "id": 406339,
+          "text": "Imperial"
+        },
+        {
           "id": 407000,
           "text": "muy agresivo"
         },
@@ -103213,6 +103389,10 @@
         {
           "id": 452094,
           "text": "{occupation} {trait} de nombre {name}"
+        },
+        {
+          "id": 452095,
+          "text": "Has llegado a {location}. La fecha es {date}. Has tardado {days} días en llegar a tu destino."
         },
         {
           "id": 900000,
@@ -106245,6 +106425,54 @@
         {
           "id": 900758,
           "text": "Tecla {hotkey} registrada"
+        },
+        {
+          "id": 900759,
+          "text": "Tienda de equipo"
+        },
+        {
+          "id": 900760,
+          "text": "Gremio de Magos"
+        },
+        {
+          "id": 900761,
+          "text": "Nombre no disponible"
+        },
+        {
+          "id": 900762,
+          "text": "{facility}: {name}"
+        },
+        {
+          "id": 900763,
+          "text": "Posada"
+        },
+        {
+          "id": 900764,
+          "text": "Templo"
+        },
+        {
+          "id": 900765,
+          "text": "Tienda de equipo"
+        },
+        {
+          "id": 900766,
+          "text": "Gremio de Magos"
+        },
+        {
+          "id": 900767,
+          "text": "Posada"
+        },
+        {
+          "id": 900768,
+          "text": "Templo"
+        },
+        {
+          "id": 900769,
+          "text": "Colores de entradas de instalaciones"
+        },
+        {
+          "id": 900770,
+          "text": "Solo se colorean las celdas del edificio junto a una entrada objetivo. La entrada roja no cambia."
         },
         {
           "id": 902000,
@@ -128012,6 +128240,10 @@
           "text": "Westen"
         },
         {
+          "id": 406339,
+          "text": "Imperial"
+        },
+        {
           "id": 407000,
           "text": "sehr aggressiv"
         },
@@ -130982,6 +131214,10 @@
         {
           "id": 452094,
           "text": "{occupation} namens {name} ({trait})"
+        },
+        {
+          "id": 452095,
+          "text": "Du hast {location} erreicht. Das Datum ist {date}. Die Reise zu deinem Ziel hat {days} Tage gedauert."
         },
         {
           "id": 900000,
@@ -134014,6 +134250,54 @@
         {
           "id": 900758,
           "text": "Tastenkürzel {hotkey} registriert"
+        },
+        {
+          "id": 900759,
+          "text": "Ausrüstungsladen"
+        },
+        {
+          "id": 900760,
+          "text": "Magiergilde"
+        },
+        {
+          "id": 900761,
+          "text": "Name nicht verfügbar"
+        },
+        {
+          "id": 900762,
+          "text": "{facility}: {name}"
+        },
+        {
+          "id": 900763,
+          "text": "Gasthaus"
+        },
+        {
+          "id": 900764,
+          "text": "Tempel"
+        },
+        {
+          "id": 900765,
+          "text": "Ausrüstungsladen"
+        },
+        {
+          "id": 900766,
+          "text": "Magiergilde"
+        },
+        {
+          "id": 900767,
+          "text": "Gasthaus"
+        },
+        {
+          "id": 900768,
+          "text": "Tempel"
+        },
+        {
+          "id": 900769,
+          "text": "Einrichtungen farblich markieren"
+        },
+        {
+          "id": 900770,
+          "text": "Nur Gebäudefelder neben einem Zieleingang werden eingefärbt. Der rote Eingang bleibt unverändert."
         },
         {
           "id": 902000,
@@ -155781,6 +156065,10 @@
           "text": "Ouest"
         },
         {
+          "id": 406339,
+          "text": "l'Impériale"
+        },
+        {
           "id": 407000,
           "text": "très agressif"
         },
@@ -158751,6 +159039,10 @@
         {
           "id": 452094,
           "text": "{occupation} {trait} du nom de {name}"
+        },
+        {
+          "id": 452095,
+          "text": "Vous arrivez à {location}. La date est {date}. Il vous a fallu {days} jours pour atteindre votre destination."
         },
         {
           "id": 900000,
@@ -161783,6 +162075,54 @@
         {
           "id": 900758,
           "text": "Raccourci {hotkey} enregistré"
+        },
+        {
+          "id": 900759,
+          "text": "Magasin d’équipement"
+        },
+        {
+          "id": 900760,
+          "text": "Guilde des mages"
+        },
+        {
+          "id": 900761,
+          "text": "Nom indisponible"
+        },
+        {
+          "id": 900762,
+          "text": "{facility} : {name}"
+        },
+        {
+          "id": 900763,
+          "text": "Auberge"
+        },
+        {
+          "id": 900764,
+          "text": "Temple"
+        },
+        {
+          "id": 900765,
+          "text": "Magasin d’équipement"
+        },
+        {
+          "id": 900766,
+          "text": "Guilde des mages"
+        },
+        {
+          "id": 900767,
+          "text": "Auberge"
+        },
+        {
+          "id": 900768,
+          "text": "Temple"
+        },
+        {
+          "id": 900769,
+          "text": "Couleurs des entrées d’établissement"
+        },
+        {
+          "id": 900770,
+          "text": "Seules les cases de bâtiment attenantes à une entrée ciblée sont colorées. L’entrée rouge reste inchangée."
         },
         {
           "id": 902000,
@@ -183550,6 +183890,10 @@
           "text": "Ovest"
         },
         {
+          "id": 406339,
+          "text": "Imperiale"
+        },
+        {
           "id": 407000,
           "text": "estremamente aggressivo"
         },
@@ -186520,6 +186864,10 @@
         {
           "id": 452094,
           "text": "{occupation} {trait} di nome {name}"
+        },
+        {
+          "id": 452095,
+          "text": "Giungi a {location}. La data è {date}. Per raggiungere la tua meta ci sono voluti {days} giorni."
         },
         {
           "id": 900000,
@@ -189552,6 +189900,54 @@
         {
           "id": 900758,
           "text": "Tasto {hotkey} registrato"
+        },
+        {
+          "id": 900759,
+          "text": "Negozio di equipaggiamento"
+        },
+        {
+          "id": 900760,
+          "text": "Gilda dei maghi"
+        },
+        {
+          "id": 900761,
+          "text": "Nome non disponibile"
+        },
+        {
+          "id": 900762,
+          "text": "{facility}: {name}"
+        },
+        {
+          "id": 900763,
+          "text": "Locanda"
+        },
+        {
+          "id": 900764,
+          "text": "Tempio"
+        },
+        {
+          "id": 900765,
+          "text": "Negozio di equipaggiamento"
+        },
+        {
+          "id": 900766,
+          "text": "Gilda dei maghi"
+        },
+        {
+          "id": 900767,
+          "text": "Locanda"
+        },
+        {
+          "id": 900768,
+          "text": "Tempio"
+        },
+        {
+          "id": 900769,
+          "text": "Colori degli ingressi delle strutture"
+        },
+        {
+          "id": 900770,
+          "text": "Vengono colorate solo le celle dell’edificio adiacenti a un ingresso interessato. L’ingresso rosso resta invariato."
         },
         {
           "id": 902000,
@@ -211319,6 +211715,10 @@
           "text": "Запад"
         },
         {
+          "id": 406339,
+          "text": "Имперская"
+        },
+        {
           "id": 407000,
           "text": "крайне агрессивный"
         },
@@ -214289,6 +214689,10 @@
         {
           "id": 452094,
           "text": "{trait} {occupation} по имени {name}"
+        },
+        {
+          "id": 452095,
+          "text": "Вы прибыли в {location}. Дата: {date}. Путь до цели занял {days} дн."
         },
         {
           "id": 900000,
@@ -217321,6 +217725,54 @@
         {
           "id": 900758,
           "text": "Клавиша {hotkey} зарегистрирована"
+        },
+        {
+          "id": 900759,
+          "text": "Магазин снаряжения"
+        },
+        {
+          "id": 900760,
+          "text": "Гильдия магов"
+        },
+        {
+          "id": 900761,
+          "text": "Название недоступно"
+        },
+        {
+          "id": 900762,
+          "text": "{facility}: {name}"
+        },
+        {
+          "id": 900763,
+          "text": "Таверна"
+        },
+        {
+          "id": 900764,
+          "text": "Храм"
+        },
+        {
+          "id": 900765,
+          "text": "Магазин снаряжения"
+        },
+        {
+          "id": 900766,
+          "text": "Гильдия магов"
+        },
+        {
+          "id": 900767,
+          "text": "Таверна"
+        },
+        {
+          "id": 900768,
+          "text": "Храм"
+        },
+        {
+          "id": 900769,
+          "text": "Цвета входов в учреждения"
+        },
+        {
+          "id": 900770,
+          "text": "Окрашиваются только клетки здания рядом с целевым входом. Красный вход не изменяется."
         },
         {
           "id": 902000,

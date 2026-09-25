@@ -68,7 +68,15 @@ class TranslationFeed:
         self._last_spoken_role = speech_role
         self._remember_spoken(repeat_key)
         self._speaking_owner = panel_owner
-        self._tts.speak(self._apply_name_reading(read_text))
+        spoken_text = self._apply_name_reading(read_text)
+        if speech_action == 'queue':
+            speak_queued = getattr(self._tts, 'speak_queued', None)
+            if callable(speak_queued):
+                speak_queued(spoken_text)
+            else:
+                self._tts.speak(spoken_text)
+        else:
+            self._tts.speak(spoken_text)
 
     def _log_decision(self, decision: str, reason: str, owner: str, role: str | None, text: str) -> None:
         key = (decision, reason, owner, role, text)
@@ -93,6 +101,22 @@ class TranslationFeed:
                     self._tts.stop_speaking()
                 except Exception:
                     pass
+            self._speaking_owner = None
+        if owner == self._last_spoken_owner:
+            self._last_spoken = None
+            self._last_spoken_original = None
+            self._last_spoken_owner = None
+            self._last_spoken_role = None
+
+    def on_display_context_ended(self, owner: str) -> None:
+        if not owner:
+            return
+        if owner == self._speaking_owner:
+            self._log_decision('stop', 'display_context_ended', owner, self._last_spoken_role, self._last_spoken or '')
+            try:
+                self._tts.stop_speaking()
+            except Exception:
+                pass
             self._speaking_owner = None
         if owner == self._last_spoken_owner:
             self._last_spoken = None

@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import numpy as np
 from PySide6.QtCore import QPoint, QPointF, QRect, QSize, Qt, Signal
 from PySide6.QtGui import QAction, QColor, QFont, QMouseEvent, QPainter, QPainterPath, QPen, QPixmap, QPolygon, QWheelEvent
-from PySide6.QtWidgets import QMenu, QToolButton, QWidget
+from PySide6.QtWidgets import QApplication, QMenu, QToolButton, QWidget
 from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
 from services.arena_reveal_stencil import _map1_kind, is_full_height_raised, map1_diagonal_is_slash, resolve_full_raised_as_wall
 _log = logging.getLogger('common_draw.automap_canvas')
@@ -28,6 +28,7 @@ _CELL_COLORS_ARENA: dict[str, QColor] = {'wall': QColor(130, 89, 48), 'diagonal'
 _WILD_FIELD_FLOOR_ID = 2
 _CELL_COLORS_MAPVIEWER: dict[str, QColor] = {'wall': QColor(130, 89, 48), 'diagonal': QColor(130, 89, 48), 'raised': QColor(120, 120, 112), 'door': QColor(146, 0, 0), 'hidden_door': QColor(168, 85, 212), 'exit_door': QColor(146, 0, 0), 'level_up': QColor(0, 105, 0), 'level_down': QColor(0, 0, 255), 'wet_chasm': QColor(109, 138, 174), 'wall_chasm': QColor(74, 107, 130), 'wall_passage': QColor(45, 74, 72), 'wall_lava': QColor(160, 74, 24), 'dry_chasm': QColor(20, 40, 40), 'lava_chasm': QColor(255, 0, 0), 'wild_wall': QColor(109, 69, 32), 'wild_door': QColor(255, 0, 0), 'wild_road': QColor(199, 154, 90)}
 _CELL_COLOR_UNKNOWN = QColor(204, 68, 255)
+_FACILITY_DEFAULT_COLORS: dict[str, QColor] = {'facility_tavern': QColor(255, 176, 0), 'facility_equipment': QColor(47, 158, 216), 'facility_temple': QColor(88, 166, 92), 'facility_mages_guild': QColor(139, 92, 246)}
 _PIPE_WIDTH_RATIO = 0.22
 
 def pipe_fill_color(base: QColor) -> QColor:
@@ -41,10 +42,20 @@ _TREASURE_MARK_EDGE = QColor(74, 51, 0)
 def default_color_hex(key: str) -> str:
     if key == 'treasure':
         return _TREASURE_MARK.name()
+    facility = _FACILITY_DEFAULT_COLORS.get(key)
+    if facility is not None:
+        return facility.name()
     col = _CELL_COLORS_ARENA.get(key)
     return col.name() if col is not None else _CELL_COLOR_UNKNOWN.name()
 _VIS_ALPHA: dict[int, int] = {1: 100, 2: 180, 3: 255}
 _REVEAL_ALL_ALPHA = 255
+
+@dataclass(frozen=True)
+class FacilityEntranceMarker:
+    x: int
+    y: int
+    kind: str
+    display_name: str | None = ''
 
 @dataclass
 class CanvasData:
@@ -59,6 +70,7 @@ class CanvasData:
     level_up_index: int | None = None
     level_down_index: int | None = None
     entrance_cells: tuple[tuple[int, int], ...] = ()
+    facility_entrances: tuple[FacilityEntranceMarker, ...] = ()
     flat_marks: tuple[tuple[int, int, str], ...] = ()
     edge_marks: tuple[tuple[int, int, str], ...] = ()
     crop_marks: tuple[tuple[int, int, str], ...] = ()
@@ -284,6 +296,7 @@ def _ui_text(key: str) -> str:
 
 class AutomapCanvas(QWidget):
     refresh_requested = Signal()
+    facility_selected = Signal(object)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -305,6 +318,7 @@ class AutomapCanvas(QWidget):
         self._express_wall_passage = True
         self._express_wall_lava = True
         self._express_treasure = True
+        self._express_facilities = True
         self._pipe_under = True
         self._pipe_opacity = 100
         self._color_overrides: dict = {}
@@ -313,10 +327,13 @@ class AutomapCanvas(QWidget):
         self._zoom: float = _DEFAULT_ZOOM
         self._pan: QPointF = QPointF(0, 0)
         self._drag_last: QPointF | None = None
+        self._press_pos: QPointF | None = None
+        self._drag_moved = False
         self._user_panned = False
         self._fit_mode = False
         self._data_view_key: tuple | None = None
         self._diag_prev_paint: tuple = ()
+        self._facility_hit_cells: dict[tuple[int, int], FacilityEntranceMarker] = {}
         self.setMouseTracking(True)
         self.setMinimumSize(420, 420)
         self.setStyleSheet('background-color: #1a1a2e;')
@@ -329,6 +346,9 @@ class AutomapCanvas(QWidget):
         next_key = self._canvas_data_view_key(data)
         data_changed = prev_key != next_key
         self._data = data
+        if prev_map_key != data.map_key:
+            self._facility_hit_cells = {}
+            self.facility_selected.emit(None)
         if self._center_on_player and self._user_panned and (not self._fit_mode) and (prev_map_key == data.map_key) and (prev_x is not None) and (prev_y is not None) and (data.player_x is not None) and (data.player_y is not None) and ((prev_x, prev_y) != (data.player_x, data.player_y)):
             self._user_panned = False
         if data_changed:
@@ -545,12 +565,17 @@ class AutomapCanvas(QWidget):
     def _should_suppress_unpositioned_map(self) -> bool:
         return self._map_suppression_reason() == 'unpositioned_center_follow'
 
-    def set_map_expression(self, *, hidden_door: bool, wall_chasm: bool, wall_passage: bool, wall_lava: bool, treasure: bool) -> None:
+    def set_map_expression(self, *, hidden_door: bool, wall_chasm: bool, wall_passage: bool, wall_lava: bool, treasure: bool, facilities: bool=True) -> None:
         self._express_hidden_door = bool(hidden_door)
         self._express_wall_chasm = bool(wall_chasm)
         self._express_wall_passage = bool(wall_passage)
         self._express_wall_lava = bool(wall_lava)
         self._express_treasure = bool(treasure)
+        was_facilities = self._express_facilities
+        self._express_facilities = bool(facilities)
+        if was_facilities and (not self._express_facilities):
+            self._facility_hit_cells = {}
+            self.facility_selected.emit(None)
         self.update()
 
     def set_pipe_under(self, *, enabled: bool, opacity: int) -> None:
@@ -668,11 +693,12 @@ class AutomapCanvas(QWidget):
             painter.drawPath(path)
 
     def _palette(self) -> dict[str, QColor]:
-        base = _CELL_COLORS_MAPVIEWER if self._reveal_all else _CELL_COLORS_ARENA
+        base = dict(_CELL_COLORS_MAPVIEWER if self._reveal_all else _CELL_COLORS_ARENA)
+        base.update(_FACILITY_DEFAULT_COLORS)
         overrides = self._color_overrides
         if not overrides:
             return base
-        merged = dict(base)
+        merged = base
         for key, hexval in overrides.items():
             if key == 'treasure' or not hexval:
                 continue
@@ -801,6 +827,7 @@ class AutomapCanvas(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
+        self._facility_hit_cells = {}
         if self._show_unexplored_floor or self._reveal_all:
             painter.fillRect(self.rect(), _PARCHMENT)
         else:
@@ -826,6 +853,17 @@ class AutomapCanvas(QWidget):
         pipe_cells: dict[tuple[int, int], tuple[str, int]] = {}
         hole_cells: set[tuple[int, int]] = set()
         entrance_set: set[tuple[int, int]] = set(d.entrance_cells) if d.entrance_cells else set()
+        facility_markers = tuple(d.facility_entrances) if self._express_facilities else ()
+        entrance_set.update(((m.x, m.y) for m in facility_markers))
+        facility_at_entrance = {(m.x, m.y): m for m in facility_markers}
+        facility_candidates: dict[tuple[int, int], list[tuple[int, FacilityEntranceMarker]]] = {}
+        for order, marker in enumerate(facility_markers):
+            for dy in (-1, 0, 1):
+                for dx in (-1, 0, 1):
+                    if dx == 0 and dy == 0:
+                        continue
+                    facility_candidates.setdefault((marker.x + dx, marker.y + dy), []).append((order, marker))
+        rendered_facility_hits: dict[tuple[int, int], FacilityEntranceMarker] = {}
         discovered_hd: set[tuple[int, int]] = set(d.discovered_hidden_door_cells) if d.discovered_hidden_door_cells else set()
         discovered_wp: set[tuple[int, int]] = set(d.discovered_wall_passage_cells) if d.discovered_wall_passage_cells else set()
         edge_set: set[tuple[int, int]] = {(x, z) for x, z, _c in d.edge_marks} if d.edge_marks else set()
@@ -868,6 +906,15 @@ class AutomapCanvas(QWidget):
                 ck = crop_kind.get((x, y))
                 if ck is not None:
                     cell_kind = ck
+                marker = facility_at_entrance.get((x, y))
+                if marker is not None:
+                    rendered_facility_hits[x, y] = marker
+                elif cell_kind in ('wall', 'wild_wall') and (not bool(d.walkable[y, x])):
+                    candidates = facility_candidates.get((x, y), ())
+                    if candidates:
+                        _order, marker = min(candidates, key=lambda item: ((x - item[1].x) ** 2 + (y - item[1].y) ** 2, item[0]))
+                        cell_kind = f'facility_{marker.kind}'
+                        rendered_facility_hits[x, y] = marker
                 if cell_kind == 'floor':
                     cells_drawn.append((x, y, rect))
                     continue
@@ -878,6 +925,7 @@ class AutomapCanvas(QWidget):
                 base_color = palette.get(cell_kind, _CELL_COLOR_UNKNOWN)
                 painter.fillRect(rect, _blend_color(base_color, vis, self._reveal_all))
                 cells_drawn.append((x, y, rect))
+        self._facility_hit_cells = rendered_facility_hits
         if pipe_cells:
             self._paint_pipes(painter, pipe_cells, hole_cells, {(cx, cy): crect for cx, cy, crect in cells_drawn})
         treasure_cells = d.treasure_cells or frozenset() if self._express_treasure else frozenset()
@@ -1020,14 +1068,34 @@ class AutomapCanvas(QWidget):
                     painter.drawLine(int(ex), int(ey), int(lx), int(ly))
                     painter.drawLine(int(ex), int(ey), int(rxh), int(ryh))
 
+    def _cell_at_position(self, pos: QPointF) -> tuple[int, int] | None:
+        d = self._data
+        if d.walkable is None or self._zoom <= 0:
+            return None
+        h, w = d.walkable.shape
+        canvas_w = w * self._zoom
+        canvas_h = h * self._zoom
+        ox = (self.width() - canvas_w) / 2 + self._pan.x()
+        oy = (self.height() - canvas_h) / 2 + self._pan.y()
+        sx = math.floor((pos.x() - ox) / self._zoom)
+        sy = math.floor((pos.y() - oy) / self._zoom)
+        if not (0 <= sx < w and 0 <= sy < h):
+            return None
+        x = w - 1 - sx if self._x_flip else sx
+        return (int(x), int(sy))
+
     def mousePressEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
             self._drag_last = event.position()
+            self._press_pos = event.position()
+            self._drag_moved = False
 
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
         if self._drag_last is not None:
             cur = event.position()
             delta = cur - self._drag_last
+            if self._press_pos is not None and (cur - self._press_pos).manhattanLength() >= QApplication.startDragDistance():
+                self._drag_moved = True
             self._pan += delta
             self._drag_last = cur
             if delta.x() != 0 or delta.y() != 0:
@@ -1039,7 +1107,14 @@ class AutomapCanvas(QWidget):
 
     def mouseReleaseEvent(self, event: QMouseEvent) -> None:
         if event.button() == Qt.MouseButton.LeftButton:
+            if not self._drag_moved:
+                cell = self._cell_at_position(event.position())
+                marker = self._facility_hit_cells.get(cell) if cell is not None else None
+                selection = (marker, QPointF(event.position())) if marker is not None else None
+                self.facility_selected.emit(selection)
             self._drag_last = None
+            self._press_pos = None
+            self._drag_moved = False
 
     def wheelEvent(self, event: QWheelEvent) -> None:
         delta = event.angleDelta().y()

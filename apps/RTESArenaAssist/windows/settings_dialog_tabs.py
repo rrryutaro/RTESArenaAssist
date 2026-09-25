@@ -403,7 +403,8 @@ def build_map_tab(dlg: '_SettingsDialog') -> QWidget:
     return page
 _MAP_EXPRESSION_ROWS = (('map_express_hidden_door', 'hidden_door', 'settings.map_express_hidden_door'), ('map_express_wall_chasm', 'wall_chasm', 'settings.map_express_wall_chasm'), ('map_express_wall_passage', 'wall_passage', 'settings.map_express_wall_passage'), ('map_express_wall_lava', 'wall_lava', 'settings.map_express_wall_lava'), ('map_express_treasure', 'treasure', 'settings.map_express_treasure'))
 _MAP_BASE_COLOR_ROWS = (('wall', 'settings.map_color_wall'), ('raised', 'settings.map_color_raised'), ('door', 'settings.map_color_door'), ('level_up', 'settings.map_color_level_up'), ('level_down', 'settings.map_color_level_down'), ('wet_chasm', 'settings.map_color_wet_chasm'), ('dry_chasm', 'settings.map_color_dry_chasm'), ('lava_chasm', 'settings.map_color_lava_chasm'))
-_MAP_COLOR_PRESETS = {'hidden_door': ('#8e44c0', '#b06fd8', '#7d5fa8'), 'wall_chasm': ('#3f5d70', '#5b7285', '#4f7370'), 'wall_passage': ('#3c5a54', '#405048', '#26403e'), 'wall_lava': ('#8c3f14', '#b25a22', '#96502a'), 'treasure': ('#f0b429', '#e8c35a', '#ffe9a0'), 'wall': ('#6d4520', '#96693a'), 'raised': ('#787870', '#554c36'), 'door': ('#b01010', '#7a0000'), 'level_up': ('#0a8a2a', '#00520a'), 'level_down': ('#2a4ad0', '#0a2a8a'), 'wet_chasm': ('#5f7ea4', '#7f9cbe'), 'dry_chasm': ('#22302f', '#0d1c1c'), 'lava_chasm': ('#e02010', '#ff5a20')}
+_MAP_FACILITY_COLOR_ROWS = (('facility_tavern', 'settings.map_color_facility_tavern'), ('facility_equipment', 'settings.map_color_facility_equipment'), ('facility_temple', 'settings.map_color_facility_temple'), ('facility_mages_guild', 'settings.map_color_facility_mages_guild'))
+_MAP_COLOR_PRESETS = {'hidden_door': ('#8e44c0', '#b06fd8', '#7d5fa8'), 'wall_chasm': ('#3f5d70', '#5b7285', '#4f7370'), 'wall_passage': ('#3c5a54', '#405048', '#26403e'), 'wall_lava': ('#8c3f14', '#b25a22', '#96502a'), 'treasure': ('#f0b429', '#e8c35a', '#ffe9a0'), 'wall': ('#6d4520', '#96693a'), 'raised': ('#787870', '#554c36'), 'door': ('#b01010', '#7a0000'), 'level_up': ('#0a8a2a', '#00520a'), 'level_down': ('#2a4ad0', '#0a2a8a'), 'wet_chasm': ('#5f7ea4', '#7f9cbe'), 'dry_chasm': ('#22302f', '#0d1c1c'), 'lava_chasm': ('#e02010', '#ff5a20'), 'facility_tavern': ('#e69f00', '#d98c20', '#f0b429'), 'facility_equipment': ('#56b4e9', '#4f7cac', '#78b7d0'), 'facility_temple': ('#009e73', '#c9a227', '#72b879'), 'facility_mages_guild': ('#cc79a7', '#7c4dcc', '#a875f0')}
 
 def _build_map_expression_group(dlg: '_SettingsDialog') -> QGroupBox:
     from common_draw.automap_canvas import default_color_hex
@@ -438,6 +439,25 @@ def _build_map_expression_group(dlg: '_SettingsDialog') -> QGroupBox:
             lay.addWidget(dlg._map_treasure_mark_edit)
         lay.addStretch()
         form.addRow(i18n.tr(label_key) + ':', row)
+    facility_toggle = QCheckBox(i18n.tr('settings.map_express_on'))
+    facility_toggle.setChecked(bool(settings.get('map_express_facilities', True)))
+    dlg._map_express_cbs['map_express_facilities'] = facility_toggle
+    form.addRow(i18n.tr('settings.map_express_facilities') + ':', facility_toggle)
+    facility_note = QLabel(i18n.tr('settings.map_facility_colors_note'))
+    facility_note.setObjectName('dimLabel')
+    facility_note.setWordWrap(True)
+    form.addRow(facility_note)
+    facility_color_widgets = []
+    for color_key, label_key in _MAP_FACILITY_COLOR_ROWS:
+        widget = _make_color_widget(dlg, color_key, saved, default_color_hex(color_key))
+        facility_color_widgets.append(widget)
+        form.addRow(i18n.tr(label_key) + ':', widget)
+
+    def _sync_facility_colors(enabled: bool) -> None:
+        for widget in facility_color_widgets:
+            widget.setEnabled(enabled)
+    facility_toggle.toggled.connect(_sync_facility_colors)
+    _sync_facility_colors(facility_toggle.isChecked())
     pipe_row = QWidget()
     pipe_lay = QHBoxLayout(pipe_row)
     pipe_lay.setContentsMargins(0, 0, 0, 0)

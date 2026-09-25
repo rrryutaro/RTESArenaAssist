@@ -19,6 +19,7 @@ from normal_play import npc_conversation_module as _npc_conversation
 from normal_play import npc_message_module as _npc_message
 from normal_play import temple_render_module as _temple_render
 from normal_play import instore_dialog_module as _instore_dialog
+from screen_display_copy import poll_display_copy as _poll_display_copy
 from top_level.normal_play_state import poll_sessions as _poll_normal_play_sessions
 from top_level.top_level_dispatcher import build_session_context as _build_session_context, current_state as _current_top_level
 from controllers.poll_diag import _checkpoint, _phase_record, _phase_start
@@ -483,6 +484,17 @@ def reset_map_progress_on_load(w) -> None:
         except (AttributeError, RuntimeError):
             _log.exception('reset_progress failed on load')
 
+def reset_coord_transition_on_world_jump(w) -> None:
+    w._coord_gate_loc_prev = None
+    w._coord_gate_active = False
+    w._coord_gate_pre_coord = None
+    w._coord_gate_pre_loc = None
+    w._coord_gate_load_pending = False
+    w._coord_gate_coord_prev = None
+    tab = getattr(w, '_tab_map', None) or _fallback_map_tab_or_none(w)
+    if tab is not None:
+        tab.reset_coordinate_continuity()
+
 def _fallback_map_tab_or_none(w):
     try:
         return w._tab_translate.fallback_map_tab()
@@ -634,6 +646,11 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
                 _shown = _poll_shop_sign(w, door_pos=door_pos, facility_info=facility_info)
                 if _shown:
                     interior_facility_name = _shown
+                    _map_x = getattr(facility_info, 'map_x', None)
+                    _map_y = getattr(facility_info, 'map_y', None)
+                    if _map_x is not None and _map_y is not None:
+                        from normal_play.map.dispatcher import get_dispatcher
+                        get_dispatcher().observe_city_facility_name(location_name, _map_x, _map_y, _shown)
                 display_mif_name = interior_mif_name
             if getattr(w, '_entry_door_logged', None) != door_pos:
                 w._entry_door_logged = door_pos
@@ -1575,8 +1592,12 @@ class PollController:
                 w._npc_dialog_prev = npc_dialog
             if _top_is_normal_play:
                 _poll_status_popup(w, entry_handled=_entry_handled)
+            _poll_display_copy(w, gameplay=bool(_top_is_normal_play and _b30.get('in_gameplay')))
             if _top_is_normal_play:
                 _poll_cinematic_dispatch(w, _b30)
+            else:
+                from normal_play.cinematic_module import forget_scene
+                forget_scene(w)
             _poll_band_c1_and_lock_units(w, _b30=_b30, _top_is_normal_play=_top_is_normal_play, _screen_display_active=_screen_display_active, rt_x=rt_x, rt_z=rt_z, inf_name=inf_name, mif_name=mif_name, _poll_hierarchy_area=_poll_hierarchy_area, _instore_resp_handled=_instore_resp_handled)
             _level_up_continue = _poll_level_up_and_item_pickup(w, _top_is_normal_play=_top_is_normal_play, _loading_post_settle=_loading_post_settle, _newpop_gate=_newpop_gate, _b30_img_name=_b30_img_name, npc_dialog=npc_dialog, _shop_buy_active=_shop_buy_active, _shop_menu_visible=_shop_menu_visible, _active_facility_name=_active_facility_name, _inventory_screen_now=_inventory_screen_now)
             _img_name = _poll_detect_img_name(w)

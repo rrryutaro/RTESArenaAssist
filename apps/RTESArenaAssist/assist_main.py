@@ -117,9 +117,12 @@ def _maybe_update_dictionary() -> None:
             return
         QApplication.setOverrideCursor(Qt.WaitCursor)
         try:
-            _ald.rebuild_v2_localpack_standalone(_USER_DIR)
+            updated = _ald.rebuild_v2_localpack_standalone(_USER_DIR)
         finally:
             QApplication.restoreOverrideCursor()
+        if not updated:
+            logging.getLogger('RTESArenaAssist').warning('辞書の再写像は完了しませんでした（重い再生成の判定へ継続）')
+            return
         _cfg = settings.get('i18n_v2_categories')
         _cats = set(_cfg) if _cfg else set(i18n.PHASE5_ENABLE_SET)
         _owned_i18n_path('i18n/degraded_accepted.json')
@@ -176,7 +179,9 @@ def _maybe_regen_localpack() -> None:
 
             def run(self):
                 try:
-                    _ald.build_local_pack(self._arena_dir, self._user_dir, self._analyzer, classification=self._cls, progress=lambda f, l: self.progressed.emit(float(f), str(l)))
+                    result = _ald.build_local_pack(self._arena_dir, self._user_dir, self._analyzer, classification=self._cls, progress=lambda f, l: self.progressed.emit(float(f), str(l)))
+                    if result is None:
+                        self.failed = True
                 except Exception:
                     self.failed = True
         worker = _RegenWorker(_arena_dir, _USER_DIR, analyzer, cls)
@@ -193,6 +198,8 @@ def _maybe_regen_localpack() -> None:
         dlg.close()
         if not worker.failed:
             _reinit_translation_after_wizard(_arena_dir)
+        else:
+            logging.getLogger('RTESArenaAssist').warning('辞書再生成は完了しませんでした（既存の辞書で継続）')
     except Exception:
         logging.getLogger('RTESArenaAssist').warning('辞書再生成フローに失敗（既存の辞書で継続）', exc_info=True)
     finally:

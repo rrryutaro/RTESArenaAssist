@@ -66,6 +66,12 @@ def _aexe_part(key: str, index: int) -> str:
 def equipment_name_parts(prefix_index: int, suffix_index: int) -> tuple[str, str]:
     return (_aexe_part('equipment_prefixes', prefix_index), _aexe_part('equipment_suffixes', suffix_index))
 
+def tavern_name_parts() -> tuple[tuple[str, ...], tuple[str, ...]]:
+    data = _load_aexe_city_generation()
+    prefixes = tuple((value for value in data.get('tavern_prefixes', ()) if isinstance(value, str) and value))
+    suffixes = tuple(dict.fromkeys((value for key in ('tavern_suffixes', 'tavern_marine_suffixes') for value in data.get(key, ()) if isinstance(value, str) and value)))
+    return (prefixes, suffixes)
+
 def translate_place_name(en: str, category: str) -> Optional[str]:
     return _lookup_place_ja(en, category)
 

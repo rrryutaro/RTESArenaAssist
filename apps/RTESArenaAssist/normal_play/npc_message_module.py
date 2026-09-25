@@ -1,11 +1,59 @@
 from __future__ import annotations
 import logging
+from assist_log import recog as _recog
+from screen_detector import POPUP_FRAME_ABSENT_POLLS_TO_END
 _log = logging.getLogger('RTESArenaAssist')
 NPC_MESSAGE_OWNER = 'npc_message'
 _MSG_BUF_OFFSET = 39582
 _MSG_BUF_READ = 512
 _MSG_CONT_OFFSET = 37534
 _MSG_CONT_READ = 512
+
+def _reset_npc_message_popup_tracking(w) -> None:
+    w._npc_message_popup_frame_seen = False
+    w._npc_message_popup_frame_absent_polls = 0
+    w._npc_message_popup_route = ''
+    w._npc_message_popup_keep_key = None
+    w._npc_message_popup_screen_img = ''
+
+def poll_npc_message_popup_lifetime(w, *, popup_frame, popup_frame_drawn, screen_img: str='') -> bool:
+    start_img = str(getattr(w, '_npc_message_popup_screen_img', '') or '')
+    current_img = str(screen_img or '').upper()
+    surface_ended = bool(start_img and current_img and (current_img != start_img))
+    frame_ended = False
+    if getattr(w, '_npc_message_popup_frame_seen', False):
+        if popup_frame_drawn is True:
+            w._npc_message_popup_frame_absent_polls = 0
+        elif popup_frame_drawn is False:
+            absent = getattr(w, '_npc_message_popup_frame_absent_polls', 0) + 1
+            w._npc_message_popup_frame_absent_polls = absent
+            frame_ended = absent >= POPUP_FRAME_ABSENT_POLLS_TO_END
+    if not surface_ended and (not frame_ended):
+        return False
+    keep = getattr(w, '_npc_message_popup_keep_key', None)
+    if keep:
+        try:
+            if not w._ui_router.is_displaying(NPC_MESSAGE_OWNER, *keep):
+                _reset_npc_message_popup_tracking(w)
+                return False
+        except (AttributeError, RuntimeError):
+            pass
+    w._ui_router.notify_display_context_ended(NPC_MESSAGE_OWNER)
+    w._ui_router.clear_if_owner(NPC_MESSAGE_OWNER, notify_close=False)
+    route = getattr(w, '_npc_message_popup_route', '')
+    _reset_npc_message_popup_tracking(w)
+    reason = 'screen surface ended' if surface_ended else 'popup frame ended'
+    _recog(_log, 'npc_message closed: route=%s reason=%s', route, reason)
+    return True
+
+def _remember_npc_message_popup(w, *, popup_frame, frame_drawn, screen_img: str, route: str, keep: tuple[str, str]) -> None:
+    w._npc_message_popup_route = route
+    w._npc_message_popup_keep_key = keep
+    if not getattr(w, '_npc_message_popup_screen_img', '') and screen_img:
+        w._npc_message_popup_screen_img = str(screen_img).upper()
+    if frame_drawn is True:
+        w._npc_message_popup_frame_seen = True
+        w._npc_message_popup_frame_absent_polls = 0
 
 def _normalize_msg_text(text: str) -> str:
     return ' '.join(text.split())
@@ -56,6 +104,8 @@ def _build_msg_foreground_candidates(w) -> list[str]:
     return candidates
 
 def _poll_route_msg_foreground(w, ctx, *, in_interior: bool, facility_active_now: bool, c_area: str) -> bool:
+    if getattr(ctx, 'npc_message_popup_closed', False):
+        return False
     if not getattr(ctx, 'msg_text_on_screen', False):
         return False
     if in_interior or c_area == 'dungeon' or getattr(w, '_npc_conversation_active', False) or facility_active_now:
@@ -87,6 +137,7 @@ def _poll_route_msg_foreground(w, ctx, *, in_interior: bool, facility_active_now
     en, ja = (cache[2], cache[3])
     if not en or not ja:
         return False
+    _remember_npc_message_popup(w, popup_frame=getattr(ctx, 'popup_frame', None), frame_drawn=getattr(ctx, 'popup_frame_drawn', None), screen_img=getattr(ctx, 'screen_img', ''), route='msg_foreground', keep=(en, ja))
     keep = (en, ja)
     if ctx.dialog_just_opened or getattr(w, '_msg_foreground_keep_key', None) != keep:
         w._msg_foreground_keep_key = keep
@@ -101,25 +152,29 @@ def _poll_route3_dungeon_msg(w, ctx, *, npc_dialog: str, npc_dialog_changed: boo
             _npc_ja = _dml.lookup(npc_dialog)
             if _npc_ja:
                 w._ui_router.update_translation(NPC_MESSAGE_OWNER, npc_dialog, _npc_ja, speech_role='situation')
+                _remember_npc_message_popup(w, popup_frame=getattr(ctx, 'popup_frame', None), frame_drawn=getattr(ctx, 'popup_frame_drawn', None), screen_img=getattr(ctx, 'screen_img', ''), route='dungeon_msg', keep=(npc_dialog, _npc_ja))
                 _log.info('panel_owner -> npc_message (route=dungeon_msg, text=%r)', npc_dialog)
                 return True
         except (ImportError, AttributeError):
             pass
     return False
 
-def _poll_route4a_arrival(w, *, npc_dialog: str, npc_dialog_changed: bool, dialog_just_opened: bool, facility_active_now: bool) -> bool:
-    _arrival_text = ' '.join(npc_dialog.split()) if npc_dialog else ''
-    if _arrival_text.startswith('You have arrived in') and (npc_dialog_changed or dialog_just_opened) and (not facility_active_now):
+def _poll_route4a_arrival(w, *, npc_dialog: str, npc_dialog_changed: bool, dialog_just_opened: bool, facility_active_now: bool, screen_img: str='', popup_frame=None, popup_frame_drawn=None) -> bool:
+    try:
+        import npc_dialog_lookup as _ndl_arr
+    except ImportError:
+        return False
+    if _ndl_arr.is_arrival_text(npc_dialog) and (npc_dialog_changed or dialog_just_opened) and (not facility_active_now):
         try:
-            import npc_dialog_lookup as _ndl_arr
             _arr_result = _ndl_arr.lookup(npc_dialog)
             if _arr_result:
                 _arr_tmpl, _arr_ph = _arr_result
                 _arr_ja = _ndl_arr.format_japanese(_arr_tmpl, _arr_ph)
                 w._ui_router.update_translation(NPC_MESSAGE_OWNER, npc_dialog, _arr_ja, speech_role='conversation')
+                _remember_npc_message_popup(w, popup_frame=popup_frame, frame_drawn=popup_frame_drawn, screen_img=screen_img, route='arrival', keep=(npc_dialog, _arr_ja))
                 _log.info('npc_message displayed (route=arrival text=%r)', npc_dialog[:80])
                 return True
-        except (ImportError, AttributeError):
+        except AttributeError:
             pass
     return False
 
@@ -160,7 +215,8 @@ def poll_travel_event_lifecycle(w, *, npc_dialog: str, screen_img: str, facility
 
 def close_on_modal_overlay(w) -> None:
     try:
+        _reset_npc_message_popup_tracking(w)
         w._ui_router.clear_if_owner(NPC_MESSAGE_OWNER, mode='translate', clear_place_list=True)
     except (AttributeError, RuntimeError):
         pass
-__all__ = ['NPC_MESSAGE_OWNER', 'close_on_modal_overlay', '_poll_route_msg_foreground', '_poll_route3_dungeon_msg', '_poll_route4a_arrival', 'poll_travel_event_lifecycle']
+__all__ = ['NPC_MESSAGE_OWNER', 'close_on_modal_overlay', '_poll_route_msg_foreground', '_poll_route3_dungeon_msg', '_poll_route4a_arrival', 'poll_npc_message_popup_lifetime', 'poll_travel_event_lifecycle']

@@ -41,6 +41,7 @@
   "status_buffer_text.settlement_format": "{type} «{name}»",
   "status_buffer_text.travel_location_format": "{location}, провинция {province}",
   "status_buffer_text.travel_arrival_format": "Вы прибыли в {location}, провинция {province}. Дата: {date}. Путь до цели занял {days} дн.",
+  "status_buffer_text.travel_arrival_no_province_format": "Вы прибыли в {location}. Дата: {date}. Путь до цели занял {days} дн.",
   "status_buffer_text.already_in_format": "Вы уже находитесь в {place}.",
   "status_buffer_text.travel_estimate_format": "{location}, провинция {province}. Дата: {date1}. Судя по текущей погоде, путь займёт {days} дн. Общее расстояние — {km} км. Ожидаемое прибытие: {date2}.",
   "status_buffer_text.travel_condition_warning": "В твоём состоянии ты можешь не пережить это путешествие. Всё равно отправиться в путь?",

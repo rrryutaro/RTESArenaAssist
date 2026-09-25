@@ -22,4 +22,15 @@ def extract_displayed_name(text: str, expected_suffix: str, prefixes: Iterable[s
         return None
     m = pattern.search(text)
     return m.group() if m is not None else None
-__all__ = ['extract_displayed_name']
+
+def extract_tavern_displayed_name(text: str, prefixes: Iterable[str], suffixes: Iterable[str]) -> Optional[str]:
+    if not text:
+        return None
+    prefix_values = tuple((value for value in prefixes if value))
+    suffix_values = tuple((value for value in suffixes if value))
+    if not prefix_values or not suffix_values:
+        return None
+    pattern = re.compile('(?<![A-Za-z])(?:' + '|'.join((re.escape(value) for value in prefix_values)) + ') (?:' + '|'.join((re.escape(value) for value in suffix_values)) + ')(?![A-Za-z])')
+    match = pattern.search(text)
+    return match.group() if match is not None else None
+__all__ = ['extract_displayed_name', 'extract_tavern_displayed_name']

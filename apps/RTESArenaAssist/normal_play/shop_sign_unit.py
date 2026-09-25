@@ -8,6 +8,7 @@ def _reset(w, door_pos) -> None:
     w._shop_sign_door = door_pos
     w._shop_sign_name = None
     w._shop_sign_en = ''
+    w._shop_sign_entry_text = ''
 
 def release_shop_sign(w) -> None:
     _reset(w, None)
@@ -24,16 +25,17 @@ def poll_shop_sign(w, *, door_pos, facility_info) -> Optional[str]:
     text = current_entry_text(w)
     if not text:
         return None
+    if text == getattr(w, '_shop_sign_entry_text', ''):
+        return None
+    w._shop_sign_entry_text = text
     from city_viewer_bridge import extract_shop_sign, translate_shop_sign
     observed = extract_shop_sign(text, facility_info)
     list_en = getattr(facility_info, 'name_en', '') or ''
     if not observed or observed == list_en:
-        w._shop_sign_name = ''
         w._shop_sign_en = observed or ''
         return None
     ja = translate_shop_sign(observed, facility_info)
     if not ja:
-        w._shop_sign_name = ''
         w._shop_sign_en = observed
         return None
     w._shop_sign_name = ja

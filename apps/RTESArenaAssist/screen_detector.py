@@ -107,13 +107,15 @@ def _read_display_key(analyzer, comp_base: int) -> bytes | None:
         return None
     return bytes(key)
 
-def resolve_display_buffer(analyzer, anchor: int) -> int | None:
+def read_display_key(analyzer, anchor: int) -> bytes | None:
     if analyzer is None or not anchor:
         return None
-    comp_base = anchor + SCREEN_BUFFER_OFFSET
-    key = _read_display_key(analyzer, comp_base)
-    if key is None:
+    return _read_display_key(analyzer, anchor + SCREEN_BUFFER_OFFSET)
+
+def find_display_copy(analyzer, anchor: int, key: bytes) -> int | None:
+    if analyzer is None or not anchor or (not key):
         return None
+    comp_base = anchor + SCREEN_BUFFER_OFFSET
     key_off = _DISPLAY_KEY_ROW_FIRST * SCREEN_ROW_BYTES
     frame_len = SCREEN_ROWS * SCREEN_ROW_BYTES
     try:

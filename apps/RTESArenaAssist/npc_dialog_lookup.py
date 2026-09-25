@@ -976,7 +976,11 @@ def translate_placeholder(name: str, value: str, lang: str | None=None) -> str:
             _log.warning('placeholder %%%s に解決器が無い（原文のまま表示する）', name)
         return value
     return resolver(name, value, lang)
-_ARRIVAL_RE = re.compile('^You have arrived in (?P<loc>.+?) in (?P<prov>.+?) Province\\.\\s*The date is (?P<date>.+?)\\s+It took (?P<days>\\d+) days? to reach your goal\\.\\s*(?P<flavor>.*)$', re.DOTALL)
+_ARRIVAL_PREFIX = 'You have arrived in'
+_ARRIVAL_RE = re.compile('^You have arrived in (?P<loc>.+?)(?: in (?P<prov>.+?) Province)?\\.\\s*The date is (?P<date>.+?)\\s+It took (?P<days>\\d+) days? to reach your goal\\.\\s*(?P<flavor>.*)$', re.DOTALL)
+
+def is_arrival_text(text: str) -> bool:
+    return ' '.join((text or '').split()).startswith(_ARRIVAL_PREFIX)
 _SETTLEMENT_RE = re.compile('^The (?P<type>Village|Town|City-State|City) of (?P<name>.+)$')
 _SETTLEMENT_TYPE_IDS = {'Village': 'settlement_types.0.0', 'Town': 'settlement_types.1.0', 'City': 'settlement_types.2.0', 'City-State': 'settlement_types.3.0'}
 
@@ -1005,8 +1009,9 @@ def _translate_arrival(text: str, lang: str='ja') -> str | None:
     if not m:
         return None
     import i18n_helper as i18n
+    prov = m.group('prov')
     loc_ja = _translate_settlement_location(m.group('loc'), lang)
-    prov_ja = _translate_static_place(m.group('prov'), lang)
+    prov_ja = _translate_static_place(prov, lang) if prov else ''
     date_ja = _translate_date(m.group('date'), lang)
     days = m.group('days')
     flavor_ja = ''
@@ -1014,7 +1019,8 @@ def _translate_arrival(text: str, lang: str='ja') -> str | None:
     if flavor:
         r = lookup(flavor)
         flavor_ja = format_japanese(r[0], r[1], lang) if r is not None else flavor
-    result = i18n.text('status_buffer_text.travel_arrival_format').replace('{province}', prov_ja).replace('{location}', loc_ja).replace('{date}', date_ja).replace('{days}', days)
+    fmt_id = 'status_buffer_text.travel_arrival_format' if prov else 'status_buffer_text.travel_arrival_no_province_format'
+    result = i18n.text(fmt_id).replace('{province}', prov_ja).replace('{location}', loc_ja).replace('{date}', date_ja).replace('{days}', days)
     if flavor_ja:
         result += ' ' + flavor_ja
     return result
@@ -1209,6 +1215,8 @@ def lookup(text: str) -> tuple[str, dict] | None:
     arrival = _translate_arrival(text, lang)
     if arrival is not None:
         return (arrival, {})
+    if lang != 'en' and is_arrival_text(text):
+        return None
     already = _translate_already_in(text, lang)
     if already is not None:
         return (already, {})
@@ -1597,6 +1605,40 @@ def lookup_span_by_fixed_parts(text: str) -> tuple[str, dict, str] | None:
         return None
     body = ' '.join(text.split())
     return (found[0], found[1], body[:found[2]])
+
+def lookup_body_fixed_parts(text: str, *, keys: frozenset) -> tuple[str, dict, str] | None:
+    if not text or not keys:
+        return None
+    _ensure_i18n_bound_caches_current()
+    body = ' '.join(text.split())
+    if not body:
+        return None
+    body_up = body.upper()
+    best: tuple[str, dict, str] | None = None
+    best_score = (0, 0)
+    tied = False
+    for en_raw, tmpl, _ph_list, key_int, _ref in _iter_npcd(include_untranslated=True):
+        if key_int not in keys:
+            continue
+        en = _game_surface(en_raw)
+        if _body_head_anchor_of(en):
+            continue
+        segs, _names = _split_segments(en)
+        if not segs:
+            continue
+        got = _walk_segments(segs, body_up, body)
+        if got is None or got[3] is None:
+            continue
+        score = (got[1], got[0])
+        if score > best_score:
+            best_score = score
+            best = (tmpl or '', got[2], body[:got[3]])
+            tied = False
+        elif score == best_score and best is not None:
+            tied = True
+    if best is None or tied:
+        return None
+    return best
 _TEMPLATE_ANCHOR = 16
 _MAX_BOUNDARY_GAP = 8
 
@@ -1705,6 +1747,24 @@ def format_japanese(ja_template: str, placeholders: dict, lang: str | None=None)
     from text_corrector import apply_text_corrections
     result = apply_text_corrections(result, lang)
     return result
+
+def render_body_group(keys: tuple[int, ...], placeholders: dict) -> tuple[str, str] | None:
+    wanted = tuple((int(key) for key in keys))
+    entries: dict[int, tuple[str, str]] = {}
+    for en_raw, ja_template, _ph_list, key_int, _ref in _iter_npcd():
+        if key_int not in wanted or key_int in entries:
+            continue
+        en = _game_surface(en_raw)
+        for name, value in sorted(placeholders.items(), key=lambda item: len(item[0]), reverse=True):
+            if value:
+                en = en.replace(f'%{name}', str(value))
+        ja = format_japanese(ja_template, dict(placeholders))
+        if not en or not ja:
+            return None
+        entries[key_int] = (en, ja)
+    if any((key not in entries for key in wanted)):
+        return None
+    return ('\n\n'.join((entries[key][0] for key in wanted)), '\n\n'.join((entries[key][1] for key in wanted)))
 if __name__ == '__main__':
     samples = ['Greetings, I am John, a Mage. I cast spells for a living.', 'They call me Maria the Warrior. I fight for a living.', 'I am called Tom, the Daggerfall Bard. You know, I play music for a living.', 'Good day, sir. My name is Alice the skilled Healer. I heal the sick for a living.', "The boys call me Lily. I'm a whore.", "How would like to recover something for a friend of mine, a highly aggressive aristocrat called Lord Barbyrrya? You can find this person at the Blue Giants, you know the inn southwest of here? I'm sure you'll be paid nicely."]
     for s in samples:

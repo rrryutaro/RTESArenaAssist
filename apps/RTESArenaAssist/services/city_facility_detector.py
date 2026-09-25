@@ -92,12 +92,16 @@ def _equipment_with_names(city_seed: int, hits: list[_MarkerHit], city_type_key:
         result.append(FacilityPlacement(menu_type=ArenaMenuType.EQUIPMENT, original_x=hit.original_x, original_y=hit.original_y, block_type=hit.block_type, block_mif=hit.block_mif, local_x=hit.local_x, local_y=hit.local_y, marker_voxel=hit.marker_voxel, mif_name=_make_mif_name(hit, ArenaMenuType.EQUIPMENT, city_type), translation=translate_equipment(named, city_type_key), race_id=race_id, ef_seed=ef_seed, n_seed=n_seed, ef_name=ef_name, n_name=n_name, name_prefix_en=_pre_en, name_suffix_en=_suf_en))
     return result
 
-def detect_city_facilities(entries: list[CityBlockEntry], city_seed: int, start_position: tuple[int, int], city_type: ArenaCityType, city_type_key: str | None, province_id: int, coastal: bool, random_after_plan: ArenaRandom, global_city_id: int | None=None) -> list[FacilityPlacement]:
+def detect_city_facilities(entries: list[CityBlockEntry], city_seed: int, start_position: tuple[int, int], city_type: ArenaCityType, city_type_key: str | None, province_id: int, coastal: bool, random_after_plan: ArenaRandom | None, global_city_id: int | None=None) -> list[FacilityPlacement]:
     result: list[FacilityPlacement] = []
     tavern_hits = _iter_marker_hits(entries, start_position, _SERVICE_MARKERS[ArenaMenuType.TAVERN])
-    tavern_rng = ArenaRandom(random_after_plan.get_seed())
-    for hit, name in zip(tavern_hits, generate_tavern_names(tavern_rng, len(tavern_hits), coastal)):
-        result.append(FacilityPlacement(menu_type=ArenaMenuType.TAVERN, original_x=hit.original_x, original_y=hit.original_y, block_type=hit.block_type, block_mif=hit.block_mif, local_x=hit.local_x, local_y=hit.local_y, marker_voxel=hit.marker_voxel, mif_name=_make_mif_name(hit, ArenaMenuType.TAVERN, city_type), translation=translate_tavern(name)))
+    if random_after_plan is None:
+        tavern_translations = [BuildingTranslation(en='', ja=None, parts_missing=[]) for _ in tavern_hits]
+    else:
+        tavern_rng = ArenaRandom(random_after_plan.get_seed())
+        tavern_translations = [translate_tavern(name) for name in generate_tavern_names(tavern_rng, len(tavern_hits), coastal)]
+    for hit, translation in zip(tavern_hits, tavern_translations):
+        result.append(FacilityPlacement(menu_type=ArenaMenuType.TAVERN, original_x=hit.original_x, original_y=hit.original_y, block_type=hit.block_type, block_mif=hit.block_mif, local_x=hit.local_x, local_y=hit.local_y, marker_voxel=hit.marker_voxel, mif_name=_make_mif_name(hit, ArenaMenuType.TAVERN, city_type), translation=translation))
     equipment_hits = _iter_marker_hits(entries, start_position, _SERVICE_MARKERS[ArenaMenuType.EQUIPMENT])
     result.extend(_equipment_with_names(city_seed, equipment_hits, city_type_key, city_type, province_id))
     temple_hits = _iter_marker_hits(entries, start_position, _SERVICE_MARKERS[ArenaMenuType.TEMPLE])
@@ -111,7 +115,7 @@ def detect_city_facilities(entries: list[CityBlockEntry], city_seed: int, start_
     return sorted(result, key=lambda item: (order.get(item.menu_type, 99), item.translation.en, item.original_y, item.original_x))
 
 def describe_facility_naming(facility: FacilityPlacement, facilities: Iterable[FacilityPlacement], door_pos: tuple[int, int]) -> str:
-    parts = ['店名の生成: 扉=(%d,%d)' % (door_pos[0], door_pos[1]), 'マーカー=(%d,%d)' % (facility.original_x, facility.original_y), '種別=%s' % facility.menu_type.value, 'ブロック=%s' % facility.block_mif]
+    parts = ['店名の生成: 立ち位置=(%d,%d)' % (door_pos[0], door_pos[1]), 'マーカー=(%d,%d)' % (facility.original_x, facility.original_y), '種別=%s' % facility.menu_type.value, 'ブロック=%s' % facility.block_mif]
     if facility.ef_seed is not None and facility.n_seed is not None:
         parts.append('seed_ef=0x%X(式=(y<<16)+x)' % facility.ef_seed)
         parts.append('seed_n=0x%X(式=(x<<16)+y)' % facility.n_seed)
@@ -123,7 +127,7 @@ def describe_facility_naming(facility: FacilityPlacement, facilities: Iterable[F
     if ja:
         parts.append('表示=%r' % ja)
     origin = (facility.original_x - facility.local_x, facility.original_y - facility.local_y)
-    siblings = [(f.original_x, f.original_y) for f in facilities if f is not facility and f.menu_type == facility.menu_type and (f.block_mif == facility.block_mif) and ((f.original_x - f.local_x, f.original_y - f.local_y) == origin)]
+    siblings = [(f.original_x, f.original_y) for f in facilities if f is not facility and facility.block_type != BlockType.RESERVED and (f.menu_type == facility.menu_type) and (f.block_mif == facility.block_mif) and ((f.original_x - f.local_x, f.original_y - f.local_y) == origin)]
     if siblings:
         parts.append('同建物候補マーカー=%s' % (siblings,))
     return ' '.join(parts)

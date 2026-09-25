@@ -121,6 +121,8 @@ class AssistWindow(QMainWindow):
             from controllers.map_ext_lifecycle import get_lifecycle
             get_lifecycle().add_store(self._log_store)
             get_lifecycle().add_on_load(self._translation_feed.on_load)
+            from normal_play.cinematic_module import reset_final_sequence
+            get_lifecycle().add_on_load(lambda: reset_final_sequence(self))
             from controllers.poll_controller import reset_floor_holds_on_load, reset_map_progress_on_load, reset_trigger_axis_on_load
             get_lifecycle().add_on_load(lambda: reset_floor_holds_on_load(self))
             get_lifecycle().add_on_load(lambda: reset_trigger_axis_on_load(self))
@@ -133,6 +135,12 @@ class AssistWindow(QMainWindow):
             from controllers.map_ext_lifecycle import get_lifecycle
             from services import riddle_store
             get_lifecycle().add_store(riddle_store.get_store())
+        except Exception:
+            pass
+        try:
+            from controllers.map_ext_lifecycle import get_lifecycle
+            from services import facility_name_store
+            get_lifecycle().add_store(facility_name_store.get_store())
         except Exception:
             pass
         try:
@@ -474,6 +482,10 @@ class AssistWindow(QMainWindow):
         self._poll_timer.stop()
         from normal_play.action_text_band import shutdown_band as _shutdown_band
         from normal_play.lock_message_module import release_watch as _release_lock_watch
+        from screen_display_copy import forget as _forget_display_copy
+        from normal_play.cinematic_module import forget_scene as _forget_scene
+        _forget_display_copy(self)
+        _forget_scene(self)
         _shutdown_band(self)
         _release_lock_watch(self)
         if self._analyzer:

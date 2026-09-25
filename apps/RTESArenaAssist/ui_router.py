@@ -23,6 +23,7 @@ class UiRouter:
         self._translation_observer = None
         self._obs_last_key = None
         self._clear_observer = None
+        self._context_end_observer = None
         self._replacement_observer = None
         self._displayed_translation: Optional[tuple[str, str, str]] = None
 
@@ -32,11 +33,22 @@ class UiRouter:
     def set_clear_observer(self, callback) -> None:
         self._clear_observer = callback
 
+    def set_context_end_observer(self, callback) -> None:
+        self._context_end_observer = callback
+
     def set_replacement_observer(self, callback) -> None:
         self._replacement_observer = callback
 
     def notify_display_unit_closed(self, panel_owner: str) -> None:
         self._notify_clear(panel_owner)
+
+    def notify_display_context_ended(self, panel_owner: str) -> None:
+        if not panel_owner:
+            return
+        if self._obs_last_key is not None and self._obs_last_key[0] == panel_owner:
+            self._obs_last_key = None
+        if self._context_end_observer is not None:
+            self._context_end_observer(panel_owner)
 
     def notify_display_unit_replaced(self, panel_owner: str) -> None:
         if not panel_owner:

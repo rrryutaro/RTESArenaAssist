@@ -220,6 +220,10 @@ class TTSService:
         if self._enabled:
             self._enqueue(text, force=False)
 
+    def speak_queued(self, text: str) -> None:
+        if self._enabled:
+            self._enqueue(text, force=False, honor_interrupt=False)
+
     def speak_now(self, text: str) -> None:
         self._enqueue(text, force=True)
 
@@ -278,14 +282,14 @@ class TTSService:
         self._queue.put(None)
         self._prewarm_queue.put(None)
 
-    def _enqueue(self, text: str, *, force: bool) -> None:
+    def _enqueue(self, text: str, *, force: bool, honor_interrupt: bool=True) -> None:
         value = self._sanitize(text)
         if not value:
             return
         with self._pause_cond:
             if self._stopping:
                 return
-            interrupt = self._interrupt
+            interrupt = self._interrupt and honor_interrupt
             engine = self._engine
             if interrupt:
                 self._generation += 1

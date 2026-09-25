@@ -69,6 +69,12 @@ class MapDispatcher:
     def reset_progress(self) -> None:
         self.interior.reset_progress()
         self.base_location.reset_progress()
+
+    def reset_coordinate_continuity(self) -> None:
+        self.city.reset_coordinate_continuity()
+
+    def observe_city_facility_name(self, location_name: str, x: int, y: int, display_name: str) -> None:
+        self.city.observe_facility_name(location_name, x, y, display_name)
 _SHARED_DISPATCHER: Optional[MapDispatcher] = None
 
 def get_dispatcher() -> MapDispatcher:

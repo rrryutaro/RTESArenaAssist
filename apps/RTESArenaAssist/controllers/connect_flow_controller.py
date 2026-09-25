@@ -77,6 +77,7 @@ def on_connect_done(win, pid: int, anchor: int):
     if _feed is not None:
         win._ui_router.set_translation_observer(_feed.on_translation)
         win._ui_router.set_clear_observer(_feed.on_display_cleared)
+        win._ui_router.set_context_end_observer(_feed.on_display_context_ended)
         win._ui_router.set_replacement_observer(_feed.on_display_replaced)
     win._b32_was_corpse: bool = False
     win._img_name_prev = ''

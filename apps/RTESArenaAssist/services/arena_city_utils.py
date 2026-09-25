@@ -59,3 +59,13 @@ def expand_city_plan_with_random(city_seed: int, city_dim: int, reserved_blocks:
             x_dim = 0
             z_dim += 1
     return (entries, random)
+
+def premade_city_entries(base_mif: str) -> List[CityBlockEntry]:
+    return [CityBlockEntry(plan_index=0, x_dim=0, z_dim=0, block_type=BlockType.RESERVED, block_mif=base_mif)]
+IMPERIAL_TAVERN_RANDOM_ADVANCE = 255
+
+def imperial_tavern_random(city_seed: int) -> ArenaRandom:
+    random = ArenaRandom(city_seed)
+    for _ in range(IMPERIAL_TAVERN_RANDOM_ADVANCE):
+        random.next()
+    return random

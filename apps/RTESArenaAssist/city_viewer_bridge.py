@@ -21,6 +21,8 @@ class InteriorFacilityInfo:
     name_suffix_en: str = ''
     name_category: str = ''
     name_template: str = ''
+    map_x: Optional[int] = None
+    map_y: Optional[int] = None
 
 def lookup_interior_facility(location_name: Optional[str], door_x: Optional[int], door_y: Optional[int]) -> Optional[InteriorFacilityInfo]:
     if not _AVAILABLE:
@@ -35,7 +37,7 @@ def lookup_interior_facility(location_name: Optional[str], door_x: Optional[int]
     if not mif_name:
         return None
     name_en, name_ja, suffix_en, category, template = _facility_name_at(location_name, door)
-    return InteriorFacilityInfo(mif_name=mif_name, name_en=name_en, name_ja=name_ja, name_suffix_en=suffix_en, name_category=category, name_template=template)
+    return InteriorFacilityInfo(mif_name=mif_name, name_en=name_en, name_ja=name_ja, name_suffix_en=suffix_en, name_category=category, name_template=template, map_x=door.original_x, map_y=door.original_y)
 
 def describe_entered_door(location_name: str, door_x: int, door_y: int) -> str:
     if not _AVAILABLE or not location_name:
@@ -58,9 +60,19 @@ def describe_entered_door(location_name: str, door_x: int, door_y: int) -> str:
     return 'doors=%d hit=none nearest=(%d,%d) menu=%d %s d2=%d' % (len(doors), best.original_x, best.original_y, best.menu_id, best.menu_type.value, best_d2)
 
 def extract_shop_sign(text: str, info: Optional[InteriorFacilityInfo]) -> Optional[str]:
-    suffix_en = getattr(info, 'name_suffix_en', '') or ''
     category = getattr(info, 'name_category', '') or ''
-    if info is None or not suffix_en or (not category) or (not text):
+    if info is None or not category or (not text):
+        return None
+    if category == 'tavern':
+        try:
+            from services.dynamic_translation import tavern_name_parts
+            from services.shop_sign_name import extract_tavern_displayed_name
+            prefixes, suffixes = tavern_name_parts()
+            return extract_tavern_displayed_name(text, prefixes, suffixes)
+        except Exception:
+            return None
+    suffix_en = getattr(info, 'name_suffix_en', '') or ''
+    if not suffix_en:
         return None
     template = getattr(info, 'name_template', '') or ''
     if not template:

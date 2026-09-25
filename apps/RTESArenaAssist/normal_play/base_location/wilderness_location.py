@@ -2,7 +2,7 @@ from __future__ import annotations
 import logging
 from typing import Optional
 import numpy as np
-from common_draw.automap_canvas import CanvasData
+from common_draw.automap_canvas import CanvasData, FacilityEntranceMarker
 from services.arena_location_utils import get_wilderness_seed
 from services.mif_loader import DEFAULT_INF_DIR, parse_inf_menu_texture_map
 from services.wild_block_lists import get_block_lists, get_cache_source
@@ -98,6 +98,8 @@ class WildernessMapSession(MapSessionBase):
         self._field_entrance_ctx: Optional[FieldEntranceContext] = None
         self._enterable_cells: tuple[tuple[int, int, int], ...] = ()
         self._enterable_key: Optional[int] = None
+        self._facility_entrances: tuple[FacilityEntranceMarker, ...] = ()
+        self._facility_entrance_key: Optional[tuple[int, int, int, int]] = None
         self._logged_entrance_mif: Optional[str] = None
         self._logged_temple_name: Optional[str] = None
         self._last_logged_origin: Optional[tuple[int, int]] = None
@@ -113,6 +115,8 @@ class WildernessMapSession(MapSessionBase):
         self._map1 = None
         self._flor = None
         self._bitmap = None
+        self._facility_entrances = ()
+        self._facility_entrance_key = None
         self._live_wild_blocks = None
         self._live_origin = None
         self._seed_pending = True
@@ -199,6 +203,8 @@ class WildernessMapSession(MapSessionBase):
         self._grid_size = n_chunks * _CHUNK
         self._built_live_origin = live_origin
         self._built_live_blocks = live_blocks
+        self._facility_entrances = ()
+        self._facility_entrance_key = None
         src = get_cache_source() or 'unset'
         _log.info('wild: grid built loc=%s seed=0x%08X origin=(%d,%d) chunks=%s block_lists=%s normal_count=%d rt=(%s,%s) chunk_track=(%d,%d)', ctx.location_name, wild_seed, origin[0], origin[1], grid.chunk_ids, src, len(blocks.normal), ctx.player_tile_x, ctx.player_tile_y, self._chunk_tracker.chunk_x, self._chunk_tracker.chunk_y)
 
@@ -324,6 +330,25 @@ class WildernessMapSession(MapSessionBase):
             self._enterable_key = key
         return self._enterable_cells
 
+    def _wild_facility_entrances(self) -> tuple[FacilityEntranceMarker, ...]:
+        if self._map1 is None or self._origin_chunk is None:
+            return ()
+        key = (id(self._map1), self._origin_chunk[0], self._origin_chunk[1], int(self._wild_seed or 0))
+        if key == self._facility_entrance_key:
+            return self._facility_entrances
+        markers: list[FacilityEntranceMarker] = []
+        for x, y, menu_id in self._enterable_menu_cells():
+            kind = {3: 'tavern', 4: 'temple'}.get(menu_id)
+            if kind is None:
+                continue
+            abs_x = self._origin_chunk[0] * _CHUNK + x
+            abs_y = self._origin_chunk[1] * _CHUNK + y
+            name_en, name_local = self._resolve_field_facility_name(abs_x, abs_y, menu_id, emit_log=False)
+            markers.append(FacilityEntranceMarker(x=x, y=y, kind=kind, display_name=name_local or name_en or ''))
+        self._facility_entrances = tuple(markers)
+        self._facility_entrance_key = key
+        return self._facility_entrances
+
     def _resolve_field_door_mif(self, abs_x: int, abs_y: int, menu_id: int) -> Optional[str]:
         try:
             from services.arena_level_utils import get_door_voxel_mif_name
@@ -358,7 +383,7 @@ class WildernessMapSession(MapSessionBase):
             self._logged_entrance_mif = mif
             self._log_field_entrance_calibration(abs_x, abs_y, cx, cz, mid, mif)
 
-    def _resolve_field_facility_name(self, abs_x: int, abs_y: int, menu_id: int) -> tuple[str, Optional[str]]:
+    def _resolve_field_facility_name(self, abs_x: int, abs_y: int, menu_id: int, *, emit_log: bool=True) -> tuple[str, Optional[str]]:
         we, sn = (abs_x // _CHUNK, abs_y // _CHUNK)
         try:
             if menu_id == 3:
@@ -366,7 +391,7 @@ class WildernessMapSession(MapSessionBase):
                 from services.dynamic_translation import translate_tavern
                 tav = generate_wild_tavern_name_opentes(we, sn)
                 tr = translate_tavern(tav)
-                if (tr.en or '') != getattr(self, '_logged_tavern_name', None):
+                if emit_log and (tr.en or '') != getattr(self, '_logged_tavern_name', None):
                     self._logged_tavern_name = tr.en or ''
                     _log.warning('FIELD_TAVERN_NAME[OpenTES] block(WE=%d,SN=%d) seed=0x%08X prefix=%d suf=%d en=%r ja=%r', we, sn, make_wild_chunk_name_seed(we, sn), tav.prefix_index, tav.suffix_index, tr.en, tr.ja)
                 return (tr.en or '', tr.ja)
@@ -376,7 +401,7 @@ class WildernessMapSession(MapSessionBase):
                 from services.dynamic_translation import translate_temple
                 tname = generate_wild_temple_name_calibrated(we, sn, wild_seed)
                 tr = translate_temple(tname)
-                if (tr.en or '') != getattr(self, '_logged_temple_name', None):
+                if emit_log and (tr.en or '') != getattr(self, '_logged_temple_name', None):
                     self._logged_temple_name = tr.en or ''
                     _log.warning('FIELD_TEMPLE_NAME[calibrated] block(WE=%d,SN=%d) wildSeed=0x%08X seed=0x%08X model=%d suf=%d en=%r ja=%r', we, sn, wild_seed, make_wild_temple_name_seed_calibrated(we, sn, wild_seed), tname.model, tname.suffix_index, tr.en, tr.ja)
                 return (tr.en or '', tr.ja)
@@ -437,7 +462,7 @@ class WildernessMapSession(MapSessionBase):
                     local_x = lx
                     local_y = ly
         self._update_field_entrance_hint(local_x, local_y)
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=local_x, player_y=local_y, player_angle_deg=self._angle, level_up_index=None, level_down_index=None, entrance_cells=self._wild_entrance_cells(), flat_marks=self._wild_flat_marks(), edge_marks=self._wild_edge_marks(), crop_marks=self._wild_crop_marks(), wild_show_crops=self._show_crops, is_wilderness=True, chunk_origin=self._origin_chunk, wilderness_compact_view=self._compact_view, wild_distinguish_road=self._distinguish_road, wild_show_edge=self._show_edge, hidden_door_ids=frozenset(), menu_texture_indices=frozenset(), map_key='wilderness:%s:%s:%s' % (self._wild_seed if self._wild_seed is not None else '?', self._origin_chunk, self._grid_size))
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=local_x, player_y=local_y, player_angle_deg=self._angle, level_up_index=None, level_down_index=None, entrance_cells=self._wild_entrance_cells(), facility_entrances=self._wild_facility_entrances(), flat_marks=self._wild_flat_marks(), edge_marks=self._wild_edge_marks(), crop_marks=self._wild_crop_marks(), wild_show_crops=self._show_crops, is_wilderness=True, chunk_origin=self._origin_chunk, wilderness_compact_view=self._compact_view, wild_distinguish_road=self._distinguish_road, wild_show_edge=self._show_edge, hidden_door_ids=frozenset(), menu_texture_indices=frozenset(), map_key='wilderness:%s:%s:%s' % (self._wild_seed if self._wild_seed is not None else '?', self._origin_chunk, self._grid_size))
 
     def reset_progress(self) -> None:
         if self._walkable is not None:
