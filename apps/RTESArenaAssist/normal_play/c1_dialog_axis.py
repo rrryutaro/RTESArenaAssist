@@ -22,7 +22,7 @@ class DialogTextArea:
 
     def contains(self, ptr: int | None) -> bool:
         return ptr is not None and self.start <= ptr < self.start + self.length
-C1_DIALOG_TEXT_AREAS: tuple[DialogTextArea, ...] = (DialogTextArea(AREA_NPC_DIALOG, 4164, 512, close_confirmed=True), DialogTextArea(AREA_RUNTIME_MSG, 31097, 68, close_confirmed=True), DialogTextArea(AREA_GOLD, 37534, 512, close_confirmed=False), DialogTextArea(AREA_MSG_BUF, 39582, 512, close_confirmed=False), DialogTextArea(AREA_STATIC, TEMPLATE_RANGE_LOW, TEMPLATE_RANGE_HIGH - TEMPLATE_RANGE_LOW, close_confirmed=False))
+C1_DIALOG_TEXT_AREAS: tuple[DialogTextArea, ...] = (DialogTextArea(AREA_NPC_DIALOG, 4164, 512, close_confirmed=True), DialogTextArea(AREA_RUNTIME_MSG, 31097, 68, close_confirmed=True), DialogTextArea(AREA_GOLD, 37534, 512, close_confirmed=False), DialogTextArea(AREA_MSG_BUF, 39582, 512, close_confirmed=True), DialogTextArea(AREA_STATIC, TEMPLATE_RANGE_LOW, TEMPLATE_RANGE_HIGH - TEMPLATE_RANGE_LOW, close_confirmed=False))
 _AREAS_BY_NAME = {a.name: a for a in C1_DIALOG_TEXT_AREAS}
 
 def area_of(ptr: int | None) -> str:

@@ -4,8 +4,8 @@ from typing import Optional
 import numpy as np
 from common_draw.automap_canvas import CanvasData, FacilityEntranceMarker
 from services.arena_types import ArenaMenuType
-from services.city_lookup import get_facilities_by_location_name
-from services.city_voxel_assembler import build_city_voxel_grid_by_name
+from services.city_lookup import get_facilities_for
+from services.city_voxel_assembler import build_city_voxel_grid_for
 from services.wild_flats import extract_flat_marks, get_city_flat_category_map
 from normal_play.map.base import MapContext, MapSessionBase
 _log = logging.getLogger('base_location.city')
@@ -31,6 +31,7 @@ class CityMapSession(MapSessionBase):
 
     def __init__(self) -> None:
         super().__init__()
+        self._city_ref = None
         self._city_name: Optional[str] = None
         self._walkable: Optional[np.ndarray] = None
         self._map1: Optional[np.ndarray] = None
@@ -53,7 +54,7 @@ class CityMapSession(MapSessionBase):
 
     def start(self, ctx: MapContext) -> None:
         super().start(ctx)
-        if ctx.location_name and ctx.location_name != self._city_name:
+        if ctx.location_ref != self._city_ref:
             self._reset_state()
 
     def stop(self, ctx: MapContext) -> None:
@@ -64,9 +65,10 @@ class CityMapSession(MapSessionBase):
         self._angle = ctx.angle_deg
         self._show_grid = ctx.show_grid
         self._show_static_flats = ctx.wild_show_static_flats
-        if ctx.location_name and ctx.location_name != self._city_name:
-            self._load_city_grid(ctx.location_name)
-            self._city_name = ctx.location_name
+        if ctx.location_ref != self._city_ref:
+            self._city_ref = ctx.location_ref
+            self._city_name = ctx.location_ref.name if ctx.location_ref is not None else None
+            self._load_city_grid(ctx.location_ref)
         self._update_player_position(ctx.player_tile_x, ctx.player_tile_y)
 
     def get_canvas_data(self) -> CanvasData:
@@ -75,8 +77,8 @@ class CityMapSession(MapSessionBase):
     def reset_progress(self) -> None:
         if self._walkable is not None:
             self._bitmap = np.full(self._walkable.shape, 3, dtype=np.uint8)
-        if self._city_name and self._map1 is not None:
-            self._load_facility_entrances(self._city_name)
+        if self._city_ref is not None and self._map1 is not None:
+            self._load_facility_entrances(self._city_ref)
 
     def reset_coordinate_continuity(self) -> None:
         self._player_x = None
@@ -93,9 +95,9 @@ class CityMapSession(MapSessionBase):
         key = (location_name, int(x), int(y))
         if not get_store().note_name(*key, display_name):
             return
-        if location_name != self._city_name:
+        if location_name != self._city_name or self._city_ref is None:
             return
-        self._load_facility_entrances(location_name)
+        self._load_facility_entrances(self._city_ref)
 
     def _city_flat_marks(self) -> tuple[tuple[int, int, str], ...]:
         if self._map1 is None or not self._show_static_flats:
@@ -136,12 +138,14 @@ class CityMapSession(MapSessionBase):
             self._player_y, self._player_wrap_edge_y = project_wrapped_city_axis(raw_y, self._player_raw_y, height, self._player_wrap_edge_y)
         self._player_raw_x, self._player_raw_y = (raw_x, raw_y)
 
-    def _load_city_grid(self, location_name: str) -> None:
-        try:
-            grid = build_city_voxel_grid_by_name(location_name)
-        except Exception:
-            _log.exception('build_city_voxel_grid_by_name failed: %s', location_name)
-            grid = None
+    def _load_city_grid(self, location) -> None:
+        grid = None
+        if location is not None:
+            try:
+                grid = build_city_voxel_grid_for(location.province_id, location.location_id)
+            except Exception:
+                _log.exception('build_city_voxel_grid_for failed: %s', location)
+                grid = None
         if grid is None:
             self._walkable = None
             self._map1 = None
@@ -155,16 +159,17 @@ class CityMapSession(MapSessionBase):
         self._walkable = (grid.map1 == 0) | (grid.map1 & 61440 == 32768)
         self._bitmap = np.full((grid.depth, grid.width), 3, dtype=np.uint8)
         self._entrance_cells = grid.menu_cells
-        self._load_facility_entrances(location_name)
+        self._load_facility_entrances(location)
 
-    def _load_facility_entrances(self, location_name: str) -> None:
-        if self._map1 is None:
+    def _load_facility_entrances(self, location) -> None:
+        if self._map1 is None or location is None:
             self._facility_entrances = ()
             return
+        location_name = location.name
         try:
-            facilities = get_facilities_by_location_name(location_name) or []
+            facilities = get_facilities_for(location.province_id, location.location_id) or []
         except Exception:
-            _log.exception('get_facilities_by_location_name failed: %s', location_name)
+            _log.exception('get_facilities_for failed: %s', location)
             facilities = []
         from services.facility_name_store import get_store
         name_store = get_store()

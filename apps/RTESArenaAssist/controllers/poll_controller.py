@@ -631,10 +631,11 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
     if in_interior:
         door_pos = getattr(w, '_entry_door_pos', None)
         location_name = gs.get('MapName') or ''
-        if door_pos is not None and location_name:
+        location = getattr(w, '_current_location', None)
+        if door_pos is not None and location is not None:
             try:
                 from city_viewer_bridge import lookup_interior_facility
-                facility_info = lookup_interior_facility(location_name, door_pos[0], door_pos[1])
+                facility_info = lookup_interior_facility(location, door_pos[0], door_pos[1])
             except Exception:
                 _log.exception('city_viewer_bridge lookup failed')
                 facility_info = None
@@ -655,20 +656,20 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
                 w._entry_door_logged = door_pos
                 try:
                     from city_viewer_bridge import describe_entered_door
-                    _log.info('interior door: pos=%s %s -> mif=%r name=%r', door_pos, describe_entered_door(location_name, *door_pos), interior_mif_name, interior_facility_name)
+                    _log.info('interior door: pos=%s %s -> mif=%r name=%r', door_pos, describe_entered_door(location, *door_pos), interior_mif_name, interior_facility_name)
                 except Exception:
                     pass
                 try:
                     from city_viewer_bridge import describe_facility_naming_at
-                    _naming_line = describe_facility_naming_at(location_name, *door_pos)
+                    _naming_line = describe_facility_naming_at(location, *door_pos)
                     if _naming_line:
                         _recog(_log, '%s', _naming_line)
                 except Exception:
                     pass
-        if interior_mif_name is None and location_name and (_img_safe == 'PALACE.XMI'):
+        if interior_mif_name is None and location is not None and (_img_safe == 'PALACE.XMI'):
             try:
-                from services.city_lookup import get_palace_mif_for_location
-                _palace_mif = get_palace_mif_for_location(location_name)
+                from services.city_lookup import get_palace_mif_for
+                _palace_mif = get_palace_mif_for(location.province_id, location.location_id)
             except Exception:
                 _log.exception('palace mif fallback failed')
                 _palace_mif = None
@@ -799,10 +800,22 @@ def _poll_resolve_area_and_frame(w, *, mif_name, in_interior, ui_router, field_f
         ui_router.begin_poll_frame(PollFrame.from_window(w, hierarchy=_poll_hierarchy))
     return (_resolved_area, _poll_hierarchy_area)
 
+def _poll_resolve_current_location(w, gs) -> None:
+    try:
+        from services.city_lookup import resolve_current_location
+        location = resolve_current_location(gs.get('MapName'), gs.get('CurrentCity'))
+    except Exception:
+        _log.exception('current location resolve failed')
+        location = None
+    if location != getattr(w, '_current_location', None):
+        _recog(_log, 'current location: %s', '%s province=%d location=%d' % (location.name, location.province_id, location.location_id) if location is not None else 'none (map=%r)' % (gs.get('MapName') or ''))
+    w._current_location = location
+
 def _poll_read_game_state(w):
     from arena_bridge import read_game_state, interpret_location, RT_COORD_X_OFFSET, RT_COORD_Z_OFFSET, read_interior_flag
     from play_area_classifier import resolve_in_interior
     gs = read_game_state(w._analyzer, w._anchor)
+    _poll_resolve_current_location(w, gs)
     try:
         rt_x = struct.unpack_from('<H', w._analyzer.read_bytes(w._anchor + RT_COORD_X_OFFSET, 2))[0]
         rt_z = struct.unpack_from('<H', w._analyzer.read_bytes(w._anchor + RT_COORD_Z_OFFSET, 2))[0]
@@ -1020,7 +1033,7 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
                 except Exception:
                     _log.exception('wild_diag failed')
             wild_location_name = gs.get('MapName') or '' if _resolved_area in ('city', 'wilderness') else None
-            _map_view = tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, item_pickup_kinds=_item_pickup_kinds, dungeon_floor=dungeon_floor, dungeon_floor_fresh=dungeon_level_hyp)
+            _map_view = tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, location_ref=getattr(w, '_current_location', None), analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, item_pickup_kinds=_item_pickup_kinds, dungeon_floor=dungeon_floor, dungeon_floor_fresh=dungeon_level_hyp)
             if _map_view is not None:
                 try:
                     w._tab_translate.render_fallback_map_view(_map_view, place_text=place_text, suppress_map=_fallback_suppress_map, suppress_reason=_fallback_suppress_reason)

@@ -104,6 +104,92 @@ def get_city_doors_for(province_id: int, location_id: int) -> Optional[list]:
     except _CityDoorsUnavailable:
         return None
 
+@dataclass(frozen=True)
+class LocationRef:
+    province_id: int
+    location_id: int
+    name: str
+_CURRENT_CITY_SIZE = 56
+_CURRENT_CITY_PROVINCE = 36
+_CURRENT_CITY_TYPE = 37
+_CURRENT_CITY_ID = 42
+_CURRENT_CITY_TYPES = {0: ArenaLocationType.CITY_STATE, 1: ArenaLocationType.TOWN, 2: ArenaLocationType.VILLAGE}
+_DUNGEON_CITY_TYPE = 3
+
+def location_ref_from_current_city(raw) -> Optional[LocationRef]:
+    if not isinstance(raw, (bytes, bytearray)) or len(raw) < _CURRENT_CITY_SIZE:
+        return None
+    if not is_world_map_available():
+        return None
+    name = bytes(raw[:20]).split(b'\x00', 1)[0].decode('ascii', errors='replace').strip()
+    if not name:
+        return None
+    province_id = raw[_CURRENT_CITY_PROVINCE]
+    city_type = raw[_CURRENT_CITY_TYPE]
+    city_id = raw[_CURRENT_CITY_ID]
+    if city_type in _CURRENT_CITY_TYPES:
+        location_id = city_id - province_id * 32
+        if _location_type_from_id(location_id) != _CURRENT_CITY_TYPES[city_type]:
+            return None
+    elif city_type == _DUNGEON_CITY_TYPE:
+        location_id = city_id
+        if not 32 <= location_id < 48:
+            return None
+    else:
+        return None
+    world_map = load_world_map_data()
+    if not 0 <= province_id < len(world_map.provinces):
+        return None
+    location = world_map.provinces[province_id].get_location(location_id)
+    if location is None or location.name != name:
+        return None
+    return LocationRef(province_id, location_id, name)
+
+def location_ref_by_unique_name(name: str) -> Optional[LocationRef]:
+    if not name or not is_world_map_available():
+        return None
+    found = load_world_map_data().find_location_by_name(name)
+    if found is None:
+        return None
+    province_id, location_id, location = found
+    return LocationRef(province_id, location_id, location.name)
+
+def resolve_current_location(map_name: Optional[str], current_city) -> Optional[LocationRef]:
+    name = (map_name or '').strip()
+    if not name:
+        return None
+    ref = location_ref_from_current_city(current_city)
+    if ref is not None and ref.name == name:
+        return ref
+    return location_ref_by_unique_name(name)
+
+def get_city_type_and_ruler_seed_for(province_id: int, location_id: int):
+    if not is_world_map_available():
+        return None
+    location_type = _location_type_from_id(location_id)
+    if location_type is None:
+        return None
+    world_map = load_world_map_data()
+    if not 0 <= province_id < len(world_map.provinces):
+        return None
+    province = world_map.provinces[province_id]
+    location = province.get_location(location_id)
+    if location is None:
+        return None
+    rect = Rect(province.global_x, province.global_y, province.global_w, province.global_h)
+    ruler_seed = get_ruler_seed(Int2(location.x, location.y), rect)
+    return (_CITY_TYPE_ENUM[location_type], ruler_seed)
+
+def get_palace_mif_for(province_id: int, location_id: int) -> Optional[str]:
+    ct = get_city_type_and_ruler_seed_for(province_id, location_id)
+    if ct is None:
+        return None
+    location_type = _location_type_from_id(location_id)
+    _city_type, ruler_seed = ct
+    variant = (ruler_seed >> 8 & 65535) % 3
+    prefix_index = {ArenaLocationType.CITY_STATE: 0, ArenaLocationType.TOWN: 8, ArenaLocationType.VILLAGE: 9}[location_type]
+    return f'{MENU_MIF_PREFIXES[prefix_index]}{variant + 1}.MIF'
+
 def get_city_doors_by_location_name(location_name: str) -> Optional[list]:
     if not is_world_map_available():
         return None
@@ -115,20 +201,10 @@ def get_city_doors_by_location_name(location_name: str) -> Optional[list]:
     return get_city_doors_for(province_id, location_id)
 
 def get_city_type_and_ruler_seed(location_name: str):
-    if not is_world_map_available():
+    ref = location_ref_by_unique_name(location_name)
+    if ref is None:
         return None
-    world_map = load_world_map_data()
-    found = world_map.find_location_by_name(location_name)
-    if found is None:
-        return None
-    province_id, location_id, location = found
-    location_type = _location_type_from_id(location_id)
-    if location_type is None:
-        return None
-    province = world_map.provinces[province_id]
-    rect = Rect(province.global_x, province.global_y, province.global_w, province.global_h)
-    ruler_seed = get_ruler_seed(Int2(location.x, location.y), rect)
-    return (_CITY_TYPE_ENUM[location_type], ruler_seed)
+    return get_city_type_and_ruler_seed_for(ref.province_id, ref.location_id)
 
 def get_facilities_by_location_name(location_name: str) -> Optional[list[FacilityPlacement]]:
     if not is_world_map_available():
@@ -141,22 +217,10 @@ def get_facilities_by_location_name(location_name: str) -> Optional[list[Facilit
     return get_facilities_for(province_id, location_id)
 
 def get_palace_mif_for_location(location_name: str) -> Optional[str]:
-    if not is_world_map_available():
+    ref = location_ref_by_unique_name(location_name)
+    if ref is None:
         return None
-    world_map = load_world_map_data()
-    found = world_map.find_location_by_name(location_name)
-    if found is None:
-        return None
-    province_id, location_id, location = found
-    location_type = _location_type_from_id(location_id)
-    if location_type is None:
-        return None
-    province = world_map.provinces[province_id]
-    rect = Rect(province.global_x, province.global_y, province.global_w, province.global_h)
-    ruler_seed = get_ruler_seed(Int2(location.x, location.y), rect)
-    variant = (ruler_seed >> 8 & 65535) % 3
-    prefix_index = {ArenaLocationType.CITY_STATE: 0, ArenaLocationType.TOWN: 8, ArenaLocationType.VILLAGE: 9}[location_type]
-    return f'{MENU_MIF_PREFIXES[prefix_index]}{variant + 1}.MIF'
+    return get_palace_mif_for(ref.province_id, ref.location_id)
 
 def find_nearest_facility(facilities: list[FacilityPlacement], x: int, y: int) -> Optional[FacilityPlacement]:
     best: Optional[FacilityPlacement] = None

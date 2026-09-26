@@ -130,14 +130,17 @@ def _nearest_outdoor_door(w, rt_x, rt_z):
     place = getattr(w, '_current_outdoor_location', '') or ''
     if not place:
         return (None, 0)
-    if getattr(w, '_lock_msg_doors_key', None) != place:
+    location = getattr(w, '_current_location', None)
+    if location is None or location.name != place:
+        return (None, 0)
+    if getattr(w, '_lock_msg_doors_key', None) != location:
         doors = ()
         try:
-            from services.city_lookup import get_city_doors_by_location_name
-            doors = tuple(get_city_doors_by_location_name(place) or ())
+            from services.city_lookup import get_city_doors_for
+            doors = tuple(get_city_doors_for(location.province_id, location.location_id) or ())
         except Exception:
-            _log.exception('lock message: 街の扉一覧の取得に失敗: %s', place)
-        w._lock_msg_doors_key = place
+            _log.exception('lock message: 街の扉一覧の取得に失敗: %s', location)
+        w._lock_msg_doors_key = location
         w._lock_msg_doors = doors
     doors = getattr(w, '_lock_msg_doors', ())
     if not doors:

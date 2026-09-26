@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Optional
 from runtime_paths import resolve_arena_data_dir
 try:
-    from services.city_lookup import get_city_doors_by_location_name, get_city_type_and_ruler_seed, get_facilities_by_location_name
+    from services.city_lookup import LocationRef, get_city_doors_for, get_city_type_and_ruler_seed_for, get_facilities_for
     from services.mif_loader import load_mif
     _AVAILABLE = True
 except ImportError:
@@ -24,26 +24,26 @@ class InteriorFacilityInfo:
     map_x: Optional[int] = None
     map_y: Optional[int] = None
 
-def lookup_interior_facility(location_name: Optional[str], door_x: Optional[int], door_y: Optional[int]) -> Optional[InteriorFacilityInfo]:
+def lookup_interior_facility(location: 'Optional[LocationRef]', door_x: Optional[int], door_y: Optional[int]) -> Optional[InteriorFacilityInfo]:
     if not _AVAILABLE:
         return None
-    if not location_name or door_x is None or door_y is None:
+    if location is None or door_x is None or door_y is None:
         return None
     door_x, door_y = (int(door_x), int(door_y))
-    door = _resolve_entered_door(location_name, door_x, door_y)
+    door = _resolve_entered_door(location, door_x, door_y)
     if door is None:
         return None
-    mif_name = _mif_for_door(location_name, door) or ''
+    mif_name = _mif_for_door(location, door) or ''
     if not mif_name:
         return None
-    name_en, name_ja, suffix_en, category, template = _facility_name_at(location_name, door)
+    name_en, name_ja, suffix_en, category, template = _facility_name_at(location, door)
     return InteriorFacilityInfo(mif_name=mif_name, name_en=name_en, name_ja=name_ja, name_suffix_en=suffix_en, name_category=category, name_template=template, map_x=door.original_x, map_y=door.original_y)
 
-def describe_entered_door(location_name: str, door_x: int, door_y: int) -> str:
-    if not _AVAILABLE or not location_name:
+def describe_entered_door(location: 'Optional[LocationRef]', door_x: int, door_y: int) -> str:
+    if not _AVAILABLE or location is None:
         return 'unavailable'
     try:
-        doors = get_city_doors_by_location_name(location_name)
+        doors = get_city_doors_for(location.province_id, location.location_id)
     except Exception:
         return 'doors=error'
     if not doors:
@@ -93,17 +93,17 @@ def translate_shop_sign(shown_en: str, info: Optional[InteriorFacilityInfo]) -> 
     except Exception:
         return ''
 
-def describe_facility_naming_at(location_name: Optional[str], door_x: Optional[int], door_y: Optional[int]) -> Optional[str]:
-    if not _AVAILABLE or not location_name:
+def describe_facility_naming_at(location: 'Optional[LocationRef]', door_x: Optional[int], door_y: Optional[int]) -> Optional[str]:
+    if not _AVAILABLE or location is None:
         return None
     if door_x is None or door_y is None:
         return None
     door_x, door_y = (int(door_x), int(door_y))
-    door = _resolve_entered_door(location_name, door_x, door_y)
+    door = _resolve_entered_door(location, door_x, door_y)
     if door is None:
         return None
     try:
-        facilities = get_facilities_by_location_name(location_name) or []
+        facilities = get_facilities_for(location.province_id, location.location_id) or []
     except Exception:
         return None
     for f in facilities:
@@ -112,9 +112,9 @@ def describe_facility_naming_at(location_name: Optional[str], door_x: Optional[i
             return describe_facility_naming(f, facilities, (door_x, door_y))
     return None
 
-def _resolve_entered_door(location_name: str, door_x: int, door_y: int):
+def _resolve_entered_door(location, door_x: int, door_y: int):
     try:
-        doors = get_city_doors_by_location_name(location_name)
+        doors = get_city_doors_for(location.province_id, location.location_id)
     except Exception:
         return None
     if not doors:
@@ -122,18 +122,18 @@ def _resolve_entered_door(location_name: str, door_x: int, door_y: int):
     from services.city_door_detector import door_at
     return door_at(doors, door_x, door_y)
 
-def _mif_for_door(location_name: str, door) -> Optional[str]:
+def _mif_for_door(location, door) -> Optional[str]:
     from services.arena_level_utils import get_door_voxel_mif_name
     from services.arena_voxel_utils import MapType
-    ct = get_city_type_and_ruler_seed(location_name)
+    ct = get_city_type_and_ruler_seed_for(location.province_id, location.location_id)
     if ct is None:
         return None
     city_type, ruler_seed = ct
     return get_door_voxel_mif_name(x=door.original_x, y=door.original_y, menu_id=door.menu_id, ruler_seed=ruler_seed, palace_is_main_quest_dungeon=False, city_type=city_type, map_type=MapType.CITY)
 
-def _facility_name_at(location_name: str, door) -> tuple[str, Optional[str], str, str, str]:
+def _facility_name_at(location, door) -> tuple[str, Optional[str], str, str, str]:
     try:
-        facilities = get_facilities_by_location_name(location_name)
+        facilities = get_facilities_for(location.province_id, location.location_id)
     except Exception:
         return ('', None, '', '', None)
     for f in facilities or ():
@@ -148,8 +148,8 @@ def _facility_name_at(location_name: str, door) -> tuple[str, Optional[str], str
             return (en, tr.ja if tr is not None else None, suffix_en, category, template)
     return ('', None, '', '', '')
 
-def lookup_interior_mif(location_name: Optional[str], door_x: Optional[int], door_y: Optional[int]) -> Optional[str]:
-    info = lookup_interior_facility(location_name, door_x, door_y)
+def lookup_interior_mif(location: 'Optional[LocationRef]', door_x: Optional[int], door_y: Optional[int]) -> Optional[str]:
+    info = lookup_interior_facility(location, door_x, door_y)
     if info is None or not info.mif_name:
         return None
     return info.mif_name

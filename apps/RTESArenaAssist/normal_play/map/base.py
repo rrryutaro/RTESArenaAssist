@@ -21,6 +21,7 @@ class MapContext:
     item_pickup_kinds: frozenset = frozenset()
     dungeon_floor: Optional[int] = None
     dungeon_floor_fresh: Optional[int] = None
+    location_ref: Any = None
     ext_store: Any = None
     wall_los_enabled: bool = False
     reveal_all: bool = False

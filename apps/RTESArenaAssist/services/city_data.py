@@ -124,13 +124,18 @@ class ProvinceData:
 class WorldMapData:
     provinces: list[ProvinceData]
 
-    def find_location_by_name(self, name: str) -> Optional[tuple[int, int, LocationData]]:
+    def find_locations_by_name(self, name: str) -> list[tuple[int, int, LocationData]]:
+        found: list[tuple[int, int, LocationData]] = []
         for pid, prov in enumerate(self.provinces):
             for lid in range(48):
                 loc = prov.get_location(lid)
                 if loc is not None and loc.name == name:
-                    return (pid, lid, loc)
-        return None
+                    found.append((pid, lid, loc))
+        return found
+
+    def find_location_by_name(self, name: str) -> Optional[tuple[int, int, LocationData]]:
+        found = self.find_locations_by_name(name)
+        return found[0] if len(found) == 1 else None
 _world_cached: Optional[WorldMapData] = None
 
 def _read_pack_text(name: str) -> Optional[str]:

@@ -259,7 +259,7 @@ def _ja_settlement(en):
     except Exception:
         return en
 
-def _current_province_name(map_name: str):
+def _current_province_name(w, map_name: str):
     if not map_name:
         return None
     try:
@@ -267,10 +267,14 @@ def _current_province_name(map_name: str):
         if not is_world_map_available():
             return None
         wm = load_world_map_data()
-        found = wm.find_location_by_name(map_name)
-        if found is None:
-            return None
-        pid = found[0]
+        location = getattr(w, '_current_location', None)
+        if location is not None and location.name == map_name:
+            pid = location.province_id
+        else:
+            found = wm.find_location_by_name(map_name)
+            if found is None:
+                return None
+            pid = found[0]
         if 0 <= pid < len(wm.provinces):
             return wm.provinces[pid].name
     except Exception:
@@ -301,7 +305,7 @@ def _build_travel_rows(w, *, state, dest_loc=None):
     map_name = _read_map_name(w)
     cur_pos_en = map_name
     cur_pos_ja = _ja_loc(map_name) or ''
-    cur_prov = _current_province_name(map_name)
+    cur_prov = _current_province_name(w, map_name)
     cur_region_en = cur_prov or ''
     cur_region_ja = _ja_loc(cur_prov) or '' if cur_prov else ''
     sel = getattr(w, '_travel_selected', None) or {}

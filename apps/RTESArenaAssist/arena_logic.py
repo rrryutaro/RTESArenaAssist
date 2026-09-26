@@ -7,7 +7,7 @@ _ROOT = os.path.dirname(os.path.abspath(__file__))
 import i18n_helper as i18n
 import location_lookup
 from memory_core import ArenaMemoryAnalyzer, MEMORY_BASIC_INFORMATION, MEM_COMMIT, PAGE_NOACCESS, PAGE_GUARD
-from viewer_constants import GAMESTATE_OFFSET, GS_DEFS, TRIGGER_FLAG_OFFSET, CURRENT_TRIGGER_TEXT_PTR_OFFSET, FLAGS4_BITS, INF_PREFIXES, LIVE_MIF_OFFSET, LIVE_MIF_MAXLEN, MAP_NAME_OFFSET, MAP_NAME_MAXLEN, CHARGEN_STATE_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW
+from viewer_constants import GAMESTATE_OFFSET, GS_DEFS, TRIGGER_FLAG_OFFSET, CURRENT_TRIGGER_TEXT_PTR_OFFSET, FLAGS4_BITS, INF_PREFIXES, LIVE_MIF_OFFSET, LIVE_MIF_MAXLEN, MAP_NAME_OFFSET, MAP_NAME_MAXLEN, CURRENT_CITY_OFFSET, CURRENT_CITY_SIZE, CHARGEN_STATE_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW
 _LOG_BASE = os.path.dirname(os.path.abspath(sys.executable)) if getattr(sys, 'frozen', False) else _ROOT
 LOG_DIR = os.path.join(_LOG_BASE, 'output')
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -66,6 +66,10 @@ def read_game_state(analyzer, anchor: int) -> dict:
     live_raw = read_live_buffer(analyzer, anchor + LIVE_MIF_OFFSET, LIVE_MIF_MAXLEN)
     result['LiveMifName'] = normalize_mif_name(live_raw)
     result['MapName'] = read_live_buffer(analyzer, anchor + MAP_NAME_OFFSET, MAP_NAME_MAXLEN)
+    try:
+        result['CurrentCity'] = analyzer.read_bytes(anchor + CURRENT_CITY_OFFSET, CURRENT_CITY_SIZE)
+    except OSError:
+        result['CurrentCity'] = None
     try:
         result['ChargenState'] = analyzer.read_bytes(anchor + CHARGEN_STATE_OFFSET, 1)[0]
     except OSError:

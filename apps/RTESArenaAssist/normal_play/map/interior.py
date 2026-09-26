@@ -63,6 +63,8 @@ class InteriorMapSession(MapSessionBase):
         self._ext_store = ctx.ext_store
         target_mif = ctx.interior_mif_name
         if not target_mif:
+            if self._mif_name is not None:
+                self._reset_state()
             if getattr(self, '_diag_last', None) != 'no_mif':
                 self._diag_last = 'no_mif'
                 _log.warning('interior update: interior_mif_name 未解決 → 空表示')
