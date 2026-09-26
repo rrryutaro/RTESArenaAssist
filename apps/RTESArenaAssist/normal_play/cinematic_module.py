@@ -1,6 +1,7 @@
 from __future__ import annotations
 import logging
 import re as _re
+import time
 from dataclasses import dataclass
 import arena_flc
 from arena_bridge import SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN
@@ -13,7 +14,7 @@ from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 _CINEMATIC_TEXT_ADDR_OBSERVED = 276188176
 _CINEMATIC_TEXT_ADDRS_OBSERVED = (_CINEMATIC_TEXT_ADDR_OBSERVED, 277679824)
-_CINEMATIC_TEXT_ANCHOR_DELTAS_OBSERVED = (318080,)
+_CINEMATIC_TEXT_ANCHOR_DELTAS_OBSERVED = (318080, 200096, 194592)
 _CINEMATIC_FULLREAD = 4096
 _CINEMATIC_SCAN_START = 268435456
 _CINEMATIC_SCAN_END = 301989888
@@ -32,6 +33,10 @@ _VISION_TEMPLATE_KEYS = frozenset(_DREAM_TEMPLATE_KEYS | _INTRO_TEMPLATE_KEYS | 
 _DEATH_TEMPLATE_KEYS = frozenset({1402, 1403})
 _CINEMATIC_TEMPLATE_KEYS = frozenset(_VISION_TEMPLATE_KEYS | _DEATH_TEMPLATE_KEYS)
 _SCENE_PICTURES = ('JAGAR.FLC', 'VISION.FLC', 'HOUSE.IMG', 'KING.FLC', 'NUKING.FLC', 'AFLC2.FLC', 'END01.FLC', 'END02.FLC', 'JAGARDTH.FLC', 'NUJAGDTH.FLC', 'JAGRSHLD.FLC', 'MORPH.FLC', 'WARHAFT.FLC')
+_CINEMATIC_SCREEN_NAMES = frozenset({'VISION.XMI', 'VISION.FLC', 'JAGAR.FLC', 'EVLINTRO.XMI', 'END01.FLC', 'END02.FLC', 'WINGAME.XFM'})
+
+def _is_cinematic_screen_name(img_name) -> bool:
+    return (img_name or '').upper() in _CINEMATIC_SCREEN_NAMES
 _PLAYER_HP_CURRENT_OFFSET = 509
 _PLAYER_NAME_OFFSET = 429
 _PLAYER_NAME_LEN = 26
@@ -295,15 +300,30 @@ def _probe_cinematic_text(w, resolver, *, template_keys: frozenset=_CINEMATIC_TE
 def _cinematic_scan_prefixes(template_keys: frozenset=_CINEMATIC_TEMPLATE_KEYS) -> tuple[str, ...]:
     return npcd.body_head_anchors(template_keys)
 
-def _scan_vision_cinematic_text(w, resolver, *, template_keys: frozenset=_CINEMATIC_TEMPLATE_KEYS, error_attr: str='_cinematic_scan_error_logged') -> tuple[str, int]:
-    for prefix in _cinematic_scan_prefixes(template_keys):
+def _scan_all_prefixes(w, prefixes: tuple[str, ...], error_attr: str):
+    try:
+        found = w._analyzer.scan_strings(prefixes, _CINEMATIC_SCAN_START, _CINEMATIC_SCAN_END)
+    except (OSError, RuntimeError, AttributeError) as exc:
+        if not getattr(w, error_attr, False):
+            setattr(w, error_attr, True)
+            _log.info('cinematic scan error: %s', exc)
+        return
+    if isinstance(found, dict):
+        for prefix in prefixes:
+            yield (prefix, found.get(prefix) or [])
+        return
+    for prefix in prefixes:
         try:
-            results = w._analyzer.scan_string(prefix, _CINEMATIC_SCAN_START, _CINEMATIC_SCAN_END)
+            yield (prefix, w._analyzer.scan_string(prefix, _CINEMATIC_SCAN_START, _CINEMATIC_SCAN_END))
         except (OSError, RuntimeError, AttributeError) as exc:
             if not getattr(w, error_attr, False):
                 setattr(w, error_attr, True)
                 _log.info('cinematic scan_string error: %s', exc)
             continue
+
+def _scan_vision_cinematic_text(w, resolver, *, template_keys: frozenset=_CINEMATIC_TEMPLATE_KEYS, error_attr: str='_cinematic_scan_error_logged') -> tuple[str, int]:
+    prefixes = _cinematic_scan_prefixes(template_keys)
+    for _prefix, results in _scan_all_prefixes(w, prefixes, error_attr):
         if not results:
             continue
         for result in results:
@@ -339,6 +359,7 @@ def _accept_vision_text(w, text: str, addr: int) -> None:
             return
         w._vision_cinematic_text_prev = text
         w._cinematic_last_accepted_text = text
+        _record_shown_text(w, text)
         _recog(_log, 'vision cinematic accepted owner=%s addr=0x%08X len=%d picture=%s', owner, addr, len(text), _picture_now(w))
         return
     prev_attr = '_death_cinematic_text_prev' if owner == 'death_cinematic' else '_vision_cinematic_text_prev'
@@ -346,11 +367,73 @@ def _accept_vision_text(w, text: str, addr: int) -> None:
         return
     setattr(w, prev_attr, text)
     w._cinematic_last_accepted_text = text
+    _record_shown_text(w, text)
     _recog(_log, 'vision cinematic accepted owner=%s addr=0x%08X len=%d picture=%s', owner, addr, len(text), _picture_now(w))
     _show_vision_payload(w, payload)
+    if owner == 'vision_cinematic':
+        w._scene_text_open = True
+
+def _note_scene_open(w, scene_open: bool) -> None:
+    if scene_open and (not getattr(w, '_cinematic_scene_open_prev', False)):
+        w._cinematic_seek_unseen = True
+    elif not scene_open:
+        w._cinematic_seek_unseen = False
+        if getattr(w, '_scene_text_open', False):
+            _end_scene_text(w)
+    w._cinematic_scene_open_prev = scene_open
+
+def _final_presentation_owns_display(w) -> bool:
+    return bool(getattr(w, '_final_sequence_started', False))
+
+def scene_text_is_replaceable(w) -> bool:
+    return bool(getattr(w, '_scene_text_open', False)) and (not _final_presentation_owns_display(w))
+
+def _end_scene_text(w) -> None:
+    w._scene_text_open = False
+    if _final_presentation_owns_display(w):
+        return
+    _recog(_log, 'vision cinematic display end (scene closed) picture=%s', _picture_now(w))
+    try:
+        w._ui_router.notify_display_unit_closed('vision_cinematic')
+        w._ui_router.clear_if_owner('vision_cinematic', notify_close=False)
+    except AttributeError:
+        pass
+
+def _record_shown_text(w, text: str) -> None:
+    shown = getattr(w, '_cinematic_shown_texts', frozenset())
+    if text in shown:
+        return
+    w._cinematic_shown_texts = shown | {text}
+    w._cinematic_seek_unseen = False
+
+def forget_shown_scene_texts(w) -> None:
+    w._cinematic_shown_texts = frozenset()
+    w._cinematic_seek_unseen = False
+
+def _prefer_unseen_text(w, text: str, addr: int, *, blocks=None, may_scan: bool) -> tuple[str, int]:
+    if not (text and getattr(w, '_cinematic_seek_unseen', False)):
+        return (text, addr)
+    shown = getattr(w, '_cinematic_shown_texts', frozenset())
+    if text not in shown:
+        return (text, addr)
+
+    def _next_part(block: str) -> bool:
+        return block != text and block not in shown and _detect_cinematic_text(block) and (not _death_cinematic_translation(block)) and (_vision_template_key(block, _FINAL_SEQUENCE_TEMPLATE_KEYS) is None)
+    source = blocks if blocks is not None else _iter_candidate_blocks(w)
+    for cand_addr, block in source:
+        if _next_part(block):
+            w._cinematic_text_addr = cand_addr
+            return (block, cand_addr)
+    if may_scan and _named_gate_scan_is_due(w):
+        found, found_addr = _scan_vision_cinematic_text(w, _next_part)
+        if found:
+            return (found, found_addr)
+    return (text, addr)
 
 def _poll_vision_state(w, *, allow_scan: bool=True) -> None:
+    _note_scene_open(w, True)
     text, addr = _find_vision_cinematic_text(w, allow_scan=allow_scan)
+    text, addr = _prefer_unseen_text(w, text, addr, may_scan=allow_scan)
     if text:
         _accept_vision_text(w, text, addr)
 _FRAME_LEN = SCREEN_ROWS * SCREEN_ROW_BYTES
@@ -525,6 +608,12 @@ def forget_scene(w) -> None:
     w._cinematic_gate_prev = ''
     w._cinematic_gate_polls = 0
     w._vision_cinematic_text_prev = ''
+    w._vision_named_gate_text_prev = ''
+    w._vision_named_gate_found = False
+    w._vision_named_gate_scan_at = None
+    w._cinematic_scene_open_prev = False
+    w._scene_text_open = False
+    forget_shown_scene_texts(w)
     reset_final_sequence(w)
     w._cinematic_unresolved_prev = ''
     w._cinematic_scan_error_logged = False
@@ -583,8 +672,21 @@ def _note_vision_text_while_closed(w, text: str, addr: int, img_name: str | None
     w._cinematic_closed_sight_img_logs = count
     if count <= _CLOSED_GATE_SIGHT_IMG_LOG_MAX:
         _recog(_log, 'cinematic text still seen while gate closed: img=%r (%d/%d)', img, count, _CLOSED_GATE_SIGHT_IMG_LOG_MAX)
+_NAMED_GATE_SCAN_MIN_INTERVAL_S = 1.0
+
+def _monotonic() -> float:
+    return time.monotonic()
+
+def _named_gate_scan_is_due(w) -> bool:
+    now = _monotonic()
+    last = getattr(w, '_vision_named_gate_scan_at', None)
+    if last is not None and now - last < _NAMED_GATE_SCAN_MIN_INTERVAL_S:
+        return False
+    w._vision_named_gate_scan_at = now
+    return True
 
 def _poll_closed_gate(w, img_name: str | None) -> None:
+    _note_scene_open(w, _is_cinematic_screen_name(img_name))
     blocks = tuple(_iter_candidate_blocks(w))
     text, addr = _probe_cinematic_text(w, lambda block: bool(_death_cinematic_translation(block)), blocks=blocks)
     if not text:
@@ -595,6 +697,24 @@ def _poll_closed_gate(w, img_name: str | None) -> None:
             _note_vision_text_while_closed(w, '', 0, img_name)
             _accept_vision_text(w, seen, seen_addr)
             return
+        if not seen and _is_cinematic_screen_name(img_name):
+            if not getattr(w, '_vision_named_gate_found', False) and _named_gate_scan_is_due(w):
+                seen, seen_addr = _scan_vision_cinematic_text(w, _detect_cinematic_text)
+        if seen and _is_cinematic_screen_name(img_name):
+            seen, seen_addr = _prefer_unseen_text(w, seen, seen_addr, blocks=blocks, may_scan=True)
+            w._vision_named_gate_found = True
+            if seen != getattr(w, '_vision_named_gate_text_prev', ''):
+                w._vision_named_gate_text_prev = seen
+                _note_vision_text_while_closed(w, seen, seen_addr, img_name)
+                _accept_vision_text(w, seen, seen_addr)
+                return
+            return
+        if not _is_cinematic_screen_name(img_name):
+            w._vision_named_gate_found = False
+            w._vision_named_gate_text_prev = ''
+            w._vision_named_gate_scan_at = None
+        elif not seen:
+            w._vision_named_gate_text_prev = ''
         _note_vision_text_while_closed(w, seen, seen_addr, img_name)
         return
     _note_vision_text_while_closed(w, '', 0, img_name)
@@ -660,4 +780,4 @@ def _current_hp_is_zero(w) -> bool:
     if not raw or len(raw) < 2:
         return False
     return int.from_bytes(raw[:2], 'little') == 0
-__all__ = ['poll_cinematic', 'reset_final_sequence', 'PictureSignature', 'ScenePicture', 'column_of', 'is_uniform', 'derive_column_signature', 'derive_picture_signatures', 'forget_scene', '_current_hp_is_zero']
+__all__ = ['poll_cinematic', 'reset_final_sequence', 'PictureSignature', 'ScenePicture', 'column_of', 'is_uniform', 'derive_column_signature', 'derive_picture_signatures', 'forget_scene', 'forget_shown_scene_texts', 'scene_text_is_replaceable', '_current_hp_is_zero']

@@ -121,8 +121,9 @@ class AssistWindow(QMainWindow):
             from controllers.map_ext_lifecycle import get_lifecycle
             get_lifecycle().add_store(self._log_store)
             get_lifecycle().add_on_load(self._translation_feed.on_load)
-            from normal_play.cinematic_module import reset_final_sequence
+            from normal_play.cinematic_module import forget_shown_scene_texts, reset_final_sequence
             get_lifecycle().add_on_load(lambda: reset_final_sequence(self))
+            get_lifecycle().add_on_load(lambda: forget_shown_scene_texts(self))
             from controllers.poll_controller import reset_floor_holds_on_load, reset_map_progress_on_load, reset_trigger_axis_on_load
             get_lifecycle().add_on_load(lambda: reset_floor_holds_on_load(self))
             get_lifecycle().add_on_load(lambda: reset_trigger_axis_on_load(self))

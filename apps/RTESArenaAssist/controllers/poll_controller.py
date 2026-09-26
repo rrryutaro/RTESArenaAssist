@@ -788,7 +788,8 @@ def _poll_resolve_loading_state(w, *, _img_name_early):
 
 def _poll_resolve_area_and_frame(w, *, mif_name, in_interior, ui_router, field_facility_active=False):
     _resolved_area = ''
-    if field_facility_active:
+    _held_outdoor_area = getattr(w, '_last_non_interior_area', '') or ''
+    if field_facility_active and _held_outdoor_area != 'city':
         _resolved_area = 'wilderness'
     elif _current_top_level(w) == 'normal-play':
         _resolved_area, w._last_non_interior_area = _resolve_area_with_indoor_fallback(w._analyzer, w._anchor, mif_name, in_interior=in_interior, last_non_interior_area=getattr(w, '_last_non_interior_area', ''))
@@ -1171,7 +1172,7 @@ from normal_play import normal_play_render as _normal_play_render
 from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_surface_dispatch, poll_lock_message_dispatch as _poll_lock_message_dispatch, poll_cinematic_dispatch as _poll_cinematic_dispatch, _poll_npc_popup_display, _poll_facility_render_dispatch, _poll_dialog_unit_dispatch, _close_facility_story_units
 from normal_play.status_popup_module import poll_status_popup as _poll_status_popup
 from normal_play.travel_map_module import STATE_NONE as _TRAVEL_STATE_NONE, classify_travel_l4 as _classify_travel_l4, render_travel_l4 as _render_travel_l4
-from screen_detector_play_common import is_inventory_screen_img as _is_inventory_screen_img
+from screen_detector_play_common import is_inventory_screen as _is_inventory_screen
 blocks_ask_about_main = _normal_play_render.blocks_ask_about_main
 ask_about_main_display_allowed = _normal_play_render.ask_about_main_display_allowed
 _classify_popup11_substate = _normal_play_render._classify_popup11_substate
@@ -1378,7 +1379,6 @@ class PollController:
             w._entry_phase_prev = _entry_phase
             _building_entry_pending = bool(getattr(w, '_building_entry_pending', False))
             _img_name_now = _img_name_early_upper
-            _inventory_screen_now = _is_inventory_screen_img(_img_name_now)
             from normal_play.building_entry_module import should_poll_building_entry as _should_poll_building_entry
             _building_entry_active = _should_poll_building_entry(entry_phase=_entry_phase, panel_owner=w._panel_owner, pending=_building_entry_pending, img_name=_img_name_now)
             try:
@@ -1386,6 +1386,7 @@ class PollController:
             except (OSError, AttributeError, ImportError):
                 _screen_id = getattr(w, '_screen_id_prev', None) or 'loading'
                 _screen_name = i18n.tr(f'screen.{_screen_id}')
+            _inventory_screen_now = _is_inventory_screen(_screen_id)
             if _screen_id in ('spellbook', 'spell_detail'):
                 _hunter = _signal_hunter(w)
                 if _hunter is not None:

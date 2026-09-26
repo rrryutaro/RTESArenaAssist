@@ -107,6 +107,8 @@ def consume_level_up_display(w, *, screen_id_stable: str | None, b30_dialog_acti
             _waiting_bonus = getattr(w, '_level_up_waiting_for_bonus', False)
             _bonus_closed = _saw_bonus and (not _is_bonus_screen)
             _dialog_closed = b30_dialog_active_prev and (not b30_dialog_active)
+            if _dialog_closed and (not _is_bonus_screen):
+                w._ui_router.clear_if_owner('level_up')
             if _bonus_closed or (not _saw_bonus and (not _waiting_bonus) and _dialog_closed):
                 _log.info('LEVEL UP: complete (saw_bonus=%s)', _saw_bonus)
                 w._level_up_active = False

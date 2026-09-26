@@ -187,8 +187,8 @@ def _select_list_source(w, sig: dict, img: str):
         if POTION_LIST_OFFSET <= cur < SPELL_LIST_OFFSET:
             return ('Potions', 'ポーション一覧', [])
         return ('', '', [])
-    if family == 111:
-        if img == 'NEWPOP.IMG':
+    if family in (111, 90):
+        if family == 111 and img == 'NEWPOP.IMG':
             off = read_active_list_offset(w._analyzer, w._anchor)
             inv_items = read_name_list(w._analyzer, w._anchor, off if off else INVENTORY_LIST_OFFSET)
             inv_items = enrich_unidentified_by_index(w._analyzer, w._anchor, inv_items)
@@ -198,6 +198,8 @@ def _select_list_source(w, sig: dict, img: str):
             classified = _classified(ptr)
             if classified:
                 return classified
+            if family == 90:
+                return ('Items', i18n.text('mages_list.title_items'), [])
         if 21857 <= cur < 22160:
             classified = _classified(SPELLMAKER_SUBLIST_OFFSET)
             if classified:

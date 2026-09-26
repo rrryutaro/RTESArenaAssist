@@ -123,6 +123,7 @@ class WildernessMapSession(MapSessionBase):
 
     def stop(self, ctx: MapContext) -> None:
         super().stop(ctx)
+        self._field_entrance_ctx = None
 
     def update(self, ctx: MapContext) -> None:
         self._place_text = ctx.place_text

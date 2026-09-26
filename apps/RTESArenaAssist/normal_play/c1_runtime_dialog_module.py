@@ -5,6 +5,13 @@ from normal_play.c1_dialog_axis import close_confirmed as _close_confirmed
 _log = logging.getLogger('RTESArenaAssist')
 C1_RUNTIME_DIALOG_OWNER = 'c1_runtime_dialog'
 _C1_RUNTIME_DIALOG_REPLACEABLE_OWNERS = frozenset({'', C1_RUNTIME_DIALOG_OWNER, 'gold_drop', 'trigger', 'red_text', 'red_text_dialog'})
+_SCENE_TEXT_REPLACEABLE_OWNERS = frozenset({'vision_cinematic'})
+
+def _replaceable_owners(w) -> frozenset:
+    from normal_play.cinematic_module import scene_text_is_replaceable
+    if scene_text_is_replaceable(w):
+        return _C1_RUNTIME_DIALOG_REPLACEABLE_OWNERS | _SCENE_TEXT_REPLACEABLE_OWNERS
+    return _C1_RUNTIME_DIALOG_REPLACEABLE_OWNERS
 _NPC_DIALOG_RANGE = (4164, 512)
 _MSG_BUF_RANGE = (39582, 512)
 
@@ -68,7 +75,7 @@ def poll_c1_runtime_dialog(w, *, npc_dialog: str, facility_active_now: bool, msg
     _block_reasons = []
     if facility_active_now:
         _block_reasons.append('facility-active')
-    if _owner_now not in _C1_RUNTIME_DIALOG_REPLACEABLE_OWNERS:
+    if _owner_now not in _replaceable_owners(w):
         _block_reasons.append('panel-owner=%s' % (_owner_now or '-'))
     if _block_reasons:
         _recog(_log, 'c1 runtime dialog skipped (%s): %r', ','.join(_block_reasons), _body[:64])
@@ -113,6 +120,9 @@ def release_c1_runtime_dialog(w) -> None:
     _close_c1_runtime_dialog_display(w)
     w._c1_runtime_dialog_body_prev = None
 
+def pause_c1_runtime_dialog(w) -> None:
+    w._c1_runtime_dialog_body_prev = None
+
 def poll_c1_runtime_dialog_lifetime(w, *, axis=None) -> None:
     if not getattr(w, '_c1_runtime_dialog_open', False):
         return
@@ -154,4 +164,4 @@ def poll_c1_runtime_dialog_lifetime(w, *, axis=None) -> None:
         restore_last_trigger_display(w)
     else:
         w._ui_router.clear_display('', allowed_current_owners=('',))
-__all__ = ['C1_RUNTIME_DIALOG_OWNER', 'poll_c1_runtime_dialog', 'poll_c1_runtime_dialog_lifetime', 'runtime_dialog_accept_seq', 'release_c1_runtime_dialog']
+__all__ = ['C1_RUNTIME_DIALOG_OWNER', 'poll_c1_runtime_dialog', 'poll_c1_runtime_dialog_lifetime', 'runtime_dialog_accept_seq', 'release_c1_runtime_dialog', 'pause_c1_runtime_dialog']

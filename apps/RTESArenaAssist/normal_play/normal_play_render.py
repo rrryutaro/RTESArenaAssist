@@ -430,7 +430,10 @@ def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dial
         _instore_resp_handled = _poll_npc_dialog(w, b30=_b30, entry_handled=False, npc_overlay_active=_npc_overlay_active, in_interior=in_interior, npc_phase_raw=_npc_phase_raw, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, facility_active_now=_facility_active_now, npc_dialog=npc_dialog, npc_dialog_changed=_npc_dialog_changed, c_area=_poll_hierarchy_area, internalized_facility_active=_temple_active_now or _equipment_active_now or _mages_active_now, shop_state_kind=_shop_state.kind if _shop_state is not None else 'none', negot_handled=_negot_handled, active_tmpl_handled=_active_tmpl_handled, popup_observation=(_popup_frame, _popup_frame_drawn, True, _npc_message_popup_closed, _img_name_now))
         if _instore_resp_handled:
             _entry_handled = True
-    if _poll_hierarchy_area == 'dungeon' and (not _entry_handled) and (not _inventory_screen):
+    if _poll_hierarchy_area == 'dungeon' and _inventory_screen:
+        from normal_play.c1_runtime_dialog_module import pause_c1_runtime_dialog as _pause_c1_runtime_dialog
+        _pause_c1_runtime_dialog(w)
+    elif _poll_hierarchy_area == 'dungeon' and (not _entry_handled):
         from normal_play.c1_runtime_dialog_module import poll_c1_runtime_dialog as _poll_c1_runtime_dialog
         if _poll_c1_runtime_dialog(w, npc_dialog=npc_dialog, facility_active_now=_facility_active_now, msg_buf=msg_buf, axis=_b30.get('c1_dialog_axis') if _b30 else None):
             _instore_resp_handled = True

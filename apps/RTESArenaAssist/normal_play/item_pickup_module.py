@@ -127,7 +127,6 @@ def corpse_item_message(npc_dialog: str) -> bool:
         return bool(_dml.lookup_item(npc_dialog))
     except Exception:
         return False
-_BLOCKED_SCREENS = ('equipment', 'spellbook', 'spell_detail', 'status_page', 'bonus_screen')
 _CACHE_TTL = 10
 _CLOSE_DEBOUNCE_POLLS = 2
 _CLOSE_KEEP_OWNER_SCREENS = ('equipment', 'spellbook', 'spell_detail')
@@ -220,14 +219,14 @@ def _open_transition(w, *, display_n: int, names_present: bool, npc_dialog: str,
     _show_item_pickup(w, _seen, _remaining)
     _log.info('NEWPOP popup OPEN (%s): %s', 'corpse' if _is_corpse else 'chest', [it['en'] for it in _seen])
 
-def _poll_closed(w, *, gate_open: bool, display_n: int, names_present: bool, npc_dialog: str, corpse_item: bool, blocked: bool, screen_id) -> None:
+def _poll_closed(w, *, gate_open: bool, display_n: int, names_present: bool, npc_dialog: str, corpse_item: bool, blocked: bool, inventory_screen: bool, screen_id) -> None:
     if getattr(w, '_b32_seen_items', []):
         _cache_age = getattr(w, '_b32_seen_cache_age', 0) + 1
         w._b32_seen_cache_age = _cache_age
         _cache_clear_reason = ''
         if _cache_age >= _CACHE_TTL:
             _cache_clear_reason = 'ttl'
-        elif screen_id in _BLOCKED_SCREENS:
+        elif inventory_screen:
             _cache_clear_reason = 'blocked-screen'
         if _cache_clear_reason:
             _log.info('NEWPOP seen cache cleared (age=%d screen=%s reason=%s)', _cache_age, screen_id, _cache_clear_reason)
@@ -307,8 +306,8 @@ def poll_item_pickup(w, *, newpop_gate: bool, b30_img_name: str, npc_dialog: str
     _names_present = bool(_read_names(w, 1))
     _corpse_item_name = corpse_item_message(npc_dialog)
     if not _was_open:
-        _blocked = _screen_id in _BLOCKED_SCREENS or inventory_screen or shop_buy_active or shop_menu_visible or facility_active
-        _poll_closed(w, gate_open=newpop_gate, display_n=_display_n, names_present=_names_present, npc_dialog=npc_dialog, corpse_item=_corpse_item_name, blocked=_blocked, screen_id=_screen_id)
+        _blocked = inventory_screen or shop_buy_active or shop_menu_visible or facility_active
+        _poll_closed(w, gate_open=newpop_gate, display_n=_display_n, names_present=_names_present, npc_dialog=npc_dialog, corpse_item=_corpse_item_name, blocked=_blocked, inventory_screen=inventory_screen, screen_id=_screen_id)
     elif getattr(w, '_b32_was_corpse', False):
         _poll_open_corpse(w, gate_open=newpop_gate, count=_count, names_present=_names_present, npc_dialog=npc_dialog, corpse_item=_corpse_item_name, img_name=b30_img_name, screen_id=_screen_id)
     else:

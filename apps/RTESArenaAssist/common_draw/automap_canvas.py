@@ -26,7 +26,6 @@ _CROP_FILL_COLORS = {'corn': QColor(181, 161, 58), 'farm': QColor(194, 164, 90)}
 _CROP_MARK_COLORS = {'corn': QColor(35, 77, 18), 'farm': QColor(94, 60, 24)}
 _CELL_COLORS_ARENA: dict[str, QColor] = {'wall': QColor(130, 89, 48), 'diagonal': QColor(130, 89, 48), 'raised': QColor(97, 85, 60), 'door': QColor(146, 0, 0), 'hidden_door': QColor(168, 85, 212), 'wall_chasm': QColor(74, 107, 130), 'wall_passage': QColor(45, 74, 72), 'wall_lava': QColor(160, 74, 24), 'level_up': QColor(0, 105, 0), 'level_down': QColor(0, 0, 255), 'wet_chasm': QColor(109, 138, 174), 'dry_chasm': QColor(20, 40, 40), 'lava_chasm': QColor(255, 0, 0), 'wild_wall': QColor(109, 69, 32), 'wild_door': QColor(255, 0, 0), 'wild_road': QColor(199, 154, 90), 'wild_corn': QColor(181, 161, 58), 'wild_farm': QColor(181, 161, 58), 'wild_field': QColor(181, 161, 58)}
 _WILD_FIELD_FLOOR_ID = 2
-_CELL_COLORS_MAPVIEWER: dict[str, QColor] = {'wall': QColor(130, 89, 48), 'diagonal': QColor(130, 89, 48), 'raised': QColor(120, 120, 112), 'door': QColor(146, 0, 0), 'hidden_door': QColor(168, 85, 212), 'exit_door': QColor(146, 0, 0), 'level_up': QColor(0, 105, 0), 'level_down': QColor(0, 0, 255), 'wet_chasm': QColor(109, 138, 174), 'wall_chasm': QColor(74, 107, 130), 'wall_passage': QColor(45, 74, 72), 'wall_lava': QColor(160, 74, 24), 'dry_chasm': QColor(20, 40, 40), 'lava_chasm': QColor(255, 0, 0), 'wild_wall': QColor(109, 69, 32), 'wild_door': QColor(255, 0, 0), 'wild_road': QColor(199, 154, 90)}
 _CELL_COLOR_UNKNOWN = QColor(204, 68, 255)
 _FACILITY_DEFAULT_COLORS: dict[str, QColor] = {'facility_tavern': QColor(255, 176, 0), 'facility_equipment': QColor(47, 158, 216), 'facility_temple': QColor(88, 166, 92), 'facility_mages_guild': QColor(139, 92, 246)}
 _PIPE_WIDTH_RATIO = 0.22
@@ -701,7 +700,7 @@ class AutomapCanvas(QWidget):
             painter.drawPath(path)
 
     def _palette(self) -> dict[str, QColor]:
-        base = dict(_CELL_COLORS_MAPVIEWER if self._reveal_all else _CELL_COLORS_ARENA)
+        base = dict(_CELL_COLORS_ARENA)
         base.update(_FACILITY_DEFAULT_COLORS)
         overrides = self._color_overrides
         if not overrides:
@@ -836,10 +835,7 @@ class AutomapCanvas(QWidget):
     def paintEvent(self, event):
         painter = QPainter(self)
         self._facility_hit_cells = {}
-        if self._show_unexplored_floor or self._reveal_all:
-            painter.fillRect(self.rect(), _PARCHMENT)
-        else:
-            painter.fillRect(self.rect(), _BG_DARK)
+        painter.fillRect(self.rect(), _BG_DARK)
         d = self._data
         if d.walkable is None:
             return
@@ -854,6 +850,8 @@ class AutomapCanvas(QWidget):
         canvas_h = H * self._zoom
         ox = (self.width() - canvas_w) / 2 + self._pan.x()
         oy = (self.height() - canvas_h) / 2 + self._pan.y()
+        if self._show_unexplored_floor or self._reveal_all:
+            painter.fillRect(QRect(int(ox), int(oy), int(canvas_w), int(canvas_h)), _PARCHMENT)
         has_map1 = d.map1 is not None
         has_flor = d.flor is not None
         palette = self._palette()
@@ -897,14 +895,14 @@ class AutomapCanvas(QWidget):
                 if not self._show_unexplored_floor and (not self._reveal_all):
                     painter.fillRect(rect, _PARCHMENT)
                 if has_map1 and has_flor:
-                    cell_kind = _classify_cell(int(d.map1[y, x]), int(d.flor[y, x]), d.level_up_index, d.level_down_index, extended=self._reveal_all, express_wall_chasm=self._reveal_all or self._express_wall_chasm, express_wall_passage=self._reveal_all or self._express_wall_passage, express_wall_lava=self._reveal_all or self._express_wall_lava, express_hidden_door=self._express_hidden_door, hidden_door_ids=self._hidden_door_ids, hidden_door_discovered=self._reveal_all or (x, y) in discovered_hd, wall_passage_discovered=self._reveal_all or (x, y) in discovered_wp, pipe_under=self._pipe_under, menu_texture_indices=self._menu_texture_indices, is_wilderness=d.is_wilderness, wilderness_compact=not d.wild_show_edge, wild_distinguish_road=d.wild_distinguish_road, wild_show_field=d.wild_show_crops, full_raised_as_wall=full_raised_wall)
+                    cell_kind = _classify_cell(int(d.map1[y, x]), int(d.flor[y, x]), d.level_up_index, d.level_down_index, extended=False, express_wall_chasm=self._express_wall_chasm, express_wall_passage=self._express_wall_passage, express_wall_lava=self._express_wall_lava, express_hidden_door=self._express_hidden_door, hidden_door_ids=self._hidden_door_ids, hidden_door_discovered=self._reveal_all or (x, y) in discovered_hd, wall_passage_discovered=self._reveal_all or (x, y) in discovered_wp, pipe_under=self._pipe_under, menu_texture_indices=self._menu_texture_indices, is_wilderness=d.is_wilderness, wilderness_compact=not d.wild_show_edge, wild_distinguish_road=d.wild_distinguish_road, wild_show_field=d.wild_show_crops, full_raised_as_wall=full_raised_wall)
                 else:
                     cell_kind = 'floor' if d.walkable[y, x] else 'wall'
                 if self._pipe_under and has_map1 and has_flor:
                     if cell_kind in ('wet_chasm', 'dry_chasm', 'lava_chasm'):
                         hole_cells.add((x, y))
                     else:
-                        pk = pipe_under_kind(int(d.map1[y, x]), int(d.flor[y, x]), express_wall_chasm=self._reveal_all or self._express_wall_chasm, express_wall_passage=self._reveal_all or self._express_wall_passage, express_wall_lava=self._reveal_all or self._express_wall_lava, wall_passage_discovered=self._reveal_all or (x, y) in discovered_wp)
+                        pk = pipe_under_kind(int(d.map1[y, x]), int(d.flor[y, x]), express_wall_chasm=self._express_wall_chasm, express_wall_passage=self._express_wall_passage, express_wall_lava=self._express_wall_lava, wall_passage_discovered=self._reveal_all or (x, y) in discovered_wp)
                         if pk is not None:
                             pipe_cells[x, y] = (pk, vis)
                 if (x, y) in entrance_set:

@@ -243,6 +243,27 @@ class ArenaMemoryAnalyzer:
         needle = text.encode('ascii')
         return [ScanResult(address=addr, raw_bytes=raw, display_value=_bytes_to_ascii(raw)) for addr, raw in self._scan_pattern(needle, start, end)]
 
+    def scan_strings(self, texts, start: int, end: int) -> dict[str, list[ScanResult]]:
+        if not self.is_attached():
+            raise RuntimeError('プロセスにアタッチされていません。')
+        needles = [(t, t.encode('ascii')) for t in texts]
+        found: dict[str, list[ScanResult]] = {t: [] for t, _ in needles}
+        for region_base, region_size in self._enum_readable_regions(start, end):
+            try:
+                data = self.read_bytes(region_base, region_size)
+            except OSError:
+                continue
+            for text, needle in needles:
+                offset = 0
+                while True:
+                    idx = data.find(needle, offset)
+                    if idx == -1:
+                        break
+                    raw = data[idx:idx + max(len(needle), 32)]
+                    found[text].append(ScanResult(address=region_base + idx, raw_bytes=raw, display_value=_bytes_to_ascii(raw)))
+                    offset = idx + 1
+        return found
+
     def scan_bytes(self, pattern: bytes, start: int, end: int) -> list[ScanResult]:
         if not self.is_attached():
             raise RuntimeError('プロセスにアタッチされていません。')

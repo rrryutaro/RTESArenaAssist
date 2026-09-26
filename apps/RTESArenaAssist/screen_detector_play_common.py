@@ -1,12 +1,12 @@
 from __future__ import annotations
 from typing import Optional, Tuple
 from screen_detector import is_spell_detail_drawn, _tr, FLAG_STATUS_POPUP_OFFSET, FLAG_EQUIPMENT_OPEN_OFFSET, POPUP_OPEN_OFFSET, _read_u8
-INVENTORY_SCREEN_IMGS = ('MRSHIRT.IMG', 'EQUIP.IMG', 'MPANTS.IMG', 'PAGE2.IMG', 'CHARSTAT.IMG')
+INVENTORY_SCREEN_IDS = frozenset({'status_page', 'bonus_screen', 'equipment', 'spellbook', 'spell_detail'})
 
-def is_inventory_screen_img(img_name: str) -> bool:
-    return (img_name or '').upper() in INVENTORY_SCREEN_IMGS
+def is_inventory_screen(screen_id: str | None) -> bool:
+    return screen_id in INVENTORY_SCREEN_IDS
 
-def detect_common_play_screen(analyzer, anchor: int, img_name: str) -> Optional[Tuple[str, str]]:
+def detect_common_play_screen(analyzer, anchor: int, img_name: str, foreground_ptr: int | None=None) -> Optional[Tuple[str, str]]:
     img_upper = (img_name or '').upper()
     flag_status = _read_u8(analyzer, anchor + FLAG_STATUS_POPUP_OFFSET)
     flag_equipment = _read_u8(analyzer, anchor + FLAG_EQUIPMENT_OPEN_OFFSET)
@@ -31,6 +31,7 @@ def detect_common_play_screen(analyzer, anchor: int, img_name: str) -> Optional[
     if popup_open == 1:
         if img_upper in ('AUTOMAP.IMG', 'POINTER.IMG'):
             from template_parser import status_popup_foreground
-            if not status_popup_foreground(analyzer, anchor):
+            from active_template_reader import is_dialog_text_pointer
+            if not status_popup_foreground(analyzer, anchor) and (not is_dialog_text_pointer(foreground_ptr)):
                 return ('automap', _tr('automap'))
     return None
