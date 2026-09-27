@@ -4,7 +4,7 @@ from functools import lru_cache
 from typing import Optional
 from .arena_city_utils import CityBlockEntry, expand_city_plan_with_random, imperial_tavern_random, premade_city_entries
 from .arena_level_utils import MENU_MIF_PREFIXES
-from .arena_location_utils import CENTER_PROVINCE_CITY_MIF_NAME, get_city_reserved_block_list_index, get_city_starting_position_index, get_city_template_count, get_city_template_name_index, get_global_city_id, get_ruler_seed, is_premade_city
+from .arena_location_utils import CENTER_PROVINCE_CITY_MIF_NAME, get_city_reserved_block_list_index, get_city_starting_position_index, get_city_template_count, get_city_template_name_index, get_global_city_id, get_ruler_seed, is_premade_city, palace_is_main_quest_dungeon
 from .arena_random import ArenaRandom
 from .arena_types import ArenaCityType, ArenaLocationType, Int2, Rect
 from .city_data import LocationData, is_data_available, is_world_map_available, load_city_generation_data, load_world_map_data
@@ -181,6 +181,8 @@ def get_city_type_and_ruler_seed_for(province_id: int, location_id: int):
     return (_CITY_TYPE_ENUM[location_type], ruler_seed)
 
 def get_palace_mif_for(province_id: int, location_id: int) -> Optional[str]:
+    if palace_is_main_quest_dungeon(location_id, province_id):
+        return None
     ct = get_city_type_and_ruler_seed_for(province_id, location_id)
     if ct is None:
         return None

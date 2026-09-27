@@ -124,12 +124,13 @@ def _resolve_entered_door(location, door_x: int, door_y: int):
 
 def _mif_for_door(location, door) -> Optional[str]:
     from services.arena_level_utils import get_door_voxel_mif_name
+    from services.arena_location_utils import palace_is_main_quest_dungeon
     from services.arena_voxel_utils import MapType
     ct = get_city_type_and_ruler_seed_for(location.province_id, location.location_id)
     if ct is None:
         return None
     city_type, ruler_seed = ct
-    return get_door_voxel_mif_name(x=door.original_x, y=door.original_y, menu_id=door.menu_id, ruler_seed=ruler_seed, palace_is_main_quest_dungeon=False, city_type=city_type, map_type=MapType.CITY)
+    return get_door_voxel_mif_name(x=door.original_x, y=door.original_y, menu_id=door.menu_id, ruler_seed=ruler_seed, palace_is_main_quest_dungeon=palace_is_main_quest_dungeon(location.location_id, location.province_id), city_type=city_type, map_type=MapType.CITY)
 
 def _facility_name_at(location, door) -> tuple[str, Optional[str], str, str, str]:
     try:

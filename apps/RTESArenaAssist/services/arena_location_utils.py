@@ -8,6 +8,9 @@ CENTER_PROVINCE_CITY_MIF_NAME = 'IMPERIAL.MIF'
 def is_premade_city(local_city_id: int, province_id: int) -> bool:
     return province_id == CENTER_PROVINCE_ID and local_city_id == CENTER_PROVINCE_CITY_LOCAL_ID
 
+def palace_is_main_quest_dungeon(local_city_id: int, province_id: int) -> bool:
+    return province_id == CENTER_PROVINCE_ID and local_city_id == CENTER_PROVINCE_CITY_LOCAL_ID
+
 def city_to_location_id(local_city_id: int) -> int:
     return local_city_id
 
