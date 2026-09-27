@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from PySide6.QtCore import Qt, QSize
-from PySide6.QtGui import QColor, QIcon, QPixmap
+from PySide6.QtCore import Qt, QSize, QUrl
+from PySide6.QtGui import QColor, QDesktopServices, QIcon, QPixmap
 from PySide6.QtWidgets import QCheckBox, QComboBox, QFormLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QPushButton, QSlider, QSpinBox, QVBoxLayout, QWidget, QFontComboBox
 import i18n_helper as i18n
 import assist_settings as settings
@@ -161,6 +161,27 @@ def build_general_tab(dlg: '_SettingsDialog', *, poll_ms_default: int) -> QWidge
     hk_note.setWordWrap(True)
     hk_form.addRow('', hk_note)
     outer.addWidget(hk_grp)
+    import version as app_version
+    from services.public_links import RELEASES_URL
+    up_grp = QGroupBox(i18n.tr('settings.group_update'))
+    up_form = QFormLayout(up_grp)
+    up_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    up_form.setSpacing(6)
+    up_row = QWidget()
+    up_lay = QHBoxLayout(up_row)
+    up_lay.setContentsMargins(0, 0, 0, 0)
+    dlg._update_version_label = QLabel(i18n.tr('settings.update_current', version=app_version.version_string()))
+    dlg._open_releases_btn = QPushButton(i18n.tr('settings.update_open_releases'))
+    dlg._open_releases_btn.clicked.connect(lambda: QDesktopServices.openUrl(QUrl(RELEASES_URL)))
+    up_lay.addWidget(dlg._update_version_label)
+    up_lay.addSpacing(12)
+    up_lay.addWidget(dlg._open_releases_btn)
+    up_lay.addStretch(1)
+    up_form.addRow('', up_row)
+    up_note = QLabel(i18n.tr('settings.update_note'))
+    up_note.setWordWrap(True)
+    up_form.addRow('', up_note)
+    outer.addWidget(up_grp)
     outer.addStretch()
     return page
 

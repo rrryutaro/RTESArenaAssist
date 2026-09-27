@@ -34,6 +34,8 @@ apps/RTESArenaAssist/ext_data/
 apps/RTESArenaAssist/assist_debug.log
 apps/RTESArenaAssist/logs/
 apps/RTESArenaAssist/captures/
+# 詳細マニュアルの翻訳パックを取り込んだ物（ソースから実行した時の利用者のデータ）
+apps/RTESArenaAssist/manual_full/
 # 公開版データ基盤: ユーザー Arena 資産から再生成する単一データパック（Arena 原文を含む・
 # 絶対にコミット/公開しない・再生成可能）。仕様067 §1/§5/§7。
 apps/RTESArenaAssist/arena_local.pak

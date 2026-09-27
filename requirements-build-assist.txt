@@ -3,3 +3,4 @@ PySide6>=6.6,<7
 Pillow>=10,<12
 numpy>=1.26,<3
 pywin32>=306        # 読み上げ(TTS) SAPI5 用
+pypdf>=6,<7         # 詳細マニュアル: 利用者の Docs の PDF から画像を取り出す（BSD-3-Clause）

@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:c320d9c33e0c43653fc9ba5e9467ae21dc4b10e523779d05223e2e04379543b1",
+  "registry_hash": "sha256:55382efee467cca45cb7b5201bd4a8f7d1a7551237285cf3ddac2ae8a72ee4ca",
   "categories": [
     {
       "category": "assist_ui",
@@ -3876,6 +3876,171 @@
           "id": 900772,
           "kind": "label",
           "debug_name": "settings.tts_fallback_sapi_label"
+        },
+        {
+          "id": 900773,
+          "kind": "label",
+          "debug_name": "manual.pack.failed_invalid"
+        },
+        {
+          "id": 900774,
+          "kind": "label",
+          "debug_name": "manual.pack.failed_network"
+        },
+        {
+          "id": 900775,
+          "kind": "label",
+          "debug_name": "manual.pack.failed_write"
+        },
+        {
+          "id": 900776,
+          "kind": "label",
+          "debug_name": "manual.pack.get"
+        },
+        {
+          "id": 900777,
+          "kind": "label",
+          "debug_name": "manual.pack.intro"
+        },
+        {
+          "id": 900778,
+          "kind": "label",
+          "debug_name": "manual.pack.no_docs"
+        },
+        {
+          "id": 900779,
+          "kind": "label",
+          "debug_name": "manual.pack.no_images_mismatch"
+        },
+        {
+          "id": 900780,
+          "kind": "label",
+          "debug_name": "manual.pack.no_images_pdf"
+        },
+        {
+          "id": 900781,
+          "kind": "label",
+          "debug_name": "manual.pack.not_available"
+        },
+        {
+          "id": 900782,
+          "kind": "label",
+          "debug_name": "manual.pack.offline_hint"
+        },
+        {
+          "id": 900783,
+          "kind": "label",
+          "debug_name": "manual.pack.open_player_guide"
+        },
+        {
+          "id": 900784,
+          "kind": "label",
+          "debug_name": "manual.pack.open_quick_ref"
+        },
+        {
+          "id": 900785,
+          "kind": "label",
+          "debug_name": "manual.pack.pdf_intro"
+        },
+        {
+          "id": 900786,
+          "kind": "label",
+          "debug_name": "manual.pack.step_download"
+        },
+        {
+          "id": 900787,
+          "kind": "label",
+          "debug_name": "manual.pack.step_images"
+        },
+        {
+          "id": 900788,
+          "kind": "label",
+          "debug_name": "manual.pack.title"
+        },
+        {
+          "id": 900789,
+          "kind": "label",
+          "debug_name": "manual.pack.working"
+        },
+        {
+          "id": 900790,
+          "kind": "label",
+          "debug_name": "manual.pack.import"
+        },
+        {
+          "id": 900791,
+          "kind": "label",
+          "debug_name": "manual.pack.not_found"
+        },
+        {
+          "id": 900792,
+          "kind": "label",
+          "debug_name": "manual.pack.open_folder"
+        },
+        {
+          "id": 900793,
+          "kind": "label",
+          "debug_name": "manual.pack.open_page"
+        },
+        {
+          "id": 900794,
+          "kind": "label",
+          "debug_name": "manual.pack.place_hint"
+        },
+        {
+          "id": 900795,
+          "kind": "label",
+          "debug_name": "manual.pack.failed_lang"
+        },
+        {
+          "id": 900796,
+          "kind": "label",
+          "debug_name": "manual.pack.failed_unreadable"
+        },
+        {
+          "id": 900797,
+          "kind": "label",
+          "debug_name": "manual.pack.file_filter"
+        },
+        {
+          "id": 900798,
+          "kind": "label",
+          "debug_name": "manual.pack.import_hint"
+        },
+        {
+          "id": 900799,
+          "kind": "label",
+          "debug_name": "manual.pack.import_title"
+        },
+        {
+          "id": 900800,
+          "kind": "label",
+          "debug_name": "manual.pack.installed"
+        },
+        {
+          "id": 900801,
+          "kind": "label",
+          "debug_name": "manual.pack.rebuild"
+        },
+        {
+          "id": 900802,
+          "kind": "label",
+          "debug_name": "settings.group_update"
+        },
+        {
+          "id": 900803,
+          "kind": "label",
+          "debug_name": "settings.update_current"
+        },
+        {
+          "id": 900804,
+          "kind": "label",
+          "debug_name": "settings.update_note"
+        },
+        {
+          "id": 900805,
+          "kind": "label",
+          "debug_name": "settings.update_open_releases"
         }
       ]
     },
@@ -50256,6 +50421,106 @@
           "text": "Fallback voice"
         },
         {
+          "id": 900773,
+          "text": "The selected file could not be read as a translation pack. Download it again from the download page."
+        },
+        {
+          "id": 900775,
+          "text": "Could not write the files."
+        },
+        {
+          "id": 900777,
+          "text": "The full manual is a translation of the official manual (the Player's Guide and its addendum). Translations are distributed as translation packs for each display language on the manual download page (check the page for the available languages). The images are made from the PDF in the Docs folder of your Arena (Steam version)."
+        },
+        {
+          "id": 900778,
+          "text": "The Docs folder was not found. In the settings, set the \"Game Folder\" to Arena's ARENA folder."
+        },
+        {
+          "id": 900779,
+          "text": "Shown without images because Player Guide.pdf is not the version this translation is based on."
+        },
+        {
+          "id": 900780,
+          "text": "Shown without images because Player Guide.pdf was not found in the Docs folder. Check the \"Game Folder\" in the settings and press \"Rebuild the images\" to show the images."
+        },
+        {
+          "id": 900783,
+          "text": "Open the Player's Guide"
+        },
+        {
+          "id": 900784,
+          "text": "Open the Quick Reference Card (addendum)"
+        },
+        {
+          "id": 900785,
+          "text": "You can open the official manual (English PDF) in the Docs folder of your Arena."
+        },
+        {
+          "id": 900787,
+          "text": "Making images… {done}/{total}"
+        },
+        {
+          "id": 900788,
+          "text": "Full manual (official manual)"
+        },
+        {
+          "id": 900789,
+          "text": "Importing…"
+        },
+        {
+          "id": 900790,
+          "text": "Import"
+        },
+        {
+          "id": 900793,
+          "text": "Open the manual download page"
+        },
+        {
+          "id": 900795,
+          "text": "The selected translation pack is for {lang}. Select the translation pack for your display language."
+        },
+        {
+          "id": 900796,
+          "text": "Could not read the file."
+        },
+        {
+          "id": 900797,
+          "text": "Translation pack"
+        },
+        {
+          "id": 900798,
+          "text": "Download the translation pack for your display language ({file}) from the page, then press \"Import\" and select the file."
+        },
+        {
+          "id": 900799,
+          "text": "Select a translation pack"
+        },
+        {
+          "id": 900800,
+          "text": "Translation pack ({updated}) imported."
+        },
+        {
+          "id": 900801,
+          "text": "Rebuild the images"
+        },
+        {
+          "id": 900802,
+          "text": "Updates"
+        },
+        {
+          "id": 900803,
+          "text": "Current version: {version}"
+        },
+        {
+          "id": 900804,
+          "text": "Check the releases page for new versions. Assist does not check for updates or update itself (it does not connect to the internet)."
+        },
+        {
+          "id": 900805,
+          "text": "Open the releases page"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -78203,6 +78468,106 @@
         {
           "id": 900772,
           "text": "代替の読み上げ"
+        },
+        {
+          "id": 900773,
+          "text": "選んだファイルは翻訳パックとして読めませんでした。ダウンロードページから取り直してください。"
+        },
+        {
+          "id": 900775,
+          "text": "ファイルを書き込めませんでした。"
+        },
+        {
+          "id": 900777,
+          "text": "詳細版は、公式マニュアル（Player's Guide と追補）の訳です。訳は表示言語ごとの翻訳パックとして、マニュアルのダウンロードページで配っています（用意できている言語はページで確かめてください）。画像は、お使いの Arena（Steam 版）の Docs フォルダにある PDF から作ります。"
+        },
+        {
+          "id": 900778,
+          "text": "Docs フォルダが見つかりません。設定の「ゲームフォルダ」に Arena の ARENA フォルダを指定してください。"
+        },
+        {
+          "id": 900779,
+          "text": "Player Guide.pdf がこの訳の元の版と違うため、画像なしで表示しています。"
+        },
+        {
+          "id": 900780,
+          "text": "Docs フォルダに Player Guide.pdf が見つからないため、画像なしで表示しています。設定の「ゲームフォルダ」を確かめてから「画像を作り直す」を押すと、画像も表示されます。"
+        },
+        {
+          "id": 900783,
+          "text": "Player's Guide を開く"
+        },
+        {
+          "id": 900784,
+          "text": "Quick Reference Card（追補）を開く"
+        },
+        {
+          "id": 900785,
+          "text": "お使いの Arena の Docs フォルダにある公式マニュアル（英語の PDF）を開けます。"
+        },
+        {
+          "id": 900787,
+          "text": "画像を作っています… {done}/{total}"
+        },
+        {
+          "id": 900788,
+          "text": "詳細版（公式マニュアルの訳）"
+        },
+        {
+          "id": 900789,
+          "text": "取り込んでいます…"
+        },
+        {
+          "id": 900790,
+          "text": "取り込む"
+        },
+        {
+          "id": 900793,
+          "text": "マニュアルのダウンロードページを開く"
+        },
+        {
+          "id": 900795,
+          "text": "選んだ翻訳パックは {lang} 用です。表示言語に合った翻訳パックを選んでください。"
+        },
+        {
+          "id": 900796,
+          "text": "ファイルを読めませんでした。"
+        },
+        {
+          "id": 900797,
+          "text": "翻訳パック"
+        },
+        {
+          "id": 900798,
+          "text": "ページから表示言語の翻訳パック（{file}）をダウンロードし、「取り込む」を押してそのファイルを選んでください。"
+        },
+        {
+          "id": 900799,
+          "text": "翻訳パックを選ぶ"
+        },
+        {
+          "id": 900800,
+          "text": "翻訳パック（{updated} 版）を取り込み済みです。"
+        },
+        {
+          "id": 900801,
+          "text": "画像を作り直す"
+        },
+        {
+          "id": 900802,
+          "text": "更新"
+        },
+        {
+          "id": 900803,
+          "text": "お使いの版: {version}"
+        },
+        {
+          "id": 900804,
+          "text": "新しい版は、リリースページで確かめてください。Assist は更新の確認や自動更新を行いません（インターネットに接続しません）。"
+        },
+        {
+          "id": 900805,
+          "text": "リリースページを開く"
         },
         {
           "id": 902000,
@@ -106962,6 +107327,106 @@
           "text": "Voz alternativa"
         },
         {
+          "id": 900773,
+          "text": "El archivo seleccionado no se pudo leer como paquete de traducción. Vuelve a descargarlo desde la página de descarga."
+        },
+        {
+          "id": 900775,
+          "text": "No se pudieron escribir los archivos."
+        },
+        {
+          "id": 900777,
+          "text": "El manual completo es una traducción del manual oficial (la Player's Guide y su anexo). Las traducciones se distribuyen como paquetes de traducción para cada idioma de la interfaz en la página de descarga del manual (consulta en la página los idiomas disponibles). Las imágenes se crean a partir del PDF de la carpeta Docs de tu Arena (versión de Steam)."
+        },
+        {
+          "id": 900778,
+          "text": "No se encontró la carpeta Docs. En la configuración, indica la carpeta ARENA de Arena como «Carpeta del juego»."
+        },
+        {
+          "id": 900779,
+          "text": "Se muestra sin imágenes porque Player Guide.pdf no es la versión en la que se basa esta traducción."
+        },
+        {
+          "id": 900780,
+          "text": "Se muestra sin imágenes porque no se encontró Player Guide.pdf en la carpeta Docs. Comprueba la «Carpeta del juego» en la configuración y pulsa «Volver a crear las imágenes» para ver las imágenes."
+        },
+        {
+          "id": 900783,
+          "text": "Abrir la Player's Guide"
+        },
+        {
+          "id": 900784,
+          "text": "Abrir la Quick Reference Card (anexo)"
+        },
+        {
+          "id": 900785,
+          "text": "Puedes abrir el manual oficial (PDF en inglés) de la carpeta Docs de tu Arena."
+        },
+        {
+          "id": 900787,
+          "text": "Creando imágenes… {done}/{total}"
+        },
+        {
+          "id": 900788,
+          "text": "Manual completo (traducción del manual oficial)"
+        },
+        {
+          "id": 900789,
+          "text": "Importando…"
+        },
+        {
+          "id": 900790,
+          "text": "Importar"
+        },
+        {
+          "id": 900793,
+          "text": "Abrir la página de descarga del manual"
+        },
+        {
+          "id": 900795,
+          "text": "El paquete de traducción seleccionado es para {lang}. Selecciona el paquete de traducción de tu idioma."
+        },
+        {
+          "id": 900796,
+          "text": "No se pudo leer el archivo."
+        },
+        {
+          "id": 900797,
+          "text": "Paquete de traducción"
+        },
+        {
+          "id": 900798,
+          "text": "Descarga desde la página el paquete de traducción de tu idioma ({file}) y pulsa «Importar» para seleccionar el archivo."
+        },
+        {
+          "id": 900799,
+          "text": "Seleccionar un paquete de traducción"
+        },
+        {
+          "id": 900800,
+          "text": "Paquete de traducción ({updated}) importado."
+        },
+        {
+          "id": 900801,
+          "text": "Volver a crear las imágenes"
+        },
+        {
+          "id": 900802,
+          "text": "Actualizaciones"
+        },
+        {
+          "id": 900803,
+          "text": "Versión actual: {version}"
+        },
+        {
+          "id": 900804,
+          "text": "Consulta la página de versiones para ver si hay versiones nuevas. Assist no busca actualizaciones ni se actualiza por sí solo (no se conecta a internet)."
+        },
+        {
+          "id": 900805,
+          "text": "Abrir la página de versiones"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -134909,6 +135374,106 @@
         {
           "id": 900772,
           "text": "Ersatzstimme"
+        },
+        {
+          "id": 900773,
+          "text": "Die ausgewählte Datei konnte nicht als Übersetzungspaket gelesen werden. Lade sie erneut von der Download-Seite herunter."
+        },
+        {
+          "id": 900775,
+          "text": "Die Dateien konnten nicht geschrieben werden."
+        },
+        {
+          "id": 900777,
+          "text": "Das vollständige Handbuch ist eine Übersetzung des offiziellen Handbuchs (Player's Guide und Nachtrag). Die Übersetzungen werden als Übersetzungspakete für jede Anzeigesprache auf der Download-Seite des Handbuchs verteilt (welche Sprachen verfügbar sind, steht auf der Seite). Die Bilder werden aus dem PDF im Docs-Ordner deines Arena (Steam-Version) erzeugt."
+        },
+        {
+          "id": 900778,
+          "text": "Der Docs-Ordner wurde nicht gefunden. Lege in den Einstellungen den ARENA-Ordner von Arena als „Spielordner“ fest."
+        },
+        {
+          "id": 900779,
+          "text": "Ohne Bilder angezeigt, weil Player Guide.pdf nicht die Version ist, auf der diese Übersetzung beruht."
+        },
+        {
+          "id": 900780,
+          "text": "Ohne Bilder angezeigt, weil Player Guide.pdf im Docs-Ordner nicht gefunden wurde. Prüfe den „Spielordner“ in den Einstellungen und klicke auf „Bilder neu erzeugen“, um die Bilder anzuzeigen."
+        },
+        {
+          "id": 900783,
+          "text": "Player's Guide öffnen"
+        },
+        {
+          "id": 900784,
+          "text": "Quick Reference Card (Nachtrag) öffnen"
+        },
+        {
+          "id": 900785,
+          "text": "Du kannst das offizielle Handbuch (englisches PDF) im Docs-Ordner deines Arena öffnen."
+        },
+        {
+          "id": 900787,
+          "text": "Bilder werden erzeugt … {done}/{total}"
+        },
+        {
+          "id": 900788,
+          "text": "Vollständiges Handbuch (Übersetzung des offiziellen Handbuchs)"
+        },
+        {
+          "id": 900789,
+          "text": "Wird importiert …"
+        },
+        {
+          "id": 900790,
+          "text": "Importieren"
+        },
+        {
+          "id": 900793,
+          "text": "Download-Seite des Handbuchs öffnen"
+        },
+        {
+          "id": 900795,
+          "text": "Das ausgewählte Übersetzungspaket ist für {lang}. Wähle das Übersetzungspaket für deine Anzeigesprache."
+        },
+        {
+          "id": 900796,
+          "text": "Die Datei konnte nicht gelesen werden."
+        },
+        {
+          "id": 900797,
+          "text": "Übersetzungspaket"
+        },
+        {
+          "id": 900798,
+          "text": "Lade das Übersetzungspaket für deine Anzeigesprache ({file}) von der Seite herunter, klicke auf „Importieren“ und wähle die Datei aus."
+        },
+        {
+          "id": 900799,
+          "text": "Übersetzungspaket auswählen"
+        },
+        {
+          "id": 900800,
+          "text": "Übersetzungspaket ({updated}) importiert."
+        },
+        {
+          "id": 900801,
+          "text": "Bilder neu erzeugen"
+        },
+        {
+          "id": 900802,
+          "text": "Aktualisierungen"
+        },
+        {
+          "id": 900803,
+          "text": "Aktuelle Version: {version}"
+        },
+        {
+          "id": 900804,
+          "text": "Neue Versionen findest du auf der Release-Seite. Assist sucht nicht nach Aktualisierungen und aktualisiert sich nicht selbst (es stellt keine Internetverbindung her)."
+        },
+        {
+          "id": 900805,
+          "text": "Release-Seite öffnen"
         },
         {
           "id": 902000,
@@ -162860,6 +163425,106 @@
           "text": "Voix de secours"
         },
         {
+          "id": 900773,
+          "text": "Le fichier sélectionné n'a pas pu être lu comme paquet de traduction. Téléchargez-le de nouveau depuis la page de téléchargement."
+        },
+        {
+          "id": 900775,
+          "text": "Impossible d'écrire les fichiers."
+        },
+        {
+          "id": 900777,
+          "text": "Le manuel complet est une traduction du manuel officiel (le Player's Guide et son addendum). Les traductions sont distribuées sous forme de paquets de traduction pour chaque langue d'affichage sur la page de téléchargement du manuel (consultez la page pour les langues disponibles). Les images sont créées à partir du PDF du dossier Docs de votre Arena (version Steam)."
+        },
+        {
+          "id": 900778,
+          "text": "Le dossier Docs est introuvable. Dans les paramètres, indiquez le dossier ARENA d'Arena comme « Dossier du jeu »."
+        },
+        {
+          "id": 900779,
+          "text": "Affiché sans images, car Player Guide.pdf n'est pas la version sur laquelle repose cette traduction."
+        },
+        {
+          "id": 900780,
+          "text": "Affiché sans images, car Player Guide.pdf est introuvable dans le dossier Docs. Vérifiez le « Dossier du jeu » dans les paramètres, puis cliquez sur « Recréer les images » pour afficher les images."
+        },
+        {
+          "id": 900783,
+          "text": "Ouvrir le Player's Guide"
+        },
+        {
+          "id": 900784,
+          "text": "Ouvrir la Quick Reference Card (addendum)"
+        },
+        {
+          "id": 900785,
+          "text": "Vous pouvez ouvrir le manuel officiel (PDF en anglais) du dossier Docs de votre Arena."
+        },
+        {
+          "id": 900787,
+          "text": "Création des images… {done}/{total}"
+        },
+        {
+          "id": 900788,
+          "text": "Manuel complet (traduction du manuel officiel)"
+        },
+        {
+          "id": 900789,
+          "text": "Importation…"
+        },
+        {
+          "id": 900790,
+          "text": "Importer"
+        },
+        {
+          "id": 900793,
+          "text": "Ouvrir la page de téléchargement du manuel"
+        },
+        {
+          "id": 900795,
+          "text": "Le paquet de traduction sélectionné est destiné à {lang}. Sélectionnez le paquet de traduction de votre langue d'affichage."
+        },
+        {
+          "id": 900796,
+          "text": "Impossible de lire le fichier."
+        },
+        {
+          "id": 900797,
+          "text": "Paquet de traduction"
+        },
+        {
+          "id": 900798,
+          "text": "Téléchargez depuis la page le paquet de traduction de votre langue d'affichage ({file}), puis cliquez sur « Importer » et sélectionnez le fichier."
+        },
+        {
+          "id": 900799,
+          "text": "Sélectionner un paquet de traduction"
+        },
+        {
+          "id": 900800,
+          "text": "Paquet de traduction ({updated}) importé."
+        },
+        {
+          "id": 900801,
+          "text": "Recréer les images"
+        },
+        {
+          "id": 900802,
+          "text": "Mises à jour"
+        },
+        {
+          "id": 900803,
+          "text": "Version actuelle : {version}"
+        },
+        {
+          "id": 900804,
+          "text": "Consultez la page des versions pour les nouvelles versions. Assist ne recherche pas de mises à jour et ne se met pas à jour lui-même (il ne se connecte pas à Internet)."
+        },
+        {
+          "id": 900805,
+          "text": "Ouvrir la page des versions"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -190809,6 +191474,106 @@
           "text": "Voce alternativa"
         },
         {
+          "id": 900773,
+          "text": "Il file selezionato non può essere letto come pacchetto di traduzione. Scaricalo di nuovo dalla pagina di download."
+        },
+        {
+          "id": 900775,
+          "text": "Impossibile scrivere i file."
+        },
+        {
+          "id": 900777,
+          "text": "Il manuale completo è una traduzione del manuale ufficiale (la Player's Guide e il relativo addendum). Le traduzioni sono distribuite come pacchetti di traduzione per ogni lingua dell'interfaccia nella pagina di download del manuale (controlla nella pagina le lingue disponibili). Le immagini vengono create dal PDF nella cartella Docs del tuo Arena (versione Steam)."
+        },
+        {
+          "id": 900778,
+          "text": "Cartella Docs non trovata. Nelle impostazioni, imposta come «Cartella di gioco» la cartella ARENA di Arena."
+        },
+        {
+          "id": 900779,
+          "text": "Mostrato senza immagini perché Player Guide.pdf non è la versione su cui si basa questa traduzione."
+        },
+        {
+          "id": 900780,
+          "text": "Mostrato senza immagini perché Player Guide.pdf non è stato trovato nella cartella Docs. Controlla la «Cartella di gioco» nelle impostazioni e premi «Ricrea le immagini» per vedere le immagini."
+        },
+        {
+          "id": 900783,
+          "text": "Apri la Player's Guide"
+        },
+        {
+          "id": 900784,
+          "text": "Apri la Quick Reference Card (addendum)"
+        },
+        {
+          "id": 900785,
+          "text": "Puoi aprire il manuale ufficiale (PDF in inglese) nella cartella Docs del tuo Arena."
+        },
+        {
+          "id": 900787,
+          "text": "Creazione delle immagini… {done}/{total}"
+        },
+        {
+          "id": 900788,
+          "text": "Manuale completo (traduzione del manuale ufficiale)"
+        },
+        {
+          "id": 900789,
+          "text": "Importazione in corso…"
+        },
+        {
+          "id": 900790,
+          "text": "Importa"
+        },
+        {
+          "id": 900793,
+          "text": "Apri la pagina di download del manuale"
+        },
+        {
+          "id": 900795,
+          "text": "Il pacchetto di traduzione selezionato è per {lang}. Seleziona il pacchetto di traduzione della tua lingua."
+        },
+        {
+          "id": 900796,
+          "text": "Impossibile leggere il file."
+        },
+        {
+          "id": 900797,
+          "text": "Pacchetto di traduzione"
+        },
+        {
+          "id": 900798,
+          "text": "Scarica dalla pagina il pacchetto di traduzione della tua lingua ({file}), poi premi «Importa» e seleziona il file."
+        },
+        {
+          "id": 900799,
+          "text": "Seleziona un pacchetto di traduzione"
+        },
+        {
+          "id": 900800,
+          "text": "Pacchetto di traduzione ({updated}) importato."
+        },
+        {
+          "id": 900801,
+          "text": "Ricrea le immagini"
+        },
+        {
+          "id": 900802,
+          "text": "Aggiornamenti"
+        },
+        {
+          "id": 900803,
+          "text": "Versione attuale: {version}"
+        },
+        {
+          "id": 900804,
+          "text": "Controlla la pagina delle versioni per le nuove versioni. Assist non cerca aggiornamenti e non si aggiorna da solo (non si connette a Internet)."
+        },
+        {
+          "id": 900805,
+          "text": "Apri la pagina delle versioni"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -218756,6 +219521,106 @@
         {
           "id": 900772,
           "text": "Запасной голос"
+        },
+        {
+          "id": 900773,
+          "text": "Выбранный файл не удалось прочитать как пакет перевода. Скачайте его заново со страницы загрузки."
+        },
+        {
+          "id": 900775,
+          "text": "Не удалось записать файлы."
+        },
+        {
+          "id": 900777,
+          "text": "Полное руководство — это перевод официального руководства (Player's Guide и дополнения). Переводы распространяются в виде пакетов перевода для каждого языка интерфейса на странице загрузки руководства (доступные языки указаны на странице). Изображения создаются из PDF в папке Docs вашей Arena (версия Steam)."
+        },
+        {
+          "id": 900778,
+          "text": "Папка Docs не найдена. В настройках укажите папку ARENA игры Arena как «Папку игры»."
+        },
+        {
+          "id": 900779,
+          "text": "Показано без изображений: Player Guide.pdf — не та версия, на которой основан этот перевод."
+        },
+        {
+          "id": 900780,
+          "text": "Показано без изображений: в папке Docs не найден Player Guide.pdf. Проверьте «Папку игры» в настройках и нажмите «Создать изображения заново», чтобы увидеть изображения."
+        },
+        {
+          "id": 900783,
+          "text": "Открыть Player's Guide"
+        },
+        {
+          "id": 900784,
+          "text": "Открыть Quick Reference Card (дополнение)"
+        },
+        {
+          "id": 900785,
+          "text": "Можно открыть официальное руководство (PDF на английском) из папки Docs вашей Arena."
+        },
+        {
+          "id": 900787,
+          "text": "Создание изображений… {done}/{total}"
+        },
+        {
+          "id": 900788,
+          "text": "Полное руководство (перевод официального руководства)"
+        },
+        {
+          "id": 900789,
+          "text": "Импорт…"
+        },
+        {
+          "id": 900790,
+          "text": "Импортировать"
+        },
+        {
+          "id": 900793,
+          "text": "Открыть страницу загрузки руководства"
+        },
+        {
+          "id": 900795,
+          "text": "Выбранный пакет перевода предназначен для языка: {lang}. Выберите пакет перевода для вашего языка интерфейса."
+        },
+        {
+          "id": 900796,
+          "text": "Не удалось прочитать файл."
+        },
+        {
+          "id": 900797,
+          "text": "Пакет перевода"
+        },
+        {
+          "id": 900798,
+          "text": "Скачайте со страницы пакет перевода для вашего языка интерфейса ({file}), затем нажмите «Импортировать» и выберите файл."
+        },
+        {
+          "id": 900799,
+          "text": "Выберите пакет перевода"
+        },
+        {
+          "id": 900800,
+          "text": "Пакет перевода ({updated}) импортирован."
+        },
+        {
+          "id": 900801,
+          "text": "Создать изображения заново"
+        },
+        {
+          "id": 900802,
+          "text": "Обновления"
+        },
+        {
+          "id": 900803,
+          "text": "Текущая версия: {version}"
+        },
+        {
+          "id": 900804,
+          "text": "Новые версии ищите на странице выпусков. Assist не проверяет обновления и не обновляется сам (он не подключается к интернету)."
+        },
+        {
+          "id": 900805,
+          "text": "Открыть страницу выпусков"
         },
         {
           "id": 902000,

@@ -9,6 +9,7 @@ RTESArenaAssist 本体は MIT License です（[LICENSE](LICENSE)）。配布し
 | Qt / PySide6 | LGPL v3（Qt は商用ライセンスとのデュアルライセンス） | https://www.qt.io/ / https://pypi.org/project/PySide6/ |
 | NumPy | BSD 3-Clause | https://numpy.org/ |
 | Pillow | MIT-CMU | https://python-pillow.org/ |
+| pypdf | BSD 3-Clause | https://github.com/py-pdf/pypdf |
 | pywin32 | PSF-2.0 系 | https://github.com/mhammond/pywin32 |
 | CPython ランタイム | PSF License | https://www.python.org/ |
 | PyInstaller ブートローダ | GPL v2 以降（ブートローダには例外条項があり、生成した実行ファイルを任意のライセンスで配布できます） | https://pyinstaller.org/ |
@@ -28,9 +29,10 @@ RTESArenaAssist 本体は MIT License です（[LICENSE](LICENSE)）。配布し
 
 ## The Elder Scrolls: Arena について
 
-本ツールはゲームの実行ファイルやデータファイルを書き換えません。また **Arena のデータ・
-テキスト・画像を同梱していません**。
-翻訳表示に必要なデータは、利用者の環境にインストールされた Arena から実行時に読み出して
+本ツールはゲームの実行ファイルやデータファイルを書き換えません。また **Arena の原文（英語の
+テキスト）・データ・画像を同梱していません**（同梱しているのは、ゲーム内テキストの訳と本ツール
+独自のデータだけです）。
+翻訳表示に必要な原文のデータは、利用者の環境にインストールされた Arena から実行時に読み出して
 生成します。The Elder Scrolls: Arena および関連する名称・意匠は ZeniMax Media Inc. および
 Bethesda Softworks LLC に帰属します。本ツールは非公式のファンメイドであり、これらの企業とは
 一切関係がありません。
