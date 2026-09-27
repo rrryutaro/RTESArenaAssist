@@ -1,7 +1,7 @@
 {
   "schema": "rtesaa.source_id_map",
   "schema_version": 2,
-  "registry_hash": "sha256:b501d7946335c0fd8b876ae57330586e105cfd719bd87804c74d45360232b582",
+  "registry_hash": "sha256:c320d9c33e0c43653fc9ba5e9467ae21dc4b10e523779d05223e2e04379543b1",
   "map": {
     "aexe:akey:A001.0": [
       111871
@@ -812,6 +812,7 @@
     ],
     "aexe:classes:names:1": [
       100061,
+      109062,
       202001
     ],
     "aexe:classes:names:10": [
@@ -826,6 +827,7 @@
     ],
     "aexe:classes:names:12": [
       100044,
+      109058,
       202004
     ],
     "aexe:classes:names:13": [
@@ -859,31 +861,38 @@
       202010
     ],
     "aexe:classes:names:3": [
+      109061,
       202011
     ],
     "aexe:classes:names:4": [
       100027,
       100028,
+      109057,
       202012
     ],
     "aexe:classes:names:5": [
       100045,
+      109059,
       202013
     ],
     "aexe:classes:names:6": [
       100008,
+      109055,
       202014
     ],
     "aexe:classes:names:7": [
       100013,
+      109056,
       202015
     ],
     "aexe:classes:names:8": [
       100053,
+      109060,
       202016
     ],
     "aexe:classes:names:9": [
       100000,
+      109054,
       202017
     ],
     "aexe:entities:attribute_names:0": [
@@ -1046,6 +1055,12 @@
     "aexe:entities:relation_names:1": [
       410001
     ],
+    "aexe:entities:relation_names:10": [
+      410018
+    ],
+    "aexe:entities:relation_names:11": [
+      410019
+    ],
     "aexe:entities:relation_names:12": [
       410010
     ],
@@ -1054,6 +1069,15 @@
     ],
     "aexe:entities:relation_names:14": [
       410002
+    ],
+    "aexe:entities:relation_names:16": [
+      410020
+    ],
+    "aexe:entities:relation_names:17": [
+      410021
+    ],
+    "aexe:entities:relation_names:18": [
+      410022
     ],
     "aexe:entities:relation_names:2": [
       410006
@@ -1066,6 +1090,18 @@
     ],
     "aexe:entities:relation_names:5": [
       410009
+    ],
+    "aexe:entities:relation_names:6": [
+      410014
+    ],
+    "aexe:entities:relation_names:7": [
+      410015
+    ],
+    "aexe:entities:relation_names:8": [
+      410016
+    ],
+    "aexe:entities:relation_names:9": [
+      410017
     ],
     "aexe:entities:title_names:1": [
       407001
@@ -1529,6 +1565,9 @@
     "aexe:equipment:spellcasting_item_names:3": [
       106134
     ],
+    "aexe:equipment:unidentified_potion_name:0": [
+      106194
+    ],
     "aexe:equipment:weapon_enchantment_names:1": [
       203001,
       204016
@@ -1633,6 +1672,9 @@
     "aexe:inn:drinks_common:1": [
       106057
     ],
+    "aexe:inn:drinks_common:10": [
+      106195
+    ],
     "aexe:inn:drinks_common:11": [
       106055
     ],
@@ -1660,11 +1702,32 @@
     "aexe:inn:drinks_common:9": [
       106059
     ],
+    "aexe:inn:drinks_special:0": [
+      106196
+    ],
+    "aexe:inn:drinks_special:1": [
+      106197
+    ],
     "aexe:inn:drinks_special:2": [
       106054
     ],
     "aexe:inn:drinks_special:3": [
       106070
+    ],
+    "aexe:inn:drinks_special:4": [
+      106198
+    ],
+    "aexe:inn:drinks_special:5": [
+      106199
+    ],
+    "aexe:inn:drinks_special:6": [
+      106200
+    ],
+    "aexe:inn:drinks_special:7": [
+      106201
+    ],
+    "aexe:inn:drinks_special:8": [
+      106202
     ],
     "aexe:inn:room_types:0": [
       106120

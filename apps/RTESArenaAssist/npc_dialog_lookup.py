@@ -806,6 +806,11 @@ def _ph_ra_t_oc_ct_oth_di_lp_cn_tem(name: str, value: str, lang: str) -> str:
         direct = _ph_direct_id(name, value)
         if direct is not None:
             return direct
+    if name == 't' and lang != 'en':
+        import i18n_helper as i18n
+        title = i18n.value_in('titles', value, lang)
+        if title is not None:
+            return title
     if name == 'oth':
         import i18n_helper as i18n
         nd = i18n.value('npc_dialog', value)
@@ -951,7 +956,10 @@ def _ph_nk(name: str, value: str, lang: str) -> str:
     return _lookup_key_material(value) or value
 
 def _ph_nc2(name: str, value: str, lang: str) -> str:
-    return value
+    if lang == 'en':
+        return value
+    import date_translator
+    return date_translator.translate_condition_name(value) or value
 _PLACEHOLDER_RESOLVERS = {'n': _ph_n_fn_rf_an_nc, 'fn': _ph_n_fn_rf_an_nc, 'rf': _ph_n_fn_rf_an_nc, 'an': _ph_n_fn_rf_an_nc, 'nc': _ph_n_fn_rf_an_nc, 'doc': _ph_doc, 'mn': _ph_mn_mt, 'mt': _ph_mn_mt, 'ra': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 't': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'oc': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'ct': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'oth': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'di': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'lp': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'cn': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'tem': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'tq': _ph_tq, 'cp': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'cll': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'ccs': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'rcn': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'cn2': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'hc': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'qc': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'tan': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'st': _ph_st, 'nh': _ph_nh, 'nhd': _ph_nhd, 'hod': _ph_hod_jok, 'jok': _ph_hod_jok, 'nt': _ph_nt, 'ds': _ph_ds, 'a': _ph_a_a2_oap, 'a2': _ph_a_a2_oap, 'oap': _ph_a_a2_oap, 'da': _ph_da, 'omq': _ph_omq_mi, 'mi': _ph_omq_mi, 'r': _ph_r, 'g': _ph_g_g2_g3, 'g2': _ph_g_g2_g3, 'g3': _ph_g_g2_g3, 'fq': _ph_fq_ne, 'ne': _ph_fq_ne, 'o': _ph_o_pcn, 'pcn': _ph_o_pcn, 'tl': _ph_tl_en, 'en': _ph_tl_en, 'nd': _ph_nd, 'nr': _ph_nr, 'ni': _ph_ni_i, 'i': _ph_ni_i, 'nk': _ph_nk, 'nc2': _ph_nc2}
 
 def translate_placeholder(name: str, value: str, lang: str | None=None) -> str:

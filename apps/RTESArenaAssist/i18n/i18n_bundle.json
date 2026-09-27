@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:b501d7946335c0fd8b876ae57330586e105cfd719bd87804c74d45360232b582",
+  "registry_hash": "sha256:c320d9c33e0c43653fc9ba5e9467ae21dc4b10e523779d05223e2e04379543b1",
   "categories": [
     {
       "category": "assist_ui",
@@ -12789,8 +12789,91 @@
         {
           "id": 106194,
           "kind": "label",
+          "source": {
+            "source_id": "aexe:equipment:unidentified_potion_name:0"
+          },
           "context": {
             "section": "unidentified_potion"
+          }
+        },
+        {
+          "id": 106195,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:inn:drinks_common:10"
+          },
+          "context": {
+            "section": "drinks"
+          }
+        },
+        {
+          "id": 106196,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:inn:drinks_special:0"
+          },
+          "context": {
+            "section": "drinks"
+          }
+        },
+        {
+          "id": 106197,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:inn:drinks_special:1"
+          },
+          "context": {
+            "section": "drinks"
+          }
+        },
+        {
+          "id": 106198,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:inn:drinks_special:4"
+          },
+          "context": {
+            "section": "drinks"
+          }
+        },
+        {
+          "id": 106199,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:inn:drinks_special:5"
+          },
+          "context": {
+            "section": "drinks"
+          }
+        },
+        {
+          "id": 106200,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:inn:drinks_special:6"
+          },
+          "context": {
+            "section": "drinks"
+          }
+        },
+        {
+          "id": 106201,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:inn:drinks_special:7"
+          },
+          "context": {
+            "section": "drinks"
+          }
+        },
+        {
+          "id": 106202,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:inn:drinks_special:8"
+          },
+          "context": {
+            "section": "drinks"
           }
         }
       ]
@@ -16643,6 +16726,69 @@
           "kind": "label",
           "source": {
             "source_id": "aexe:entities:creature_names:12"
+          }
+        },
+        {
+          "id": 109054,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:classes:names:9"
+          }
+        },
+        {
+          "id": 109055,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:classes:names:6"
+          }
+        },
+        {
+          "id": 109056,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:classes:names:7"
+          }
+        },
+        {
+          "id": 109057,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:classes:names:4"
+          }
+        },
+        {
+          "id": 109058,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:classes:names:12"
+          }
+        },
+        {
+          "id": 109059,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:classes:names:5"
+          }
+        },
+        {
+          "id": 109060,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:classes:names:8"
+          }
+        },
+        {
+          "id": 109061,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:classes:names:3"
+          }
+        },
+        {
+          "id": 109062,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:classes:names:1"
           }
         }
       ]
@@ -41108,6 +41254,69 @@
         {
           "id": 410013,
           "kind": "label"
+        },
+        {
+          "id": 410014,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:entities:relation_names:6"
+          }
+        },
+        {
+          "id": 410015,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:entities:relation_names:7"
+          }
+        },
+        {
+          "id": 410016,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:entities:relation_names:8"
+          }
+        },
+        {
+          "id": 410017,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:entities:relation_names:9"
+          }
+        },
+        {
+          "id": 410018,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:entities:relation_names:10"
+          }
+        },
+        {
+          "id": 410019,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:entities:relation_names:11"
+          }
+        },
+        {
+          "id": 410020,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:entities:relation_names:16"
+          }
+        },
+        {
+          "id": 410021,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:entities:relation_names:17"
+          }
+        },
+        {
+          "id": 410022,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:entities:relation_names:18"
+          }
         }
       ]
     },
@@ -42247,6 +42456,18 @@
         },
         {
           "id": 452095,
+          "kind": "label"
+        },
+        {
+          "id": 452096,
+          "kind": "label"
+        },
+        {
+          "id": 452097,
+          "kind": "label"
+        },
+        {
+          "id": 452098,
           "kind": "label"
         }
       ]
@@ -53772,6 +53993,38 @@
           "text": "ポーション"
         },
         {
+          "id": 106195,
+          "text": "グロッグ"
+        },
+        {
+          "id": 106196,
+          "text": "グットガイスト"
+        },
+        {
+          "id": 106197,
+          "text": "硫黄水"
+        },
+        {
+          "id": 106198,
+          "text": "ゴーレムメーカー"
+        },
+        {
+          "id": 106199,
+          "text": "カリュブディス・オン・ザ・ロック"
+        },
+        {
+          "id": 106200,
+          "text": "リキッド・リッチ"
+        },
+        {
+          "id": 106201,
+          "text": "ハイロックミルク"
+        },
+        {
+          "id": 106202,
+          "text": "脾臓を貫くクレイモア"
+        },
+        {
           "id": 107000,
           "text": "対象1体・遠隔"
         },
@@ -54702,6 +54955,42 @@
         {
           "id": 109053,
           "text": "ゾンビ"
+        },
+        {
+          "id": 109054,
+          "text": "軽業師（敵）"
+        },
+        {
+          "id": 109055,
+          "text": "吟遊詩人（敵）"
+        },
+        {
+          "id": 109056,
+          "text": "強盗（敵）"
+        },
+        {
+          "id": 109057,
+          "text": "治療師（敵）"
+        },
+        {
+          "id": 109058,
+          "text": "修道士（敵）"
+        },
+        {
+          "id": 109059,
+          "text": "ナイトブレイド（敵）"
+        },
+        {
+          "id": 109060,
+          "text": "ならず者（敵）"
+        },
+        {
+          "id": 109061,
+          "text": "妖術師（敵）"
+        },
+        {
+          "id": 109062,
+          "text": "魔法剣士（敵）"
         },
         {
           "id": 110000,
@@ -73872,6 +74161,42 @@
           "text": "姪"
         },
         {
+          "id": 410014,
+          "text": "末の息子"
+        },
+        {
+          "id": 410015,
+          "text": "末の娘"
+        },
+        {
+          "id": 410016,
+          "text": "弟"
+        },
+        {
+          "id": 410017,
+          "text": "妹"
+        },
+        {
+          "id": 410018,
+          "text": "末の弟"
+        },
+        {
+          "id": 410019,
+          "text": "末の妹"
+        },
+        {
+          "id": 410020,
+          "text": "継息子"
+        },
+        {
+          "id": 410021,
+          "text": "継娘"
+        },
+        {
+          "id": 410022,
+          "text": "はとこ"
+        },
+        {
           "id": 411000,
           "text": "村"
         },
@@ -74778,6 +75103,18 @@
         {
           "id": 452095,
           "text": "{location}に到着した。日付は{date}。目的地まで{days}日かかった。"
+        },
+        {
+          "id": 452096,
+          "text": "早朝"
+        },
+        {
+          "id": 452097,
+          "text": "正午"
+        },
+        {
+          "id": 452098,
+          "text": "真夜中"
         },
         {
           "id": 900000,
@@ -81905,6 +82242,38 @@
           "text": "Poción"
         },
         {
+          "id": 106195,
+          "text": "Grog"
+        },
+        {
+          "id": 106196,
+          "text": "Guttgeist"
+        },
+        {
+          "id": 106197,
+          "text": "Agua sulfurosa"
+        },
+        {
+          "id": 106198,
+          "text": "Hacedor de gólems"
+        },
+        {
+          "id": 106199,
+          "text": "Caribdis con hielo"
+        },
+        {
+          "id": 106200,
+          "text": "Liche líquido"
+        },
+        {
+          "id": 106201,
+          "text": "Leche de Roca Alta"
+        },
+        {
+          "id": 106202,
+          "text": "Claymore en el bazo"
+        },
+        {
           "id": 107000,
           "text": "1 objetivo a distancia"
         },
@@ -82835,6 +83204,42 @@
         {
           "id": 109053,
           "text": "Zombi"
+        },
+        {
+          "id": 109054,
+          "text": "Acrobata"
+        },
+        {
+          "id": 109055,
+          "text": "Bardo"
+        },
+        {
+          "id": 109056,
+          "text": "Bandido"
+        },
+        {
+          "id": 109057,
+          "text": "Sanador"
+        },
+        {
+          "id": 109058,
+          "text": "Monje"
+        },
+        {
+          "id": 109059,
+          "text": "Cuchilla nocturna"
+        },
+        {
+          "id": 109060,
+          "text": "Pícaro"
+        },
+        {
+          "id": 109061,
+          "text": "Hechicero"
+        },
+        {
+          "id": 109062,
+          "text": "Guerrero arcano"
         },
         {
           "id": 110000,
@@ -102513,6 +102918,42 @@
           "text": "sobrina"
         },
         {
+          "id": 410014,
+          "text": "hijo menor"
+        },
+        {
+          "id": 410015,
+          "text": "hija menor"
+        },
+        {
+          "id": 410016,
+          "text": "hermano menor"
+        },
+        {
+          "id": 410017,
+          "text": "hermana menor"
+        },
+        {
+          "id": 410018,
+          "text": "hermano pequeño"
+        },
+        {
+          "id": 410019,
+          "text": "hermana pequeña"
+        },
+        {
+          "id": 410020,
+          "text": "hijastro"
+        },
+        {
+          "id": 410021,
+          "text": "hijastra"
+        },
+        {
+          "id": 410022,
+          "text": "primo segundo"
+        },
+        {
           "id": 411000,
           "text": "Aldea"
         },
@@ -103419,6 +103860,18 @@
         {
           "id": 452095,
           "text": "Has llegado a {location}. La fecha es {date}. Has tardado {days} días en llegar a tu destino."
+        },
+        {
+          "id": 452096,
+          "text": "madrugada"
+        },
+        {
+          "id": 452097,
+          "text": "mediodía"
+        },
+        {
+          "id": 452098,
+          "text": "medianoche"
         },
         {
           "id": 900000,
@@ -110246,6 +110699,38 @@
           "text": "Trank"
         },
         {
+          "id": 106195,
+          "text": "Grog"
+        },
+        {
+          "id": 106196,
+          "text": "Guttgeist"
+        },
+        {
+          "id": 106197,
+          "text": "Schwefelwasser"
+        },
+        {
+          "id": 106198,
+          "text": "Golemmacher"
+        },
+        {
+          "id": 106199,
+          "text": "Charybdis auf Eis"
+        },
+        {
+          "id": 106200,
+          "text": "Flüssiger Lich"
+        },
+        {
+          "id": 106201,
+          "text": "Hochfelsmilch"
+        },
+        {
+          "id": 106202,
+          "text": "Claymore durch die Milz"
+        },
+        {
           "id": 107000,
           "text": "1 Ziel auf Distanz"
         },
@@ -111176,6 +111661,42 @@
         {
           "id": 109053,
           "text": "Zombie"
+        },
+        {
+          "id": 109054,
+          "text": "Akrobat"
+        },
+        {
+          "id": 109055,
+          "text": "Barde"
+        },
+        {
+          "id": 109056,
+          "text": "Einbrecher"
+        },
+        {
+          "id": 109057,
+          "text": "Heiler"
+        },
+        {
+          "id": 109058,
+          "text": "Mönch"
+        },
+        {
+          "id": 109059,
+          "text": "Nachtklinge"
+        },
+        {
+          "id": 109060,
+          "text": "Schurke"
+        },
+        {
+          "id": 109061,
+          "text": "Hexer"
+        },
+        {
+          "id": 109062,
+          "text": "Zauberklinge"
         },
         {
           "id": 110000,
@@ -130346,6 +130867,42 @@
           "text": "Nichte"
         },
         {
+          "id": 410014,
+          "text": "jüngster Sohn"
+        },
+        {
+          "id": 410015,
+          "text": "jüngste Tochter"
+        },
+        {
+          "id": 410016,
+          "text": "jüngerer Bruder"
+        },
+        {
+          "id": 410017,
+          "text": "jüngere Schwester"
+        },
+        {
+          "id": 410018,
+          "text": "jüngster Bruder"
+        },
+        {
+          "id": 410019,
+          "text": "jüngste Schwester"
+        },
+        {
+          "id": 410020,
+          "text": "Stiefsohn"
+        },
+        {
+          "id": 410021,
+          "text": "Stieftochter"
+        },
+        {
+          "id": 410022,
+          "text": "Cousin zweiten Grades"
+        },
+        {
           "id": 411000,
           "text": "Dorf"
         },
@@ -131252,6 +131809,18 @@
         {
           "id": 452095,
           "text": "Du hast {location} erreicht. Das Datum ist {date}. Die Reise zu deinem Ziel hat {days} Tage gedauert."
+        },
+        {
+          "id": 452096,
+          "text": "früher Morgen"
+        },
+        {
+          "id": 452097,
+          "text": "Mittag"
+        },
+        {
+          "id": 452098,
+          "text": "Mitternacht"
         },
         {
           "id": 900000,
@@ -138079,6 +138648,38 @@
           "text": "Potion"
         },
         {
+          "id": 106195,
+          "text": "Grog"
+        },
+        {
+          "id": 106196,
+          "text": "Guttgeist"
+        },
+        {
+          "id": 106197,
+          "text": "Eau sulfureuse"
+        },
+        {
+          "id": 106198,
+          "text": "Faiseur de golems"
+        },
+        {
+          "id": 106199,
+          "text": "Charybde sur glace"
+        },
+        {
+          "id": 106200,
+          "text": "Liche liquide"
+        },
+        {
+          "id": 106201,
+          "text": "Lait de Hauteroche"
+        },
+        {
+          "id": 106202,
+          "text": "Claymore dans la rate"
+        },
+        {
           "id": 107000,
           "text": "1 cible à distance"
         },
@@ -139009,6 +139610,42 @@
         {
           "id": 109053,
           "text": "Zombie"
+        },
+        {
+          "id": 109054,
+          "text": "Acrobate"
+        },
+        {
+          "id": 109055,
+          "text": "Barde"
+        },
+        {
+          "id": 109056,
+          "text": "Cambrioleur"
+        },
+        {
+          "id": 109057,
+          "text": "Guérisseur"
+        },
+        {
+          "id": 109058,
+          "text": "Moine"
+        },
+        {
+          "id": 109059,
+          "text": "Lame nocturne"
+        },
+        {
+          "id": 109060,
+          "text": "Vaurien"
+        },
+        {
+          "id": 109061,
+          "text": "Sorcier"
+        },
+        {
+          "id": 109062,
+          "text": "Épée-sort"
         },
         {
           "id": 110000,
@@ -158179,6 +158816,42 @@
           "text": "nièce"
         },
         {
+          "id": 410014,
+          "text": "fils cadet"
+        },
+        {
+          "id": 410015,
+          "text": "fille cadette"
+        },
+        {
+          "id": 410016,
+          "text": "frère cadet"
+        },
+        {
+          "id": 410017,
+          "text": "sœur cadette"
+        },
+        {
+          "id": 410018,
+          "text": "plus jeune frère"
+        },
+        {
+          "id": 410019,
+          "text": "plus jeune sœur"
+        },
+        {
+          "id": 410020,
+          "text": "beau-fils"
+        },
+        {
+          "id": 410021,
+          "text": "belle-fille"
+        },
+        {
+          "id": 410022,
+          "text": "cousin issu de germain"
+        },
+        {
           "id": 411000,
           "text": "Village"
         },
@@ -159085,6 +159758,18 @@
         {
           "id": 452095,
           "text": "Vous arrivez à {location}. La date est {date}. Il vous a fallu {days} jours pour atteindre votre destination."
+        },
+        {
+          "id": 452096,
+          "text": "petit matin"
+        },
+        {
+          "id": 452097,
+          "text": "midi"
+        },
+        {
+          "id": 452098,
+          "text": "minuit"
         },
         {
           "id": 900000,
@@ -165912,6 +166597,38 @@
           "text": "Pozione"
         },
         {
+          "id": 106195,
+          "text": "Grog"
+        },
+        {
+          "id": 106196,
+          "text": "Guttgeist"
+        },
+        {
+          "id": 106197,
+          "text": "Acqua sulfurea"
+        },
+        {
+          "id": 106198,
+          "text": "Creatore di golem"
+        },
+        {
+          "id": 106199,
+          "text": "Cariddi con ghiaccio"
+        },
+        {
+          "id": 106200,
+          "text": "Lich liquido"
+        },
+        {
+          "id": 106201,
+          "text": "Latte di Alta Roccia"
+        },
+        {
+          "id": 106202,
+          "text": "Claymore nella milza"
+        },
+        {
           "id": 107000,
           "text": "1 bersaglio a distanza"
         },
@@ -166842,6 +167559,42 @@
         {
           "id": 109053,
           "text": "Zombi"
+        },
+        {
+          "id": 109054,
+          "text": "Acrobata"
+        },
+        {
+          "id": 109055,
+          "text": "Bardo"
+        },
+        {
+          "id": 109056,
+          "text": "Scassinatore"
+        },
+        {
+          "id": 109057,
+          "text": "Guaritore"
+        },
+        {
+          "id": 109058,
+          "text": "Monaco"
+        },
+        {
+          "id": 109059,
+          "text": "Lama Notturna"
+        },
+        {
+          "id": 109060,
+          "text": "Furfante"
+        },
+        {
+          "id": 109061,
+          "text": "Stregone"
+        },
+        {
+          "id": 109062,
+          "text": "Spadamagica"
         },
         {
           "id": 110000,
@@ -186012,6 +186765,42 @@
           "text": "nipote"
         },
         {
+          "id": 410014,
+          "text": "figlio minore"
+        },
+        {
+          "id": 410015,
+          "text": "figlia minore"
+        },
+        {
+          "id": 410016,
+          "text": "fratello minore"
+        },
+        {
+          "id": 410017,
+          "text": "sorella minore"
+        },
+        {
+          "id": 410018,
+          "text": "fratello più piccolo"
+        },
+        {
+          "id": 410019,
+          "text": "sorella più piccola"
+        },
+        {
+          "id": 410020,
+          "text": "figliastro"
+        },
+        {
+          "id": 410021,
+          "text": "figliastra"
+        },
+        {
+          "id": 410022,
+          "text": "cugino di secondo grado"
+        },
+        {
           "id": 411000,
           "text": "Villaggio"
         },
@@ -186918,6 +187707,18 @@
         {
           "id": 452095,
           "text": "Giungi a {location}. La data è {date}. Per raggiungere la tua meta ci sono voluti {days} giorni."
+        },
+        {
+          "id": 452096,
+          "text": "primo mattino"
+        },
+        {
+          "id": 452097,
+          "text": "mezzogiorno"
+        },
+        {
+          "id": 452098,
+          "text": "mezzanotte"
         },
         {
           "id": 900000,
@@ -193745,6 +194546,38 @@
           "text": "Зелье"
         },
         {
+          "id": 106195,
+          "text": "Грог"
+        },
+        {
+          "id": 106196,
+          "text": "Гуттгайст"
+        },
+        {
+          "id": 106197,
+          "text": "Серная вода"
+        },
+        {
+          "id": 106198,
+          "text": "Големодел"
+        },
+        {
+          "id": 106199,
+          "text": "Харибда со льдом"
+        },
+        {
+          "id": 106200,
+          "text": "Жидкий лич"
+        },
+        {
+          "id": 106201,
+          "text": "Молоко Хай Рока"
+        },
+        {
+          "id": 106202,
+          "text": "Клеймор в селезёнку"
+        },
+        {
           "id": 107000,
           "text": "1 цель на расстоянии"
         },
@@ -194675,6 +195508,42 @@
         {
           "id": 109053,
           "text": "Зомби"
+        },
+        {
+          "id": 109054,
+          "text": "Акробат"
+        },
+        {
+          "id": 109055,
+          "text": "Бард"
+        },
+        {
+          "id": 109056,
+          "text": "Взломщик"
+        },
+        {
+          "id": 109057,
+          "text": "Целитель"
+        },
+        {
+          "id": 109058,
+          "text": "Монах"
+        },
+        {
+          "id": 109059,
+          "text": "Клинок ночи"
+        },
+        {
+          "id": 109060,
+          "text": "Жулик"
+        },
+        {
+          "id": 109061,
+          "text": "Чародей"
+        },
+        {
+          "id": 109062,
+          "text": "Воин-маг"
         },
         {
           "id": 110000,
@@ -213845,6 +214714,42 @@
           "text": "племянница"
         },
         {
+          "id": 410014,
+          "text": "младший сын"
+        },
+        {
+          "id": 410015,
+          "text": "младшая дочь"
+        },
+        {
+          "id": 410016,
+          "text": "младший брат"
+        },
+        {
+          "id": 410017,
+          "text": "младшая сестра"
+        },
+        {
+          "id": 410018,
+          "text": "самый младший брат"
+        },
+        {
+          "id": 410019,
+          "text": "самая младшая сестра"
+        },
+        {
+          "id": 410020,
+          "text": "пасынок"
+        },
+        {
+          "id": 410021,
+          "text": "падчерица"
+        },
+        {
+          "id": 410022,
+          "text": "троюродный брат"
+        },
+        {
           "id": 411000,
           "text": "Деревня"
         },
@@ -214751,6 +215656,18 @@
         {
           "id": 452095,
           "text": "Вы прибыли в {location}. Дата: {date}. Путь до цели занял {days} дн."
+        },
+        {
+          "id": 452096,
+          "text": "раннее утро"
+        },
+        {
+          "id": 452097,
+          "text": "полдень"
+        },
+        {
+          "id": 452098,
+          "text": "полночь"
         },
         {
           "id": 900000,

@@ -12,5 +12,14 @@
   "relations.10.0": "primo",
   "relations.11.0": "esposo",
   "relations.12.0": "esposa",
-  "relations.13.0": "amigo"
+  "relations.13.0": "amigo",
+  "relations.14.0": "hijo menor",
+  "relations.15.0": "hija menor",
+  "relations.16.0": "hermano menor",
+  "relations.17.0": "hermana menor",
+  "relations.18.0": "hermano pequeño",
+  "relations.19.0": "hermana pequeña",
+  "relations.20.0": "hijastro",
+  "relations.21.0": "hijastra",
+  "relations.22.0": "primo segundo"
 }

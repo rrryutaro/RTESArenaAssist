@@ -12,5 +12,14 @@
   "relations.10.0": "従兄弟",
   "relations.11.0": "夫",
   "relations.12.0": "妻",
-  "relations.13.0": "友人"
+  "relations.13.0": "友人",
+  "relations.14.0": "末の息子",
+  "relations.15.0": "末の娘",
+  "relations.16.0": "弟",
+  "relations.17.0": "妹",
+  "relations.18.0": "末の弟",
+  "relations.19.0": "末の妹",
+  "relations.20.0": "継息子",
+  "relations.21.0": "継娘",
+  "relations.22.0": "はとこ"
 }

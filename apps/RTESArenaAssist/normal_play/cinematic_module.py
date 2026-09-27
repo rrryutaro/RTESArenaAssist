@@ -115,11 +115,15 @@ def _lookup_vision_cinematic_payload(w, text: str) -> tuple[str, str, str] | Non
         ja_template, placeholders, en = fixed
         if not ja_template:
             return None
+    for key in ('pcn', 'pcf'):
+        if str(placeholders.get(key) or '').startswith('%'):
+            placeholders[key] = ''
     player_name = placeholders.get('pcn') or placeholders.get('pcf') or _read_player_name(w)
     if player_name:
         for key in ('pcn', 'pcf'):
             if not placeholders.get(key):
                 placeholders[key] = player_name
+        en = en.replace('%pcn', player_name).replace('%pcf', player_name)
     ja = npcd.format_japanese(ja_template, placeholders)
     if not ja:
         return None

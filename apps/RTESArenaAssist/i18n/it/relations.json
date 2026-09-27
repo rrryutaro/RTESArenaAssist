@@ -12,5 +12,14 @@
   "relations.10.0": "cugino",
   "relations.11.0": "marito",
   "relations.12.0": "moglie",
-  "relations.13.0": "amico"
+  "relations.13.0": "amico",
+  "relations.14.0": "figlio minore",
+  "relations.15.0": "figlia minore",
+  "relations.16.0": "fratello minore",
+  "relations.17.0": "sorella minore",
+  "relations.18.0": "fratello più piccolo",
+  "relations.19.0": "sorella più piccola",
+  "relations.20.0": "figliastro",
+  "relations.21.0": "figliastra",
+  "relations.22.0": "cugino di secondo grado"
 }

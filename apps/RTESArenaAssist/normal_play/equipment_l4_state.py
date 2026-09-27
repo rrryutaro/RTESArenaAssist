@@ -34,6 +34,8 @@ VIEW_FLAG_MENU = 81
 VIEW_FLAG_POPUP = 0
 _MENU_FLAG_STABLE_POLLS = 2
 _NONE_STABLE_POLLS = 2
+LIST_FLAG_OFFSET = 47044
+LIST_FLAG_LIST = 0
 _RAW_TEMPLATE_OFFSET = 4164
 _RAW_TEMPLATE_READ_LEN = 192
 _ESTIMATE_TEMPLATE_PREFIXES = ('Sure I could fix that ', 'Fixing that ')
@@ -63,6 +65,20 @@ def read_view_flag(w):
         return raw[0]
     except Exception:
         return None
+
+def read_list_flag(w):
+    try:
+        raw = w._analyzer.read_bytes(w._anchor + LIST_FLAG_OFFSET, 1)
+        if not isinstance(raw, (bytes, bytearray)) or not raw:
+            return None
+        return raw[0]
+    except Exception:
+        return None
+
+def _list_is_foreground(w) -> bool:
+    val = read_list_flag(w)
+    w._equipment_l4_list_flag_value = val
+    return val is None or val == LIST_FLAG_LIST
 
 def _track_menu_flag(w):
     val = read_view_flag(w)
@@ -231,6 +247,7 @@ def _update_and_select_reply(w, img: str):
 
 def _decide(w, img: str) -> EquipmentL4Snapshot:
     S = EquipmentL4State
+    w._equipment_l4_list_flag_value = None
     flag_value, menu_stable = _track_menu_flag(w)
     if menu_stable:
         return EquipmentL4Snapshot(state=S.MENU, img=img, reason='view_flag')
@@ -261,13 +278,14 @@ def _decide(w, img: str) -> EquipmentL4Snapshot:
         chosen = _update_and_select_reply(w, img)
         if chosen is not None:
             return EquipmentL4Snapshot(state=S.REPLY, img=img, reason='response_evidence', reply_text=chosen.text, reply_source_offset=chosen.source_offset)
-    if img in ('POPUP3.IMG', 'POPUP4.IMG'):
+    if img in ('POPUP3.IMG', 'POPUP4.IMG') and _list_is_foreground(w):
         return EquipmentL4Snapshot(state=S.BUY_LIST, img=img, reason='list_img')
     return EquipmentL4Snapshot(state=S.NONE, img=img, reason='none')
 
 def _log_state_edge(w, prev_state, snap: EquipmentL4Snapshot) -> None:
     flag = getattr(w, '_equipment_l4_flag_value', None)
-    _recog(_log, 'equipment L4 state: %s -> %s reason=%s img=%r flag=%s menu_flag_polls=%s none_streak=%s', getattr(prev_state, 'value', None), snap.state.value, snap.reason, snap.img, 'None' if flag is None else f'0x{int(flag):02X}', getattr(w, '_equipment_l4_menu_flag_polls', 0), getattr(w, '_equipment_l4_none_streak', 0))
+    list_flag = getattr(w, '_equipment_l4_list_flag_value', None)
+    _recog(_log, 'equipment L4 state: %s -> %s reason=%s img=%r flag=%s menu_flag_polls=%s none_streak=%s list_flag=%s', getattr(prev_state, 'value', None), snap.state.value, snap.reason, snap.img, 'None' if flag is None else f'0x{int(flag):02X}', getattr(w, '_equipment_l4_menu_flag_polls', 0), getattr(w, '_equipment_l4_none_streak', 0), '-' if list_flag is None else f'0x{int(list_flag):02X}')
 
 def _compute(w, img: str) -> EquipmentL4Snapshot:
     snap = _decide(w, img)
@@ -312,6 +330,7 @@ def reset_equipment_l4_state(w) -> None:
     w._equipment_l4_snapshot = None
     w._equipment_l4_snapshot_seq = None
     w._equipment_l4_flag_value = None
+    w._equipment_l4_list_flag_value = None
     w._equipment_l4_menu_flag_polls = 0
     w._equipment_l4_menu_stable = False
     w._equipment_l4_none_streak = 0
@@ -320,4 +339,4 @@ def reset_equipment_l4_state(w) -> None:
     w._equipment_l4_prev_reply_text = ''
     w._equipment_l4_resp_prev_by_offset = {}
     w._equipment_l4_resp_baselined = False
-__all__ = ['EQUIPMENT_OWNERS', 'EquipmentL4Snapshot', 'EquipmentL4State', 'REPLY_STATES', 'VIEW_FLAG_MENU', 'VIEW_FLAG_OFFSET', 'VIEW_FLAG_POPUP', 'get_equipment_l4_state', 'has_equipment_negotiation_foreground', 'peek_equipment_l4_state', 'read_view_flag', 'reset_equipment_l4_state']
+__all__ = ['EQUIPMENT_OWNERS', 'EquipmentL4Snapshot', 'EquipmentL4State', 'LIST_FLAG_OFFSET', 'REPLY_STATES', 'VIEW_FLAG_MENU', 'VIEW_FLAG_OFFSET', 'VIEW_FLAG_POPUP', 'get_equipment_l4_state', 'has_equipment_negotiation_foreground', 'peek_equipment_l4_state', 'read_list_flag', 'read_view_flag', 'reset_equipment_l4_state']

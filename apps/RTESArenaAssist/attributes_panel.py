@@ -20,6 +20,7 @@ OFF_LEVEL_U16 = 541
 OFF_LEVEL_U8 = 426
 OFF_GOLD_U32 = 1474
 OFF_EXP_U32 = 1453
+CHEAT_U32_FIELD_MAX = 2147483647
 OFF_FATIGUE_U16 = 513
 OFF_FATIGUE_MAX = None
 OFF_BONUS_PTS = None
@@ -150,7 +151,7 @@ class AttributesPanel(QWidget):
     def set_race_class(self, race: Optional[str], cls: Optional[str]) -> None:
         self._race_label = race
         self._class_label = cls
-    _CHEAT_VALUE_SPECS = (('health', 'status.cheat_field_hp', 65535), ('fatigue', 'status.cheat_field_fatigue', 200), ('spell', 'status.cheat_field_spell', 65535), ('gold', 'status.cheat_field_gold', 65535), ('exp', 'status.cheat_field_exp', 9999999))
+    _CHEAT_VALUE_SPECS = (('health', 'status.cheat_field_hp', 65535), ('fatigue', 'status.cheat_field_fatigue', 200), ('spell', 'status.cheat_field_spell', 65535), ('gold', 'status.cheat_field_gold', CHEAT_U32_FIELD_MAX), ('exp', 'status.cheat_field_exp', CHEAT_U32_FIELD_MAX))
 
     def _build_cheat_values_group(self) -> QGroupBox:
         from attributes_panel_ui import build_cheat_values_group

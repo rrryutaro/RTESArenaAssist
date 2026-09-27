@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 DATE_PATTERN = re.compile('^\\s*(\\w+)\\s*,\\s*(\\d+)(?:st|nd|rd|th)?\\s+of\\s+(.+?)\\s+in\\s+the\\s+year\\s+(\\d+)E\\s+(\\d+)\\s*$', re.IGNORECASE)
 _DAY_EN = ('Sundas', 'Morndas', 'Tirdas', 'Middas', 'Turdas', 'Fredas', 'Loredas')
 _MONTH_EN = ('Morning Star', "Sun's Dawn", 'First Seed', "Rain's Hand", 'Second Seed', 'Mid Year', "Sun's Height", 'Last Seed', 'Hearthfire', 'Frostfall', "Sun's Dusk", 'Evening Star')
-_PART_EN = ('morning', 'afternoon', 'evening', 'night')
+_PART_EN = ('morning', 'afternoon', 'evening', 'night', 'early morning', 'noon', 'midnight')
 _HEALTH_EN = ('healthy', 'diseased', 'poisoned', 'in critical condition', 'drunk', 'invisible', 'a non-target', 'resistant to fire', 'resistant to cold', 'resistant to shock', 'resistant to acid', 'resistant to poison', 'levitating', '', 'silenced', 'able to absorb spells', 'able to reflect spells', 'resistant to spells', 'shielded', 'regenerating', 'paralyzed', 'cursed', 'being drained')
 _DISEASE_EN = ('Witch Pox', 'Plague', 'Yellow Fever', 'Stomach Rot', 'Consumption', 'Brain Fever', 'Swamp Rot', 'Calirons Curse', 'Cholera', 'Leprosy', 'Wound Rot', 'Red Death', 'Blood Rot', 'Typhoid Fever', 'Dementia', 'Chrondiasis', 'Wizard Fever')
 _ATTRIBUTE_EN = ('Strength', 'Intelligence', 'Willpower', 'Agility', 'Speed', 'Endurance', 'Personality', 'Luck')
@@ -42,6 +42,8 @@ def parse_and_translate(text: str) -> Optional[Tuple[str, str]]:
     return (en, ja)
 LOCATION_PATTERN = re.compile('^You are in\\s+(.+?)\\.?\\s*$')
 TIME_PATTERN = re.compile('^It is\\s+(\\d+):(\\d+)\\s+in the\\s+(\\w+)\\.?\\s*$')
+TIME_PHRASE_PATTERN = re.compile('^It is\\s+(\\d+):(\\d+)\\s+(early morning|noon|at night|midnight)\\.?\\s*$', re.IGNORECASE)
+_TIME_PHRASE_PART = {'early morning': 'early morning', 'noon': 'noon', 'at night': 'night', 'midnight': 'midnight'}
 DATE_HEADER_PATTERN = re.compile('^The date is\\s+(.+?)\\s*$')
 LOAD_PATTERN = re.compile('^You are currently carrying\\s+([\\d.]+)\\s*kg\\s+out of\\s+([\\d.]+)\\s*kg\\.?\\s*$')
 DISEASE_PATTERN = re.compile('^You have\\s+(.+?)\\.?\\s*$')
@@ -53,6 +55,12 @@ def is_status_state_line(line: str) -> bool:
         return False
     s = line.strip()
     return bool(DISEASE_PATTERN.match(s) or FORTIFY_PATTERN.match(s) or HEALTH_PATTERN.match(s))
+
+def translate_condition_name(value: str) -> Optional[str]:
+    if not value or not value.strip():
+        return None
+    name = value.strip()
+    return _sbt_value('disease', name, _DISEASE_EN) or _sbt_value('health', name.lower(), _HEALTH_EN)
 
 def _translate_state_line(line: str) -> Optional[str]:
     import i18n_helper as i18n
@@ -92,6 +100,12 @@ def _translate_status_line(line: str) -> Optional[str]:
     if m:
         h, mn, part = m.groups()
         part_ja = _sbt_value('part', part.lower(), _PART_EN) or part
+        return i18n.text('status_buffer_text.line_time').replace('{hour}', h).replace('{minute}', mn).replace('{part}', part_ja)
+    m = TIME_PHRASE_PATTERN.match(line)
+    if m:
+        h, mn, phrase = m.groups()
+        part = _TIME_PHRASE_PART[phrase.lower()]
+        part_ja = _sbt_value('part', part, _PART_EN) or phrase
         return i18n.text('status_buffer_text.line_time').replace('{hour}', h).replace('{minute}', mn).replace('{part}', part_ja)
     m = DATE_HEADER_PATTERN.match(line)
     if m:

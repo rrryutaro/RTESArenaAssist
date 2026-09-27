@@ -36,6 +36,17 @@ def _monster_names() -> dict[str, str]:
         _MONSTER_NAMES = result
     return _MONSTER_NAMES
 
+def _enemy_name(name_en: str) -> str:
+    name_en = name_en.strip()
+    names = _monster_names()
+    monster = names.get(name_en)
+    if monster:
+        return monster
+    folded = [tr for en, tr in names.items() if en.casefold() == name_en.casefold()]
+    if len(set(folded)) == 1:
+        return folded[0]
+    return name_en
+
 def lookup_monster_name(name_en: str) -> str | None:
     if not name_en:
         return None
@@ -176,15 +187,47 @@ def lookup_item(name: str) -> str:
     for base_en, base_ja in item_names.items():
         if name.endswith(base_en):
             prefix = name[:len(name) - len(base_en)].strip()
-            if not prefix:
-                return base_ja
-            fmt = i18n.text('item.name.material_format')
-            out = base_ja
-            for p in reversed(prefix.split()):
-                mat_tr = i18n.value('item_materials', p) or p
-                out = fmt.replace('{material}', mat_tr).replace('{base}', out)
-            return out
+            return _compose_material_name(prefix, base_ja)
+    folded_names = _item_names_casefold()
+    folded = folded_names.get(name.casefold())
+    if folded:
+        return folded
+    folded_name = name.casefold()
+    best = None
+    for base_key, base_ja in folded_names.items():
+        if folded_name.endswith(' ' + base_key) and (best is None or len(base_key) > len(best[0])):
+            best = (base_key, base_ja)
+    if best is not None:
+        prefix = name[:len(name) - len(best[0])].strip()
+        return _compose_material_name(prefix, best[1])
     return ''
+
+def _compose_material_name(prefix: str, base_tr: str) -> str:
+    if not prefix:
+        return base_tr
+    fmt = i18n.text('item.name.material_format')
+    out = base_tr
+    for p in reversed(prefix.split()):
+        mat_tr = i18n.value('item_materials', p) or p
+        out = fmt.replace('{material}', mat_tr).replace('{base}', out)
+    return out
+_ITEM_NAMES_CASEFOLD: tuple | None = None
+
+def _item_names_casefold() -> dict[str, str]:
+    global _ITEM_NAMES_CASEFOLD
+    names = _item_names()
+    if _ITEM_NAMES_CASEFOLD is None or _ITEM_NAMES_CASEFOLD[0] is not names:
+        folded: dict[str, str] = {}
+        ambiguous: set[str] = set()
+        for en, tr in names.items():
+            key = en.casefold()
+            if key in folded and folded[key] != tr:
+                ambiguous.add(key)
+            folded.setdefault(key, tr)
+        for key in ambiguous:
+            folded.pop(key, None)
+        _ITEM_NAMES_CASEFOLD = (names, folded)
+    return _ITEM_NAMES_CASEFOLD[1]
 
 def lookup(text: str) -> str:
     if not text:
@@ -194,21 +237,21 @@ def lookup(text: str) -> str:
     m = re.match('^You see (an?) (.+?)\\.', text)
     if m:
         name_en = m.group(2).strip()
-        name_ja = _monster_names().get(name_en, name_en)
+        name_ja = _enemy_name(name_en)
         return i18n.text('dungeon_msg.you_see_format').replace('{article}', m.group(1)).replace('{name}', name_ja)
     if text.startswith('The ') and text.endswith(' has no gold or usable items.'):
         name_en = text[4:-len(' has no gold or usable items.')]
-        name_ja = _monster_names().get(name_en, name_en)
+        name_ja = _enemy_name(name_en)
         return i18n.text('dungeon_msg.no_gold_no_items_format').replace('{name}', name_ja)
     if text.startswith('The ') and text.endswith(' has nothing usable.'):
         name_en = text[4:-len(' has nothing usable.')]
-        name_ja = _monster_names().get(name_en, name_en)
+        name_ja = _enemy_name(name_en)
         return i18n.text('dungeon_msg.nothing_usable_format').replace('{name}', name_ja)
     if text.startswith('The ') and ' has ' in text and (' in their possession' in text):
         after_the = text[4:]
         has_pos = after_the.find(' has ')
         name_en = after_the[:has_pos]
-        name_ja = _monster_names().get(name_en, name_en)
+        name_ja = _enemy_name(name_en)
         item_part = after_the[has_pos + 5:].rstrip('.')
         item_part = item_part.replace(' in their possession', '').strip()
         return i18n.text('dungeon_msg.possession_format').replace('{name}', name_ja).replace('{item}', item_part)

@@ -12,5 +12,14 @@
   "relations.10.0": "cousin",
   "relations.11.0": "mari",
   "relations.12.0": "épouse",
-  "relations.13.0": "ami"
+  "relations.13.0": "ami",
+  "relations.14.0": "fils cadet",
+  "relations.15.0": "fille cadette",
+  "relations.16.0": "frère cadet",
+  "relations.17.0": "sœur cadette",
+  "relations.18.0": "plus jeune frère",
+  "relations.19.0": "plus jeune sœur",
+  "relations.20.0": "beau-fils",
+  "relations.21.0": "belle-fille",
+  "relations.22.0": "cousin issu de germain"
 }

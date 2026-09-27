@@ -49,6 +49,22 @@ def show_equipment_page(w) -> None:
     except Exception:
         _log.exception('equipment read failed')
     w._ui_router.propose_equipment_list('equipment', title, item_data, priority=SCREEN_PANEL_PRIORITY, reason='screen:equipment')
+_EFFECT_TEXT_FIELDS = ('effect_details', 'text_en', 'text_ja', 'effect_en', 'effect_ja')
+
+def _effect_text_matched(data: dict) -> bool:
+    details = data.get('effect_details') or []
+    return bool(data.get('text_ja')) or any((isinstance(d, dict) and d.get('text_ja') for d in details))
+
+def _keep_matched_effect_text(w, data: dict) -> None:
+    spell_name = (data.get('name') or '').strip()
+    if not spell_name:
+        return
+    if _effect_text_matched(data):
+        w._spell_detail_matched = (spell_name, {k: data.get(k) for k in _EFFECT_TEXT_FIELDS})
+        return
+    prev = getattr(w, '_spell_detail_matched', None)
+    if data.get('text_en') and prev is not None and (prev[0] == spell_name):
+        data.update(prev[1])
 
 def show_spell_detail_page(w) -> None:
     try:
@@ -59,6 +75,7 @@ def show_spell_detail_page(w) -> None:
     except Exception:
         _log.exception('spell_detail read failed')
         data = {}
+    _keep_matched_effect_text(w, data)
     text_en = (data.get('text_en') or '').strip()
     spell_name = (data.get('name') or '').strip()
     last_name = getattr(w, '_spell_detail_last_accepted_name', '')
@@ -119,6 +136,7 @@ def reset_spell_detail_markers(w) -> None:
     w._spell_detail_marker = None
     w._spell_detail_text_marker = None
     w._spell_detail_text_ready = True
+    w._spell_detail_matched = None
 _CHAR_SCREENS = frozenset({'spell_detail', 'equipment', 'spellbook', 'race_select'})
 
 def poll_char_screen_pages(w, screen_id_stable) -> None:

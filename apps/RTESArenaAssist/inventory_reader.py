@@ -31,6 +31,8 @@ ACCESSORY_MATERIAL_BASE = 3
 SHIELD_SLOT_MIN = 7
 SHIELD_SLOT_MAX = 11
 ARMOR_PIECE_SLOT_MAX = 6
+_BASE_ARMOR_MATERIAL_TO_ID = {0: 2, 1: 1, 2: 0}
+LEATHER_ARMOR_PARAM1 = 15
 _CONDITION_THRESHOLDS = [1, 5, 15, 40, 60, 75, 91]
 _ITEMS_LABEL_SOURCE_IDS = {'items.spellcasting_items.1.0': 'aexe:equipment:spellcasting_item_names:1', 'items.spellcasting_items.3.0': 'aexe:equipment:spellcasting_item_names:3', **{f'items.conditions.{i}.0': f'aexe:equipment:item_condition_names:{i}' for i in range(8)}}
 
@@ -148,6 +150,12 @@ def _is_potion(item: dict) -> bool:
 def _potion_count(item: dict) -> int:
     return item['weight'] + 1
 
+def _has_body(item: dict) -> bool:
+    try:
+        return int(item.get('weight') or 0) > 0 and int(item.get('max_hp') or 0) > 1
+    except (TypeError, ValueError):
+        return False
+
 def _classify_item(item: dict) -> tuple[str, int]:
     if _is_potion(item):
         return ('potion', -1)
@@ -158,11 +166,11 @@ def _classify_item(item: dict) -> tuple[str, int]:
         return ('weapon', -1)
     if hands > 2:
         return ('spellcasting', -1)
-    if item['x'] == 255 and 0 <= sid <= 3:
+    if item['x'] == 255 and 0 <= sid <= 3 and (not _has_body(item)):
         return ('accessory', -1)
     if SHIELD_SLOT_MIN <= sid <= SHIELD_SLOT_MAX:
         return ('shield', -1)
-    if item['x'] == 255 and 0 <= item['material'] <= 7 and (4 <= sid <= 6):
+    if item['x'] == 255 and 0 <= item['material'] <= 7 and (4 <= sid <= 6 or (0 <= sid <= 3 and _has_body(item))):
         return ('armor', 2)
     if 40 <= p1 <= 50:
         return ('armor', 2)
@@ -170,6 +178,11 @@ def _classify_item(item: dict) -> tuple[str, int]:
         return ('armor', 1)
     if 18 <= p1 <= 28:
         return ('armor', 0)
+    if 0 <= sid <= ARMOR_PIECE_SLOT_MAX and _has_body(item):
+        if not item.get('flags', 0) & FLAG_MAGIC and item['x'] != 255 and (item['material'] in _BASE_ARMOR_MATERIAL_TO_ID):
+            return ('armor', _BASE_ARMOR_MATERIAL_TO_ID[item['material']])
+        if p1 == LEATHER_ARMOR_PARAM1:
+            return ('armor', 0)
     return ('accessory', -1)
 
 def _is_empty(item: dict) -> bool:
@@ -246,19 +259,13 @@ def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], 
             if 0 <= mi < len(material_names):
                 return f'{material_names[mi]} {base}'
         return base
-    if kind == 'armor' and item['x'] == 255 and (0 <= mat_id < len(material_names)) and (4 <= sid <= ARMOR_PIECE_SLOT_MAX):
+    if kind == 'armor' and item['x'] == 255 and (0 <= mat_id < len(material_names)) and (0 <= sid <= ARMOR_PIECE_SLOT_MAX):
         base = base_armor_names[sid] if sid < len(base_armor_names) else f'Slot#{sid}'
         return f'{material_names[mat_id]} {base}'
     if kind == 'armor':
-        if 40 <= p1 <= 50:
-            if 0 <= sid < len(plate_names):
-                return plate_names[sid]
-        elif 29 <= p1 <= 39:
-            if 0 <= sid < len(chain_names):
-                return chain_names[sid]
-        elif 18 <= p1 <= 28:
-            if 0 <= sid < len(leather_names):
-                return leather_names[sid]
+        tier_names = {2: plate_names, 1: chain_names, 0: leather_names}.get(_armor_material_id)
+        if tier_names is not None and 0 <= sid < len(tier_names):
+            return tier_names[sid]
     elif kind == 'shield':
         if 0 <= sid < len(plate_names):
             base = plate_names[sid]

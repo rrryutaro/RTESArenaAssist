@@ -30,4 +30,7 @@ def calc_bonus_to_health(endurance: int) -> int:
 
 def calc_max_stamina(strength: int, endurance: int) -> int:
     return strength + endurance
-__all__ = ['_scale_100_to_256', '_scale_256_to_100', 'calc_damage_bonus', 'calc_max_kilos', 'calc_magic_defense', 'calc_bonus_to_hit', 'calc_bonus_to_health', 'calc_bonus_to_health_256', 'calc_max_stamina']
+
+def calc_max_stamina_256(strength_256: int, endurance_256: int) -> int:
+    return _scale_256_to_100(strength_256 + endurance_256)
+__all__ = ['_scale_100_to_256', '_scale_256_to_100', 'calc_damage_bonus', 'calc_max_kilos', 'calc_magic_defense', 'calc_bonus_to_hit', 'calc_bonus_to_health', 'calc_bonus_to_health_256', 'calc_max_stamina', 'calc_max_stamina_256']

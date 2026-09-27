@@ -286,5 +286,86 @@
       "verified_official": true,
       "provenance": "live_harvest_content_match"
     }
+  },
+  "monsters.spellsword.0": {
+    "src_table": "classes.names",
+    "src_index": 1,
+    "src_hash": "919ed8936582b799",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.sorceror.0": {
+    "src_table": "classes.names",
+    "src_index": 3,
+    "src_hash": "8ce3eb86b4438217",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.healer.0": {
+    "src_table": "classes.names",
+    "src_index": 4,
+    "src_hash": "a491a33c72cd4d18",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.nightblade.0": {
+    "src_table": "classes.names",
+    "src_index": 5,
+    "src_hash": "9ef0f3005e4f3388",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.bard.0": {
+    "src_table": "classes.names",
+    "src_index": 6,
+    "src_hash": "fbef39c347a54191",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.burglar.0": {
+    "src_table": "classes.names",
+    "src_index": 7,
+    "src_hash": "880b8e64c1d5d8cd",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.rogue.0": {
+    "src_table": "classes.names",
+    "src_index": 8,
+    "src_hash": "0b8cdd9ec4e4cbca",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.acrobat.0": {
+    "src_table": "classes.names",
+    "src_index": 9,
+    "src_hash": "246b4a77c4fc6aa2",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
+  },
+  "monsters.monk.0": {
+    "src_table": "classes.names",
+    "src_index": 12,
+    "src_hash": "a670c8d297ce4dec",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "live_harvest_content_match"
+    }
   }
 }

@@ -3,7 +3,7 @@ from typing import Optional
 import arena_data
 import i18n_helper as i18n
 from attributes_panel import OFF_BONUS_PTS_U8, OFF_DAMAGE_I16, OFF_EXP_U32, OFF_FATIGUE_U16, OFF_GOLD_U32, OFF_HEALTH_CURR_U16, OFF_HEALTH_MAX_U16, OFF_LEVEL_U8, OFF_NAME, OFF_PRIMARY_1, OFF_RACE_INDEX, OFF_SPELL_PTS_CURR, OFF_SPELL_PTS_MAX, PRIMARY_LEN, UNKNOWN, _signed
-from attribute_formulas import calc_bonus_to_health, calc_bonus_to_health_256, calc_bonus_to_hit, calc_damage_bonus, calc_magic_defense, calc_max_kilos, calc_max_stamina
+from attribute_formulas import calc_bonus_to_health, calc_bonus_to_health_256, calc_bonus_to_hit, calc_damage_bonus, calc_magic_defense, calc_max_kilos, calc_max_stamina, calc_max_stamina_256
 
 def poll_attributes(panel) -> None:
     if panel._analyzer is None or panel._anchor == 0:
@@ -122,7 +122,10 @@ def poll_attributes(panel) -> None:
     except OSError:
         panel._stats['hp'].setText(UNKNOWN)
     fat_max_256 = raw_data[0] + raw_data[5]
-    fat_max = calc_max_stamina(STR, END)
+    if panel._chargen_mode or panel._is_bonus_screen:
+        fat_max = calc_max_stamina(STR, END)
+    else:
+        fat_max = calc_max_stamina_256(raw_data[0], raw_data[5])
     if panel._chargen_mode:
         panel._stats['fatigue'].setText(f'{fat_max}/{fat_max}')
     else:

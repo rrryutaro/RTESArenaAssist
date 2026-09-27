@@ -1477,8 +1477,81 @@
       "provenance": "acd_table_content_match"
     }
   },
+  "items.drinks.20.0": {
+    "src_table": "inn.drinks_common",
+    "src_index": 10,
+    "src_hash": "d2a1aa6df10907ef",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.21.0": {
+    "src_table": "inn.drinks_special",
+    "src_index": 0,
+    "src_hash": "4b9c7e836edb9037",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.22.0": {
+    "src_table": "inn.drinks_special",
+    "src_index": 1,
+    "src_hash": "88dfc14de4dc9ee4",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.23.0": {
+    "src_table": "inn.drinks_special",
+    "src_index": 4,
+    "src_hash": "a7ea45e1754045d1",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.24.0": {
+    "src_table": "inn.drinks_special",
+    "src_index": 5,
+    "src_hash": "3f63dd7cc68a8325",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.25.0": {
+    "src_table": "inn.drinks_special",
+    "src_index": 6,
+    "src_hash": "e3a20df65a5df43e",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.26.0": {
+    "src_table": "inn.drinks_special",
+    "src_index": 7,
+    "src_hash": "8e8b46518a08b920",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
+  "items.drinks.27.0": {
+    "src_table": "inn.drinks_special",
+    "src_index": 8,
+    "src_hash": "c05ffbbfd5eaddeb",
+    "_meta": {
+      "verified_official": true,
+      "provenance": "acd_table_content_match"
+    }
+  },
   "items.unidentified_potion.0.0": {
     "src_table": "equipment.unidentified_potion_name",
+    "src_index": 0,
     "src_hash": "41e4ae984c221ad6",
     "_meta": {
       "verified_official": true,

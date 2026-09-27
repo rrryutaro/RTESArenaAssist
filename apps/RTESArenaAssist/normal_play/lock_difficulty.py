@@ -5,6 +5,9 @@ ATTRIBUTE_SCALE = 256
 def attribute_display_from_memory(scaled_value: int) -> int:
     return round(scaled_value * 100 / ATTRIBUTE_SCALE)
 
+def attribute_value_from_memory(scaled_value: int) -> int:
+    return scaled_value * 100 // ATTRIBUTE_SCALE
+
 def class_index_from_name(class_name, class_names) -> int | None:
     if not class_name:
         return None

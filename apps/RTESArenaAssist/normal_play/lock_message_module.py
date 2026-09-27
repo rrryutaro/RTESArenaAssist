@@ -197,8 +197,8 @@ def _player_stats(w):
         return None
     if len(primary) < PRIMARY_LEN:
         return None
-    intelligence = lock_difficulty.attribute_display_from_memory(primary[1])
-    agility = lock_difficulty.attribute_display_from_memory(primary[3])
+    intelligence = lock_difficulty.attribute_value_from_memory(primary[1])
+    agility = lock_difficulty.attribute_value_from_memory(primary[3])
     return (int(level_raw), intelligence, agility)
 
 def _resolve_message(tables, index: int) -> tuple[str, str]:
