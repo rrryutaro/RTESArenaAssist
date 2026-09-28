@@ -27,6 +27,33 @@ _WILD_INF_CANDIDATES = ('TWN.INF', 'DWN.INF', 'MWN.INF')
 _WILD_MENU_MAP_FALLBACK = {0: 7, 1: 8, 2: 9, 3: 10, 4: 11, 5: 13, 6: 45, 7: 46, 8: 50, 9: 51}
 _WILD_ENTERABLE_MENU_IDS = frozenset({1, 2, 3, 4, 5, 8, 9})
 _MENU_LABELS = {1: 'crypt', 2: 'house', 3: 'tavern', 4: 'temple', 5: 'tower', 8: 'dungeon', 9: 'dungeon'}
+_field_only_prefix_cache: Optional[dict[str, str]] = None
+
+def _field_only_facility_prefixes() -> dict[str, str]:
+    global _field_only_prefix_cache
+    if _field_only_prefix_cache is None:
+        from services.arena_level_utils import MENU_MIF_MAPPINGS, MENU_MIF_PREFIXES, NO_INDEX
+        from services.arena_voxel_utils import CITY_MENU_MAPPINGS, WILD_MENU_MAPPINGS
+        city_types = set(CITY_MENU_MAPPINGS.values())
+        prefixes: dict[str, str] = {}
+        for menu_id, menu_type in WILD_MENU_MAPPINGS.items():
+            if menu_type in city_types:
+                continue
+            index = MENU_MIF_MAPPINGS.get(menu_type, NO_INDEX)
+            if index == NO_INDEX:
+                continue
+            prefixes[MENU_MIF_PREFIXES[index]] = _MENU_LABELS.get(menu_id, str(menu_id))
+        _field_only_prefix_cache = prefixes
+    return _field_only_prefix_cache
+
+def field_only_facility_label(mif_name: Optional[str]) -> str:
+    upper = (mif_name or '').strip().upper()
+    if not upper:
+        return ''
+    for prefix, label in _field_only_facility_prefixes().items():
+        if upper.startswith(prefix):
+            return label
+    return ''
 _wild_menu_map_cache: Optional[dict[int, int]] = None
 _wild_menu_tex_sets: Optional[tuple[frozenset[int], frozenset[int]]] = None
 
@@ -425,6 +452,15 @@ class WildernessMapSession(MapSessionBase):
 
     def field_entrance_hint(self) -> Optional[FieldEntranceContext]:
         return self._field_entrance_ctx
+
+    def adopt_load_arrival(self, arrival_mif: Optional[str]) -> None:
+        mif = (arrival_mif or '').strip().upper()
+        current = self._field_entrance_ctx
+        if current is not None and mif and ((current.interior_mif_name or '').upper() == mif):
+            return
+        label = field_only_facility_label(mif)
+        self._field_entrance_ctx = FieldEntranceContext(interior_mif_name=mif, menu_label=label) if label else None
+        self._logged_entrance_mif = None
 
     def _log_c3_entry_coords(self, ctx: MapContext, rt_x: int, rt_z: int, origin: tuple[int, int]) -> None:
         o_x = self._chunk_tracker.chunk_x

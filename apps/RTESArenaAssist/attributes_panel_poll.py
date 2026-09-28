@@ -61,13 +61,16 @@ def poll_attributes(panel) -> None:
             sb.setValue(new_val)
             sb.blockSignals(False)
     STR, INT, WIL, AGI, SPD, END, PER, LUC = data
-    try:
-        d_raw = panel._analyzer.read_bytes(panel._anchor + OFF_DAMAGE_I16, 2)
-        damage = d_raw[0] | d_raw[1] << 8
-        if damage & 32768:
-            damage -= 65536
-    except OSError:
+    if panel._is_bonus_screen:
         damage = calc_damage_bonus(STR)
+    else:
+        try:
+            d_raw = panel._analyzer.read_bytes(panel._anchor + OFF_DAMAGE_I16, 2)
+            damage = d_raw[0] | d_raw[1] << 8
+            if damage & 32768:
+                damage -= 65536
+        except OSError:
+            damage = calc_damage_bonus(STR)
     panel._derived['damage'].setText(_signed(damage))
     panel._derived['max_kilos'].setText(str(calc_max_kilos(STR)))
     panel._derived['magic_def'].setText(_signed(calc_magic_defense(WIL)))

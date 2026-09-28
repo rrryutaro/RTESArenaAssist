@@ -1005,9 +1005,12 @@ def _ph_ni_i(name: str, value: str, lang: str) -> str:
     try:
         from equipment_shop_list_reader import translate_equipment_shop_name
         translated = translate_equipment_shop_name(value)
-        return translated if translated else value
     except Exception:
-        return value
+        translated = None
+    if translated:
+        return translated
+    from dungeon_msg_lookup import lookup_enemy_name
+    return lookup_enemy_name(value) or value
 
 def _ph_nk(name: str, value: str, lang: str) -> str:
     if lang == 'en':

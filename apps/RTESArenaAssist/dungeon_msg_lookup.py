@@ -46,6 +46,12 @@ def _enemy_name(name_en: str) -> str:
         return folded[0]
     return name_en
 
+def lookup_enemy_name(name_en: str) -> str | None:
+    if not name_en or not name_en.strip():
+        return None
+    translated = _enemy_name(name_en)
+    return translated if translated != name_en.strip() else None
+
 def lookup_monster_name(name_en: str) -> str | None:
     if not name_en:
         return None

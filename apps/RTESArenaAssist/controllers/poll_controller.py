@@ -594,16 +594,34 @@ def _poll_detect_img_name(w):
             w._img_screen.on_img_name_changed(_img_name)
     return _img_name
 
-def _field_entrance_hint(w):
+def _wilderness_session(w):
     tab_map = getattr(w, '_tab_map', None)
     disp = getattr(tab_map, '_dispatcher', None) if tab_map is not None else None
-    wild = getattr(disp, 'wilderness', None) if disp is not None else None
+    return getattr(disp, 'wilderness', None) if disp is not None else None
+
+def _field_entrance_hint(w):
+    wild = _wilderness_session(w)
     if wild is None:
         return None
     try:
         return wild.field_entrance_hint()
     except (AttributeError, RuntimeError):
         return None
+
+def reset_location_on_load(w) -> None:
+    try:
+        from controllers.map_ext_lifecycle import get_lifecycle
+        entry = get_lifecycle().last_load_arrival()
+    except Exception:
+        entry = None
+    arrival_mif = entry[1].get('mif') if entry is not None else None
+    wild = _wilderness_session(w)
+    if wild is not None:
+        try:
+            wild.adopt_load_arrival(arrival_mif)
+        except (AttributeError, RuntimeError):
+            _log.exception('field entrance hint reset failed on load')
+    w._last_non_interior_area = 'wilderness' if _field_entrance_hint(w) is not None else ''
 
 def _resolve_field_facility(w, interior_raw):
     try:

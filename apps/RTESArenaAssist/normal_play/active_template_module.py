@@ -91,6 +91,9 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
             _ipf_name = _ipf(_c)
             _log.debug('  candidate src=%s slot=%s ptr=0x%04X hit=%s input_prompt=%r text=%r', _c.source, f'0x{_c.ptr_slot:04X}' if _c.ptr_slot is not None else 'None', _c.ptr, _hit_ok, _ipf_name, _c.text.rstrip()[:60])
     if _active_tmpl is not None and _ndl_result is not None:
+        from normal_play.level_up_module import is_level_up_message
+        if is_level_up_message(_active_tmpl):
+            return True
         _ja_tmpl, _ph = _ndl_result
         _ja = _ndl.format_japanese(_ja_tmpl, _ph)
         _tmpl_key = (_active_tmpl, _ja)

@@ -124,10 +124,11 @@ class AssistWindow(QMainWindow):
             from normal_play.cinematic_module import forget_shown_scene_texts, reset_final_sequence
             get_lifecycle().add_on_load(lambda: reset_final_sequence(self))
             get_lifecycle().add_on_load(lambda: forget_shown_scene_texts(self))
-            from controllers.poll_controller import reset_floor_holds_on_load, reset_map_progress_on_load, reset_trigger_axis_on_load
+            from controllers.poll_controller import reset_floor_holds_on_load, reset_location_on_load, reset_map_progress_on_load, reset_trigger_axis_on_load
             get_lifecycle().add_on_load(lambda: reset_floor_holds_on_load(self))
             get_lifecycle().add_on_load(lambda: reset_trigger_axis_on_load(self))
             get_lifecycle().add_on_load(lambda: reset_map_progress_on_load(self))
+            get_lifecycle().add_on_load(lambda: reset_location_on_load(self))
             from normal_play.level_up_module import reset_level_up_on_load
             get_lifecycle().add_on_load(lambda: reset_level_up_on_load(self))
         except Exception:
