@@ -14,7 +14,7 @@ _PLACE_LIST_OWNERS = frozenset({'npc_dialog', 'npc_conversation', 'npc_message'}
 
 class MagesGuildNode(FacilityNode):
     name = 'mages_guild'
-    menu_signatures = ((frozenset({'Buy', 'Detect Magic', 'Spellmaker', 'Steal', 'Exit'}), 'shop_menu', 'MENU OPTIONS'), (frozenset({'Potions', 'Magic items', 'Spells'}), 'shop_menu', 'PICK ITEM'), (frozenset({'Potion', 'Magic item'}), 'shop_menu', 'PICK ITEM'))
+    menu_signatures = ((frozenset({'Buy', 'Detect Magic', 'Spellmaker', 'Steal', 'Exit'}), 'shop_menu', 'MENU OPTIONS'), (frozenset({'Buy', 'Detect Magic', 'Steal', 'Exit'}), 'shop_menu', 'MENU OPTIONS'), (frozenset({'Potions', 'Magic items', 'Spells'}), 'shop_menu', 'PICK ITEM'), (frozenset({'Potions', 'Spells'}), 'shop_menu', 'PICK ITEM'), (frozenset({'Potion', 'Magic item'}), 'shop_menu', 'PICK ITEM'))
 
     def classify_view(self, w, *, shop_state=None, shop_img_name: str='', **_signals) -> FacilityView:
         from mages_signals import read_signals
@@ -51,13 +51,13 @@ class MagesGuildNode(FacilityNode):
     def _classify_view_from_signals(self, w, *, shop_state, img: str, sig: dict, foreground_ptr) -> FacilityView:
         from normal_play.mages_guild_render_module import MENU_OWNER, LIST_OWNER, SPELLMAKER_OWNER, EFFECT_MENU_OWNER, MENU_OWNER_CONFIRM, MENU_OWNER_SPELLDETAIL, MENU_OWNER_PROMPT, NEGOTIATION_OWNER, LIST_IMGS, SPELLMAKER_IMG, BUYSPELL_IMG, _CONFIRM_FAMILY, _is_negotiation_img, _last_spellmaker_list_title, _is_spellmaker_return_from_residual_list, _resolve_response_prompt
         from normal_play.mages_reply_module import REPLY_OWNER
-        from mages_signals import classify, detect_magic_reply_kind_from_memory, LIST_ON
+        from mages_signals import classify, detect_magic_reply_kind_from_memory, is_menu_frame, LIST_ON
 
         def _view(**kwargs) -> FacilityView:
             return FacilityView(signals_snapshot=sig, **kwargs)
         state = classify(sig)
-        is_menu_state = state in ('main_menu', 'buy_submenu', 'steal_menu')
         has_menu_state = shop_state is not None and shop_state.kind == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'mages_guild')
+        is_menu_state = state in ('main_menu', 'buy_submenu', 'steal_menu') or (has_menu_state and is_menu_frame(sig))
         if sig.get('family') == _CONFIRM_FAMILY:
             return _view(l4_kind='confirm', render_owner=MENU_OWNER_CONFIRM, l4_visible=True, reason='mages_confirm')
         if state == 'edit_effects_menu':

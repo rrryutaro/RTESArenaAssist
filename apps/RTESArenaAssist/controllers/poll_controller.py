@@ -429,37 +429,62 @@ def _poll_compute_newpop_gate(w, *, npc_dialog):
     _is_corpse_loot = bool(_newpop_gate and corpse_item_message(npc_dialog))
     return (_newpop_gate, _is_corpse_loot)
 
+def _dungeon_level_names(w, mif_name: str) -> dict | None:
+    cache = getattr(w, '_dungeon_level_names_cache', None)
+    if cache and cache.get('mif') == mif_name:
+        return cache
+    from services.mif_loader import DEFAULT_MIF_DIR, load_mif
+    from runtime_paths import resolve_arena_install_dir
+    dirs = [d for d in (DEFAULT_MIF_DIR, resolve_arena_install_dir()) if d is not None]
+    head = load_mif(mif_name, dirs)
+    if head is None:
+        return None
+    names: list[str] = []
+    infs: list[str] = []
+    want = max(int(head.level_count or 1), 1)
+    for i in range(want):
+        lv = load_mif(mif_name, dirs, level_index_override=i)
+        if lv is None:
+            break
+        names.append(lv.mif_name or '')
+        infs.append(lv.info_name or '')
+    if len(names) < want:
+        return None
+    cache = {'mif': mif_name, 'names': names, 'infs': infs, 'generated': bool(getattr(head, 'generated', False))}
+    w._dungeon_level_names_cache = cache
+    return cache
+
+def _generated_dungeon_level(w, mif_name: str, level_count: int) -> int | None:
+    if level_count <= 1:
+        return 0
+    from services.automap_file import level_index_of_hash, read_current_level_hash
+    level_hash = read_current_level_hash(w._analyzer, w._anchor)
+    index = level_index_of_hash(level_hash)
+    if index is not None and (not 0 <= index < level_count):
+        index = None
+    mark = (mif_name, index)
+    if getattr(w, '_generated_dungeon_level_logged', None) != mark:
+        w._generated_dungeon_level_logged = mark
+        import dungeon_level as dl
+        base = w._anchor + dl.GAMESTATE_BASE_OFFSET
+        _recog(_log, 'generated dungeon level: mif=%s index=%s built=%d hash=%s gs_level=%r gs_inf=%r gs_mif=%r', mif_name, index, level_count, f'0x{level_hash:08X}' if level_hash is not None else None, dl._read_str(w._analyzer, base + dl.GS_LEVEL_NAME_OFFSET), dl._read_str(w._analyzer, base + dl.GS_INF_NAME_OFFSET), dl._read_str(w._analyzer, base + dl.GS_MIF_NAME_OFFSET))
+    return index
+
 def _resolve_dungeon_level(w, mif_name: str | None) -> int | None:
     if not mif_name:
         return None
     try:
         import dungeon_level as dl
+        cache = _dungeon_level_names(w, mif_name)
+        if cache is not None and cache.get('generated'):
+            return _generated_dungeon_level(w, mif_name, len(cache.get('names') or []))
         identity = dl.read_level_identity(w._analyzer, w._anchor)
         if identity is None:
             return None
         if identity.get('mif', '').strip().lower() != str(mif_name).strip().lower():
             return None
-        cache = getattr(w, '_dungeon_level_names_cache', None)
-        if not cache or cache.get('mif') != mif_name:
-            from services.mif_loader import DEFAULT_MIF_DIR, load_mif
-            from runtime_paths import resolve_arena_install_dir
-            dirs = [d for d in (DEFAULT_MIF_DIR, resolve_arena_install_dir()) if d is not None]
-            head = load_mif(mif_name, dirs)
-            if head is None:
-                return None
-            names: list[str] = []
-            infs: list[str] = []
-            want = max(int(head.level_count or 1), 1)
-            for i in range(want):
-                lv = load_mif(mif_name, dirs, level_index_override=i)
-                if lv is None:
-                    break
-                names.append(lv.mif_name or '')
-                infs.append(lv.info_name or '')
-            if len(names) < want:
-                return None
-            cache = {'mif': mif_name, 'names': names, 'infs': infs}
-            w._dungeon_level_names_cache = cache
+        if cache is None:
+            return None
         if len(cache.get('names') or []) <= 1:
             return 0
         return dl.match_level_index(identity, cache['names'], cache['infs'])
@@ -1113,22 +1138,22 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
         _b126 = read_bonus_screen_signals(w._analyzer, w._anchor)
         _b126_flag_status = _b126.flag_status
         _b126_bonus_pts = _b126.bonus_pts
-        from normal_play.level_up_module import level_up_active as _level_up_active_now
-        _in_levelup = _level_up_active_now(w)
+        from normal_play.level_up_module import bonus_window_pending as _bonus_window_pending, bonus_window_points_max as _bonus_window_points_max
+        _in_levelup = _bonus_window_pending(w)
         from controllers.screen_finalize import resolve_bonus_screen
         _bonus_pre_screen = _screen_id_stable
-        _bonus_res = resolve_bonus_screen(_screen_id_stable, _in_levelup, _b126_flag_status, getattr(w, '_bonus_screen_hold', False), bonus_pts=_b126_bonus_pts)
+        _bonus_res = resolve_bonus_screen(_screen_id_stable, _in_levelup, _b126_flag_status, getattr(w, '_bonus_screen_hold', False), bonus_pts=_b126_bonus_pts, bonus_max=_bonus_window_points_max(w))
         if _bonus_res.log_start:
-            _log.info('bonus_screen hold START (level-up character screen)')
+            _recog(_log, 'bonus_screen hold START (bonus window: bonus_pts=%s)', _b126_bonus_pts)
         w._bonus_screen_hold = _bonus_res.hold_active
         if _bonus_res.clear_spell_markers:
             _char_screen.reset_spell_detail_markers(w)
         if _bonus_res.log_end:
-            _log.info('bonus_screen hold END (flag_status=%d in_levelup=%s bonus_pts=%s)', _b126_flag_status, _in_levelup, _b126_bonus_pts)
+            _recog(_log, 'bonus_screen hold END (flag_status=%d in_levelup=%s bonus_pts=%s)', _b126_flag_status, _in_levelup, _b126_bonus_pts)
         if _bonus_res.log_override:
             _log.debug('bonus_screen hold OVERRIDE: %s → bonus_screen', _bonus_pre_screen)
         _screen_id_stable = _bonus_res.screen_id_stable
-        _CHAR_PAGES = ('status_page', 'equipment', 'spellbook', 'spell_detail')
+        from controllers.screen_finalize import _HOLD_OVERRIDE_PAGES as _CHAR_PAGES
         if _b126_flag_status == 1 and getattr(w, '_char_screen_flag_prev', 0) == 0:
             w._char_screen_settling = True
             w._char_screen_budget = 20

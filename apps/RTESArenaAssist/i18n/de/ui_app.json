@@ -222,6 +222,7 @@
   "settings.map_express_wall_passage": "Gänge unter Mauern",
   "settings.map_express_wall_lava": "Lava unter Mauern",
   "settings.map_express_treasure": "Schätze",
+  "settings.map_express_quest_treasure": "Schlüssel und Questgegenstände",
   "settings.map_pipe_under": "Gänge darunter",
   "settings.map_pipe_under_on": "Als Röhren zeigen",
   "settings.map_pipe_opacity": "Stärke",
@@ -795,5 +796,8 @@
   "equipment.category.shield": "Schild",
   "equipment.category.accessory": "Schmuck",
   "equipment.category.spellcasting": "Zaubergegenstand",
-  "equipment.category.potion": "Trank"
+  "equipment.category.potion": "Trank",
+  "negotiation.accept": "Annehmen",
+  "negotiation.counter": "Gegenangebot",
+  "negotiation.reject": "Ablehnen"
 }

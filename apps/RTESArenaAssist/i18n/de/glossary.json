@@ -51,7 +51,7 @@
   "glossary.artifact_chrysamere.0": "Chrysamere",
   "glossary.artifact_oghma_infinium.0": "Oghma Infinium",
   "glossary.artifact_lords_mail.0": "Lords Panzerhemd",
-  "glossary.artifact_skeleton_key.0": "Dietrichschlüssel",
+  "glossary.artifact_skeletons_key.0": "Dietrichschlüssel",
   "glossary.artifact_spell_breaker.0": "Zauberbrecher",
   "glossary.artifact_volendrung.0": "Volendrung",
   "glossary.artifact_auriels_bow.0": "Auriels Bogen",
@@ -76,5 +76,6 @@
   "glossary.artifact_staff_of_magnus.0": "Stab des Magnus",
   "glossary.artifact_ring_of_phynaster.0": "Phynasters Ring",
   "glossary.artifact_ring_of_khajiit.0": "Ring des Khajiit",
+  "glossary.artifact_king_orgnums_coffer.0": "König Orgnums Truhe",
   "glossary.artifact_ebony_mail.0": "Ebenerzpanzerhemd"
 }

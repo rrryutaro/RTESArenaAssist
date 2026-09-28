@@ -96,6 +96,7 @@ def poll_c1_runtime_dialog(w, *, npc_dialog: str, facility_active_now: bool, msg
     if not _npc_ja:
         return False
     w._ui_router.update_translation(C1_RUNTIME_DIALOG_OWNER, _body, _npc_ja, speech_role='situation')
+    w._c1_runtime_dialog_accepted_body = _body
     _open_c1_runtime_dialog_display(w, area=axis.area)
     _recog(_log, 'c1 runtime dialog accepted (ptr=%s area=%s): %r → %r', '0x%04X' % axis.current_ptr if axis.current_ptr is not None else 'n/a', axis.area or '-', _body[:64], _npc_ja[:64])
     return True
@@ -115,6 +116,9 @@ def _close_c1_runtime_dialog_display(w) -> None:
 
 def runtime_dialog_accept_seq(w) -> int:
     return int(getattr(w, '_c1_runtime_dialog_accept_seq', 0))
+
+def accepted_dialog_body(w) -> str:
+    return str(getattr(w, '_c1_runtime_dialog_accepted_body', '') or '')
 
 def release_c1_runtime_dialog(w) -> None:
     _close_c1_runtime_dialog_display(w)
@@ -164,4 +168,4 @@ def poll_c1_runtime_dialog_lifetime(w, *, axis=None) -> None:
         restore_last_trigger_display(w)
     else:
         w._ui_router.clear_display('', allowed_current_owners=('',))
-__all__ = ['C1_RUNTIME_DIALOG_OWNER', 'poll_c1_runtime_dialog', 'poll_c1_runtime_dialog_lifetime', 'runtime_dialog_accept_seq', 'release_c1_runtime_dialog', 'pause_c1_runtime_dialog']
+__all__ = ['C1_RUNTIME_DIALOG_OWNER', 'poll_c1_runtime_dialog', 'poll_c1_runtime_dialog_lifetime', 'runtime_dialog_accept_seq', 'accepted_dialog_body', 'release_c1_runtime_dialog', 'pause_c1_runtime_dialog']

@@ -30,6 +30,12 @@ def all_item_point_cells(cells_by_kind: dict) -> frozenset:
         cells.update(group or ())
     return frozenset(cells)
 
+def quest_item_point_cells(cells_by_kind: dict) -> frozenset:
+    cells: set = set()
+    for kind in (ITEM_POINT_KEY, ITEM_POINT_QUEST_ITEM):
+        cells.update((cells_by_kind or {}).get(kind) or ())
+    return frozenset(cells)
+
 def note_item_pickups(ext_store, location_key, *, kinds: frozenset, prev_kinds: frozenset, player_x, player_y, angle_deg, cells_by_kind: dict) -> None:
     if ext_store is None or not location_key:
         return
@@ -37,4 +43,4 @@ def note_item_pickups(ext_store, location_key, *, kinds: frozenset, prev_kinds: 
         cell = facing_target_cell(player_x, player_y, angle_deg, cells_by_kind.get(kind, frozenset()))
         if cell is not None:
             ext_store.note_discovery(location_key, cell[0], cell[1], SECTION_TREASURE_PILES)
-__all__ = ['pickup_kinds', 'item_point_cells', 'all_item_point_cells', 'note_item_pickups']
+__all__ = ['pickup_kinds', 'item_point_cells', 'all_item_point_cells', 'quest_item_point_cells', 'note_item_pickups']

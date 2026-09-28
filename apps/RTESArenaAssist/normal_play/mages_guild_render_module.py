@@ -174,14 +174,18 @@ def _select_list_source(w, sig: dict, img: str):
             if classified:
                 return classified
         return ('Effects', '効果一覧', [])
-    if family == 112:
+    if family in (112, 113):
         if img == 'POPUP7.IMG':
             return ('Magic Items', '魔法アイテム一覧', read_magic_item_list(w._analyzer, w._anchor))
         items = read_active_priced_list(w._analyzer, w._anchor)
         if items:
             if looks_like_potion_list(items):
                 return ('Potions', 'ポーション一覧', items)
-            return ('Spells', '呪文一覧', items)
+            if family == 112:
+                return ('Spells', '呪文一覧', items)
+            return ('', '', [])
+        if family == 113:
+            return ('', '', [])
         if SPELL_LIST_OFFSET <= cur < 39936:
             return ('Spells', '呪文一覧', [])
         if POTION_LIST_OFFSET <= cur < SPELL_LIST_OFFSET:

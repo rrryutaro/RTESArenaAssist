@@ -1,0 +1,49 @@
+{
+  "_comment": "言語別処理ルール(翻訳でない)。翻訳ローダは _ 接頭辞ファイルを無視する。",
+  "dynamic_places": {
+    "dungeon": {
+      "combination_rule": "{type} de {name}",
+      "combination_rule_vowel": "{type} d'{name}",
+      "vowels": "AEIOUaeiou",
+      "keep_name": true,
+      "types": [
+        {
+          "en": "Dungeon",
+          "value": "Donjon"
+        },
+        {
+          "en": "Cavern",
+          "value": "Caverne"
+        },
+        {
+          "en": "Labyrinth",
+          "value": "Labyrinthe"
+        },
+        {
+          "en": "Catacombs",
+          "value": "Catacombes"
+        },
+        {
+          "en": "Hole",
+          "value": "Trou"
+        },
+        {
+          "en": "Crypt",
+          "value": "Crypte"
+        },
+        {
+          "en": "Fortress",
+          "value": "Forteresse"
+        },
+        {
+          "en": "Mines",
+          "value": "Mines"
+        },
+        {
+          "en": "Cellar",
+          "value": "Cave"
+        }
+      ]
+    }
+  }
+}

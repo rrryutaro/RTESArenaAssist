@@ -92,6 +92,10 @@ def classify(sig: dict) -> str:
         return 'reply'
     return 'unknown'
 
+def is_menu_frame(sig: dict) -> bool:
+    view = sig.get('view')
+    return view is not None and view not in (VIEW_POPUP, VIEW_EDIT_EFFECTS)
+
 def detect_magic_reply_kind(sig: dict, img_name: str='') -> str:
     img = (img_name or '').upper()
     if img not in ('NEWPOP.IMG', 'YESNO.IMG', ''):
@@ -157,7 +161,7 @@ def detect_magic_reply_kind_from_memory(analyzer, anchor: int, img_name: str='',
         return old_kind
     known_text = _ascii_cstr(analyzer, anchor, MAGES_MENU_TEXT_OFFSET, 96)
     response_text = _normalize_text(_ascii_cstr(analyzer, anchor, RESPONSE_TEXT_OFFSET, 160))
-    if img == 'NEWPOP.IMG' and sig.get('list') not in (None, LIST_ON) and isinstance(current_ptr, int) and (MAGES_MENU_PTR_START <= current_ptr < MAGES_MENU_PTR_END) and (known_text == DETECT_MAGIC_ALREADY_KNOWN):
+    if img == 'NEWPOP.IMG' and sig.get('view') == VIEW_POPUP and (sig.get('list') not in (None, LIST_ON)) and isinstance(current_ptr, int) and (MAGES_MENU_PTR_START <= current_ptr < MAGES_MENU_PTR_END) and (known_text == DETECT_MAGIC_ALREADY_KNOWN):
         return 'detect_known'
     if img == 'YESNO.IMG' and is_popup_reply and (DETECT_MAGIC_QUOTE_PREFIX in response_text):
         return 'detect_cost'
@@ -168,4 +172,4 @@ def detect_magic_text_flags(analyzer, anchor: int) -> tuple[bool, bool, bool]:
     identified = _contains_normalized(analyzer, anchor, NEGOTIATION_TEXT_OFFSET, 256, DETECT_MAGIC_IDENTIFIED)
     known = _ascii_cstr(analyzer, anchor, MAGES_MENU_TEXT_OFFSET, 96) == DETECT_MAGIC_ALREADY_KNOWN
     return (cost, identified, known)
-__all__ = ['VIEW_FLAG_OFFSET', 'VIEW_TYPE_OFFSET', 'LIST_FLAG_OFFSET', 'DIALOG_ACTIVE_OFFSET', 'TEXT_FAMILY_OFFSET', 'SUBSTATE_OFFSET', 'VIEW_DESC_OFFSET', 'RESULT_HINT_OFFSET', 'CURRENT_TEXT_PTR_OFFSET', 'RESPONSE_TEXT_OFFSET', 'MAGES_MENU_TEXT_OFFSET', 'NEGOTIATION_TEXT_OFFSET', 'VIEW_MENU', 'VIEW_SUBMENU', 'VIEW_EDIT_EFFECTS', 'VIEW_POPUP', 'TYPE_POPUP', 'DIALOG_NORMAL', 'FAMILY_MENU_DETECT_CREATE', 'DETECT_KNOWN_HINT', 'DETECT_COST_HINT', 'DETECT_MAGIC_QUOTE_PREFIX', 'DETECT_MAGIC_ALREADY_KNOWN', 'DETECT_MAGIC_IDENTIFIED', 'MENU_STATES', 'read_signals', 'classify', 'detect_magic_reply_kind', 'detect_magic_reply_kind_from_memory', 'is_detect_magic_reply_foreground', 'detect_magic_text_flags']
+__all__ = ['VIEW_FLAG_OFFSET', 'VIEW_TYPE_OFFSET', 'LIST_FLAG_OFFSET', 'DIALOG_ACTIVE_OFFSET', 'TEXT_FAMILY_OFFSET', 'SUBSTATE_OFFSET', 'VIEW_DESC_OFFSET', 'RESULT_HINT_OFFSET', 'CURRENT_TEXT_PTR_OFFSET', 'RESPONSE_TEXT_OFFSET', 'MAGES_MENU_TEXT_OFFSET', 'NEGOTIATION_TEXT_OFFSET', 'VIEW_MENU', 'VIEW_SUBMENU', 'VIEW_EDIT_EFFECTS', 'VIEW_POPUP', 'TYPE_POPUP', 'DIALOG_NORMAL', 'FAMILY_MENU_DETECT_CREATE', 'DETECT_KNOWN_HINT', 'DETECT_COST_HINT', 'DETECT_MAGIC_QUOTE_PREFIX', 'DETECT_MAGIC_ALREADY_KNOWN', 'DETECT_MAGIC_IDENTIFIED', 'MENU_STATES', 'read_signals', 'classify', 'is_menu_frame', 'detect_magic_reply_kind', 'detect_magic_reply_kind_from_memory', 'is_detect_magic_reply_foreground', 'detect_magic_text_flags']

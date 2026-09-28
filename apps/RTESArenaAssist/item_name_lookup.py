@@ -99,6 +99,13 @@ def _plain_name_ja(en: str) -> str | None:
         out = fmt.replace('{material}', mat_ja, 1).replace('{base}', out, 1)
     return out
 
+def translate_artifact_name_opt(en: str, lang: str | None=None) -> str | None:
+    surface = (en or '').strip()
+    if not surface:
+        return None
+    from location_lookup import _slug
+    return i18n.lang_value_in(f'glossary.artifact_{_slug(surface)}.0', lang or i18n.current_lang())
+
 def translate_item_name_opt(en: str) -> str | None:
     key = (en or '').strip()
     if not key:
@@ -106,6 +113,9 @@ def translate_item_name_opt(en: str) -> str | None:
     name_dict = _item_name_dict()
     if key in name_dict:
         return name_dict[key]
+    artifact = translate_artifact_name_opt(key)
+    if artifact:
+        return artifact
     m = _ENCHANT_RE.match(key)
     if m:
         ench_tr = i18n.value('item_enchantments', m.group(2))
@@ -114,4 +124,4 @@ def translate_item_name_opt(en: str) -> str | None:
             if base_ja:
                 return i18n.text('item.name.enchant_format').replace('{enchant}', ench_tr, 1).replace('{base}', base_ja, 1)
     return _plain_name_ja(key)
-__all__ = ['translate_item_name_opt', 'invalidate_caches']
+__all__ = ['translate_item_name_opt', 'translate_artifact_name_opt', 'invalidate_caches']

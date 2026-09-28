@@ -226,7 +226,14 @@ def _render_no_session_shop(w, *, shop_state, shop_img_name: str, shop_buy_activ
 
 def _poll_shared_negotiation_and_template(w, *, _shop_menu_visible, _shop_buy_active, _shop_img_name, _temple_active_now, _tavern_active_now, _tavern_l4_kind, _poll_hierarchy_area, _negot_handled, _active_tmpl_handled):
     from normal_play.negotiation_module import poll_negotiation as _poll_negotiation, cleanup_if_owner as _cleanup_negotiation
+    from normal_play.artifact_offer_module import poll_artifact_offer as _poll_artifact_offer, release_artifact_offer as _release_artifact_offer
     if _shop_menu_visible:
+        _artifact_handled = False
+    else:
+        _artifact_handled = _poll_artifact_offer(w, img_name=_shop_img_name, top_level_state=_current_top_level(w))
+    if not _artifact_handled:
+        _release_artifact_offer(w)
+    if _shop_menu_visible or _artifact_handled:
         _negot_handled = False
         _cleanup_negotiation(w)
     else:
@@ -235,7 +242,7 @@ def _poll_shared_negotiation_and_template(w, *, _shop_menu_visible, _shop_buy_ac
             _cleanup_negotiation(w)
     from normal_play.active_template_module import poll_active_template as _poll_active_template, cleanup_if_owner as _cleanup_active_template
     _at_active_facility = 'temple' if _temple_active_now else 'tavern' if _tavern_active_now else ''
-    if _negot_handled:
+    if _negot_handled or _artifact_handled:
         _active_tmpl_handled = False
     else:
         _t_active_tmpl = _phase_start()
@@ -243,7 +250,7 @@ def _poll_shared_negotiation_and_template(w, *, _shop_menu_visible, _shop_buy_ac
         _phase_record(w, 'active_template', _t_active_tmpl)
     if not _active_tmpl_handled and (not _negot_handled):
         _cleanup_active_template(w)
-    return (_negot_handled, _active_tmpl_handled)
+    return (_negot_handled or _artifact_handled, _active_tmpl_handled)
 _FACILITY_PTR_UNSET = object()
 
 def _read_facility_story_pointer(w) -> int | None:
@@ -357,6 +364,9 @@ def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_
     if not _story_kind and _unified_node is None and (not _facility_tavern):
         _shop_buy_active, _shop_menu_visible = _render_no_session_shop(w, shop_state=_shop_state, shop_img_name=_shop_img_name, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible)
         _negot_handled, _active_tmpl_handled = _poll_shared_negotiation_and_template(w, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active, _shop_img_name=_shop_img_name, _temple_active_now=_temple_active_now, _tavern_active_now=_tavern_active_now, _tavern_l4_kind=_tavern_l4_kind, _poll_hierarchy_area=_poll_hierarchy_area, _negot_handled=_negot_handled, _active_tmpl_handled=_active_tmpl_handled)
+    else:
+        from normal_play.artifact_offer_module import release_artifact_offer as _release_artifact_offer
+        _release_artifact_offer(w)
     return (_negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active)
 
 def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog_changed, _npc_phase_raw, _img_name_now, _building_entry_active, _entry_phase_prev, _shop_state, _shop_img_name, _shop_menu_visible, _shop_buy_active, _facility_active_now, _poll_hierarchy_area, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _negot_handled, _active_tmpl_handled, _inventory_screen=False, _b30=None):

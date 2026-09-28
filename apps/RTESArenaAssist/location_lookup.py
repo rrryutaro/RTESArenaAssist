@@ -18,5 +18,8 @@ def lookup(en: str) -> str | None:
     tokens = slug.split('_')
     stripped = [t for t in tokens if t not in _ARTICLE_TOKENS]
     if stripped and len(stripped) != len(tokens):
-        return i18n.text_opt(f"location.{'_'.join(stripped)}.0")
-    return None
+        hit = i18n.text_opt(f"location.{'_'.join(stripped)}.0")
+        if hit is not None:
+            return hit
+    from dynamic_place_lookup import lookup_dungeon_name
+    return lookup_dungeon_name(en)

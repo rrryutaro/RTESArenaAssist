@@ -51,7 +51,7 @@
   "glossary.artifact_chrysamere.0": "クリサメア",
   "glossary.artifact_oghma_infinium.0": "オグマ・インフィニウム",
   "glossary.artifact_lords_mail.0": "ロードズ・メイル",
-  "glossary.artifact_skeleton_key.0": "スケルトンキー",
+  "glossary.artifact_skeletons_key.0": "スケルトンキー",
   "glossary.artifact_spell_breaker.0": "スペルブレイカー",
   "glossary.artifact_volendrung.0": "ヴォレンドルング",
   "glossary.artifact_auriels_bow.0": "アウリエルの弓",
@@ -76,5 +76,6 @@
   "glossary.artifact_staff_of_magnus.0": "マグナスの杖",
   "glossary.artifact_ring_of_phynaster.0": "フィナスターのリング",
   "glossary.artifact_ring_of_khajiit.0": "カジートのリング",
+  "glossary.artifact_king_orgnums_coffer.0": "オルグナム王の宝箱",
   "glossary.artifact_ebony_mail.0": "エボニーメイル"
 }

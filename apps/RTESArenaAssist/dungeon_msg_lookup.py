@@ -9,7 +9,6 @@ _loaded = False
 _MONSTER_NAMES: dict[str, str] | None = None
 _MONSTER_PHRASES: dict[str, str] | None = None
 _ITEM_NAMES: dict[str, str] | None = None
-_ARTIFACT_NAMES: dict[str, str] | None = None
 
 def _iter_monsters():
     originals = i18n.originals('monsters')
@@ -89,37 +88,12 @@ def _item_names() -> dict[str, str]:
         _ITEM_NAMES = result
     return _ITEM_NAMES
 
-def _artifact_names() -> dict[str, str]:
-    global _ARTIFACT_NAMES
-    if _ARTIFACT_NAMES is None:
-        result: dict[str, str] = {}
-        originals = i18n.originals('glossary')
-        if originals:
-            for _id, e in originals.items():
-                if not _id.startswith('glossary.artifact_'):
-                    continue
-                eng = e.get('original', '') if isinstance(e, dict) else ''
-                tr = i18n.text_opt(_id)
-                if eng and tr:
-                    result[eng] = tr
-        else:
-            cur = {e['id']: e.get('text') for e in i18n.v2_category_entries('glossary')}
-            for e in i18n.v2_category_entries('glossary', lang='en'):
-                dn = e.get('debug_name') or ''
-                if not dn.startswith('glossary.artifact_'):
-                    continue
-                eng = e.get('text')
-                tr = cur.get(e['id'])
-                if eng and tr:
-                    result[eng] = tr
-        _ARTIFACT_NAMES = result
-    return _ARTIFACT_NAMES
-
 def lookup_spell(name: str) -> str:
     if not name:
         return ''
     surface = name.strip()
-    return i18n.value('mages', surface) or _artifact_names().get(surface) or ''
+    from item_name_lookup import translate_artifact_name_opt
+    return i18n.value('mages', surface) or translate_artifact_name_opt(surface) or ''
 
 def _rebuild_category(category: str) -> list[dict]:
     originals = i18n.originals(category)
@@ -177,6 +151,10 @@ def lookup_item(name: str) -> str:
     item_names = _item_names()
     if name in item_names:
         return item_names[name]
+    from item_name_lookup import translate_artifact_name_opt
+    artifact = translate_artifact_name_opt(name)
+    if artifact:
+        return artifact
     m_ench = re.match('^(.+?) (of .+)$', name)
     if m_ench:
         ench_ja = i18n.value('item_enchantments', m_ench.group(2))

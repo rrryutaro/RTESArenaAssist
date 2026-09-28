@@ -25,8 +25,8 @@ _META_ASSET_HASHES = 'arena_asset_hashes'
 _META_EXE_HARVEST = 'exe_harvest_enabled'
 _GOLDEN_MANIFEST_PATH = os.path.join(os.path.dirname(__file__), 'arena_golden_manifest.json')
 GOLDEN_VERSION = 1
-_BASE_CONTENT_VERSION = 'be+npcd+atrade+atradeshop+akeyrepair+inf+nnc+chrgnq2+wmap+loc/10'
-_AEXE_CONTENT_VERSION = 'be+npcd+atrade+atradeshop+akeyrepair+inf+nnc+chrgnq2+aexe4+chargenui+akeyui2+aexeman+wmap+chgnprov+loc+citygen+itemmat+monsters+partial2+items+reclass+srcback27+v2pak28+askchrome29+keymat30+citygennames31+akeyrequired32+travel33+questitems34+spellnames35+shopmsg36+lockmsg37+deathmsg38+drinksrc39+relsrc40+enemysrc41/41'
+_BASE_CONTENT_VERSION = 'be+npcd+atrade+atradeshop+akeyrepair+inf+nnc+chrgnq2+wmap+loc+artfact/11'
+_AEXE_CONTENT_VERSION = 'be+npcd+atrade+atradeshop+akeyrepair+inf+nnc+chrgnq2+aexe4+chargenui+akeyui2+aexeman+wmap+chgnprov+loc+citygen+itemmat+monsters+partial2+items+reclass+srcback27+v2pak28+askchrome29+keymat30+citygennames31+akeyrequired32+travel33+questitems34+spellnames35+shopmsg36+lockmsg37+deathmsg38+drinksrc39+relsrc40+enemysrc41+artfact42/42'
 _META_CONTENT_VERSION = 'content_version'
 _AEXE_CATEGORIES = ('races', 'calendar', 'titles', 'location_types', 'classes', 'protect_locations', 'spells', 'item_enchantments', 'equipment_suffixes', 'chargen_provinces', 'item_materials', 'monsters', 'equipment', 'character', 'mages', 'dungeon', 'items', 'settlement_types', 'chargen_race_descriptions', 'pronouns', 'relations', 'ask_about_menu', 'status_buffer_text', 'descriptors', 'status_terms', 'npc_traits', 'travel', 'lock_messages')
 _AEXE_TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'i18n', '_aexe_template')
@@ -413,6 +413,9 @@ def build_local_pack(arena_dir: str, user_dir: str, analyzer=None, classificatio
     npcd.update(atrade_shop)
     akey_repair = arena_regen.regenerate_akey_repair(raw)
     npcd.update(akey_repair)
+    art1, art2 = (_vfs.read('ARTFACT1.DAT'), _vfs.read('ARTFACT2.DAT'))
+    artifact = arena_regen.regenerate_artifact_dialog(art1, art2) if art1 or art2 else {}
+    npcd.update(artifact)
     _p(0.24, '地名・名前データを処理中…')
     citydata_raw = _read_citydata(arena_dir)
     world_map_json = None

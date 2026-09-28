@@ -191,6 +191,55 @@ def _translate_parts(parts: list[dict], lang: str) -> str | None:
                 return None
             out.append(t)
     return ''.join(out)
+_PLACE_NAME_RULES: list[dict] = _NAME_RULES[8][0]
+
+def _parse_place_name_part(name: str) -> list[dict] | None:
+    _load()
+    normalized = ' '.join((name or '').split())
+    if not normalized:
+        return None
+    return _parse_name_with_rules(normalized, _PLACE_NAME_RULES)
+
+def is_place_name_part(name: str) -> bool:
+    return _parse_place_name_part(name) is not None
+_PLACE_COMPLETION_CACHE: dict[str, str | None] = {}
+
+def complete_place_name_part(prefix: str) -> str | None:
+    p = (prefix or '').strip()
+    if not p:
+        return None
+    if p in _PLACE_COMPLETION_CACHE:
+        return _PLACE_COMPLETION_CACHE[p]
+    _load()
+    options: list[list[str]] = []
+    for rule in _PLACE_NAME_RULES:
+        t = rule['t']
+        if t == 'S':
+            options.append([rule['s']])
+        elif t == 'I':
+            options.append(list(_chunk_entries(rule['c'])))
+        elif t == 'IC':
+            options.append([''] + list(_chunk_entries(rule['c'])))
+        else:
+            return None
+    if any((not opts or opts == [''] for opts in options)):
+        return None
+    names = {''}
+    for opts in options:
+        names = {n + o for n in names for o in opts}
+    found = {n for n in names if len(n) > len(p) and n.startswith(p)}
+    result = next(iter(found)) if len(found) == 1 else None
+    _PLACE_COMPLETION_CACHE[p] = result
+    return result
+
+def translate_place_name_part(name: str, lang: str | None=None) -> str | None:
+    if lang is None:
+        import i18n_helper as i18n
+        lang = i18n.current_lang()
+    parts = _parse_place_name_part(name)
+    if parts is None:
+        return None
+    return _translate_parts(parts, lang)
 
 def translate_generated_name(name: str, lang: str | None=None) -> str:
     if lang is None:

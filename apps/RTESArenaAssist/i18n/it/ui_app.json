@@ -222,6 +222,7 @@
   "settings.map_express_wall_passage": "Passaggi sotto i muri",
   "settings.map_express_wall_lava": "Lava sotto i muri",
   "settings.map_express_treasure": "Tesori",
+  "settings.map_express_quest_treasure": "Chiavi e oggetti delle missioni",
   "settings.map_pipe_under": "Passaggi sottostanti",
   "settings.map_pipe_under_on": "Mostra come condotti",
   "settings.map_pipe_opacity": "Intensità",
@@ -795,5 +796,8 @@
   "equipment.category.shield": "Scudo",
   "equipment.category.accessory": "Accessorio",
   "equipment.category.spellcasting": "Oggetto magico",
-  "equipment.category.potion": "Pozione"
+  "equipment.category.potion": "Pozione",
+  "negotiation.accept": "Accetta",
+  "negotiation.counter": "Controfferta",
+  "negotiation.reject": "Rifiuta"
 }

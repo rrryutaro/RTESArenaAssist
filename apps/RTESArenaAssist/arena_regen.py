@@ -351,6 +351,37 @@ def regenerate_atrade_tavern(raw: bytes) -> dict[str, dict]:
 
 def build_atrade_manifest(new_entries: dict[str, dict], fingerprint: str) -> dict:
     return _build_manifest(new_entries, fingerprint, NPC_DIALOG_CATEGORY, ATRADE_GENERATOR_VERSION)
+ARTFACT_GENERATOR_VERSION = 'artfact-1'
+ARTFACT_BLOCK_PREFIX = 'ARTFACT'
+_ARTFACT_ENTRIES = 240
+_ARTFACT_BLOCK_RE = re.compile('^ARTFACT([12])_(\\d{3})$')
+
+def artifact_block(file_no: int, index: int) -> str:
+    return f'{ARTFACT_BLOCK_PREFIX}{int(file_no)}_{int(index):03d}'
+
+def artifact_block_source_id(block: str) -> str | None:
+    m = _ARTFACT_BLOCK_RE.match(block or '')
+    if not m:
+        return None
+    return sa.artfact_id(int(m.group(1)), int(m.group(2)))
+
+def regenerate_artifact_dialog(art1_raw: bytes | None, art2_raw: bytes | None) -> dict[str, dict]:
+    out: dict[str, dict] = {}
+    seen: set[str] = set()
+    for file_no, raw in ((1, art1_raw), (2, art2_raw)):
+        if not raw:
+            continue
+        for i, part in enumerate(raw.split(b'\x00')[:_ARTFACT_ENTRIES]):
+            text = ' '.join(part.decode('latin-1', errors='replace').split())
+            if not text or text == '!' or text in seen:
+                continue
+            seen.add(text)
+            app_id = f'{NPC_DIALOG_KEY_PREFIX}{artifact_block(file_no, i)}.0'
+            out[app_id] = {'original': text, 'source_id': sa.artfact_id(file_no, i), 'source_hash': sa.source_hash(text), 'placeholders': _placeholders(text)}
+    return out
+
+def build_artifact_manifest(new_entries: dict[str, dict], fingerprint: str) -> dict:
+    return _build_manifest(new_entries, fingerprint, NPC_DIALOG_CATEGORY, ARTFACT_GENERATOR_VERSION)
 ATRADE_SHOP_GENERATOR_VERSION = 'atradeshop-1'
 _ATRADE_SHOP_SINGLES = (('A601.0', 'equip', 9), ('A602.0', 'equip', 39), ('A603.0', 'equip', 41))
 
@@ -599,4 +630,4 @@ AEXE_MANIFEST_GENERATOR_VERSION = 'aexe-1'
 def build_aexe_manifest(category: str, original_json: dict[str, dict], fingerprint: str) -> dict:
     entries = {sa.aexe_id(category, k): sa.source_hash(v.get('original', '')) for k, v in original_json.items()}
     return {sa.MANIFEST_VERSION: AEXE_MANIFEST_GENERATOR_VERSION, sa.MANIFEST_GENERATOR: f'arena_regen/{AEXE_MANIFEST_GENERATOR_VERSION}', sa.MANIFEST_FINGERPRINT: fingerprint, sa.MANIFEST_DIGEST: sa.manifest_digest(entries), 'category': category, sa.MANIFEST_ENTRIES: entries}
-__all__ = ['GENERATOR_VERSION', 'CATEGORY', 'TARGET_BLOCKS', 'parse_template_dat_bytes', 'regenerate_building_entry_bytes', 'build_original_json', 'fingerprint_bytes', 'build_manifest', 'NPC_DIALOG_GENERATOR_VERSION', 'NPC_DIALOG_CATEGORY', 'regenerate_npc_dialog_bytes', 'build_npc_dialog_original_json', 'build_npc_dialog_manifest', 'INF_TEXT_GENERATOR_VERSION', 'INF_TEXT_CATEGORY', 'regenerate_inf_text_bytes', 'build_inf_text_original_json', 'build_inf_text_manifest', 'CHARGEN_QUESTION_GENERATOR_VERSION', 'regenerate_chargen_questions', 'build_chargen_questions_manifest', 'CHARGEN_UI_GENERATOR_VERSION', 'regenerate_chargen_ui', 'ATRADE_GENERATOR_VERSION', 'regenerate_atrade_tavern', 'build_atrade_manifest', 'ATRADE_SHOP_GENERATOR_VERSION', 'regenerate_atrade_shops', 'build_atrade_shop_manifest', 'AKEY_REPAIR_GENERATOR_VERSION', 'regenerate_akey_repair', 'build_akey_repair_manifest', 'AKEY_UI_GENERATOR_VERSION', 'regenerate_akey_ui', 'build_akey_ui_manifest', 'NPC_NAME_CHUNKS_GENERATOR_VERSION', 'NPC_NAME_CHUNKS_CATEGORY', 'regenerate_npc_name_chunks_bytes', 'build_npc_name_chunks_original_json', 'build_npc_name_chunks_manifest', 'AEXE_MANIFEST_GENERATOR_VERSION', 'build_aexe_manifest']
+__all__ = ['GENERATOR_VERSION', 'CATEGORY', 'TARGET_BLOCKS', 'parse_template_dat_bytes', 'regenerate_building_entry_bytes', 'build_original_json', 'fingerprint_bytes', 'build_manifest', 'NPC_DIALOG_GENERATOR_VERSION', 'NPC_DIALOG_CATEGORY', 'regenerate_npc_dialog_bytes', 'build_npc_dialog_original_json', 'build_npc_dialog_manifest', 'INF_TEXT_GENERATOR_VERSION', 'INF_TEXT_CATEGORY', 'regenerate_inf_text_bytes', 'build_inf_text_original_json', 'build_inf_text_manifest', 'CHARGEN_QUESTION_GENERATOR_VERSION', 'regenerate_chargen_questions', 'build_chargen_questions_manifest', 'CHARGEN_UI_GENERATOR_VERSION', 'regenerate_chargen_ui', 'ATRADE_GENERATOR_VERSION', 'regenerate_atrade_tavern', 'build_atrade_manifest', 'ARTFACT_GENERATOR_VERSION', 'ARTFACT_BLOCK_PREFIX', 'artifact_block', 'artifact_block_source_id', 'regenerate_artifact_dialog', 'build_artifact_manifest', 'ATRADE_SHOP_GENERATOR_VERSION', 'regenerate_atrade_shops', 'build_atrade_shop_manifest', 'AKEY_REPAIR_GENERATOR_VERSION', 'regenerate_akey_repair', 'build_akey_repair_manifest', 'AKEY_UI_GENERATOR_VERSION', 'regenerate_akey_ui', 'build_akey_ui_manifest', 'NPC_NAME_CHUNKS_GENERATOR_VERSION', 'NPC_NAME_CHUNKS_CATEGORY', 'regenerate_npc_name_chunks_bytes', 'build_npc_name_chunks_original_json', 'build_npc_name_chunks_manifest', 'AEXE_MANIFEST_GENERATOR_VERSION', 'build_aexe_manifest']

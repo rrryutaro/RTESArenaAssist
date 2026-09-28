@@ -51,7 +51,7 @@
   "glossary.artifact_chrysamere.0": "Chrysamere",
   "glossary.artifact_oghma_infinium.0": "Oghma Infinium",
   "glossary.artifact_lords_mail.0": "Cota de Lord",
-  "glossary.artifact_skeleton_key.0": "Llave de esqueleto",
+  "glossary.artifact_skeletons_key.0": "Llave de esqueleto",
   "glossary.artifact_spell_breaker.0": "Rompemagia",
   "glossary.artifact_volendrung.0": "Volendrung",
   "glossary.artifact_auriels_bow.0": "Arco de Auriel",
@@ -76,5 +76,6 @@
   "glossary.artifact_staff_of_magnus.0": "Bastón de Magnus",
   "glossary.artifact_ring_of_phynaster.0": "Anillo de Phynaster",
   "glossary.artifact_ring_of_khajiit.0": "Anillo del Khajiit",
+  "glossary.artifact_king_orgnums_coffer.0": "Cofre del Rey Orgnum",
   "glossary.artifact_ebony_mail.0": "Cota de ébano"
 }

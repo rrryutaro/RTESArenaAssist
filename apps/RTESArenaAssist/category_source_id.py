@@ -89,6 +89,9 @@ def npc_dialog_source_id(legacy_id: str) -> str | None:
     if '.' not in rest:
         return None
     block, var = rest.rsplit('.', 1)
+    if block.startswith('ARTFACT'):
+        import arena_regen
+        return arena_regen.artifact_block_source_id(block)
     try:
         var_i = int(var)
     except ValueError:

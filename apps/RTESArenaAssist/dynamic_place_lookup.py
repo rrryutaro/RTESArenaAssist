@@ -1,6 +1,7 @@
 from __future__ import annotations
 import logging
 import re
+from travel_location_table import _NAME_LEN as _LOCATION_NAME_FIELD
 _log = logging.getLogger(__name__)
 _DATA: dict = {}
 _LOC_TYPES: dict[str, str] = {}
@@ -186,6 +187,56 @@ def _lookup_mages_guild(en_text: str) -> str:
         return mg.get('static_name_value', '')
     _log.debug('dynamic_place_unmatched: category=mages_guild en=%r', en_text)
     return ''
+_DUNGEON_NAME_RE = re.compile('^(?P<type>[A-Za-z]+) of (?P<name>[A-Za-z]+)$')
+_LOCATION_NAME_MAX = _LOCATION_NAME_FIELD - 1
+
+def _dungeon_types() -> dict[str, str]:
+    _load()
+    return {t['en']: t.get('value', '') for t in _DATA.get('dungeon', {}).get('types', []) if t.get('en')}
+
+def _dungeon_name_part(name_en: str, data: dict) -> str | None:
+    from npc_name_translator import is_place_name_part, translate_place_name_part
+    if not is_place_name_part(name_en):
+        return None
+    if data.get('keep_name'):
+        return name_en
+    return translate_place_name_part(name_en)
+
+def _lookup_dungeon(en_text: str) -> str:
+    data = _DATA.get('dungeon', {})
+    m = _DUNGEON_NAME_RE.match(en_text)
+    if not data or not m:
+        return ''
+    type_tr = _dungeon_types().get(m.group('type'))
+    if not type_tr:
+        _log.debug('dynamic_place_unmatched: category=dungeon type=%r', m.group('type'))
+        return ''
+    name_tr = _dungeon_name_part(m.group('name'), data)
+    if not name_tr and len(en_text) == _LOCATION_NAME_MAX:
+        from npc_name_translator import complete_place_name_part, is_place_name_part
+        if not is_place_name_part(m.group('name')):
+            full = complete_place_name_part(m.group('name'))
+            if full:
+                name_tr = _dungeon_name_part(full, data)
+    if not name_tr:
+        _log.debug('dynamic_place_unmatched: category=dungeon name=%r', m.group('name'))
+        return ''
+    genitive = data.get('name_genitive') or {}
+    if genitive.get('suffix') and name_tr[-1:].lower() in genitive.get('after', ''):
+        name_tr += genitive['suffix']
+    rule = data.get('combination_rule', '')
+    if data.get('combination_rule_vowel') and name_tr[:1] in data.get('vowels', ''):
+        rule = data['combination_rule_vowel']
+    if not rule:
+        return ''
+    return rule.replace('{type}', type_tr).replace('{name}', name_tr)
+
+def lookup_dungeon_name(en_text: str) -> str | None:
+    _load()
+    text = (en_text or '').strip()
+    if not _DUNGEON_NAME_RE.match(text):
+        return None
+    return _lookup_dungeon(text) or None
 _EQ_SUFFIX_SET: set[str] | None = None
 
 def _get_eq_suffix_set() -> set[str]:
@@ -210,6 +261,9 @@ def detect_category(en_text: str) -> str | None:
     for sfx in eq_sfx:
         if text.endswith(' ' + sfx) or text == sfx:
             return 'equipment_store'
+    m = _DUNGEON_NAME_RE.match(text)
+    if m and m.group('type') in _dungeon_types():
+        return 'dungeon'
     for p in _DATA.get('tavern', {}).get('prefixes', []):
         if text.startswith(p.get('en', '') + ' '):
             return 'tavern'
@@ -235,6 +289,8 @@ def _lookup_surface(text: str, category: str | None) -> str:
         return _lookup_equipment_store(text)
     if cat == 'mages_guild':
         return _lookup_mages_guild(text)
+    if cat == 'dungeon':
+        return _lookup_dungeon(text)
     _log.debug('dynamic_place_unmatched: category=%r en=%r (unknown category)', cat, text)
     return ''
 

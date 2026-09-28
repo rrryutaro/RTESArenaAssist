@@ -98,6 +98,13 @@ def _current_mages_state(w, *, sig: dict | None=None) -> str:
     except Exception:
         return 'unknown'
 
+def _is_menu_frame(w, *, sig: dict | None=None) -> bool:
+    try:
+        from mages_signals import is_menu_frame, read_signals
+        return is_menu_frame(sig if sig is not None else read_signals(w._analyzer, w._anchor))
+    except Exception:
+        return False
+
 def _detect_magic_cost_candidate(candidates) -> ResponseCandidate | None:
     for c in candidates:
         if _DETECT_MAGIC_QUOTE_PREFIX in _normalize_reply_text(c.text):
@@ -126,7 +133,7 @@ def poll_mages_reply(w, *, mages_active: bool, mages_just_started: bool, img_nam
         return False
     detect_kind = _detect_magic_reply_kind(w, img, sig=signals_snapshot, current_ptr=foreground_ptr)
     current_state = _current_mages_state(w, sig=signals_snapshot)
-    if img == 'NEWPOP.IMG' and (not detect_kind) and (current_state in {'list', 'main_menu', 'buy_submenu', 'steal_menu', 'edit_effects_menu'}):
+    if img == 'NEWPOP.IMG' and (not detect_kind) and (current_state in {'list', 'main_menu', 'buy_submenu', 'steal_menu', 'edit_effects_menu'} or _is_menu_frame(w, sig=signals_snapshot)):
         _clear_reply_owner(w)
         return False
     if _is_negotiation_img(img) and (not detect_kind):

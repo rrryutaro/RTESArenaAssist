@@ -222,6 +222,7 @@
   "settings.map_express_wall_passage": "Passages sous les murs",
   "settings.map_express_wall_lava": "Lave sous les murs",
   "settings.map_express_treasure": "Trésors",
+  "settings.map_express_quest_treasure": "Clés et objets de quête",
   "settings.map_pipe_under": "Passages en dessous",
   "settings.map_pipe_under_on": "Montrer en conduits",
   "settings.map_pipe_opacity": "Intensité",
@@ -795,5 +796,8 @@
   "equipment.category.shield": "Bouclier",
   "equipment.category.accessory": "Accessoire",
   "equipment.category.spellcasting": "Objet magique",
-  "equipment.category.potion": "Potion"
+  "equipment.category.potion": "Potion",
+  "negotiation.accept": "Accepter",
+  "negotiation.counter": "Contre-offre",
+  "negotiation.reject": "Refuser"
 }

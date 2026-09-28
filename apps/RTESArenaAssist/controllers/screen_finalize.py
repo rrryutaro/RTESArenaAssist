@@ -12,11 +12,12 @@ class BonusScreenResolve:
     clear_spell_markers: bool
 BONUS_PTS_MIN = 0
 BONUS_PTS_MAX = 30
+ARTIFACT_BONUS_PTS_MAX = 50
 
-def bonus_pts_is_plausible(bonus_pts: int | None) -> bool:
+def bonus_pts_is_plausible(bonus_pts: int | None, maximum: int=BONUS_PTS_MAX) -> bool:
     if bonus_pts is None:
         return False
-    return BONUS_PTS_MIN <= int(bonus_pts) <= BONUS_PTS_MAX
+    return BONUS_PTS_MIN <= int(bonus_pts) <= int(maximum)
 
 @dataclass(frozen=True)
 class BonusScreenSignals:
@@ -35,12 +36,12 @@ def read_bonus_screen_signals(analyzer, anchor: int) -> BonusScreenSignals:
     flag = _read(BONUS_SCREEN_FLAG_OFFSET)
     return BonusScreenSignals(flag_status=0 if flag is None else int(flag), bonus_pts=_read(BONUS_PTS_OFFSET))
 
-def resolve_bonus_screen(screen_id_stable: str, in_levelup: bool, flag_status: int, hold_active: bool, bonus_pts: int | None=None) -> BonusScreenResolve:
+def resolve_bonus_screen(screen_id_stable: str, in_levelup: bool, flag_status: int, hold_active: bool, bonus_pts: int | None=None, bonus_max: int=BONUS_PTS_MAX) -> BonusScreenResolve:
     log_start = False
     log_end = False
     log_override = False
     clear_spell_markers = False
-    if in_levelup and flag_status == 1 and (hold_active or bonus_pts_is_plausible(bonus_pts)):
+    if in_levelup and flag_status == 1 and (hold_active or bonus_pts_is_plausible(bonus_pts, bonus_max)):
         if not hold_active:
             log_start = True
         hold_active = True

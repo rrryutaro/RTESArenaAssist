@@ -222,6 +222,7 @@
   "settings.map_express_wall_passage": "Проходы под стенами",
   "settings.map_express_wall_lava": "Лава под стенами",
   "settings.map_express_treasure": "Сокровища",
+  "settings.map_express_quest_treasure": "Ключи и квестовые предметы",
   "settings.map_pipe_under": "Проходы внизу",
   "settings.map_pipe_under_on": "Показывать трубами",
   "settings.map_pipe_opacity": "Насыщенность",
@@ -795,5 +796,8 @@
   "equipment.category.shield": "Щит",
   "equipment.category.accessory": "Украшение",
   "equipment.category.spellcasting": "Магический предмет",
-  "equipment.category.potion": "Зелье"
+  "equipment.category.potion": "Зелье",
+  "negotiation.accept": "Принять",
+  "negotiation.counter": "Встречное предложение",
+  "negotiation.reject": "Отказать"
 }

@@ -18,7 +18,8 @@ KIND_ARMOR_PREFIX = 'armor_prefix'
 KIND_SPELL_EFFECT = 'spelleffect'
 KIND_MAGIC_ITEM = 'magicitem'
 KIND_MATERIAL_ITEM = 'materialitem'
-ALL_KINDS = frozenset({KIND_TEMPLATE, KIND_INF, KIND_SPELLMKR, KIND_NAMECHNK, KIND_QUESTION, KIND_TRADE, KIND_DOCS, KIND_ASSIST_SUMMARY, KIND_AEXE, KIND_CITYDATA, KIND_SPELLSG, KIND_PUBLIC_BUILTIN, KIND_ARMOR_PREFIX, KIND_SPELL_EFFECT, KIND_MAGIC_ITEM, KIND_MATERIAL_ITEM})
+KIND_ARTFACT = 'artfact'
+ALL_KINDS = frozenset({KIND_TEMPLATE, KIND_INF, KIND_SPELLMKR, KIND_NAMECHNK, KIND_QUESTION, KIND_TRADE, KIND_DOCS, KIND_ASSIST_SUMMARY, KIND_AEXE, KIND_CITYDATA, KIND_SPELLSG, KIND_PUBLIC_BUILTIN, KIND_ARMOR_PREFIX, KIND_SPELL_EFFECT, KIND_MAGIC_ITEM, KIND_MATERIAL_ITEM, KIND_ARTFACT})
 _SEP = ':'
 
 def _seg(value) -> str:
@@ -61,6 +62,9 @@ def question_id(question_number) -> str:
 
 def tradetext_id(dat_file, index) -> str:
     return _SEP.join((KIND_TRADE, _seg(str(dat_file).lower()), _seg(int(index))))
+
+def artfact_id(file_no, index) -> str:
+    return _SEP.join((KIND_ARTFACT, _seg(int(file_no)), _seg(int(index))))
 
 def aexe_id(group, entry_id) -> str:
     return _SEP.join((KIND_AEXE, _seg(group), _seg(entry_id)))

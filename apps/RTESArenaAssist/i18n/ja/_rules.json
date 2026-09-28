@@ -629,6 +629,47 @@
     "mages_guild": {
       "static_name_en": "Mages Guild",
       "static_name_value": "魔術師ギルド"
+    },
+    "dungeon": {
+      "combination_rule": "{name}の{type}",
+      "types": [
+        {
+          "en": "Dungeon",
+          "value": "ダンジョン"
+        },
+        {
+          "en": "Cavern",
+          "value": "洞窟"
+        },
+        {
+          "en": "Labyrinth",
+          "value": "迷宮"
+        },
+        {
+          "en": "Catacombs",
+          "value": "地下墓地"
+        },
+        {
+          "en": "Hole",
+          "value": "穴"
+        },
+        {
+          "en": "Crypt",
+          "value": "地下墓所"
+        },
+        {
+          "en": "Fortress",
+          "value": "砦"
+        },
+        {
+          "en": "Mines",
+          "value": "鉱山"
+        },
+        {
+          "en": "Cellar",
+          "value": "地下室"
+        }
+      ]
     }
   }
 }

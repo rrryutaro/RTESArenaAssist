@@ -51,7 +51,7 @@
   "glossary.artifact_chrysamere.0": "Chrysamère",
   "glossary.artifact_oghma_infinium.0": "Oghma Infinium",
   "glossary.artifact_lords_mail.0": "Armure du Seigneur",
-  "glossary.artifact_skeleton_key.0": "Clé Squelette",
+  "glossary.artifact_skeletons_key.0": "Clé Squelette",
   "glossary.artifact_spell_breaker.0": "Brise-Sorts",
   "glossary.artifact_volendrung.0": "Volendrung",
   "glossary.artifact_auriels_bow.0": "Arc d'Auriel",
@@ -76,5 +76,6 @@
   "glossary.artifact_staff_of_magnus.0": "Bâton de Magnus",
   "glossary.artifact_ring_of_phynaster.0": "Anneau de Phynaster",
   "glossary.artifact_ring_of_khajiit.0": "Anneau du Khajiit",
+  "glossary.artifact_king_orgnums_coffer.0": "Coffre du roi Orgnum",
   "glossary.artifact_ebony_mail.0": "Cotte d'Ébonite"
 }

@@ -1,16 +1,18 @@
 from __future__ import annotations
+import dataclasses
 import logging
 from pathlib import Path
 from typing import Optional
 import numpy as np
 from common_draw.automap_canvas import CanvasData, _classify_cell, _is_hidden_door_cell, _is_wall_passage_cell, facing_delta
+from services.inf_file_parser import ITEM_POINT_CONTAINER, ITEM_POINT_QUEST_ITEM
 from services.map_ext_store import SECTION_TREASURE_PILES, SECTION_WALL_PASSAGES
 from services.automap_file import AutomapCache, EXPECTED_FILE_SIZE, cache_for_level_hash, level_index_of_hash, parse_automap_file, read_current_level_hash
 from services.arena_reveal_stencil import apply_reveal_stencil, apply_reveal_stencil_with_los, resolve_first_block, wall_passage_cell_visible
 from runtime_paths import resolve_arena_install_dir
-from services.mif_loader import DEFAULT_INF_DIR, DEFAULT_MIF_DIR, load_mif, parse_inf_level_transitions, parse_inf_menu_indices, parse_inf_walls_hidden_door_ids, resolve_inf_for_mif
+from services.mif_loader import DEFAULT_INF_DIR, DEFAULT_MIF_DIR, _extract_entities, load_mif, parse_inf_level_transitions, parse_inf_menu_indices, parse_inf_walls_hidden_door_ids, resolve_inf_for_mif
 from normal_play.map.base import MapContext, MapSessionBase
-from normal_play.map.item_points import all_item_point_cells, item_point_cells, note_item_pickups
+from normal_play.map.item_points import all_item_point_cells, item_point_cells, note_item_pickups, quest_item_point_cells
 from assist_log import RECOGNITION_LEVEL as _RECOG_LEVEL
 _log = logging.getLogger('base_location.dungeon')
 
@@ -53,6 +55,18 @@ class DungeonMapSession(MapSessionBase):
         self._center_on_player = True
         self._show_grid = True
         self._item_point_cells: dict[str, frozenset] = {}
+        self._generated_level = None
+        self._live_grid_pending: bool = False
+        self._live_grid_attempts: int = 0
+        self._live_map1: Optional[list] = None
+        self._live_flats: dict[int, int] = {}
+        self._last_live_raw: Optional[list] = None
+        self._last_live_hash: Optional[int] = None
+        self._stale_live: Optional[list] = None
+        self._stale_hash: Optional[int] = None
+        self._live_grid_stale_polls: int = 0
+        self._level_down_cells: frozenset = frozenset()
+        self._artifact_chest_logged: Optional[tuple] = None
         self._flat_marks_all: tuple[tuple[int, int, str], ...] = ()
         self._show_static_flats = False
         self._known_treasure: frozenset = frozenset()
@@ -98,6 +112,8 @@ class DungeonMapSession(MapSessionBase):
             self._load_mif(ctx.mif_name, int(floor))
             self._mif_name = ctx.mif_name
             self._floor = int(floor)
+        self._overlay_live_grid_if_pending(ctx)
+        self._refresh_live_objects(ctx)
         self._refresh_level_axis(ctx)
         self._location_key = self._level_store_key
         self._update_record_gate(ctx)
@@ -136,7 +152,99 @@ class DungeonMapSession(MapSessionBase):
     def get_canvas_data(self) -> CanvasData:
         if self._await_axis_reconfirm or self._location_key is None:
             return CanvasData(walkable=None, map1=None, flor=None, bitmap_grid=None, notes=[], player_x=None, player_y=None, player_angle_deg=None, level_up_index=None, level_down_index=None, entrance_cells=(), is_wilderness=False, hidden_door_ids=frozenset(), menu_texture_indices=frozenset(), treasure_cells=frozenset(), discovered_hidden_door_cells=frozenset(), discovered_wall_passage_cells=frozenset(), map_key='dungeon:<transition>', cache_index=None)
-        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, treasure_cells=self._known_treasure, all_treasure_cells=all_item_point_cells(self._item_point_cells), discovered_hidden_door_cells=self._discovered_hd, discovered_wall_passage_cells=self._discovered_wp, flat_marks=self._visible_flat_marks(), map_key=f'dungeon:{self._location_key}' if self._location_key else 'dungeon:<unknown>', cache_index=self._active_cache_index)
+        return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=self._notes, player_x=int(self._player_x) if self._player_x is not None else None, player_y=int(self._player_y) if self._player_y is not None else None, player_angle_deg=self._angle, level_up_index=self._level_up_index, level_down_index=self._level_down_index, entrance_cells=(), is_wilderness=False, hidden_door_ids=self._hidden_door_ids, menu_texture_indices=self._menu_texture_indices, treasure_cells=self._known_treasure, all_treasure_cells=all_item_point_cells(self._item_point_cells), quest_treasure_cells=quest_item_point_cells(self._item_point_cells), discovered_hidden_door_cells=self._discovered_hd, discovered_wall_passage_cells=self._discovered_wp, flat_marks=self._visible_flat_marks(), map_key=f'dungeon:{self._location_key}' if self._location_key else 'dungeon:<unknown>', cache_index=self._active_cache_index)
+    _LIVE_GRID_MIN_MATCH = 0.95
+    _LIVE_GRID_LOG_AFTER = 20
+
+    def _overlay_live_grid_if_pending(self, ctx: MapContext) -> None:
+        mif = self._generated_level
+        if mif is None or not self._live_grid_pending:
+            return
+        from services.automap_file import read_current_level_hash
+        from services.live_level_grid import match_ratio, read_level_map1
+        live = read_level_map1(ctx.analyzer, ctx.anchor, mif.width, mif.height)
+        if live is None:
+            return
+        ratio = match_ratio(live, mif.map1)
+        if ratio < self._LIVE_GRID_MIN_MATCH:
+            self._live_grid_attempts += 1
+            if self._live_grid_attempts == self._LIVE_GRID_LOG_AFTER:
+                _log.log(_RECOG_LEVEL, 'live level grid not matched: mif=%s level=%d ratio=%.3f attempts=%d', self._mif_name, mif.level_index, ratio, self._live_grid_attempts)
+            return
+        live_map1 = list(live)
+        level_hash = read_current_level_hash(ctx.analyzer, ctx.anchor)
+        if self._stale_live is not None and live_map1 == self._stale_live and (level_hash == self._stale_hash):
+            self._live_grid_stale_polls += 1
+            return
+        self._live_grid_pending = False
+        self._last_live_raw = list(live_map1)
+        self._last_live_hash = level_hash
+        differing = sum((1 for a, b in zip(live_map1, mif.map1) if a != b))
+        placed: dict[int, int] = {}
+        for a, b in zip(live_map1, mif.map1):
+            if a != b and a & 61440 == 32768:
+                placed[a & 255] = placed.get(a & 255, 0) + 1
+        self._apply_live_map1(ctx, mif, live_map1)
+        _log.log(_RECOG_LEVEL, 'live level grid applied: mif=%s level=%d ratio=%.4f differing=%d item_points=%d stairs=%d placed=%s previous_level_polls=%d', self._mif_name, mif.level_index, ratio, differing, len(all_item_point_cells(self._item_point_cells)), len(self._stair_cells), ','.join((f'{k}x{n}' for k, n in sorted(placed.items()))) or '-', self._live_grid_stale_polls)
+
+    @staticmethod
+    def _flat_cells(map1) -> dict[int, int]:
+        return {i: v for i, v in enumerate(map1) if v & 61440 == 32768}
+
+    def _apply_live_map1(self, ctx: MapContext, mif, map1: list) -> None:
+        self._live_map1 = list(map1)
+        self._live_flats = self._flat_cells(map1)
+        self._install_level(self._mif_name, dataclasses.replace(mif, map1=list(map1), entities=_extract_entities(list(map1), list(mif.flor), mif.width, mif.height)))
+        self._mark_artifact_quest_chest(ctx, mif)
+
+    def _refresh_live_objects(self, ctx: MapContext) -> None:
+        mif = self._generated_level
+        if mif is None or self._live_grid_pending or self._live_map1 is None:
+            return
+        from services.automap_file import read_current_level_hash
+        from services.live_level_grid import match_ratio, merge_live_cells, read_level_map1
+        live = read_level_map1(ctx.analyzer, ctx.anchor, mif.width, mif.height)
+        if live is None:
+            return
+        live = list(live)
+        if live == self._last_live_raw:
+            return
+        if match_ratio(live, mif.map1) < self._LIVE_GRID_MIN_MATCH:
+            return
+        self._last_live_raw = live
+        self._last_live_hash = read_current_level_hash(ctx.analyzer, ctx.anchor)
+        before = self._live_map1
+        map1 = merge_live_cells(before, live)
+        if map1 == before:
+            return
+        flats = self._flat_cells(map1)
+        added = len(set(flats) - set(self._live_flats))
+        removed = len(set(self._live_flats) - set(flats))
+        other = sum((1 for i in range(len(map1)) if map1[i] != before[i] and i not in flats and (i not in self._live_flats)))
+        self._apply_live_map1(ctx, mif, map1)
+        _log.log(_RECOG_LEVEL, 'live level grid objects changed: mif=%s level=%d added=%d removed=%d other=%d item_points=%d', self._mif_name, mif.level_index, added, removed, other, len(all_item_point_cells(self._item_point_cells)))
+
+    def _mark_artifact_quest_chest(self, ctx: MapContext, mif) -> None:
+        if self._level_down_cells:
+            return
+        from services.artifact_quest import read_artifact_quest
+        from services.random_dungeon import find_random_dungeon_location
+        loc = find_random_dungeon_location(self._mif_name or '')
+        quest = read_artifact_quest(ctx.analyzer, ctx.anchor)
+        if loc is None or quest is None:
+            return
+        role = quest.dungeon_role(*loc)
+        cell = quest.chest_cell() if role else None
+        containers = self._item_point_cells.get(ITEM_POINT_CONTAINER, frozenset())
+        marked = cell if cell is not None and cell in containers else None
+        if marked is not None:
+            cells = dict(self._item_point_cells)
+            cells[ITEM_POINT_QUEST_ITEM] = cells.get(ITEM_POINT_QUEST_ITEM, frozenset()) | {marked}
+            self._item_point_cells = cells
+        mark = (self._mif_name, mif.level_index, role, cell, marked)
+        if mark != self._artifact_chest_logged:
+            self._artifact_chest_logged = mark
+            _log.log(_RECOG_LEVEL, 'artifact quest chest: mif=%s level=%d here=%s role=%s map=(%d,%d) artifact=(%d,%d) cell=%s marked=%s', self._mif_name, mif.level_index, loc, role, quest.map_province_id, quest.map_dungeon_id, quest.artifact_province_id, quest.artifact_dungeon_id, cell, marked)
 
     def _note_item_pickups_if_any(self, ctx: MapContext) -> None:
         kinds = frozenset(ctx.item_pickup_kinds or ())
@@ -189,6 +297,12 @@ class DungeonMapSession(MapSessionBase):
         self._notes = []
 
     def _load_mif(self, mif_name: str, player_floor: int=0) -> None:
+        if self._last_live_raw is not None:
+            self._stale_live = self._last_live_raw
+            self._stale_hash = self._last_live_hash
+        self._last_live_raw = None
+        self._last_live_hash = None
+        self._live_grid_stale_polls = 0
         try:
             mif = load_mif(mif_name, self._mif_dirs, level_index_override=player_floor)
         except Exception:
@@ -196,6 +310,8 @@ class DungeonMapSession(MapSessionBase):
             self._walkable = None
             self._map1 = None
             self._flor = None
+            self._generated_level = None
+            self._live_grid_pending = False
             return
         if mif is None:
             self._walkable = None
@@ -209,7 +325,17 @@ class DungeonMapSession(MapSessionBase):
             self._wall_passage_cells = ()
             self._location_key = None
             self._level_store_key = None
+            self._generated_level = None
+            self._live_grid_pending = False
             return
+        self._generated_level = mif if getattr(mif, 'generated', False) else None
+        self._live_grid_pending = self._generated_level is not None
+        self._live_grid_attempts = 0
+        self._live_map1 = None
+        self._live_flats = {}
+        self._install_level(mif_name, mif)
+
+    def _install_level(self, mif_name: str, mif) -> None:
         map1 = np.array(mif.map1, dtype=np.uint16).reshape(mif.height, mif.width)
         self._map1 = map1
         self._walkable = (map1 == 0) | (map1 & 61440 == 32768)
@@ -250,13 +376,17 @@ class DungeonMapSession(MapSessionBase):
         self._hidden_door_ids = frozenset(hidden_door_ids)
         self._menu_texture_indices = frozenset(menu_indices)
         stair_cells: list[tuple[int, int]] = []
+        down_cells: list[tuple[int, int]] = []
         if self._flor is not None and (self._level_up_index is not None or self._level_down_index is not None):
             for yy in range(mif.height):
                 for xx in range(mif.width):
                     kind = _classify_cell(int(map1[yy, xx]), int(self._flor[yy, xx]), self._level_up_index, self._level_down_index)
                     if kind in ('level_up', 'level_down'):
                         stair_cells.append((xx, yy))
+                    if kind == 'level_down':
+                        down_cells.append((xx, yy))
         self._stair_cells = frozenset(stair_cells)
+        self._level_down_cells = frozenset(down_cells)
         try:
             self._item_point_cells = item_point_cells(getattr(mif, 'entities', None), inf_path)
         except Exception:

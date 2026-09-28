@@ -222,6 +222,7 @@
   "settings.map_express_wall_passage": "Passages under walls",
   "settings.map_express_wall_lava": "Lava under walls",
   "settings.map_express_treasure": "Treasure",
+  "settings.map_express_quest_treasure": "Keys and quest items",
   "settings.map_pipe_under": "Passages underneath",
   "settings.map_pipe_under_on": "Show as pipes",
   "settings.map_pipe_opacity": "Strength",
@@ -795,5 +796,8 @@
   "equipment.category.shield": "Shield",
   "equipment.category.accessory": "Accessory",
   "equipment.category.spellcasting": "Spellcasting",
-  "equipment.category.potion": "Potion"
+  "equipment.category.potion": "Potion",
+  "negotiation.accept": "Accept",
+  "negotiation.counter": "Counter",
+  "negotiation.reject": "Reject"
 }

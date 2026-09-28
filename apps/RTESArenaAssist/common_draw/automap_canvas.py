@@ -37,10 +37,13 @@ def pipe_fill_color(base: QColor) -> QColor:
     return out
 _TREASURE_MARK = QColor(255, 210, 74)
 _TREASURE_MARK_EDGE = QColor(74, 51, 0)
+_QUEST_TREASURE_MARK = QColor(229, 57, 53)
 
 def default_color_hex(key: str) -> str:
     if key == 'treasure':
         return _TREASURE_MARK.name()
+    if key == 'quest_treasure':
+        return _QUEST_TREASURE_MARK.name()
     facility = _FACILITY_DEFAULT_COLORS.get(key)
     if facility is not None:
         return facility.name()
@@ -80,6 +83,7 @@ class CanvasData:
     wild_show_edge: bool = True
     treasure_cells: frozenset = frozenset()
     all_treasure_cells: frozenset = frozenset()
+    quest_treasure_cells: frozenset = frozenset()
     hidden_door_ids: frozenset[int] = frozenset()
     menu_texture_indices: frozenset[int] = frozenset()
     discovered_hidden_door_cells: frozenset[tuple[int, int]] = frozenset()
@@ -285,6 +289,12 @@ def treasure_marks_to_draw(data, *, reveal_all: bool, express_treasure: bool) ->
         return frozenset(getattr(data, 'all_treasure_cells', None) or frozenset())
     return frozenset(data.treasure_cells or frozenset())
 
+def quest_marks_to_draw(data, treasure_cells: frozenset, *, express_quest_treasure: bool) -> frozenset:
+    if not express_quest_treasure or not treasure_cells:
+        return frozenset()
+    quest = frozenset(getattr(data, 'quest_treasure_cells', None) or frozenset())
+    return frozenset(treasure_cells) & quest
+
 def _blend_color(base: QColor, vis: int, reveal_all: bool) -> QColor:
     alpha = _REVEAL_ALL_ALPHA if reveal_all else _VIS_ALPHA.get(vis, 255)
     col = QColor(base)
@@ -325,6 +335,7 @@ class AutomapCanvas(QWidget):
         self._express_wall_passage = True
         self._express_wall_lava = True
         self._express_treasure = True
+        self._express_quest_treasure = True
         self._express_facilities = True
         self._pipe_under = True
         self._pipe_opacity = 100
@@ -572,12 +583,13 @@ class AutomapCanvas(QWidget):
     def _should_suppress_unpositioned_map(self) -> bool:
         return self._map_suppression_reason() == 'unpositioned_center_follow'
 
-    def set_map_expression(self, *, hidden_door: bool, wall_chasm: bool, wall_passage: bool, wall_lava: bool, treasure: bool, facilities: bool=True) -> None:
+    def set_map_expression(self, *, hidden_door: bool, wall_chasm: bool, wall_passage: bool, wall_lava: bool, treasure: bool, facilities: bool=True, quest_treasure: bool=True) -> None:
         self._express_hidden_door = bool(hidden_door)
         self._express_wall_chasm = bool(wall_chasm)
         self._express_wall_passage = bool(wall_passage)
         self._express_wall_lava = bool(wall_lava)
         self._express_treasure = bool(treasure)
+        self._express_quest_treasure = bool(quest_treasure)
         was_facilities = self._express_facilities
         self._express_facilities = bool(facilities)
         if was_facilities and (not self._express_facilities):
@@ -717,6 +729,10 @@ class AutomapCanvas(QWidget):
     def _treasure_color(self) -> QColor:
         col = QColor(self._color_overrides.get('treasure', ''))
         return col if col.isValid() else _TREASURE_MARK
+
+    def _quest_treasure_color(self) -> QColor:
+        col = QColor(self._color_overrides.get('quest_treasure', ''))
+        return col if col.isValid() else _QUEST_TREASURE_MARK
 
     def _draw_edge_lines(self, painter: QPainter, d: CanvasData, ox: float, oy: float, W: int, H: int) -> None:
         z = self._zoom
@@ -942,13 +958,15 @@ class AutomapCanvas(QWidget):
             font.setBold(True)
             painter.setFont(font)
             mark_color = self._treasure_color()
+            quest_color = self._quest_treasure_color()
+            quest_cells = quest_marks_to_draw(d, treasure_cells, express_quest_treasure=self._express_quest_treasure)
             for tx, ty, trect in cells_drawn:
                 if (tx, ty) not in treasure_cells:
                     continue
                 painter.setPen(QPen(_TREASURE_MARK_EDGE))
                 for ox2, oy2 in ((-1, 0), (1, 0), (0, -1), (0, 1)):
                     painter.drawText(trect.translated(ox2, oy2), Qt.AlignmentFlag.AlignCenter, mark)
-                painter.setPen(QPen(mark_color))
+                painter.setPen(QPen(quest_color if (tx, ty) in quest_cells else mark_color))
                 painter.drawText(trect, Qt.AlignmentFlag.AlignCenter, mark)
         if self._show_grid and self._zoom >= 6:
             painter.setPen(QPen(_GRID_LINE))

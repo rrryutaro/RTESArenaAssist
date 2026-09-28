@@ -1,0 +1,50 @@
+{
+  "_comment": "言語別処理ルール(翻訳でない)。翻訳ローダは _ 接頭辞ファイルを無視する。",
+  "dynamic_places": {
+    "dungeon": {
+      "combination_rule": "{type} {name}",
+      "name_genitive": {
+        "after": "бвгджзклмнпрстфхцчшщ",
+        "suffix": "а"
+      },
+      "types": [
+        {
+          "en": "Dungeon",
+          "value": "Подземелье"
+        },
+        {
+          "en": "Cavern",
+          "value": "Пещера"
+        },
+        {
+          "en": "Labyrinth",
+          "value": "Лабиринт"
+        },
+        {
+          "en": "Catacombs",
+          "value": "Катакомбы"
+        },
+        {
+          "en": "Hole",
+          "value": "Яма"
+        },
+        {
+          "en": "Crypt",
+          "value": "Крипта"
+        },
+        {
+          "en": "Fortress",
+          "value": "Крепость"
+        },
+        {
+          "en": "Mines",
+          "value": "Рудники"
+        },
+        {
+          "en": "Cellar",
+          "value": "Погреб"
+        }
+      ]
+    }
+  }
+}

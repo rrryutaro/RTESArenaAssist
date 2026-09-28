@@ -60,6 +60,7 @@ class MifMap:
     raw_map1_size: int = 0
     mif_name: str = ''
     info_name: str = ''
+    generated: bool = False
 
     @property
     def name(self) -> str:
@@ -90,7 +91,7 @@ def parse_mif_bytes(data: bytes, path: str | Path='<memory>', level_index_overri
         return parsed
     return _parse_mif_scan_fallback(data, mif_path)
 
-def _parse_mif_structured(data: bytes, mif_path: Path, level_index_override: int | None=None, player_floor: int | None=None) -> MifMap | None:
+def _parse_structured_levels(data: bytes, mif_path: Path):
     if data[:4] != b'MHDR':
         return None
     header_size = _read_chunk_size(data, 0)
@@ -117,6 +118,17 @@ def _parse_mif_structured(data: bytes, mif_path: Path, level_index_override: int
         levels.append(level)
         offset = level_end
         level_index += 1
+    return (header_size, starting_level, level_count_hint, width, height, levels)
+
+def parse_mif_levels_bytes(data: bytes, path: str | Path='<memory>') -> list[MifMap]:
+    parsed = _parse_structured_levels(data, Path(path))
+    return list(parsed[5]) if parsed is not None else []
+
+def _parse_mif_structured(data: bytes, mif_path: Path, level_index_override: int | None=None, player_floor: int | None=None) -> MifMap | None:
+    parsed = _parse_structured_levels(data, mif_path)
+    if parsed is None:
+        return None
+    header_size, starting_level, level_count_hint, width, height, levels = parsed
     if not levels:
         return None
     if level_index_override is not None:
@@ -470,7 +482,7 @@ def read_mif_bytes(path: str | Path) -> bytes | None:
         return vfs.read(mif_path.name)
     return None
 
-def load_mif(mif_name: str, mif_dirs, *, player_floor: int=0, level_index_override: int | None=None) -> 'MifMap | None':
+def _find_loose_mif(mif_name: str, mif_dirs) -> Path | None:
     for d in mif_dirs:
         dp = Path(d)
         try:
@@ -480,19 +492,37 @@ def load_mif(mif_name: str, mif_dirs, *, player_floor: int=0, level_index_overri
             continue
         candidate = dp / mif_name
         if candidate.exists():
-            return parse_mif(candidate, level_index_override, player_floor)
+            return candidate
         try:
             for f in dp.iterdir():
                 if f.is_file() and f.name.lower() == mif_name.lower():
-                    return parse_mif(f, level_index_override, player_floor)
+                    return f
         except OSError:
             pass
+    return None
+
+def load_mif(mif_name: str, mif_dirs, *, player_floor: int=0, level_index_override: int | None=None) -> 'MifMap | None':
+    loose = _find_loose_mif(mif_name, mif_dirs)
+    if loose is not None:
+        return parse_mif(loose, level_index_override, player_floor)
     vfs = _install_vfs()
     if vfs is not None:
         data = vfs.read(mif_name)
         if data is not None:
             return parse_mif_bytes(data, mif_name, level_index_override, player_floor)
-    return None
+    from services.random_dungeon import load_generated_level
+    return load_generated_level(mif_name, mif_dirs, level_index_override=level_index_override)
+
+def load_mif_levels(mif_name: str, mif_dirs) -> list[MifMap]:
+    loose = _find_loose_mif(mif_name, mif_dirs)
+    if loose is not None:
+        return parse_mif_levels_bytes(loose.read_bytes(), loose)
+    vfs = _install_vfs()
+    if vfs is not None:
+        data = vfs.read(mif_name)
+        if data is not None:
+            return parse_mif_levels_bytes(data, mif_name)
+    return []
 
 def _inf_available(name: str) -> bool:
     if not name:

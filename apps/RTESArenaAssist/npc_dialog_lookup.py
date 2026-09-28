@@ -2,6 +2,7 @@ from __future__ import annotations
 import json
 import re
 import logging
+from typing import NamedTuple, Optional
 _log = logging.getLogger('RTESArenaAssist')
 _GRAMMATICAL_CASE_NAMES = ('g', 'g2', 'g3')
 _UNRESOLVED_PLACEHOLDERS: set[str] = set()
@@ -9,11 +10,17 @@ _UNRESOLVED_PLACEHOLDERS: set[str] = set()
 def unresolved_placeholder_names() -> list[str]:
     return sorted(_UNRESOLVED_PLACEHOLDERS)
 from game_surface import game_surface
+from i18n_source_address import KIND_ARTFACT
 from npc_name_translator import translate_generated_name
 _COMPILED: list[tuple[re.Pattern, str, int, bool, int]] = []
 _LOADED = False
 _TRAVEL_EVENT_KEYS: frozenset[int] = frozenset({1274, 1275})
 _TRAVEL_EVENT_COMPILED: list[tuple[re.Pattern, str, int, bool, int]] = []
+_ARTIFACT_KEY_PREFIX = 'npc_dialog.ARTFACT'
+_ARTIFACT_KEY_POS_RE = re.compile('ARTFACT(\\d)_(\\d{3})')
+_ARTIFACT_ROLES = 15
+_ARTIFACT_COMPILED: list[tuple] = []
+_ARTIFACT_TEMPLATES: frozenset[str] = frozenset()
 _CLOSED_PH_ALT: dict[str, str] = {}
 _CLOSED_PH_LOADED = False
 _CLOSED_PLACEHOLDERS: frozenset[str] = frozenset({'di'})
@@ -210,13 +217,15 @@ def _reset_i18n_bound_caches() -> None:
     global _EXACT_ORIGINALS, _CALENDAR_WEEKDAYS, _CALENDAR_MONTHS
     global _CALENDAR_HOLIDAYS, _CALENDAR_LOADED
     global _TRAVEL_RE_CACHE, _TRAVEL_LOC_RE_CACHE
-    global _TRAVEL_EVENT_COMPILED
+    global _TRAVEL_EVENT_COMPILED, _ARTIFACT_COMPILED, _ARTIFACT_TEMPLATES
     global _BODY_HEAD_ENTRIES, _BODY_HEAD_LOADED, _BODY_HEAD_PREFIX_RE
     global _BODY_HEAD_ANCHORS, _BODY_SPAN_ENTRIES, _BODY_SPAN_RE
     global _FIXED_SEG_ENTRIES, _FIXED_SEG_LOADED
     _COMPILED = []
     _LOADED = False
     _TRAVEL_EVENT_COMPILED = []
+    _ARTIFACT_COMPILED = []
+    _ARTIFACT_TEMPLATES = frozenset()
     _BODY_HEAD_ENTRIES = []
     _BODY_HEAD_LOADED = False
     _BODY_HEAD_PREFIX_RE = {}
@@ -295,7 +304,7 @@ def _preprocess_placeholder_value(name: str, value: str, lang: str) -> str:
         value = compiled.sub(replace, value)
     return value
 _DS_PATTERN = re.compile('^(.+?)\\s+(\\w+)\\s+called\\s+(.+)$')
-_PLACEHOLDER_NAMES: frozenset[str] = frozenset(['a', 'a2', 'adn', 'amn', 'an', 'apr', 'arc', 'art', 'ba', 'ccs', 'cll', 'cn', 'cn2', 'cp', 'ct', 'da', 'de', 'di', 'dit', 'doc', 'ds', 'du', 'en', 'fn', 'fq', 'g', 'g2', 'g3', 'hc', 'hod', 'i', 'jok', 'lp', 'mi', 'mn', 'mpr', 'mt', 'n', 'nap', 'nc', 'nc2', 'nd', 'ne', 'nh', 'nhd', 'ni', 'nk', 'nr', 'nt', 'o', 'oap', 'oc', 'omq', 'opp', 'oth', 'pcf', 'pcn', 'qc', 'qmn', 'qt', 'r', 'ra', 'rcn', 'rf', 's', 'sn', 'st', 't', 'ta', 'tan', 'tc', 'tem', 'tg', 'ti', 'tl', 'tq', 'tt', 'u'])
+_PLACEHOLDER_NAMES: frozenset[str] = frozenset(['a', 'a2', 'adn', 'amn', 'an', 'ap', 'apr', 'arc', 'art', 'ba', 'ccs', 'cll', 'cn', 'cn2', 'cp', 'ct', 'da', 'de', 'di', 'dit', 'doc', 'ds', 'du', 'en', 'fn', 'fq', 'g', 'g2', 'g3', 'hc', 'hod', 'i', 'jok', 'lp', 'mi', 'mn', 'mpr', 'mt', 'n', 'nap', 'nc', 'nc2', 'nd', 'ne', 'nh', 'nhd', 'ni', 'nk', 'nr', 'nt', 'o', 'oap', 'oc', 'omq', 'opp', 'oth', 'pcf', 'pcn', 'qc', 'qmn', 'qt', 'r', 'ra', 'rcn', 'rf', 's', 'sn', 'st', 't', 'ta', 'tan', 'tc', 'tem', 'tg', 'ti', 'tl', 'tn', 'tq', 'tt', 'u'])
 
 def _template_to_regex(en_template: str, *, anchor_end: bool=True, allow_empty: bool=False) -> re.Pattern | None:
     seen: set[str] = set()
@@ -403,10 +412,38 @@ def _iter_npcd(*, include_untranslated: bool=False):
             yield (en_raw, tmpl, entry.get('placeholders', []) or [], key_int, ('id', id_))
 _game_surface = game_surface
 _EXACT_ORIGINALS: list[tuple[str, str]] = []
+_EXACT_KEYS: dict[str, int] = {}
+
+def _is_artifact_ref(ref) -> bool:
+    kind, val = ref
+    if not isinstance(val, str):
+        return False
+    if kind == 'sid':
+        return val.split(':', 1)[0] == KIND_ARTFACT
+    return val.startswith(_ARTIFACT_KEY_PREFIX)
+
+def _artifact_position(ref) -> tuple[int, int] | None:
+    kind, val = ref
+    index = None
+    if kind == 'sid':
+        parts = val.split(':')
+        if len(parts) >= 3:
+            try:
+                index = int(parts[2])
+            except ValueError:
+                index = None
+    else:
+        m = _ARTIFACT_KEY_POS_RE.search(val)
+        if m:
+            index = int(m.group(2))
+    if index is None:
+        return None
+    return (index // _ARTIFACT_ROLES, index % _ARTIFACT_ROLES)
 
 def _load() -> None:
     global _COMPILED, _LOADED, _DOC_VALUES, _DOC_COMPILED, _EXACT_ORIGINALS
-    global _TRAVEL_EVENT_COMPILED, _DOC_COMPILED_LAX
+    global _TRAVEL_EVENT_COMPILED, _DOC_COMPILED_LAX, _ARTIFACT_COMPILED
+    global _ARTIFACT_TEMPLATES, _EXACT_KEYS
     if _LOADED:
         return
     _load_closed_ph()
@@ -414,7 +451,9 @@ def _load() -> None:
     doc_entries: list[tuple[re.Pattern, str, int]] = []
     doc_entries_lax: list[tuple[re.Pattern, str, int]] = []
     travel_event_entries: list[tuple[re.Pattern, str, int, bool, int]] = []
+    artifact_entries: list[tuple] = []
     exact_originals: list[tuple[str, str]] = []
+    exact_keys: dict[str, int] = {}
     for en_raw, tmpl, ph_list, key_int, ref in _iter_npcd():
         en = _game_surface(en_raw)
         ph_count = len(ph_list)
@@ -426,8 +465,12 @@ def _load() -> None:
         entries.append((compiled, tmpl, ph_count, is_exact, literal_len))
         if is_exact and en:
             exact_originals.append((en, tmpl))
+            if key_int >= 0:
+                exact_keys.setdefault(' '.join(en.split()), key_int)
         if key_int in _TRAVEL_EVENT_KEYS:
             travel_event_entries.append((compiled, tmpl, ph_count, is_exact, literal_len))
+        if _is_artifact_ref(ref):
+            artifact_entries.append((compiled, tmpl, ph_count, is_exact, literal_len, ref[1], _artifact_position(ref)))
         if 262 <= key_int <= 362:
             if not ph_list:
                 _DOC_VALUES[en] = {'ref': ref}
@@ -444,8 +487,19 @@ def _load() -> None:
     _DOC_COMPILED_LAX = doc_entries_lax
     travel_event_entries.sort(key=lambda x: (not x[3], -x[4], -x[2]))
     _TRAVEL_EVENT_COMPILED = travel_event_entries
+    artifact_entries.sort(key=lambda x: (not x[3], -x[4], -x[2]))
+    _ARTIFACT_COMPILED = artifact_entries
+    _ARTIFACT_TEMPLATES = frozenset((e[1] for e in artifact_entries))
     _EXACT_ORIGINALS = exact_originals
+    _EXACT_KEYS = exact_keys
     _LOADED = True
+
+def template_key_of_exact(text: str) -> int | None:
+    if not text:
+        return None
+    _ensure_i18n_bound_caches_current()
+    _load()
+    return _EXACT_KEYS.get(' '.join(text.split()))
 
 def _match_exact_prefix_tolerant(q_norm: str) -> tuple[str, str] | None:
     if len(q_norm) < 12:
@@ -852,6 +906,12 @@ def _ph_tq(name: str, value: str, lang: str) -> str:
 def _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan(name: str, value: str, lang: str) -> str:
     return _translate_static_place(value, lang)
 
+def _ph_art(name: str, value: str, lang: str) -> str:
+    if lang == 'en' or not value:
+        return value
+    from item_name_lookup import translate_artifact_name_opt
+    return translate_artifact_name_opt(value, lang) or value
+
 def _ph_st(name: str, value: str, lang: str) -> str:
     if lang == 'en':
         return value
@@ -960,7 +1020,7 @@ def _ph_nc2(name: str, value: str, lang: str) -> str:
         return value
     import date_translator
     return date_translator.translate_condition_name(value) or value
-_PLACEHOLDER_RESOLVERS = {'n': _ph_n_fn_rf_an_nc, 'fn': _ph_n_fn_rf_an_nc, 'rf': _ph_n_fn_rf_an_nc, 'an': _ph_n_fn_rf_an_nc, 'nc': _ph_n_fn_rf_an_nc, 'doc': _ph_doc, 'mn': _ph_mn_mt, 'mt': _ph_mn_mt, 'ra': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 't': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'oc': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'ct': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'oth': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'di': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'lp': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'cn': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'tem': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'tq': _ph_tq, 'cp': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'cll': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'ccs': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'rcn': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'cn2': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'hc': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'qc': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'tan': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'st': _ph_st, 'nh': _ph_nh, 'nhd': _ph_nhd, 'hod': _ph_hod_jok, 'jok': _ph_hod_jok, 'nt': _ph_nt, 'ds': _ph_ds, 'a': _ph_a_a2_oap, 'a2': _ph_a_a2_oap, 'oap': _ph_a_a2_oap, 'da': _ph_da, 'omq': _ph_omq_mi, 'mi': _ph_omq_mi, 'r': _ph_r, 'g': _ph_g_g2_g3, 'g2': _ph_g_g2_g3, 'g3': _ph_g_g2_g3, 'fq': _ph_fq_ne, 'ne': _ph_fq_ne, 'o': _ph_o_pcn, 'pcn': _ph_o_pcn, 'tl': _ph_tl_en, 'en': _ph_tl_en, 'nd': _ph_nd, 'nr': _ph_nr, 'ni': _ph_ni_i, 'i': _ph_ni_i, 'nk': _ph_nk, 'nc2': _ph_nc2}
+_PLACEHOLDER_RESOLVERS = {'n': _ph_n_fn_rf_an_nc, 'fn': _ph_n_fn_rf_an_nc, 'rf': _ph_n_fn_rf_an_nc, 'an': _ph_n_fn_rf_an_nc, 'nc': _ph_n_fn_rf_an_nc, 'doc': _ph_doc, 'mn': _ph_mn_mt, 'mt': _ph_mn_mt, 'ra': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 't': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'oc': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'ct': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'oth': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'di': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'lp': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'cn': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'tem': _ph_ra_t_oc_ct_oth_di_lp_cn_tem, 'tq': _ph_tq, 'cp': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'cll': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'amn': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'mpr': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'adn': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'apr': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'tc': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'art': _ph_art, 'arc': _ph_art, 'ccs': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'rcn': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'cn2': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'hc': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'qc': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'tan': _ph_cp_cll_ccs_rcn_cn2_hc_qc_tan, 'st': _ph_st, 'nh': _ph_nh, 'nhd': _ph_nhd, 'hod': _ph_hod_jok, 'jok': _ph_hod_jok, 'nt': _ph_nt, 'ds': _ph_ds, 'a': _ph_a_a2_oap, 'a2': _ph_a_a2_oap, 'oap': _ph_a_a2_oap, 'ap': _ph_a_a2_oap, 'nap': _ph_a_a2_oap, 'ba': _ph_a_a2_oap, 'ta': _ph_a_a2_oap, 'dit': _ph_a_a2_oap, 'du': _ph_a_a2_oap, 'de': _ph_a_a2_oap, 'ti': _ph_a_a2_oap, 'u': _ph_a_a2_oap, 'da': _ph_da, 'omq': _ph_omq_mi, 'mi': _ph_omq_mi, 'r': _ph_r, 'g': _ph_g_g2_g3, 'g2': _ph_g_g2_g3, 'g3': _ph_g_g2_g3, 'fq': _ph_fq_ne, 'ne': _ph_fq_ne, 'o': _ph_o_pcn, 'pcn': _ph_o_pcn, 'pcf': _ph_o_pcn, 'tl': _ph_tl_en, 'en': _ph_tl_en, 'nd': _ph_nd, 'nr': _ph_nr, 'ni': _ph_ni_i, 'i': _ph_ni_i, 'nk': _ph_nk, 'nc2': _ph_nc2}
 
 def translate_placeholder(name: str, value: str, lang: str | None=None) -> str:
     if not value:
@@ -1256,6 +1316,10 @@ def _lookup_compiled_full(text: str) -> tuple[str, dict] | None:
                     closed_invalid_checked = True
                 if closed_invalid_score is not None and closed_invalid_score[0] >= _literal_len:
                     continue
+            if ja in _ARTIFACT_TEMPLATES:
+                chosen = _choose_artifact_match(_artifact_candidates(text))
+                if chosen is not None:
+                    return (chosen.ja_template, chosen.placeholders)
             return (ja, placeholders)
     return None
 
@@ -1298,6 +1362,52 @@ def lookup_travel_event(text: str) -> tuple[str, dict] | None:
         if m:
             return (ja, m.groupdict())
     return None
+
+class ArtifactMatch(NamedTuple):
+    ja_template: str
+    placeholders: dict
+    ref: str
+    group: Optional[int]
+    role: Optional[int]
+
+def _is_race_value(value: str) -> bool:
+    if not value:
+        return False
+    _load_ph()
+    if ('ra', value) in _PH_VALUES:
+        return True
+    import i18n_helper as i18n
+    return i18n.value_in('races', value, i18n.current_lang()) is not None
+
+def _artifact_candidates(text: str) -> list[ArtifactMatch]:
+    cands: list[ArtifactMatch] = []
+    for compiled, ja, _ph_count, _is_exact, _literal_len, ref_val, pos in _ARTIFACT_COMPILED:
+        m = compiled.match(text)
+        if m:
+            cands.append(ArtifactMatch(ja, m.groupdict(), ref_val, pos[0] if pos else None, pos[1] if pos else None))
+    return cands
+
+def _choose_artifact_match(cands: list[ArtifactMatch]) -> ArtifactMatch | None:
+    if not cands:
+        return None
+    if len(cands) == 1:
+        return cands[0]
+    raced = [c for c in cands if 'ra' in c.placeholders and _is_race_value(c.placeholders['ra'])]
+    if len(raced) == 1:
+        return raced[0]
+    return cands[0]
+
+def match_artifact_dialog(text: str) -> ArtifactMatch | None:
+    if not text:
+        return None
+    _ensure_i18n_bound_caches_current()
+    text = ' '.join(text.split())
+    _load()
+    return _choose_artifact_match(_artifact_candidates(text))
+
+def lookup_artifact_dialog(text: str) -> tuple[str, dict] | None:
+    m = match_artifact_dialog(text)
+    return (m.ja_template, m.placeholders) if m else None
 _BODY_HEAD_ENTRIES: list[tuple[str, str, str, int]] = []
 _BODY_HEAD_LOADED = False
 _BODY_HEAD_PREFIX_RE: dict[str, re.Pattern] = {}
