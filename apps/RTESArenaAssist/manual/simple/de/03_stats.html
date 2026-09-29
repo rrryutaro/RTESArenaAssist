@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Charakterattribute</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #c9d1e0; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 5px 8px; text-align: left; font-size: 12px; border: 1px solid #1e3a4a; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.stat-label { color: #7ec8e3; font-weight: bold; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Charakterattribute</h1>
+
+<div class="note">Alle Attribute reichen von 1–100. <strong>50 ist der Durchschnitt</strong> — 50 % der Bevölkerung des Kaiserreichs sind in diesem Attribut besser als du, und 50 % sind es nicht.</div>
+
+<h2>Die 8 Hauptattribute</h2>
+
+<h3><span class="stat-label">STR — Stärke</span></h3>
+<p>Bestimmt, wie viel Schaden du im Kampf verursachst. Beeinflusst das maximale Tragegewicht (Max. Kilogramm), die Erschöpfung und die Sprungweite. <strong>Unverzichtbar für Kriegerklassen.</strong></p>
+
+<h3><span class="stat-label">INT — Intelligenz</span></h3>
+<p>Bestimmt die gesamten Zauberpunkte von Zauberwirkern. Beeinflusst Verhandlungen, das Feilschen um Preise und den Erfolg beim Schlösserknacken. <strong>Unverzichtbar für Magier- und Diebesklassen.</strong></p>
+
+<h3><span class="stat-label">WIL — Willenskraft</span></h3>
+<p>Bestimmt den Widerstand gegen Zauber (Magieabwehr). Hilft auch bei Verhandlungen. <strong>Entscheidend für jeden Charakter, der Schutz vor Zaubern will.</strong></p>
+
+<h3><span class="stat-label">AGI — Beweglichkeit</span></h3>
+<p>Beeinflusst direkt die Trefferchance im Nahkampf (Treffer-Bonus), die Chance, getroffen zu werden (Verteidigungs-Bonus), und die Chance, gezielten Zaubern auszuweichen. Bestimmt auch Stehlen und Schlösserknacken. <strong>Unverzichtbar für Diebesklassen.</strong></p>
+
+<h3><span class="stat-label">SPD — Geschwindigkeit</span></h3>
+<p>Steuert die Bewegungsgeschwindigkeit, die Drehgeschwindigkeit und die Schussrate von Fernkampfwaffen. Kann den Unterschied zwischen Leben und Tod ausmachen. <strong>Wichtig für alle Klassen.</strong></p>
+
+<h3><span class="stat-label">END — Ausdauer</span></h3>
+<p>Bestimmt die Gesamtzahl der Trefferpunkte, die Heilungsrate und die Erschöpfung. Beeinflusst auch den Widerstand gegen Gifte und Drogen. <strong>Unverzichtbar für Kriegerklassen.</strong></p>
+
+<h3><span class="stat-label">PER — Persönlichkeit</span></h3>
+<p>Bestimmt den Charisma-Modifikator. Beeinflusst direkt die Fähigkeit, zu verhandeln, bessere Preise zu erzielen und Informationen zu sammeln. <strong>Wichtig für soziale Interaktionen.</strong></p>
+
+<h3><span class="stat-label">LUC — Glück</span></h3>
+<p>Ein mächtiger Modifikator für jede Handlung — Angreifen, Verteidigen, Stehlen, alles. Der Durchschnitt ist 50; höher ist besser. <strong>Wirkt sich auf alle Charaktere aus.</strong></p>
+
+<h2>Übersicht der Attribut-Modifikatoren</h2>
+<table>
+  <tr><th>Attribut</th><th>Modifikator</th><th>Beschreibung</th></tr>
+  <tr><td>STR</td><td>Schaden</td><td>Positiver Bonus ab STR 55; Abzug bei 45 und darunter</td></tr>
+  <tr><td>STR</td><td>Max. Kilogramm</td><td>Wird dies überschritten, gibt es Erschöpfungsabzüge, bis keine Bewegung mehr möglich ist</td></tr>
+  <tr><td>INT</td><td>Zauberpunkte</td><td>Nicht-Zauberwirker: 0. Hexer: bis zu INT×3</td></tr>
+  <tr><td>WIL</td><td>Magieabwehr</td><td>Höhere WIL = Gegner treffen dich schwerer mit Zaubern</td></tr>
+  <tr><td>AGI</td><td>Treffer-Bonus</td><td>Bonus oder Abzug auf Nahkampf-Angriffswürfe</td></tr>
+  <tr><td>AGI</td><td>Verteidigungs-Bonus</td><td>Wird vom Rüstungswert abgezogen (niedrigerer AR = besserer Schutz)</td></tr>
+  <tr><td>END</td><td>Gesundheit</td><td>Wird bei jedem Stufenaufstieg zur gewonnenen Gesundheit addiert</td></tr>
+  <tr><td>END</td><td>Heilungsmodifikator</td><td>Prozentualer Modifikator auf die Grundheilungsrate beim Rasten</td></tr>
+  <tr><td>PER</td><td>Charisma</td><td>Modifikator auf die Erfolgschance bei Verhandlungen mit NSCs</td></tr>
+  <tr><td>LUC</td><td>Allgemein</td><td>Verborgener Einfluss auf alle Handlungen</td></tr>
+</table>
+
+<h2>Rüstungswert (AR)</h2>
+<p>Der AR wird auf Seite 2 des Charakterbogens am Charakterporträt angezeigt. <strong>Niedrigerer AR = besserer Schutz</strong> (+10 ist ungeschützt; negative Werte bedeuten schwere Panzerung).</p>
+<table>
+  <tr><th>Körperteil</th><th>Rüstungsteil</th></tr>
+  <tr><td>Kopf</td><td>Helm</td></tr>
+  <tr><td>Brust</td><td>Brustpanzer</td></tr>
+  <tr><td>Hände</td><td>Handschuhe</td></tr>
+  <tr><td>Hüfte und Beine</td><td>Beinschienen</td></tr>
+  <tr><td>Unterschenkel und Füße</td><td>Stiefel</td></tr>
+  <tr><td>Schultern (L &amp; R)</td><td>Schulterplatten</td></tr>
+</table>
+
+</body>
+</html>

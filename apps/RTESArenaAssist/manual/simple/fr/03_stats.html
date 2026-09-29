@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Attributs du personnage</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #c9d1e0; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 5px 8px; text-align: left; font-size: 12px; border: 1px solid #1e3a4a; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.stat-label { color: #7ec8e3; font-weight: bold; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Attributs du personnage</h1>
+
+<div class="note">Tous les attributs vont de 1 à 100. <strong>50 est la moyenne</strong>&nbsp;: 50&nbsp;% de la population de l'Empire fait mieux que vous dans cet attribut, et 50&nbsp;% fait moins bien.</div>
+
+<h2>Les 8 attributs principaux</h2>
+
+<h3><span class="stat-label">STR — Force</span></h3>
+<p>Détermine les dégâts que vous infligez au combat. Influe sur la charge maximale (Kilos max.), la fatigue et la distance de saut. <strong>Indispensable aux classes de guerrier.</strong></p>
+
+<h3><span class="stat-label">INT — Intelligence</span></h3>
+<p>Détermine le total de points de sort des lanceurs de sorts. Influe sur la négociation, le marchandage des prix et la réussite du crochetage. <strong>Indispensable aux classes de mage et de voleur.</strong></p>
+
+<h3><span class="stat-label">WIL — Volonté</span></h3>
+<p>Détermine la résistance aux sorts (Défense magique). Aide aussi dans les négociations. <strong>Vital pour tout personnage qui veut se protéger des sorts.</strong></p>
+
+<h3><span class="stat-label">AGI — Agilité</span></h3>
+<p>Influe directement sur les chances de toucher au corps à corps (Bonus au toucher), les chances d'être touché (Bonus de défense) et les chances d'esquiver les sorts ciblés. Régit aussi le vol et le crochetage. <strong>Indispensable aux classes de voleur.</strong></p>
+
+<h3><span class="stat-label">SPD — Vitesse</span></h3>
+<p>Contrôle la vitesse de déplacement, la vitesse de rotation et la cadence de tir des armes à projectiles. Peut faire la différence entre la vie et la mort. <strong>Important pour toutes les classes.</strong></p>
+
+<h3><span class="stat-label">END — Endurance</span></h3>
+<p>Détermine le total de points de vie, la vitesse de guérison et la fatigue. Influe aussi sur la résistance aux poisons et aux drogues. <strong>Indispensable aux classes de guerrier.</strong></p>
+
+<h3><span class="stat-label">PER — Personnalité</span></h3>
+<p>Détermine le modificateur de Charisme. Influe directement sur la capacité à négocier, à obtenir de meilleurs prix et à recueillir des informations. <strong>Important pour les interactions sociales.</strong></p>
+
+<h3><span class="stat-label">LUC — Chance</span></h3>
+<p>Un puissant modificateur appliqué à toute action&nbsp;: attaquer, se défendre, voler, tout. La moyenne est de 50&nbsp;; plus c'est haut, mieux c'est. <strong>Concerne tous les personnages.</strong></p>
+
+<h2>Récapitulatif des modificateurs</h2>
+<table>
+  <tr><th>Attribut</th><th>Modificateur</th><th>Description</th></tr>
+  <tr><td>STR</td><td>Dégâts</td><td>Bonus positif à partir de 55 en STR&nbsp;; malus à 45 et en dessous</td></tr>
+  <tr><td>STR</td><td>Kilos max.</td><td>Au-delà, malus de fatigue jusqu'à l'immobilisation</td></tr>
+  <tr><td>INT</td><td>Pts de sort</td><td>Non-lanceurs de sorts&nbsp;: 0. Sorciers&nbsp;: jusqu'à INT&nbsp;×&nbsp;3</td></tr>
+  <tr><td>WIL</td><td>Défense magique</td><td>Plus WIL est élevée, plus il est difficile aux ennemis de vous toucher avec des sorts</td></tr>
+  <tr><td>AGI</td><td>Bonus au toucher</td><td>Bonus ou malus aux jets d'attaque au corps à corps</td></tr>
+  <tr><td>AGI</td><td>Bonus de défense</td><td>Se soustrait à votre indice d'armure (un AR plus bas = meilleure protection)</td></tr>
+  <tr><td>END</td><td>Santé</td><td>S'ajoute à la santé gagnée à chaque montée de niveau</td></tr>
+  <tr><td>END</td><td>Modif. de guérison</td><td>Modificateur en pourcentage de la vitesse de guérison de base au repos</td></tr>
+  <tr><td>PER</td><td>Charisme</td><td>Modificateur des chances de réussite des négociations avec les PNJ</td></tr>
+  <tr><td>LUC</td><td>Général</td><td>Influence latente sur toutes les actions entreprises</td></tr>
+</table>
+
+<h2>Indice d'armure (AR)</h2>
+<p>L'AR est affiché sur le portrait du personnage, à la page 2 de la feuille de personnage. <strong>Plus l'AR est bas, meilleure est la protection</strong> (+10 = sans protection&nbsp;; les valeurs négatives correspondent à une lourde armure).</p>
+<table>
+  <tr><th>Partie du corps</th><th>Pièce d'armure</th></tr>
+  <tr><td>Tête</td><td>Heaume</td></tr>
+  <tr><td>Torse</td><td>Cuirasse</td></tr>
+  <tr><td>Mains</td><td>Gantelets</td></tr>
+  <tr><td>Taille et jambes</td><td>Grèves</td></tr>
+  <tr><td>Bas des jambes et pieds</td><td>Bottes</td></tr>
+  <tr><td>Épaules (G et D)</td><td>Épaulières</td></tr>
+</table>
+
+</body>
+</html>

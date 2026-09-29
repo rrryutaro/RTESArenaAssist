@@ -1,7 +1,7 @@
 from __future__ import annotations
 import re
 from typing import Optional
-from PySide6.QtCore import Qt, QTimer
+from PySide6.QtCore import Qt, QTimer, Signal
 from PySide6.QtWidgets import QCheckBox, QFrame, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QPushButton, QSizePolicy, QSpinBox, QVBoxLayout, QWidget
 import i18n_helper as i18n
 import assist_settings as settings
@@ -16,6 +16,8 @@ OFF_HEALTH_MAX_U16 = 511
 OFF_SPELL_PTS_CURR = 522
 OFF_SPELL_PTS_MAX = 524
 OFF_RACE_INDEX = 424
+OFF_IS_FEMALE = 427
+OFF_FACE_INDEX = 527
 OFF_LEVEL_U16 = 541
 OFF_LEVEL_U8 = 426
 OFF_GOLD_U32 = 1474
@@ -67,6 +69,13 @@ ROW_GOLD_EXP_GAP = 18
 ROW_EXP = 19
 ROW_LEVEL = 20
 
+def class_names(cls_idx: int) -> Optional[tuple[str, str]]:
+    from player_class_reader import class_en_of
+    en = class_en_of(cls_idx)
+    if not en:
+        return None
+    return (i18n.value('classes', en) or en, en)
+
 def _bilingual(label_id: str) -> str:
     en = i18n.lang_value_in(label_id, 'en') or ''
     translated = i18n.text(label_id)
@@ -75,11 +84,13 @@ def _bilingual(label_id: str) -> str:
     return f'{en} ({translated})'
 
 class AttributesPanel(QWidget):
+    sheetValuesChanged = Signal()
 
     def __init__(self, parent=None):
         super().__init__(parent)
         self._analyzer = None
         self._anchor: int = 0
+        self._sheet_values: dict[str, str] = {}
         self._cheat_enabled: bool = bool(settings.get('cheat_enabled', False)) and bool(settings.get('cheat_status_change', False))
         self._cheat_parent: bool = bool(settings.get('cheat_enabled', False))
         self._health_max_enabled: bool = self._compute_always_max('cheat_health_max')
@@ -91,6 +102,8 @@ class AttributesPanel(QWidget):
         self._poll_timer = QTimer(self)
         self._poll_timer.setInterval(POLL_INTERVAL_MS)
         self._poll_timer.timeout.connect(self._poll)
+        from player_condition import ConditionLog
+        self._condition_log = ConditionLog()
         self._race_label: Optional[str] = None
         self._class_label: Optional[str] = None
         self._spinboxes: list[QSpinBox] = []
@@ -137,6 +150,7 @@ class AttributesPanel(QWidget):
         self._analyzer = None
         self._anchor = 0
         self._poll_timer.stop()
+        self._condition_log.reset()
 
     def set_chargen_mode(self, mode: bool) -> None:
         self._chargen_mode = mode
@@ -279,6 +293,15 @@ class AttributesPanel(QWidget):
         self._bp_spin.blockSignals(True)
         self._bp_spin.setValue(0)
         self._bp_spin.blockSignals(False)
+        self._publish_sheet_values({})
+
+    def sheet_values(self) -> dict[str, str]:
+        return dict(self._sheet_values)
+
+    def _publish_sheet_values(self, values: dict[str, str]) -> None:
+        if values != self._sheet_values:
+            self._sheet_values = dict(values)
+            self.sheetValuesChanged.emit()
 
     def _poll(self) -> None:
         from attributes_panel_poll import poll_attributes
@@ -306,12 +329,11 @@ class AttributesPanel(QWidget):
             return None
 
     def _lookup_class_display(self, cls_idx: int) -> Optional[str]:
-        from player_class_reader import class_en_of
-        en = class_en_of(cls_idx)
-        if not en:
+        names = class_names(cls_idx)
+        if names is None:
             return None
-        name = i18n.value('classes', en)
-        if name and name != en:
+        name, en = names
+        if name != en:
             return f'{name} ({en})'
         return en
 

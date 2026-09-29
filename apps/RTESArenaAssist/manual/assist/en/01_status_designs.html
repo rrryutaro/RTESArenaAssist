@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Status Designs (Character Sheets)</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Status Designs (Character Sheets)</h1>
+
+<p>This feature shows the status on the Status tab in a design of your choice (a character sheet). Choose the design with "View" at the top of the Status tab. The status screen and the attribute distribution (character creation and level-up) on the Translate tab use the same design.</p>
+<p>A design is an HTML file (a template). You can pick one of the bundled designs or make your own. Besides the attributes and their modifiers, a sheet can show the character's condition, the armor rating of each body part, and the face and the full-body image.</p>
+
+<div class="note">
+This is an Assist display feature. It is separate from the game's own status screen (called the "character sheet" in the official manual); the game's screen does not change.
+</div>
+
+<h2>Switching the view</h2>
+<p>With "View" at the top of the Status tab, choose "Standard" (the display used until now) or one of the character sheet designs. The choice is kept for the next start.</p>
+<ul>
+<li>The status screen and the attribute distribution on the Translate tab use the view chosen here. The Translate tab has no selector of its own.</li>
+<li>The values are the ones Assist reads from the game, the same as in the "Standard" view. A character sheet only displays them and never changes the game's values (changing values through the cheat settings is done in the "Standard" view).</li>
+<li>A sheet is shown only while Assist is connected to the game and the status is displayed.</li>
+</ul>
+
+<h2>Bundled designs</h2>
+<p>There are 8 bundled designs, listed here in the order of the "View" list. Choose one in "View" to see how it looks.</p>
+<table>
+  <tr><th>Design</th><th>Description</th></tr>
+  <tr><td>Arena style</td><td>Laid out like the game's status screen: the modifiers on the attribute rows, the full-body image on the right</td></tr>
+  <tr><td>Attribute cards</td><td>Light colors. One card per attribute, with the modifiers that depend on it (Strength: Damage and Max Kilos, and so on; the same pairs as on the game's status screen). Health, fatigue and spell point bars at the top</td></tr>
+  <tr><td>Attribute cards (dark)</td><td>The attribute cards in the colors of Assist's dark window. The attributes on the left; the armor rating of each body part and the full-body image on the right</td></tr>
+  <tr><td>Compact</td><td>Small type on one short page, for a small window</td></tr>
+  <tr><td>Dashboard</td><td>Dark panels. Health, fatigue, spell points and experience shown as bars</td></tr>
+  <tr><td>Large print</td><td>Large white and yellow type on black</td></tr>
+  <tr><td>Tabletop RPG (record sheet)</td><td>A black-and-white record sheet</td></tr>
+  <tr><td>Tabletop RPG (parchment)</td><td>Parchment colors and a serif typeface</td></tr>
+</table>
+<ul>
+<li>The bundled designs are made to fit the Status tab and the Translate tab of the 1920×1080 layout mode without scrolling.</li>
+<li>Some designs show a horizontal scroll bar in a narrow window (Attribute cards (dark) below about 740 px, Arena style and Dashboard below about 540 px). "Compact" suits a small window.</li>
+<li>The bar colors follow the bars next to the face on the game screen (health = green, fatigue = red, spell points = blue).</li>
+</ul>
+
+<h2>Your own character sheets</h2>
+
+<h3>Where to put them</h3>
+<p>Press "Open folder" on the Status tab to open the folder for your own character sheets.</p>
+<ul>
+<li>The folder is <code>character_sheets</code>, in the same place as RTESArenaAssist.exe.</li>
+<li>The first time you open it, Assist creates the folder and puts copies of the bundled designs in it (existing files are not overwritten). The easiest way to start is to edit a copy.</li>
+<li>Every <code>.html</code> file in the folder appears in the "View" list. Its name is the text of the file's <code>&lt;title&gt;</code> (or the file name if there is none) followed by "(folder)". Change the <code>&lt;title&gt;</code> to rename it.</li>
+<li>After editing a file, press "Reload" on the Status tab.</li>
+<li>Save the file as UTF-8.</li>
+</ul>
+
+<h3>Supported HTML</h3>
+<p>Sheets are shown with Qt's simple HTML display, not with a browser (no internet connection is used).</p>
+<ul>
+<li>Supported: tables (<code>table</code>), text color, size, weight and typeface, background colors, borders (<code>border</code>, <code>border-collapse</code>), spacing (<code>padding</code>, <code>margin</code>), images (<code>img</code>), classes in a <code>&lt;style&gt;</code> block, and so on. See "Supported HTML Subset" in the Qt documentation for details.</li>
+<li>Not supported: scripts, <code>flex</code> and <code>grid</code>, overlapping (<code>position</code>), rounded corners, and so on. Build the layout with tables.</li>
+<li>Images and style sheets in the same folder can be used with relative paths (for example <code>&lt;img src="bg.png"&gt;</code>). Files outside the folder and files on the internet are not read. Links are not opened.</li>
+<li>A table of width 100% keeps its shape better when every column has a width in %.</li>
+</ul>
+
+<h2>Syntax</h2>
+<p>Write the following in the HTML, and the value is inserted in that place.</p>
+<table>
+  <tr><th>Syntax</th><th>Meaning</th></tr>
+  <tr><td><code>{{key}}</code></td><td>A value (see "Values"). "—" while the value cannot be read yet</td></tr>
+  <tr><td><code>{{label.key}}</code></td><td>A label (see "Labels"), in the display language</td></tr>
+  <tr><td><code>{{img.face}}</code> / <code>{{img.body}}</code></td><td>The face or the full-body image (see "Images"). Use it as <code>&lt;img src="{{img.face}}"&gt;</code></td></tr>
+  <tr><td><code>{{#if key}}</code> … <code>{{else}}</code> … <code>{{/if}}</code></td><td>Shows the first part only while the value of key can be read (is not empty), and the part after <code>{{else}}</code> otherwise. <code>{{else}}</code> can be left out. Blocks can be nested. <code>0</code> counts as a readable value</td></tr>
+</table>
+<ul>
+<li>An unknown key is shown as <code>[key?]</code> so that a misspelling is easy to spot (for example <code>{{golf}}</code> becomes <code>[golf?]</code>). An unmatched <code>{{else}}</code> or <code>{{/if}}</code> is shown as <code>[else?]</code> or <code>[/if?]</code>, and an unclosed <code>{{#if}}</code> puts <code>[/if?]</code> at the end of the document.</li>
+<li>Spaces inside the braces are allowed, as in <code>{{ key }}</code>.</li>
+<li>Nothing is inserted inside HTML comments (<code>&lt;!-- … --&gt;</code>). The comment at the top of each bundled design lists the keys.</li>
+<li>Values are inserted in an HTML-safe form (a <code>&lt;</code> or <code>&amp;</code> in a value appears as that character).</li>
+</ul>
+
+<h2>Values</h2>
+<p>Keys for <code>{{key}}</code>. The examples are all from the same character.</p>
+
+<h3>Name, race, class and so on</h3>
+<table>
+  <tr><th>Key</th><th>Content</th><th>Example</th></tr>
+  <tr><td><code>name</code></td><td>Name</td><td>Seraphine</td></tr>
+  <tr><td><code>race</code> / <code>race_en</code></td><td>Race (in the display language / in English)</td><td>High Elf</td></tr>
+  <tr><td><code>class</code> / <code>class_en</code></td><td>Class (in the display language / in English)</td><td>Spellsword</td></tr>
+  <tr><td><code>level</code></td><td>Level</td><td>5</td></tr>
+  <tr><td><code>gold</code></td><td>Gold</td><td>1284</td></tr>
+</table>
+
+<h3>Attributes and modifiers</h3>
+<table>
+  <tr><th>Key</th><th>Content</th><th>Example</th></tr>
+  <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Attributes (Strength, Intelligence, Willpower, Agility, Speed, Endurance, Personality, Luck)</td><td>58</td></tr>
+  <tr><td><code>damage</code></td><td>Damage (the modifier from Strength)</td><td>+1</td></tr>
+  <tr><td><code>max_kilos</code></td><td>Max Kilos</td><td>116</td></tr>
+  <tr><td><code>magic_def</code></td><td>Magic Def</td><td>+1</td></tr>
+  <tr><td><code>to_hit</code> / <code>to_defend</code></td><td>to Hit / to Defend</td><td>+1 / +1</td></tr>
+  <tr><td><code>health</code></td><td>Health modifier (from Endurance)</td><td>+1</td></tr>
+  <tr><td><code>heal_mod</code></td><td>Heal Mod</td><td>+1</td></tr>
+  <tr><td><code>charisma</code></td><td>Charisma</td><td>+0</td></tr>
+  <tr><td><code>bonus_pts</code></td><td>Points left to distribute (has a value only during character creation and attribute distribution)</td><td>12</td></tr>
+</table>
+
+<h3>Health, fatigue, spell points and experience</h3>
+<table>
+  <tr><th>Key</th><th>Content</th><th>Example</th></tr>
+  <tr><td><code>hp</code> / <code>hp_curr</code> / <code>hp_max</code></td><td>Health (as "current/max" / current / max)</td><td>37/58 / 37 / 58</td></tr>
+  <tr><td><code>fatigue</code> / <code>fatigue_curr</code> / <code>fatigue_max</code></td><td>Fatigue (the same three forms)</td><td>101/121 / 101 / 121</td></tr>
+  <tr><td><code>spell_pts</code> / <code>spell_pts_curr</code> / <code>spell_pts_max</code></td><td>Spell points (the same three forms)</td><td>88/142 / 88 / 142</td></tr>
+  <tr><td><code>experience</code></td><td>Experience</td><td>5210</td></tr>
+  <tr><td><code>experience_next</code></td><td>Experience required for the next level</td><td>7910</td></tr>
+  <tr><td><code>experience_to_next</code></td><td>Experience still needed for the next level</td><td>2700</td></tr>
+</table>
+
+<h3>Values for bars</h3>
+<table>
+  <tr><th>Key</th><th>Content</th><th>Example</th></tr>
+  <tr><td><code>hp_pct</code> / <code>fatigue_pct</code> / <code>spell_pts_pct</code></td><td>The current value as a percentage (0 to 100). Missing when the maximum is 0 (for example the spell points of a class that cannot cast)</td><td>64 / 83 / 62</td></tr>
+  <tr><td><code>experience_pct</code></td><td>Progress from the start of this level to the next level (0 to 100)</td><td>27</td></tr>
+  <tr><td><code>hp_pct_rest</code> / <code>fatigue_pct_rest</code> / <code>spell_pts_pct_rest</code> / <code>experience_pct_rest</code></td><td>The rest (100 − the percentage)</td><td>36 / 17 / 38 / 73</td></tr>
+</table>
+<p>See "Examples" for how to draw a bar.</p>
+
+<h3>Condition</h3>
+<table>
+  <tr><th>Key</th><th>Content</th><th>Example</th></tr>
+  <tr><td><code>condition</code></td><td>Every current state, joined together. "healthy" when there is none</td><td>poisoned</td></tr>
+  <tr><td><code>condition_bad</code></td><td>Bad states only (diseased, poisoned, drunk, silenced, paralyzed, cursed, being drained). Missing when there is none</td><td>poisoned</td></tr>
+  <tr><td><code>condition_good</code></td><td>Good effects only (invisible, a non-target, resistant to fire and the other resistances, levitating, able to absorb spells, able to reflect spells, resistant to spells, regenerating). Missing when there is none</td><td>(none)</td></tr>
+</table>
+<ul>
+<li>The words are the same as in the game's status window. Several states are separated by ", ".</li>
+<li>Not shown for now: critical condition, shielded, the name of a disease, fortified attributes, blessed.</li>
+<li>Missing during character creation.</li>
+</ul>
+
+<h3>Armor rating by body part</h3>
+<table>
+  <tr><th>Key</th><th>Body part</th><th>Example</th></tr>
+  <tr><td><code>ar_head</code></td><td>Head</td><td>+7</td></tr>
+  <tr><td><code>ar_shoulder_right</code> / <code>ar_shoulder_left</code></td><td>Right shoulder / Left shoulder</td><td>+1 / -1</td></tr>
+  <tr><td><code>ar_chest</code></td><td>Chest</td><td>-1</td></tr>
+  <tr><td><code>ar_hands</code></td><td>Hands</td><td>+5</td></tr>
+  <tr><td><code>ar_legs</code></td><td>Waist and legs</td><td>+4</td></tr>
+  <tr><td><code>ar_feet</code></td><td>Feet</td><td>+4</td></tr>
+</table>
+<ul>
+<li>The same numbers the game's equipment screen (page 2 of the status screen) shows next to the body, computed from the equipment. Lower is better protected; +10 with nothing worn.</li>
+<li>Computation: 10 − armor (that part) − shield (the parts it covers) − jewelry (all parts) − the defense modifier from Agility (<code>to_defend</code>).</li>
+<li>Missing while the equipment cannot be read.</li>
+</ul>
+
+<h2>Labels</h2>
+<p>Keys for <code>{{label.key}}</code>. The label is inserted in the display language.</p>
+<table>
+  <tr><th>Key</th><th>Shown in English</th></tr>
+  <tr><td><code>name</code> <code>race</code> <code>class</code> <code>level</code> <code>gold</code> <code>experience</code></td><td>Name, Race, Class, Level, Gold, Experience</td></tr>
+  <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Strength, Intelligence, Willpower, Agility, Speed, Endurance, Personality, Luck</td></tr>
+  <tr><td><code>str_code</code> <code>int_code</code> <code>wil_code</code> <code>agi_code</code> <code>spd_code</code> <code>end_code</code> <code>per_code</code> <code>luc_code</code></td><td>STR, INT, WIL, AGI, SPD, END, PER, LUC</td></tr>
+  <tr><td><code>damage</code> <code>max_kilos</code> <code>magic_def</code> <code>to_hit</code> <code>to_defend</code> <code>health</code> <code>heal_mod</code> <code>charisma</code> <code>spell_pts</code> <code>bonus_pts</code></td><td>Damage, Max Kilos, Magic Def, to Hit, to Defend, Health, Heal Mod, Charisma, Spell Pts, BONUS PTS</td></tr>
+  <tr><td><code>hp</code> <code>fatigue</code></td><td>Health, Fatigue</td></tr>
+  <tr><td><code>experience_next</code> <code>experience_to_next</code></td><td>Next level, To next level</td></tr>
+  <tr><td><code>condition</code></td><td>Condition</td></tr>
+  <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Head, Right shoulder, Left shoulder, Chest, Hands, Waist and legs, Feet</td></tr>
+  <tr><td><code>title</code></td><td>Character Sheet</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code></td><td>Attributes, Combat &amp; Magic, Health &amp; Fatigue, Experience &amp; Gold, Armor rating (AR)</td></tr>
+  <tr><td><code>col_value</code> <code>col_modifier</code></td><td>Value, Modifier</td></tr>
+  <tr><td><code>armor_note</code></td><td>Lower is better protected (+10 when unprotected)</td></tr>
+</table>
+
+<h2>Images</h2>
+<table>
+  <tr><th>Key</th><th>Content</th><th>Size</th></tr>
+  <tr><td><code>img.face</code></td><td>The face (the one shown at the bottom of the game screen)</td><td>80×70</td></tr>
+  <tr><td><code>img.body</code></td><td>The figure on the status screen (with the equipment worn)</td><td>300×480</td></tr>
+</table>
+<ul>
+<li>They are made from the files of your Arena (Assist does not bundle Arena's images). When they cannot be made, a transparent image of the same size is used.</li>
+<li>With <code>width</code> / <code>height</code> the image is shown at that size (scaled without smoothing, keeping the coarse pixels). Whole multiples look best (for example <code>width="160" height="140"</code> for the face).</li>
+<li>The equipment on the full-body image is checked once a second, and the image is rebuilt only when it changes.</li>
+</ul>
+
+<h2>Examples</h2>
+<p>Write the HTML characters as they are (they are shown here in a readable form).</p>
+
+<h3>A minimal sheet</h3>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;My sheet&lt;/title&gt;
+&lt;style&gt;
+  body { background-color: #1a1a2e; color: #e0e0e0;
+         font-family: "Segoe UI", "Yu Gothic UI", sans-serif; }
+  .v   { font-weight: bold; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;table width="100%" cellspacing="0" cellpadding="6"&gt;
+&lt;tr&gt;
+  &lt;td width="90"&gt;&lt;img src="{{img.face}}"&gt;&lt;/td&gt;
+  &lt;td&gt;&lt;span class="v"&gt;{{name}}&lt;/span&gt;&lt;br&gt;{{race}} / {{class}}&lt;br&gt;{{label.level}} {{level}}&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;table width="100%" cellspacing="0" cellpadding="4"&gt;
+&lt;tr&gt;&lt;td width="50%"&gt;{{label.str}}&lt;/td&gt;&lt;td width="50%" align="right"&gt;&lt;span class="v"&gt;{{str}}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;{{label.hp}}&lt;/td&gt;&lt;td align="right"&gt;&lt;span class="v"&gt;{{hp}}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre></td></tr></table>
+
+<h3>Showing parts only when they apply, with {{#if}}</h3>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;!-- only while points are being distributed --&gt;
+{{#if bonus_pts}}&lt;p&gt;{{label.bonus_pts}}: {{bonus_pts}}&lt;/p&gt;{{/if}}
+
+&lt;!-- in red when there is a bad state --&gt;
+&lt;p&gt;{{label.condition}}:
+{{#if condition_bad}}&lt;span style="color: #ff5050;"&gt;{{condition}}&lt;/span&gt;{{else}}{{condition}}{{/if}}&lt;/p&gt;</pre></td></tr></table>
+
+<h3>A bar</h3>
+<table class="code" cellpadding="8"><tr><td><pre>{{#if hp_pct}}
+&lt;table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; font-size: 1px;"&gt;
+&lt;tr&gt;
+  &lt;td width="{{hp_pct}}%" bgcolor="#4caf50" style="padding-top: 4px; padding-bottom: 4px;"&gt;&lt;/td&gt;
+  &lt;td width="{{hp_pct_rest}}%" bgcolor="#1f3326"&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+{{/if}}</pre></td></tr></table>
+<ul>
+<li>Give both cells a width (with only one, a value of 0 looks full).</li>
+<li>Keep the cells empty and give them height with the top and bottom padding. A small font size on the table (<code>font-size: 1px</code>) keeps the empty cells low.</li>
+<li>When the maximum is 0 there is no percentage, so wrapping the bar in <code>{{#if hp_pct}}</code> hides the whole bar.</li>
+</ul>
+
+<h2>When something does not show correctly</h2>
+<table>
+  <tr><th>Symptom</th><th>What to check</th></tr>
+  <tr><td><code>[key?]</code> is shown</td><td>The spelling of the key (see "Values" and "Labels")</td></tr>
+  <tr><td>"—" is shown</td><td>The value cannot be read yet (for example during character creation)</td></tr>
+  <tr><td>The sheet is not in the list</td><td>Is the file extension <code>.html</code>? Is the file in the <code>character_sheets</code> folder? Did you press "Reload" after adding it?</td></tr>
+  <tr><td>The layout is broken</td><td>Does the file use something unsupported (<code>flex</code>, <code>grid</code>, and so on)? Build the layout with tables</td></tr>
+  <tr><td>An image does not show</td><td>Is the image file inside the <code>character_sheets</code> folder? (files outside it are not read)</td></tr>
+  <tr><td>Garbled text</td><td>Was the file saved as UTF-8?</td></tr>
+  <tr><td>Nothing is shown</td><td>Is Assist connected to the game, and is the status being displayed? (nothing is shown on the title screen, for example)</td></tr>
+</table>
+
+</body>
+</html>

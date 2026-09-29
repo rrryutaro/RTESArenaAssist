@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Design dello stato (schede del personaggio)</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Design dello stato (schede del personaggio)</h1>
+
+<p>Questa funzione mostra lo stato nella scheda «Stato» con un design a tua scelta (una scheda del personaggio). Il design si sceglie con «Vista», in alto nella scheda «Stato». La schermata di stato e la distribuzione degli attributi (creazione del personaggio e passaggio di livello) nella scheda «Traduci» usano lo stesso design.</p>
+<p>Un design è un file HTML (un modello). Puoi scegliere uno dei design inclusi o crearne uno tuo. Oltre agli attributi e ai loro modificatori, una scheda può mostrare la condizione del personaggio, la classe armatura di ogni parte del corpo, il volto e l'immagine a figura intera.</p>
+
+<div class="note">
+Questa è una funzione di visualizzazione di Assist. È separata dalla schermata di stato del gioco (che il manuale ufficiale chiama «scheda del personaggio»); la schermata del gioco non cambia.
+</div>
+
+<h2>Cambiare la vista</h2>
+<p>Con «Vista», in alto nella scheda «Stato», scegli «Standard» (la visualizzazione usata finora) oppure uno dei design di scheda del personaggio. La scelta viene conservata per l'avvio successivo.</p>
+<ul>
+<li>La schermata di stato e la distribuzione degli attributi nella scheda «Traduci» usano la vista scelta qui. La scheda «Traduci» non ha un selettore proprio.</li>
+<li>I valori sono quelli che Assist legge dal gioco, gli stessi della vista «Standard». Una scheda del personaggio li mostra soltanto e non cambia mai i valori del gioco (la modifica dei valori tramite le impostazioni dei trucchi si fa nella vista «Standard»).</li>
+<li>Una scheda viene mostrata solo mentre Assist è connesso al gioco e lo stato è visualizzato.</li>
+</ul>
+
+<h2>Design inclusi</h2>
+<p>I design inclusi sono 8, elencati qui nell'ordine dell'elenco «Vista». Scegline uno in «Vista» per vedere come appare.</p>
+<table>
+  <tr><th>Design</th><th>Descrizione</th></tr>
+  <tr><td>Stile Arena</td><td>Disposto come la schermata di stato del gioco: i modificatori sulle righe degli attributi, l'immagine a figura intera a destra</td></tr>
+  <tr><td>Schede degli attributi</td><td>Colori chiari. Una scheda per ogni attributo, con i modificatori che dipendono da esso (Forza: Danno e Peso Massimo, e così via; le stesse coppie della schermata di stato del gioco). In alto le barre di salute, fatica e Punti Incantesimo</td></tr>
+  <tr><td>Schede degli attributi (scuro)</td><td>Le schede degli attributi nei colori della finestra scura di Assist. Gli attributi a sinistra; la classe armatura di ogni parte del corpo e l'immagine a figura intera a destra</td></tr>
+  <tr><td>Compatto</td><td>Caratteri piccoli in una sola pagina corta, per una finestra piccola</td></tr>
+  <tr><td>Pannello</td><td>Riquadri scuri. Salute, fatica, Punti Incantesimo ed esperienza mostrati come barre</td></tr>
+  <tr><td>Caratteri grandi</td><td>Caratteri grandi bianchi e gialli su nero</td></tr>
+  <tr><td>GdR da tavolo (scheda di registro)</td><td>Una scheda di registro in bianco e nero</td></tr>
+  <tr><td>GdR da tavolo (pergamena)</td><td>Colori pergamena e un carattere con grazie</td></tr>
+</table>
+<ul>
+<li>I design inclusi sono fatti per stare nella scheda «Stato» e nella scheda «Traduci» della modalità layout 1920×1080 senza scorrimento.</li>
+<li>In una finestra stretta alcuni design mostrano una barra di scorrimento orizzontale (Schede degli attributi (scuro) sotto circa 740 px, Stile Arena e Pannello sotto circa 540 px). «Compatto» è adatto a una finestra piccola.</li>
+<li>I colori delle barre seguono le barre accanto al volto nella schermata del gioco (salute = verde, fatica = rosso, Punti Incantesimo = blu).</li>
+</ul>
+
+<h2>Le tue schede del personaggio</h2>
+
+<h3>Dove metterle</h3>
+<p>Premi «Apri cartella» nella scheda «Stato» per aprire la cartella delle tue schede del personaggio.</p>
+<ul>
+<li>La cartella è <code>character_sheets</code>, nella stessa posizione di RTESArenaAssist.exe.</li>
+<li>La prima volta che la apri, Assist crea la cartella e vi mette copie dei design inclusi (i file già presenti non vengono sovrascritti). Il modo più semplice per iniziare è modificare una copia.</li>
+<li>Ogni file <code>.html</code> nella cartella compare nell'elenco «Vista». Il suo nome è il testo del <code>&lt;title&gt;</code> del file (o il nome del file, se manca) seguito da «(cartella)». Cambia il <code>&lt;title&gt;</code> per rinominarlo.</li>
+<li>Dopo aver modificato un file, premi «Ricarica» nella scheda «Stato».</li>
+<li>Salva il file in UTF-8.</li>
+</ul>
+
+<h3>HTML supportato</h3>
+<p>Le schede vengono mostrate con la visualizzazione HTML semplificata di Qt, non con un browser (non viene usata alcuna connessione a Internet).</p>
+<ul>
+<li>Supportati: tabelle (<code>table</code>), colore, dimensione, spessore e tipo di carattere del testo, colori di sfondo, bordi (<code>border</code>, <code>border-collapse</code>), spaziatura (<code>padding</code>, <code>margin</code>), immagini (<code>img</code>), classi in un blocco <code>&lt;style&gt;</code> e così via. Per i dettagli vedi «Supported HTML Subset» nella documentazione di Qt.</li>
+<li>Non supportati: script, <code>flex</code> e <code>grid</code>, sovrapposizioni (<code>position</code>), angoli arrotondati e così via. Costruisci la disposizione con le tabelle.</li>
+<li>Le immagini e i fogli di stile nella stessa cartella si possono usare con percorsi relativi (per esempio <code>&lt;img src="bg.png"&gt;</code>). I file fuori dalla cartella e i file su Internet non vengono letti. I collegamenti non vengono aperti.</li>
+<li>Una tabella di larghezza 100% mantiene meglio la sua forma se ogni colonna ha una larghezza in %.</li>
+</ul>
+
+<h2>Sintassi</h2>
+<p>Scrivi quanto segue nell'HTML e il valore viene inserito in quel punto.</p>
+<table>
+  <tr><th>Sintassi</th><th>Significato</th></tr>
+  <tr><td><code>{{key}}</code></td><td>Un valore (vedi «Valori»). «—» finché il valore non può ancora essere letto</td></tr>
+  <tr><td><code>{{label.key}}</code></td><td>Un'etichetta (vedi «Etichette»), nella lingua di visualizzazione</td></tr>
+  <tr><td><code>{{img.face}}</code> / <code>{{img.body}}</code></td><td>Il volto o l'immagine a figura intera (vedi «Immagini»). Si usa come <code>&lt;img src="{{img.face}}"&gt;</code></td></tr>
+  <tr><td><code>{{#if key}}</code> … <code>{{else}}</code> … <code>{{/if}}</code></td><td>Mostra la prima parte solo finché il valore di key può essere letto (non è vuoto), e la parte dopo <code>{{else}}</code> altrimenti. <code>{{else}}</code> può essere omesso. I blocchi possono essere annidati. <code>0</code> conta come valore leggibile</td></tr>
+</table>
+<ul>
+<li>Una chiave sconosciuta viene mostrata come <code>[key?]</code>, così un errore di battitura si nota subito (per esempio <code>{{golf}}</code> diventa <code>[golf?]</code>). Un <code>{{else}}</code> o <code>{{/if}}</code> senza corrispondenza viene mostrato come <code>[else?]</code> o <code>[/if?]</code>, e un <code>{{#if}}</code> non chiuso mette <code>[/if?]</code> alla fine del documento.</li>
+<li>Gli spazi dentro le parentesi graffe sono ammessi, come in <code>{{ key }}</code>.</li>
+<li>Dentro i commenti HTML (<code>&lt;!-- … --&gt;</code>) non viene inserito nulla. Il commento in cima a ogni design incluso elenca le chiavi.</li>
+<li>I valori vengono inseriti in una forma sicura per l'HTML (un <code>&lt;</code> o <code>&amp;</code> in un valore appare come quel carattere).</li>
+</ul>
+
+<h2>Valori</h2>
+<p>Chiavi per <code>{{key}}</code>. Gli esempi provengono tutti dallo stesso personaggio.</p>
+
+<h3>Nome, razza, classe e così via</h3>
+<table>
+  <tr><th>Chiave</th><th>Contenuto</th><th>Esempio</th></tr>
+  <tr><td><code>name</code></td><td>Nome</td><td>Seraphine</td></tr>
+  <tr><td><code>race</code> / <code>race_en</code></td><td>Razza (nella lingua di visualizzazione / in inglese)</td><td>Alto Elfo / High Elf</td></tr>
+  <tr><td><code>class</code> / <code>class_en</code></td><td>Classe (nella lingua di visualizzazione / in inglese)</td><td>Spadamagica / Spellsword</td></tr>
+  <tr><td><code>level</code></td><td>Livello</td><td>5</td></tr>
+  <tr><td><code>gold</code></td><td>Oro</td><td>1284</td></tr>
+</table>
+
+<h3>Attributi e modificatori</h3>
+<table>
+  <tr><th>Chiave</th><th>Contenuto</th><th>Esempio</th></tr>
+  <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Attributi (Forza, Intelligenza, Volontà, Agilità, Velocità, Resistenza, Personalità, Fortuna)</td><td>58</td></tr>
+  <tr><td><code>damage</code></td><td>Danno (il modificatore dato dalla Forza)</td><td>+1</td></tr>
+  <tr><td><code>max_kilos</code></td><td>Peso Massimo</td><td>116</td></tr>
+  <tr><td><code>magic_def</code></td><td>Difesa Magica</td><td>+1</td></tr>
+  <tr><td><code>to_hit</code> / <code>to_defend</code></td><td>in Attacco / in Difesa</td><td>+1 / +1</td></tr>
+  <tr><td><code>health</code></td><td>Modificatore della salute (dato dalla Resistenza)</td><td>+1</td></tr>
+  <tr><td><code>heal_mod</code></td><td>Mod. Cura</td><td>+1</td></tr>
+  <tr><td><code>charisma</code></td><td>Carisma</td><td>+0</td></tr>
+  <tr><td><code>bonus_pts</code></td><td>Punti ancora da distribuire (ha un valore solo durante la creazione del personaggio e la distribuzione degli attributi)</td><td>12</td></tr>
+</table>
+
+<h3>Salute, fatica, Punti Incantesimo ed esperienza</h3>
+<table>
+  <tr><th>Chiave</th><th>Contenuto</th><th>Esempio</th></tr>
+  <tr><td><code>hp</code> / <code>hp_curr</code> / <code>hp_max</code></td><td>Salute (nella forma «attuale/massimo» / attuale / massimo)</td><td>37/58 / 37 / 58</td></tr>
+  <tr><td><code>fatigue</code> / <code>fatigue_curr</code> / <code>fatigue_max</code></td><td>Fatica (le stesse tre forme)</td><td>101/121 / 101 / 121</td></tr>
+  <tr><td><code>spell_pts</code> / <code>spell_pts_curr</code> / <code>spell_pts_max</code></td><td>Punti Incantesimo (le stesse tre forme)</td><td>88/142 / 88 / 142</td></tr>
+  <tr><td><code>experience</code></td><td>Esperienza</td><td>5210</td></tr>
+  <tr><td><code>experience_next</code></td><td>Esperienza richiesta per il livello successivo</td><td>7910</td></tr>
+  <tr><td><code>experience_to_next</code></td><td>Esperienza ancora necessaria per il livello successivo</td><td>2700</td></tr>
+</table>
+
+<h3>Valori per le barre</h3>
+<table>
+  <tr><th>Chiave</th><th>Contenuto</th><th>Esempio</th></tr>
+  <tr><td><code>hp_pct</code> / <code>fatigue_pct</code> / <code>spell_pts_pct</code></td><td>Il valore attuale in percentuale (da 0 a 100). Manca quando il massimo è 0 (per esempio i Punti Incantesimo di una classe che non può lanciare incantesimi)</td><td>64 / 83 / 62</td></tr>
+  <tr><td><code>experience_pct</code></td><td>Avanzamento dall'inizio di questo livello al livello successivo (da 0 a 100)</td><td>27</td></tr>
+  <tr><td><code>hp_pct_rest</code> / <code>fatigue_pct_rest</code> / <code>spell_pts_pct_rest</code> / <code>experience_pct_rest</code></td><td>Il resto (100 − la percentuale)</td><td>36 / 17 / 38 / 73</td></tr>
+</table>
+<p>Vedi «Esempi» per come disegnare una barra.</p>
+
+<h3>Condizione</h3>
+<table>
+  <tr><th>Chiave</th><th>Contenuto</th><th>Esempio</th></tr>
+  <tr><td><code>condition</code></td><td>Tutti gli stati attuali, uniti insieme. «in salute» quando non ce n'è nessuno</td><td>avvelenato</td></tr>
+  <tr><td><code>condition_bad</code></td><td>Solo gli stati negativi (malato, avvelenato, ubriaco, silenziato, paralizzato, maledetto, in fase di prosciugamento). Manca quando non ce n'è nessuno</td><td>avvelenato</td></tr>
+  <tr><td><code>condition_good</code></td><td>Solo gli effetti positivi (invisibile, non bersagliabile, resistente al fuoco e le altre resistenze, in levitazione, in grado di assorbire gli incantesimi, in grado di riflettere gli incantesimi, resistente agli incantesimi, in rigenerazione). Manca quando non ce n'è nessuno</td><td>(nessuno)</td></tr>
+</table>
+<ul>
+<li>Le parole sono le stesse della finestra di stato del gioco. Più stati sono separati da «, ».</li>
+<li>Per ora non vengono mostrati: in condizioni critiche, protetto, il nome di una malattia, gli attributi potenziati, benedetto.</li>
+<li>Manca durante la creazione del personaggio.</li>
+</ul>
+
+<h3>Classe armatura per parte del corpo</h3>
+<table>
+  <tr><th>Chiave</th><th>Parte del corpo</th><th>Esempio</th></tr>
+  <tr><td><code>ar_head</code></td><td>Testa</td><td>+7</td></tr>
+  <tr><td><code>ar_shoulder_right</code> / <code>ar_shoulder_left</code></td><td>Spalla destra / Spalla sinistra</td><td>+1 / -1</td></tr>
+  <tr><td><code>ar_chest</code></td><td>Petto</td><td>-1</td></tr>
+  <tr><td><code>ar_hands</code></td><td>Mani</td><td>+5</td></tr>
+  <tr><td><code>ar_legs</code></td><td>Vita e gambe</td><td>+4</td></tr>
+  <tr><td><code>ar_feet</code></td><td>Piedi</td><td>+4</td></tr>
+</table>
+<ul>
+<li>Gli stessi numeri che la schermata dell'equipaggiamento del gioco (pagina 2 della schermata di stato) mostra accanto al corpo, calcolati dall'equipaggiamento. Più è basso, meglio si è protetti; +10 senza nulla indosso.</li>
+<li>Calcolo: 10 − armatura (quella parte) − scudo (le parti che copre) − gioielli (tutte le parti) − il modificatore di difesa dato dall'Agilità (<code>to_defend</code>).</li>
+<li>Manca finché l'equipaggiamento non può essere letto.</li>
+</ul>
+
+<h2>Etichette</h2>
+<p>Chiavi per <code>{{label.key}}</code>. L'etichetta viene inserita nella lingua di visualizzazione.</p>
+<table>
+  <tr><th>Chiave</th><th>Visualizzazione in italiano</th></tr>
+  <tr><td><code>name</code> <code>race</code> <code>class</code> <code>level</code> <code>gold</code> <code>experience</code></td><td>Nome, Razza, Classe, Livello, Oro, Esperienza</td></tr>
+  <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Forza, Intelligenza, Volontà, Agilità, Velocità, Resistenza, Personalità, Fortuna</td></tr>
+  <tr><td><code>str_code</code> <code>int_code</code> <code>wil_code</code> <code>agi_code</code> <code>spd_code</code> <code>end_code</code> <code>per_code</code> <code>luc_code</code></td><td>STR, INT, WIL, AGI, SPD, END, PER, LUC</td></tr>
+  <tr><td><code>damage</code> <code>max_kilos</code> <code>magic_def</code> <code>to_hit</code> <code>to_defend</code> <code>health</code> <code>heal_mod</code> <code>charisma</code> <code>spell_pts</code> <code>bonus_pts</code></td><td>Danno, Peso Massimo, Difesa Magica, in Attacco, in Difesa, Salute, Mod. Cura, Carisma, Punti Incantesimo, BONUS PTS</td></tr>
+  <tr><td><code>hp</code> <code>fatigue</code></td><td>Salute, Fatica</td></tr>
+  <tr><td><code>experience_next</code> <code>experience_to_next</code></td><td>Livello successivo, Al livello successivo</td></tr>
+  <tr><td><code>condition</code></td><td>Condizione</td></tr>
+  <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Testa, Spalla destra, Spalla sinistra, Petto, Mani, Vita e gambe, Piedi</td></tr>
+  <tr><td><code>title</code></td><td>Scheda del personaggio</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code></td><td>Attributi, Combattimento e magia, Salute e fatica, Esperienza e oro, Classe armatura (AR)</td></tr>
+  <tr><td><code>col_value</code> <code>col_modifier</code></td><td>Valore, Modificatore</td></tr>
+  <tr><td><code>armor_note</code></td><td>Più è basso, meglio si è protetti (+10 senza protezione)</td></tr>
+</table>
+
+<h2>Immagini</h2>
+<table>
+  <tr><th>Chiave</th><th>Contenuto</th><th>Dimensione</th></tr>
+  <tr><td><code>img.face</code></td><td>Il volto (quello mostrato in basso nella schermata del gioco)</td><td>80×70</td></tr>
+  <tr><td><code>img.body</code></td><td>La figura della schermata di stato (con l'equipaggiamento indossato)</td><td>300×480</td></tr>
+</table>
+<ul>
+<li>Vengono create dai file del tuo Arena (Assist non include le immagini di Arena). Quando non possono essere create, viene usata un'immagine trasparente della stessa dimensione.</li>
+<li>Con <code>width</code> / <code>height</code> l'immagine viene mostrata a quella dimensione (ridimensionata senza sfocatura, mantenendo i pixel grossi). I multipli interi sono quelli che appaiono meglio (per esempio <code>width="160" height="140"</code> per il volto).</li>
+<li>L'equipaggiamento sull'immagine a figura intera viene controllato una volta al secondo e l'immagine viene ricostruita solo quando cambia.</li>
+</ul>
+
+<h2>Esempi</h2>
+<p>Scrivi i caratteri HTML così come sono (qui sono mostrati in forma leggibile).</p>
+
+<h3>Una scheda minima</h3>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;My sheet&lt;/title&gt;
+&lt;style&gt;
+  body { background-color: #1a1a2e; color: #e0e0e0;
+         font-family: "Segoe UI", "Yu Gothic UI", sans-serif; }
+  .v   { font-weight: bold; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;table width="100%" cellspacing="0" cellpadding="6"&gt;
+&lt;tr&gt;
+  &lt;td width="90"&gt;&lt;img src="{{img.face}}"&gt;&lt;/td&gt;
+  &lt;td&gt;&lt;span class="v"&gt;{{name}}&lt;/span&gt;&lt;br&gt;{{race}} / {{class}}&lt;br&gt;{{label.level}} {{level}}&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;table width="100%" cellspacing="0" cellpadding="4"&gt;
+&lt;tr&gt;&lt;td width="50%"&gt;{{label.str}}&lt;/td&gt;&lt;td width="50%" align="right"&gt;&lt;span class="v"&gt;{{str}}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;{{label.hp}}&lt;/td&gt;&lt;td align="right"&gt;&lt;span class="v"&gt;{{hp}}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre></td></tr></table>
+
+<h3>Mostrare parti solo quando servono, con {{#if}}</h3>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;!-- solo mentre i punti vengono distribuiti --&gt;
+{{#if bonus_pts}}&lt;p&gt;{{label.bonus_pts}}: {{bonus_pts}}&lt;/p&gt;{{/if}}
+
+&lt;!-- in rosso quando c'è uno stato negativo --&gt;
+&lt;p&gt;{{label.condition}}:
+{{#if condition_bad}}&lt;span style="color: #ff5050;"&gt;{{condition}}&lt;/span&gt;{{else}}{{condition}}{{/if}}&lt;/p&gt;</pre></td></tr></table>
+
+<h3>Una barra</h3>
+<table class="code" cellpadding="8"><tr><td><pre>{{#if hp_pct}}
+&lt;table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; font-size: 1px;"&gt;
+&lt;tr&gt;
+  &lt;td width="{{hp_pct}}%" bgcolor="#4caf50" style="padding-top: 4px; padding-bottom: 4px;"&gt;&lt;/td&gt;
+  &lt;td width="{{hp_pct_rest}}%" bgcolor="#1f3326"&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+{{/if}}</pre></td></tr></table>
+<ul>
+<li>Dai una larghezza a entrambe le celle (con una sola, un valore di 0 sembra pieno).</li>
+<li>Lascia le celle vuote e dai loro altezza con il padding superiore e inferiore. Una dimensione del carattere piccola sulla tabella (<code>font-size: 1px</code>) mantiene basse le celle vuote.</li>
+<li>Quando il massimo è 0 non c'è percentuale, quindi racchiudere la barra in <code>{{#if hp_pct}}</code> nasconde l'intera barra.</li>
+</ul>
+
+<h2>Quando qualcosa non viene mostrato correttamente</h2>
+<table>
+  <tr><th>Sintomo</th><th>Cosa controllare</th></tr>
+  <tr><td>Viene mostrato <code>[key?]</code></td><td>L'ortografia della chiave (vedi «Valori» ed «Etichette»)</td></tr>
+  <tr><td>Viene mostrato «—»</td><td>Il valore non può ancora essere letto (per esempio durante la creazione del personaggio)</td></tr>
+  <tr><td>La scheda non è nell'elenco</td><td>L'estensione del file è <code>.html</code>? Il file è nella cartella <code>character_sheets</code>? Hai premuto «Ricarica» dopo averlo aggiunto?</td></tr>
+  <tr><td>La disposizione è rovinata</td><td>Il file usa qualcosa di non supportato (<code>flex</code>, <code>grid</code> e così via)? Costruisci la disposizione con le tabelle</td></tr>
+  <tr><td>Un'immagine non viene mostrata</td><td>Il file dell'immagine è dentro la cartella <code>character_sheets</code>? (i file fuori da essa non vengono letti)</td></tr>
+  <tr><td>Testo illeggibile</td><td>Il file è stato salvato in UTF-8?</td></tr>
+  <tr><td>Non viene mostrato nulla</td><td>Assist è connesso al gioco e lo stato è visualizzato? (nella schermata del titolo, per esempio, non viene mostrato nulla)</td></tr>
+</table>
+
+</body>
+</html>

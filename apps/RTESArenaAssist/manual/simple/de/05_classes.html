@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Charakterklassen</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 13px; color: #5bc0de; margin-top: 4px; margin-bottom: 2px; }
+h3 { font-size: 12px; color: #7a8899; margin: 14px 0 2px 0; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+p { margin: 0 0 6px 0; font-size: 12px; }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 10px 0; font-size: 11px; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 3px 6px; text-align: left; border: 1px solid #1e3a4a; }
+td { padding: 3px 6px; border: 1px solid #1e3a4a; }
+tr:nth-child(even) { background: #111e2c; }
+.ability { color: #a8d8a8; font-size: 11px; margin: 2px 0 6px 0; }
+.section-header { background: #1c2e3f; color: #a0c4d8; font-size: 13px; font-weight: bold; padding: 5px 8px; margin: 18px 0 6px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Charakterklassen (alle 18)</h1>
+
+<div class="section-header">Diebesklassen — Hauptattribute: Beweglichkeit (AGI) &amp; Intelligenz (INT)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">Alle Diebesklassen können Schlösser knacken, Taschen leeren und stehlen. Eine hohe Geschwindigkeit ist ebenfalls wünschenswert.</p>
+
+<h2>Dieb</h2>
+<p>Schnell und beweglich. Im Kampf nützlich für Überraschungsangriffe, Erkundung und kritische Treffer. Steigt am schnellsten von allen Klassen in den Erfahrungsstufen auf.</p>
+<div class="ability">★ Erhält pro Stufe eine Chance auf kritische Treffer (3× Schaden)</div>
+<table><tr><th>Waffen</th><td>Dolch, Kurzschwert, Breitschwert, Säbel, Kriegsaxt, Kurzbogen</td></tr>
+<tr><th>Rüstung</th><td>Nur Leder</td></tr><tr><th>Schild</th><td>Nur Faustschild</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d10</td></tr></table>
+
+<h2>Einbrecher</h2>
+<p>Experte im Schlösserknacken und im Eindringen in gesperrte Bereiche. Kann keine Schilde benutzen.</p>
+<div class="ability">★ Chance auf kritische Treffer pro Stufe (geringer als beim Dieb)</div>
+<table><tr><th>Waffen</th><td>Dolch, Kurzschwert, Tanto, Kurzbogen</td></tr>
+<tr><th>Rüstung</th><td>Nur Leder</td></tr><tr><th>Schild</th><td>Keiner</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d8</td></tr></table>
+
+<h2>Assassine</h2>
+<p>Dem Töten verschrieben. Höchste Chance auf kritische Treffer aller Klassen. Kann jede Waffe benutzen, ist aber auf Lederrüstung beschränkt und kann keinen Schild tragen.</p>
+<div class="ability">★ Höchste Chance auf kritische Treffer pro Stufe aller Klassen</div>
+<table><tr><th>Waffen</th><td>Alle</td></tr>
+<tr><th>Rüstung</th><td>Nur Leder</td></tr><tr><th>Schild</th><td>Keiner</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d12</td></tr></table>
+
+<h2>Schurke</h2>
+<p>Ein Dieb, der in Waffen und Rüstung ausgebildet ist. Im Kampf mit Kriegern vergleichbar, behält aber die Fähigkeiten zum Schlösserknacken und Taschendiebstahl.</p>
+<div class="ability">★ Geringe Chance auf kritische Treffer pro Stufe</div>
+<table><tr><th>Waffen</th><td>Alle</td></tr>
+<tr><th>Rüstung</th><td>Nur Leder oder Kettenrüstung</td></tr><tr><th>Schild</th><td>Alle außer Turmschild</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d14</td></tr></table>
+
+<h2>Akrobat</h2>
+<p>Übernatürlich beweglich — der schnellste Charakter zu Fuß. Senkt passiv die Grundtrefferchance der Gegner.</p>
+<div class="ability">★ Senkt die Grundtrefferchance des Gegners / Chance auf kritische Treffer pro Stufe</div>
+<table><tr><th>Waffen</th><td>Dolch, Kurzschwert, Breitschwert, Tanto, Kurzbogen</td></tr>
+<tr><th>Rüstung</th><td>Nur Leder</td></tr><tr><th>Schild</th><td>Keiner</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d8</td></tr></table>
+
+<h2>Barde</h2>
+<p>„Alleskönner.“ Beherrscht kritische Treffer, Waffen, Diebeskunst und Magie. Zauberpunkte = INT.</p>
+<table><tr><th>Waffen</th><td>Dolch, Kurzschwert, Breitschwert, Säbel, Streitkolben, Kriegsaxt, Kurzbogen</td></tr>
+<tr><th>Rüstung</th><td>Nur Leder oder Kettenrüstung</td></tr><tr><th>Schild</th><td>Alle außer Turmschild</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d10</td></tr></table>
+
+<div class="section-header">Kriegerklassen — Hauptattribute: Stärke (STR) &amp; Ausdauer (END)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">Können keine Zauber wirken, sofern nicht anders angegeben. Beweglichkeit ist auch für den Rüstungswert wichtig.</p>
+
+<h2>Krieger</h2>
+<p>Das Rückgrat Tamriels. Kann jede Waffe, jede Rüstung und jeden Schild benutzen. Steigt am zweitschnellsten in den Stufen auf. Nur Krieger, Ritter und Waldläufer dürfen verzauberte Plattenrüstung tragen.</p>
+<table><tr><th>Waffen</th><td>Alle</td></tr><tr><th>Rüstung</th><td>Alle</td></tr><tr><th>Schild</th><td>Alle</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d20</td></tr></table>
+
+<h2>Ritter</h2>
+<p>Edler Kämpfer. Repariert automatisch alle Waffen und Rüstungen im Inventar.</p>
+<div class="ability">★ Immun gegen Lähmung (Zauber und Gift) / Repariert Waffen und Rüstungen automatisch</div>
+<table><tr><th>Waffen</th><td>Alle</td></tr><tr><th>Rüstung</th><td>Kein Leder</td></tr><tr><th>Schild</th><td>Alle</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d18</td></tr></table>
+
+<h2>Waldläufer</h2>
+<p>Fährtenleser und Überlebenskünstler. Verkürzt automatisch die Reisezeit zwischen Städten. Verursacht Bonusschaden in Höhe der Stufe.</p>
+<div class="ability">★ Verkürzte Reisezeit zwischen Städten / Bonusschaden = Stufe</div>
+<table><tr><th>Waffen</th><td>Alle</td></tr><tr><th>Rüstung</th><td>Alle</td></tr><tr><th>Schild</th><td>Alle außer Turmschild</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d18</td></tr></table>
+
+<h2>Bogenschütze</h2>
+<p>Scharfschütze, spezialisiert auf Fernkampfwaffen. Chance auf kritische Treffer mit Bögen pro Stufe. Kann keine Schilde benutzen.</p>
+<div class="ability">★ Chance auf kritische Treffer mit Fernkampfwaffen pro Stufe</div>
+<table><tr><th>Waffen</th><td>Alle</td></tr><tr><th>Rüstung</th><td>Nur Leder oder Kettenrüstung</td></tr><tr><th>Schild</th><td>Keiner</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d16</td></tr></table>
+
+<h2>Mönch</h2>
+<p>Geist und Körper zu einer Tötungsmaschine geschliffen. Keine Rüstung, kein Schild. Die Trefferchance der Gegner sinkt mit jeder Stufe. Erfolgreiche Rettungswürfe gegen Zauber ergeben keinen Schaden.</p>
+<div class="ability">★ Senkt die Trefferchance der Gegner pro Stufe / Erfolgreicher Rettungswurf gegen Zauber = kein Schaden / Kritische Treffer (nur Nahkampf)</div>
+<table><tr><th>Waffen</th><td>Alle</td></tr><tr><th>Rüstung</th><td>Keine</td></tr><tr><th>Schild</th><td>Keiner</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d14</td></tr></table>
+
+<h2>Barbar</h2>
+<p>Überlebender rauer Länder. Höchste Startgesundheit aller Klassen. Heilt zusätzliche Gesundheit auf Grundlage der Ausdauer.</p>
+<div class="ability">★ Immun gegen Gift / Zusätzliche Gesundheit pro Rast auf Grundlage von END</div>
+<table><tr><th>Waffen</th><td>Alle</td></tr><tr><th>Rüstung</th><td>Bis Kettenrüstung</td></tr><tr><th>Schild</th><td>Alle</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d30 (höchste aller Klassen)</td></tr></table>
+
+<div class="section-header">Magierklassen — Hauptattribute: Intelligenz (INT) &amp; Willenskraft (WIL)</div>
+
+<h2>Magier</h2>
+<p>Für die Magie geboren. Zauberpunkte = INT×2. Verlässt sich für Angriff und Verteidigung ganz auf Zauber. Keine Rüstung, kein Schild.</p>
+<table><tr><th>Waffen</th><td>Dolch, Stab</td></tr><tr><th>Rüstung</th><td>Keine</td></tr><tr><th>Schild</th><td>Nur Faustschild</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d6</td></tr></table>
+
+<h2>Hexer</h2>
+<p>Eine magische „Batterie“. Kann keine Zauberpunkte selbst erzeugen; nimmt sie stattdessen aus Zaubern auf, die auf ihn gerichtet sind (bis zu INT×3). Voll aufgeladen möglicherweise die mächtigste aller Magierklassen.</p>
+<div class="ability">★ Absorbiert auf ihn gerichtete Zauber → kein Schaden + Zauberpunkte / Kann eigene Zauber nicht absorbieren / Keine natürliche SP-Regeneration</div>
+<table><tr><th>Waffen</th><td>Alle</td></tr><tr><th>Rüstung</th><td>Bis Kettenrüstung</td></tr><tr><th>Schild</th><td>Keiner</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d6</td></tr></table>
+
+<h2>Heiler</h2>
+<p>Spezialist für Schutzmagie. Zauberpunkte = INT×1,75. Schutzzauber kosten in der Zauberschmiede weniger. Erhöhte Grundheilungsrate.</p>
+<table><tr><th>Waffen</th><td>Dolch, Stab, Streitkolben, Kriegsflegel</td></tr><tr><th>Rüstung</th><td>Nur Leder oder Kettenrüstung</td></tr><tr><th>Schild</th><td>Bis Rundschild</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d8</td></tr></table>
+
+<h2>Kampfmagier</h2>
+<p>Spezialist für Angriffszauber. Zauberpunkte = INT×1,75. Angriffszauber kosten in der Zauberschmiede weniger.</p>
+<table><tr><th>Waffen</th><td>Alle</td></tr><tr><th>Rüstung</th><td>Nur Leder</td></tr><tr><th>Schild</th><td>Bis Rundschild</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d10</td></tr></table>
+
+<h2>Zauberklinge</h2>
+<p>Kann Zauber wirken, während sie Rüstung trägt. Vielseitiger Krieger-Magier. Zauberpunkte = INT×1,5.</p>
+<table><tr><th>Waffen</th><td>Alle</td></tr><tr><th>Rüstung</th><td>Nur Leder oder Kettenrüstung</td></tr><tr><th>Schild</th><td>Alle außer Turmschild</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d12</td></tr></table>
+
+<h2>Nachtklinge</h2>
+<p>Magier der Heimlichkeit und Infiltration. Schlösserknacken vergleichbar mit Schurken. Chance auf kritische Treffer pro Stufe. Zauberpunkte = INT×1,5.</p>
+<div class="ability">★ Chance auf kritische Treffer pro Stufe</div>
+<table><tr><th>Waffen</th><td>Dolch, Stab, Kurzbogen, Kurzschwert, Säbel</td></tr><tr><th>Rüstung</th><td>Nur Leder</td></tr><tr><th>Schild</th><td>Nur Faustschild</td></tr>
+<tr><th>Startgesundheit</th><td>25 + d8</td></tr></table>
+
+</body>
+</html>

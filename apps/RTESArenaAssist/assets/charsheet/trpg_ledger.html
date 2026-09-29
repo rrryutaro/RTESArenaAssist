@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!--
+  RTESArenaAssist character sheet template (simple HTML) - black and white record sheet.
+  Keys and the {{#if KEY}} ... {{/if}} blocks are listed in arena_classic.html.
+  Comments are left as they are.
+  Layout uses tables (the simple HTML view has no flex/grid and runs no scripts).
+  Two columns so that the sheet fits the translation tab of a 1920x1080 layout
+  without scrolling (about 850 px wide or more).
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<title>Tabletop RPG (record sheet)</title>
+<style>
+  body     { background-color: #ffffff; color: #111111;
+             font-family: "Segoe UI", "Yu Gothic UI", "Meiryo", sans-serif; font-size: 13px; }
+  .grid    { border-collapse: collapse; margin-bottom: 8px; }
+  .grid td { border-width: 1px; border-style: solid; border-color: #111111;
+             padding-top: 3px; padding-bottom: 3px; padding-left: 6px; padding-right: 6px; }
+  .band    { background-color: #111111; color: #ffffff; font-weight: bold; font-size: 13px; }
+  .title   { background-color: #111111; color: #ffffff; font-weight: bold; font-size: 20px; }
+  .cap     { color: #555555; font-size: 11px; }
+  .fill    { color: #000000; font-size: 17px; font-weight: bold; }
+  .code    { color: #000000; font-size: 18px; font-weight: bold; }
+  .num     { color: #000000; font-size: 26px; font-weight: bold; }
+  .mod     { color: #000000; font-size: 15px; font-weight: bold; }
+  .shade   { background-color: #eeeeee; }
+  .bad     { background-color: #000000; color: #ffffff; font-size: 17px; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr>
+<td width="49%" valign="top">
+
+<table class="grid" width="100%" cellspacing="0">
+<tr><td class="title" colspan="4">{{label.title}}</td><td class="title" width="96"></td></tr>
+<tr>
+  <td colspan="2"><span class="cap">{{label.name}}</span><br><span class="fill">{{name}}</span></td>
+  <td><span class="cap">{{label.level}}</span><br><span class="fill">{{level}}</span></td>
+  <td><span class="cap">{{label.gold}}</span><br><span class="fill">{{gold}}</span></td>
+  <td rowspan="2" align="center" valign="middle"><img src="{{img.face}}"></td>
+</tr>
+<tr>
+  <td colspan="2"><span class="cap">{{label.race}}</span><br><span class="fill">{{race}}</span></td>
+  <td colspan="2"><span class="cap">{{label.class}}</span><br><span class="fill">{{class}}</span></td>
+</tr>
+</table>
+
+<table class="grid" width="100%" cellspacing="0">
+<tr><td class="band" colspan="4">{{label.section_attributes}}</td></tr>
+<tr>
+  <td width="25%" align="center" class="shade"><span class="code">{{label.str_code}}</span><br><span class="cap">{{label.str}}</span><br><span class="num">{{str}}</span></td>
+  <td width="25%" align="center" class="shade"><span class="code">{{label.int_code}}</span><br><span class="cap">{{label.int}}</span><br><span class="num">{{int}}</span></td>
+  <td width="25%" align="center" class="shade"><span class="code">{{label.wil_code}}</span><br><span class="cap">{{label.wil}}</span><br><span class="num">{{wil}}</span></td>
+  <td width="25%" align="center" class="shade"><span class="code">{{label.agi_code}}</span><br><span class="cap">{{label.agi}}</span><br><span class="num">{{agi}}</span></td>
+</tr>
+<tr>
+  <td align="center" class="shade"><span class="code">{{label.spd_code}}</span><br><span class="cap">{{label.spd}}</span><br><span class="num">{{spd}}</span></td>
+  <td align="center" class="shade"><span class="code">{{label.end_code}}</span><br><span class="cap">{{label.end}}</span><br><span class="num">{{end}}</span></td>
+  <td align="center" class="shade"><span class="code">{{label.per_code}}</span><br><span class="cap">{{label.per}}</span><br><span class="num">{{per}}</span></td>
+  <td align="center" class="shade"><span class="code">{{label.luc_code}}</span><br><span class="cap">{{label.luc}}</span><br><span class="num">{{luc}}</span></td>
+</tr>
+</table>
+
+{{#if bonus_pts}}
+<table class="grid" width="100%" cellspacing="0">
+<tr>
+  <td width="75%" class="shade"><span class="code">{{label.bonus_pts}}</span></td>
+  <td align="center"><span class="num">{{bonus_pts}}</span></td>
+</tr>
+</table>
+{{/if}}
+
+</td>
+<td width="2%"></td>
+<td width="49%" valign="top">
+
+<table class="grid" width="100%" cellspacing="0">
+<tr><td class="band" colspan="4">{{label.section_combat}}</td></tr>
+<tr>
+  <td width="25%"><span class="cap">{{label.damage}}</span><br><span class="mod">{{damage}}</span></td>
+  <td width="25%"><span class="cap">{{label.to_hit}}</span><br><span class="mod">{{to_hit}}</span></td>
+  <td width="25%"><span class="cap">{{label.to_defend}}</span><br><span class="mod">{{to_defend}}</span></td>
+  <td width="25%"><span class="cap">{{label.magic_def}}</span><br><span class="mod">{{magic_def}}</span></td>
+</tr>
+<tr>
+  <td><span class="cap">{{label.spell_pts}}</span><br><span class="mod">{{spell_pts}}</span></td>
+  <td><span class="cap">{{label.max_kilos}}</span><br><span class="mod">{{max_kilos}}</span></td>
+  <td><span class="cap">{{label.charisma}}</span><br><span class="mod">{{charisma}}</span></td>
+  <td><span class="cap">{{label.heal_mod}}</span><br><span class="mod">{{heal_mod}}</span></td>
+</tr>
+</table>
+
+<table class="grid" width="100%" cellspacing="0">
+<tr><td class="band" colspan="3">{{label.section_vitals}}</td></tr>
+<tr>
+  <td width="40%"><span class="cap">{{label.hp}}</span><br><span class="num">{{hp_curr}}</span> <span class="cap">/ {{hp_max}}</span></td>
+  <td width="40%"><span class="cap">{{label.fatigue}}</span><br><span class="num">{{fatigue_curr}}</span> <span class="cap">/ {{fatigue_max}}</span></td>
+  <td><span class="cap">{{label.health}}</span><br><span class="mod">{{health}}</span></td>
+</tr>
+{{#if condition}}
+<tr>
+  <td colspan="3"><span class="cap">{{label.condition}}</span><br>{{#if condition_bad}}<span class="bad">&nbsp;{{condition}}&nbsp;</span>{{else}}<span class="fill">{{condition}}</span>{{/if}}</td>
+</tr>
+{{/if}}
+</table>
+
+<table class="grid" width="100%" cellspacing="0">
+<tr><td class="band" colspan="2">{{label.section_record}}</td></tr>
+<tr>
+  <td width="50%"><span class="cap">{{label.experience}}</span><br><span class="fill">{{experience}}</span></td>
+  <td><span class="cap">{{label.experience_next}}</span><br><span class="fill">{{experience_next}}</span></td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>

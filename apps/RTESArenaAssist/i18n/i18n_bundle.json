@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:ba588dc956887a8990d6182a7e86a6d18195f22cd2837e47c9bdd3b6d9a7fe5a",
+  "registry_hash": "sha256:28033d1ed7a6b9a3273762185b2ff5827edacbf1b089b77ed0906e8dcb2afaf5",
   "categories": [
     {
       "category": "assist_ui",
@@ -4061,6 +4061,191 @@
           "id": 900809,
           "kind": "label",
           "debug_name": "settings.map_express_quest_treasure"
+        },
+        {
+          "id": 900810,
+          "kind": "label",
+          "debug_name": "charsheet.col.modifier"
+        },
+        {
+          "id": 900811,
+          "kind": "label",
+          "debug_name": "charsheet.col.value"
+        },
+        {
+          "id": 900812,
+          "kind": "label",
+          "debug_name": "charsheet.label.next_level"
+        },
+        {
+          "id": 900813,
+          "kind": "label",
+          "debug_name": "charsheet.section.attributes"
+        },
+        {
+          "id": 900814,
+          "kind": "label",
+          "debug_name": "charsheet.section.combat"
+        },
+        {
+          "id": 900815,
+          "kind": "label",
+          "debug_name": "charsheet.section.record"
+        },
+        {
+          "id": 900816,
+          "kind": "label",
+          "debug_name": "charsheet.section.vitals"
+        },
+        {
+          "id": 900817,
+          "kind": "label",
+          "debug_name": "charsheet.template.arena_classic"
+        },
+        {
+          "id": 900818,
+          "kind": "label",
+          "debug_name": "charsheet.template.trpg_ledger"
+        },
+        {
+          "id": 900819,
+          "kind": "label",
+          "debug_name": "charsheet.template.trpg_parchment"
+        },
+        {
+          "id": 900820,
+          "kind": "label",
+          "debug_name": "charsheet.title"
+        },
+        {
+          "id": 900821,
+          "kind": "label",
+          "debug_name": "status.view.label"
+        },
+        {
+          "id": 900822,
+          "kind": "label",
+          "debug_name": "status.view.open_folder"
+        },
+        {
+          "id": 900823,
+          "kind": "label",
+          "debug_name": "status.view.open_folder_tip"
+        },
+        {
+          "id": 900824,
+          "kind": "label",
+          "debug_name": "status.view.reload"
+        },
+        {
+          "id": 900825,
+          "kind": "label",
+          "debug_name": "status.view.reload_tip"
+        },
+        {
+          "id": 900826,
+          "kind": "label",
+          "debug_name": "status.view.standard"
+        },
+        {
+          "id": 900827,
+          "kind": "label",
+          "debug_name": "status.view.user_template"
+        },
+        {
+          "id": 900828,
+          "kind": "label",
+          "debug_name": "charsheet.label.to_next_level"
+        },
+        {
+          "id": 900829,
+          "kind": "label",
+          "debug_name": "charsheet.template.attribute_cards"
+        },
+        {
+          "id": 900830,
+          "kind": "label",
+          "debug_name": "charsheet.template.compact"
+        },
+        {
+          "id": 900831,
+          "kind": "label",
+          "debug_name": "charsheet.template.dashboard"
+        },
+        {
+          "id": 900832,
+          "kind": "label",
+          "debug_name": "charsheet.template.large_print"
+        },
+        {
+          "id": 900833,
+          "kind": "label",
+          "debug_name": "charsheet.armor.chest"
+        },
+        {
+          "id": 900834,
+          "kind": "label",
+          "debug_name": "charsheet.armor.feet"
+        },
+        {
+          "id": 900835,
+          "kind": "label",
+          "debug_name": "charsheet.armor.hands"
+        },
+        {
+          "id": 900836,
+          "kind": "label",
+          "debug_name": "charsheet.armor.head"
+        },
+        {
+          "id": 900837,
+          "kind": "label",
+          "debug_name": "charsheet.armor.legs"
+        },
+        {
+          "id": 900838,
+          "kind": "label",
+          "debug_name": "charsheet.armor.note"
+        },
+        {
+          "id": 900839,
+          "kind": "label",
+          "debug_name": "charsheet.armor.shoulder_left"
+        },
+        {
+          "id": 900840,
+          "kind": "label",
+          "debug_name": "charsheet.armor.shoulder_right"
+        },
+        {
+          "id": 900841,
+          "kind": "label",
+          "debug_name": "charsheet.label.condition"
+        },
+        {
+          "id": 900842,
+          "kind": "label",
+          "debug_name": "charsheet.list_separator"
+        },
+        {
+          "id": 900843,
+          "kind": "label",
+          "debug_name": "charsheet.section.armor"
+        },
+        {
+          "id": 900844,
+          "kind": "label",
+          "debug_name": "charsheet.template.attribute_cards_dark"
+        },
+        {
+          "id": 900845,
+          "kind": "label",
+          "debug_name": "manual.doc.assist.01_status_designs"
+        },
+        {
+          "id": 900846,
+          "kind": "label",
+          "debug_name": "manual.mode.assist"
         }
       ]
     },
@@ -51731,6 +51916,154 @@
           "text": "Keys and quest items"
         },
         {
+          "id": 900810,
+          "text": "Modifier"
+        },
+        {
+          "id": 900811,
+          "text": "Value"
+        },
+        {
+          "id": 900812,
+          "text": "Next level"
+        },
+        {
+          "id": 900813,
+          "text": "Attributes"
+        },
+        {
+          "id": 900814,
+          "text": "Combat & Magic"
+        },
+        {
+          "id": 900815,
+          "text": "Experience & Gold"
+        },
+        {
+          "id": 900816,
+          "text": "Health & Fatigue"
+        },
+        {
+          "id": 900817,
+          "text": "Arena style"
+        },
+        {
+          "id": 900818,
+          "text": "Tabletop RPG (record sheet)"
+        },
+        {
+          "id": 900819,
+          "text": "Tabletop RPG (parchment)"
+        },
+        {
+          "id": 900820,
+          "text": "Character Sheet"
+        },
+        {
+          "id": 900821,
+          "text": "View"
+        },
+        {
+          "id": 900822,
+          "text": "Open folder"
+        },
+        {
+          "id": 900823,
+          "text": "Opens the folder for your own character sheets (HTML files). The first time, copies of the bundled samples are placed there."
+        },
+        {
+          "id": 900824,
+          "text": "Reload"
+        },
+        {
+          "id": 900825,
+          "text": "Reloads the character sheets from the folder."
+        },
+        {
+          "id": 900826,
+          "text": "Standard"
+        },
+        {
+          "id": 900827,
+          "text": "{name} (folder)"
+        },
+        {
+          "id": 900828,
+          "text": "To next level"
+        },
+        {
+          "id": 900829,
+          "text": "Attribute cards"
+        },
+        {
+          "id": 900830,
+          "text": "Compact"
+        },
+        {
+          "id": 900831,
+          "text": "Dashboard"
+        },
+        {
+          "id": 900832,
+          "text": "Large print"
+        },
+        {
+          "id": 900833,
+          "text": "Chest"
+        },
+        {
+          "id": 900834,
+          "text": "Feet"
+        },
+        {
+          "id": 900835,
+          "text": "Hands"
+        },
+        {
+          "id": 900836,
+          "text": "Head"
+        },
+        {
+          "id": 900837,
+          "text": "Waist and legs"
+        },
+        {
+          "id": 900838,
+          "text": "Lower is better protected (+10 when unprotected)"
+        },
+        {
+          "id": 900839,
+          "text": "Left shoulder"
+        },
+        {
+          "id": 900840,
+          "text": "Right shoulder"
+        },
+        {
+          "id": 900841,
+          "text": "Condition"
+        },
+        {
+          "id": 900842,
+          "text": ", "
+        },
+        {
+          "id": 900843,
+          "text": "Armor rating (AR)"
+        },
+        {
+          "id": 900844,
+          "text": "Attribute cards (dark)"
+        },
+        {
+          "id": 900845,
+          "text": "Status Designs (Character Sheets)"
+        },
+        {
+          "id": 900846,
+          "text": "Assist"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -80466,6 +80799,154 @@
         {
           "id": 900809,
           "text": "鍵・クエストアイテム"
+        },
+        {
+          "id": 900810,
+          "text": "補正"
+        },
+        {
+          "id": 900811,
+          "text": "値"
+        },
+        {
+          "id": 900812,
+          "text": "次のレベル"
+        },
+        {
+          "id": 900813,
+          "text": "能力値"
+        },
+        {
+          "id": 900814,
+          "text": "戦闘と魔法"
+        },
+        {
+          "id": 900815,
+          "text": "経験値とゴールド"
+        },
+        {
+          "id": 900816,
+          "text": "体力と疲労"
+        },
+        {
+          "id": 900817,
+          "text": "Arena 風"
+        },
+        {
+          "id": 900818,
+          "text": "TRPG（記録用紙）"
+        },
+        {
+          "id": 900819,
+          "text": "TRPG（羊皮紙）"
+        },
+        {
+          "id": 900820,
+          "text": "キャラクターシート"
+        },
+        {
+          "id": 900821,
+          "text": "表示"
+        },
+        {
+          "id": 900822,
+          "text": "フォルダを開く"
+        },
+        {
+          "id": 900823,
+          "text": "自分で作ったキャラクターシート（HTML ファイル）を置くフォルダを開きます。初めて開く時は、同梱のサンプルの写しを置きます。"
+        },
+        {
+          "id": 900824,
+          "text": "再読込"
+        },
+        {
+          "id": 900825,
+          "text": "フォルダのキャラクターシートを読み直します。"
+        },
+        {
+          "id": 900826,
+          "text": "標準"
+        },
+        {
+          "id": 900827,
+          "text": "{name}（フォルダ）"
+        },
+        {
+          "id": 900828,
+          "text": "次のレベルまで"
+        },
+        {
+          "id": 900829,
+          "text": "能力値カード"
+        },
+        {
+          "id": 900830,
+          "text": "コンパクト"
+        },
+        {
+          "id": 900831,
+          "text": "ダッシュボード"
+        },
+        {
+          "id": 900832,
+          "text": "大きな文字"
+        },
+        {
+          "id": 900833,
+          "text": "胸"
+        },
+        {
+          "id": 900834,
+          "text": "足"
+        },
+        {
+          "id": 900835,
+          "text": "手"
+        },
+        {
+          "id": 900836,
+          "text": "頭"
+        },
+        {
+          "id": 900837,
+          "text": "腰と脚"
+        },
+        {
+          "id": 900838,
+          "text": "小さいほど守りが固い（何も着けていないと +10）"
+        },
+        {
+          "id": 900839,
+          "text": "左肩"
+        },
+        {
+          "id": 900840,
+          "text": "右肩"
+        },
+        {
+          "id": 900841,
+          "text": "状態"
+        },
+        {
+          "id": 900842,
+          "text": "・"
+        },
+        {
+          "id": 900843,
+          "text": "アーマーレーティング (AR)"
+        },
+        {
+          "id": 900844,
+          "text": "能力値カード（ダーク）"
+        },
+        {
+          "id": 900845,
+          "text": "ステータスのデザイン（キャラクターシート）"
+        },
+        {
+          "id": 900846,
+          "text": "Assist"
         },
         {
           "id": 902000,
@@ -110013,6 +110494,154 @@
           "text": "Llaves y objetos de misión"
         },
         {
+          "id": 900810,
+          "text": "Modificador"
+        },
+        {
+          "id": 900811,
+          "text": "Valor"
+        },
+        {
+          "id": 900812,
+          "text": "Siguiente nivel"
+        },
+        {
+          "id": 900813,
+          "text": "Atributos"
+        },
+        {
+          "id": 900814,
+          "text": "Combate y magia"
+        },
+        {
+          "id": 900815,
+          "text": "Experiencia y oro"
+        },
+        {
+          "id": 900816,
+          "text": "Salud y fatiga"
+        },
+        {
+          "id": 900817,
+          "text": "Estilo Arena"
+        },
+        {
+          "id": 900818,
+          "text": "Rol de mesa (hoja de registro)"
+        },
+        {
+          "id": 900819,
+          "text": "Rol de mesa (pergamino)"
+        },
+        {
+          "id": 900820,
+          "text": "Hoja de personaje"
+        },
+        {
+          "id": 900821,
+          "text": "Vista"
+        },
+        {
+          "id": 900822,
+          "text": "Abrir carpeta"
+        },
+        {
+          "id": 900823,
+          "text": "Abre la carpeta para tus propias hojas de personaje (archivos HTML). La primera vez se colocan allí copias de los ejemplos incluidos."
+        },
+        {
+          "id": 900824,
+          "text": "Recargar"
+        },
+        {
+          "id": 900825,
+          "text": "Vuelve a cargar las hojas de personaje de la carpeta."
+        },
+        {
+          "id": 900826,
+          "text": "Estándar"
+        },
+        {
+          "id": 900827,
+          "text": "{name} (carpeta)"
+        },
+        {
+          "id": 900828,
+          "text": "Para el siguiente nivel"
+        },
+        {
+          "id": 900829,
+          "text": "Tarjetas de atributos"
+        },
+        {
+          "id": 900830,
+          "text": "Compacto"
+        },
+        {
+          "id": 900831,
+          "text": "Panel"
+        },
+        {
+          "id": 900832,
+          "text": "Letra grande"
+        },
+        {
+          "id": 900833,
+          "text": "Pecho"
+        },
+        {
+          "id": 900834,
+          "text": "Pies"
+        },
+        {
+          "id": 900835,
+          "text": "Manos"
+        },
+        {
+          "id": 900836,
+          "text": "Cabeza"
+        },
+        {
+          "id": 900837,
+          "text": "Cintura y piernas"
+        },
+        {
+          "id": 900838,
+          "text": "Cuanto menor, mejor protección (+10 sin protección)"
+        },
+        {
+          "id": 900839,
+          "text": "Hombro izquierdo"
+        },
+        {
+          "id": 900840,
+          "text": "Hombro derecho"
+        },
+        {
+          "id": 900841,
+          "text": "Estado"
+        },
+        {
+          "id": 900842,
+          "text": ", "
+        },
+        {
+          "id": 900843,
+          "text": "Defensa de armadura (AR)"
+        },
+        {
+          "id": 900844,
+          "text": "Tarjetas de atributos (oscuro)"
+        },
+        {
+          "id": 900845,
+          "text": "Diseños de estado (hojas de personaje)"
+        },
+        {
+          "id": 900846,
+          "text": "Assist"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -136043,11 +136672,11 @@
         },
         {
           "id": 900124,
-          "text": "Statuswerte"
+          "text": "Attribute"
         },
         {
           "id": 900125,
-          "text": "Völker"
+          "text": "Rassen"
         },
         {
           "id": 900126,
@@ -136067,7 +136696,7 @@
         },
         {
           "id": 900130,
-          "text": "Daten & Kalender"
+          "text": "Datum & Kalender"
         },
         {
           "id": 900131,
@@ -138748,6 +139377,154 @@
         {
           "id": 900809,
           "text": "Schlüssel und Questgegenstände"
+        },
+        {
+          "id": 900810,
+          "text": "Modifikator"
+        },
+        {
+          "id": 900811,
+          "text": "Wert"
+        },
+        {
+          "id": 900812,
+          "text": "Nächste Stufe"
+        },
+        {
+          "id": 900813,
+          "text": "Attribute"
+        },
+        {
+          "id": 900814,
+          "text": "Kampf & Magie"
+        },
+        {
+          "id": 900815,
+          "text": "Erfahrung & Gold"
+        },
+        {
+          "id": 900816,
+          "text": "Gesundheit & Erschöpfung"
+        },
+        {
+          "id": 900817,
+          "text": "Arena-Stil"
+        },
+        {
+          "id": 900818,
+          "text": "Pen-&-Paper (Protokollbogen)"
+        },
+        {
+          "id": 900819,
+          "text": "Pen-&-Paper (Pergament)"
+        },
+        {
+          "id": 900820,
+          "text": "Charakterbogen"
+        },
+        {
+          "id": 900821,
+          "text": "Ansicht"
+        },
+        {
+          "id": 900822,
+          "text": "Ordner öffnen"
+        },
+        {
+          "id": 900823,
+          "text": "Öffnet den Ordner für eigene Charakterbögen (HTML-Dateien). Beim ersten Mal werden Kopien der mitgelieferten Beispiele dort abgelegt."
+        },
+        {
+          "id": 900824,
+          "text": "Neu laden"
+        },
+        {
+          "id": 900825,
+          "text": "Lädt die Charakterbögen aus dem Ordner neu."
+        },
+        {
+          "id": 900826,
+          "text": "Standard"
+        },
+        {
+          "id": 900827,
+          "text": "{name} (Ordner)"
+        },
+        {
+          "id": 900828,
+          "text": "Bis zur nächsten Stufe"
+        },
+        {
+          "id": 900829,
+          "text": "Attributkarten"
+        },
+        {
+          "id": 900830,
+          "text": "Kompakt"
+        },
+        {
+          "id": 900831,
+          "text": "Übersicht"
+        },
+        {
+          "id": 900832,
+          "text": "Großdruck"
+        },
+        {
+          "id": 900833,
+          "text": "Brust"
+        },
+        {
+          "id": 900834,
+          "text": "Füße"
+        },
+        {
+          "id": 900835,
+          "text": "Hände"
+        },
+        {
+          "id": 900836,
+          "text": "Kopf"
+        },
+        {
+          "id": 900837,
+          "text": "Hüfte und Beine"
+        },
+        {
+          "id": 900838,
+          "text": "Je niedriger, desto besser geschützt (+10 ungeschützt)"
+        },
+        {
+          "id": 900839,
+          "text": "Linke Schulter"
+        },
+        {
+          "id": 900840,
+          "text": "Rechte Schulter"
+        },
+        {
+          "id": 900841,
+          "text": "Zustand"
+        },
+        {
+          "id": 900842,
+          "text": ", "
+        },
+        {
+          "id": 900843,
+          "text": "Rüstungswert (AR)"
+        },
+        {
+          "id": 900844,
+          "text": "Attributkarten (dunkel)"
+        },
+        {
+          "id": 900845,
+          "text": "Status-Designs (Charakterbögen)"
+        },
+        {
+          "id": 900846,
+          "text": "Assist"
         },
         {
           "id": 902000,
@@ -164780,7 +165557,7 @@
         },
         {
           "id": 900124,
-          "text": "Statistiques"
+          "text": "Attributs"
         },
         {
           "id": 900125,
@@ -167485,6 +168262,154 @@
         {
           "id": 900809,
           "text": "Clés et objets de quête"
+        },
+        {
+          "id": 900810,
+          "text": "Modificateur"
+        },
+        {
+          "id": 900811,
+          "text": "Valeur"
+        },
+        {
+          "id": 900812,
+          "text": "Niveau suivant"
+        },
+        {
+          "id": 900813,
+          "text": "Attributs"
+        },
+        {
+          "id": 900814,
+          "text": "Combat et magie"
+        },
+        {
+          "id": 900815,
+          "text": "Expérience et or"
+        },
+        {
+          "id": 900816,
+          "text": "Santé et fatigue"
+        },
+        {
+          "id": 900817,
+          "text": "Style Arena"
+        },
+        {
+          "id": 900818,
+          "text": "JDR sur table (feuille de suivi)"
+        },
+        {
+          "id": 900819,
+          "text": "JDR sur table (parchemin)"
+        },
+        {
+          "id": 900820,
+          "text": "Fiche de personnage"
+        },
+        {
+          "id": 900821,
+          "text": "Affichage"
+        },
+        {
+          "id": 900822,
+          "text": "Ouvrir le dossier"
+        },
+        {
+          "id": 900823,
+          "text": "Ouvre le dossier de vos propres fiches de personnage (fichiers HTML). La première fois, des copies des exemples fournis y sont placées."
+        },
+        {
+          "id": 900824,
+          "text": "Recharger"
+        },
+        {
+          "id": 900825,
+          "text": "Recharge les fiches de personnage du dossier."
+        },
+        {
+          "id": 900826,
+          "text": "Standard"
+        },
+        {
+          "id": 900827,
+          "text": "{name} (dossier)"
+        },
+        {
+          "id": 900828,
+          "text": "Jusqu'au niveau suivant"
+        },
+        {
+          "id": 900829,
+          "text": "Cartes d'attributs"
+        },
+        {
+          "id": 900830,
+          "text": "Compact"
+        },
+        {
+          "id": 900831,
+          "text": "Tableau de bord"
+        },
+        {
+          "id": 900832,
+          "text": "Gros caractères"
+        },
+        {
+          "id": 900833,
+          "text": "Torse"
+        },
+        {
+          "id": 900834,
+          "text": "Pieds"
+        },
+        {
+          "id": 900835,
+          "text": "Mains"
+        },
+        {
+          "id": 900836,
+          "text": "Tête"
+        },
+        {
+          "id": 900837,
+          "text": "Taille et jambes"
+        },
+        {
+          "id": 900838,
+          "text": "Plus c'est bas, mieux on est protégé (+10 sans protection)"
+        },
+        {
+          "id": 900839,
+          "text": "Épaule gauche"
+        },
+        {
+          "id": 900840,
+          "text": "Épaule droite"
+        },
+        {
+          "id": 900841,
+          "text": "État"
+        },
+        {
+          "id": 900842,
+          "text": ", "
+        },
+        {
+          "id": 900843,
+          "text": "Indice d'armure (AR)"
+        },
+        {
+          "id": 900844,
+          "text": "Cartes d'attributs (sombre)"
+        },
+        {
+          "id": 900845,
+          "text": "Designs de statut (fiches de personnage)"
+        },
+        {
+          "id": 900846,
+          "text": "Assist"
         },
         {
           "id": 902000,
@@ -196224,6 +197149,154 @@
           "text": "Chiavi e oggetti delle missioni"
         },
         {
+          "id": 900810,
+          "text": "Modificatore"
+        },
+        {
+          "id": 900811,
+          "text": "Valore"
+        },
+        {
+          "id": 900812,
+          "text": "Livello successivo"
+        },
+        {
+          "id": 900813,
+          "text": "Attributi"
+        },
+        {
+          "id": 900814,
+          "text": "Combattimento e magia"
+        },
+        {
+          "id": 900815,
+          "text": "Esperienza e oro"
+        },
+        {
+          "id": 900816,
+          "text": "Salute e fatica"
+        },
+        {
+          "id": 900817,
+          "text": "Stile Arena"
+        },
+        {
+          "id": 900818,
+          "text": "GdR da tavolo (scheda di registro)"
+        },
+        {
+          "id": 900819,
+          "text": "GdR da tavolo (pergamena)"
+        },
+        {
+          "id": 900820,
+          "text": "Scheda del personaggio"
+        },
+        {
+          "id": 900821,
+          "text": "Vista"
+        },
+        {
+          "id": 900822,
+          "text": "Apri cartella"
+        },
+        {
+          "id": 900823,
+          "text": "Apre la cartella per le tue schede del personaggio (file HTML). La prima volta vi vengono copiati gli esempi inclusi."
+        },
+        {
+          "id": 900824,
+          "text": "Ricarica"
+        },
+        {
+          "id": 900825,
+          "text": "Ricarica le schede del personaggio dalla cartella."
+        },
+        {
+          "id": 900826,
+          "text": "Standard"
+        },
+        {
+          "id": 900827,
+          "text": "{name} (cartella)"
+        },
+        {
+          "id": 900828,
+          "text": "Al livello successivo"
+        },
+        {
+          "id": 900829,
+          "text": "Schede degli attributi"
+        },
+        {
+          "id": 900830,
+          "text": "Compatto"
+        },
+        {
+          "id": 900831,
+          "text": "Pannello"
+        },
+        {
+          "id": 900832,
+          "text": "Caratteri grandi"
+        },
+        {
+          "id": 900833,
+          "text": "Petto"
+        },
+        {
+          "id": 900834,
+          "text": "Piedi"
+        },
+        {
+          "id": 900835,
+          "text": "Mani"
+        },
+        {
+          "id": 900836,
+          "text": "Testa"
+        },
+        {
+          "id": 900837,
+          "text": "Vita e gambe"
+        },
+        {
+          "id": 900838,
+          "text": "Più è basso, meglio si è protetti (+10 senza protezione)"
+        },
+        {
+          "id": 900839,
+          "text": "Spalla sinistra"
+        },
+        {
+          "id": 900840,
+          "text": "Spalla destra"
+        },
+        {
+          "id": 900841,
+          "text": "Condizione"
+        },
+        {
+          "id": 900842,
+          "text": ", "
+        },
+        {
+          "id": 900843,
+          "text": "Classe armatura (AR)"
+        },
+        {
+          "id": 900844,
+          "text": "Schede degli attributi (scuro)"
+        },
+        {
+          "id": 900845,
+          "text": "Design dello stato (schede del personaggio)"
+        },
+        {
+          "id": 900846,
+          "text": "Assist"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -222270,7 +223343,7 @@
         },
         {
           "id": 900128,
-          "text": "Места и названия"
+          "text": "Места и заведения"
         },
         {
           "id": 900129,
@@ -224959,6 +226032,154 @@
         {
           "id": 900809,
           "text": "Ключи и квестовые предметы"
+        },
+        {
+          "id": 900810,
+          "text": "Модификатор"
+        },
+        {
+          "id": 900811,
+          "text": "Значение"
+        },
+        {
+          "id": 900812,
+          "text": "Следующий уровень"
+        },
+        {
+          "id": 900813,
+          "text": "Характеристики"
+        },
+        {
+          "id": 900814,
+          "text": "Бой и магия"
+        },
+        {
+          "id": 900815,
+          "text": "Опыт и золото"
+        },
+        {
+          "id": 900816,
+          "text": "Здоровье и усталость"
+        },
+        {
+          "id": 900817,
+          "text": "В стиле Arena"
+        },
+        {
+          "id": 900818,
+          "text": "Настольная РПГ (бланк записи)"
+        },
+        {
+          "id": 900819,
+          "text": "Настольная РПГ (пергамент)"
+        },
+        {
+          "id": 900820,
+          "text": "Лист персонажа"
+        },
+        {
+          "id": 900821,
+          "text": "Вид"
+        },
+        {
+          "id": 900822,
+          "text": "Открыть папку"
+        },
+        {
+          "id": 900823,
+          "text": "Открывает папку для ваших листов персонажа (файлы HTML). При первом открытии туда копируются прилагаемые образцы."
+        },
+        {
+          "id": 900824,
+          "text": "Обновить"
+        },
+        {
+          "id": 900825,
+          "text": "Заново загружает листы персонажа из папки."
+        },
+        {
+          "id": 900826,
+          "text": "Стандартный"
+        },
+        {
+          "id": 900827,
+          "text": "{name} (папка)"
+        },
+        {
+          "id": 900828,
+          "text": "До следующего уровня"
+        },
+        {
+          "id": 900829,
+          "text": "Карточки характеристик"
+        },
+        {
+          "id": 900830,
+          "text": "Компактный"
+        },
+        {
+          "id": 900831,
+          "text": "Панель"
+        },
+        {
+          "id": 900832,
+          "text": "Крупный шрифт"
+        },
+        {
+          "id": 900833,
+          "text": "Грудь"
+        },
+        {
+          "id": 900834,
+          "text": "Ступни"
+        },
+        {
+          "id": 900835,
+          "text": "Руки"
+        },
+        {
+          "id": 900836,
+          "text": "Голова"
+        },
+        {
+          "id": 900837,
+          "text": "Пояс и ноги"
+        },
+        {
+          "id": 900838,
+          "text": "Чем меньше, тем лучше защита (+10 без защиты)"
+        },
+        {
+          "id": 900839,
+          "text": "Левое плечо"
+        },
+        {
+          "id": 900840,
+          "text": "Правое плечо"
+        },
+        {
+          "id": 900841,
+          "text": "Состояние"
+        },
+        {
+          "id": 900842,
+          "text": ", "
+        },
+        {
+          "id": 900843,
+          "text": "Класс брони (AR)"
+        },
+        {
+          "id": 900844,
+          "text": "Карточки характеристик (тёмные)"
+        },
+        {
+          "id": 900845,
+          "text": "Дизайны статуса (листы персонажа)"
+        },
+        {
+          "id": 900846,
+          "text": "Assist"
         },
         {
           "id": 902000,

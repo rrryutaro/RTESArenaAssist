@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Commandes et interface</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Commandes et interface</h1>
+
+<h2>Feuille de personnage — Page 1</h2>
+<table>
+  <tr><th>Champ</th><th>Description</th></tr>
+  <tr><td>Nom / Race / Classe</td><td>Identité de base du personnage</td></tr>
+  <tr><td>Expérience</td><td>Points d'expérience accumulés à ce jour</td></tr>
+  <tr><td>Niveau</td><td>Niveau actuel du personnage</td></tr>
+  <tr><td>Santé</td><td>Points de vie actuels</td></tr>
+  <tr><td>Fatigue</td><td>De 2 à 200</td></tr>
+  <tr><td>Or</td><td>Or en votre possession</td></tr>
+  <tr><td>Page suivante</td><td>Passe à la page 2 (liste de l'équipement)</td></tr>
+  <tr><td>Terminé</td><td>Ferme la feuille de personnage</td></tr>
+</table>
+
+<h2>Feuille de personnage — Page 2 (Équipement)</h2>
+<table>
+  <tr><th>Couleur</th><th>Signification</th></tr>
+  <tr><td style="color:#ffd700">Jaune</td><td>Objet actuellement équipé</td></tr>
+  <tr><td style="color:#d2b48c">Beige</td><td>Objet équipable</td></tr>
+  <tr><td style="color:#ff6b6b">Rouge</td><td>Ne peut pas être équipé</td></tr>
+  <tr><td style="color:#00ffff">Cyan</td><td>Objet magique non identifié</td></tr>
+  <tr><td style="color:#88ffff">Cyan clair</td><td>Objet magique non identifié (équipé)</td></tr>
+</table>
+<p><strong>Clic gauche</strong> pour équiper un objet. <strong>Clic droit</strong> pour les informations sur l'objet. Les flèches de défilement permettent de parcourir jusqu'à 40 objets.</p>
+<p><strong>Jeter</strong>&nbsp;: jette l'objet surligné. <strong>Grimoire</strong>&nbsp;: affiche les sorts. <strong>Quitter</strong>&nbsp;: retourne à la page 1.</p>
+
+<h2>Commandes à la souris</h2>
+<table>
+  <tr><th>Action</th><th>Effet</th></tr>
+  <tr><td>Clic gauche (dans le monde)</td><td>Avancer / interagir / équiper</td></tr>
+  <tr><td>Clic droit (dans le monde)</td><td>Reculer</td></tr>
+  <tr><td>Clic gauche (interface)</td><td>Sélectionner / confirmer</td></tr>
+  <tr><td>Clic droit (objet)</td><td>Afficher les informations sur l'objet</td></tr>
+  <tr><td>Souris vers la gauche/droite</td><td>Tourner à gauche/droite</td></tr>
+  <tr><td>Souris vers le haut/bas</td><td>Regarder vers le haut/bas</td></tr>
+</table>
+
+<h2>Commandes au clavier</h2>
+<table>
+  <tr><th>Touche</th><th>Action</th></tr>
+  <tr><td><span class="key">↑</span> / <span class="key">W</span></td><td>Avancer</td></tr>
+  <tr><td><span class="key">↓</span> / <span class="key">S</span></td><td>Reculer</td></tr>
+  <tr><td><span class="key">←</span> / <span class="key">A</span></td><td>Tourner à gauche</td></tr>
+  <tr><td><span class="key">→</span> / <span class="key">D</span></td><td>Tourner à droite</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>Afficher/masquer la carte automatique</td></tr>
+  <tr><td><span class="key">C</span></td><td>Feuille de personnage</td></tr>
+  <tr><td><span class="key">L</span></td><td>Journal</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>Menu / retour</td></tr>
+  <tr><td><span class="key">F1</span></td><td>Aide</td></tr>
+  <tr><td><span class="key">Alt+F4</span></td><td>Quitter le jeu</td></tr>
+</table>
+
+<div class="note">
+<strong>Astuces DOSBox&nbsp;:</strong> <span class="key">Ctrl+F10</span> active ou désactive la capture de la souris. <span class="key">Alt+Enter</span> bascule entre le plein écran et le mode fenêtré.
+</div>
+
+<h2>Actions en jeu</h2>
+<table>
+  <tr><th>Action</th><th>Description</th></tr>
+  <tr><td>Parler</td><td>Parler aux PNJ pour obtenir des informations et des quêtes</td></tr>
+  <tr><td>Voler</td><td>Voler un objet à une cible (réussite selon AGI)</td></tr>
+  <tr><td>Prendre</td><td>Ramasser un objet au sol</td></tr>
+  <tr><td>Repos / Camper</td><td>Récupérer santé et fatigue&nbsp;; Ria peut apparaître en rêve</td></tr>
+  <tr><td>Lancer</td><td>Utiliser un sort de votre grimoire</td></tr>
+  <tr><td>Utiliser</td><td>Utiliser un objet tenu en main</td></tr>
+</table>
+
+</body>
+</html>

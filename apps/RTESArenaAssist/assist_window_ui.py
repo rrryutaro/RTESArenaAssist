@@ -9,7 +9,7 @@ import assist_settings as settings
 from assist_constants import WIN_W, WIN_H, WIN_MIN_W, WIN_MIN_H
 from version import version_string
 from layout_manager import TrackMode
-from attributes_panel import AttributesPanel
+from charsheet.status_display import StatusDisplay
 from tabs.tab_translate import TabTranslate
 from tabs.tab_status import TabStatus
 from tabs.tab_dict import TabDict
@@ -100,9 +100,9 @@ def build_ui(win: 'AssistWindow') -> None:
     conn_layout.addWidget(win._close_btn)
     root.addWidget(conn_bar)
     win._tabs = QTabWidget()
-    win._attributes_panel = AttributesPanel()
-    win._tab_translate = TabTranslate(win._attributes_panel)
-    win._tab_status = TabStatus(win._attributes_panel)
+    win._status_display = StatusDisplay()
+    win._tab_translate = TabTranslate(win._status_display)
+    win._tab_status = TabStatus(win._status_display)
     win._tab_dict = TabDict()
     win._tab_save = TabSave()
     win._tab_manual = TabManual()
@@ -145,9 +145,9 @@ def build_ui(win: 'AssistWindow') -> None:
     elif win._tab_screen_judge is not None:
         win._tab_screen_judge.hide()
     root.addWidget(win._tabs)
-    win._tabs.currentChanged.connect(lambda *_: win._update_attr_panel_placement())
-    win._tab_translate.panel_mode_changed.connect(lambda *_: win._update_attr_panel_placement())
-    win._update_attr_panel_placement()
+    win._tabs.currentChanged.connect(lambda *_: win._update_status_display_placement())
+    win._tab_translate.panel_mode_changed.connect(lambda *_: win._update_status_display_placement())
+    win._update_status_display_placement()
     win._tabs.currentChanged.connect(lambda *_: win._update_save_tab_placement())
     win._tab_translate.panel_mode_changed.connect(lambda *_: win._update_save_tab_placement())
     win._update_save_tab_placement()

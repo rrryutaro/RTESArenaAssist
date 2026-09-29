@@ -32,7 +32,7 @@ def _race_name_candidates(race_en: str) -> list[str]:
     else:
         cands = (arena_data.race_display_name(idx), arena_data.race_display_name(idx, 'ja'))
     for name in cands:
-        if name and name != race_en and (name not in out):
+        if name and name not in out:
             out.append(name)
     return out
 
@@ -109,6 +109,7 @@ for _race_id, _pen, _pidx, _ren, _dis in RACE_LIST_ORDER:
     if _key.endswith('s'):
         _RACE_EN_TO_ID[_key[:-1]] = _race_id
 _RACE_EN_TO_ID.update({'wood elf': 'wood_elf', 'high elf': 'high_elf', 'dark elf': 'dark_elf', 'wood elves': 'wood_elf', 'high elves': 'high_elf', 'dark elves': 'dark_elf', 'khajiit': 'khajiit'})
+_RACE_EN_NAMES: tuple[str, ...] = tuple(sorted(_RACE_EN_TO_ID, key=len, reverse=True))
 
 def _resolve_race_id_from_heading(heading_text: str) -> Optional[str]:
     plain = re.sub('<[^>]+>', '', heading_text).strip()
@@ -119,6 +120,9 @@ def _resolve_race_id_from_heading(heading_text: str) -> Optional[str]:
         en_in = m.group(1).strip().lower()
         if en_in in _RACE_EN_TO_ID:
             return _RACE_EN_TO_ID[en_in]
+    for en_name in _RACE_EN_NAMES:
+        if re.search('(?<![A-Za-z])' + re.escape(en_name) + '(?![A-Za-z])', plain, re.IGNORECASE):
+            return _RACE_EN_TO_ID[en_name]
     candidates: list[tuple[int, str]] = []
     for race_id, _pen, _pidx, race_en, _dis in RACE_LIST_ORDER:
         for cand in _race_name_candidates(race_en):
@@ -175,12 +179,8 @@ def _parse_race_sections_full(html_text: str) -> dict[str, str]:
 _parse_race_sections = _parse_race_sections_simple
 
 def _read_manual_html(mode: str, lang: str) -> str:
-    import app_resources
-    for L in (lang, 'ja'):
-        txt = app_resources.read_text(f'manual/{mode}/{L}/{_RACE_DOC}')
-        if txt is not None:
-            return txt
-    return ''
+    from services import manual_pages
+    return manual_pages.read_page(mode, _RACE_DOC, lang)
 
 def _read_base_html(lang: str) -> str:
     return _read_manual_html('simple', lang)

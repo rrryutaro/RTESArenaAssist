@@ -8,26 +8,19 @@ import i18n_helper as i18n
 from assist_constants import Dark
 _MODE_SIMPLE = 'simple'
 _MODE_FULL = 'full'
+_MODE_ASSIST = 'assist'
+_MODE_BUTTON_WIDTH = 56
 _LINK_COLOR = Dark.ACCENT
 
 def _link(href: str, text: str) -> str:
     return f'<a href="{href}" style="color:{_LINK_COLOR}">{html.escape(text)}</a>'
 
-def _manual_subdir(mode: str) -> str:
-    import app_resources
-    lang = i18n.current_lang()
-    rel = f'manual/{mode}/{lang}'
-    if app_resources.is_dir(rel) and any((f.endswith('.html') for f in app_resources.listdir(rel))):
-        return rel
-    return f'manual/{mode}/ja'
-
 def _list_docs(mode: str) -> list[tuple[str, str]]:
     if mode == _MODE_FULL:
         from services import manual_pack
         return manual_pack.list_installed_docs(i18n.current_lang())
-    import app_resources
-    d = _manual_subdir(mode)
-    return sorted(((os.path.splitext(f)[0], f'{d}/{f}') for f in app_resources.listdir(d) if f.lower().endswith('.html')))
+    from services import manual_pages
+    return manual_pages.list_pages(mode)
 
 def _language_name(code: str) -> str:
     for entry in i18n.available_languages():
@@ -97,16 +90,18 @@ class TabManual(QWidget):
         toolbar_row.setSpacing(4)
         self._btn_simple = QPushButton(i18n.tr('manual.mode.simple'))
         self._btn_full = QPushButton(i18n.tr('manual.mode.full'))
-        for btn in (self._btn_simple, self._btn_full):
-            btn.setCheckable(True)
-            btn.setFixedWidth(56)
-        self._btn_simple.setChecked(True)
+        self._btn_assist = QPushButton(i18n.tr('manual.mode.assist'))
+        self._mode_buttons = (self._btn_simple, self._btn_full, self._btn_assist)
         self._mode_group = QButtonGroup(self)
         self._mode_group.setExclusive(True)
-        self._mode_group.addButton(self._btn_simple)
-        self._mode_group.addButton(self._btn_full)
+        for btn in self._mode_buttons:
+            btn.setCheckable(True)
+            btn.setFixedWidth(_MODE_BUTTON_WIDTH)
+            self._mode_group.addButton(btn)
+        self._btn_simple.setChecked(True)
         self._btn_simple.clicked.connect(lambda: self._switch_mode(_MODE_SIMPLE))
         self._btn_full.clicked.connect(lambda: self._switch_mode(_MODE_FULL))
+        self._btn_assist.clicked.connect(lambda: self._switch_mode(_MODE_ASSIST))
         self._search_edit = QLineEdit()
         self._search_edit.setPlaceholderText(i18n.tr('manual.search_placeholder'))
         self._search_edit.setMaximumWidth(180)
@@ -120,8 +115,8 @@ class TabManual(QWidget):
         self._match_lbl = QLabel('')
         self._match_lbl.setMinimumWidth(56)
         self._match_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        toolbar_row.addWidget(self._btn_simple)
-        toolbar_row.addWidget(self._btn_full)
+        for btn in self._mode_buttons:
+            toolbar_row.addWidget(btn)
         toolbar_row.addSpacing(8)
         toolbar_row.addWidget(self._search_edit)
         toolbar_row.addWidget(self._prev_btn)
@@ -157,6 +152,15 @@ class TabManual(QWidget):
         root.addWidget(splitter, 1)
         self._prev_btn.setEnabled(False)
         self._next_btn.setEnabled(False)
+
+    def _fit_mode_buttons(self) -> None:
+        width = max(_MODE_BUTTON_WIDTH, *(btn.sizeHint().width() for btn in self._mode_buttons))
+        for btn in self._mode_buttons:
+            btn.setFixedWidth(width)
+
+    def showEvent(self, event) -> None:
+        self._fit_mode_buttons()
+        super().showEvent(event)
 
     def _switch_mode(self, mode: str):
         if self._mode == mode:

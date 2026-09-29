@@ -55,6 +55,13 @@ def is_status_state_line(line: str) -> bool:
         return False
     s = line.strip()
     return bool(DISEASE_PATTERN.match(s) or FORTIFY_PATTERN.match(s) or HEALTH_PATTERN.match(s))
+EFFECT_NAMES_EN: tuple[str, ...] = _HEALTH_EN
+
+def effect_word(index: int) -> Optional[str]:
+    if not 0 <= index < len(_HEALTH_EN) or not _HEALTH_EN[index]:
+        return None
+    surface = _HEALTH_EN[index]
+    return _sbt_value('health', surface, _HEALTH_EN) or surface
 
 def translate_condition_name(value: str) -> Optional[str]:
     if not value or not value.strip():

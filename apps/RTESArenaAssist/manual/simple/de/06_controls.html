@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Steuerung &amp; Benutzeroberfläche</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Steuerung &amp; Benutzeroberfläche</h1>
+
+<h2>Charakterbogen — Seite 1</h2>
+<table>
+  <tr><th>Feld</th><th>Beschreibung</th></tr>
+  <tr><td>Name / Rasse / Klasse</td><td>Grundlegende Identität des Charakters</td></tr>
+  <tr><td>Erfahrung</td><td>Aktuell angesammelte Erfahrungspunkte</td></tr>
+  <tr><td>Stufe</td><td>Aktuelle Charakterstufe</td></tr>
+  <tr><td>Gesundheit</td><td>Aktuelle Trefferpunkte</td></tr>
+  <tr><td>Erschöpfung</td><td>Reicht von 2 bis 200</td></tr>
+  <tr><td>Gold</td><td>Aktuelles Gold im Besitz</td></tr>
+  <tr><td>Nächste Seite</td><td>Zu Seite 2 (Ausrüstungsliste)</td></tr>
+  <tr><td>Fertig</td><td>Schließt den Charakterbogen</td></tr>
+</table>
+
+<h2>Charakterbogen — Seite 2 (Ausrüstung)</h2>
+<table>
+  <tr><th>Farbe</th><th>Bedeutung</th></tr>
+  <tr><td style="color:#ffd700">Gelb</td><td>Derzeit ausgerüsteter Gegenstand</td></tr>
+  <tr><td style="color:#d2b48c">Beige</td><td>Ausrüstbarer Gegenstand</td></tr>
+  <tr><td style="color:#ff6b6b">Rot</td><td>Kann nicht ausgerüstet werden</td></tr>
+  <tr><td style="color:#00ffff">Cyan</td><td>Nicht identifizierter magischer Gegenstand</td></tr>
+  <tr><td style="color:#88ffff">Helles Cyan</td><td>Nicht identifizierter magischer Gegenstand (ausgerüstet)</td></tr>
+</table>
+<p><strong>Linksklick</strong>, um einen Gegenstand auszurüsten. <strong>Rechtsklick</strong> für Informationen zum Gegenstand. Mit den Bildlaufpfeilen blätterst du durch bis zu 40 Gegenstände.</p>
+<p><strong>Fallen lassen</strong>: Lässt den markierten Gegenstand fallen. <strong>Zauberbuch</strong>: Zeigt die Zauber an. <strong>Beenden</strong>: Zurück zu Seite 1.</p>
+
+<h2>Maussteuerung</h2>
+<table>
+  <tr><th>Aktion</th><th>Wirkung</th></tr>
+  <tr><td>Linksklick (in der Welt)</td><td>Vorwärts gehen / interagieren / ausrüsten</td></tr>
+  <tr><td>Rechtsklick (in der Welt)</td><td>Rückwärts gehen</td></tr>
+  <tr><td>Linksklick (Oberfläche)</td><td>Auswählen / bestätigen</td></tr>
+  <tr><td>Rechtsklick (Gegenstand)</td><td>Informationen zum Gegenstand anzeigen</td></tr>
+  <tr><td>Maus nach links/rechts bewegen</td><td>Nach links/rechts drehen</td></tr>
+  <tr><td>Maus nach oben/unten bewegen</td><td>Nach oben/unten blicken</td></tr>
+</table>
+
+<h2>Tastatursteuerung</h2>
+<table>
+  <tr><th>Taste</th><th>Aktion</th></tr>
+  <tr><td><span class="key">↑</span> / <span class="key">W</span></td><td>Vorwärts gehen</td></tr>
+  <tr><td><span class="key">↓</span> / <span class="key">S</span></td><td>Rückwärts gehen</td></tr>
+  <tr><td><span class="key">←</span> / <span class="key">A</span></td><td>Nach links drehen</td></tr>
+  <tr><td><span class="key">→</span> / <span class="key">D</span></td><td>Nach rechts drehen</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>Automap ein-/ausblenden</td></tr>
+  <tr><td><span class="key">C</span></td><td>Charakterbogen</td></tr>
+  <tr><td><span class="key">L</span></td><td>Logbuch</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>Menü / zurück</td></tr>
+  <tr><td><span class="key">F1</span></td><td>Hilfe</td></tr>
+  <tr><td><span class="key">Alt+F4</span></td><td>Spiel beenden</td></tr>
+</table>
+
+<div class="note">
+<strong>DOSBox-Tipps:</strong> <span class="key">Ctrl+F10</span> schaltet die Mauserfassung um. <span class="key">Alt+Enter</span> wechselt zwischen Vollbild und Fenstermodus.
+</div>
+
+<h2>Aktionen im Spiel</h2>
+<table>
+  <tr><th>Aktion</th><th>Beschreibung</th></tr>
+  <tr><td>Sprechen</td><td>Mit NSCs sprechen, um Informationen und Quests zu erhalten</td></tr>
+  <tr><td>Stehlen</td><td>Einen Gegenstand von einem Ziel stehlen (Erfolg abhängig von AGI)</td></tr>
+  <tr><td>Nehmen</td><td>Einen Gegenstand vom Boden aufheben</td></tr>
+  <tr><td>Rasten / Lager</td><td>Gesundheit und Erschöpfung wiederherstellen; Ria kann in Träumen erscheinen</td></tr>
+  <tr><td>Wirken</td><td>Einen Zauber aus deinem Zauberbuch einsetzen</td></tr>
+  <tr><td>Benutzen</td><td>Einen gehaltenen Gegenstand benutzen</td></tr>
+</table>
+
+</body>
+</html>

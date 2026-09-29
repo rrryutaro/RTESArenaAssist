@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Combate y magia</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.danger { background: #2e1a1a; border-left: 3px solid #a03030; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Combate y magia</h1>
+
+<h2>Fundamentos del combate</h2>
+<p>Arena usa combate en tiempo real. Haz clic para atacar. Que aciertes, y cuánto daño hagas, depende de tus atributos, de tu equipo y de la defensa de armadura (AR) del enemigo.</p>
+
+<h2>Factores de la probabilidad de golpe</h2>
+<table>
+  <tr><th>Factor</th><th>Efecto</th></tr>
+  <tr><td>AGI (Agilidad)</td><td>Bonificación para golpear del atacante; bonificación para defender del defensor</td></tr>
+  <tr><td>LUC (Suerte)</td><td>Modificador aleatorio aplicado a todas las acciones</td></tr>
+  <tr><td>Raza Redguard</td><td>+nivel÷3 para golpear y al daño (solo cuerpo a cuerpo)</td></tr>
+  <tr><td>Raza Elfo del bosque</td><td>+nivel÷3 para golpear y al daño (solo arcos)</td></tr>
+  <tr><td>Raza Elfo oscuro</td><td>+nivel÷4 para golpear y al daño (cuerpo a cuerpo y a distancia)</td></tr>
+</table>
+
+<h2>Daño</h2>
+<p>Daño = valor base del arma + modificador de STR + bonificación racial. La defensa de armadura (AR) del objetivo reduce el daño recibido: cuanto menor es la AR, mejor es la protección.</p>
+
+<h2>Golpe crítico</h2>
+<div class="note">
+<strong>Golpe crítico = 3× el daño normal del arma.</strong><br>
+Los personajes de las clases de ladrón ganan por nivel una probabilidad de asestarlo. Los Asesinos tienen la mayor probabilidad. Los Pícaros, los Bandidos, los Bardos, los Acrobatas, los Monjes, los Arqueros (con arcos) y las Cuchillas nocturnas también tienen esta capacidad.
+</div>
+
+<h2>Tirada de salvación</h2>
+<p>Cuando un hechizo o un efecto especial te tiene como objetivo, una tirada de salvación superada reduce o anula el efecto. La WIL (Voluntad) determina la probabilidad de éxito.</p>
+<table>
+  <tr><th>Clase / Raza</th><th>Resultado de la salvación</th></tr>
+  <tr><td>Por defecto</td><td>Éxito = la mitad de daño</td></tr>
+  <tr><td>Monje</td><td>Éxito = daño cero</td></tr>
+  <tr><td>Nórdico</td><td>Salvación superada contra frío = daño cero</td></tr>
+  <tr><td>Breton</td><td>Salvación superada contra magia = daño cero</td></tr>
+</table>
+
+<h2>Estados</h2>
+<table>
+  <tr><th>Estado</th><th>Efecto</th><th>Cómo se quita</th></tr>
+  <tr><td>Enfermo</td><td>Penalizaciones a los atributos, curación mermada</td><td>Templo, hechizo de curación</td></tr>
+  <tr><td>Envenenado</td><td>Daño continuo con el tiempo</td><td>Templo, poción de curar veneno</td></tr>
+  <tr><td>Maldito</td><td>Penalizaciones a los atributos</td><td>Templo</td></tr>
+  <tr><td>Bendecido</td><td>Bonificaciones temporales a los atributos (beneficioso)</td><td>Se pasa con el tiempo</td></tr>
+  <tr><td>Paralizado</td><td>No puedes actuar</td><td>Se pasa, hechizo de Disipar</td></tr>
+  <tr><td>Silenciado</td><td>No puedes lanzar hechizos</td><td>Se pasa, hechizo de Disipar</td></tr>
+  <tr><td>Sobrecargado</td><td>Penalizaciones al movimiento y a las acciones</td><td>Soltar objetos / Fortificar</td></tr>
+</table>
+<div class="danger">
+<strong>Inmunes a la parálisis:</strong> el Caballero y el Alto elfo son totalmente inmunes a la parálisis.<br>
+<strong>Inmune al veneno:</strong> el Bárbaro es totalmente inmune al veneno.
+</div>
+
+<h2>Sistema de magia</h2>
+<p>Los hechizos se eligen en el Libro de hechizos (página 2 de la hoja de personaje). Cada hechizo cuesta puntos de hechizo (SP). Cuando los SP llegan a 0, no se puede lanzar ningún hechizo. Los SP se calculan como INT × un multiplicador propio de cada clase.</p>
+
+<h2>Multiplicadores de puntos de hechizo</h2>
+<table>
+  <tr><th>Clase</th><th>SP = INT ×</th></tr>
+  <tr><td>Mago</td><td>× 2</td></tr>
+  <tr><td>Hechicero</td><td>Hasta × 3 (absorbidos de hechizos, no generados por sí mismo)</td></tr>
+  <tr><td>Sanador</td><td>× 1.75</td></tr>
+  <tr><td>Mago de batalla</td><td>× 1.75</td></tr>
+  <tr><td>Guerrero arcano</td><td>× 1.5</td></tr>
+  <tr><td>Cuchilla nocturna</td><td>× 1.5</td></tr>
+  <tr><td>Bardo</td><td>= INT (× 1)</td></tr>
+</table>
+
+<h2>Categorías de hechizos</h2>
+<table>
+  <tr><th>Categoría</th><th>Ejemplos</th><th>Propósito</th></tr>
+  <tr><td>Daño</td><td>Daño de fuego, Escarcha, Rayo</td><td>Hacer daño a los enemigos</td></tr>
+  <tr><td>Curación</td><td>Curar, Curar a otro</td><td>Recuperar puntos de salud</td></tr>
+  <tr><td>Defensa</td><td>Escudo, Fortificar, Caída lenta</td><td>Mejorar la protección</td></tr>
+  <tr><td>Movimiento</td><td>Levitar, Teleportar, Llamar de regreso</td><td>Viajar y escapar</td></tr>
+  <tr><td>Sigilo</td><td>Invisibilidad, Camaleón</td><td>Ocultarte</td></tr>
+  <tr><td>Detección</td><td>Detectar vida, Ojo nocturno, Luz</td><td>Ver a los enemigos y el entorno</td></tr>
+  <tr><td>Debilitamiento</td><td>Paralizar, Silencio, Encantar</td><td>Incapacitar a los enemigos</td></tr>
+  <tr><td>Utilidad</td><td>Abrir, Identificar, Paso de pared</td><td>Abrir cerraduras, tasar, atravesar muros</td></tr>
+</table>
+
+<h2>Creador de hechizos</h2>
+<p>Disponible en el Gremio de Magos. Crea hechizos a medida combinando efectos, alcance, duración y magnitud. Los Sanadores tienen descuento en los efectos defensivos; los Magos de batalla, en los efectos ofensivos.</p>
+
+<h2>Experiencia y subida de nivel</h2>
+<p>Ganas experiencia derrotando enemigos y completando misiones. Al subir de nivel aumentan los atributos y la salud (y los SP de los lanzadores).</p>
+<div class="note">
+<strong>Velocidad de subida de nivel (de más rápida a más lenta):</strong> Ladrón → Guerrero → subclases de guerrero → subclases de ladrón → Mago → subclases de mago
+</div>
+
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Classi del Personaggio</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 13px; color: #5bc0de; margin-top: 4px; margin-bottom: 2px; }
+h3 { font-size: 12px; color: #7a8899; margin: 14px 0 2px 0; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+p { margin: 0 0 6px 0; font-size: 12px; }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 10px 0; font-size: 11px; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 3px 6px; text-align: left; border: 1px solid #1e3a4a; }
+td { padding: 3px 6px; border: 1px solid #1e3a4a; }
+tr:nth-child(even) { background: #111e2c; }
+.ability { color: #a8d8a8; font-size: 11px; margin: 2px 0 6px 0; }
+.section-header { background: #1c2e3f; color: #a0c4d8; font-size: 13px; font-weight: bold; padding: 5px 8px; margin: 18px 0 6px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Classi del Personaggio (tutte e 18)</h1>
+
+<div class="section-header">Classi da ladro — Statistiche principali: Agilità (AGI) e Intelligenza (INT)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">Tutte le classi da ladro possono scassinare serrature, borseggiare e rubare. Anche un'alta Velocità è desiderabile.</p>
+
+<h2>Ladro</h2>
+<p>Rapido e agile. Utile in combattimento per attacchi a sorpresa, ricognizione e colpi critici. La classe più veloce a guadagnare livelli di esperienza.</p>
+<div class="ability">★ Guadagna probabilità di colpo critico (danno ×3) a ogni livello</div>
+<table><tr><th>Armi</th><td>Pugnale, Spada corta, Spada larga, Sciabola, Ascia da guerra, Arco corto</td></tr>
+<tr><th>Armatura</th><td>Solo Cuoio</td></tr><tr><th>Scudo</th><td>Solo Brocchiero</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d10</td></tr></table>
+
+<h2>Scassinatore</h2>
+<p>Esperto nello scassinare serrature e nell'infiltrarsi in aree riservate. Non può usare scudi.</p>
+<div class="ability">★ Probabilità di colpo critico a ogni livello (inferiore a quella del Ladro)</div>
+<table><tr><th>Armi</th><td>Pugnale, Spada corta, Tanto, Arco corto</td></tr>
+<tr><th>Armatura</th><td>Solo Cuoio</td></tr><tr><th>Scudo</th><td>Nessuno</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d8</td></tr></table>
+
+<h2>Assassino</h2>
+<p>Votato all'uccisione. La probabilità di colpo critico più alta di tutte le classi. Può usare qualsiasi arma, ma è limitato all'armatura di cuoio e non può usare scudi.</p>
+<div class="ability">★ La probabilità di colpo critico per livello più alta di tutte le classi</div>
+<table><tr><th>Armi</th><td>Qualsiasi</td></tr>
+<tr><th>Armatura</th><td>Solo Cuoio</td></tr><tr><th>Scudo</th><td>Nessuno</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d12</td></tr></table>
+
+<h2>Furfante</h2>
+<p>Un ladro addestrato alle armi e alle armature. Paragonabile ai guerrieri in combattimento, pur conservando le capacità di scasso e borseggio.</p>
+<div class="ability">★ Lieve probabilità di colpo critico a ogni livello</div>
+<table><tr><th>Armi</th><td>Qualsiasi</td></tr>
+<tr><th>Armatura</th><td>Solo Cuoio o Maglia</td></tr><tr><th>Scudo</th><td>Qualsiasi tranne lo Scudo a torre</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d14</td></tr></table>
+
+<h2>Acrobata</h2>
+<p>Agile in modo soprannaturale: il personaggio più veloce a piedi. Riduce passivamente la probabilità base di colpire dei nemici.</p>
+<div class="ability">★ Riduce la probabilità base di colpire dell'avversario / Probabilità di colpo critico a ogni livello</div>
+<table><tr><th>Armi</th><td>Pugnale, Spada corta, Spada larga, Tanto, Arco corto</td></tr>
+<tr><th>Armatura</th><td>Solo Cuoio</td></tr><tr><th>Scudo</th><td>Nessuno</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d8</td></tr></table>
+
+<h2>Bardo</h2>
+<p>«Tuttofare». Se la cava con colpi critici, armi, furto e magia. Punti Incantesimo = INT.</p>
+<table><tr><th>Armi</th><td>Pugnale, Spada corta, Spada larga, Sciabola, Mazza, Ascia da guerra, Arco corto</td></tr>
+<tr><th>Armatura</th><td>Solo Cuoio o Maglia</td></tr><tr><th>Scudo</th><td>Qualsiasi tranne lo Scudo a torre</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d10</td></tr></table>
+
+<div class="section-header">Classi da guerriero — Statistiche principali: Forza (STR) e Resistenza (END)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">Non possono lanciare incantesimi, salvo dove indicato. Anche l'Agilità è importante per la Classe Armatura.</p>
+
+<h2>Guerriero</h2>
+<p>La spina dorsale di Tamriel. Può usare qualsiasi arma, armatura o scudo. Il secondo più veloce a guadagnare livelli. Solo Guerrieri, Cavalieri e Ranger possono indossare armature di piastre incantate.</p>
+<table><tr><th>Armi</th><td>Qualsiasi</td></tr><tr><th>Armatura</th><td>Qualsiasi</td></tr><tr><th>Scudo</th><td>Qualsiasi</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d20</td></tr></table>
+
+<h2>Cavaliere</h2>
+<p>Combattente nobile. Ripara automaticamente tutte le armi e le armature nell'inventario.</p>
+<div class="ability">★ Immune alla paralisi (incantesimi e veleno) / Ripara automaticamente armi e armature</div>
+<table><tr><th>Armi</th><td>Qualsiasi</td></tr><tr><th>Armatura</th><td>Non di Cuoio</td></tr><tr><th>Scudo</th><td>Qualsiasi</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d18</td></tr></table>
+
+<h2>Ranger</h2>
+<p>Cercatore di tracce ed esperto di sopravvivenza. Riduce automaticamente il tempo di viaggio tra le città. Infligge un danno bonus pari al livello.</p>
+<div class="ability">★ Tempo di viaggio ridotto tra le città / Danno bonus = livello</div>
+<table><tr><th>Armi</th><td>Qualsiasi</td></tr><tr><th>Armatura</th><td>Qualsiasi</td></tr><tr><th>Scudo</th><td>Qualsiasi tranne lo Scudo a torre</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d18</td></tr></table>
+
+<h2>Arciere</h2>
+<p>Tiratore scelto specializzato nelle armi da lancio. Probabilità di colpo critico con gli archi a ogni livello. Non può usare scudi.</p>
+<div class="ability">★ Probabilità di colpo critico con le armi da lancio a ogni livello</div>
+<table><tr><th>Armi</th><td>Qualsiasi</td></tr><tr><th>Armatura</th><td>Solo Cuoio o Maglia</td></tr><tr><th>Scudo</th><td>Nessuno</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d16</td></tr></table>
+
+<h2>Monaco</h2>
+<p>Mente e corpo temprati fino a diventare una macchina da guerra. Niente armatura né scudo. La probabilità dei nemici di colpirlo diminuisce a ogni livello. Un tiro salvezza riuscito contro gli incantesimi annulla il danno.</p>
+<div class="ability">★ Riduce la probabilità di colpire dei nemici a ogni livello / Tiro salvezza riuscito contro gli incantesimi = danno zero / Colpo critico (solo in mischia)</div>
+<table><tr><th>Armi</th><td>Qualsiasi</td></tr><tr><th>Armatura</th><td>Nessuna</td></tr><tr><th>Scudo</th><td>Nessuno</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d14</td></tr></table>
+
+<h2>Barbaro</h2>
+<p>Sopravvissuto di terre inospitali. La salute iniziale più alta di tutte le classi. Recupera salute bonus in base alla Resistenza.</p>
+<div class="ability">★ Immune al veleno / Salute bonus recuperata a ogni riposo in base a END</div>
+<table><tr><th>Armi</th><td>Qualsiasi</td></tr><tr><th>Armatura</th><td>Fino a Maglia</td></tr><tr><th>Scudo</th><td>Qualsiasi</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d30 (la più alta di tutte le classi)</td></tr></table>
+
+<div class="section-header">Classi da mago — Statistiche principali: Intelligenza (INT) e Volontà (WIL)</div>
+
+<h2>Mago</h2>
+<p>Nato per la magia. Punti Incantesimo = INT×2. Dipende interamente dagli incantesimi per attacco e difesa. Niente armatura né scudo.</p>
+<table><tr><th>Armi</th><td>Pugnale, Bastone</td></tr><tr><th>Armatura</th><td>Nessuna</td></tr><tr><th>Scudo</th><td>Solo Brocchiero</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d6</td></tr></table>
+
+<h2>Stregone</h2>
+<p>Una «batteria» magica. Non genera Punti Incantesimo al proprio interno; li assorbe invece dagli incantesimi diretti contro di lui (fino a INT×3). Quando è completamente carico, è potenzialmente la più potente di tutte le classi da mago.</p>
+<div class="ability">★ Assorbe gli incantesimi diretti contro di lui → nessun danno + guadagna Punti Incantesimo / Non può assorbire i propri incantesimi / Nessuna rigenerazione naturale degli SP</div>
+<table><tr><th>Armi</th><td>Qualsiasi</td></tr><tr><th>Armatura</th><td>Fino a Maglia</td></tr><tr><th>Scudo</th><td>Nessuno</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d6</td></tr></table>
+
+<h2>Guaritore</h2>
+<p>Specialista di magia difensiva. Punti Incantesimo = INT×1,75. Gli incantesimi difensivi costano meno nel Creatore di incantesimi. Velocità base di guarigione aumentata.</p>
+<table><tr><th>Armi</th><td>Pugnale, Bastone, Mazza, Flagello</td></tr><tr><th>Armatura</th><td>Solo Cuoio o Maglia</td></tr><tr><th>Scudo</th><td>Fino a Scudo rotondo</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d8</td></tr></table>
+
+<h2>Mago da battaglia</h2>
+<p>Specialista di incantesimi offensivi. Punti Incantesimo = INT×1,75. Gli incantesimi offensivi costano meno nel Creatore di incantesimi.</p>
+<table><tr><th>Armi</th><td>Qualsiasi</td></tr><tr><th>Armatura</th><td>Solo Cuoio</td></tr><tr><th>Scudo</th><td>Fino a Scudo rotondo</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d10</td></tr></table>
+
+<h2>Spadamagica</h2>
+<p>Può lanciare incantesimi indossando l'armatura. Un guerriero-mago versatile. Punti Incantesimo = INT×1,5.</p>
+<table><tr><th>Armi</th><td>Qualsiasi</td></tr><tr><th>Armatura</th><td>Solo Cuoio o Maglia</td></tr><tr><th>Scudo</th><td>Qualsiasi tranne lo Scudo a torre</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d12</td></tr></table>
+
+<h2>Lama Notturna</h2>
+<p>Mago della furtività e dell'infiltrazione. Scasso delle serrature paragonabile a quello dei Furfanti. Probabilità di colpo critico a ogni livello. Punti Incantesimo = INT×1,5.</p>
+<div class="ability">★ Probabilità di colpo critico a ogni livello</div>
+<table><tr><th>Armi</th><td>Pugnale, Bastone, Arco corto, Spada corta, Sciabola</td></tr><tr><th>Armatura</th><td>Solo Cuoio</td></tr><tr><th>Scudo</th><td>Solo Brocchiero</td></tr>
+<tr><th>Salute iniziale</th><td>25 + d8</td></tr></table>
+
+</body>
+</html>

@@ -46,9 +46,28 @@ def show_equipment_page(w) -> None:
         _staff = read_staff_pieces_row(w)
         if _staff is not None:
             item_data.append(_staff)
+        if inventory_ok:
+            _log_armor_rating(w, items_raw)
     except Exception:
         _log.exception('equipment read failed')
     w._ui_router.propose_equipment_list('equipment', title, item_data, priority=SCREEN_PANEL_PRIORITY, reason='screen:equipment')
+
+def _log_armor_rating(w, items_raw: list) -> None:
+    import armor_rating
+    import assist_log
+    try:
+        to_defend_text = w._status_display.panel().sheet_values().get('to_defend')
+    except AttributeError:
+        to_defend_text = None
+    breakdown = armor_rating.compute(items_raw, armor_rating.parse_signed(to_defend_text))
+    if breakdown is None:
+        return
+    materials = ['%s:%s:slot%s:AR%s:mat%s:metal%s' % (it.get('en'), it.get('item_type'), it.get('slot_id'), it.get('armor_value'), it.get('armor_material_id'), it.get('metal')) for it in items_raw if it.get('equipped') and it.get('item_type') in ('armor', 'shield', 'accessory')]
+    text = '%s To Def（表示）=%s 装備=%s' % (armor_rating.describe(breakdown), to_defend_text or '?', materials)
+    if text == getattr(w, '_equipment_armor_rating_log', None):
+        return
+    w._equipment_armor_rating_log = text
+    assist_log.recog(_log, '装備画面の部位ごとの AR（計算・照合用）: %s', text)
 _EFFECT_TEXT_FIELDS = ('effect_details', 'text_en', 'text_ja', 'effect_en', 'effect_ja')
 
 def _effect_text_matched(data: dict) -> bool:

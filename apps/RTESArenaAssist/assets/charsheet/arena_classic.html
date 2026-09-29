@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<!--
+  RTESArenaAssist character sheet template (simple HTML).
+
+  Values        {{name}} {{race}} {{race_en}} {{class}} {{class_en}}
+                {{str}} {{int}} {{wil}} {{agi}} {{spd}} {{end}} {{per}} {{luc}}
+                {{damage}} {{max_kilos}} {{magic_def}} {{to_hit}} {{to_defend}}
+                {{health}} {{heal_mod}} {{charisma}} {{bonus_pts}}
+                {{spell_pts}} {{spell_pts_curr}} {{spell_pts_max}}
+                {{hp}} {{hp_curr}} {{hp_max}} {{fatigue}} {{fatigue_curr}} {{fatigue_max}}
+                {{gold}} {{level}} {{experience}} {{experience_next}} {{experience_to_next}}
+  Gauges        {{hp_pct}} {{fatigue_pct}} {{spell_pts_pct}} {{experience_pct}} (0-100) and
+                {{hp_pct_rest}} {{fatigue_pct_rest}} {{spell_pts_pct_rest}} {{experience_pct_rest}}
+                (100 minus the value). Draw a bar as a table with two empty cells:
+                <td width="{{hp_pct}}%"></td><td width="{{hp_pct_rest}}%"></td>
+  Condition     {{condition}} (every current state, or "healthy"), {{condition_bad}}
+                (bad states only), {{condition_good}} (good magic effects only).
+                The last two are missing when there are none.
+  Armor rating  {{ar_head}} {{ar_shoulder_right}} {{ar_shoulder_left}} {{ar_chest}}
+                {{ar_hands}} {{ar_legs}} {{ar_feet}} by body location, from the
+                equipment (lower is better protected; +10 when unprotected).
+  Labels        {{label.KEY}} (translated) for name race class, the attributes
+                (str ... luc, and str_code ... luc_code for STR ... LUC), the modifiers
+                (damage ... charisma, spell_pts, bonus_pts), hp fatigue gold level experience
+                experience_next experience_to_next condition, ar_head ... ar_feet
+                (body locations), and title section_attributes section_combat
+                section_vitals section_record section_armor col_value col_modifier
+                armor_note
+  Images        <img src="{{img.face}}"> (80x70)   <img src="{{img.body}}"> (300x480)
+  Conditions    {{#if KEY}} ... {{else}} ... {{/if}} shows the first part only while the
+                value can be read (e.g. bonus_pts only while distributing points).
+
+  Layout uses tables (the simple HTML view has no flex/grid and runs no scripts).
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<title>Arena style</title>
+<style>
+  body      { background-color: #17252b; color: #e0a33a;
+              font-family: "Segoe UI", "Yu Gothic UI", "Meiryo", sans-serif; font-size: 14px; }
+  .frame    { border-style: double; border-width: 4px; border-color: #9a7a34;
+              background-color: #1d2f36; }
+  .grid     { border-collapse: collapse; }
+  .grid td  { border-width: 1px; border-style: solid; border-color: #4f5f45;
+              padding-top: 4px; padding-bottom: 4px; padding-left: 5px; padding-right: 5px; }
+  .name     { color: #ffd060; font-size: 26px; font-weight: bold; }
+  .sub      { color: #d6b56a; font-size: 15px; }
+  .code     { color: #ffcf5a; font-weight: bold; font-size: 14px; }
+  .attr     { color: #b99a5a; font-size: 11px; }
+  .val      { color: #fff0b0; font-weight: bold; font-size: 17px; }
+  .dlbl     { color: #e0a33a; font-size: 12px; }
+  .dval     { color: #fff0b0; font-weight: bold; font-size: 15px; }
+  .head     { background-color: #2c4550; color: #ffd060; font-weight: bold; font-size: 13px; }
+  .portrait { background-color: #0f1a1e; }
+  .bad      { color: #ff6a50; font-weight: bold; font-size: 15px; }
+  .bonus    { background-color: #2c4550; color: #ffd060; font-weight: bold; font-size: 14px; }
+</style>
+</head>
+<body>
+<table class="frame" width="100%" cellspacing="0" cellpadding="10">
+<tr>
+  <td valign="top">
+
+    <table width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+      <td valign="middle" width="92">
+        <table class="grid portrait" cellspacing="0"><tr><td><img src="{{img.face}}"></td></tr></table>
+      </td>
+      <td valign="middle">
+        <span class="name">{{name}}</span><br>
+        <span class="sub">{{race}} / {{class}}</span><br>
+        <span class="dlbl">{{label.level}}</span> <span class="dval">{{level}}</span>
+        {{#if bonus_pts}}&nbsp;&nbsp;<span class="bonus">&nbsp;{{label.bonus_pts}} {{bonus_pts}}&nbsp;</span>{{/if}}
+      </td>
+    </tr>
+    </table>
+
+    <table class="grid" width="100%" cellspacing="0" style="margin-top: 10px;">
+    <tr class="head">
+      <td colspan="2">{{label.section_attributes}}</td>
+      <td colspan="4">{{label.col_modifier}}</td>
+    </tr>
+    <tr>
+      <td><span class="code">{{label.str_code}}</span> <span class="attr">{{label.str}}</span></td>
+      <td align="right"><span class="val">{{str}}</span></td>
+      <td><span class="dlbl">{{label.damage}}</span></td><td align="right"><span class="dval">{{damage}}</span></td>
+      <td><span class="dlbl">{{label.max_kilos}}</span></td><td align="right"><span class="dval">{{max_kilos}}</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">{{label.int_code}}</span> <span class="attr">{{label.int}}</span></td>
+      <td align="right"><span class="val">{{int}}</span></td>
+      <td><span class="dlbl">{{label.spell_pts}}</span></td><td align="right"><span class="dval">{{spell_pts}}</span></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td><span class="code">{{label.wil_code}}</span> <span class="attr">{{label.wil}}</span></td>
+      <td align="right"><span class="val">{{wil}}</span></td>
+      <td><span class="dlbl">{{label.magic_def}}</span></td><td align="right"><span class="dval">{{magic_def}}</span></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td><span class="code">{{label.agi_code}}</span> <span class="attr">{{label.agi}}</span></td>
+      <td align="right"><span class="val">{{agi}}</span></td>
+      <td><span class="dlbl">{{label.to_hit}}</span></td><td align="right"><span class="dval">{{to_hit}}</span></td>
+      <td><span class="dlbl">{{label.to_defend}}</span></td><td align="right"><span class="dval">{{to_defend}}</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">{{label.spd_code}}</span> <span class="attr">{{label.spd}}</span></td>
+      <td align="right"><span class="val">{{spd}}</span></td>
+      <td></td><td></td><td></td><td></td>
+    </tr>
+    <tr>
+      <td><span class="code">{{label.end_code}}</span> <span class="attr">{{label.end}}</span></td>
+      <td align="right"><span class="val">{{end}}</span></td>
+      <td><span class="dlbl">{{label.health}}</span></td><td align="right"><span class="dval">{{health}}</span></td>
+      <td><span class="dlbl">{{label.heal_mod}}</span></td><td align="right"><span class="dval">{{heal_mod}}</span></td>
+    </tr>
+    <tr>
+      <td><span class="code">{{label.per_code}}</span> <span class="attr">{{label.per}}</span></td>
+      <td align="right"><span class="val">{{per}}</span></td>
+      <td><span class="dlbl">{{label.charisma}}</span></td><td align="right"><span class="dval">{{charisma}}</span></td>
+      <td></td><td></td>
+    </tr>
+    <tr>
+      <td><span class="code">{{label.luc_code}}</span> <span class="attr">{{label.luc}}</span></td>
+      <td align="right"><span class="val">{{luc}}</span></td>
+      <td></td><td></td><td></td><td></td>
+    </tr>
+    </table>
+
+    <table class="grid" width="100%" cellspacing="0" style="margin-top: 10px;">
+    <tr>
+      <td width="50%"><span class="dlbl">{{label.hp}}</span></td>
+      <td align="right"><span class="val">{{hp_curr}}</span> <span class="attr">/ {{hp_max}}</span></td>
+    </tr>
+    <tr>
+      <td><span class="dlbl">{{label.fatigue}}</span></td>
+      <td align="right"><span class="val">{{fatigue_curr}}</span> <span class="attr">/ {{fatigue_max}}</span></td>
+    </tr>
+    {{#if condition}}
+    <tr>
+      <td><span class="dlbl">{{label.condition}}</span></td>
+      <td align="right">{{#if condition_bad}}<span class="bad">{{condition}}</span>{{else}}<span class="dval">{{condition}}</span>{{/if}}</td>
+    </tr>
+    {{/if}}
+    <tr>
+      <td><span class="dlbl">{{label.gold}}</span></td>
+      <td align="right"><span class="val">{{gold}}</span></td>
+    </tr>
+    <tr>
+      <td><span class="dlbl">{{label.experience}}</span></td>
+      <td align="right"><span class="val">{{experience}}</span> <span class="attr">/ {{experience_next}}</span></td>
+    </tr>
+    </table>
+
+  </td>
+  <td valign="top" align="center" width="316" class="portrait">
+    <img src="{{img.body}}">
+  </td>
+</tr>
+</table>
+</body>
+</html>

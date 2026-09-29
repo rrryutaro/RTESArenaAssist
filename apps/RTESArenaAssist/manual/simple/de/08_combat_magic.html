@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Kampf &amp; Magie</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.danger { background: #2e1a1a; border-left: 3px solid #a03030; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Kampf &amp; Magie</h1>
+
+<h2>Grundlagen des Kampfes</h2>
+<p>Arena verwendet Echtzeitkampf. Klicke, um anzugreifen. Ob du triffst und wie viel Schaden du verursachst, hängt von deinen Attributen, deiner Ausrüstung und dem Rüstungswert (AR) des Gegners ab.</p>
+
+<h2>Faktoren der Trefferchance</h2>
+<table>
+  <tr><th>Faktor</th><th>Wirkung</th></tr>
+  <tr><td>AGI (Beweglichkeit)</td><td>Treffer-Bonus für den Angreifer; Verteidigungs-Bonus für den Verteidiger</td></tr>
+  <tr><td>LUC (Glück)</td><td>Zufälliger Modifikator auf alle Handlungen</td></tr>
+  <tr><td>Rasse Rothwardone</td><td>+Stufe÷3 auf Treffer und Schaden (nur Nahkampf)</td></tr>
+  <tr><td>Rasse Waldelf</td><td>+Stufe÷3 auf Treffer und Schaden (nur Bögen)</td></tr>
+  <tr><td>Rasse Dunkelelf</td><td>+Stufe÷4 auf Treffer und Schaden (Nahkampf und Fernkampf)</td></tr>
+</table>
+
+<h2>Schaden</h2>
+<p>Schaden = Grundwert der Waffe + STR-Modifikator + Rassenbonus. Der Rüstungswert (AR) des Ziels verringert den erlittenen Schaden — je niedriger der AR, desto besser der Schutz.</p>
+
+<h2>Kritischer Treffer</h2>
+<div class="note">
+<strong>Kritischer Treffer = 3× normaler Waffenschaden.</strong><br>
+Charaktere der Diebesklassen erhalten pro Stufe eine Chance darauf. Assassinen haben die höchste Chance. Schurken, Einbrecher, Barden, Akrobaten, Mönche, Bogenschützen (mit Bögen) und Nachtklingen besitzen diese Fähigkeit ebenfalls.
+</div>
+
+<h2>Rettungswurf</h2>
+<p>Wenn du Ziel eines Zaubers oder einer besonderen Wirkung bist, verringert oder verhindert ein erfolgreicher Rettungswurf die Wirkung. WIL (Willenskraft) bestimmt die Erfolgschance.</p>
+<table>
+  <tr><th>Klasse / Rasse</th><th>Ergebnis des Rettungswurfs</th></tr>
+  <tr><td>Standard</td><td>Erfolg = halber Schaden</td></tr>
+  <tr><td>Mönch</td><td>Erfolg = kein Schaden</td></tr>
+  <tr><td>Nord</td><td>Erfolgreicher Rettungswurf gegen Kälte = kein Schaden</td></tr>
+  <tr><td>Bretone</td><td>Erfolgreicher Rettungswurf gegen Magie = kein Schaden</td></tr>
+</table>
+
+<h2>Zustände</h2>
+<table>
+  <tr><th>Zustand</th><th>Wirkung</th><th>Beseitigung</th></tr>
+  <tr><td>Krank</td><td>Attributabzüge, beeinträchtigte Heilung</td><td>Tempel, Heilzauber</td></tr>
+  <tr><td>Vergiftet</td><td>Fortlaufender Schaden über Zeit</td><td>Tempel, Trank der Giftheilung</td></tr>
+  <tr><td>Verflucht</td><td>Attributabzüge</td><td>Tempel</td></tr>
+  <tr><td>Gesegnet</td><td>Vorübergehende Attributboni (nützlich)</td><td>Klingt mit der Zeit ab</td></tr>
+  <tr><td>Gelähmt</td><td>Handlungsunfähig</td><td>Klingt ab, Zauber „Bannen“</td></tr>
+  <tr><td>Zum Schweigen gebracht</td><td>Kann keine Zauber wirken</td><td>Klingt ab, Zauber „Bannen“</td></tr>
+  <tr><td>Überladen</td><td>Abzüge auf Bewegung und Handlungen</td><td>Gegenstände fallen lassen / Verstärken</td></tr>
+</table>
+<div class="danger">
+<strong>Immun gegen Lähmung:</strong> Ritter und Hochelfen sind vollständig immun gegen Lähmung.<br>
+<strong>Immun gegen Gift:</strong> Barbaren sind vollständig immun gegen Gift.
+</div>
+
+<h2>Magiesystem</h2>
+<p>Zauber werden aus deinem Zauberbuch (Charakterbogen, Seite 2) ausgewählt. Jeder Zauber kostet Zauberpunkte (SP). Sind die SP auf 0, können keine Zauber mehr gewirkt werden. Die SP ergeben sich aus INT × einem klassenabhängigen Multiplikator.</p>
+
+<h2>Zauberpunkt-Multiplikatoren</h2>
+<table>
+  <tr><th>Klasse</th><th>SP = INT ×</th></tr>
+  <tr><td>Magier</td><td>× 2</td></tr>
+  <tr><td>Hexer</td><td>Bis zu × 3 (aus Zaubern absorbiert, nicht selbst erzeugt)</td></tr>
+  <tr><td>Heiler</td><td>× 1,75</td></tr>
+  <tr><td>Kampfmagier</td><td>× 1,75</td></tr>
+  <tr><td>Zauberklinge</td><td>× 1,5</td></tr>
+  <tr><td>Nachtklinge</td><td>× 1,5</td></tr>
+  <tr><td>Barde</td><td>= INT (× 1)</td></tr>
+</table>
+
+<h2>Zauberkategorien</h2>
+<table>
+  <tr><th>Kategorie</th><th>Beispiele</th><th>Zweck</th></tr>
+  <tr><td>Schaden</td><td>Feuerschaden, Frost, Blitz</td><td>Gegnern Schaden zufügen</td></tr>
+  <tr><td>Heilung</td><td>Heilen, Andere heilen</td><td>Trefferpunkte wiederherstellen</td></tr>
+  <tr><td>Schutz</td><td>Schild, Verstärken, Sanfter Fall</td><td>Schutz verbessern</td></tr>
+  <tr><td>Bewegung</td><td>Levitation, Teleportation, Rückruf</td><td>Reisen und Flucht</td></tr>
+  <tr><td>Heimlichkeit</td><td>Unsichtbarkeit, Chamäleon</td><td>Dich verbergen</td></tr>
+  <tr><td>Aufspüren</td><td>Leben erspüren, Nachtsicht, Licht</td><td>Gegner und Umgebung sehen</td></tr>
+  <tr><td>Schwächung</td><td>Lähmung, Stille, Bezirzen</td><td>Gegner außer Gefecht setzen</td></tr>
+  <tr><td>Nützliches</td><td>Öffnen, Identifizieren, Wanddurchgang</td><td>Aufschließen, schätzen, Wände durchqueren</td></tr>
+</table>
+
+<h2>Zauberschmiede</h2>
+<p>In der Magiergilde verfügbar. Erstelle eigene Zauber, indem du Effekte, Reichweite, Dauer und Stärke kombinierst. Heiler erhalten Rabatte auf Schutzeffekte; Kampfmagier erhalten Rabatte auf Angriffseffekte.</p>
+
+<h2>Erfahrung &amp; Stufenaufstieg</h2>
+<p>Sammle Erfahrung, indem du Gegner besiegst und Quests abschließt. Ein Stufenaufstieg erhöht Attribute und Gesundheit (und SP für Zauberwirker).</p>
+<div class="note">
+<strong>Geschwindigkeit des Stufenaufstiegs (schnellste zuerst):</strong> Dieb → Krieger → Krieger-Unterklassen → Diebes-Unterklassen → Magier → Magier-Unterklassen
+</div>
+
+</body>
+</html>

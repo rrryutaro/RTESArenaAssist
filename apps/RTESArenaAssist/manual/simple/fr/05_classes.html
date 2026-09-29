@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Classes de personnage</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 13px; color: #5bc0de; margin-top: 4px; margin-bottom: 2px; }
+h3 { font-size: 12px; color: #7a8899; margin: 14px 0 2px 0; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+p { margin: 0 0 6px 0; font-size: 12px; }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 10px 0; font-size: 11px; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 3px 6px; text-align: left; border: 1px solid #1e3a4a; }
+td { padding: 3px 6px; border: 1px solid #1e3a4a; }
+tr:nth-child(even) { background: #111e2c; }
+.ability { color: #a8d8a8; font-size: 11px; margin: 2px 0 6px 0; }
+.section-header { background: #1c2e3f; color: #a0c4d8; font-size: 13px; font-weight: bold; padding: 5px 8px; margin: 18px 0 6px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Classes de personnage (les 18)</h1>
+
+<div class="section-header">Classes de voleur — Attributs principaux&nbsp;: Agilité (AGI) et Intelligence (INT)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">Toutes les classes de voleur peuvent crocheter les serrures, faire les poches et voler. Une Vitesse élevée est également souhaitable.</p>
+
+<h2>Voleur</h2>
+<p>Rapide et agile. Utile au combat pour les attaques surprises, l'éclairage et les coups critiques. La classe qui gagne des niveaux le plus vite.</p>
+<div class="ability">★ Chances de coup critique (dégâts&nbsp;×&nbsp;3) croissant avec le niveau</div>
+<table><tr><th>Armes</th><td>Dague, Épée courte, Épée large, Sabre, Hache de guerre, Arc court</td></tr>
+<tr><th>Armure</th><td>Cuir uniquement</td></tr><tr><th>Bouclier</th><td>Targe uniquement</td></tr>
+<tr><th>Santé de départ</th><td>25 + d10</td></tr></table>
+
+<h2>Cambrioleur</h2>
+<p>Expert en crochetage et en infiltration des zones interdites. Ne peut pas utiliser de bouclier.</p>
+<div class="ability">★ Chances de coup critique par niveau (moindres que le Voleur)</div>
+<table><tr><th>Armes</th><td>Dague, Épée courte, Tanto, Arc court</td></tr>
+<tr><th>Armure</th><td>Cuir uniquement</td></tr><tr><th>Bouclier</th><td>Aucun</td></tr>
+<tr><th>Santé de départ</th><td>25 + d8</td></tr></table>
+
+<h2>Assassin</h2>
+<p>Voué à tuer. Les meilleures chances de coup critique de toutes les classes. Peut utiliser n'importe quelle arme, mais se limite à l'armure de cuir, sans bouclier.</p>
+<div class="ability">★ Les meilleures chances de coup critique par niveau de toutes les classes</div>
+<table><tr><th>Armes</th><td>Toutes</td></tr>
+<tr><th>Armure</th><td>Cuir uniquement</td></tr><tr><th>Bouclier</th><td>Aucun</td></tr>
+<tr><th>Santé de départ</th><td>25 + d12</td></tr></table>
+
+<h2>Vaurien</h2>
+<p>Un voleur formé aux armes et aux armures. Comparable aux guerriers au combat, tout en conservant le crochetage et le vol à la tire.</p>
+<div class="ability">★ Faibles chances de coup critique par niveau</div>
+<table><tr><th>Armes</th><td>Toutes</td></tr>
+<tr><th>Armure</th><td>Cuir ou mailles uniquement</td></tr><tr><th>Bouclier</th><td>Tous sauf le pavois</td></tr>
+<tr><th>Santé de départ</th><td>25 + d14</td></tr></table>
+
+<h2>Acrobate</h2>
+<p>D'une agilité surnaturelle&nbsp;: le personnage le plus rapide à pied. Réduit passivement les chances de base des ennemis de toucher.</p>
+<div class="ability">★ Réduit les chances de base de l'adversaire de toucher / Chances de coup critique par niveau</div>
+<table><tr><th>Armes</th><td>Dague, Épée courte, Épée large, Tanto, Arc court</td></tr>
+<tr><th>Armure</th><td>Cuir uniquement</td></tr><tr><th>Bouclier</th><td>Aucun</td></tr>
+<tr><th>Santé de départ</th><td>25 + d8</td></tr></table>
+
+<h2>Barde</h2>
+<p>«&nbsp;Touche-à-tout&nbsp;». Manie les coups critiques, les armes, le vol et la magie. Points de sort = INT.</p>
+<table><tr><th>Armes</th><td>Dague, Épée courte, Épée large, Sabre, Masse, Hache de guerre, Arc court</td></tr>
+<tr><th>Armure</th><td>Cuir ou mailles uniquement</td></tr><tr><th>Bouclier</th><td>Tous sauf le pavois</td></tr>
+<tr><th>Santé de départ</th><td>25 + d10</td></tr></table>
+
+<div class="section-header">Classes de guerrier — Attributs principaux&nbsp;: Force (STR) et Endurance (END)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">Ne peuvent pas lancer de sorts, sauf mention contraire. L'Agilité compte aussi pour l'indice d'armure.</p>
+
+<h2>Guerrier</h2>
+<p>L'épine dorsale de Tamriel. Peut utiliser n'importe quelle arme, armure ou bouclier. Deuxième classe la plus rapide à gagner des niveaux. Seuls les Guerriers, les Chevaliers et les Rôdeurs peuvent porter une armure de plaques enchantée.</p>
+<table><tr><th>Armes</th><td>Toutes</td></tr><tr><th>Armure</th><td>Toutes</td></tr><tr><th>Bouclier</th><td>Tous</td></tr>
+<tr><th>Santé de départ</th><td>25 + d20</td></tr></table>
+
+<h2>Chevalier</h2>
+<p>Combattant noble. Répare automatiquement toutes les armes et armures de l'inventaire.</p>
+<div class="ability">★ Immunisé contre la paralysie (sorts et poison) / Répare automatiquement armes et armures</div>
+<table><tr><th>Armes</th><td>Toutes</td></tr><tr><th>Armure</th><td>Tout sauf le cuir</td></tr><tr><th>Bouclier</th><td>Tous</td></tr>
+<tr><th>Santé de départ</th><td>25 + d18</td></tr></table>
+
+<h2>Rôdeur</h2>
+<p>Pisteur et expert en survie. Réduit automatiquement le temps de voyage entre les cités. Inflige des dégâts bonus égaux à son niveau.</p>
+<div class="ability">★ Temps de voyage réduit entre les cités / Dégâts bonus = niveau</div>
+<table><tr><th>Armes</th><td>Toutes</td></tr><tr><th>Armure</th><td>Toutes</td></tr><tr><th>Bouclier</th><td>Tous sauf le pavois</td></tr>
+<tr><th>Santé de départ</th><td>25 + d18</td></tr></table>
+
+<h2>Archer</h2>
+<p>Tireur d'élite spécialisé dans les armes à projectiles. Chances de coup critique à l'arc par niveau. Ne peut pas utiliser de bouclier.</p>
+<div class="ability">★ Chances de coup critique avec les armes à projectiles par niveau</div>
+<table><tr><th>Armes</th><td>Toutes</td></tr><tr><th>Armure</th><td>Cuir ou mailles uniquement</td></tr><tr><th>Bouclier</th><td>Aucun</td></tr>
+<tr><th>Santé de départ</th><td>25 + d16</td></tr></table>
+
+<h2>Moine</h2>
+<p>Esprit et corps affûtés en une machine à tuer. Ni armure ni bouclier. Les chances des ennemis de toucher diminuent à chaque niveau. Un jet de sauvegarde réussi contre un sort annule tout dégât.</p>
+<div class="ability">★ Réduit les chances de toucher des ennemis par niveau / Jet de sauvegarde réussi contre un sort = aucun dégât / Coup critique (corps à corps uniquement)</div>
+<table><tr><th>Armes</th><td>Toutes</td></tr><tr><th>Armure</th><td>Aucune</td></tr><tr><th>Bouclier</th><td>Aucun</td></tr>
+<tr><th>Santé de départ</th><td>25 + d14</td></tr></table>
+
+<h2>Barbare</h2>
+<p>Survivant des terres hostiles. La santé de départ la plus élevée de toutes les classes. Récupère de la santé bonus en fonction de l'Endurance.</p>
+<div class="ability">★ Immunisé contre le poison / Santé bonus rendue à chaque repos selon END</div>
+<table><tr><th>Armes</th><td>Toutes</td></tr><tr><th>Armure</th><td>Jusqu'aux mailles</td></tr><tr><th>Bouclier</th><td>Tous</td></tr>
+<tr><th>Santé de départ</th><td>25 + d30 (la plus élevée de toutes les classes)</td></tr></table>
+
+<div class="section-header">Classes de mage — Attributs principaux&nbsp;: Intelligence (INT) et Volonté (WIL)</div>
+
+<h2>Mage</h2>
+<p>Né pour la magie. Points de sort = INT&nbsp;×&nbsp;2. Dépend entièrement des sorts, en attaque comme en défense. Ni armure ni bouclier.</p>
+<table><tr><th>Armes</th><td>Dague, Bâton</td></tr><tr><th>Armure</th><td>Aucune</td></tr><tr><th>Bouclier</th><td>Targe uniquement</td></tr>
+<tr><th>Santé de départ</th><td>25 + d6</td></tr></table>
+
+<h2>Sorcier</h2>
+<p>Une «&nbsp;pile&nbsp;» magique. Ne génère pas de points de sort par lui-même&nbsp;: il les absorbe des sorts qui le visent (jusqu'à INT&nbsp;×&nbsp;3). Une fois chargé à bloc, potentiellement la plus puissante des classes de mage.</p>
+<div class="ability">★ Absorbe les sorts qui le visent → aucun dégât + gain de points de sort / Ne peut pas absorber ses propres sorts / Aucune régénération naturelle des SP</div>
+<table><tr><th>Armes</th><td>Toutes</td></tr><tr><th>Armure</th><td>Jusqu'aux mailles</td></tr><tr><th>Bouclier</th><td>Aucun</td></tr>
+<tr><th>Santé de départ</th><td>25 + d6</td></tr></table>
+
+<h2>Guérisseur</h2>
+<p>Spécialiste de la magie défensive. Points de sort = INT&nbsp;×&nbsp;1,75. Les sorts défensifs coûtent moins cher dans le Créateur de sorts. Vitesse de guérison de base accrue.</p>
+<table><tr><th>Armes</th><td>Dague, Bâton, Masse, Fléau d'armes</td></tr><tr><th>Armure</th><td>Cuir ou mailles uniquement</td></tr><tr><th>Bouclier</th><td>Jusqu'au bouclier rond</td></tr>
+<tr><th>Santé de départ</th><td>25 + d8</td></tr></table>
+
+<h2>Bataillemage</h2>
+<p>Spécialiste des sorts offensifs. Points de sort = INT&nbsp;×&nbsp;1,75. Les sorts offensifs coûtent moins cher dans le Créateur de sorts.</p>
+<table><tr><th>Armes</th><td>Toutes</td></tr><tr><th>Armure</th><td>Cuir uniquement</td></tr><tr><th>Bouclier</th><td>Jusqu'au bouclier rond</td></tr>
+<tr><th>Santé de départ</th><td>25 + d10</td></tr></table>
+
+<h2>Épée-sort</h2>
+<p>Peut lancer des sorts en portant une armure. Guerrier-mage polyvalent. Points de sort = INT&nbsp;×&nbsp;1,5.</p>
+<table><tr><th>Armes</th><td>Toutes</td></tr><tr><th>Armure</th><td>Cuir ou mailles uniquement</td></tr><tr><th>Bouclier</th><td>Tous sauf le pavois</td></tr>
+<tr><th>Santé de départ</th><td>25 + d12</td></tr></table>
+
+<h2>Lame nocturne</h2>
+<p>Mage de la discrétion et de l'infiltration. Crochetage comparable à celui des Vauriens. Chances de coup critique par niveau. Points de sort = INT&nbsp;×&nbsp;1,5.</p>
+<div class="ability">★ Chances de coup critique par niveau</div>
+<table><tr><th>Armes</th><td>Dague, Bâton, Arc court, Épée courte, Sabre</td></tr><tr><th>Armure</th><td>Cuir uniquement</td></tr><tr><th>Bouclier</th><td>Targe uniquement</td></tr>
+<tr><th>Santé de départ</th><td>25 + d8</td></tr></table>
+
+</body>
+</html>

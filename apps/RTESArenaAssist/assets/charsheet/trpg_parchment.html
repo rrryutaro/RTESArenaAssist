@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<!--
+  RTESArenaAssist character sheet template (simple HTML) - parchment style.
+  Keys and the {{#if KEY}} ... {{/if}} blocks are listed in arena_classic.html.
+  Comments are left as they are.
+  Layout uses tables (the simple HTML view has no flex/grid and runs no scripts).
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<title>Tabletop RPG (parchment)</title>
+<style>
+  body     { background-color: #e9dcb6; color: #3b2a16;
+             font-family: "Georgia", "Yu Mincho", "MS Mincho", serif; font-size: 14px; }
+  .sheet   { border-style: double; border-width: 5px; border-color: #6e4f28;
+             background-color: #f2e7c8; }
+  .box     { border-collapse: collapse; background-color: #f7efd8; }
+  .box td  { border-width: 1px; border-style: solid; border-color: #8c6b3e;
+             padding-top: 4px; padding-bottom: 4px; padding-left: 8px; padding-right: 8px; }
+  .bar     { background-color: #cdb482; color: #3b2a16; font-weight: bold; font-size: 14px;
+             font-variant: small-caps; }
+  .title   { color: #5a3b17; font-size: 13px; font-variant: small-caps; font-weight: bold; }
+  .name    { color: #2b1d0d; font-size: 28px; font-weight: bold; }
+  .field   { color: #6e5230; font-size: 12px; }
+  .ink     { color: #2b1d0d; font-size: 16px; font-weight: bold; }
+  .big     { color: #2b1d0d; font-size: 20px; font-weight: bold; }
+  .code    { color: #7a4b1c; font-weight: bold; }
+  .small   { color: #6e5230; font-size: 12px; }
+  .bad     { color: #8b1a1a; font-weight: bold; }
+  .frame   { border-style: solid; border-width: 3px; border-color: #6e4f28;
+             background-color: #d9c79a; }
+</style>
+</head>
+<body>
+<table class="sheet" width="100%" cellspacing="0" cellpadding="12">
+<tr><td>
+
+  <table width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td valign="middle" width="104">
+      <table class="frame" cellspacing="0" cellpadding="6"><tr><td><img src="{{img.face}}"></td></tr></table>
+    </td>
+    <td valign="middle" style="padding-left: 12px;">
+      <span class="title">{{label.title}}</span><br>
+      <span class="name">{{name}}</span>
+      <table class="box" width="100%" cellspacing="0" style="margin-top: 6px;">
+      <tr>
+        <td width="34%"><span class="field">{{label.race}}</span><br><span class="ink">{{race}}</span></td>
+        <td width="34%"><span class="field">{{label.class}}</span><br><span class="ink">{{class}}</span></td>
+        <td><span class="field">{{label.level}}</span><br><span class="ink">{{level}}</span></td>
+      </tr>
+      </table>
+    </td>
+  </tr>
+  </table>
+
+  <table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 12px;">
+  <tr>
+    <td valign="top" width="50%" style="padding-right: 6px;">
+      <table class="box" width="100%" cellspacing="0">
+      <tr class="bar"><td colspan="3">{{label.section_attributes}}</td></tr>
+      <tr><td width="22%"><span class="code">{{label.str_code}}</span></td><td>{{label.str}}</td><td align="right"><span class="big">{{str}}</span></td></tr>
+      <tr><td><span class="code">{{label.int_code}}</span></td><td>{{label.int}}</td><td align="right"><span class="big">{{int}}</span></td></tr>
+      <tr><td><span class="code">{{label.wil_code}}</span></td><td>{{label.wil}}</td><td align="right"><span class="big">{{wil}}</span></td></tr>
+      <tr><td><span class="code">{{label.agi_code}}</span></td><td>{{label.agi}}</td><td align="right"><span class="big">{{agi}}</span></td></tr>
+      <tr><td><span class="code">{{label.spd_code}}</span></td><td>{{label.spd}}</td><td align="right"><span class="big">{{spd}}</span></td></tr>
+      <tr><td><span class="code">{{label.end_code}}</span></td><td>{{label.end}}</td><td align="right"><span class="big">{{end}}</span></td></tr>
+      <tr><td><span class="code">{{label.per_code}}</span></td><td>{{label.per}}</td><td align="right"><span class="big">{{per}}</span></td></tr>
+      <tr><td><span class="code">{{label.luc_code}}</span></td><td>{{label.luc}}</td><td align="right"><span class="big">{{luc}}</span></td></tr>
+      </table>
+      {{#if bonus_pts}}
+      <table class="box" width="100%" cellspacing="0" style="margin-top: 10px;">
+      <tr class="bar"><td>{{label.bonus_pts}}</td><td align="right"><span class="big">{{bonus_pts}}</span></td></tr>
+      </table>
+      {{/if}}
+      <table class="box" width="100%" cellspacing="0" style="margin-top: 10px;">
+      <tr class="bar"><td colspan="3">{{label.section_record}}</td></tr>
+      <tr>
+        <td width="34%"><span class="field">{{label.experience}}</span><br><span class="big">{{experience}}</span></td>
+        <td width="33%"><span class="field">{{label.experience_next}}</span><br><span class="big">{{experience_next}}</span></td>
+        <td><span class="field">{{label.gold}}</span><br><span class="big">{{gold}}</span></td>
+      </tr>
+      </table>
+    </td>
+    <td valign="top" style="padding-left: 6px;">
+      <table class="box" width="100%" cellspacing="0">
+      <tr class="bar"><td colspan="2">{{label.section_combat}}</td></tr>
+      <tr><td>{{label.damage}}</td><td align="right"><span class="ink">{{damage}}</span></td></tr>
+      <tr><td>{{label.to_hit}}</td><td align="right"><span class="ink">{{to_hit}}</span></td></tr>
+      <tr><td>{{label.to_defend}}</td><td align="right"><span class="ink">{{to_defend}}</span></td></tr>
+      <tr><td>{{label.magic_def}}</td><td align="right"><span class="ink">{{magic_def}}</span></td></tr>
+      <tr><td>{{label.spell_pts}}</td><td align="right"><span class="ink">{{spell_pts}}</span></td></tr>
+      <tr><td>{{label.max_kilos}}</td><td align="right"><span class="ink">{{max_kilos}}</span></td></tr>
+      </table>
+      <table class="box" width="100%" cellspacing="0" style="margin-top: 10px;">
+      <tr class="bar"><td colspan="2">{{label.section_vitals}}</td></tr>
+      <tr><td>{{label.hp}}</td><td align="right"><span class="big">{{hp_curr}}</span> <span class="small">/ {{hp_max}}</span></td></tr>
+      <tr><td>{{label.fatigue}}</td><td align="right"><span class="big">{{fatigue_curr}}</span> <span class="small">/ {{fatigue_max}}</span></td></tr>
+      {{#if condition}}
+      <tr><td>{{label.condition}}</td><td align="right">{{#if condition_bad}}<span class="bad">{{condition}}</span>{{else}}<span class="ink">{{condition}}</span>{{/if}}</td></tr>
+      {{/if}}
+      <tr><td>{{label.health}} / {{label.heal_mod}}</td><td align="right"><span class="ink">{{health}}</span> / <span class="ink">{{heal_mod}}</span></td></tr>
+      <tr><td>{{label.charisma}}</td><td align="right"><span class="ink">{{charisma}}</span></td></tr>
+      </table>
+    </td>
+  </tr>
+  </table>
+
+</td></tr>
+</table>
+</body>
+</html>

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Statistiche del Personaggio</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #c9d1e0; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 5px 8px; text-align: left; font-size: 12px; border: 1px solid #1e3a4a; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.stat-label { color: #7ec8e3; font-weight: bold; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Statistiche del Personaggio</h1>
+
+<div class="note">Tutte le statistiche vanno da 1 a 100. <strong>50 è la media</strong>: il 50% della popolazione dell'Impero è migliore di te in quella statistica e il 50% non lo è.</div>
+
+<h2>Le 8 statistiche principali</h2>
+
+<h3><span class="stat-label">STR — Forza</span></h3>
+<p>Determina quanto danno infliggi in combattimento. Influisce sul peso massimo trasportabile (Peso Massimo), sulla fatica e sulla distanza di salto. <strong>Essenziale per le classi da guerriero.</strong></p>
+
+<h3><span class="stat-label">INT — Intelligenza</span></h3>
+<p>Determina il totale dei Punti Incantesimo per chi lancia incantesimi. Influisce sulle trattative, sulla contrattazione dei prezzi e sulla riuscita dello scasso delle serrature. <strong>Essenziale per le classi da mago e da ladro.</strong></p>
+
+<h3><span class="stat-label">WIL — Volontà</span></h3>
+<p>Determina la resistenza agli incantesimi (Difesa Magica). Aiuta anche nelle trattative. <strong>Fondamentale per qualsiasi personaggio che voglia proteggersi dagli incantesimi.</strong></p>
+
+<h3><span class="stat-label">AGI — Agilità</span></h3>
+<p>Influisce direttamente sulla probabilità di colpire in mischia (Bonus in Attacco), sulla probabilità di essere colpiti (Bonus in Difesa) e sulla probabilità di schivare gli incantesimi a bersaglio. Regola anche il furto e lo scasso delle serrature. <strong>Essenziale per le classi da ladro.</strong></p>
+
+<h3><span class="stat-label">SPD — Velocità</span></h3>
+<p>Controlla la velocità di movimento, la velocità di rotazione e la cadenza di tiro delle armi da lancio. Può fare la differenza tra la vita e la morte. <strong>Importante per tutte le classi.</strong></p>
+
+<h3><span class="stat-label">END — Resistenza</span></h3>
+<p>Determina il totale dei punti salute, la velocità di guarigione e la fatica. Influisce anche sulla resistenza a veleni e droghe. <strong>Essenziale per le classi da guerriero.</strong></p>
+
+<h3><span class="stat-label">PER — Personalità</span></h3>
+<p>Determina il modificatore di Carisma. Influisce direttamente sulla capacità di trattare, ottenere prezzi migliori e raccogliere informazioni. <strong>Importante per le interazioni sociali.</strong></p>
+
+<h3><span class="stat-label">LUC — Fortuna</span></h3>
+<p>Un potente modificatore per ogni azione: attaccare, difendersi, rubare, qualsiasi cosa. La media è 50; più è alta, meglio è. <strong>Influisce su tutti i personaggi.</strong></p>
+
+<h2>Tabella dei modificatori delle statistiche</h2>
+<table>
+  <tr><th>Statistica</th><th>Modificatore</th><th>Descrizione</th></tr>
+  <tr><td>STR</td><td>Danno</td><td>Bonus positivo con STR 55 o più; penalità a 45 o meno</td></tr>
+  <tr><td>STR</td><td>Peso Massimo</td><td>Superarlo causa penalità di fatica, fino all'impossibilità di muoversi</td></tr>
+  <tr><td>INT</td><td>Punti Incantesimo</td><td>Chi non lancia incantesimi: 0. Stregoni: fino a INT×3</td></tr>
+  <tr><td>WIL</td><td>Difesa Magica</td><td>WIL più alta = per i nemici è più difficile colpirti con gli incantesimi</td></tr>
+  <tr><td>AGI</td><td>Bonus in Attacco</td><td>Bonus o penalità ai tiri di attacco in mischia</td></tr>
+  <tr><td>AGI</td><td>Bonus in Difesa</td><td>Si sottrae alla Classe Armatura (AR più bassa = protezione migliore)</td></tr>
+  <tr><td>END</td><td>Salute</td><td>Si aggiunge alla salute guadagnata a ogni passaggio di livello</td></tr>
+  <tr><td>END</td><td>Mod. Cura</td><td>Modificatore percentuale alla velocità base di guarigione durante il riposo</td></tr>
+  <tr><td>PER</td><td>Carisma</td><td>Modificatore alla probabilità di successo nelle trattative con i PNG</td></tr>
+  <tr><td>LUC</td><td>Generale</td><td>Influenza latente su tutte le azioni intraprese</td></tr>
+</table>
+
+<h2>Classe Armatura (AR)</h2>
+<p>L'AR è mostrata sul ritratto del personaggio nella pagina 2 della scheda. <strong>AR più bassa = protezione migliore</strong> (+10 significa nessuna protezione; i valori negativi indicano un'armatura pesante).</p>
+<table>
+  <tr><th>Parte del corpo</th><th>Pezzo di armatura</th></tr>
+  <tr><td>Testa</td><td>Elmo</td></tr>
+  <tr><td>Petto</td><td>Corazza</td></tr>
+  <tr><td>Mani</td><td>Guanti</td></tr>
+  <tr><td>Vita e gambe</td><td>Schinieri</td></tr>
+  <tr><td>Parte inferiore delle gambe e piedi</td><td>Stivali</td></tr>
+  <tr><td>Spalle (sx e dx)</td><td>Spallacci</td></tr>
+</table>
+
+</body>
+</html>

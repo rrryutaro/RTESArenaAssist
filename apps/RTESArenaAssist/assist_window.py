@@ -573,13 +573,13 @@ class AssistWindow(QMainWindow):
         self._sync_attributes_chargen_mode()
         self._apply_display_active_for_state()
 
-    def _update_attr_panel_placement(self) -> None:
+    def _update_status_display_placement(self) -> None:
         try:
             want_translate = self._tabs.currentWidget() is self._tab_translate and self._tab_translate.panel_mode() in ('choose_attributes', 'fallback_status')
             if want_translate:
-                self._tab_translate.mount_attributes_panel()
+                self._tab_translate.mount_status_display()
             else:
-                self._tab_status.mount_attributes_panel()
+                self._tab_status.mount_status_display()
         except (AttributeError, RuntimeError):
             pass
 

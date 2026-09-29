@@ -9,7 +9,7 @@ _APP_DIR_FOR_IMPORT = Path(__file__).resolve().parents[1] / 'apps' / 'RTESArenaA
 if str(_APP_DIR_FOR_IMPORT) not in sys.path:
     sys.path.insert(0, str(_APP_DIR_FOR_IMPORT))
 import i18n_language_config as langcfg
-_STATIC_DIR_ENTRIES = (('assets', 'assets'), ('i18n/_aexe_template', 'i18n/_aexe_template'), ('manual/simple', 'manual/simple'))
+_STATIC_DIR_ENTRIES = (('assets', 'assets'), ('i18n/_aexe_template', 'i18n/_aexe_template'), ('manual/simple', 'manual/simple'), ('manual/assist', 'manual/assist'))
 _FILE_ENTRIES = (('i18n/en/ui_app.json', 'i18n/en/ui_app.json'), ('i18n/en/ui.json', 'i18n/en/ui.json'), ('i18n/en/setup.json', 'i18n/en/setup.json'), ('i18n/_meta.json', 'i18n/_meta.json'), ('i18n/_template.json', 'i18n/_template.json'), ('i18n/i18n_bundle.json', 'i18n/i18n_bundle.json'), ('i18n/source_id_map.json', 'i18n/source_id_map.json'), ('i18n/degraded_accepted.json', 'i18n/degraded_accepted.json'), ('arena_fingerprints.json', 'arena_fingerprints.json'), ('arena_golden_manifest.json', 'arena_golden_manifest.json'))
 
 def public_i18n_dir_entries(app_dir: Path) -> tuple[tuple[str, str], ...]:

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Combat et magie</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.danger { background: #2e1a1a; border-left: 3px solid #a03030; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Combat et magie</h1>
+
+<h2>Bases du combat</h2>
+<p>Arena utilise un combat en temps réel. Cliquez pour attaquer. Le fait de toucher, et les dégâts infligés, dépendent de vos attributs, de votre équipement et de l'indice d'armure (AR) de l'ennemi.</p>
+
+<h2>Facteurs des chances de toucher</h2>
+<table>
+  <tr><th>Facteur</th><th>Effet</th></tr>
+  <tr><td>AGI (Agilité)</td><td>Bonus au toucher pour l'attaquant&nbsp;; Bonus de défense pour le défenseur</td></tr>
+  <tr><td>LUC (Chance)</td><td>Modificateur aléatoire appliqué à toutes les actions</td></tr>
+  <tr><td>Race Rougegarde</td><td>+niveau&nbsp;÷&nbsp;3 au toucher et aux dégâts (corps à corps uniquement)</td></tr>
+  <tr><td>Race Elfe des bois</td><td>+niveau&nbsp;÷&nbsp;3 au toucher et aux dégâts (arcs uniquement)</td></tr>
+  <tr><td>Race Elfe noir</td><td>+niveau&nbsp;÷&nbsp;4 au toucher et aux dégâts (corps à corps et à distance)</td></tr>
+</table>
+
+<h2>Dégâts</h2>
+<p>Dégâts = valeur de base de l'arme + modificateur de STR + bonus racial. L'indice d'armure (AR) de la cible réduit les dégâts reçus&nbsp;: plus l'AR est bas, meilleure est la protection.</p>
+
+<h2>Coup critique</h2>
+<div class="note">
+<strong>Coup critique = 3&nbsp;× les dégâts normaux de l'arme.</strong><br>
+Les personnages des classes de voleur ont, par niveau, une chance d'en réussir un. Les Assassins ont les meilleures chances. Les Vauriens, Cambrioleurs, Bardes, Acrobates, Moines, Archers (à l'arc) et Lames nocturnes possèdent aussi cette capacité.
+</div>
+
+<h2>Jet de sauvegarde</h2>
+<p>Lorsqu'un sort ou un effet spécial vous vise, un jet de sauvegarde réussi réduit ou annule l'effet. WIL (Volonté) régit les chances de réussite.</p>
+<table>
+  <tr><th>Classe / Race</th><th>Résultat du jet</th></tr>
+  <tr><td>Par défaut</td><td>Réussite = moitié des dégâts</td></tr>
+  <tr><td>Moine</td><td>Réussite = aucun dégât</td></tr>
+  <tr><td>Nordique</td><td>Jet réussi contre le froid = aucun dégât</td></tr>
+  <tr><td>Breton</td><td>Jet réussi contre la magie = aucun dégât</td></tr>
+</table>
+
+<h2>États</h2>
+<table>
+  <tr><th>État</th><th>Effet</th><th>Comment y remédier</th></tr>
+  <tr><td>Malade</td><td>Malus aux attributs, guérison entravée</td><td>Temple, sort de guérison</td></tr>
+  <tr><td>Empoisonné</td><td>Dégâts continus au fil du temps</td><td>Temple, potion de guérison du poison</td></tr>
+  <tr><td>Maudit</td><td>Malus aux attributs</td><td>Temple</td></tr>
+  <tr><td>Béni</td><td>Bonus temporaires aux attributs (bénéfique)</td><td>S'estompe avec le temps</td></tr>
+  <tr><td>Paralysé</td><td>Incapable d'agir</td><td>S'estompe, sort de dissipation</td></tr>
+  <tr><td>Réduit au silence</td><td>Impossible de lancer des sorts</td><td>S'estompe, sort de dissipation</td></tr>
+  <tr><td>Surchargé</td><td>Malus aux déplacements et aux actions</td><td>Jeter des objets / Fortification</td></tr>
+</table>
+<div class="danger">
+<strong>Immunité à la paralysie&nbsp;:</strong> le Chevalier et le Haut-Elfe sont totalement immunisés contre la paralysie.<br>
+<strong>Immunité au poison&nbsp;:</strong> le Barbare est totalement immunisé contre le poison.
+</div>
+
+<h2>Système de magie</h2>
+<p>Les sorts se choisissent dans votre Grimoire (page 2 de la feuille de personnage). Chaque sort coûte des points de sort (SP). Quand les SP tombent à 0, plus aucun sort ne peut être lancé. Les SP sont déterminés par INT&nbsp;× un multiplicateur propre à la classe.</p>
+
+<h2>Multiplicateurs de points de sort</h2>
+<table>
+  <tr><th>Classe</th><th>SP = INT&nbsp;×</th></tr>
+  <tr><td>Mage</td><td>×&nbsp;2</td></tr>
+  <tr><td>Sorcier</td><td>Jusqu'à ×&nbsp;3 (absorbés des sorts, non générés)</td></tr>
+  <tr><td>Guérisseur</td><td>×&nbsp;1,75</td></tr>
+  <tr><td>Bataillemage</td><td>×&nbsp;1,75</td></tr>
+  <tr><td>Épée-sort</td><td>×&nbsp;1,5</td></tr>
+  <tr><td>Lame nocturne</td><td>×&nbsp;1,5</td></tr>
+  <tr><td>Barde</td><td>= INT (×&nbsp;1)</td></tr>
+</table>
+
+<h2>Catégories de sorts</h2>
+<table>
+  <tr><th>Catégorie</th><th>Exemples</th><th>Usage</th></tr>
+  <tr><td>Dégâts</td><td>Dégâts de feu, Givre, Choc</td><td>Infliger des dégâts aux ennemis</td></tr>
+  <tr><td>Guérison</td><td>Guérison, Guérison d'autrui</td><td>Restaurer les points de vie</td></tr>
+  <tr><td>Défense</td><td>Bouclier, Fortification, Chute amortie</td><td>Renforcer la protection</td></tr>
+  <tr><td>Déplacement</td><td>Lévitation, Téléportation, Rappel</td><td>Voyager et fuir</td></tr>
+  <tr><td>Discrétion</td><td>Invisibilité, Caméléon</td><td>Se dissimuler</td></tr>
+  <tr><td>Détection</td><td>Détection de vie, Œil de nuit, Lumière</td><td>Voir les ennemis et les environs</td></tr>
+  <tr><td>Affaiblissement</td><td>Paralysie, Silence, Charme</td><td>Neutraliser les ennemis</td></tr>
+  <tr><td>Utilitaire</td><td>Ouverture, Identification, Traverse-mur</td><td>Déverrouiller, estimer, traverser les murs</td></tr>
+</table>
+
+<h2>Créateur de sorts</h2>
+<p>Disponible à la Guilde des mages. Créez vos propres sorts en combinant effets, portée, durée et puissance. Les Guérisseurs bénéficient de remises sur les effets défensifs&nbsp;; les Bataillemages, sur les effets offensifs.</p>
+
+<h2>Expérience et montée de niveau</h2>
+<p>Gagnez de l'expérience en vainquant des ennemis et en accomplissant des quêtes. Monter de niveau augmente les attributs et la santé (et les SP pour les lanceurs de sorts).</p>
+<div class="note">
+<strong>Vitesse de montée de niveau (du plus rapide au plus lent)&nbsp;:</strong> Voleur → Guerrier → sous-classes de guerrier → sous-classes de voleur → Mage → sous-classes de mage
+</div>
+
+</body>
+</html>

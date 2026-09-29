@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Atributos del personaje</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #c9d1e0; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 5px 8px; text-align: left; font-size: 12px; border: 1px solid #1e3a4a; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.stat-label { color: #7ec8e3; font-weight: bold; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Atributos del personaje</h1>
+
+<div class="note">Todos los atributos van de 1 a 100. <strong>50 es la media</strong>: el 50 % de la población del Imperio es mejor que tú en ese atributo, y el 50 % no lo es.</div>
+
+<h2>Los 8 atributos principales</h2>
+
+<h3><span class="stat-label">STR — Fuerza</span></h3>
+<p>Determina cuánto daño haces en combate. Afecta al peso máximo que puedes cargar (Máx. kilos), a la fatiga y a la distancia de salto. <strong>Esencial para las clases de guerrero.</strong></p>
+
+<h3><span class="stat-label">INT — Inteligencia</span></h3>
+<p>Determina el total de puntos de hechizo de los lanzadores. Afecta a la negociación, al regateo de precios y al éxito al forzar cerraduras. <strong>Esencial para las clases de mago y de ladrón.</strong></p>
+
+<h3><span class="stat-label">WIL — Voluntad</span></h3>
+<p>Determina la resistencia a los hechizos (Defensa mágica). También ayuda en las negociaciones. <strong>Vital para cualquier personaje que quiera protegerse de los hechizos.</strong></p>
+
+<h3><span class="stat-label">AGI — Agilidad</span></h3>
+<p>Afecta directamente a la probabilidad de acertar cuerpo a cuerpo (Para golpear), a la de ser alcanzado (Para defender) y a la de esquivar hechizos dirigidos. También rige el robo y el forzado de cerraduras. <strong>Esencial para las clases de ladrón.</strong></p>
+
+<h3><span class="stat-label">SPD — Velocidad</span></h3>
+<p>Controla la velocidad de movimiento, la de giro y la cadencia de disparo de las armas a distancia. Puede marcar la diferencia entre la vida y la muerte. <strong>Importante para todas las clases.</strong></p>
+
+<h3><span class="stat-label">END — Resistencia</span></h3>
+<p>Determina el total de puntos de salud, el ritmo de curación y la fatiga. También afecta a la resistencia a venenos y drogas. <strong>Esencial para las clases de guerrero.</strong></p>
+
+<h3><span class="stat-label">PER — Personalidad</span></h3>
+<p>Determina el modificador de Carisma. Afecta directamente a la capacidad de negociar, conseguir mejores precios y recabar información. <strong>Importante para las interacciones sociales.</strong></p>
+
+<h3><span class="stat-label">LUC — Suerte</span></h3>
+<p>Un poderoso modificador de toda acción: atacar, defender, robar, cualquier cosa. La media es 50; cuanto más alta, mejor. <strong>Afecta a todos los personajes.</strong></p>
+
+<h2>Referencia de modificadores de atributos</h2>
+<table>
+  <tr><th>Atributo</th><th>Modificador</th><th>Descripción</th></tr>
+  <tr><td>STR</td><td>Daño</td><td>Bonificación positiva con STR 55 o más; penalización con 45 o menos</td></tr>
+  <tr><td>STR</td><td>Máx. kilos</td><td>Superarlo causa penalizaciones de fatiga hasta no poder moverse</td></tr>
+  <tr><td>INT</td><td>Pts. de hechizo</td><td>No lanzadores: 0. Hechiceros: hasta INT×3</td></tr>
+  <tr><td>WIL</td><td>Defensa mágica</td><td>Cuanta más WIL, más difícil es que los enemigos te alcancen con hechizos</td></tr>
+  <tr><td>AGI</td><td>Para golpear</td><td>Bonificación o penalización a las tiradas de ataque cuerpo a cuerpo</td></tr>
+  <tr><td>AGI</td><td>Para defender</td><td>Se resta de tu defensa de armadura (menor AR = mejor protección)</td></tr>
+  <tr><td>END</td><td>Salud</td><td>Se suma a la salud ganada en cada subida de nivel</td></tr>
+  <tr><td>END</td><td>Mod. de curación</td><td>Modificador porcentual del ritmo base de curación al descansar</td></tr>
+  <tr><td>PER</td><td>Carisma</td><td>Modificador de la probabilidad de éxito al negociar con PNJ</td></tr>
+  <tr><td>LUC</td><td>General</td><td>Influencia latente en todas las acciones</td></tr>
+</table>
+
+<h2>Defensa de armadura (AR)</h2>
+<p>La AR se muestra sobre el retrato del personaje en la página 2 de la hoja. <strong>Menor AR = mejor protección</strong> (+10 es sin protección; los valores negativos indican armadura pesada).</p>
+<table>
+  <tr><th>Parte del cuerpo</th><th>Pieza de armadura</th></tr>
+  <tr><td>Cabeza</td><td>Yelmo</td></tr>
+  <tr><td>Pecho</td><td>Cota</td></tr>
+  <tr><td>Manos</td><td>Guanteletes</td></tr>
+  <tr><td>Cintura y piernas</td><td>Grebas</td></tr>
+  <tr><td>Pantorrillas y pies</td><td>Botas</td></tr>
+  <tr><td>Hombros (izq. y der.)</td><td>Hombreras</td></tr>
+</table>
+
+</body>
+</html>

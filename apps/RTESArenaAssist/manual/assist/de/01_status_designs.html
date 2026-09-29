@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Status-Designs (Charakterbögen)</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Status-Designs (Charakterbögen)</h1>
+
+<p>Diese Funktion zeigt den Status auf dem Tab „Status“ in einem Design deiner Wahl (einem Charakterbogen). Das Design wählst du mit „Ansicht“ oben auf dem Tab „Status“. Die Statusanzeige und die Verteilung der Attribute (Charaktererstellung und Stufenaufstieg) auf dem Tab „Übersetzung“ verwenden dasselbe Design.</p>
+<p>Ein Design ist eine HTML-Datei (eine Vorlage). Du kannst eines der mitgelieferten Designs wählen oder ein eigenes erstellen. Neben den Attributen und ihren Modifikatoren kann ein Bogen den Zustand des Charakters, den Rüstungswert jedes Körperteils sowie das Gesicht und das Ganzkörperbild zeigen.</p>
+
+<div class="note">
+Dies ist eine Anzeigefunktion von Assist. Sie ist unabhängig von der Statusanzeige des Spiels (im offiziellen Handbuch „Charakterbogen“ genannt); die Anzeige des Spiels ändert sich nicht.
+</div>
+
+<h2>Die Ansicht wechseln</h2>
+<p>Wähle mit „Ansicht“ oben auf dem Tab „Status“ entweder „Standard“ (die bisherige Anzeige) oder eines der Charakterbogen-Designs. Die Wahl bleibt für den nächsten Start erhalten.</p>
+<ul>
+<li>Die Statusanzeige und die Verteilung der Attribute auf dem Tab „Übersetzung“ verwenden die hier gewählte Ansicht. Der Tab „Übersetzung“ hat keine eigene Auswahl.</li>
+<li>Die Werte sind die, die Assist aus dem Spiel liest, dieselben wie in der Ansicht „Standard“. Ein Charakterbogen zeigt sie nur an und ändert nie die Werte des Spiels (Werte über die Cheat-Einstellungen zu ändern geschieht in der Ansicht „Standard“).</li>
+<li>Ein Bogen wird nur angezeigt, solange Assist mit dem Spiel verbunden ist und der Status angezeigt wird.</li>
+</ul>
+
+<h2>Mitgelieferte Designs</h2>
+<p>Es gibt 8 mitgelieferte Designs, hier in der Reihenfolge der Liste „Ansicht“. Wähle eines unter „Ansicht“, um zu sehen, wie es aussieht.</p>
+<table>
+  <tr><th>Design</th><th>Beschreibung</th></tr>
+  <tr><td>Arena-Stil</td><td>Angeordnet wie die Statusanzeige des Spiels: die Modifikatoren in den Zeilen der Attribute, das Ganzkörperbild rechts</td></tr>
+  <tr><td>Attributkarten</td><td>Helle Farben. Eine Karte pro Attribut, mit den Modifikatoren, die von ihm abhängen (Stärke: Schaden und Max. Kilogramm, und so weiter; dieselben Paare wie auf der Statusanzeige des Spiels). Oben Balken für Gesundheit, Erschöpfung und Zauberpunkte</td></tr>
+  <tr><td>Attributkarten (dunkel)</td><td>Die Attributkarten in den Farben des dunklen Assist-Fensters. Links die Attribute; rechts der Rüstungswert jedes Körperteils und das Ganzkörperbild</td></tr>
+  <tr><td>Kompakt</td><td>Kleine Schrift auf einer kurzen Seite, für ein kleines Fenster</td></tr>
+  <tr><td>Übersicht</td><td>Dunkle Felder. Gesundheit, Erschöpfung, Zauberpunkte und Erfahrung als Balken</td></tr>
+  <tr><td>Großdruck</td><td>Große weiße und gelbe Schrift auf Schwarz</td></tr>
+  <tr><td>Pen-&amp;-Paper (Protokollbogen)</td><td>Ein schwarz-weißer Protokollbogen</td></tr>
+  <tr><td>Pen-&amp;-Paper (Pergament)</td><td>Pergamentfarben und eine Serifenschrift</td></tr>
+</table>
+<ul>
+<li>Die mitgelieferten Designs sind so gemacht, dass sie ohne Scrollen auf den Tab „Status“ und den Tab „Übersetzung“ des Layoutmodus 1920×1080 passen.</li>
+<li>Manche Designs zeigen in einem schmalen Fenster eine horizontale Bildlaufleiste (Attributkarten (dunkel) unter etwa 740 px, Arena-Stil und Übersicht unter etwa 540 px). „Kompakt“ eignet sich für ein kleines Fenster.</li>
+<li>Die Farben der Balken folgen den Balken neben dem Gesicht auf dem Spielbildschirm (Gesundheit = grün, Erschöpfung = rot, Zauberpunkte = blau).</li>
+</ul>
+
+<h2>Eigene Charakterbögen</h2>
+
+<h3>Ablageort</h3>
+<p>Drücke „Ordner öffnen“ auf dem Tab „Status“, um den Ordner für deine eigenen Charakterbögen zu öffnen.</p>
+<ul>
+<li>Der Ordner ist <code>character_sheets</code>, am selben Ort wie RTESArenaAssist.exe.</li>
+<li>Beim ersten Öffnen legt Assist den Ordner an und legt Kopien der mitgelieferten Designs hinein (vorhandene Dateien werden nicht überschrieben). Am einfachsten beginnst du, indem du eine Kopie bearbeitest.</li>
+<li>Jede <code>.html</code>-Datei im Ordner erscheint in der Liste „Ansicht“. Ihr Name ist der Text des <code>&lt;title&gt;</code> der Datei (oder der Dateiname, wenn es keinen gibt), gefolgt von „(Ordner)“. Ändere den <code>&lt;title&gt;</code>, um sie umzubenennen.</li>
+<li>Nach dem Bearbeiten einer Datei drücke „Neu laden“ auf dem Tab „Status“.</li>
+<li>Speichere die Datei als UTF-8.</li>
+</ul>
+
+<h3>Unterstütztes HTML</h3>
+<p>Bögen werden mit der einfachen HTML-Anzeige von Qt dargestellt, nicht mit einem Browser (es wird keine Internetverbindung verwendet).</p>
+<ul>
+<li>Unterstützt: Tabellen (<code>table</code>), Farbe, Größe, Stärke und Schriftart des Textes, Hintergrundfarben, Rahmen (<code>border</code>, <code>border-collapse</code>), Abstände (<code>padding</code>, <code>margin</code>), Bilder (<code>img</code>), Klassen in einem <code>&lt;style&gt;</code>-Block und so weiter. Einzelheiten stehen unter „Supported HTML Subset“ in der Qt-Dokumentation.</li>
+<li>Nicht unterstützt: Skripte, <code>flex</code> und <code>grid</code>, Überlappungen (<code>position</code>), abgerundete Ecken und so weiter. Baue das Layout mit Tabellen.</li>
+<li>Bilder und Stylesheets im selben Ordner können mit relativen Pfaden verwendet werden (zum Beispiel <code>&lt;img src="bg.png"&gt;</code>). Dateien außerhalb des Ordners und Dateien im Internet werden nicht gelesen. Links werden nicht geöffnet.</li>
+<li>Eine Tabelle mit Breite 100 % behält ihre Form besser, wenn jede Spalte eine Breite in % hat.</li>
+</ul>
+
+<h2>Syntax</h2>
+<p>Schreibe Folgendes in das HTML, und der Wert wird an dieser Stelle eingesetzt.</p>
+<table>
+  <tr><th>Syntax</th><th>Bedeutung</th></tr>
+  <tr><td><code>{{key}}</code></td><td>Ein Wert (siehe „Werte“). „—“, solange der Wert noch nicht gelesen werden kann</td></tr>
+  <tr><td><code>{{label.key}}</code></td><td>Eine Beschriftung (siehe „Beschriftungen“), in der Anzeigesprache</td></tr>
+  <tr><td><code>{{img.face}}</code> / <code>{{img.body}}</code></td><td>Das Gesicht oder das Ganzkörperbild (siehe „Bilder“). Verwende es als <code>&lt;img src="{{img.face}}"&gt;</code></td></tr>
+  <tr><td><code>{{#if key}}</code> … <code>{{else}}</code> … <code>{{/if}}</code></td><td>Zeigt den ersten Teil nur, solange der Wert von key gelesen werden kann (nicht leer ist), und andernfalls den Teil nach <code>{{else}}</code>. <code>{{else}}</code> kann weggelassen werden. Blöcke können verschachtelt werden. <code>0</code> zählt als lesbarer Wert</td></tr>
+</table>
+<ul>
+<li>Ein unbekannter Schlüssel wird als <code>[key?]</code> angezeigt, damit ein Tippfehler leicht zu erkennen ist (zum Beispiel wird aus <code>{{golf}}</code> <code>[golf?]</code>). Ein <code>{{else}}</code> oder <code>{{/if}}</code> ohne Gegenstück wird als <code>[else?]</code> oder <code>[/if?]</code> angezeigt, und ein nicht geschlossenes <code>{{#if}}</code> setzt <code>[/if?]</code> an das Ende des Dokuments.</li>
+<li>Leerzeichen innerhalb der Klammern sind erlaubt, wie in <code>{{ key }}</code>.</li>
+<li>Innerhalb von HTML-Kommentaren (<code>&lt;!-- … --&gt;</code>) wird nichts eingesetzt. Der Kommentar am Anfang jedes mitgelieferten Designs listet die Schlüssel auf.</li>
+<li>Werte werden in einer HTML-sicheren Form eingesetzt (ein <code>&lt;</code> oder <code>&amp;</code> in einem Wert erscheint als dieses Zeichen).</li>
+</ul>
+
+<h2>Werte</h2>
+<p>Schlüssel für <code>{{key}}</code>. Die Beispiele stammen alle vom selben Charakter.</p>
+
+<h3>Name, Rasse, Klasse und so weiter</h3>
+<table>
+  <tr><th>Schlüssel</th><th>Inhalt</th><th>Beispiel</th></tr>
+  <tr><td><code>name</code></td><td>Name</td><td>Seraphine</td></tr>
+  <tr><td><code>race</code> / <code>race_en</code></td><td>Rasse (in der Anzeigesprache / auf Englisch)</td><td>Hochelf / High Elf</td></tr>
+  <tr><td><code>class</code> / <code>class_en</code></td><td>Klasse (in der Anzeigesprache / auf Englisch)</td><td>Zauberklinge / Spellsword</td></tr>
+  <tr><td><code>level</code></td><td>Stufe</td><td>5</td></tr>
+  <tr><td><code>gold</code></td><td>Gold</td><td>1284</td></tr>
+</table>
+
+<h3>Attribute und Modifikatoren</h3>
+<table>
+  <tr><th>Schlüssel</th><th>Inhalt</th><th>Beispiel</th></tr>
+  <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Attribute (Stärke, Intelligenz, Willenskraft, Beweglichkeit, Geschwindigkeit, Ausdauer, Persönlichkeit, Glück)</td><td>58</td></tr>
+  <tr><td><code>damage</code></td><td>Schaden (der Modifikator aus Stärke)</td><td>+1</td></tr>
+  <tr><td><code>max_kilos</code></td><td>Max. Kilogramm</td><td>116</td></tr>
+  <tr><td><code>magic_def</code></td><td>Magieabwehr</td><td>+1</td></tr>
+  <tr><td><code>to_hit</code> / <code>to_defend</code></td><td>Treffer-Bonus / Verteidigungs-Bonus</td><td>+1 / +1</td></tr>
+  <tr><td><code>health</code></td><td>Gesundheitsmodifikator (aus Ausdauer)</td><td>+1</td></tr>
+  <tr><td><code>heal_mod</code></td><td>Heilungsmodifikator</td><td>+1</td></tr>
+  <tr><td><code>charisma</code></td><td>Charisma</td><td>+0</td></tr>
+  <tr><td><code>bonus_pts</code></td><td>Noch zu verteilende Punkte (hat nur während der Charaktererstellung und der Verteilung der Attribute einen Wert)</td><td>12</td></tr>
+</table>
+
+<h3>Gesundheit, Erschöpfung, Zauberpunkte und Erfahrung</h3>
+<table>
+  <tr><th>Schlüssel</th><th>Inhalt</th><th>Beispiel</th></tr>
+  <tr><td><code>hp</code> / <code>hp_curr</code> / <code>hp_max</code></td><td>Gesundheit (als „aktuell/max“ / aktuell / max)</td><td>37/58 / 37 / 58</td></tr>
+  <tr><td><code>fatigue</code> / <code>fatigue_curr</code> / <code>fatigue_max</code></td><td>Erschöpfung (dieselben drei Formen)</td><td>101/121 / 101 / 121</td></tr>
+  <tr><td><code>spell_pts</code> / <code>spell_pts_curr</code> / <code>spell_pts_max</code></td><td>Zauberpunkte (dieselben drei Formen)</td><td>88/142 / 88 / 142</td></tr>
+  <tr><td><code>experience</code></td><td>Erfahrung</td><td>5210</td></tr>
+  <tr><td><code>experience_next</code></td><td>Für die nächste Stufe benötigte Erfahrung</td><td>7910</td></tr>
+  <tr><td><code>experience_to_next</code></td><td>Bis zur nächsten Stufe noch fehlende Erfahrung</td><td>2700</td></tr>
+</table>
+
+<h3>Werte für Balken</h3>
+<table>
+  <tr><th>Schlüssel</th><th>Inhalt</th><th>Beispiel</th></tr>
+  <tr><td><code>hp_pct</code> / <code>fatigue_pct</code> / <code>spell_pts_pct</code></td><td>Der aktuelle Wert in Prozent (0 bis 100). Fehlt, wenn das Maximum 0 ist (zum Beispiel die Zauberpunkte einer Klasse, die nicht zaubern kann)</td><td>64 / 83 / 62</td></tr>
+  <tr><td><code>experience_pct</code></td><td>Fortschritt vom Beginn dieser Stufe bis zur nächsten Stufe (0 bis 100)</td><td>27</td></tr>
+  <tr><td><code>hp_pct_rest</code> / <code>fatigue_pct_rest</code> / <code>spell_pts_pct_rest</code> / <code>experience_pct_rest</code></td><td>Der Rest (100 − der Prozentwert)</td><td>36 / 17 / 38 / 73</td></tr>
+</table>
+<p>Wie ein Balken gezeichnet wird, steht unter „Beispiele“.</p>
+
+<h3>Zustand</h3>
+<table>
+  <tr><th>Schlüssel</th><th>Inhalt</th><th>Beispiel</th></tr>
+  <tr><td><code>condition</code></td><td>Alle aktuellen Zustände, aneinandergereiht. „gesund“, wenn keiner vorliegt</td><td>vergiftet</td></tr>
+  <tr><td><code>condition_bad</code></td><td>Nur schlechte Zustände (krank, vergiftet, betrunken, verstummt, gelähmt, verflucht, wird geschwächt). Fehlt, wenn keiner vorliegt</td><td>vergiftet</td></tr>
+  <tr><td><code>condition_good</code></td><td>Nur gute Effekte (unsichtbar; kein Ziel; feuerresistent und die anderen Resistenzen; schwebend; fähig, Zauber zu absorbieren; fähig, Zauber zu reflektieren; zauberresistent; regenerierend). Fehlt, wenn keiner vorliegt</td><td>(keiner)</td></tr>
+</table>
+<ul>
+<li>Die Wörter sind dieselben wie im Statusfenster des Spiels. Mehrere Zustände werden mit „, “ getrennt.</li>
+<li>Vorerst nicht angezeigt: in kritischem Zustand, abgeschirmt, der Name einer Krankheit, verstärkte Attribute, gesegnet.</li>
+<li>Fehlt während der Charaktererstellung.</li>
+</ul>
+
+<h3>Rüstungswert nach Körperteil</h3>
+<table>
+  <tr><th>Schlüssel</th><th>Körperteil</th><th>Beispiel</th></tr>
+  <tr><td><code>ar_head</code></td><td>Kopf</td><td>+7</td></tr>
+  <tr><td><code>ar_shoulder_right</code> / <code>ar_shoulder_left</code></td><td>Rechte Schulter / Linke Schulter</td><td>+1 / -1</td></tr>
+  <tr><td><code>ar_chest</code></td><td>Brust</td><td>-1</td></tr>
+  <tr><td><code>ar_hands</code></td><td>Hände</td><td>+5</td></tr>
+  <tr><td><code>ar_legs</code></td><td>Hüfte und Beine</td><td>+4</td></tr>
+  <tr><td><code>ar_feet</code></td><td>Füße</td><td>+4</td></tr>
+</table>
+<ul>
+<li>Dieselben Zahlen, die der Ausrüstungsbildschirm des Spiels (Seite 2 der Statusanzeige) neben dem Körper zeigt, berechnet aus der Ausrüstung. Niedriger ist besser geschützt; +10, wenn nichts getragen wird.</li>
+<li>Berechnung: 10 − Rüstung (dieses Körperteil) − Schild (die Körperteile, die er abdeckt) − Schmuck (alle Körperteile) − der Verteidigungsmodifikator aus Beweglichkeit (<code>to_defend</code>).</li>
+<li>Fehlt, solange die Ausrüstung nicht gelesen werden kann.</li>
+</ul>
+
+<h2>Beschriftungen</h2>
+<p>Schlüssel für <code>{{label.key}}</code>. Die Beschriftung wird in der Anzeigesprache eingesetzt.</p>
+<table>
+  <tr><th>Schlüssel</th><th>Anzeige auf Deutsch</th></tr>
+  <tr><td><code>name</code> <code>race</code> <code>class</code> <code>level</code> <code>gold</code> <code>experience</code></td><td>Name, Rasse, Klasse, Stufe, Gold, Erfahrung</td></tr>
+  <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Stärke, Intelligenz, Willenskraft, Beweglichkeit, Geschwindigkeit, Ausdauer, Persönlichkeit, Glück</td></tr>
+  <tr><td><code>str_code</code> <code>int_code</code> <code>wil_code</code> <code>agi_code</code> <code>spd_code</code> <code>end_code</code> <code>per_code</code> <code>luc_code</code></td><td>STR, INT, WIL, AGI, SPD, END, PER, LUC</td></tr>
+  <tr><td><code>damage</code> <code>max_kilos</code> <code>magic_def</code> <code>to_hit</code> <code>to_defend</code> <code>health</code> <code>heal_mod</code> <code>charisma</code> <code>spell_pts</code> <code>bonus_pts</code></td><td>Schaden, Max. Kilogramm, Magieabwehr, Treffer-Bonus, Verteidigungs-Bonus, Gesundheit, Heilungsmodifikator, Charisma, Zauberpunkte, BONUSPUNKTE</td></tr>
+  <tr><td><code>hp</code> <code>fatigue</code></td><td>Gesundheit, Erschöpfung</td></tr>
+  <tr><td><code>experience_next</code> <code>experience_to_next</code></td><td>Nächste Stufe, Bis zur nächsten Stufe</td></tr>
+  <tr><td><code>condition</code></td><td>Zustand</td></tr>
+  <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Kopf, Rechte Schulter, Linke Schulter, Brust, Hände, Hüfte und Beine, Füße</td></tr>
+  <tr><td><code>title</code></td><td>Charakterbogen</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code></td><td>Attribute, Kampf &amp; Magie, Gesundheit &amp; Erschöpfung, Erfahrung &amp; Gold, Rüstungswert (AR)</td></tr>
+  <tr><td><code>col_value</code> <code>col_modifier</code></td><td>Wert, Modifikator</td></tr>
+  <tr><td><code>armor_note</code></td><td>Je niedriger, desto besser geschützt (+10 ungeschützt)</td></tr>
+</table>
+
+<h2>Bilder</h2>
+<table>
+  <tr><th>Schlüssel</th><th>Inhalt</th><th>Größe</th></tr>
+  <tr><td><code>img.face</code></td><td>Das Gesicht (das unten auf dem Spielbildschirm gezeigte)</td><td>80×70</td></tr>
+  <tr><td><code>img.body</code></td><td>Die Figur auf der Statusanzeige (mit der getragenen Ausrüstung)</td><td>300×480</td></tr>
+</table>
+<ul>
+<li>Sie werden aus den Dateien deines Arena erzeugt (Assist liefert keine Bilder von Arena mit). Wenn sie nicht erzeugt werden können, wird ein transparentes Bild derselben Größe verwendet.</li>
+<li>Mit <code>width</code> / <code>height</code> wird das Bild in dieser Größe gezeigt (ohne Glättung skaliert, die groben Pixel bleiben erhalten). Ganzzahlige Vielfache sehen am besten aus (zum Beispiel <code>width="160" height="140"</code> für das Gesicht).</li>
+<li>Die Ausrüstung auf dem Ganzkörperbild wird einmal pro Sekunde geprüft, und das Bild wird nur neu erzeugt, wenn sie sich ändert.</li>
+</ul>
+
+<h2>Beispiele</h2>
+<p>Schreibe die HTML-Zeichen so, wie sie sind (hier werden sie in lesbarer Form gezeigt).</p>
+
+<h3>Ein minimaler Bogen</h3>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;My sheet&lt;/title&gt;
+&lt;style&gt;
+  body { background-color: #1a1a2e; color: #e0e0e0;
+         font-family: "Segoe UI", "Yu Gothic UI", sans-serif; }
+  .v   { font-weight: bold; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;table width="100%" cellspacing="0" cellpadding="6"&gt;
+&lt;tr&gt;
+  &lt;td width="90"&gt;&lt;img src="{{img.face}}"&gt;&lt;/td&gt;
+  &lt;td&gt;&lt;span class="v"&gt;{{name}}&lt;/span&gt;&lt;br&gt;{{race}} / {{class}}&lt;br&gt;{{label.level}} {{level}}&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;table width="100%" cellspacing="0" cellpadding="4"&gt;
+&lt;tr&gt;&lt;td width="50%"&gt;{{label.str}}&lt;/td&gt;&lt;td width="50%" align="right"&gt;&lt;span class="v"&gt;{{str}}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;{{label.hp}}&lt;/td&gt;&lt;td align="right"&gt;&lt;span class="v"&gt;{{hp}}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre></td></tr></table>
+
+<h3>Teile nur zeigen, wenn sie zutreffen, mit {{#if}}</h3>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;!-- nur während Punkte verteilt werden --&gt;
+{{#if bonus_pts}}&lt;p&gt;{{label.bonus_pts}}: {{bonus_pts}}&lt;/p&gt;{{/if}}
+
+&lt;!-- in Rot, wenn ein schlechter Zustand vorliegt --&gt;
+&lt;p&gt;{{label.condition}}:
+{{#if condition_bad}}&lt;span style="color: #ff5050;"&gt;{{condition}}&lt;/span&gt;{{else}}{{condition}}{{/if}}&lt;/p&gt;</pre></td></tr></table>
+
+<h3>Ein Balken</h3>
+<table class="code" cellpadding="8"><tr><td><pre>{{#if hp_pct}}
+&lt;table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; font-size: 1px;"&gt;
+&lt;tr&gt;
+  &lt;td width="{{hp_pct}}%" bgcolor="#4caf50" style="padding-top: 4px; padding-bottom: 4px;"&gt;&lt;/td&gt;
+  &lt;td width="{{hp_pct_rest}}%" bgcolor="#1f3326"&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+{{/if}}</pre></td></tr></table>
+<ul>
+<li>Gib beiden Zellen eine Breite (mit nur einer sieht ein Wert von 0 voll aus).</li>
+<li>Lass die Zellen leer und gib ihnen Höhe über den oberen und unteren Innenabstand. Eine kleine Schriftgröße auf der Tabelle (<code>font-size: 1px</code>) hält die leeren Zellen niedrig.</li>
+<li>Wenn das Maximum 0 ist, gibt es keinen Prozentwert; schließt du den Balken in <code>{{#if hp_pct}}</code> ein, wird der ganze Balken ausgeblendet.</li>
+</ul>
+
+<h2>Wenn etwas nicht richtig angezeigt wird</h2>
+<table>
+  <tr><th>Symptom</th><th>Was zu prüfen ist</th></tr>
+  <tr><td><code>[key?]</code> wird angezeigt</td><td>Die Schreibweise des Schlüssels (siehe „Werte“ und „Beschriftungen“)</td></tr>
+  <tr><td>„—“ wird angezeigt</td><td>Der Wert kann noch nicht gelesen werden (zum Beispiel während der Charaktererstellung)</td></tr>
+  <tr><td>Der Bogen ist nicht in der Liste</td><td>Ist die Dateiendung <code>.html</code>? Liegt die Datei im Ordner <code>character_sheets</code>? Hast du nach dem Hinzufügen „Neu laden“ gedrückt?</td></tr>
+  <tr><td>Die Anordnung stimmt nicht</td><td>Verwendet die Datei etwas Nichtunterstütztes (<code>flex</code>, <code>grid</code> und so weiter)? Baue das Layout mit Tabellen</td></tr>
+  <tr><td>Ein Bild wird nicht angezeigt</td><td>Liegt die Bilddatei im Ordner <code>character_sheets</code>? (Dateien außerhalb werden nicht gelesen)</td></tr>
+  <tr><td>Zeichensalat</td><td>Wurde die Datei als UTF-8 gespeichert?</td></tr>
+  <tr><td>Nichts wird angezeigt</td><td>Ist Assist mit dem Spiel verbunden, und wird der Status angezeigt? (Auf dem Titelbildschirm zum Beispiel wird nichts angezeigt)</td></tr>
+</table>
+
+</body>
+</html>

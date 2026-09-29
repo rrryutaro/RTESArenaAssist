@@ -212,12 +212,8 @@ def _parse_class_sections_full(html_text: str) -> dict[str, str]:
 _parse_class_sections = _parse_class_sections_simple
 
 def _read_manual_html(mode: str, lang: str) -> str:
-    import app_resources
-    for L in (lang, 'ja'):
-        txt = app_resources.read_text(f'manual/{mode}/{L}/{_CLASS_DOC}')
-        if txt is not None:
-            return txt
-    return ''
+    from services import manual_pages
+    return manual_pages.read_page(mode, _CLASS_DOC, lang)
 
 def _load_html_or_empty(base_dir: str, lang: str) -> str:
     mode = 'full' if base_dir == _MANUAL_FULL else 'simple'

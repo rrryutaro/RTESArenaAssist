@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Controles e interfaz</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Controles e interfaz</h1>
+
+<h2>Hoja de personaje — Página 1</h2>
+<table>
+  <tr><th>Campo</th><th>Descripción</th></tr>
+  <tr><td>Nombre / Raza / Clase</td><td>Identidad básica del personaje</td></tr>
+  <tr><td>Experiencia</td><td>Puntos de experiencia acumulados hasta ahora</td></tr>
+  <tr><td>Nivel</td><td>Nivel actual del personaje</td></tr>
+  <tr><td>Salud</td><td>Puntos de salud actuales</td></tr>
+  <tr><td>Fatiga</td><td>Va de 2 a 200</td></tr>
+  <tr><td>Oro</td><td>Oro que llevas encima</td></tr>
+  <tr><td>Página siguiente</td><td>Ir a la página 2 (lista de equipo)</td></tr>
+  <tr><td>Hecho</td><td>Cerrar la hoja de personaje</td></tr>
+</table>
+
+<h2>Hoja de personaje — Página 2 (Equipo)</h2>
+<table>
+  <tr><th>Color</th><th>Significado</th></tr>
+  <tr><td style="color:#ffd700">Amarillo</td><td>Objeto equipado</td></tr>
+  <tr><td style="color:#d2b48c">Bronceado</td><td>Objeto equipable</td></tr>
+  <tr><td style="color:#ff6b6b">Rojo</td><td>No se puede equipar</td></tr>
+  <tr><td style="color:#00ffff">Cian</td><td>Objeto mágico sin identificar</td></tr>
+  <tr><td style="color:#88ffff">Cian claro</td><td>Objeto mágico sin identificar (equipado)</td></tr>
+</table>
+<p><strong>Clic izquierdo</strong> para equipar un objeto. <strong>Clic derecho</strong> para ver la información del objeto. Las flechas de desplazamiento recorren hasta 40 objetos.</p>
+<p><strong>Soltar</strong>: suelta el objeto resaltado. <strong>Libro de hechizos</strong>: muestra los hechizos. <strong>Salir</strong>: vuelve a la página 1.</p>
+
+<h2>Controles del ratón</h2>
+<table>
+  <tr><th>Acción</th><th>Efecto</th></tr>
+  <tr><td>Clic izquierdo (en el mundo)</td><td>Avanzar / interactuar / equipar</td></tr>
+  <tr><td>Clic derecho (en el mundo)</td><td>Retroceder</td></tr>
+  <tr><td>Clic izquierdo (interfaz)</td><td>Seleccionar / confirmar</td></tr>
+  <tr><td>Clic derecho (objeto)</td><td>Mostrar la información del objeto</td></tr>
+  <tr><td>Mover el ratón a izquierda/derecha</td><td>Girar a la izquierda/derecha</td></tr>
+  <tr><td>Mover el ratón arriba/abajo</td><td>Mirar arriba/abajo</td></tr>
+</table>
+
+<h2>Controles del teclado</h2>
+<table>
+  <tr><th>Tecla</th><th>Acción</th></tr>
+  <tr><td><span class="key">↑</span> / <span class="key">W</span></td><td>Avanzar</td></tr>
+  <tr><td><span class="key">↓</span> / <span class="key">S</span></td><td>Retroceder</td></tr>
+  <tr><td><span class="key">←</span> / <span class="key">A</span></td><td>Girar a la izquierda</td></tr>
+  <tr><td><span class="key">→</span> / <span class="key">D</span></td><td>Girar a la derecha</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>Mostrar u ocultar el automapa</td></tr>
+  <tr><td><span class="key">C</span></td><td>Hoja de personaje</td></tr>
+  <tr><td><span class="key">L</span></td><td>Diario</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>Menú / volver</td></tr>
+  <tr><td><span class="key">F1</span></td><td>Ayuda</td></tr>
+  <tr><td><span class="key">Alt+F4</span></td><td>Salir del juego</td></tr>
+</table>
+
+<div class="note">
+<strong>Consejos para DOSBox:</strong> <span class="key">Ctrl+F10</span> activa o desactiva la captura del ratón. <span class="key">Alt+Enter</span> alterna entre pantalla completa y ventana.
+</div>
+
+<h2>Acciones en el juego</h2>
+<table>
+  <tr><th>Acción</th><th>Descripción</th></tr>
+  <tr><td>Hablar</td><td>Habla con los PNJ para obtener información y misiones</td></tr>
+  <tr><td>Robar</td><td>Roba un objeto a un objetivo (el éxito depende de AGI)</td></tr>
+  <tr><td>Tomar</td><td>Recoge un objeto del suelo</td></tr>
+  <tr><td>Descansar / Acampar</td><td>Recupera salud y fatiga; Ria puede aparecer en sueños</td></tr>
+  <tr><td>Lanzar</td><td>Usa un hechizo de tu libro de hechizos</td></tr>
+  <tr><td>Usar</td><td>Usa un objeto que llevas</td></tr>
+</table>
+
+</body>
+</html>

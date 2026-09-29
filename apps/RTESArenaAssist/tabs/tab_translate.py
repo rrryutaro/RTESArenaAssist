@@ -6,6 +6,7 @@ import i18n_helper as i18n
 from layout_panel_translate import resolve_pair_texts
 _log = logging.getLogger('RTESArenaAssist')
 from attributes_panel import AttributesPanel
+from charsheet.status_display import StatusDisplay
 from appearance_faces_panel import AppearanceFacesPanel
 from tabs.tab_map import TabMap
 from tabs.translate_panels.item_row import ItemRow
@@ -33,10 +34,10 @@ _MODE_MAP_SCREEN = 'map_screen'
 class TabTranslate(QWidget):
     panel_mode_changed = Signal(str)
 
-    def __init__(self, attributes_panel=None, parent=None):
+    def __init__(self, status_display=None, parent=None):
         super().__init__(parent)
         self._panel_mode = _MODE_TRANSLATE
-        self._attributes_panel = attributes_panel if attributes_panel is not None else AttributesPanel()
+        self._status_display = status_display if status_display is not None else StatusDisplay()
         self._build_ui()
         self.set_connected(False)
 
@@ -429,8 +430,8 @@ class TabTranslate(QWidget):
         return self._appearance_faces_panel
 
     def attributes_panel(self) -> AttributesPanel:
-        return self._attributes_panel
+        return self._status_display.panel()
 
-    def mount_attributes_panel(self) -> None:
-        if self._attributes_panel.parent() is not self._attr_slot:
-            self._attr_slot.layout().addWidget(self._attributes_panel)
+    def mount_status_display(self) -> None:
+        if self._status_display.parent() is not self._attr_slot:
+            self._attr_slot.layout().addWidget(self._status_display)

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Comandi e Interfaccia</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Comandi e Interfaccia</h1>
+
+<h2>Scheda Personaggio — Pagina 1</h2>
+<table>
+  <tr><th>Campo</th><th>Descrizione</th></tr>
+  <tr><td>Nome / Razza / Classe</td><td>Identità di base del personaggio</td></tr>
+  <tr><td>Esperienza</td><td>Punti esperienza accumulati finora</td></tr>
+  <tr><td>Livello</td><td>Livello attuale del personaggio</td></tr>
+  <tr><td>Salute</td><td>Punti salute attuali</td></tr>
+  <tr><td>Fatica</td><td>Va da 2 a 200</td></tr>
+  <tr><td>Oro</td><td>Oro attualmente posseduto</td></tr>
+  <tr><td>Pagina Successiva</td><td>Passa alla pagina 2 (elenco dell'equipaggiamento)</td></tr>
+  <tr><td>Fatto</td><td>Chiude la scheda del personaggio</td></tr>
+</table>
+
+<h2>Scheda Personaggio — Pagina 2 (Equipaggiamento)</h2>
+<table>
+  <tr><th>Colore</th><th>Significato</th></tr>
+  <tr><td style="color:#ffd700">Giallo</td><td>Oggetto attualmente equipaggiato</td></tr>
+  <tr><td style="color:#d2b48c">Beige</td><td>Oggetto equipaggiabile</td></tr>
+  <tr><td style="color:#ff6b6b">Rosso</td><td>Non equipaggiabile</td></tr>
+  <tr><td style="color:#00ffff">Ciano</td><td>Oggetto magico non identificato</td></tr>
+  <tr><td style="color:#88ffff">Ciano chiaro</td><td>Oggetto magico non identificato (equipaggiato)</td></tr>
+</table>
+<p><strong>Clic sinistro</strong> per equipaggiare un oggetto. <strong>Clic destro</strong> per le informazioni sull'oggetto. Le frecce di scorrimento permettono di sfogliare fino a 40 oggetti.</p>
+<p><strong>Lascia</strong>: lascia cadere l'oggetto selezionato. <strong>Libro degli Incantesimi</strong>: mostra gli incantesimi. <strong>Esci</strong>: torna alla pagina 1.</p>
+
+<h2>Comandi del mouse</h2>
+<table>
+  <tr><th>Azione</th><th>Effetto</th></tr>
+  <tr><td>Clic sinistro (nel mondo)</td><td>Avanza / interagisci / equipaggia</td></tr>
+  <tr><td>Clic destro (nel mondo)</td><td>Indietreggia</td></tr>
+  <tr><td>Clic sinistro (interfaccia)</td><td>Seleziona / conferma</td></tr>
+  <tr><td>Clic destro (oggetto)</td><td>Mostra le informazioni sull'oggetto</td></tr>
+  <tr><td>Movimento del mouse a sinistra/destra</td><td>Gira a sinistra/destra</td></tr>
+  <tr><td>Movimento del mouse in alto/basso</td><td>Guarda in alto/basso</td></tr>
+</table>
+
+<h2>Comandi da tastiera</h2>
+<table>
+  <tr><th>Tasto</th><th>Azione</th></tr>
+  <tr><td><span class="key">↑</span> / <span class="key">W</span></td><td>Avanza</td></tr>
+  <tr><td><span class="key">↓</span> / <span class="key">S</span></td><td>Indietreggia</td></tr>
+  <tr><td><span class="key">←</span> / <span class="key">A</span></td><td>Gira a sinistra</td></tr>
+  <tr><td><span class="key">→</span> / <span class="key">D</span></td><td>Gira a destra</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>Mostra/nasconde la Mappa Automatica</td></tr>
+  <tr><td><span class="key">C</span></td><td>Scheda Personaggio</td></tr>
+  <tr><td><span class="key">L</span></td><td>Diario</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>Menu / indietro</td></tr>
+  <tr><td><span class="key">F1</span></td><td>Aiuto</td></tr>
+  <tr><td><span class="key">Alt+F4</span></td><td>Esci dal gioco</td></tr>
+</table>
+
+<div class="note">
+<strong>Suggerimenti per DOSBox:</strong> <span class="key">Ctrl+F10</span> attiva/disattiva la cattura del mouse. <span class="key">Alt+Enter</span> passa dalla modalità a schermo intero a quella in finestra e viceversa.
+</div>
+
+<h2>Azioni di gioco</h2>
+<table>
+  <tr><th>Azione</th><th>Descrizione</th></tr>
+  <tr><td>Parla</td><td>Parla con i PNG per ottenere informazioni e missioni</td></tr>
+  <tr><td>Ruba</td><td>Ruba un oggetto a un bersaglio (riuscita basata su AGI)</td></tr>
+  <tr><td>Prendi</td><td>Raccogli un oggetto da terra</td></tr>
+  <tr><td>Riposa / Accampati</td><td>Recupera salute e fatica; Ria potrebbe apparire nei sogni</td></tr>
+  <tr><td>Lancia</td><td>Usa un incantesimo dal tuo libro degli incantesimi</td></tr>
+  <tr><td>Usa</td><td>Usa un oggetto che hai in mano</td></tr>
+</table>
+
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Combattimento e Magia</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.danger { background: #2e1a1a; border-left: 3px solid #a03030; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Combattimento e Magia</h1>
+
+<h2>Basi del combattimento</h2>
+<p>Arena usa il combattimento in tempo reale. Fai clic per attaccare. Se colpisci, e quanto danno infliggi, dipende dalle tue statistiche, dal tuo equipaggiamento e dalla Classe Armatura (AR) del nemico.</p>
+
+<h2>Fattori della probabilità di colpire</h2>
+<table>
+  <tr><th>Fattore</th><th>Effetto</th></tr>
+  <tr><td>AGI (Agilità)</td><td>Bonus in Attacco per chi attacca; Bonus in Difesa per chi difende</td></tr>
+  <tr><td>LUC (Fortuna)</td><td>Modificatore casuale applicato a tutte le azioni</td></tr>
+  <tr><td>Razza Redguard</td><td>+livello÷3 per colpire e al danno (solo mischia)</td></tr>
+  <tr><td>Razza Elfo dei Boschi</td><td>+livello÷3 per colpire e al danno (solo archi)</td></tr>
+  <tr><td>Razza Elfo Oscuro</td><td>+livello÷4 per colpire e al danno (mischia e a distanza)</td></tr>
+</table>
+
+<h2>Danno</h2>
+<p>Danno = valore base dell'arma + modificatore STR + bonus razziale. La Classe Armatura (AR) del bersaglio riduce il danno in arrivo: più bassa è l'AR, migliore è la protezione.</p>
+
+<h2>Colpo critico</h2>
+<div class="note">
+<strong>Colpo critico = 3× il danno normale dell'arma.</strong><br>
+I personaggi delle classi da ladro guadagnano a ogni livello una probabilità di metterne a segno uno. Gli Assassini hanno la probabilità più alta. Anche Furfanti, Scassinatori, Bardi, Acrobati, Monaci, Arcieri (con gli archi) e Lame Notturne hanno questa capacità.
+</div>
+
+<h2>Tiro salvezza</h2>
+<p>Quando sei bersaglio di un incantesimo o di un effetto speciale, un tiro salvezza riuscito riduce o annulla l'effetto. La WIL (Volontà) determina la probabilità di successo.</p>
+<table>
+  <tr><th>Classe / Razza</th><th>Esito del tiro salvezza</th></tr>
+  <tr><td>Predefinito</td><td>Successo = metà danno</td></tr>
+  <tr><td>Monaco</td><td>Successo = danno zero</td></tr>
+  <tr><td>Nord</td><td>Tiro salvezza riuscito contro il Freddo = danno zero</td></tr>
+  <tr><td>Bretone</td><td>Tiro salvezza riuscito contro la Magia = danno zero</td></tr>
+</table>
+
+<h2>Condizioni di stato</h2>
+<table>
+  <tr><th>Condizione</th><th>Effetto</th><th>Come rimuoverla</th></tr>
+  <tr><td>Malato</td><td>Penalità alle statistiche, guarigione compromessa</td><td>Tempio, incantesimo di cura</td></tr>
+  <tr><td>Avvelenato</td><td>Danno continuo nel tempo</td><td>Tempio, pozione antidoto</td></tr>
+  <tr><td>Maledetto</td><td>Penalità alle statistiche</td><td>Tempio</td></tr>
+  <tr><td>Benedetto</td><td>Bonus temporanei alle statistiche (benefico)</td><td>Svanisce con il tempo</td></tr>
+  <tr><td>Paralizzato</td><td>Impossibile agire</td><td>Svanisce con il tempo, incantesimo Dissolvi magia</td></tr>
+  <tr><td>Silenziato</td><td>Impossibile lanciare incantesimi</td><td>Svanisce con il tempo, incantesimo Dissolvi magia</td></tr>
+  <tr><td>Sovraccarico</td><td>Penalità al movimento e alle azioni</td><td>Lascia degli oggetti / Fortifica</td></tr>
+</table>
+<div class="danger">
+<strong>Immunità alla paralisi:</strong> Cavaliere e Alto Elfo sono completamente immuni alla paralisi.<br>
+<strong>Immunità al veleno:</strong> il Barbaro è completamente immune al veleno.
+</div>
+
+<h2>Sistema magico</h2>
+<p>Gli incantesimi si selezionano dal Libro degli Incantesimi (pagina 2 della scheda del personaggio). Ogni incantesimo costa Punti Incantesimo (SP). Quando gli SP arrivano a 0, non è possibile lanciare incantesimi. Gli SP sono determinati da INT × un moltiplicatore specifico per classe.</p>
+
+<h2>Moltiplicatori dei Punti Incantesimo</h2>
+<table>
+  <tr><th>Classe</th><th>SP = INT ×</th></tr>
+  <tr><td>Mago</td><td>× 2</td></tr>
+  <tr><td>Stregone</td><td>Fino a × 3 (assorbiti dagli incantesimi, non generati da sé)</td></tr>
+  <tr><td>Guaritore</td><td>× 1,75</td></tr>
+  <tr><td>Mago da battaglia</td><td>× 1,75</td></tr>
+  <tr><td>Spadamagica</td><td>× 1,5</td></tr>
+  <tr><td>Lama Notturna</td><td>× 1,5</td></tr>
+  <tr><td>Bardo</td><td>= INT (× 1)</td></tr>
+</table>
+
+<h2>Categorie di incantesimi</h2>
+<table>
+  <tr><th>Categoria</th><th>Esempi</th><th>Scopo</th></tr>
+  <tr><td>Danno</td><td>Danno da fuoco, Gelo, Scarica</td><td>Infliggere danno ai nemici</td></tr>
+  <tr><td>Cura</td><td>Cura, Cura altrui</td><td>Ripristinare la salute</td></tr>
+  <tr><td>Difesa</td><td>Scudo, Fortifica, Caduta lenta</td><td>Migliorare la protezione</td></tr>
+  <tr><td>Movimento</td><td>Levitazione, Teletrasporto, Richiamo</td><td>Viaggiare e fuggire</td></tr>
+  <tr><td>Furtività</td><td>Invisibilità, Camaleonte</td><td>Nascondersi</td></tr>
+  <tr><td>Rilevamento</td><td>Rileva vita, Occhio notturno, Luce</td><td>Vedere nemici e dintorni</td></tr>
+  <tr><td>Indebolimento</td><td>Paralisi, Silenzio, Ammaliare</td><td>Neutralizzare i nemici</td></tr>
+  <tr><td>Utilità</td><td>Apri, Identifica, Attraversamuri</td><td>Aprire serrature, valutare oggetti, attraversare i muri</td></tr>
+</table>
+
+<h2>Creatore di incantesimi</h2>
+<p>Disponibile alla Gilda dei Maghi. Crea incantesimi personalizzati combinando effetti, gittata, durata e intensità. I Guaritori ottengono sconti sugli effetti difensivi; i Maghi da battaglia sugli effetti offensivi.</p>
+
+<h2>Esperienza e livelli</h2>
+<p>Guadagna esperienza sconfiggendo nemici e completando missioni. Salire di livello aumenta le statistiche e la salute (e gli SP per chi lancia incantesimi).</p>
+<div class="note">
+<strong>Velocità di avanzamento di livello (dal più veloce):</strong> Ladro → Guerriero → sottoclassi da guerriero → sottoclassi da ladro → Mago → sottoclassi da mago
+</div>
+
+</body>
+</html>

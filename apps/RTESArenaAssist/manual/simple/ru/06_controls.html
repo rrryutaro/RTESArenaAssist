@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Управление и интерфейс</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Управление и интерфейс</h1>
+
+<h2>Лист персонажа — страница 1</h2>
+<table>
+  <tr><th>Поле</th><th>Описание</th></tr>
+  <tr><td>Имя / Раса / Класс</td><td>Основные сведения о персонаже</td></tr>
+  <tr><td>Опыт</td><td>Накопленные на данный момент очки опыта</td></tr>
+  <tr><td>Уровень</td><td>Текущий уровень персонажа</td></tr>
+  <tr><td>Здоровье</td><td>Текущие очки здоровья</td></tr>
+  <tr><td>Усталость</td><td>В пределах от 2 до 200</td></tr>
+  <tr><td>Золото</td><td>Золото на руках</td></tr>
+  <tr><td>Следующая страница</td><td>Перейти на страницу 2 (список снаряжения)</td></tr>
+  <tr><td>Готово</td><td>Закрыть лист персонажа</td></tr>
+</table>
+
+<h2>Лист персонажа — страница 2 (снаряжение)</h2>
+<table>
+  <tr><th>Цвет</th><th>Значение</th></tr>
+  <tr><td style="color:#ffd700">Жёлтый</td><td>Надетый предмет</td></tr>
+  <tr><td style="color:#d2b48c">Бежевый</td><td>Предмет, который можно надеть</td></tr>
+  <tr><td style="color:#ff6b6b">Красный</td><td>Нельзя надеть</td></tr>
+  <tr><td style="color:#00ffff">Голубой</td><td>Неопознанный магический предмет</td></tr>
+  <tr><td style="color:#88ffff">Ярко-голубой</td><td>Неопознанный магический предмет (надет)</td></tr>
+</table>
+<p><strong>Левый клик</strong> — надеть предмет. <strong>Правый клик</strong> — сведения о предмете. Стрелки прокрутки листают до 40 предметов.</p>
+<p><strong>Выбросить</strong>: выбросить выделенный предмет. <strong>Книга заклинаний</strong>: показать заклинания. <strong>Выход</strong>: вернуться на страницу 1.</p>
+
+<h2>Управление мышью</h2>
+<table>
+  <tr><th>Действие</th><th>Эффект</th></tr>
+  <tr><td>Левый клик (в мире)</td><td>Идти вперёд / взаимодействовать / надеть</td></tr>
+  <tr><td>Правый клик (в мире)</td><td>Идти назад</td></tr>
+  <tr><td>Левый клик (интерфейс)</td><td>Выбрать / подтвердить</td></tr>
+  <tr><td>Правый клик (предмет)</td><td>Показать сведения о предмете</td></tr>
+  <tr><td>Движение мыши влево/вправо</td><td>Поворот влево/вправо</td></tr>
+  <tr><td>Движение мыши вверх/вниз</td><td>Взгляд вверх/вниз</td></tr>
+</table>
+
+<h2>Управление с клавиатуры</h2>
+<table>
+  <tr><th>Клавиша</th><th>Действие</th></tr>
+  <tr><td><span class="key">↑</span> / <span class="key">W</span></td><td>Идти вперёд</td></tr>
+  <tr><td><span class="key">↓</span> / <span class="key">S</span></td><td>Идти назад</td></tr>
+  <tr><td><span class="key">←</span> / <span class="key">A</span></td><td>Поворот влево</td></tr>
+  <tr><td><span class="key">→</span> / <span class="key">D</span></td><td>Поворот вправо</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>Показать/скрыть автокарту</td></tr>
+  <tr><td><span class="key">C</span></td><td>Лист персонажа</td></tr>
+  <tr><td><span class="key">L</span></td><td>Журнал</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>Меню / назад</td></tr>
+  <tr><td><span class="key">F1</span></td><td>Справка</td></tr>
+  <tr><td><span class="key">Alt+F4</span></td><td>Выйти из игры</td></tr>
+</table>
+
+<div class="note">
+<strong>Советы по DOSBox:</strong> <span class="key">Ctrl+F10</span> включает и отключает захват мыши. <span class="key">Alt+Enter</span> переключает полноэкранный/оконный режим.
+</div>
+
+<h2>Действия в игре</h2>
+<table>
+  <tr><th>Действие</th><th>Описание</th></tr>
+  <tr><td>Говорить</td><td>Поговорить с NPC, чтобы получить сведения и задания</td></tr>
+  <tr><td>Украсть</td><td>Украсть предмет у цели (успех зависит от AGI)</td></tr>
+  <tr><td>Взять</td><td>Подобрать предмет с земли</td></tr>
+  <tr><td>Отдых / Лагерь</td><td>Восстановить здоровье и усталость; во сне может явиться Риа</td></tr>
+  <tr><td>Творить</td><td>Применить заклинание из книги заклинаний</td></tr>
+  <tr><td>Использовать</td><td>Использовать предмет в руках</td></tr>
+</table>
+
+</body>
+</html>

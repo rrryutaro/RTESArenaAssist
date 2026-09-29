@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<!--
+  RTESArenaAssist character sheet template (simple HTML).
+
+  Values        {{name}} {{race}} {{race_en}} {{class}} {{class_en}}
+                {{str}} {{int}} {{wil}} {{agi}} {{spd}} {{end}} {{per}} {{luc}}
+                {{damage}} {{max_kilos}} {{magic_def}} {{to_hit}} {{to_defend}}
+                {{health}} {{heal_mod}} {{charisma}} {{bonus_pts}}
+                {{spell_pts}} {{spell_pts_curr}} {{spell_pts_max}}
+                {{hp}} {{hp_curr}} {{hp_max}} {{fatigue}} {{fatigue_curr}} {{fatigue_max}}
+                {{gold}} {{level}} {{experience}} {{experience_next}} {{experience_to_next}}
+  Gauges        {{hp_pct}} {{fatigue_pct}} {{spell_pts_pct}} {{experience_pct}} (0-100) and
+                {{hp_pct_rest}} {{fatigue_pct_rest}} {{spell_pts_pct_rest}} {{experience_pct_rest}}
+                (100 minus the value). Draw a bar as a table with two empty cells:
+                <td width="{{hp_pct}}%"></td><td width="{{hp_pct_rest}}%"></td>
+  Condition     {{condition}} (every current state, or "healthy"), {{condition_bad}}
+                (bad states only), {{condition_good}} (good magic effects only).
+                The last two are missing when there are none.
+  Armor rating  {{ar_head}} {{ar_shoulder_right}} {{ar_shoulder_left}} {{ar_chest}}
+                {{ar_hands}} {{ar_legs}} {{ar_feet}} by body location, from the
+                equipment (lower is better protected; +10 when unprotected).
+  Labels        {{label.KEY}} (translated) for name race class, the attributes
+                (str ... luc, and str_code ... luc_code for STR ... LUC), the modifiers
+                (damage ... charisma, spell_pts, bonus_pts), hp fatigue gold level experience
+                experience_next experience_to_next condition, ar_head ... ar_feet
+                (body locations), and title section_attributes section_combat
+                section_vitals section_record section_armor col_value col_modifier
+                armor_note
+  Images        <img src="{{img.face}}"> (80x70)   <img src="{{img.body}}"> (300x480)
+                Giving width/height scales the picture without blurring it.
+  Conditions    {{#if KEY}} ... {{else}} ... {{/if}} shows the first part only while the
+                value can be read (e.g. bonus_pts only while distributing points).
+
+  Layout uses tables (the simple HTML view has no flex/grid and runs no scripts).
+  High contrast and large type: white and yellow on black. Two columns (name,
+  condition and health on the left; attributes and modifiers on the right) so
+  that the sheet fits the translation tab of a 1920x1080 layout without
+  scrolling (about 850 px wide or more).
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<title>Large print</title>
+<style>
+  body    { background-color: #000000; color: #ffffff;
+            font-family: "Segoe UI", "Yu Gothic UI", "Meiryo", sans-serif; font-size: 19px; }
+  .name   { color: #ffffff; font-size: 32px; font-weight: bold; }
+  .sub    { color: #e8e8e8; font-size: 19px; }
+  .lab    { color: #ffffff; font-size: 19px; }
+  .num    { color: #ffe14d; font-size: 32px; font-weight: bold; }
+  .of     { color: #cfcfcf; font-size: 20px; }
+  .head   { color: #000000; background-color: #ffe14d; font-size: 18px; font-weight: bold; }
+  .rows .lab { font-size: 16px; }
+  .rows td { border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #4a4a4a; }
+  .bar    { border-collapse: collapse; font-size: 1px; }
+  .bar td { padding-top: 7px; padding-bottom: 7px; padding-left: 0px; padding-right: 0px; }
+  .bonus  { background-color: #ffe14d; color: #000000; font-weight: bold; font-size: 22px; }
+  .ok     { color: #7dff7d; font-size: 26px; font-weight: bold; }
+  .bad    { color: #ff5050; font-size: 26px; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<table width="100%" cellspacing="0" cellpadding="0">
+<tr>
+<td width="49%" valign="top">
+
+<table width="100%" cellspacing="0" cellpadding="6">
+<tr>
+  <td width="130" valign="middle"><img src="{{img.face}}" width="120" height="105"></td>
+  <td valign="middle">
+    <span class="name">{{name}}</span><br>
+    <span class="sub">{{race}} &middot; {{class}}</span><br>
+    <span class="lab">{{label.level}}</span> <span class="num">{{level}}</span><br>
+    <span class="lab">{{label.gold}}</span> <span class="num">{{gold}}</span>
+  </td>
+</tr>
+</table>
+
+<table width="100%" cellspacing="0" cellpadding="6" style="margin-top: 6px;">
+<tr><td class="head">{{label.section_vitals}}</td></tr>
+</table>
+
+{{#if condition}}
+<table width="100%" cellspacing="0" cellpadding="4">
+<tr>
+  <td valign="bottom"><span class="lab">{{label.condition}}</span></td>
+  <td valign="bottom" align="right">{{#if condition_bad}}<span class="bad">{{condition}}</span>{{else}}<span class="ok">{{condition}}</span>{{/if}}</td>
+</tr>
+</table>
+{{/if}}
+
+<table width="100%" cellspacing="0" cellpadding="4">
+<tr>
+  <td valign="bottom"><span class="lab">{{label.hp}}</span></td>
+  <td valign="bottom" align="right"><span class="num">{{hp_curr}}</span><span class="of"> / {{hp_max}}</span></td>
+</tr>
+</table>
+{{#if hp_pct}}
+<table class="bar" width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="{{hp_pct}}%" bgcolor="#00d000"></td><td width="{{hp_pct_rest}}%" bgcolor="#1e3a1e"></td></tr>
+</table>
+{{/if}}
+
+<table width="100%" cellspacing="0" cellpadding="4" style="margin-top: 4px;">
+<tr>
+  <td valign="bottom"><span class="lab">{{label.fatigue}}</span></td>
+  <td valign="bottom" align="right"><span class="num">{{fatigue_curr}}</span><span class="of"> / {{fatigue_max}}</span></td>
+</tr>
+</table>
+{{#if fatigue_pct}}
+<table class="bar" width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="{{fatigue_pct}}%" bgcolor="#ff2a2a"></td><td width="{{fatigue_pct_rest}}%" bgcolor="#3d1a1a"></td></tr>
+</table>
+{{/if}}
+
+<table width="100%" cellspacing="0" cellpadding="4" style="margin-top: 4px;">
+<tr>
+  <td valign="bottom"><span class="lab">{{label.spell_pts}}</span></td>
+  <td valign="bottom" align="right"><span class="num">{{spell_pts_curr}}</span><span class="of"> / {{spell_pts_max}}</span></td>
+</tr>
+</table>
+{{#if spell_pts_pct}}
+<table class="bar" width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="{{spell_pts_pct}}%" bgcolor="#4f7dff"></td><td width="{{spell_pts_pct_rest}}%" bgcolor="#1a2240"></td></tr>
+</table>
+{{/if}}
+
+<table width="100%" cellspacing="0" cellpadding="4" style="margin-top: 4px;">
+<tr>
+  <td valign="bottom"><span class="lab">{{label.experience}}</span></td>
+  <td valign="bottom" align="right"><span class="num">{{experience}}</span><span class="of"> / {{experience_next}}</span></td>
+</tr>
+</table>
+{{#if experience_pct}}
+<table class="bar" width="100%" cellspacing="0" cellpadding="0">
+<tr><td width="{{experience_pct}}%" bgcolor="#ffc400"></td><td width="{{experience_pct_rest}}%" bgcolor="#3a3218"></td></tr>
+</table>
+<table width="100%" cellspacing="0" cellpadding="4">
+<tr><td align="right"><span class="lab">{{label.experience_to_next}}</span> <span class="num">{{experience_to_next}}</span></td></tr>
+</table>
+{{/if}}
+
+</td>
+<td width="2%"></td>
+<td width="49%" valign="top">
+
+{{#if bonus_pts}}
+<table class="bonus" width="100%" cellspacing="0" cellpadding="8" style="margin-bottom: 6px;">
+<tr>
+  <td valign="middle">{{label.bonus_pts}}</td>
+  <td valign="middle" align="right"><span style="font-size: 34px;">{{bonus_pts}}</span></td>
+</tr>
+</table>
+{{/if}}
+
+<table width="100%" cellspacing="0" cellpadding="6">
+<tr><td class="head">{{label.section_attributes}}</td></tr>
+</table>
+
+<table class="rows" width="100%" cellspacing="0" cellpadding="5">
+<tr>
+  <td width="30%" valign="bottom"><span class="lab">{{label.str}}</span></td><td width="18%" valign="bottom" align="right"><span class="num">{{str}}</span></td>
+  <td width="4%"></td>
+  <td width="30%" valign="bottom"><span class="lab">{{label.spd}}</span></td><td width="18%" valign="bottom" align="right"><span class="num">{{spd}}</span></td>
+</tr>
+<tr>
+  <td valign="bottom"><span class="lab">{{label.int}}</span></td><td valign="bottom" align="right"><span class="num">{{int}}</span></td>
+  <td></td>
+  <td width="30%" valign="bottom"><span class="lab">{{label.end}}</span></td><td width="18%" valign="bottom" align="right"><span class="num">{{end}}</span></td>
+</tr>
+<tr>
+  <td valign="bottom"><span class="lab">{{label.wil}}</span></td><td valign="bottom" align="right"><span class="num">{{wil}}</span></td>
+  <td></td>
+  <td width="30%" valign="bottom"><span class="lab">{{label.per}}</span></td><td width="18%" valign="bottom" align="right"><span class="num">{{per}}</span></td>
+</tr>
+<tr>
+  <td valign="bottom"><span class="lab">{{label.agi}}</span></td><td valign="bottom" align="right"><span class="num">{{agi}}</span></td>
+  <td></td>
+  <td width="30%" valign="bottom"><span class="lab">{{label.luc}}</span></td><td width="18%" valign="bottom" align="right"><span class="num">{{luc}}</span></td>
+</tr>
+</table>
+
+<table width="100%" cellspacing="0" cellpadding="6" style="margin-top: 12px;">
+<tr><td class="head">{{label.section_combat}}</td></tr>
+</table>
+
+<table class="rows" width="100%" cellspacing="0" cellpadding="5">
+<tr>
+  <td width="30%" valign="bottom"><span class="lab">{{label.damage}}</span></td><td width="18%" valign="bottom" align="right"><span class="num">{{damage}}</span></td>
+  <td width="4%"></td>
+  <td width="30%" valign="bottom"><span class="lab">{{label.to_hit}}</span></td><td width="18%" valign="bottom" align="right"><span class="num">{{to_hit}}</span></td>
+</tr>
+<tr>
+  <td valign="bottom"><span class="lab">{{label.max_kilos}}</span></td><td valign="bottom" align="right"><span class="num">{{max_kilos}}</span></td>
+  <td></td>
+  <td width="30%" valign="bottom"><span class="lab">{{label.to_defend}}</span></td><td width="18%" valign="bottom" align="right"><span class="num">{{to_defend}}</span></td>
+</tr>
+<tr>
+  <td valign="bottom"><span class="lab">{{label.magic_def}}</span></td><td valign="bottom" align="right"><span class="num">{{magic_def}}</span></td>
+  <td></td>
+  <td width="30%" valign="bottom"><span class="lab">{{label.charisma}}</span></td><td width="18%" valign="bottom" align="right"><span class="num">{{charisma}}</span></td>
+</tr>
+<tr>
+  <td valign="bottom"><span class="lab">{{label.health}}</span></td><td valign="bottom" align="right"><span class="num">{{health}}</span></td>
+  <td></td>
+  <td width="30%" valign="bottom"><span class="lab">{{label.heal_mod}}</span></td><td width="18%" valign="bottom" align="right"><span class="num">{{heal_mod}}</span></td>
+</tr>
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html>

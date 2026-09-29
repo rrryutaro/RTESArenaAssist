@@ -3,6 +3,7 @@ import hashlib
 import json
 SCHEMA = 'rtesaa.i18n_bundle'
 SUPPORTED_SCHEMA_VERSION = 1
+ASSIST_BUNDLED_POLICY = 'assist_bundled'
 
 def compute_registry_hash(raw: dict) -> str:
     rows: list[tuple] = []
@@ -10,6 +11,8 @@ def compute_registry_hash(raw: dict) -> str:
         name = cat.get('category')
         policy = cat.get('source_policy')
         provider = cat.get('source_provider')
+        if policy == ASSIST_BUNDLED_POLICY:
+            continue
         for entry in cat.get('entries') or []:
             rows.append((int(entry['id']), name, policy, provider, json.dumps(entry.get('source'), sort_keys=True, ensure_ascii=False)))
     rows.sort(key=lambda r: r[0])
@@ -116,4 +119,4 @@ def load_bundle(path: str) -> Bundle:
     with open(path, 'r', encoding='utf-8') as fh:
         raw = json.load(fh)
     return load_bundle_obj(raw)
-__all__ = ['Bundle', 'BundleError', 'load_bundle', 'load_bundle_obj', 'compute_registry_hash', 'SCHEMA', 'SUPPORTED_SCHEMA_VERSION']
+__all__ = ['Bundle', 'BundleError', 'load_bundle', 'load_bundle_obj', 'compute_registry_hash', 'ASSIST_BUNDLED_POLICY', 'SCHEMA', 'SUPPORTED_SCHEMA_VERSION']

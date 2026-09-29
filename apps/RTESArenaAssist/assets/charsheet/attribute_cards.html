@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<!--
+  RTESArenaAssist character sheet template (simple HTML).
+
+  Values        {{name}} {{race}} {{race_en}} {{class}} {{class_en}}
+                {{str}} {{int}} {{wil}} {{agi}} {{spd}} {{end}} {{per}} {{luc}}
+                {{damage}} {{max_kilos}} {{magic_def}} {{to_hit}} {{to_defend}}
+                {{health}} {{heal_mod}} {{charisma}} {{bonus_pts}}
+                {{spell_pts}} {{spell_pts_curr}} {{spell_pts_max}}
+                {{hp}} {{hp_curr}} {{hp_max}} {{fatigue}} {{fatigue_curr}} {{fatigue_max}}
+                {{gold}} {{level}} {{experience}} {{experience_next}} {{experience_to_next}}
+  Gauges        {{hp_pct}} {{fatigue_pct}} {{spell_pts_pct}} {{experience_pct}} (0-100) and
+                {{hp_pct_rest}} {{fatigue_pct_rest}} {{spell_pts_pct_rest}} {{experience_pct_rest}}
+                (100 minus the value). Draw a bar as a table with two empty cells:
+                <td width="{{hp_pct}}%"></td><td width="{{hp_pct_rest}}%"></td>
+  Condition     {{condition}} (every current state, or "healthy"), {{condition_bad}}
+                (bad states only), {{condition_good}} (good magic effects only).
+                The last two are missing when there are none.
+  Armor rating  {{ar_head}} {{ar_shoulder_right}} {{ar_shoulder_left}} {{ar_chest}}
+                {{ar_hands}} {{ar_legs}} {{ar_feet}} by body location, from the
+                equipment (lower is better protected; +10 when unprotected).
+  Labels        {{label.KEY}} (translated) for name race class, the attributes
+                (str ... luc, and str_code ... luc_code for STR ... LUC), the modifiers
+                (damage ... charisma, spell_pts, bonus_pts), hp fatigue gold level experience
+                experience_next experience_to_next condition, ar_head ... ar_feet
+                (body locations), and title section_attributes section_combat
+                section_vitals section_record section_armor col_value col_modifier
+                armor_note
+  Images        <img src="{{img.face}}"> (80x70)   <img src="{{img.body}}"> (300x480)
+  Conditions    {{#if KEY}} ... {{else}} ... {{/if}} shows the first part only while the
+                value can be read (e.g. bonus_pts only while distributing points).
+
+  Layout uses tables (the simple HTML view has no flex/grid and runs no scripts).
+  Each attribute card lists the modifiers that attribute decides, in the same
+  pairs as the game's status screen.
+-->
+<html>
+<head>
+<meta charset="utf-8">
+<title>Attribute cards</title>
+<style>
+  body    { background-color: #f3f0e8; color: #2b2925;
+            font-family: "Segoe UI", "Yu Gothic UI", "Meiryo", sans-serif; font-size: 14px; }
+  .box    { background-color: #ffffff; border-width: 1px; border-style: solid; border-color: #d9d2c3; }
+  .name   { color: #1f2d33; font-size: 22px; font-weight: bold; }
+  .sub    { color: #6d675d; font-size: 14px; }
+  .cap    { color: #6d675d; font-size: 12px; }
+  .num    { color: #1f2d33; font-size: 16px; font-weight: bold; }
+  .of     { color: #8a8378; font-size: 12px; }
+  .big    { color: #1f2d33; font-size: 24px; font-weight: bold; }
+  .bar    { border-collapse: collapse; font-size: 1px; }
+  .bar td { padding-top: 4px; padding-bottom: 4px; padding-left: 0px; padding-right: 0px; }
+  .card   { background-color: #ffffff; border-width: 1px; border-style: solid; border-color: #cfc6b3; }
+  .chead  { background-color: #35606a; color: #ffffff; font-weight: bold; font-size: 13px; }
+  .ccode  { color: #bfe0e4; font-size: 11px; }
+  .aval   { color: #1f2d33; font-size: 28px; font-weight: bold; }
+  .mlab   { color: #6d675d; font-size: 12px; }
+  .mval   { color: #1f2d33; font-size: 14px; font-weight: bold; }
+  .bonus  { background-color: #f2c14e; color: #2b2925; font-weight: bold; font-size: 14px; }
+  .ok     { color: #2e7d32; font-size: 15px; font-weight: bold; }
+  .bad    { color: #c62828; font-size: 15px; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<table class="box" width="100%" cellspacing="0" cellpadding="8">
+<tr><td>
+  <table width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="90" valign="middle"><img src="{{img.face}}"></td>
+    <td valign="middle">
+      <span class="name">{{name}}</span><br>
+      <span class="sub">{{race}} &middot; {{class}}</span>
+      {{#if bonus_pts}}<br><span class="bonus">&nbsp;{{label.bonus_pts}} {{bonus_pts}}&nbsp;</span>{{/if}}
+    </td>
+    <td valign="middle" align="right" width="70">
+      <span class="cap">{{label.level}}</span><br><span class="big">{{level}}</span>
+    </td>
+    <td valign="middle" align="right" width="90">
+      <span class="cap">{{label.gold}}</span><br><span class="num">{{gold}}</span>
+    </td>
+  </tr>
+  </table>
+</td></tr>
+</table>
+
+<table class="box" width="100%" cellspacing="0" cellpadding="8" style="margin-top: 6px;">
+<tr><td>
+  {{#if condition}}
+  <table width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 8px;">
+  <tr><td>
+    <span class="cap">{{label.condition}}</span>
+    {{#if condition_bad}}<span class="bad">{{condition}}</span>{{else}}<span class="ok">{{condition}}</span>{{/if}}
+  </td></tr>
+  </table>
+  {{/if}}
+  <table width="100%" cellspacing="0" cellpadding="0">
+  <tr>
+    <td width="31%" valign="top">
+      <span class="cap">{{label.hp}}</span><br>
+      <span class="num">{{hp_curr}}</span><span class="of"> / {{hp_max}}</span>
+      {{#if hp_pct}}
+      <table class="bar" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 3px;">
+      <tr><td width="{{hp_pct}}%" bgcolor="#1fa83a"></td><td width="{{hp_pct_rest}}%" bgcolor="#dbe8dc"></td></tr>
+      </table>
+      {{/if}}
+    </td>
+    <td width="3%"></td>
+    <td width="31%" valign="top">
+      <span class="cap">{{label.fatigue}}</span><br>
+      <span class="num">{{fatigue_curr}}</span><span class="of"> / {{fatigue_max}}</span>
+      {{#if fatigue_pct}}
+      <table class="bar" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 3px;">
+      <tr><td width="{{fatigue_pct}}%" bgcolor="#cc2a2a"></td><td width="{{fatigue_pct_rest}}%" bgcolor="#f0dcdc"></td></tr>
+      </table>
+      {{/if}}
+    </td>
+    <td width="3%"></td>
+    <td width="32%" valign="top">
+      <span class="cap">{{label.spell_pts}}</span><br>
+      <span class="num">{{spell_pts_curr}}</span><span class="of"> / {{spell_pts_max}}</span>
+      {{#if spell_pts_pct}}
+      <table class="bar" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 3px;">
+      <tr><td width="{{spell_pts_pct}}%" bgcolor="#3355dd"></td><td width="{{spell_pts_pct_rest}}%" bgcolor="#dde2f3"></td></tr>
+      </table>
+      {{/if}}
+    </td>
+  </tr>
+  </table>
+
+  <table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 10px;">
+  <tr>
+    <td valign="bottom">
+      <span class="cap">{{label.experience}}</span>
+      <span class="num">{{experience}}</span><span class="of"> / {{experience_next}}</span>
+    </td>
+    <td valign="bottom" align="right">
+      {{#if experience_pct}}<span class="cap">{{label.experience_to_next}}</span> <span class="num">{{experience_to_next}}</span>{{/if}}
+    </td>
+  </tr>
+  </table>
+  {{#if experience_pct}}
+  <table class="bar" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 3px;">
+  <tr><td width="{{experience_pct}}%" bgcolor="#c9961a"></td><td width="{{experience_pct_rest}}%" bgcolor="#efe6cf"></td></tr>
+  </table>
+  {{/if}}
+</td></tr>
+</table>
+
+<table width="100%" cellspacing="6" cellpadding="0" style="margin-top: 0px;">
+<tr>
+  <td width="50%" valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+    <tr><td class="chead">{{label.str}} <span class="ccode">{{label.str_code}}</span></td></tr>
+    <tr><td>
+      <table width="100%" cellspacing="0" cellpadding="0"><tr>
+        <td width="56" valign="middle"><span class="aval">{{str}}</span></td>
+        <td valign="middle">
+          <span class="mlab">{{label.damage}}</span> <span class="mval">{{damage}}</span><br>
+          <span class="mlab">{{label.max_kilos}}</span> <span class="mval">{{max_kilos}}</span>
+        </td>
+      </tr></table>
+    </td></tr>
+    </table>
+  </td>
+  <td width="50%" valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+    <tr><td class="chead">{{label.int}} <span class="ccode">{{label.int_code}}</span></td></tr>
+    <tr><td>
+      <table width="100%" cellspacing="0" cellpadding="0"><tr>
+        <td width="56" valign="middle"><span class="aval">{{int}}</span></td>
+        <td valign="middle">
+          <span class="mlab">{{label.spell_pts}}</span> <span class="mval">{{spell_pts_max}}</span>
+        </td>
+      </tr></table>
+    </td></tr>
+    </table>
+  </td>
+</tr>
+<tr>
+  <td valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+    <tr><td class="chead">{{label.wil}} <span class="ccode">{{label.wil_code}}</span></td></tr>
+    <tr><td>
+      <table width="100%" cellspacing="0" cellpadding="0"><tr>
+        <td width="56" valign="middle"><span class="aval">{{wil}}</span></td>
+        <td valign="middle">
+          <span class="mlab">{{label.magic_def}}</span> <span class="mval">{{magic_def}}</span>
+        </td>
+      </tr></table>
+    </td></tr>
+    </table>
+  </td>
+  <td valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+    <tr><td class="chead">{{label.agi}} <span class="ccode">{{label.agi_code}}</span></td></tr>
+    <tr><td>
+      <table width="100%" cellspacing="0" cellpadding="0"><tr>
+        <td width="56" valign="middle"><span class="aval">{{agi}}</span></td>
+        <td valign="middle">
+          <span class="mlab">{{label.to_hit}}</span> <span class="mval">{{to_hit}}</span><br>
+          <span class="mlab">{{label.to_defend}}</span> <span class="mval">{{to_defend}}</span>
+        </td>
+      </tr></table>
+    </td></tr>
+    </table>
+  </td>
+</tr>
+<tr>
+  <td valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+    <tr><td class="chead">{{label.spd}} <span class="ccode">{{label.spd_code}}</span></td></tr>
+    <tr><td>
+      <table width="100%" cellspacing="0" cellpadding="0"><tr>
+        <td width="56" valign="middle"><span class="aval">{{spd}}</span></td>
+        <td></td>
+      </tr></table>
+    </td></tr>
+    </table>
+  </td>
+  <td valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+    <tr><td class="chead">{{label.end}} <span class="ccode">{{label.end_code}}</span></td></tr>
+    <tr><td>
+      <table width="100%" cellspacing="0" cellpadding="0"><tr>
+        <td width="56" valign="middle"><span class="aval">{{end}}</span></td>
+        <td valign="middle">
+          <span class="mlab">{{label.health}}</span> <span class="mval">{{health}}</span><br>
+          <span class="mlab">{{label.heal_mod}}</span> <span class="mval">{{heal_mod}}</span>
+        </td>
+      </tr></table>
+    </td></tr>
+    </table>
+  </td>
+</tr>
+<tr>
+  <td valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+    <tr><td class="chead">{{label.per}} <span class="ccode">{{label.per_code}}</span></td></tr>
+    <tr><td>
+      <table width="100%" cellspacing="0" cellpadding="0"><tr>
+        <td width="56" valign="middle"><span class="aval">{{per}}</span></td>
+        <td valign="middle">
+          <span class="mlab">{{label.charisma}}</span> <span class="mval">{{charisma}}</span>
+        </td>
+      </tr></table>
+    </td></tr>
+    </table>
+  </td>
+  <td valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+    <tr><td class="chead">{{label.luc}} <span class="ccode">{{label.luc_code}}</span></td></tr>
+    <tr><td>
+      <table width="100%" cellspacing="0" cellpadding="0"><tr>
+        <td width="56" valign="middle"><span class="aval">{{luc}}</span></td>
+        <td></td>
+      </tr></table>
+    </td></tr>
+    </table>
+  </td>
+</tr>
+</table>
+
+</body>
+</html>

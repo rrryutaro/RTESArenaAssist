@@ -9,7 +9,7 @@ from datas**:
   - Bundled (app-owned): assets, public-enabled i18n language dirs,
     i18n/_meta.json, i18n/_template.json,
     i18n/_aexe_template (curation templates — no Arena source text, mapping metadata only),
-    manual/simple.
+    manual/simple, manual/assist.
 
 [Important runtime premise] The public build ships no Arena assets, so the Arena original
 text (required for matching in-game text at runtime) and world map are **regenerated
@@ -43,8 +43,8 @@ ONEFILE = os.environ.get("RTESA_ONEFILE", "1") == "1"
 
 # --- Embed app-owned data into an in-exe seed pack ------------------------------
 # `_internal` holds Python/PySide dependencies only. App-owned data
-# (translations, assets, manual/simple, _aexe_template, fingerprints/golden) is not put
-# in datas; tools/build_seed.py bundles it into a single seed zip embedded as
+# (translations, assets, manual/simple, manual/assist, _aexe_template, fingerprints/golden)
+# is not put in datas; tools/build_seed.py bundles it into a single seed zip embedded as
 # `apps/RTESArenaAssist/_seed_data.py` (included in the PYZ). At runtime `app_resources`
 # reads directly from the in-exe seed.
 import importlib.util as _ilu

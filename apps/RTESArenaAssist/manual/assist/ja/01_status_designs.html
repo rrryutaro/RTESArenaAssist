@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ステータスのデザイン（キャラクターシート）</title>
+<style>
+body { font-family: "メイリオ", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>ステータスのデザイン（キャラクターシート）</h1>
+
+<p>ステータスタブのステータスを、好みのデザイン（キャラクターシート）で表示する機能です。ステータスタブの上の「表示」で選びます。翻訳タブのステータス画面・能力値の割り振り（キャラクター作成とレベルアップ）でも、同じデザインで表示します。</p>
+<p>デザインは HTML のファイル（テンプレート）で決まります。同梱のデザインから選ぶほか、自分で作ることもできます。能力値と補正値のほか、キャラクターの状態・部位ごとのアーマーレーティング・顔と全身像も表示できます。</p>
+
+<div class="note">
+ゲームのステータス画面（公式マニュアルでは「キャラクターシート」と呼びます）とは別の、Assist の表示の機能です。ゲームの画面は変わりません。
+</div>
+
+<h2>表示の切り替え</h2>
+<p>ステータスタブの上の「表示」で、「標準」（これまでの表示）か、キャラクターシートのデザインを選びます。選んだ表示は、次に起動した時も使われます。</p>
+<ul>
+<li>翻訳タブのステータス画面・能力値の割り振りでも、ここで選んだ表示が使われます。翻訳タブに切り替えの欄はありません。</li>
+<li>値は Assist がゲームから読み取っている値で、「標準」の表示と同じです。キャラクターシートは表示だけで、ゲームの値は変えません（チート設定による値の変更は「標準」の表示で行います）。</li>
+<li>表示されるのは、ゲームに接続してステータスが表示される場面だけです。</li>
+</ul>
+
+<h2>同梱のデザイン</h2>
+<p>同梱のデザインは 8 種です。「表示」の一覧に出る順に並べています。見た目は「表示」で選んで確かめてください。</p>
+<table>
+  <tr><th>デザイン</th><th>内容</th></tr>
+  <tr><td>Arena 風</td><td>ゲームのステータス画面に近い並び。能力値の行に補正値、右に全身像</td></tr>
+  <tr><td>能力値カード</td><td>明るい色。能力値ごとの札に、その能力値で決まる補正値を並べます（筋力＝ダメージ・最大重量 など、ゲームのステータス画面と同じ組）。上に体力・疲労・呪文ポイントの目盛り</td></tr>
+  <tr><td>能力値カード（ダーク）</td><td>能力値カードの色を Assist の暗い画面に合わせたもの。左に能力値、右に部位ごとのアーマーレーティングと全身像</td></tr>
+  <tr><td>コンパクト</td><td>小さな字で 1 ページに詰めたもの。小さい窓向け</td></tr>
+  <tr><td>ダッシュボード</td><td>暗い色の札。体力・疲労・呪文ポイント・経験値を目盛りで表示</td></tr>
+  <tr><td>大きな文字</td><td>黒地に白と黄の大きな字</td></tr>
+  <tr><td>TRPG（記録用紙）</td><td>白黒の記録用紙</td></tr>
+  <tr><td>TRPG（羊皮紙）</td><td>羊皮紙の色と明朝の字</td></tr>
+</table>
+<ul>
+<li>同梱のデザインは、1920×1080 のレイアウトモードのステータスタブ・翻訳タブに、スクロールせずに収まるように作っています。</li>
+<li>窓の幅が狭いと横のスクロールが出るデザインがあります（能力値カード（ダーク）は幅 約 740px 未満、Arena 風とダッシュボードは約 540px 未満）。小さい窓では「コンパクト」が向いています。</li>
+<li>目盛りの色は、ゲームの画面の顔の横の棒と同じ色合いです（体力＝緑・疲労＝赤・呪文ポイント＝青）。</li>
+</ul>
+
+<h2>自作のキャラクターシート</h2>
+
+<h3>置き場所</h3>
+<p>ステータスタブの「フォルダを開く」を押すと、自作のキャラクターシートを置くフォルダが開きます。</p>
+<ul>
+<li>場所は RTESArenaAssist.exe と同じ場所の <code>character_sheets</code> フォルダです。</li>
+<li>初めて開く時にフォルダを作り、同梱のデザインの写しを置きます（既にあるファイルは上書きしません）。写しを書き換えて使うのが簡単です。</li>
+<li>フォルダの <code>.html</code> ファイルが「表示」の一覧に出ます。一覧の名前は、ファイルの <code>&lt;title&gt;</code> の文字（無ければファイル名）に「（フォルダ）」を付けたものです。同梱のデザインの写しの <code>&lt;title&gt;</code> は英語の名前なので、書き換えれば一覧の名前も変わります。</li>
+<li>ファイルを書き換えた後は、ステータスタブの「再読込」を押します。</li>
+<li>文字コードは UTF-8 で保存します。</li>
+</ul>
+
+<h3>使える HTML</h3>
+<p>表示には、ブラウザではなく Qt の簡易 HTML 表示を使います（インターネットには接続しません）。</p>
+<ul>
+<li>使えるもの: 表（<code>table</code>）、文字の色・大きさ・太さ・字体、背景色、枠線（<code>border</code>・<code>border-collapse</code>）、余白（<code>padding</code>・<code>margin</code>）、画像（<code>img</code>）、<code>&lt;style&gt;</code> の中のクラスの指定 など。詳しくは Qt のドキュメント「Supported HTML Subset」を参照してください。</li>
+<li>使えないもの: スクリプト、<code>flex</code>・<code>grid</code>、重ね合わせ（<code>position</code>）、角丸 など。配置は表で組みます。</li>
+<li>同じフォルダの中の画像やスタイルシートは、相対パスで使えます（例: <code>&lt;img src="bg.png"&gt;</code>）。フォルダの外のファイルやインターネット上のファイルは読みません。リンクは開きません。</li>
+<li>幅 100% の表は、すべての列に % で幅を書くと崩れにくくなります。</li>
+</ul>
+
+<h2>書き方</h2>
+<p>HTML の中に次の書き方を入れると、その場所に値が入ります。</p>
+<table>
+  <tr><th>書き方</th><th>意味</th></tr>
+  <tr><td><code>{{key}}</code></td><td>値（「値の一覧」）。値がまだ読めていない時は「—」</td></tr>
+  <tr><td><code>{{label.key}}</code></td><td>見出し（「見出しの一覧」）。表示言語の訳が入ります</td></tr>
+  <tr><td><code>{{img.face}}</code> / <code>{{img.body}}</code></td><td>顔・全身像の画像（「画像」）。<code>&lt;img src="{{img.face}}"&gt;</code> の形で使います</td></tr>
+  <tr><td><code>{{#if key}}</code> … <code>{{else}}</code> … <code>{{/if}}</code></td><td>key の値が読めている時（値が空でない時）だけ前の部分を、読めていない時は <code>{{else}}</code> の後を出します。<code>{{else}}</code> は省けます。入れ子にできます。<code>0</code> も読めている値です</td></tr>
+</table>
+<ul>
+<li>知らないキーは <code>[key?]</code> と出ます（綴りの誤りに気付けるように。例: <code>{{golf}}</code> は <code>[golf?]</code>）。対になっていない <code>{{else}}</code> / <code>{{/if}}</code> は <code>[else?]</code> / <code>[/if?]</code> と出ます。閉じていない <code>{{#if}}</code> は、文書の最後に <code>[/if?]</code> と出ます。</li>
+<li><code>{{ key }}</code> のように括弧の内側に空白があっても構いません。</li>
+<li>HTML のコメント（<code>&lt;!-- … --&gt;</code>）の中には値を入れません。同梱のデザインの先頭のコメントに、キーの一覧があります。</li>
+<li>値は HTML として安全な形に直して差し込みます（値の中の <code>&lt;</code> や <code>&amp;</code> は、そのまま文字として出ます）。</li>
+</ul>
+
+<h2>値の一覧</h2>
+<p><code>{{key}}</code> の key に使えるものです。例は、すべて同じキャラクターの値です。</p>
+
+<h3>名前・種族・クラスなど</h3>
+<table>
+  <tr><th>キー</th><th>内容</th><th>例</th></tr>
+  <tr><td><code>name</code></td><td>名前</td><td>Seraphine</td></tr>
+  <tr><td><code>race</code> / <code>race_en</code></td><td>種族（表示言語 / 英語）</td><td>ハイエルフ / High Elf</td></tr>
+  <tr><td><code>class</code> / <code>class_en</code></td><td>クラス（表示言語 / 英語）</td><td>スペルソード / Spellsword</td></tr>
+  <tr><td><code>level</code></td><td>レベル</td><td>5</td></tr>
+  <tr><td><code>gold</code></td><td>ゴールド</td><td>1284</td></tr>
+</table>
+
+<h3>能力値と補正値</h3>
+<table>
+  <tr><th>キー</th><th>内容</th><th>例</th></tr>
+  <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>能力値（筋力・知性・意志力・敏捷・速度・持久力・個性・幸運）</td><td>58</td></tr>
+  <tr><td><code>damage</code></td><td>ダメージ（筋力による補正）</td><td>+1</td></tr>
+  <tr><td><code>max_kilos</code></td><td>最大重量</td><td>116</td></tr>
+  <tr><td><code>magic_def</code></td><td>魔法防御</td><td>+1</td></tr>
+  <tr><td><code>to_hit</code> / <code>to_defend</code></td><td>命中 / 防御</td><td>+1 / +1</td></tr>
+  <tr><td><code>health</code></td><td>体力の補正（持久力による）</td><td>+1</td></tr>
+  <tr><td><code>heal_mod</code></td><td>回復補正</td><td>+1</td></tr>
+  <tr><td><code>charisma</code></td><td>魅力</td><td>+0</td></tr>
+  <tr><td><code>bonus_pts</code></td><td>割り振りの残り（キャラクター作成と能力値の割り振りの間だけ値があります）</td><td>12</td></tr>
+</table>
+
+<h3>体力・疲労・呪文ポイント・経験値</h3>
+<table>
+  <tr><th>キー</th><th>内容</th><th>例</th></tr>
+  <tr><td><code>hp</code> / <code>hp_curr</code> / <code>hp_max</code></td><td>体力（「今/最大」の形 / 今 / 最大）</td><td>37/58 / 37 / 58</td></tr>
+  <tr><td><code>fatigue</code> / <code>fatigue_curr</code> / <code>fatigue_max</code></td><td>疲労（同上）</td><td>101/121 / 101 / 121</td></tr>
+  <tr><td><code>spell_pts</code> / <code>spell_pts_curr</code> / <code>spell_pts_max</code></td><td>呪文ポイント（同上）</td><td>88/142 / 88 / 142</td></tr>
+  <tr><td><code>experience</code></td><td>経験値</td><td>5210</td></tr>
+  <tr><td><code>experience_next</code></td><td>次のレベルに要る経験値</td><td>7910</td></tr>
+  <tr><td><code>experience_to_next</code></td><td>次のレベルまでの残り</td><td>2700</td></tr>
+</table>
+
+<h3>目盛り用の値</h3>
+<table>
+  <tr><th>キー</th><th>内容</th><th>例</th></tr>
+  <tr><td><code>hp_pct</code> / <code>fatigue_pct</code> / <code>spell_pts_pct</code></td><td>今の値の割合（0〜100）。最大が 0 の時（魔法を使えないクラスの呪文ポイントなど）は値がありません</td><td>64 / 83 / 62</td></tr>
+  <tr><td><code>experience_pct</code></td><td>このレベルになってから次のレベルまでの進み具合（0〜100）</td><td>27</td></tr>
+  <tr><td><code>hp_pct_rest</code> / <code>fatigue_pct_rest</code> / <code>spell_pts_pct_rest</code> / <code>experience_pct_rest</code></td><td>残り（100 − 割合）</td><td>36 / 17 / 38 / 73</td></tr>
+</table>
+<p>目盛りの描き方は「書き方の例」を参照してください。</p>
+
+<h3>状態</h3>
+<table>
+  <tr><th>キー</th><th>内容</th><th>例</th></tr>
+  <tr><td><code>condition</code></td><td>今の状態をすべて並べたもの。何も無い時は「健康」</td><td>毒</td></tr>
+  <tr><td><code>condition_bad</code></td><td>悪い状態だけ（病気・毒・酩酊・沈黙・麻痺・呪い・減退）。無い時は値がありません</td><td>毒</td></tr>
+  <tr><td><code>condition_good</code></td><td>よい効果だけ（透明・標的外・火炎耐性などの各耐性・浮遊・呪文吸収・呪文反射・呪文耐性・再生）。無い時は値がありません</td><td>（無し）</td></tr>
+</table>
+<ul>
+<li>状態の語は、ゲームのステータスの窓と同じ語です。複数ある時は「・」で区切ります。</li>
+<li>次の状態は、今は出しません: 瀕死・防護・病気の名前・強化された能力値・祝福。</li>
+<li>キャラクター作成の間は値がありません。</li>
+</ul>
+
+<h3>部位ごとのアーマーレーティング</h3>
+<table>
+  <tr><th>キー</th><th>部位</th><th>例</th></tr>
+  <tr><td><code>ar_head</code></td><td>頭</td><td>+7</td></tr>
+  <tr><td><code>ar_shoulder_right</code> / <code>ar_shoulder_left</code></td><td>右肩 / 左肩</td><td>+1 / -1</td></tr>
+  <tr><td><code>ar_chest</code></td><td>胸</td><td>-1</td></tr>
+  <tr><td><code>ar_hands</code></td><td>手</td><td>+5</td></tr>
+  <tr><td><code>ar_legs</code></td><td>腰と脚</td><td>+4</td></tr>
+  <tr><td><code>ar_feet</code></td><td>足</td><td>+4</td></tr>
+</table>
+<ul>
+<li>ゲームの装備画面（ステータス画面の 2 ページ目）で体の横に出る数と同じもので、装備から計算した値です。小さいほど守りが固く、何も着けていないと +10 です。</li>
+<li>計算: 10 − 防具（その部位）− 盾（盾が守る部位）− 装身具（全部位）− 敏捷による防御の補正（<code>to_defend</code>）。</li>
+<li>装備が読めない時は値がありません。</li>
+</ul>
+
+<h2>見出しの一覧</h2>
+<p><code>{{label.key}}</code> の key に使えるものです。表示言語の訳が入ります。</p>
+<table>
+  <tr><th>key</th><th>日本語の表示</th></tr>
+  <tr><td><code>name</code> <code>race</code> <code>class</code> <code>level</code> <code>gold</code> <code>experience</code></td><td>名前・種族・クラス・レベル・ゴールド・経験値</td></tr>
+  <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>筋力・知性・意志力・敏捷・速度・持久力・個性・幸運</td></tr>
+  <tr><td><code>str_code</code> <code>int_code</code> <code>wil_code</code> <code>agi_code</code> <code>spd_code</code> <code>end_code</code> <code>per_code</code> <code>luc_code</code></td><td>STR・INT・WIL・AGI・SPD・END・PER・LUC</td></tr>
+  <tr><td><code>damage</code> <code>max_kilos</code> <code>magic_def</code> <code>to_hit</code> <code>to_defend</code> <code>health</code> <code>heal_mod</code> <code>charisma</code> <code>spell_pts</code> <code>bonus_pts</code></td><td>ダメージ・最大重量・魔法防御・命中・防御・体力・回復補正・魅力・呪文P・BONUS PTS</td></tr>
+  <tr><td><code>hp</code> <code>fatigue</code></td><td>体力・疲労</td></tr>
+  <tr><td><code>experience_next</code> <code>experience_to_next</code></td><td>次のレベル・次のレベルまで</td></tr>
+  <tr><td><code>condition</code></td><td>状態</td></tr>
+  <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>頭・右肩・左肩・胸・手・腰と脚・足</td></tr>
+  <tr><td><code>title</code></td><td>キャラクターシート</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code></td><td>能力値・戦闘と魔法・体力と疲労・経験値とゴールド・アーマーレーティング (AR)</td></tr>
+  <tr><td><code>col_value</code> <code>col_modifier</code></td><td>値・補正</td></tr>
+  <tr><td><code>armor_note</code></td><td>小さいほど守りが固い（何も着けていないと +10）</td></tr>
+</table>
+
+<h2>画像</h2>
+<table>
+  <tr><th>キー</th><th>内容</th><th>大きさ</th></tr>
+  <tr><td><code>img.face</code></td><td>顔（ゲームの画面の下に出る顔）</td><td>80×70</td></tr>
+  <tr><td><code>img.body</code></td><td>ステータス画面の姿（装備も重ねます）</td><td>300×480</td></tr>
+</table>
+<ul>
+<li>お使いの Arena のファイルから作ります（Assist は Arena の画像を同梱していません）。作れない時は、同じ大きさの透明な画像になります。</li>
+<li><code>width</code> / <code>height</code> を書くと、その大きさで表示します（点の粗い絵のまま、ぼかさずに拡大・縮小します）。整数倍（例: 顔を <code>width="160" height="140"</code>）にするときれいに見えます。</li>
+<li>全身像に重ねる装備は 1 秒ごとに見て、変わった時だけ作り直します。</li>
+</ul>
+
+<h2>書き方の例</h2>
+<p>HTML の記号はそのまま書きます（ここでは読めるように表示しています）。</p>
+
+<h3>最小の例</h3>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;My sheet&lt;/title&gt;
+&lt;style&gt;
+  body { background-color: #1a1a2e; color: #e0e0e0;
+         font-family: "Segoe UI", "Yu Gothic UI", sans-serif; }
+  .v   { font-weight: bold; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;table width="100%" cellspacing="0" cellpadding="6"&gt;
+&lt;tr&gt;
+  &lt;td width="90"&gt;&lt;img src="{{img.face}}"&gt;&lt;/td&gt;
+  &lt;td&gt;&lt;span class="v"&gt;{{name}}&lt;/span&gt;&lt;br&gt;{{race}} / {{class}}&lt;br&gt;{{label.level}} {{level}}&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;table width="100%" cellspacing="0" cellpadding="4"&gt;
+&lt;tr&gt;&lt;td width="50%"&gt;{{label.str}}&lt;/td&gt;&lt;td width="50%" align="right"&gt;&lt;span class="v"&gt;{{str}}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;{{label.hp}}&lt;/td&gt;&lt;td align="right"&gt;&lt;span class="v"&gt;{{hp}}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre></td></tr></table>
+
+<h3>{{#if}} で出し分ける</h3>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;!-- 割り振りの間だけ出す --&gt;
+{{#if bonus_pts}}&lt;p&gt;{{label.bonus_pts}}: {{bonus_pts}}&lt;/p&gt;{{/if}}
+
+&lt;!-- 悪い状態がある時は赤で出す --&gt;
+&lt;p&gt;{{label.condition}}:
+{{#if condition_bad}}&lt;span style="color: #ff5050;"&gt;{{condition}}&lt;/span&gt;{{else}}{{condition}}{{/if}}&lt;/p&gt;</pre></td></tr></table>
+
+<h3>目盛り</h3>
+<table class="code" cellpadding="8"><tr><td><pre>{{#if hp_pct}}
+&lt;table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; font-size: 1px;"&gt;
+&lt;tr&gt;
+  &lt;td width="{{hp_pct}}%" bgcolor="#4caf50" style="padding-top: 4px; padding-bottom: 4px;"&gt;&lt;/td&gt;
+  &lt;td width="{{hp_pct_rest}}%" bgcolor="#1f3326"&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+{{/if}}</pre></td></tr></table>
+<ul>
+<li>2 つの升の両方に幅を書きます（片方だけだと、割合が 0 の時に満タンに見えます）。</li>
+<li>升は空にして、高さは上下の余白（<code>padding</code>）で出します。表の字の大きさを小さく（<code>font-size: 1px</code>）しておくと、空の升の高さを抑えられます。</li>
+<li>最大が 0 の時は割合が無いので、<code>{{#if hp_pct}}</code> で囲むと目盛りごと隠せます。</li>
+</ul>
+
+<h2>うまく表示されない時</h2>
+<table>
+  <tr><th>症状</th><th>確かめること</th></tr>
+  <tr><td><code>[key?]</code> と出る</td><td>キーの綴り（「値の一覧」「見出しの一覧」）</td></tr>
+  <tr><td>「—」と出る</td><td>その値がまだ読めていません（キャラクター作成の途中など）</td></tr>
+  <tr><td>一覧に出ない</td><td>ファイルの拡張子が <code>.html</code> か、<code>character_sheets</code> フォルダに置いたか。置いた後に「再読込」を押したか</td></tr>
+  <tr><td>配置が崩れる</td><td>使えない書き方（<code>flex</code>・<code>grid</code> など）を使っていないか。配置は表で組みます</td></tr>
+  <tr><td>画像が出ない</td><td>画像のファイルが <code>character_sheets</code> フォルダの中にあるか（外のファイルは読みません）</td></tr>
+  <tr><td>文字化けする</td><td>ファイルを UTF-8 で保存したか</td></tr>
+  <tr><td>何も出ない</td><td>ゲームに接続していて、ステータスが表示される場面か（タイトル画面などでは出ません）</td></tr>
+</table>
+
+</body>
+</html>

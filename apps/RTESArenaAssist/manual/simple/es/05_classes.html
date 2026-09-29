@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Clases de personaje</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 13px; color: #5bc0de; margin-top: 4px; margin-bottom: 2px; }
+h3 { font-size: 12px; color: #7a8899; margin: 14px 0 2px 0; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+p { margin: 0 0 6px 0; font-size: 12px; }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 10px 0; font-size: 11px; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 3px 6px; text-align: left; border: 1px solid #1e3a4a; }
+td { padding: 3px 6px; border: 1px solid #1e3a4a; }
+tr:nth-child(even) { background: #111e2c; }
+.ability { color: #a8d8a8; font-size: 11px; margin: 2px 0 6px 0; }
+.section-header { background: #1c2e3f; color: #a0c4d8; font-size: 13px; font-weight: bold; padding: 5px 8px; margin: 18px 0 6px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Clases de personaje (las 18)</h1>
+
+<div class="section-header">Clases de ladrón — Atributos principales: Agilidad (AGI) e Inteligencia (INT)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">Todas las clases de ladrón pueden forzar cerraduras, robar carteras y hurtar. También conviene una Velocidad alta.</p>
+
+<h2>Ladrón</h2>
+<p>Rápido y ágil. Útil en combate por la sorpresa, la exploración y los golpes críticos. Es la clase que más rápido sube de nivel.</p>
+<div class="ability">★ Gana probabilidad de golpe crítico (daño ×3) por nivel</div>
+<table><tr><th>Armas</th><td>Adaga, Espada corta, Espada bastarda, Sable, Hacha de guerra, Arco corto</td></tr>
+<tr><th>Armadura</th><td>Solo cuero</td></tr><tr><th>Escudo</th><td>Solo rodela</td></tr>
+<tr><th>Salud inicial</th><td>25 + d10</td></tr></table>
+
+<h2>Bandido</h2>
+<p>Experto en forzar cerraduras e infiltrarse en zonas restringidas. No puede usar escudos.</p>
+<div class="ability">★ Probabilidad de golpe crítico por nivel (menor que la del Ladrón)</div>
+<table><tr><th>Armas</th><td>Adaga, Espada corta, Tanto, Arco corto</td></tr>
+<tr><th>Armadura</th><td>Solo cuero</td></tr><tr><th>Escudo</th><td>Ninguno</td></tr>
+<tr><th>Salud inicial</th><td>25 + d8</td></tr></table>
+
+<h2>Asesino</h2>
+<p>Consagrado a matar. La mayor probabilidad de golpe crítico de todas las clases. Puede usar cualquier arma, pero está limitado a la armadura de cuero y no lleva escudo.</p>
+<div class="ability">★ La mayor probabilidad de golpe crítico por nivel de todas las clases</div>
+<table><tr><th>Armas</th><td>Cualquiera</td></tr>
+<tr><th>Armadura</th><td>Solo cuero</td></tr><tr><th>Escudo</th><td>Ninguno</td></tr>
+<tr><th>Salud inicial</th><td>25 + d12</td></tr></table>
+
+<h2>Pícaro</h2>
+<p>Un ladrón adiestrado en armas y armaduras. Comparable en combate a los guerreros, y conserva la capacidad de forzar cerraduras y robar carteras.</p>
+<div class="ability">★ Ligera probabilidad de golpe crítico por nivel</div>
+<table><tr><th>Armas</th><td>Cualquiera</td></tr>
+<tr><th>Armadura</th><td>Solo cuero o cota de malla</td></tr><tr><th>Escudo</th><td>Cualquiera salvo el de torre</td></tr>
+<tr><th>Salud inicial</th><td>25 + d14</td></tr></table>
+
+<h2>Acrobata</h2>
+<p>Ágil hasta lo sobrenatural: el personaje más rápido a pie. Reduce de forma pasiva la probabilidad base de golpe del enemigo.</p>
+<div class="ability">★ Reduce la probabilidad base de golpe del adversario / Probabilidad de golpe crítico por nivel</div>
+<table><tr><th>Armas</th><td>Adaga, Espada corta, Espada bastarda, Tanto, Arco corto</td></tr>
+<tr><th>Armadura</th><td>Solo cuero</td></tr><tr><th>Escudo</th><td>Ninguno</td></tr>
+<tr><th>Salud inicial</th><td>25 + d8</td></tr></table>
+
+<h2>Bardo</h2>
+<p>«Hombre para todo». Se maneja con los golpes críticos, las armas, el robo y la magia. Puntos de hechizo = INT.</p>
+<table><tr><th>Armas</th><td>Adaga, Espada corta, Espada bastarda, Sable, Maza, Hacha de guerra, Arco corto</td></tr>
+<tr><th>Armadura</th><td>Solo cuero o cota de malla</td></tr><tr><th>Escudo</th><td>Cualquiera salvo el escudo de torre</td></tr>
+<tr><th>Salud inicial</th><td>25 + d10</td></tr></table>
+
+<div class="section-header">Clases de guerrero — Atributos principales: Fuerza (STR) y Resistencia (END)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">No pueden lanzar hechizos salvo que se indique lo contrario. La Agilidad también es importante para la defensa de armadura.</p>
+
+<h2>Guerrero</h2>
+<p>La columna vertebral de Tamriel. Puede usar cualquier arma, armadura o escudo. Es la segunda clase que más rápido sube de nivel. Solo los Guerreros, los Caballeros y los Rangers pueden llevar armadura de placas encantada.</p>
+<table><tr><th>Armas</th><td>Cualquiera</td></tr><tr><th>Armadura</th><td>Cualquiera</td></tr><tr><th>Escudo</th><td>Cualquiera</td></tr>
+<tr><th>Salud inicial</th><td>25 + d20</td></tr></table>
+
+<h2>Caballero</h2>
+<p>Combatiente noble. Repara automáticamente todas las armas y armaduras del inventario.</p>
+<div class="ability">★ Inmune a la parálisis (hechizos y veneno) / Repara automáticamente armas y armaduras</div>
+<table><tr><th>Armas</th><td>Cualquiera</td></tr><tr><th>Armadura</th><td>Todas salvo cuero</td></tr><tr><th>Escudo</th><td>Cualquiera</td></tr>
+<tr><th>Salud inicial</th><td>25 + d18</td></tr></table>
+
+<h2>Ranger</h2>
+<p>Rastreador y superviviente. Reduce automáticamente el tiempo de viaje entre ciudades. Inflige un daño extra igual a su nivel.</p>
+<div class="ability">★ Menor tiempo de viaje entre ciudades / Daño extra = nivel</div>
+<table><tr><th>Armas</th><td>Cualquiera</td></tr><tr><th>Armadura</th><td>Cualquiera</td></tr><tr><th>Escudo</th><td>Cualquiera salvo el de torre</td></tr>
+<tr><th>Salud inicial</th><td>25 + d18</td></tr></table>
+
+<h2>Arquero</h2>
+<p>Tirador especializado en armas a distancia. Probabilidad de golpe crítico con arcos por nivel. No puede usar escudos.</p>
+<div class="ability">★ Probabilidad de golpe crítico con armas a distancia por nivel</div>
+<table><tr><th>Armas</th><td>Cualquiera</td></tr><tr><th>Armadura</th><td>Solo cuero o cota de malla</td></tr><tr><th>Escudo</th><td>Ninguno</td></tr>
+<tr><th>Salud inicial</th><td>25 + d16</td></tr></table>
+
+<h2>Monje</h2>
+<p>Mente y cuerpo forjados como una máquina de matar. Sin armadura ni escudo. La probabilidad de golpe del enemigo baja con cada nivel. Si supera la salvación contra un hechizo, no recibe daño.</p>
+<div class="ability">★ Reduce la probabilidad de golpe del enemigo por nivel / Salvación superada = daño cero / Golpe crítico (solo cuerpo a cuerpo)</div>
+<table><tr><th>Armas</th><td>Cualquiera</td></tr><tr><th>Armadura</th><td>Ninguna</td></tr><tr><th>Escudo</th><td>Ninguno</td></tr>
+<tr><th>Salud inicial</th><td>25 + d14</td></tr></table>
+
+<h2>Bárbaro</h2>
+<p>Superviviente de tierras hostiles. La mayor salud inicial de todas las clases. Recupera salud extra según su Resistencia.</p>
+<div class="ability">★ Inmune al veneno / Salud extra recuperada al descansar según END</div>
+<table><tr><th>Armas</th><td>Cualquiera</td></tr><tr><th>Armadura</th><td>Hasta cota de malla</td></tr><tr><th>Escudo</th><td>Cualquiera</td></tr>
+<tr><th>Salud inicial</th><td>25 + d30 (la mayor de todas las clases)</td></tr></table>
+
+<div class="section-header">Clases de mago — Atributos principales: Inteligencia (INT) y Voluntad (WIL)</div>
+
+<h2>Mago</h2>
+<p>Nacido para la magia. Puntos de hechizo = INT×2. Depende por completo de los hechizos para atacar y defenderse. Sin armadura ni escudo.</p>
+<table><tr><th>Armas</th><td>Adaga, Bastón</td></tr><tr><th>Armadura</th><td>Ninguna</td></tr><tr><th>Escudo</th><td>Solo rodela</td></tr>
+<tr><th>Salud inicial</th><td>25 + d6</td></tr></table>
+
+<h2>Hechicero</h2>
+<p>Una «batería» mágica. No genera puntos de hechizo por sí mismo; en su lugar los absorbe de los hechizos que le lanzan (hasta INT×3). A plena carga, es potencialmente la más poderosa de todas las clases de mago.</p>
+<div class="ability">★ Absorbe los hechizos dirigidos contra él → sin daño + gana puntos de hechizo / No puede absorber sus propios hechizos / Sin regeneración natural de SP</div>
+<table><tr><th>Armas</th><td>Cualquiera</td></tr><tr><th>Armadura</th><td>Hasta cota de malla</td></tr><tr><th>Escudo</th><td>Ninguno</td></tr>
+<tr><th>Salud inicial</th><td>25 + d6</td></tr></table>
+
+<h2>Sanador</h2>
+<p>Especialista en magia defensiva. Puntos de hechizo = INT×1.75. Los hechizos defensivos cuestan menos en el Creador de hechizos. Mayor ritmo base de curación.</p>
+<table><tr><th>Armas</th><td>Adaga, Bastón, Maza, Maza de cadenas</td></tr><tr><th>Armadura</th><td>Solo cuero o cota de malla</td></tr><tr><th>Escudo</th><td>Hasta escudo redondo</td></tr>
+<tr><th>Salud inicial</th><td>25 + d8</td></tr></table>
+
+<h2>Mago de batalla</h2>
+<p>Especialista en hechizos ofensivos. Puntos de hechizo = INT×1.75. Los hechizos ofensivos cuestan menos en el Creador de hechizos.</p>
+<table><tr><th>Armas</th><td>Cualquiera</td></tr><tr><th>Armadura</th><td>Solo cuero</td></tr><tr><th>Escudo</th><td>Hasta escudo redondo</td></tr>
+<tr><th>Salud inicial</th><td>25 + d10</td></tr></table>
+
+<h2>Guerrero arcano</h2>
+<p>Puede lanzar hechizos con la armadura puesta. Guerrero-mago versátil. Puntos de hechizo = INT×1.5.</p>
+<table><tr><th>Armas</th><td>Cualquiera</td></tr><tr><th>Armadura</th><td>Solo cuero o cota de malla</td></tr><tr><th>Escudo</th><td>Cualquiera salvo el escudo de torre</td></tr>
+<tr><th>Salud inicial</th><td>25 + d12</td></tr></table>
+
+<h2>Cuchilla nocturna</h2>
+<p>Mago del sigilo y la infiltración. Fuerza cerraduras tan bien como un Pícaro. Probabilidad de golpe crítico por nivel. Puntos de hechizo = INT×1.5.</p>
+<div class="ability">★ Probabilidad de golpe crítico por nivel</div>
+<table><tr><th>Armas</th><td>Adaga, Bastón, Arco corto, Espada corta, Sable</td></tr><tr><th>Armadura</th><td>Solo cuero</td></tr><tr><th>Escudo</th><td>Solo rodela</td></tr>
+<tr><th>Salud inicial</th><td>25 + d8</td></tr></table>
+
+</body>
+</html>

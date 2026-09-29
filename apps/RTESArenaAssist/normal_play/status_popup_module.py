@@ -26,6 +26,12 @@ def poll_status_popup(w, *, entry_handled: bool) -> None:
             if _status_fg and (not entry_handled) and (_vkey != getattr(w, '_last_status_vkey', None)):
                 w._last_status_vkey = _vkey
                 w._ui_router.update_translation(STATUS_OWNER, _full_en, _full_ja)
+                _log_condition(w, _parsed.get('states', ()))
     except (ImportError, AttributeError, OSError):
         pass
+
+def _log_condition(w, states) -> None:
+    from player_condition import log_status_window, read_fields, read_hp
+    hp, hp_max = read_hp(w._analyzer, w._anchor)
+    log_status_window(states, read_fields(w._analyzer, w._anchor), hp=hp, hp_max=hp_max)
 __all__ = ['STATUS_OWNER', 'poll_status_popup']
