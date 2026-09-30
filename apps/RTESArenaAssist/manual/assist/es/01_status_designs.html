@@ -114,6 +114,8 @@ Es una función de visualización de Assist. Es independiente de la pantalla de 
 <table>
   <tr><th>Clave</th><th>Contenido</th><th>Ejemplo</th></tr>
   <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Atributos (Fuerza, Inteligencia, Voluntad, Agilidad, Velocidad, Resistencia, Personalidad, Suerte)</td><td>58</td></tr>
+  <tr><td><code>str_base</code> <code>int_base</code> <code>wil_base</code> <code>agi_base</code> <code>spd_base</code> <code>end_base</code> <code>per_base</code> <code>luc_base</code></td><td>Atributo base antes de los modificadores (solo está disponible durante el juego normal cuando difiere del valor actual)</td><td>50</td></tr>
+  <tr><td><code>str_change</code> <code>int_change</code> <code>wil_change</code> <code>agi_change</code> <code>spd_change</code> <code>end_change</code> <code>per_change</code> <code>luc_change</code></td><td>Valor actual menos el valor base, con signo como <code>+8</code> o <code>-8</code> (solo está disponible cuando no es cero)</td><td>+8</td></tr>
   <tr><td><code>damage</code></td><td>Daño (el modificador de la Fuerza)</td><td>+1</td></tr>
   <tr><td><code>max_kilos</code></td><td>Máx. kilos</td><td>116</td></tr>
   <tr><td><code>magic_def</code></td><td>Defensa mágica</td><td>+1</td></tr>
@@ -123,6 +125,11 @@ Es una función de visualización de Assist. Es independiente de la pantalla de 
   <tr><td><code>charisma</code></td><td>Carisma</td><td>+0</td></tr>
   <tr><td><code>bonus_pts</code></td><td>Puntos que quedan por repartir (solo tiene valor durante la creación de personaje y la distribución de atributos)</td><td>12</td></tr>
 </table>
+
+<p>Ejemplo que muestra el cambio y el valor base solo mientras un atributo está modificado:</p>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;span class="current"&gt;{{str}}&lt;/span&gt;
+{{#if str_change}}&lt;span class="change"&gt;{{str_change}}&lt;br&gt;({{str_base}})&lt;/span&gt;{{/if}}</pre></td></tr></table>
+<p><code>str_change</code> está vacío cuando no hay cambios, por lo que desaparece la parte condicional y solo queda el valor actual. Sustituya <code>str</code> por <code>int</code> y las demás claves de atributo del mismo modo.</p>
 
 <h3>Salud, fatiga, puntos de hechizo y experiencia</h3>
 <table>
@@ -153,7 +160,7 @@ Es una función de visualización de Assist. Es independiente de la pantalla de 
 </table>
 <ul>
 <li>Las palabras son las mismas que en la ventana de estado del juego. Varios estados se separan con «, ».</li>
-<li>Por ahora no se muestran: en estado crítico, protegido, el nombre de una enfermedad, los atributos fortalecidos, bendecido.</li>
+<li>Por ahora no se muestran: en estado crítico, protegido, el nombre de una enfermedad, bendecido.</li>
 <li>Falta durante la creación de personaje.</li>
 </ul>
 
@@ -173,6 +180,20 @@ Es una función de visualización de Assist. Es independiente de la pantalla de 
 <li>Falta mientras no se puede leer el equipo.</li>
 </ul>
 
+<h3>Cantidades de pociones</h3>
+<p>En la lista de equipo del juego, marque la columna Hoja para cada poción que desee mostrar. Se pueden seleccionar los 15 tipos de pociones identificadas del juego. Al principio están seleccionadas la curación, la recuperación de fatiga y la cura de enfermedades.</p>
+<table>
+  <tr><th>Clave</th><th>Contenido</th><th>Ejemplo</th></tr>
+  <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>Nombre de la poción seleccionada en el idioma de visualización</td><td>Poción de curación</td></tr>
+  <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>Nombre corto de la poción seleccionada (se omite la expresión fija «Poción de»)</td><td>curación</td></tr>
+  <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>Cantidad total de la poción correspondiente</td><td>4</td></tr>
+</table>
+<ul>
+<li>Los números siguen el orden de selección. Las ranuras no utilizadas no tienen valor.</li>
+<li>El diseño incluido «Tarjetas de atributos (oscuro)» usa tarjetas grandes y solo muestra los seis primeros tipos seleccionados. Un diseño HTML personalizado puede usar las claves de los 15 tipos.</li>
+<li>Las pociones sin identificar no se pueden seleccionar porque se desconoce su tipo. Tampoco hay valores mientras no se pueda leer el inventario.</li>
+</ul>
+
 <h2>Etiquetas</h2>
 <p>Claves para <code>{{label.key}}</code>. La etiqueta se inserta en el idioma de visualización.</p>
 <table>
@@ -186,8 +207,8 @@ Es una función de visualización de Assist. Es independiente de la pantalla de 
   <tr><td><code>condition</code></td><td>Estado</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Cabeza, Hombro derecho, Hombro izquierdo, Pecho, Manos, Cintura y piernas, Pies</td></tr>
   <tr><td><code>title</code></td><td>Hoja de personaje</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code></td><td>Atributos, Combate y magia, Salud y fatiga, Experiencia y oro, Defensa de armadura (AR)</td></tr>
-  <tr><td><code>col_value</code> <code>col_modifier</code></td><td>Valor, Modificador</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>Atributos, Combate y magia, Salud y fatiga, Experiencia y oro, Defensa de armadura (AR), Pociones</td></tr>
+  <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>Valor, Modificador, Base</td></tr>
   <tr><td><code>armor_note</code></td><td>Cuanto menor, mejor protección (+10 sin protección)</td></tr>
 </table>
 

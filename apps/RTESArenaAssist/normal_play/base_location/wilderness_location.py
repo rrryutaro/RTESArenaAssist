@@ -150,7 +150,11 @@ class WildernessMapSession(MapSessionBase):
 
     def stop(self, ctx: MapContext) -> None:
         super().stop(ctx)
+        self.discard_field_entrance_hint()
+
+    def discard_field_entrance_hint(self) -> None:
         self._field_entrance_ctx = None
+        self._logged_entrance_mif = None
 
     def update(self, ctx: MapContext) -> None:
         self._place_text = ctx.place_text

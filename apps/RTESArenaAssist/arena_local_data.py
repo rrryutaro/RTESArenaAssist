@@ -33,7 +33,7 @@ _AEXE_TEMPLATE_DIR = os.path.join(os.path.dirname(__file__), 'i18n', '_aexe_temp
 _V2_LOCALPACK_NAME = 'RTESArenaAssist.localpack'
 _SOURCE_ID_MAP_PATH = os.path.join(os.path.dirname(__file__), 'i18n', 'source_id_map.json')
 _BUNDLE_PATH = os.path.join(os.path.dirname(__file__), 'i18n', 'i18n_bundle.json')
-_V2_BUILDER_VERSION = 2
+_V2_BUILDER_VERSION = 3
 
 def v2_localpack_path(user_dir: str) -> str:
     return os.path.join(user_dir, _V2_LOCALPACK_NAME)

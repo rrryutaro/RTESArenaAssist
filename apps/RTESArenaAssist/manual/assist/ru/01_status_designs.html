@@ -114,6 +114,8 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
 <table>
   <tr><th>Ключ</th><th>Содержание</th><th>Пример</th></tr>
   <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Характеристики (Сила, Интеллект, Сила воли, Ловкость, Скорость, Выносливость, Личность, Удача)</td><td>58</td></tr>
+  <tr><td><code>str_base</code> <code>int_base</code> <code>wil_base</code> <code>agi_base</code> <code>spd_base</code> <code>end_base</code> <code>per_base</code> <code>luc_base</code></td><td>Базовая характеристика до модификаторов (доступна в обычной игре только при отличии от текущего значения)</td><td>50</td></tr>
+  <tr><td><code>str_change</code> <code>int_change</code> <code>wil_change</code> <code>agi_change</code> <code>spd_change</code> <code>end_change</code> <code>per_change</code> <code>luc_change</code></td><td>Текущее значение минус базовое, со знаком, например <code>+8</code> или <code>-8</code> (доступно только при ненулевой разнице)</td><td>+8</td></tr>
   <tr><td><code>damage</code></td><td>Урон (модификатор от Силы)</td><td>+1</td></tr>
   <tr><td><code>max_kilos</code></td><td>Макс. вес</td><td>116</td></tr>
   <tr><td><code>magic_def</code></td><td>Маг. защита</td><td>+1</td></tr>
@@ -123,6 +125,11 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
   <tr><td><code>charisma</code></td><td>Харизма</td><td>+0</td></tr>
   <tr><td><code>bonus_pts</code></td><td>Очки, оставшиеся для распределения (значение есть только во время создания персонажа и распределения характеристик)</td><td>12</td></tr>
 </table>
+
+<p>Пример, показывающий изменение и базовое значение только для изменённой характеристики:</p>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;span class="current"&gt;{{str}}&lt;/span&gt;
+{{#if str_change}}&lt;span class="change"&gt;{{str_change}}&lt;br&gt;({{str_base}})&lt;/span&gt;{{/if}}</pre></td></tr></table>
+<p><code>str_change</code> пуст, если изменения нет, поэтому условная часть исчезает и остаётся только текущее значение. Для других характеристик замените <code>str</code> на <code>int</code> и остальные ключи.</p>
 
 <h3>Здоровье, усталость, очки заклинаний и опыт</h3>
 <table>
@@ -153,7 +160,7 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
 </table>
 <ul>
 <li>Слова те же, что в окне статуса игры. Несколько состояний разделяются «, ».</li>
-<li>Пока не показываются: При смерти, Под щитом, название болезни, усиленные характеристики, благословение.</li>
+<li>Пока не показываются: При смерти, Под щитом, название болезни, благословение.</li>
 <li>Отсутствует во время создания персонажа.</li>
 </ul>
 
@@ -173,6 +180,20 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
 <li>Отсутствует, пока снаряжение не удаётся прочитать.</li>
 </ul>
 
+<h3>Количество зелий</h3>
+<p>В списке снаряжения игры отметьте столбец «Лист» для каждого зелья, которое нужно показать. Можно выбрать все 15 определённых типов зелий в игре. Изначально выбраны лечение, восстановление усталости и лечение болезни.</p>
+<table>
+  <tr><th>Ключ</th><th>Содержание</th><th>Пример</th></tr>
+  <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>Название выбранного зелья на языке интерфейса</td><td>Зелье исцеления</td></tr>
+  <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>Краткое название выбранного зелья (фиксированное слово «Зелье» опускается)</td><td>исцеления</td></tr>
+  <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>Общее количество соответствующего зелья</td><td>4</td></tr>
+</table>
+<ul>
+<li>Номера следуют порядку выбора. Неиспользуемые ячейки не имеют значения.</li>
+<li>Встроенный дизайн «Карточки атрибутов (тёмные)» использует крупные карточки и показывает только первые шесть выбранных типов. Пользовательский HTML-дизайн может использовать ключи всех 15 типов.</li>
+<li>Неопознанное зелье нельзя выбрать, поскольку его тип неизвестен. Значения также отсутствуют, пока инвентарь невозможно прочитать.</li>
+</ul>
+
 <h2>Подписи</h2>
 <p>Ключи для <code>{{label.key}}</code>. Подпись подставляется на языке отображения.</p>
 <table>
@@ -186,8 +207,8 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
   <tr><td><code>condition</code></td><td>Состояние</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Голова, Правое плечо, Левое плечо, Грудь, Руки, Пояс и ноги, Ступни</td></tr>
   <tr><td><code>title</code></td><td>Лист персонажа</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code></td><td>Характеристики, Бой и магия, Здоровье и усталость, Опыт и золото, Класс брони (AR)</td></tr>
-  <tr><td><code>col_value</code> <code>col_modifier</code></td><td>Значение, Модификатор</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>Характеристики, Бой и магия, Здоровье и усталость, Опыт и золото, Класс брони (AR), Зелья</td></tr>
+  <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>Значение, Модификатор, Базовое</td></tr>
   <tr><td><code>armor_note</code></td><td>Чем меньше, тем лучше защита (+10 без защиты)</td></tr>
 </table>
 

@@ -114,6 +114,8 @@ This is an Assist display feature. It is separate from the game's own status scr
 <table>
   <tr><th>Key</th><th>Content</th><th>Example</th></tr>
   <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Attributes (Strength, Intelligence, Willpower, Agility, Speed, Endurance, Personality, Luck)</td><td>58</td></tr>
+  <tr><td><code>str_base</code> <code>int_base</code> <code>wil_base</code> <code>agi_base</code> <code>spd_base</code> <code>end_base</code> <code>per_base</code> <code>luc_base</code></td><td>Base attributes before modifiers (available during normal play only when different from the current value)</td><td>50</td></tr>
+  <tr><td><code>str_change</code> <code>int_change</code> <code>wil_change</code> <code>agi_change</code> <code>spd_change</code> <code>end_change</code> <code>per_change</code> <code>luc_change</code></td><td>Current value minus the base value, signed as <code>+8</code> or <code>-8</code> (available only when nonzero)</td><td>+8</td></tr>
   <tr><td><code>damage</code></td><td>Damage (the modifier from Strength)</td><td>+1</td></tr>
   <tr><td><code>max_kilos</code></td><td>Max Kilos</td><td>116</td></tr>
   <tr><td><code>magic_def</code></td><td>Magic Def</td><td>+1</td></tr>
@@ -123,6 +125,11 @@ This is an Assist display feature. It is separate from the game's own status scr
   <tr><td><code>charisma</code></td><td>Charisma</td><td>+0</td></tr>
   <tr><td><code>bonus_pts</code></td><td>Points left to distribute (has a value only during character creation and attribute distribution)</td><td>12</td></tr>
 </table>
+
+<p>Example that shows the change and base value only while an attribute is modified:</p>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;span class="current"&gt;{{str}}&lt;/span&gt;
+{{#if str_change}}&lt;span class="change"&gt;{{str_change}}&lt;br&gt;({{str_base}})&lt;/span&gt;{{/if}}</pre></td></tr></table>
+<p><code>str_change</code> is empty when there is no change, so the conditional part disappears and only the current value remains. Replace <code>str</code> with <code>int</code> and the other attribute keys in the same way.</p>
 
 <h3>Health, fatigue, spell points and experience</h3>
 <table>
@@ -153,7 +160,7 @@ This is an Assist display feature. It is separate from the game's own status scr
 </table>
 <ul>
 <li>The words are the same as in the game's status window. Several states are separated by ", ".</li>
-<li>Not shown for now: critical condition, shielded, the name of a disease, fortified attributes, blessed.</li>
+<li>Not shown for now: critical condition, shielded, the name of a disease, blessed.</li>
 <li>Missing during character creation.</li>
 </ul>
 
@@ -173,6 +180,20 @@ This is an Assist display feature. It is separate from the game's own status scr
 <li>Missing while the equipment cannot be read.</li>
 </ul>
 
+<h3>Potion counts</h3>
+<p>In the game's equipment list, tick the Sheet column for each potion you want to show. All 15 identified potion types in the game can be selected. Healing, fatigue restoration and cure disease are selected initially.</p>
+<table>
+  <tr><th>Key</th><th>Content</th><th>Example</th></tr>
+  <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>Selected potion name in the display language</td><td>Potion of Healing</td></tr>
+  <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>Short selected potion name in the display language (the fixed “Potion of” wording is omitted)</td><td>Healing</td></tr>
+  <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>Total owned count for the corresponding potion</td><td>4</td></tr>
+</table>
+<ul>
+<li>The numbers follow the order in which the potion types were selected. Unused slots have no value.</li>
+<li>The bundled Attribute Cards (Dark) design uses large cards and shows only the first six selected types. A custom HTML design can use the keys for all 15 types.</li>
+<li>An unidentified potion cannot be selected because its type is unknown. The values are also absent while the inventory cannot be read.</li>
+</ul>
+
 <h2>Labels</h2>
 <p>Keys for <code>{{label.key}}</code>. The label is inserted in the display language.</p>
 <table>
@@ -186,8 +207,8 @@ This is an Assist display feature. It is separate from the game's own status scr
   <tr><td><code>condition</code></td><td>Condition</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Head, Right shoulder, Left shoulder, Chest, Hands, Waist and legs, Feet</td></tr>
   <tr><td><code>title</code></td><td>Character Sheet</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code></td><td>Attributes, Combat &amp; Magic, Health &amp; Fatigue, Experience &amp; Gold, Armor rating (AR)</td></tr>
-  <tr><td><code>col_value</code> <code>col_modifier</code></td><td>Value, Modifier</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>Attributes, Combat &amp; Magic, Health &amp; Fatigue, Experience &amp; Gold, Armor rating (AR), Potions</td></tr>
+  <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>Value, Modifier, Base</td></tr>
   <tr><td><code>armor_note</code></td><td>Lower is better protected (+10 when unprotected)</td></tr>
 </table>
 

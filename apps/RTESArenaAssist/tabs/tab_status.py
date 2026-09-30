@@ -101,8 +101,12 @@ class TabStatus(QWidget):
     def set_memory_target(self, analyzer, anchor: int) -> None:
         self._connected = True
         self._panel.set_memory_target(analyzer, anchor)
-        from inventory_reader import read_equipment_items
-        self._display.set_equipment_source(lambda: read_equipment_items(analyzer, anchor))
+        from inventory_reader import read_equipment_items_with_status
+
+        def read_sheet_inventory():
+            ok, items = read_equipment_items_with_status(analyzer, anchor)
+            return items if ok else None
+        self._display.set_equipment_source(read_sheet_inventory)
         self._refresh_visibility()
 
     def clear_memory_target(self) -> None:

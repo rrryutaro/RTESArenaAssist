@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import Optional
 import arena_data
 import i18n_helper as i18n
-from attributes_panel import OFF_BONUS_PTS_U8, OFF_DAMAGE_I16, OFF_EXP_U32, OFF_FATIGUE_U16, OFF_GOLD_U32, OFF_HEALTH_CURR_U16, OFF_FACE_INDEX, OFF_HEALTH_MAX_U16, OFF_IS_FEMALE, OFF_LEVEL_U8, OFF_NAME, OFF_PRIMARY_1, OFF_RACE_INDEX, OFF_SPELL_PTS_CURR, OFF_SPELL_PTS_MAX, PRIMARY_LEN, UNKNOWN, _signed, class_names
+from attributes_panel import OFF_BONUS_PTS_U8, OFF_DAMAGE_I16, OFF_EXP_U32, OFF_FATIGUE_U16, OFF_GOLD_U32, OFF_HEALTH_CURR_U16, OFF_FACE_INDEX, OFF_HEALTH_MAX_U16, OFF_IS_FEMALE, OFF_LEVEL_U8, OFF_NAME, OFF_PRIMARY_1, OFF_PRIMARY_2, OFF_RACE_INDEX, OFF_SPELL_PTS_CURR, OFF_SPELL_PTS_MAX, PRIMARY_LEN, UNKNOWN, _signed, class_names
 from player_condition import read_fields as read_condition_fields
 from player_condition import sheet_values as condition_sheet_values
 from attribute_formulas import calc_bonus_to_health, calc_bonus_to_health_256, calc_bonus_to_hit, calc_damage_bonus, calc_magic_defense, calc_max_kilos, calc_max_stamina, calc_max_stamina_256
@@ -68,6 +68,14 @@ def poll_attributes(panel) -> None:
         data = raw_data
     else:
         data = bytes((round(b * 100 / 256) for b in raw_data))
+    base_data = None
+    if not panel._chargen_mode and (not panel._is_bonus_screen):
+        try:
+            raw_base = panel._analyzer.read_bytes(panel._anchor + OFF_PRIMARY_2, PRIMARY_LEN)
+            if len(raw_base) == PRIMARY_LEN:
+                base_data = bytes((round(b * 100 / 256) for b in raw_base))
+        except OSError:
+            pass
     for idx, sb in enumerate(panel._spinboxes):
         if sb.hasFocus() and panel._cheat_enabled:
             continue
@@ -77,8 +85,14 @@ def poll_attributes(panel) -> None:
             sb.setValue(new_val)
             sb.blockSignals(False)
     STR, INT, WIL, AGI, SPD, END, PER, LUC = data
-    for key, value in zip(_SHEET_ATTR_KEYS, data):
+    for idx, (key, value) in enumerate(zip(_SHEET_ATTR_KEYS, data)):
         sheet[key] = str(value)
+        if base_data is not None:
+            base = base_data[idx]
+            change = value - base
+            if change:
+                sheet[f'{key}_base'] = str(base)
+                sheet[f'{key}_change'] = _signed(change)
     if panel._is_bonus_screen:
         damage = calc_damage_bonus(STR)
     else:

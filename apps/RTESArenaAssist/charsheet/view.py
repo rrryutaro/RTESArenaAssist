@@ -6,6 +6,7 @@ from PySide6.QtCore import QTimer, QUrl, Qt
 from PySide6.QtGui import QImage, QTextDocument
 from PySide6.QtWidgets import QFrame, QTextBrowser
 import armor_rating
+from charsheet import potions
 from charsheet import template_engine
 from charsheet import values as sheet_values
 from charsheet.images import SheetImages, equipment_key
@@ -87,7 +88,7 @@ class CharacterSheetView(QTextBrowser):
 
     @staticmethod
     def _equipment_state(equipped: Optional[list]) -> tuple:
-        return (equipment_key(equipped), armor_rating.materials_key(equipped))
+        return (equipment_key(equipped), armor_rating.materials_key(equipped), potions.state(equipped))
 
     def _check_equipment(self) -> None:
         if self._equipment_state(self._read_equipment()) != self._equipment_key:
@@ -102,6 +103,7 @@ class CharacterSheetView(QTextBrowser):
         self._equipment_key = self._equipment_state(equipped)
         self._images.update(self._values, equipped)
         values = sheet_values.with_armor(sheet_values.with_derived(self._values), equipped)
+        values.update(potions.sheet_values(equipped))
         html = template_engine.render(self._template, values, sheet_values.labels(), self._images.urls())
         bar = self.verticalScrollBar()
         position = bar.value()

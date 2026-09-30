@@ -303,7 +303,7 @@ def _preprocess_placeholder_value(name: str, value: str, lang: str) -> str:
     for compiled, replace in rules:
         value = compiled.sub(replace, value)
     return value
-_DS_PATTERN = re.compile('^(.+?)\\s+(\\w+)\\s+called\\s+(.+)$')
+_DS_PATTERN = re.compile('^(?:(.+?)\\s+)?(\\w+)\\s+called\\s+(.+)$')
 _PLACEHOLDER_NAMES: frozenset[str] = frozenset(['a', 'a2', 'adn', 'amn', 'an', 'ap', 'apr', 'arc', 'art', 'ba', 'ccs', 'cll', 'cn', 'cn2', 'cp', 'ct', 'da', 'de', 'di', 'dit', 'doc', 'ds', 'du', 'en', 'fn', 'fq', 'g', 'g2', 'g3', 'hc', 'hod', 'i', 'jok', 'lp', 'mi', 'mn', 'mpr', 'mt', 'n', 'nap', 'nc', 'nc2', 'nd', 'ne', 'nh', 'nhd', 'ni', 'nk', 'nr', 'nt', 'o', 'oap', 'oc', 'omq', 'opp', 'oth', 'pcf', 'pcn', 'qc', 'qmn', 'qt', 'r', 'ra', 'rcn', 'rf', 's', 'sn', 'st', 't', 'ta', 'tan', 'tc', 'tem', 'tg', 'ti', 'tl', 'tn', 'tq', 'tt', 'u'])
 
 def _template_to_regex(en_template: str, *, anchor_end: bool=True, allow_empty: bool=False) -> re.Pattern | None:
@@ -788,9 +788,11 @@ def _translate_ds(value: str, lang: str) -> str:
     m = _DS_PATTERN.match(value)
     if m:
         import i18n_helper as i18n
-        trait_en, occupation_en, called_en = (m.group(1), m.group(2), m.group(3))
+        trait_en, occupation_en, called_en = ((m.group(1) or '').strip(), m.group(2), m.group(3))
         _load_traits()
-        trait_ja = _TRAIT_VALUES.get(trait_en) or i18n.text_opt(f'npc_traits.trait_{_ph_slug(trait_en)}.0') or _translate_trait_words(trait_en, lang) or trait_en
+        trait_ja = ''
+        if trait_en:
+            trait_ja = _TRAIT_VALUES.get(trait_en) or i18n.text_opt(f'npc_traits.trait_{_ph_slug(trait_en)}.0') or _translate_trait_words(trait_en, lang) or trait_en
         occupation_ja = _npc_desc_noun(occupation_en, lang) or i18n.value('descriptors', occupation_en.lower()) or translate_placeholder('oc', occupation_en, lang) or occupation_en
         title_ja = None
         name_en = called_en

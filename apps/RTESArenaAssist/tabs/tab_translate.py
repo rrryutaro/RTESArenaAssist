@@ -1,11 +1,12 @@
 import logging
-from PySide6.QtCore import Signal
+from PySide6.QtCore import Signal, Qt
 from PySide6.QtWidgets import QFrame, QLabel, QTableWidgetItem, QVBoxLayout, QWidget
 import assist_settings as settings
 import i18n_helper as i18n
 from layout_panel_translate import resolve_pair_texts
 _log = logging.getLogger('RTESArenaAssist')
 from attributes_panel import AttributesPanel
+from charsheet import potions
 from charsheet.status_display import StatusDisplay
 from appearance_faces_panel import AppearanceFacesPanel
 from tabs.tab_map import TabMap
@@ -161,7 +162,34 @@ class TabTranslate(QWidget):
         self._render_equipment_list()
 
     def _render_equipment_list(self) -> None:
-        render_equipment_list(self._equip_table, getattr(self, '_equip_items', []), text_filter=self._equip_filter_text.text(), slot_filter=self._equip_filter_slot.currentData() or '', category_filter=self._equip_filter_category.currentData() or '')
+        blocked = self._equip_table.blockSignals(True)
+        try:
+            render_equipment_list(self._equip_table, getattr(self, '_equip_items', []), text_filter=self._equip_filter_text.text(), slot_filter=self._equip_filter_slot.currentData() or '', category_filter=self._equip_filter_category.currentData() or '', sheet_potions=potions.selected_names())
+        finally:
+            self._equip_table.blockSignals(blocked)
+
+    def _on_equip_sheet_item_changed(self, item: QTableWidgetItem) -> None:
+        if item.column() != 9:
+            return
+        name = item.data(Qt.ItemDataRole.UserRole)
+        if not isinstance(name, str) or not name:
+            return
+        enabled = item.checkState() == Qt.CheckState.Checked
+        if potions.set_selected(name, enabled):
+            blocked = self._equip_table.blockSignals(True)
+            try:
+                for row in range(self._equip_table.rowCount()):
+                    peer = self._equip_table.item(row, 9)
+                    if peer is not None and peer.data(Qt.ItemDataRole.UserRole) == name:
+                        peer.setCheckState(Qt.CheckState.Checked if enabled else Qt.CheckState.Unchecked)
+            finally:
+                self._equip_table.blockSignals(blocked)
+            return
+        blocked = self._equip_table.blockSignals(True)
+        try:
+            item.setCheckState(Qt.CheckState.Unchecked)
+        finally:
+            self._equip_table.blockSignals(blocked)
 
     def _sync_equip_filter_choices(self) -> None:
         items = getattr(self, '_equip_items', [])

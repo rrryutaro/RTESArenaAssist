@@ -246,7 +246,7 @@ def compute_b30_state(w, *, in_gameplay: bool, c_area: str | None=None, c1_axis=
     if _red_changed:
         _recog(_log, 'b30 0x7979 changed: %r → %r', _red_prev, _red_str)
     w._b30_red_str_prev = _red_str
-    _c1_axis = c1_axis if c_area == 'dungeon' else None
+    _c1_axis = c1_axis
     if _c1_axis is not None:
         _fg_ptr = getattr(_c1_axis, 'current_ptr', None)
     elif fg_ptr is not _FG_PTR_UNREAD:

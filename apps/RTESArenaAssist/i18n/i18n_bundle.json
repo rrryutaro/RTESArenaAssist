@@ -4246,6 +4246,16 @@
           "id": 900846,
           "kind": "label",
           "debug_name": "manual.mode.assist"
+        },
+        {
+          "id": 900847,
+          "kind": "label",
+          "debug_name": "charsheet.col.base"
+        },
+        {
+          "id": 900848,
+          "kind": "label",
+          "debug_name": "charsheet.section.potions"
         }
       ]
     },
@@ -52064,6 +52074,14 @@
           "text": "Assist"
         },
         {
+          "id": 900847,
+          "text": "Base"
+        },
+        {
+          "id": 900848,
+          "text": "Potions"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -80947,6 +80965,14 @@
         {
           "id": 900846,
           "text": "Assist"
+        },
+        {
+          "id": 900847,
+          "text": "基礎値"
+        },
+        {
+          "id": 900848,
+          "text": "ポーション"
         },
         {
           "id": 902000,
@@ -110642,6 +110668,14 @@
           "text": "Assist"
         },
         {
+          "id": 900847,
+          "text": "Base"
+        },
+        {
+          "id": 900848,
+          "text": "Pociones"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -139525,6 +139559,14 @@
         {
           "id": 900846,
           "text": "Assist"
+        },
+        {
+          "id": 900847,
+          "text": "Basiswert"
+        },
+        {
+          "id": 900848,
+          "text": "Tränke"
         },
         {
           "id": 902000,
@@ -168412,6 +168454,14 @@
           "text": "Assist"
         },
         {
+          "id": 900847,
+          "text": "Base"
+        },
+        {
+          "id": 900848,
+          "text": "Potions"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -197297,6 +197347,14 @@
           "text": "Assist"
         },
         {
+          "id": 900847,
+          "text": "Base"
+        },
+        {
+          "id": 900848,
+          "text": "Pozioni"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -226180,6 +226238,14 @@
         {
           "id": 900846,
           "text": "Assist"
+        },
+        {
+          "id": 900847,
+          "text": "Базовое"
+        },
+        {
+          "id": 900848,
+          "text": "Зелья"
         },
         {
           "id": 902000,

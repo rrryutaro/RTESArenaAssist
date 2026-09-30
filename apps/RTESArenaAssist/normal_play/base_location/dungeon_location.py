@@ -55,6 +55,8 @@ class DungeonMapSession(MapSessionBase):
         self._center_on_player = True
         self._show_grid = True
         self._item_point_cells: dict[str, frozenset] = {}
+        self._item_point_history: dict[str, frozenset] = {}
+        self._live_reference_level = None
         self._generated_level = None
         self._live_grid_pending: bool = False
         self._live_grid_attempts: int = 0
@@ -157,7 +159,7 @@ class DungeonMapSession(MapSessionBase):
     _LIVE_GRID_LOG_AFTER = 20
 
     def _overlay_live_grid_if_pending(self, ctx: MapContext) -> None:
-        mif = self._generated_level
+        mif = self._live_reference_level
         if mif is None or not self._live_grid_pending:
             return
         from services.automap_file import read_current_level_hash
@@ -198,7 +200,7 @@ class DungeonMapSession(MapSessionBase):
         self._mark_artifact_quest_chest(ctx, mif)
 
     def _refresh_live_objects(self, ctx: MapContext) -> None:
-        mif = self._generated_level
+        mif = self._live_reference_level
         if mif is None or self._live_grid_pending or self._live_map1 is None:
             return
         from services.automap_file import read_current_level_hash
@@ -252,7 +254,7 @@ class DungeonMapSession(MapSessionBase):
         self._item_pickup_kinds_prev = kinds
         if not self._record_ok:
             return
-        note_item_pickups(self._ext_store, self._location_key, kinds=kinds, prev_kinds=prev, player_x=ctx.player_tile_x, player_y=ctx.player_tile_y, angle_deg=ctx.angle_deg, cells_by_kind=self._item_point_cells)
+        note_item_pickups(self._ext_store, self._location_key, kinds=kinds, prev_kinds=prev, player_x=ctx.player_tile_x, player_y=ctx.player_tile_y, angle_deg=ctx.angle_deg, cells_by_kind=self._item_point_history)
 
     def _note_hidden_door_if_any(self, ix: int, iy: int) -> None:
         if self._ext_store is None or not self._location_key:
@@ -311,6 +313,8 @@ class DungeonMapSession(MapSessionBase):
             self._map1 = None
             self._flor = None
             self._generated_level = None
+            self._live_reference_level = None
+            self._item_point_history = {}
             self._live_grid_pending = False
             return
         if mif is None:
@@ -326,13 +330,17 @@ class DungeonMapSession(MapSessionBase):
             self._location_key = None
             self._level_store_key = None
             self._generated_level = None
+            self._live_reference_level = None
+            self._item_point_history = {}
             self._live_grid_pending = False
             return
+        self._live_reference_level = mif
         self._generated_level = mif if getattr(mif, 'generated', False) else None
-        self._live_grid_pending = self._generated_level is not None
+        self._live_grid_pending = True
         self._live_grid_attempts = 0
         self._live_map1 = None
         self._live_flats = {}
+        self._item_point_history = {}
         self._install_level(mif_name, mif)
 
     def _install_level(self, mif_name: str, mif) -> None:
@@ -391,6 +399,10 @@ class DungeonMapSession(MapSessionBase):
             self._item_point_cells = item_point_cells(getattr(mif, 'entities', None), inf_path)
         except Exception:
             self._item_point_cells = {}
+        history = {kind: set(cells) for kind, cells in self._item_point_history.items()}
+        for kind, cells in self._item_point_cells.items():
+            history.setdefault(kind, set()).update(cells)
+        self._item_point_history = {kind: frozenset(cells) for kind, cells in history.items()}
         self._flat_marks_all = ()
         if inf_path is not None:
             try:

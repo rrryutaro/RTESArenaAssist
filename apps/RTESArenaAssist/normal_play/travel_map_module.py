@@ -159,6 +159,7 @@ def _clear_state_owner(w, state: str) -> None:
         pass
 
 def _reset_travel_state(w) -> None:
+    _was_session = bool(getattr(w, '_travel_session', False))
     _clear_state_owner(w, getattr(w, '_travel_l4_state', STATE_NONE))
     w._travel_l4_state = STATE_NONE
     w._travel_l4_render_key = None
@@ -173,6 +174,12 @@ def _reset_travel_state(w) -> None:
     w._travel_estimate_dismissed_key = None
     w._travel_selected = None
     w._travel_search_list_seen = False
+    if _was_session:
+        try:
+            from controllers.poll_controller import reset_location_after_travel
+            reset_location_after_travel(w)
+        except (ImportError, AttributeError, RuntimeError):
+            _log.exception('location reset failed after travel')
 
 def _lookup_estimate(full_text: str):
     if not full_text:
@@ -482,10 +489,15 @@ def classify_travel_l4(w, img_name: str):
         _reset_travel_state(w)
         return _inactive_travel_view()
     _is_est, full_text = _read_estimate_text(w)
+    _popup_body = _read_popup_body_text(w)
+    _pflat = ' '.join((_popup_body or '').split())
+    _popup_is_already = _pflat.startswith('You are already in')
+    if _popup_is_already:
+        full_text = _popup_body
     adb6 = _read_u8(w, _OFF_ADB6)
     _dialog_flag = _read_u8(w, _OFF_DIALOG_FLAG) != 0
     _resp_ptr = _is_response_text_ptr(w)
-    _on_modal = _dialog_flag and _resp_ptr
+    _on_modal = _dialog_flag and (_resp_ptr or _popup_is_already)
     _is_already = full_text.lstrip().startswith('You are already in')
     _is_search = 'name of the city' in full_text and ('for a list' in full_text or 'press Enter' in full_text)
     list_flag = _read_u8(w, _OFF_LIST_FLAG) if img == _SEARCH_IMG else 255
@@ -508,8 +520,6 @@ def classify_travel_l4(w, img_name: str):
     _search_prompt_open = bool(_is_search and (not search_closed_stale) and (hover_location_candidate is None))
     _estimate_candidate_allowed = not (search_open or search_closed_stale or _search_prompt_open)
     _modal_candidate = _estimate_candidate_allowed and _on_modal and (_is_est or _is_already)
-    _popup_body = _read_popup_body_text(w)
-    _pflat = ' '.join((_popup_body or '').split())
     _is_condition_warning = 'Considering your condition' in _pflat or ('you may not survive' in _pflat and 'attempt the journey' in _pflat)
     _condition_dialog = _estimate_candidate_allowed and _is_condition_warning
     _cursor_xy = (_read_u16(w, _OFF_HOVER_X), _read_u16(w, _OFF_HOVER_Y))

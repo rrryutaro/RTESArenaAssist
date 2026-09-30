@@ -114,6 +114,8 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
 <table>
   <tr><th>キー</th><th>内容</th><th>例</th></tr>
   <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>能力値（筋力・知性・意志力・敏捷・速度・持久力・個性・幸運）</td><td>58</td></tr>
+  <tr><td><code>str_base</code> <code>int_base</code> <code>wil_base</code> <code>agi_base</code> <code>spd_base</code> <code>end_base</code> <code>per_base</code> <code>luc_base</code></td><td>補正前の能力値（通常プレイ中、現在値と異なる時だけ値があります）</td><td>50</td></tr>
+  <tr><td><code>str_change</code> <code>int_change</code> <code>wil_change</code> <code>agi_change</code> <code>spd_change</code> <code>end_change</code> <code>per_change</code> <code>luc_change</code></td><td>現在値から補正前の値を引いた差。増加は <code>+8</code>、減少は <code>-8</code> のように符号付きです（差がある時だけ値があります）</td><td>+8</td></tr>
   <tr><td><code>damage</code></td><td>ダメージ（筋力による補正）</td><td>+1</td></tr>
   <tr><td><code>max_kilos</code></td><td>最大重量</td><td>116</td></tr>
   <tr><td><code>magic_def</code></td><td>魔法防御</td><td>+1</td></tr>
@@ -123,6 +125,11 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
   <tr><td><code>charisma</code></td><td>魅力</td><td>+0</td></tr>
   <tr><td><code>bonus_pts</code></td><td>割り振りの残り（キャラクター作成と能力値の割り振りの間だけ値があります）</td><td>12</td></tr>
 </table>
+
+<p>能力値が変化している時だけ、増減値と補正前の値を表示する例です。</p>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;span class="current"&gt;{{str}}&lt;/span&gt;
+{{#if str_change}}&lt;span class="change"&gt;{{str_change}}&lt;br&gt;({{str_base}})&lt;/span&gt;{{/if}}</pre></td></tr></table>
+<p><code>str_change</code> は変化が無い時には空なので、条件の中は表示されず、現在値だけが残ります。ほかの能力値も <code>str</code> を <code>int</code> などへ置き換えて同じように使えます。</p>
 
 <h3>体力・疲労・呪文ポイント・経験値</h3>
 <table>
@@ -153,7 +160,7 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
 </table>
 <ul>
 <li>状態の語は、ゲームのステータスの窓と同じ語です。複数ある時は「・」で区切ります。</li>
-<li>次の状態は、今は出しません: 瀕死・防護・病気の名前・強化された能力値・祝福。</li>
+<li>次の状態は、今は出しません: 瀕死・防護・病気の名前・祝福。</li>
 <li>キャラクター作成の間は値がありません。</li>
 </ul>
 
@@ -173,6 +180,20 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
 <li>装備が読めない時は値がありません。</li>
 </ul>
 
+<h3>ポーションの個数</h3>
+<p>ゲームの装備一覧で、表示したいポーションの「シート」列をチェックします。ゲームにある鑑定済みの全 15 種類を選択できます。初期状態では、体力回復・疲労回復・病気治療の 3 種類が選択されています。</p>
+<table>
+  <tr><th>キー</th><th>内容</th><th>例</th></tr>
+  <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>選択したポーションの名前（表示言語）</td><td>治癒のポーション</td></tr>
+  <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>選択したポーションの短い名前（表示言語。「のポーション」に相当する定型部分を除く）</td><td>治癒</td></tr>
+  <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>対応するポーションの所持数</td><td>4</td></tr>
+</table>
+<ul>
+<li>番号は装備一覧で選択した順です。使っていない番号には値がありません。</li>
+<li>同梱の「能力値カード（ダーク）」は大判表示のため、選択順の先頭 6 種類だけを表示します。自作 HTML では 15 種類すべてのキーを使えます。</li>
+<li>種類を確定できない未鑑定のポーションは選択できません。所持数を読めない時も値はありません。</li>
+</ul>
+
 <h2>見出しの一覧</h2>
 <p><code>{{label.key}}</code> の key に使えるものです。表示言語の訳が入ります。</p>
 <table>
@@ -186,8 +207,8 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
   <tr><td><code>condition</code></td><td>状態</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>頭・右肩・左肩・胸・手・腰と脚・足</td></tr>
   <tr><td><code>title</code></td><td>キャラクターシート</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code></td><td>能力値・戦闘と魔法・体力と疲労・経験値とゴールド・アーマーレーティング (AR)</td></tr>
-  <tr><td><code>col_value</code> <code>col_modifier</code></td><td>値・補正</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>能力値・戦闘と魔法・体力と疲労・経験値とゴールド・アーマーレーティング (AR)・ポーション</td></tr>
+  <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>値・補正・補正前</td></tr>
   <tr><td><code>armor_note</code></td><td>小さいほど守りが固い（何も着けていないと +10）</td></tr>
 </table>
 

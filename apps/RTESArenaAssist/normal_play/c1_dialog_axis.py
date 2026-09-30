@@ -59,11 +59,11 @@ def _read_u8(w, offset: int) -> int:
     except (OSError, AttributeError, TypeError, IndexError):
         return 0
 
-def read_c1_dialog_axis(w, *, ptr: int | None, c_area: str | None, in_gameplay: bool=True, update_prev: bool=False) -> C1DialogAxis:
+def read_c1_dialog_axis(w, *, ptr: int | None, c_area: str | None, in_gameplay: bool=True, update_prev: bool=False, context_active: bool | None=None) -> C1DialogAxis:
     a84d = _read_u8(w, A84D_OFFSET)
     area = area_of(ptr)
-    in_c1 = c_area == 'dungeon'
-    active = in_c1 and in_gameplay and is_dialog_text_pointer(ptr)
+    in_context = c_area == 'dungeon' if context_active is None else bool(context_active)
+    active = in_context and in_gameplay and is_dialog_text_pointer(ptr)
     prev_active = bool(getattr(w, '_c1_dialog_axis_active_prev', False))
     opened = active and (not prev_active)
     closed = prev_active and (not active)

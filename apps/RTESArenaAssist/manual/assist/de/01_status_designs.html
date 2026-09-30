@@ -114,6 +114,8 @@ Dies ist eine Anzeigefunktion von Assist. Sie ist unabhängig von der Statusanze
 <table>
   <tr><th>Schlüssel</th><th>Inhalt</th><th>Beispiel</th></tr>
   <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Attribute (Stärke, Intelligenz, Willenskraft, Beweglichkeit, Geschwindigkeit, Ausdauer, Persönlichkeit, Glück)</td><td>58</td></tr>
+  <tr><td><code>str_base</code> <code>int_base</code> <code>wil_base</code> <code>agi_base</code> <code>spd_base</code> <code>end_base</code> <code>per_base</code> <code>luc_base</code></td><td>Grundattribut vor Modifikatoren (im normalen Spiel nur vorhanden, wenn es vom aktuellen Wert abweicht)</td><td>50</td></tr>
+  <tr><td><code>str_change</code> <code>int_change</code> <code>wil_change</code> <code>agi_change</code> <code>spd_change</code> <code>end_change</code> <code>per_change</code> <code>luc_change</code></td><td>Aktueller Wert minus Grundwert, mit Vorzeichen wie <code>+8</code> oder <code>-8</code> (nur vorhanden, wenn die Differenz nicht null ist)</td><td>+8</td></tr>
   <tr><td><code>damage</code></td><td>Schaden (der Modifikator aus Stärke)</td><td>+1</td></tr>
   <tr><td><code>max_kilos</code></td><td>Max. Kilogramm</td><td>116</td></tr>
   <tr><td><code>magic_def</code></td><td>Magieabwehr</td><td>+1</td></tr>
@@ -123,6 +125,11 @@ Dies ist eine Anzeigefunktion von Assist. Sie ist unabhängig von der Statusanze
   <tr><td><code>charisma</code></td><td>Charisma</td><td>+0</td></tr>
   <tr><td><code>bonus_pts</code></td><td>Noch zu verteilende Punkte (hat nur während der Charaktererstellung und der Verteilung der Attribute einen Wert)</td><td>12</td></tr>
 </table>
+
+<p>Beispiel, das Änderung und Grundwert nur bei einem veränderten Attribut anzeigt:</p>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;span class="current"&gt;{{str}}&lt;/span&gt;
+{{#if str_change}}&lt;span class="change"&gt;{{str_change}}&lt;br&gt;({{str_base}})&lt;/span&gt;{{/if}}</pre></td></tr></table>
+<p><code>str_change</code> ist ohne Änderung leer. Dadurch verschwindet der bedingte Teil und nur der aktuelle Wert bleibt. Ersetzen Sie <code>str</code> für die anderen Attribute entsprechend durch <code>int</code> usw.</p>
 
 <h3>Gesundheit, Erschöpfung, Zauberpunkte und Erfahrung</h3>
 <table>
@@ -153,7 +160,7 @@ Dies ist eine Anzeigefunktion von Assist. Sie ist unabhängig von der Statusanze
 </table>
 <ul>
 <li>Die Wörter sind dieselben wie im Statusfenster des Spiels. Mehrere Zustände werden mit „, “ getrennt.</li>
-<li>Vorerst nicht angezeigt: in kritischem Zustand, abgeschirmt, der Name einer Krankheit, verstärkte Attribute, gesegnet.</li>
+<li>Vorerst nicht angezeigt: in kritischem Zustand, abgeschirmt, der Name einer Krankheit, gesegnet.</li>
 <li>Fehlt während der Charaktererstellung.</li>
 </ul>
 
@@ -173,6 +180,20 @@ Dies ist eine Anzeigefunktion von Assist. Sie ist unabhängig von der Statusanze
 <li>Fehlt, solange die Ausrüstung nicht gelesen werden kann.</li>
 </ul>
 
+<h3>Trankanzahl</h3>
+<p>Markieren Sie in der Ausrüstungsliste des Spiels die Spalte Bogen für jeden Trank, der angezeigt werden soll. Alle 15 identifizierten Trankarten des Spiels können ausgewählt werden. Heilung, Wiederherstellung der Ausdauer und Krankheitsheilung sind anfangs ausgewählt.</p>
+<table>
+  <tr><th>Schlüssel</th><th>Inhalt</th><th>Beispiel</th></tr>
+  <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>Name des ausgewählten Tranks in der Anzeigesprache</td><td>Trank der Heilung</td></tr>
+  <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>Kurzname des ausgewählten Tranks (die feste Formulierung „Trank der“ entfällt)</td><td>Heilung</td></tr>
+  <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>Gesamtzahl des zugehörigen Tranks</td><td>4</td></tr>
+</table>
+<ul>
+<li>Die Nummern folgen der Auswahlreihenfolge. Nicht belegte Plätze haben keinen Wert.</li>
+<li>Das mitgelieferte Design „Attributkarten (dunkel)“ verwendet große Karten und zeigt nur die ersten sechs ausgewählten Arten. Ein eigenes HTML-Design kann die Schlüssel für alle 15 Arten verwenden.</li>
+<li>Ein nicht identifizierter Trank kann nicht ausgewählt werden, da seine Art unbekannt ist. Die Werte fehlen auch, solange das Inventar nicht gelesen werden kann.</li>
+</ul>
+
 <h2>Beschriftungen</h2>
 <p>Schlüssel für <code>{{label.key}}</code>. Die Beschriftung wird in der Anzeigesprache eingesetzt.</p>
 <table>
@@ -186,8 +207,8 @@ Dies ist eine Anzeigefunktion von Assist. Sie ist unabhängig von der Statusanze
   <tr><td><code>condition</code></td><td>Zustand</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Kopf, Rechte Schulter, Linke Schulter, Brust, Hände, Hüfte und Beine, Füße</td></tr>
   <tr><td><code>title</code></td><td>Charakterbogen</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code></td><td>Attribute, Kampf &amp; Magie, Gesundheit &amp; Erschöpfung, Erfahrung &amp; Gold, Rüstungswert (AR)</td></tr>
-  <tr><td><code>col_value</code> <code>col_modifier</code></td><td>Wert, Modifikator</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>Attribute, Kampf &amp; Magie, Gesundheit &amp; Erschöpfung, Erfahrung &amp; Gold, Rüstungswert (AR), Tränke</td></tr>
+  <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>Wert, Modifikator, Grundwert</td></tr>
   <tr><td><code>armor_note</code></td><td>Je niedriger, desto besser geschützt (+10 ungeschützt)</td></tr>
 </table>
 

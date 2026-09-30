@@ -114,6 +114,8 @@ Il s'agit d'une fonction d'affichage d'Assist. Elle est distincte de l'écran de
 <table>
   <tr><th>Clé</th><th>Contenu</th><th>Exemple</th></tr>
   <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Attributs (Force, Intelligence, Volonté, Agilité, Vitesse, Endurance, Personnalité, Chance)</td><td>58</td></tr>
+  <tr><td><code>str_base</code> <code>int_base</code> <code>wil_base</code> <code>agi_base</code> <code>spd_base</code> <code>end_base</code> <code>per_base</code> <code>luc_base</code></td><td>Attribut de base avant les modificateurs (présent en jeu normal uniquement s’il diffère de la valeur actuelle)</td><td>50</td></tr>
+  <tr><td><code>str_change</code> <code>int_change</code> <code>wil_change</code> <code>agi_change</code> <code>spd_change</code> <code>end_change</code> <code>per_change</code> <code>luc_change</code></td><td>Valeur actuelle moins valeur de base, avec un signe comme <code>+8</code> ou <code>-8</code> (présente uniquement si elle n’est pas nulle)</td><td>+8</td></tr>
   <tr><td><code>damage</code></td><td>Dégâts (le modificateur dû à la Force)</td><td>+1</td></tr>
   <tr><td><code>max_kilos</code></td><td>Kilos max.</td><td>116</td></tr>
   <tr><td><code>magic_def</code></td><td>Défense magique</td><td>+1</td></tr>
@@ -123,6 +125,11 @@ Il s'agit d'une fonction d'affichage d'Assist. Elle est distincte de l'écran de
   <tr><td><code>charisma</code></td><td>Charisme</td><td>+0</td></tr>
   <tr><td><code>bonus_pts</code></td><td>Points restant à répartir (n'a une valeur que pendant la création de personnage et la répartition des attributs)</td><td>12</td></tr>
 </table>
+
+<p>Exemple affichant la variation et la valeur de base uniquement quand un attribut est modifié :</p>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;span class="current"&gt;{{str}}&lt;/span&gt;
+{{#if str_change}}&lt;span class="change"&gt;{{str_change}}&lt;br&gt;({{str_base}})&lt;/span&gt;{{/if}}</pre></td></tr></table>
+<p><code>str_change</code> est vide en l’absence de variation : la partie conditionnelle disparaît et seule la valeur actuelle reste affichée. Remplacez <code>str</code> par <code>int</code> et les autres clés d’attribut de la même façon.</p>
 
 <h3>Santé, fatigue, points de sort et expérience</h3>
 <table>
@@ -153,7 +160,7 @@ Il s'agit d'une fonction d'affichage d'Assist. Elle est distincte de l'écran de
 </table>
 <ul>
 <li>Les mots sont les mêmes que dans la fenêtre de statut du jeu. Plusieurs états sont séparés par «&nbsp;,&nbsp;» (une virgule et une espace).</li>
-<li>Non affichés pour l'instant&nbsp;: l'état critique, la protection, le nom d'une maladie, les attributs renforcés, la bénédiction.</li>
+<li>Non affichés pour l'instant&nbsp;: l'état critique, la protection, le nom d'une maladie, la bénédiction.</li>
 <li>Absente pendant la création de personnage.</li>
 </ul>
 
@@ -173,6 +180,20 @@ Il s'agit d'une fonction d'affichage d'Assist. Elle est distincte de l'écran de
 <li>Absente tant que l'équipement ne peut pas être lu.</li>
 </ul>
 
+<h3>Nombre de potions</h3>
+<p>Dans la liste d'équipement du jeu, cochez la colonne Fiche pour chaque potion à afficher. Les 15 types de potions identifiées du jeu peuvent être sélectionnés. Les soins, la récupération de fatigue et la guérison des maladies sont sélectionnés au départ.</p>
+<table>
+  <tr><th>Clé</th><th>Contenu</th><th>Exemple</th></tr>
+  <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>Nom de la potion sélectionnée dans la langue d'affichage</td><td>Potion de soins</td></tr>
+  <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>Nom court de la potion sélectionnée (la formulation fixe « Potion de/d’ » est omise)</td><td>soins</td></tr>
+  <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>Nombre total de la potion correspondante</td><td>4</td></tr>
+</table>
+<ul>
+<li>Les numéros suivent l'ordre de sélection. Les emplacements inutilisés n'ont pas de valeur.</li>
+<li>Le modèle inclus « Cartes d'attributs (sombre) » utilise de grandes cartes et n'affiche que les six premiers types sélectionnés. Un modèle HTML personnalisé peut utiliser les clés des 15 types.</li>
+<li>Une potion non identifiée ne peut pas être sélectionnée, car son type est inconnu. Les valeurs sont également absentes lorsque l'inventaire ne peut pas être lu.</li>
+</ul>
+
 <h2>Libellés</h2>
 <p>Clés pour <code>{{label.key}}</code>. Le libellé est inséré dans la langue d'affichage.</p>
 <table>
@@ -186,8 +207,8 @@ Il s'agit d'une fonction d'affichage d'Assist. Elle est distincte de l'écran de
   <tr><td><code>condition</code></td><td>État</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Tête, Épaule droite, Épaule gauche, Torse, Mains, Taille et jambes, Pieds</td></tr>
   <tr><td><code>title</code></td><td>Fiche de personnage</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code></td><td>Attributs, Combat et magie, Santé et fatigue, Expérience et or, Indice d'armure (AR)</td></tr>
-  <tr><td><code>col_value</code> <code>col_modifier</code></td><td>Valeur, Modificateur</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>Attributs, Combat et magie, Santé et fatigue, Expérience et or, Indice d'armure (AR), Potions</td></tr>
+  <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>Valeur, Modificateur, Base</td></tr>
   <tr><td><code>armor_note</code></td><td>Plus c'est bas, mieux on est protégé (+10 sans protection)</td></tr>
 </table>
 

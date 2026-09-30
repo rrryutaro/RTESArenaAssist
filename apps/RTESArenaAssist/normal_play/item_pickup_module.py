@@ -15,7 +15,7 @@ def _container_display_count(w) -> int | None:
         return None
     return lr.container_item_count(lr.parse_records(raw), container)
 
-def _corpse_list_state(w) -> bool | None:
+def _item_list_state(w) -> bool | None:
     try:
         import viewer_constants as vc
         b = w._analyzer.read_bytes(w._anchor + vc.CORPSE_LIST_STATE_OFFSET, 1)[0]
@@ -26,6 +26,7 @@ def _corpse_list_state(w) -> bool | None:
     if b == vc.CORPSE_LIST_STATE_OPEN:
         return False
     return None
+_corpse_list_state = _item_list_state
 
 def _display_count(count: int) -> int:
     return max(count - 2, 0)
@@ -232,8 +233,9 @@ def _poll_closed(w, *, gate_open: bool, display_n: int, names_present: bool, npc
             _log.info('NEWPOP seen cache cleared (age=%d screen=%s reason=%s)', _cache_age, screen_id, _cache_clear_reason)
             w._b32_seen_items = []
             w._b32_seen_cache_age = 0
-    _content_chest_ready = display_n > 0 and names_present
-    _content_corpse_ready = corpse_item and _corpse_list_state(w) is not True
+    _list_closed = _item_list_state(w) is True
+    _content_chest_ready = display_n > 0 and names_present and (not _list_closed)
+    _content_corpse_ready = corpse_item and (not _list_closed)
     if gate_open and (not blocked) and (_content_chest_ready or _content_corpse_ready):
         _open_transition(w, display_n=display_n, names_present=names_present, npc_dialog=npc_dialog, chest_ready=_content_chest_ready, corpse_ready=_content_corpse_ready)
 
@@ -241,6 +243,9 @@ def _poll_open_chest(w, *, gate_open: bool, container_n: int | None, display_n: 
     if container_n == 0:
         _finalize_remaining_taken(w)
         _close_confirmed(w, reason='all-taken', img_name=img_name, count=count, names_present=names_present, corpse_item=corpse_item, gate_open=gate_open, pending=getattr(w, '_b32_pending_close_count', 0), screen_id=screen_id)
+        return
+    if _item_list_state(w) is True:
+        _close_confirmed(w, reason='list-state-closed', img_name=img_name, count=count, names_present=names_present, corpse_item=corpse_item, gate_open=gate_open, pending=getattr(w, '_b32_pending_close_count', 0), screen_id=screen_id)
         return
     if not gate_open:
         _gate_close_step(w, count=count, names_present=names_present, corpse_item=corpse_item, img_name=img_name, screen_id=screen_id)
@@ -259,7 +264,7 @@ def _poll_open_chest(w, *, gate_open: bool, container_n: int | None, display_n: 
             _show_item_pickup(w, _seen, display_n)
 
 def _poll_open_corpse(w, *, gate_open: bool, count: int, names_present: bool, npc_dialog: str, corpse_item: bool, img_name: str, screen_id) -> None:
-    if _corpse_list_state(w) is True:
+    if _item_list_state(w) is True:
         _close_confirmed(w, reason='corpse-state-closed', img_name=img_name, count=count, names_present=names_present, corpse_item=corpse_item, gate_open=gate_open, pending=getattr(w, '_b32_pending_close_count', 0), screen_id=screen_id)
         return
     if not gate_open:

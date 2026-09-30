@@ -4,6 +4,8 @@
 
   Values        {{name}} {{race}} {{race_en}} {{class}} {{class_en}}
                 {{str}} {{int}} {{wil}} {{agi}} {{spd}} {{end}} {{per}} {{luc}}
+                {{str_base}} ... {{luc_base}} and {{str_change}} ... {{luc_change}}
+                (base/change are present only while the current value differs in normal play)
                 {{damage}} {{max_kilos}} {{magic_def}} {{to_hit}} {{to_defend}}
                 {{health}} {{heal_mod}} {{charisma}} {{bonus_pts}}
                 {{spell_pts}} {{spell_pts_curr}} {{spell_pts_max}}
@@ -19,13 +21,16 @@
   Armor rating  {{ar_head}} {{ar_shoulder_right}} {{ar_shoulder_left}} {{ar_chest}}
                 {{ar_hands}} {{ar_legs}} {{ar_feet}} by body location, from the
                 equipment (lower is better protected; +10 when unprotected).
+  Potions       {{potion_1_name}} / {{potion_1_short}} / {{potion_1_count}}
+                through potion_15_* are available to character-sheet templates.
+                This large-card design renders the first six selected types. The
+                short value omits the language's fixed word for "potion".
   Labels        {{label.KEY}} (translated) for name race class, the attributes
                 (str ... luc, and str_code ... luc_code for STR ... LUC), the modifiers
                 (damage ... charisma, spell_pts, bonus_pts), hp fatigue gold level experience
                 experience_next experience_to_next condition, ar_head ... ar_feet
                 (body locations), and title section_attributes section_combat
-                section_vitals section_record section_armor col_value col_modifier
-                armor_note
+                section_vitals section_record section_armor section_potions col_value col_modifier col_base
   Images        <img src="{{img.face}}"> (80x70)   <img src="{{img.body}}"> (300x480)
   Conditions    {{#if KEY}} ... {{else}} ... {{/if}} shows the first part only while the
                 value can be read (e.g. bonus_pts only while distributing points).
@@ -55,11 +60,20 @@
   .bar    { border-collapse: collapse; font-size: 1px; }
   .bar td { padding-top: 4px; padding-bottom: 4px; padding-left: 0px; padding-right: 0px; }
   .card   { background-color: #16213e; border-width: 1px; border-style: solid; border-color: #2a3a4a; }
-  .chead  { background-color: #0f3460; color: #e0e0e0; font-weight: bold; font-size: 13px; }
-  .ccode  { color: #8fb6ff; font-size: 11px; }
-  .aval   { color: #ffffff; font-size: 24px; font-weight: bold; }
-  .mlab   { color: #9aa4b2; font-size: 11px; }
-  .mval   { color: #ffffff; font-size: 14px; font-weight: bold; }
+  .chead  { background-color: #0f3460; color: #e0e0e0; font-weight: bold; font-size: 14px; white-space: nowrap; }
+  .ccode  { color: #8fb6ff; font-size: 12px; }
+  .aval   { color: #ffffff; font-size: 34px; line-height: 34px;
+            letter-spacing: -2px; font-weight: bold; }
+  .avcell { white-space: nowrap; }
+  .achange { color: #8fb6ff; font-size: 14px; font-weight: bold; }
+  .abase  { color: #9aa4b2; font-size: 12px; }
+  .modcell { border-left-width: 1px; border-left-style: solid;
+             border-left-color: #2a3a4a; padding-left: 7px; }
+  .mlab   { color: #9aa4b2; font-size: 9px; }
+  .mval   { color: #ffffff; font-size: 15px; font-weight: bold; }
+  .cardleft { padding-right: 3px; }
+  .cardright { padding-left: 3px; }
+  .cardnext { padding-top: 2px; }
   .bonus  { background-color: #e94560; color: #ffffff; font-weight: bold; font-size: 12px; }
   .ok     { color: #4caf50; font-size: 15px; font-weight: bold; }
   .bad    { color: #ff5a5f; font-size: 15px; font-weight: bold; }
@@ -67,7 +81,17 @@
   .doll   { background-color: #0f1626; }
   .ar td  { border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #2a3a4a; }
   .arv    { color: #ffffff; font-size: 20px; font-weight: bold; }
-  .note   { color: #7d8797; font-size: 11px; }
+  .potion-card { background-color: #0f1626; border-width: 1px; border-style: solid;
+                 border-color: #2a3a4a; }
+  .potion-card-head { background-color: #0f3460; color: #e0e0e0;
+                      font-size: 16px; font-weight: bold; white-space: nowrap; }
+  .potion-card-count { color: #ffffff; font-size: 52px; font-weight: bold;
+                       padding-top: 12px; padding-bottom: 12px; }
+  .potion-six-grid { table-layout: fixed; }
+  .potion-card-six-head { background-color: #0f3460; color: #e0e0e0;
+                          font-size: 7px; font-weight: bold; white-space: nowrap; }
+  .potion-card-six-count { color: #ffffff; font-size: 28px; font-weight: bold;
+                           padding-top: 8px; padding-bottom: 8px; white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -76,7 +100,7 @@
 <tr>
 <td valign="top">
 
-<table class="box" width="100%" cellspacing="0" cellpadding="8">
+<table class="box" width="100%" cellspacing="0" cellpadding="6">
 <tr><td>
   <table width="100%" cellspacing="0" cellpadding="0">
   <tr>
@@ -94,10 +118,10 @@
   </table>
 </td></tr>
 </table>
-<table class="box" width="100%" cellspacing="0" cellpadding="8" style="margin-top: 6px;">
+<table class="box" width="100%" cellspacing="0" cellpadding="4" style="margin-top: 2px;">
 <tr><td>
   {{#if condition}}
-  <table width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 8px;">
+  <table width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 2px;">
   <tr><td>
     <span class="cap">{{label.condition}}</span>
     {{#if condition_bad}}<span class="bad">{{condition}}</span>{{else}}<span class="ok">{{condition}}</span>{{/if}}
@@ -138,7 +162,7 @@
   </tr>
   </table>
 
-  <table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 10px;">
+  <table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 6px;">
   <tr>
     <td valign="bottom">
       <span class="cap">{{label.experience}}</span>
@@ -157,15 +181,15 @@
 </td></tr>
 </table>
 
-<table width="100%" cellspacing="6" cellpadding="0" style="margin-top: 0px;">
+<table width="100%" cellspacing="0" cellpadding="0" style="margin-top: 4px;">
 <tr>
-  <td width="50%" valign="top">
-    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+  <td class="cardleft" width="50%" valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="4">
     <tr><td class="chead">{{label.str}} <span class="ccode">{{label.str_code}}</span></td></tr>
-    <tr><td>
+    <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
-        <td width="46" valign="middle"><span class="aval">{{str}}</span></td>
-        <td valign="middle">
+        <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{str}}</span></td><td width="34" valign="middle">{{#if str_change}}<span class="achange">{{str_change}}</span><br><span class="abase">({{str_base}})</span>{{/if}}</td></tr></table></td>
+        <td class="modcell" valign="middle">
           <span class="mlab">{{label.damage}}</span> <span class="mval">{{damage}}</span><br>
           <span class="mlab">{{label.max_kilos}}</span> <span class="mval">{{max_kilos}}</span>
         </td>
@@ -173,14 +197,14 @@
     </td></tr>
     </table>
   </td>
-  <td width="50%" valign="top">
-    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+  <td class="cardright" width="50%" valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="4">
     <tr><td class="chead">{{label.int}} <span class="ccode">{{label.int_code}}</span></td></tr>
-    <tr><td>
+    <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
-        <td width="46" valign="middle"><span class="aval">{{int}}</span></td>
-        <td valign="middle">
-          <span class="mlab">{{label.spell_pts}}</span> <span class="mval">{{spell_pts_max}}</span>
+        <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{int}}</span></td><td width="34" valign="middle">{{#if int_change}}<span class="achange">{{int_change}}</span><br><span class="abase">({{int_base}})</span>{{/if}}</td></tr></table></td>
+        <td class="modcell" valign="middle">
+          <span class="mlab">{{label.spell_pts}}</span> <span class="mval">{{spell_pts_max}}</span><br><span class="mlab">&nbsp;</span>
         </td>
       </tr></table>
     </td></tr>
@@ -188,26 +212,26 @@
   </td>
 </tr>
 <tr>
-  <td valign="top">
-    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+  <td class="cardleft cardnext" valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="4">
     <tr><td class="chead">{{label.wil}} <span class="ccode">{{label.wil_code}}</span></td></tr>
-    <tr><td>
+    <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
-        <td width="46" valign="middle"><span class="aval">{{wil}}</span></td>
-        <td valign="middle">
-          <span class="mlab">{{label.magic_def}}</span> <span class="mval">{{magic_def}}</span>
+        <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{wil}}</span></td><td width="34" valign="middle">{{#if wil_change}}<span class="achange">{{wil_change}}</span><br><span class="abase">({{wil_base}})</span>{{/if}}</td></tr></table></td>
+        <td class="modcell" valign="middle">
+          <span class="mlab">{{label.magic_def}}</span> <span class="mval">{{magic_def}}</span><br><span class="mlab">&nbsp;</span>
         </td>
       </tr></table>
     </td></tr>
     </table>
   </td>
-  <td valign="top">
-    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+  <td class="cardright cardnext" valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="4">
     <tr><td class="chead">{{label.agi}} <span class="ccode">{{label.agi_code}}</span></td></tr>
-    <tr><td>
+    <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
-        <td width="46" valign="middle"><span class="aval">{{agi}}</span></td>
-        <td valign="middle">
+        <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{agi}}</span></td><td width="34" valign="middle">{{#if agi_change}}<span class="achange">{{agi_change}}</span><br><span class="abase">({{agi_base}})</span>{{/if}}</td></tr></table></td>
+        <td class="modcell" valign="middle">
           <span class="mlab">{{label.to_hit}}</span> <span class="mval">{{to_hit}}</span><br>
           <span class="mlab">{{label.to_defend}}</span> <span class="mval">{{to_defend}}</span>
         </td>
@@ -217,24 +241,24 @@
   </td>
 </tr>
 <tr>
-  <td valign="top">
-    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+  <td class="cardleft cardnext" valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="4">
     <tr><td class="chead">{{label.spd}} <span class="ccode">{{label.spd_code}}</span></td></tr>
-    <tr><td>
+    <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
-        <td width="46" valign="middle"><span class="aval">{{spd}}</span></td>
-        <td></td>
+        <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{spd}}</span></td><td width="34" valign="middle">{{#if spd_change}}<span class="achange">{{spd_change}}</span><br><span class="abase">({{spd_base}})</span>{{/if}}</td></tr></table></td>
+        <td class="modcell" valign="middle">&nbsp;<br>&nbsp;</td>
       </tr></table>
     </td></tr>
     </table>
   </td>
-  <td valign="top">
-    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+  <td class="cardright cardnext" valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="4">
     <tr><td class="chead">{{label.end}} <span class="ccode">{{label.end_code}}</span></td></tr>
-    <tr><td>
+    <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
-        <td width="46" valign="middle"><span class="aval">{{end}}</span></td>
-        <td valign="middle">
+        <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{end}}</span></td><td width="34" valign="middle">{{#if end_change}}<span class="achange">{{end_change}}</span><br><span class="abase">({{end_base}})</span>{{/if}}</td></tr></table></td>
+        <td class="modcell" valign="middle">
           <span class="mlab">{{label.health}}</span> <span class="mval">{{health}}</span><br>
           <span class="mlab">{{label.heal_mod}}</span> <span class="mval">{{heal_mod}}</span>
         </td>
@@ -244,26 +268,26 @@
   </td>
 </tr>
 <tr>
-  <td valign="top">
-    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+  <td class="cardleft cardnext" valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="4">
     <tr><td class="chead">{{label.per}} <span class="ccode">{{label.per_code}}</span></td></tr>
-    <tr><td>
+    <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
-        <td width="46" valign="middle"><span class="aval">{{per}}</span></td>
-        <td valign="middle">
-          <span class="mlab">{{label.charisma}}</span> <span class="mval">{{charisma}}</span>
+        <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{per}}</span></td><td width="34" valign="middle">{{#if per_change}}<span class="achange">{{per_change}}</span><br><span class="abase">({{per_base}})</span>{{/if}}</td></tr></table></td>
+        <td class="modcell" valign="middle">
+          <span class="mlab">{{label.charisma}}</span> <span class="mval">{{charisma}}</span><br><span class="mlab">&nbsp;</span>
         </td>
       </tr></table>
     </td></tr>
     </table>
   </td>
-  <td valign="top">
-    <table class="card" width="100%" cellspacing="0" cellpadding="6">
+  <td class="cardright cardnext" valign="top">
+    <table class="card" width="100%" cellspacing="0" cellpadding="4">
     <tr><td class="chead">{{label.luc}} <span class="ccode">{{label.luc_code}}</span></td></tr>
-    <tr><td>
+    <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
-        <td width="46" valign="middle"><span class="aval">{{luc}}</span></td>
-        <td></td>
+        <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{luc}}</span></td><td width="34" valign="middle">{{#if luc_change}}<span class="achange">{{luc_change}}</span><br><span class="abase">({{luc_base}})</span>{{/if}}</td></tr></table></td>
+        <td class="modcell" valign="middle">&nbsp;<br>&nbsp;</td>
       </tr></table>
     </td></tr>
     </table>
@@ -289,7 +313,6 @@
         <tr><td>{{label.ar_legs}}</td><td align="right"><span class="arv">{{ar_legs}}</span></td></tr>
         <tr><td>{{label.ar_feet}}</td><td align="right"><span class="arv">{{ar_feet}}</span></td></tr>
         </table>
-        <p class="note">{{label.armor_note}}</p>
       </td>
       <td width="8"></td>
       <td valign="top" class="doll"><img src="{{img.body}}"></td>
@@ -297,6 +320,86 @@
     </table>
   </td></tr>
   </table>
+  {{#if potion_1_name}}
+  <table class="box potion-panel" width="100%" cellspacing="0" cellpadding="2" style="margin-top: 2px;">
+  <tr><td>
+    <span class="head">{{label.section_potions}}</span>
+    {{#if potion_4_name}}
+    <table class="potion-six-grid" width="100%" cellspacing="1" cellpadding="0" style="margin-top: 1px;">
+    <tr>
+      <td width="16%" valign="top">
+        <table class="potion-card" width="100%" cellspacing="0" cellpadding="0">
+        <tr><td class="potion-card-six-head" height="22" align="center">{{potion_1_short}}</td></tr>
+        <tr><td class="potion-card-six-count" height="50" align="center">{{potion_1_count}}</td></tr>
+        </table>
+      </td>
+      <td width="17%" valign="top">
+        <table class="potion-card" width="100%" cellspacing="0" cellpadding="0">
+        <tr><td class="potion-card-six-head" height="22" align="center">{{potion_2_short}}</td></tr>
+        <tr><td class="potion-card-six-count" height="50" align="center">{{potion_2_count}}</td></tr>
+        </table>
+      </td>
+      <td width="17%" valign="top">
+        <table class="potion-card" width="100%" cellspacing="0" cellpadding="0">
+        <tr><td class="potion-card-six-head" height="22" align="center">{{potion_3_short}}</td></tr>
+        <tr><td class="potion-card-six-count" height="50" align="center">{{potion_3_count}}</td></tr>
+        </table>
+      </td>
+      <td width="17%" valign="top">
+        <table class="potion-card" width="100%" cellspacing="0" cellpadding="0">
+        <tr><td class="potion-card-six-head" height="22" align="center">{{potion_4_short}}</td></tr>
+        <tr><td class="potion-card-six-count" height="50" align="center">{{potion_4_count}}</td></tr>
+        </table>
+      </td>
+      {{#if potion_5_name}}
+      <td width="17%" valign="top">
+        <table class="potion-card" width="100%" cellspacing="0" cellpadding="0">
+        <tr><td class="potion-card-six-head" height="22" align="center">{{potion_5_short}}</td></tr>
+        <tr><td class="potion-card-six-count" height="50" align="center">{{potion_5_count}}</td></tr>
+        </table>
+      </td>
+      {{else}}<td width="17%"></td>{{/if}}
+      {{#if potion_6_name}}
+      <td width="16%" valign="top">
+        <table class="potion-card" width="100%" cellspacing="0" cellpadding="0">
+        <tr><td class="potion-card-six-head" height="22" align="center">{{potion_6_short}}</td></tr>
+        <tr><td class="potion-card-six-count" height="50" align="center">{{potion_6_count}}</td></tr>
+        </table>
+      </td>
+      {{else}}<td width="16%"></td>{{/if}}
+    </tr>
+    </table>
+    {{else}}
+    <table width="100%" cellspacing="1" cellpadding="0" style="margin-top: 1px;">
+    <tr>
+      <td width="33%" valign="top">
+        <table class="potion-card" width="100%" cellspacing="0" cellpadding="0">
+        <tr><td class="potion-card-head" height="30" align="center">{{potion_1_short}}</td></tr>
+        <tr><td class="potion-card-count" height="100" align="center">{{potion_1_count}}</td></tr>
+        </table>
+      </td>
+      {{#if potion_2_name}}
+      <td width="33%" valign="top">
+        <table class="potion-card" width="100%" cellspacing="0" cellpadding="0">
+        <tr><td class="potion-card-head" height="30" align="center">{{potion_2_short}}</td></tr>
+        <tr><td class="potion-card-count" height="100" align="center">{{potion_2_count}}</td></tr>
+        </table>
+      </td>
+      {{else}}<td width="33%"></td>{{/if}}
+      {{#if potion_3_name}}
+      <td width="34%" valign="top">
+        <table class="potion-card" width="100%" cellspacing="0" cellpadding="0">
+        <tr><td class="potion-card-head" height="30" align="center">{{potion_3_short}}</td></tr>
+        <tr><td class="potion-card-count" height="100" align="center">{{potion_3_count}}</td></tr>
+        </table>
+      </td>
+      {{else}}<td width="34%"></td>{{/if}}
+    </tr>
+    </table>
+    {{/if}}
+  </td></tr>
+  </table>
+  {{/if}}
 </td>
 </tr>
 </table>
