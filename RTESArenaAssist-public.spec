@@ -29,6 +29,7 @@ Pre-publish contamination check (safety gate):
 
 import os
 from pathlib import Path
+import sys
 
 from PyInstaller.utils.hooks import collect_all
 
@@ -40,6 +41,26 @@ APP_DIR = ROOT / "apps" / "RTESArenaAssist"
 # （旧 CharacterSheet）は Assist 配下へ取り込み済みのため pathex は APP_DIR のみ。
 
 ONEFILE = os.environ.get("RTESA_ONEFILE", "1") == "1"
+
+# PyInstaller resolves transitive Windows DLL imports through PATH.  The process that
+# invokes this spec may add unrelated tool runtimes to PATH (PDF/poppler, image tools,
+# etc.).  In v0.2.5 this caused poppler's versioned ICU DLLs to be collected at the
+# archive root; Qt expects the Windows ICU compatibility shim with unversioned exports,
+# so QtWidgets failed before the application could start.  Restrict dependency lookup
+# to Python and Windows here; package-local DLLs are already supplied explicitly by
+# PyInstaller's hooks/collect_all.
+_system_root = Path(os.environ.get("SystemRoot", r"C:\Windows"))
+_build_dll_dirs = [
+    Path(sys.executable).resolve().parent,
+    Path(sys.base_prefix).resolve(),
+    Path(sys.base_prefix).resolve() / "DLLs",
+    _system_root / "System32",
+    _system_root,
+]
+os.environ["PATH"] = os.pathsep.join(
+    str(path) for path in _build_dll_dirs if path.is_dir()
+)
+print("[public spec] DLL search PATH isolated to Python/Windows")
 
 # --- Embed app-owned data into an in-exe seed pack ------------------------------
 # `_internal` holds Python/PySide dependencies only. App-owned data
@@ -91,6 +112,23 @@ a = Analysis(
     noarchive=False,
     optimize=0,
 )
+
+# Root-level ICU binaries are never part of this application.  Qt6Core imports the
+# Windows system ICU shim; collecting another product's versioned ICU runtime shadows
+# that shim and produces an import-time "procedure not found" failure.  Fail the build
+# instead of publishing such an archive again.
+_forbidden_root_icu = {
+    dest for dest, _src, _typecode in a.binaries
+    if Path(dest).parent == Path(".")
+    and (Path(dest).name.lower() == "icuuc.dll"
+         or (Path(dest).name.lower().startswith("icudt")
+             and Path(dest).name.lower().endswith(".dll")))
+}
+if _forbidden_root_icu:
+    raise RuntimeError(
+        "public build contains forbidden root ICU DLLs: "
+        + ", ".join(sorted(_forbidden_root_icu))
+    )
 pyz = PYZ(a.pure)
 
 if ONEFILE:

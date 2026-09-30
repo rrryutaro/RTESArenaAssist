@@ -20,6 +20,8 @@ DENY_EXACT = {'i18n/en.json', 'aexe_strings.json', 'i18n/i18n_id_registry.json',
 REVIEW_PATH_SEGMENTS = ('services/data/', 'manual/simple', 'manual/assist')
 ALLOW_PATH_SEGMENTS = ('i18n/ja/', 'i18n/es/', 'i18n/de/', 'i18n/fr/', 'i18n/it/', 'i18n/ru/', 'i18n/ui', 'i18n/_aexe_template', 'assets/', 'i18n/en/ui_app.json', 'i18n/en/ui.json', 'i18n/en/setup.json')
 ALLOW_EXACT = {'i18n/_meta.json', 'i18n/_template.json', 'arena_fingerprints.json', 'arena_golden_manifest.json', 'i18n/i18n_bundle.json', 'i18n/source_id_map.json', 'i18n/spell_effect_entries.json'}
+_ROOT_ICU_DATA_RE = re.compile('^icudt\\d*\\.dll$', re.IGNORECASE)
+_FORBIDDEN_BUILD_SOURCE_SEGMENTS = ('/.cache/codex-runtimes/codex-primary-runtime/dependencies/native/', '/.codex/')
 _DRIVE_PATH_RE = re.compile(b'[A-Za-z]:\\\\\\\\?[^\\x00\\"\'<>|]*', re.ASCII)
 _USERS_PATH_RE = re.compile(b'[/\\\\]Users[/\\\\][^\\x00\\"\'<>|/\\\\]+', re.IGNORECASE)
 
@@ -188,6 +190,15 @@ def check_toc(build_dir: str, report: Report) -> None:
         for dest, src, typecode in entries:
             if typecode.upper() in code_typecodes:
                 continue
+            normalized_dest = _norm(dest)
+            if '/' not in normalized_dest and (normalized_dest == 'icuuc.dll' or _ROOT_ICU_DATA_RE.fullmatch(normalized_dest)):
+                report.add(Finding(DENY, 'toc', dest, f'root ICU DLL shadows the Windows ICU shim and can break Qt imports [{typecode}]', source=src or ''))
+                continue
+            if src:
+                normalized_source = src.replace('\\', '/').lower()
+                if any((seg in normalized_source for seg in _FORBIDDEN_BUILD_SOURCE_SEGMENTS)):
+                    report.add(Finding(DENY, 'toc', dest, f'build-host tool runtime was collected as an application dependency [{typecode}]', source=src))
+                    continue
             verdict, reason = classify_dest(dest)
             if verdict in (DENY, REVIEW):
                 report.add(Finding(verdict, 'toc', dest, f'{reason} [{typecode}]', source=src or ''))
