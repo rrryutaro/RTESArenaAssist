@@ -186,6 +186,7 @@ Il s'agit d'une fonction d'affichage d'Assist. Elle est distincte de l'écran de
   <tr><th>Clé</th><th>Contenu</th><th>Exemple</th></tr>
   <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>Nom de la potion sélectionnée dans la langue d'affichage</td><td>Potion de soins</td></tr>
   <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>Nom court de la potion sélectionnée (la formulation fixe « Potion de/d’ » est omise)</td><td>soins</td></tr>
+  <tr><td><code>potion_1_compact</code> … <code>potion_15_compact</code></td><td>Nom pour les cartes compactes (abrégé par des points de suspension au-delà de 14 caractères)</td><td>soins</td></tr>
   <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>Nombre total de la potion correspondante</td><td>4</td></tr>
 </table>
 <ul>
@@ -193,6 +194,16 @@ Il s'agit d'une fonction d'affichage d'Assist. Elle est distincte de l'écran de
 <li>Le modèle inclus « Cartes d'attributs (sombre) » utilise de grandes cartes et n'affiche que les six premiers types sélectionnés. Un modèle HTML personnalisé peut utiliser les clés des 15 types.</li>
 <li>Une potion non identifiée ne peut pas être sélectionnée, car son type est inconnu. Les valeurs sont également absentes lorsque l'inventaire ne peut pas être lu.</li>
 </ul>
+
+<h3>Effets et utilisations de l’équipement magique</h3>
+<p>Dans la liste d’équipement, cochez la colonne Feuille pour l’équipement magique à afficher. Seuls les objets identifiés dont les utilisations restantes sont lisibles peuvent être sélectionnés.</p>
+<table>
+  <tr><th>Clé</th><th>Contenu</th><th>Exemple</th></tr>
+  <tr><td><code>magic_item_1_name</code> … <code>magic_item_40_name</code></td><td>Nom de l’équipement magique</td><td>Nom de l’objet</td></tr>
+  <tr><td><code>magic_item_1_effect</code> … <code>magic_item_40_effect</code></td><td>Nom de l’effet magique</td><td>Effet magique</td></tr>
+  <tr><td><code>magic_item_1_uses</code> … <code>magic_item_40_uses</code></td><td>Utilisations restantes</td><td>12</td></tr>
+</table>
+<p>Les 40 clés correspondent aux 40 emplacements d’inventaire d’Arena et ne constituent pas une limite arbitraire de types sélectionnables.</p>
 
 <h2>Libellés</h2>
 <p>Clés pour <code>{{label.key}}</code>. Le libellé est inséré dans la langue d'affichage.</p>
@@ -207,7 +218,7 @@ Il s'agit d'une fonction d'affichage d'Assist. Elle est distincte de l'écran de
   <tr><td><code>condition</code></td><td>État</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Tête, Épaule droite, Épaule gauche, Torse, Mains, Taille et jambes, Pieds</td></tr>
   <tr><td><code>title</code></td><td>Fiche de personnage</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>Attributs, Combat et magie, Santé et fatigue, Expérience et or, Indice d'armure (AR), Potions</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code> <code>section_magic_items</code></td><td>Attributs, Combat et magie, Santé et fatigue, Expérience et or, Indice d'armure (AR), Potions, Équipement magique</td></tr>
   <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>Valeur, Modificateur, Base</td></tr>
   <tr><td><code>armor_note</code></td><td>Plus c'est bas, mieux on est protégé (+10 sans protection)</td></tr>
 </table>

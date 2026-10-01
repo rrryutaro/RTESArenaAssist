@@ -8,6 +8,18 @@ BODY_W = 150
 BODY_H = 200
 _EQUIP_Z: dict[str, int] = {'armor': 10, 'shield': 20, 'weapon': 30}
 _ARMOR_FRAME_BASE: dict[int, int] = {2: 18, 1: 29, 0: 36}
+_EQUIP_MATERIAL_START = 238
+_EQUIP_MATERIAL_END = 250
+_PALETTE_MATERIAL_FIRST = 16
+_PALETTE_MATERIAL_STRIDE = 16
+_METAL_MIN = 0
+_METAL_MAX = 7
+
+def _recolor_equipment(pixels: bytes, metal) -> bytes:
+    if not isinstance(metal, int) or not _METAL_MIN <= metal <= _METAL_MAX:
+        return pixels
+    target = _PALETTE_MATERIAL_FIRST + metal * _PALETTE_MATERIAL_STRIDE
+    return bytes((target + (value - _EQUIP_MATERIAL_START) if _EQUIP_MATERIAL_START <= value <= _EQUIP_MATERIAL_END else value for value in pixels))
 
 def _equip_frame_index(item: dict) -> int | None:
     item_type = item.get('item_type', '')
@@ -99,6 +111,7 @@ def build_status_composite(race: int, is_female: bool, face_idx: int, is_magic_c
                 if frame_idx is None or frame_idx >= len(equip_frames):
                     continue
                 ew, eh, ex, ey, ep = equip_frames[frame_idx]
+                ep = _recolor_equipment(ep, item.get('metal'))
                 _blit(canvas, W, H, ep, ew, eh, ex, ey)
     return (bytes(canvas), palette)
 

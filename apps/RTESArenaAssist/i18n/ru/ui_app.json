@@ -532,6 +532,7 @@
   "charsheet.list_separator": ", ",
   "charsheet.section.armor": "Класс брони (AR)",
   "charsheet.section.potions": "Зелья",
+  "charsheet.section.magic_items": "Магическое снаряжение",
   "charsheet.armor.head": "Голова",
   "charsheet.armor.shoulder_right": "Правое плечо",
   "charsheet.armor.shoulder_left": "Левое плечо",

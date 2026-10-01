@@ -8,7 +8,8 @@ from inventory_reader import POTION_COUNT
 SETTING_KEY = 'charsheet_potions'
 POTION_TYPE_COUNT = POTION_COUNT
 DEFAULT_SELECTED: tuple[str, ...] = ('Potion of Healing', 'Potion of Stamina', 'Potion of Cure Disease')
-POTION_VALUE_KEYS: tuple[str, ...] = tuple((key for index in range(1, POTION_TYPE_COUNT + 1) for key in (f'potion_{index}_name', f'potion_{index}_short', f'potion_{index}_count')))
+POTION_VALUE_KEYS: tuple[str, ...] = tuple((key for index in range(1, POTION_TYPE_COUNT + 1) for key in (f'potion_{index}_name', f'potion_{index}_short', f'potion_{index}_compact', f'potion_{index}_count')))
+COMPACT_NAME_LENGTH = 14
 _SHORT_NAME_PATTERNS: tuple[re.Pattern[str], ...] = tuple((re.compile(pattern, re.IGNORECASE) for pattern in ('\\s*のポーション\\s*$', '^\\s*Potion of\\s+', '^\\s*Poción de\\s+', '^\\s*Trank der\\s+', '^\\s*Potion de\\s+', "^\\s*Potion d['’]", '^\\s*Pozione di\\s+', '^\\s*Зелье\\s+')))
 
 def short_name(localized_name: str) -> str:
@@ -18,6 +19,12 @@ def short_name(localized_name: str) -> str:
         if replacements and shortened.strip():
             return shortened.strip()
     return name
+
+def compact_name(localized_name: str) -> str:
+    name = short_name(localized_name)
+    if len(name) <= COMPACT_NAME_LENGTH:
+        return name
+    return name[:COMPACT_NAME_LENGTH - 1].rstrip() + '…'
 
 def _normalise(names) -> tuple[str, ...]:
     if not isinstance(names, (list, tuple)):
@@ -74,6 +81,7 @@ def sheet_values(inventory: Optional[Iterable[Mapping]]) -> dict[str, str]:
         localized_name = dml.lookup_item(name) or name
         out[f'potion_{index}_name'] = localized_name
         out[f'potion_{index}_short'] = short_name(localized_name)
+        out[f'potion_{index}_compact'] = compact_name(localized_name)
         out[f'potion_{index}_count'] = str(counts.get(name, 0))
     return out
 
@@ -83,4 +91,4 @@ def state(inventory: Optional[Iterable[Mapping]]) -> tuple:
         return (names, None)
     counts = _counts(inventory)
     return (names, tuple((counts.get(name, 0) for name in names)))
-__all__ = ['SETTING_KEY', 'POTION_TYPE_COUNT', 'DEFAULT_SELECTED', 'POTION_VALUE_KEYS', 'short_name', 'selected_names', 'set_selected', 'sheet_values', 'state']
+__all__ = ['SETTING_KEY', 'POTION_TYPE_COUNT', 'DEFAULT_SELECTED', 'POTION_VALUE_KEYS', 'COMPACT_NAME_LENGTH', 'short_name', 'compact_name', 'selected_names', 'set_selected', 'sheet_values', 'state']

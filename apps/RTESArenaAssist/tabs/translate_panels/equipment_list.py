@@ -4,7 +4,7 @@ from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QTableWidget, QTableWidgetItem
 import assist_settings as settings
 import i18n_helper as i18n
-from charsheet import potions
+from charsheet import magic_items, potions
 _COL_YELLOW = QColor('#EBC734')
 _COL_TAN = QColor('#D38E00')
 _COL_RED = QColor('#C72000')
@@ -53,7 +53,7 @@ def _uses_text(item_data: dict) -> str:
     except (TypeError, ValueError):
         return ''
 
-def render_equipment_list(table: QTableWidget, items: list, *, text_filter: str='', slot_filter: str='', category_filter: str='', sheet_potions: tuple[str, ...]=()) -> None:
+def render_equipment_list(table: QTableWidget, items: list, *, text_filter: str='', slot_filter: str='', category_filter: str='', sheet_potions: tuple[str, ...]=(), sheet_magic_items: tuple[str, ...]=()) -> None:
     table.setRowCount(0)
     mark_equipped = settings.get('equipment_mark_equipped', 'Ｅ')
     mark_equippable = settings.get('equipment_mark_equippable', '')
@@ -99,12 +99,18 @@ def render_equipment_list(table: QTableWidget, items: list, *, text_filter: str=
             table.setItem(row, col, cell)
         sheet_cell = QTableWidgetItem()
         sheet_cell.setTextAlignment(Qt.AlignmentFlag.AlignCenter | Qt.AlignmentFlag.AlignVCenter)
-        selectable = item_data.get('item_type') == 'potion' and (not is_unidentified) and bool(en)
+        kind = ''
+        if item_data.get('item_type') == 'potion' and (not is_unidentified) and bool(en):
+            kind = 'potion'
+        elif magic_items.is_selectable(item_data):
+            kind = 'magic_item'
+        selectable = bool(kind)
         if selectable:
             sheet_cell.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsUserCheckable)
             sheet_cell.setData(Qt.ItemDataRole.UserRole, en)
-            sheet_cell.setCheckState(Qt.CheckState.Checked if en in sheet_potions else Qt.CheckState.Unchecked)
-            sheet_cell.setToolTip('キャラクターシートに個数を表示')
+            sheet_cell.setData(Qt.ItemDataRole.UserRole + 1, kind)
+            sheet_cell.setCheckState(Qt.CheckState.Checked if kind == 'potion' and en in sheet_potions or (kind == 'magic_item' and en in sheet_magic_items) else Qt.CheckState.Unchecked)
+            sheet_cell.setToolTip('キャラクターシートに表示')
         else:
             sheet_cell.setFlags(Qt.ItemFlag.NoItemFlags)
         table.setItem(row, 9, sheet_cell)

@@ -186,12 +186,26 @@ This is an Assist display feature. It is separate from the game's own status scr
   <tr><th>Key</th><th>Content</th><th>Example</th></tr>
   <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>Selected potion name in the display language</td><td>Potion of Healing</td></tr>
   <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>Short selected potion name in the display language (the fixed “Potion of” wording is omitted)</td><td>Healing</td></tr>
+  <tr><td><code>potion_1_compact</code> … <code>potion_15_compact</code></td><td>Compact card name (truncated with an ellipsis when the short name exceeds 14 characters)</td><td>Healing</td></tr>
   <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>Total owned count for the corresponding potion</td><td>4</td></tr>
 </table>
 <ul>
 <li>The numbers follow the order in which the potion types were selected. Unused slots have no value.</li>
 <li>The bundled Attribute Cards (Dark) design uses large cards and shows only the first six selected types. A custom HTML design can use the keys for all 15 types.</li>
 <li>An unidentified potion cannot be selected because its type is unknown. The values are also absent while the inventory cannot be read.</li>
+</ul>
+
+<h3>Magic equipment effects and uses</h3>
+<p>In the game's equipment list, tick the Sheet column for magic equipment you want to show. Identified items with readable remaining uses can be selected. Physical items with the same name are shown separately.</p>
+<table>
+  <tr><th>Key</th><th>Content</th><th>Example</th></tr>
+  <tr><td><code>magic_item_1_name</code> … <code>magic_item_40_name</code></td><td>Selected magic equipment name in the display language</td><td>Item name</td></tr>
+  <tr><td><code>magic_item_1_effect</code> … <code>magic_item_40_effect</code></td><td>Magic effect name in the display language</td><td>Magic effect</td></tr>
+  <tr><td><code>magic_item_1_uses</code> … <code>magic_item_40_uses</code></td><td>Remaining uses</td><td>12</td></tr>
+</table>
+<ul>
+<li>Forty is not a limit on selectable types; it represents every one of Arena's 40 inventory slots. The saved selection has no arbitrary type limit.</li>
+<li>Unidentified items and equipment without uses cannot be selected. A selected item that is not currently owned produces no value.</li>
 </ul>
 
 <h2>Labels</h2>
@@ -207,7 +221,7 @@ This is an Assist display feature. It is separate from the game's own status scr
   <tr><td><code>condition</code></td><td>Condition</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Head, Right shoulder, Left shoulder, Chest, Hands, Waist and legs, Feet</td></tr>
   <tr><td><code>title</code></td><td>Character Sheet</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>Attributes, Combat &amp; Magic, Health &amp; Fatigue, Experience &amp; Gold, Armor rating (AR), Potions</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code> <code>section_magic_items</code></td><td>Attributes, Combat &amp; Magic, Health &amp; Fatigue, Experience &amp; Gold, Armor rating (AR), Potions, Magic equipment</td></tr>
   <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>Value, Modifier, Base</td></tr>
   <tr><td><code>armor_note</code></td><td>Lower is better protected (+10 when unprotected)</td></tr>
 </table>

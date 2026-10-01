@@ -532,6 +532,7 @@
   "charsheet.list_separator": ", ",
   "charsheet.section.armor": "Classe armatura (AR)",
   "charsheet.section.potions": "Pozioni",
+  "charsheet.section.magic_items": "Equipaggiamento magico",
   "charsheet.armor.head": "Testa",
   "charsheet.armor.shoulder_right": "Spalla destra",
   "charsheet.armor.shoulder_left": "Spalla sinistra",

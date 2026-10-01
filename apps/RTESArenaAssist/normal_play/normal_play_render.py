@@ -21,6 +21,10 @@ def poll_lock_message_dispatch(w, b30, *, near, band, in_play: bool):
     _poll_lock_message(w, b30=b30, near=near, band=band)
     _poll_lock_message_lifetime(w, b30=b30, band=band)
 
+def poll_static_action_text_dispatch(w, *, band, in_play: bool):
+    from normal_play.static_action_text_module import poll_static_action_text
+    poll_static_action_text(w, band=band, in_play=in_play)
+
 def poll_c1_surface_dispatch(w, b30, *, inf_name, mif_name, c_area: str='', band=None, message_taken: bool=False, runtime_dialog_context: bool | None=None):
     from normal_play.trigger_module import poll_red_text as _poll_red_text, poll_red_text_lifetime as _poll_red_text_lifetime, release_red_text as _release_red_text
     from normal_play.c1_gold_drop_module import poll_gold_drop as _poll_gold_drop, poll_gold_drop_lifetime as _poll_gold_drop_lifetime, release_gold_drop as _release_gold_drop

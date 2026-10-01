@@ -532,6 +532,7 @@
   "charsheet.list_separator": ", ",
   "charsheet.section.armor": "Rüstungswert (AR)",
   "charsheet.section.potions": "Tränke",
+  "charsheet.section.magic_items": "Magische Ausrüstung",
   "charsheet.armor.head": "Kopf",
   "charsheet.armor.shoulder_right": "Rechte Schulter",
   "charsheet.armor.shoulder_left": "Linke Schulter",

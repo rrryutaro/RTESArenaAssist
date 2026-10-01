@@ -532,6 +532,7 @@
   "charsheet.list_separator": "・",
   "charsheet.section.armor": "アーマーレーティング (AR)",
   "charsheet.section.potions": "ポーション",
+  "charsheet.section.magic_items": "魔法装備",
   "charsheet.armor.head": "頭",
   "charsheet.armor.shoulder_right": "右肩",
   "charsheet.armor.shoulder_left": "左肩",

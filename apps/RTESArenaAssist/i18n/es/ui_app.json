@@ -554,6 +554,7 @@
   "charsheet.list_separator": ", ",
   "charsheet.section.armor": "Defensa de armadura (AR)",
   "charsheet.section.potions": "Pociones",
+  "charsheet.section.magic_items": "Equipo mágico",
   "charsheet.armor.head": "Cabeza",
   "charsheet.armor.shoulder_right": "Hombro derecho",
   "charsheet.armor.shoulder_left": "Hombro izquierdo",

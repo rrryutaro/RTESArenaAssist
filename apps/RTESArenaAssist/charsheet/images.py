@@ -85,7 +85,7 @@ def _number(value, default: int=-1) -> int:
 def equipment_key(equipped: Optional[Iterable[dict]]) -> tuple:
     if not equipped:
         return ()
-    return tuple(sorted(((str(item.get('item_type')), _number(item.get('slot_id')), _number(item.get('hands'), 0), _number(item.get('armor_material_id'))) for item in equipped if item.get('equipped'))))
+    return tuple(sorted(((str(item.get('item_type')), _number(item.get('slot_id')), _number(item.get('hands'), 0), _number(item.get('armor_material_id')), _number(item.get('metal'))) for item in equipped if item.get('equipped'))))
 
 class SheetImages:
 

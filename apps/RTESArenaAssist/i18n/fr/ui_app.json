@@ -532,6 +532,7 @@
   "charsheet.list_separator": ", ",
   "charsheet.section.armor": "Indice d'armure (AR)",
   "charsheet.section.potions": "Potions",
+  "charsheet.section.magic_items": "Équipement magique",
   "charsheet.armor.head": "Tête",
   "charsheet.armor.shoulder_right": "Épaule droite",
   "charsheet.armor.shoulder_left": "Épaule gauche",

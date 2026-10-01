@@ -186,12 +186,26 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
   <tr><th>キー</th><th>内容</th><th>例</th></tr>
   <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>選択したポーションの名前（表示言語）</td><td>治癒のポーション</td></tr>
   <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>選択したポーションの短い名前（表示言語。「のポーション」に相当する定型部分を除く）</td><td>治癒</td></tr>
+  <tr><td><code>potion_1_compact</code> … <code>potion_15_compact</code></td><td>小さいカード用の名前（短い名前が14文字を超える時は省略記号で短縮）</td><td>治癒</td></tr>
   <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>対応するポーションの所持数</td><td>4</td></tr>
 </table>
 <ul>
 <li>番号は装備一覧で選択した順です。使っていない番号には値がありません。</li>
 <li>同梱の「能力値カード（ダーク）」は大判表示のため、選択順の先頭 6 種類だけを表示します。自作 HTML では 15 種類すべてのキーを使えます。</li>
 <li>種類を確定できない未鑑定のポーションは選択できません。所持数を読めない時も値はありません。</li>
+</ul>
+
+<h3>魔法装備の効果と使用回数</h3>
+<p>ゲームの装備一覧で、表示したい魔法装備の「シート」列をチェックします。鑑定済みで残り使用回数を読める装備を選択でき、同じ名前の実物を複数持つ場合もそれぞれ表示します。</p>
+<table>
+  <tr><th>キー</th><th>内容</th><th>例</th></tr>
+  <tr><td><code>magic_item_1_name</code> … <code>magic_item_40_name</code></td><td>選択した魔法装備の名前（表示言語）</td><td>装備名</td></tr>
+  <tr><td><code>magic_item_1_effect</code> … <code>magic_item_40_effect</code></td><td>魔法効果名（表示言語）</td><td>魔法効果</td></tr>
+  <tr><td><code>magic_item_1_uses</code> … <code>magic_item_40_uses</code></td><td>残り使用回数</td><td>12</td></tr>
+</table>
+<ul>
+<li>40 は種類数の制限ではなく、Arena の所持品40枠をすべて表せるキー数です。選択設定の種類数に任意の上限はありません。</li>
+<li>未鑑定品と使用回数を持たない装備は選択できません。現在所持していない選択品や、所持品を読めない時は値がありません。</li>
 </ul>
 
 <h2>見出しの一覧</h2>
@@ -207,7 +221,7 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
   <tr><td><code>condition</code></td><td>状態</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>頭・右肩・左肩・胸・手・腰と脚・足</td></tr>
   <tr><td><code>title</code></td><td>キャラクターシート</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>能力値・戦闘と魔法・体力と疲労・経験値とゴールド・アーマーレーティング (AR)・ポーション</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code> <code>section_magic_items</code></td><td>能力値・戦闘と魔法・体力と疲労・経験値とゴールド・アーマーレーティング (AR)・ポーション・魔法装備</td></tr>
   <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>値・補正・補正前</td></tr>
   <tr><td><code>armor_note</code></td><td>小さいほど守りが固い（何も着けていないと +10）</td></tr>
 </table>

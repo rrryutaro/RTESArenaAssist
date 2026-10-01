@@ -186,6 +186,7 @@ Dies ist eine Anzeigefunktion von Assist. Sie ist unabhängig von der Statusanze
   <tr><th>Schlüssel</th><th>Inhalt</th><th>Beispiel</th></tr>
   <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>Name des ausgewählten Tranks in der Anzeigesprache</td><td>Trank der Heilung</td></tr>
   <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>Kurzname des ausgewählten Tranks (die feste Formulierung „Trank der“ entfällt)</td><td>Heilung</td></tr>
+  <tr><td><code>potion_1_compact</code> … <code>potion_15_compact</code></td><td>Name für kompakte Karten (bei mehr als 14 Zeichen mit Auslassungszeichen gekürzt)</td><td>Heilung</td></tr>
   <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>Gesamtzahl des zugehörigen Tranks</td><td>4</td></tr>
 </table>
 <ul>
@@ -193,6 +194,16 @@ Dies ist eine Anzeigefunktion von Assist. Sie ist unabhängig von der Statusanze
 <li>Das mitgelieferte Design „Attributkarten (dunkel)“ verwendet große Karten und zeigt nur die ersten sechs ausgewählten Arten. Ein eigenes HTML-Design kann die Schlüssel für alle 15 Arten verwenden.</li>
 <li>Ein nicht identifizierter Trank kann nicht ausgewählt werden, da seine Art unbekannt ist. Die Werte fehlen auch, solange das Inventar nicht gelesen werden kann.</li>
 </ul>
+
+<h3>Effekte und Nutzungen magischer Ausrüstung</h3>
+<p>Markieren Sie in der Ausrüstungsliste die Spalte Bogen für die gewünschte magische Ausrüstung. Auswählbar sind identifizierte Gegenstände mit lesbarer Restnutzung.</p>
+<table>
+  <tr><th>Schlüssel</th><th>Inhalt</th><th>Beispiel</th></tr>
+  <tr><td><code>magic_item_1_name</code> … <code>magic_item_40_name</code></td><td>Name der magischen Ausrüstung</td><td>Gegenstandsname</td></tr>
+  <tr><td><code>magic_item_1_effect</code> … <code>magic_item_40_effect</code></td><td>Name des magischen Effekts</td><td>Magischer Effekt</td></tr>
+  <tr><td><code>magic_item_1_uses</code> … <code>magic_item_40_uses</code></td><td>Verbleibende Nutzungen</td><td>12</td></tr>
+</table>
+<p>Die 40 Schlüssel entsprechen den 40 Inventarplätzen von Arena und sind keine willkürliche Begrenzung auswählbarer Arten.</p>
 
 <h2>Beschriftungen</h2>
 <p>Schlüssel für <code>{{label.key}}</code>. Die Beschriftung wird in der Anzeigesprache eingesetzt.</p>
@@ -207,7 +218,7 @@ Dies ist eine Anzeigefunktion von Assist. Sie ist unabhängig von der Statusanze
   <tr><td><code>condition</code></td><td>Zustand</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Kopf, Rechte Schulter, Linke Schulter, Brust, Hände, Hüfte und Beine, Füße</td></tr>
   <tr><td><code>title</code></td><td>Charakterbogen</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>Attribute, Kampf &amp; Magie, Gesundheit &amp; Erschöpfung, Erfahrung &amp; Gold, Rüstungswert (AR), Tränke</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code> <code>section_magic_items</code></td><td>Attribute, Kampf &amp; Magie, Gesundheit &amp; Erschöpfung, Erfahrung &amp; Gold, Rüstungswert (AR), Tränke, Magische Ausrüstung</td></tr>
   <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>Wert, Modifikator, Grundwert</td></tr>
   <tr><td><code>armor_note</code></td><td>Je niedriger, desto besser geschützt (+10 ungeschützt)</td></tr>
 </table>

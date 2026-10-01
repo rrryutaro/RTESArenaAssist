@@ -186,6 +186,7 @@ Questa è una funzione di visualizzazione di Assist. È separata dalla schermata
   <tr><th>Chiave</th><th>Contenuto</th><th>Esempio</th></tr>
   <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>Nome della pozione selezionata nella lingua di visualizzazione</td><td>Pozione di cura</td></tr>
   <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>Nome breve della pozione selezionata (la dicitura fissa «Pozione di» viene omessa)</td><td>cura</td></tr>
+  <tr><td><code>potion_1_compact</code> … <code>potion_15_compact</code></td><td>Nome per le schede compatte (abbreviato con puntini di sospensione oltre 14 caratteri)</td><td>cura</td></tr>
   <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>Quantità totale della pozione corrispondente</td><td>4</td></tr>
 </table>
 <ul>
@@ -193,6 +194,16 @@ Questa è una funzione di visualizzazione di Assist. È separata dalla schermata
 <li>Il modello incluso «Schede attributi (scuro)» usa schede grandi e mostra solo i primi sei tipi selezionati. Un modello HTML personalizzato può usare le chiavi di tutti i 15 tipi.</li>
 <li>Una pozione non identificata non può essere selezionata perché il suo tipo è sconosciuto. I valori sono assenti anche quando non è possibile leggere l'inventario.</li>
 </ul>
+
+<h3>Effetti e utilizzi dell’equipaggiamento magico</h3>
+<p>Nell’elenco equipaggiamento, selezionare la colonna Scheda per l’equipaggiamento magico da mostrare. Sono selezionabili gli oggetti identificati con utilizzi rimanenti leggibili.</p>
+<table>
+  <tr><th>Chiave</th><th>Contenuto</th><th>Esempio</th></tr>
+  <tr><td><code>magic_item_1_name</code> … <code>magic_item_40_name</code></td><td>Nome dell’equipaggiamento magico</td><td>Nome oggetto</td></tr>
+  <tr><td><code>magic_item_1_effect</code> … <code>magic_item_40_effect</code></td><td>Nome dell’effetto magico</td><td>Effetto magico</td></tr>
+  <tr><td><code>magic_item_1_uses</code> … <code>magic_item_40_uses</code></td><td>Utilizzi rimanenti</td><td>12</td></tr>
+</table>
+<p>Le 40 chiavi corrispondono ai 40 slot dell’inventario di Arena e non sono un limite arbitrario ai tipi selezionabili.</p>
 
 <h2>Etichette</h2>
 <p>Chiavi per <code>{{label.key}}</code>. L'etichetta viene inserita nella lingua di visualizzazione.</p>
@@ -207,7 +218,7 @@ Questa è una funzione di visualizzazione di Assist. È separata dalla schermata
   <tr><td><code>condition</code></td><td>Condizione</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Testa, Spalla destra, Spalla sinistra, Petto, Mani, Vita e gambe, Piedi</td></tr>
   <tr><td><code>title</code></td><td>Scheda del personaggio</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>Attributi, Combattimento e magia, Salute e fatica, Esperienza e oro, Classe armatura (AR), Pozioni</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code> <code>section_magic_items</code></td><td>Attributi, Combattimento e magia, Salute e fatica, Esperienza e oro, Classe armatura (AR), Pozioni, Equipaggiamento magico</td></tr>
   <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>Valore, Modificatore, Base</td></tr>
   <tr><td><code>armor_note</code></td><td>Più è basso, meglio si è protetti (+10 senza protezione)</td></tr>
 </table>

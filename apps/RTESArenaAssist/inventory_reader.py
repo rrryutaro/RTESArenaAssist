@@ -109,8 +109,10 @@ def _armor_value(item: dict, item_type: str) -> int:
         return 0
     return max(0, item['param1'] // 5)
 
-def _metal_index(item: dict) -> int | None:
+def _metal_index(item: dict, item_type: str | None=None) -> int | None:
     if item['x'] == 255 and 0 <= item['material'] <= 7:
+        return item['material']
+    if item_type in ('weapon', 'armor', 'shield') and item.get('flags', 0) & FLAG_MAGIC and (0 <= item['material'] <= 7):
         return item['material']
     return None
 
@@ -331,7 +333,7 @@ def read_equipment_items_with_status(analyzer, anchor: int) -> tuple[bool, list[
         classification = _classify_item(item)
         item_type, armor_material_id = classification
         en = _get_item_name(item, classification=classification, **tables)
-        items.append({'en': en, 'slot_id': item['slot_id'], 'hands': item['hands'], 'health': item['health'], 'max_hp': item['max_hp'], 'price': item['price'], 'equipped': bool(item['flags'] & 128), 'is_unidentified': _display_unidentified(item), 'item_type': item_type, 'armor_material_id': armor_material_id, 'armor_value': _armor_value(item, item_type), 'metal': _metal_index(item), 'slot_label': _slot_label(item, classification=classification), 'weight': '' if item_type == 'potion' else _weight_str(item['weight']), 'condition': '' if item_type == 'potion' else _condition_str(item), 'uses': None if item_type == 'potion' else _uses_left(item, item_type), 'effect': '' if item_type == 'potion' else _effect_str(item), 'count': _potion_count(item) if item_type == 'potion' else None})
+        items.append({'en': en, 'slot_id': item['slot_id'], 'hands': item['hands'], 'health': item['health'], 'max_hp': item['max_hp'], 'price': item['price'], 'equipped': bool(item['flags'] & 128), 'is_unidentified': _display_unidentified(item), 'item_type': item_type, 'armor_material_id': armor_material_id, 'armor_value': _armor_value(item, item_type), 'metal': _metal_index(item, item_type), 'slot_label': _slot_label(item, classification=classification), 'weight': '' if item_type == 'potion' else _weight_str(item['weight']), 'condition': '' if item_type == 'potion' else _condition_str(item), 'uses': None if item_type == 'potion' else _uses_left(item, item_type), 'effect': '' if item_type == 'potion' else _effect_str(item), 'count': _potion_count(item) if item_type == 'potion' else None})
     return (True, items)
 
 def read_equipment_items(analyzer, anchor: int) -> list[dict]:

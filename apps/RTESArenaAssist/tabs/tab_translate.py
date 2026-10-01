@@ -6,7 +6,7 @@ import i18n_helper as i18n
 from layout_panel_translate import resolve_pair_texts
 _log = logging.getLogger('RTESArenaAssist')
 from attributes_panel import AttributesPanel
-from charsheet import potions
+from charsheet import magic_items, potions
 from charsheet.status_display import StatusDisplay
 from appearance_faces_panel import AppearanceFacesPanel
 from tabs.tab_map import TabMap
@@ -164,7 +164,7 @@ class TabTranslate(QWidget):
     def _render_equipment_list(self) -> None:
         blocked = self._equip_table.blockSignals(True)
         try:
-            render_equipment_list(self._equip_table, getattr(self, '_equip_items', []), text_filter=self._equip_filter_text.text(), slot_filter=self._equip_filter_slot.currentData() or '', category_filter=self._equip_filter_category.currentData() or '', sheet_potions=potions.selected_names())
+            render_equipment_list(self._equip_table, getattr(self, '_equip_items', []), text_filter=self._equip_filter_text.text(), slot_filter=self._equip_filter_slot.currentData() or '', category_filter=self._equip_filter_category.currentData() or '', sheet_potions=potions.selected_names(), sheet_magic_items=magic_items.selected_names())
         finally:
             self._equip_table.blockSignals(blocked)
 
@@ -172,15 +172,19 @@ class TabTranslate(QWidget):
         if item.column() != 9:
             return
         name = item.data(Qt.ItemDataRole.UserRole)
+        kind = item.data(Qt.ItemDataRole.UserRole + 1)
         if not isinstance(name, str) or not name:
             return
         enabled = item.checkState() == Qt.CheckState.Checked
-        if potions.set_selected(name, enabled):
+        setter = potions.set_selected if kind == 'potion' else magic_items.set_selected if kind == 'magic_item' else None
+        if setter is None:
+            return
+        if setter(name, enabled):
             blocked = self._equip_table.blockSignals(True)
             try:
                 for row in range(self._equip_table.rowCount()):
                     peer = self._equip_table.item(row, 9)
-                    if peer is not None and peer.data(Qt.ItemDataRole.UserRole) == name:
+                    if peer is not None and peer.data(Qt.ItemDataRole.UserRole) == name and (peer.data(Qt.ItemDataRole.UserRole + 1) == kind):
                         peer.setCheckState(Qt.CheckState.Checked if enabled else Qt.CheckState.Unchecked)
             finally:
                 self._equip_table.blockSignals(blocked)

@@ -583,6 +583,7 @@
   "charsheet.list_separator": ", ",
   "charsheet.section.armor": "Armor rating (AR)",
   "charsheet.section.potions": "Potions",
+  "charsheet.section.magic_items": "Magic equipment",
   "charsheet.armor.head": "Head",
   "charsheet.armor.shoulder_right": "Right shoulder",
   "charsheet.armor.shoulder_left": "Left shoulder",

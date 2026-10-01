@@ -186,6 +186,7 @@ Es una función de visualización de Assist. Es independiente de la pantalla de 
   <tr><th>Clave</th><th>Contenido</th><th>Ejemplo</th></tr>
   <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>Nombre de la poción seleccionada en el idioma de visualización</td><td>Poción de curación</td></tr>
   <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>Nombre corto de la poción seleccionada (se omite la expresión fija «Poción de»)</td><td>curación</td></tr>
+  <tr><td><code>potion_1_compact</code> … <code>potion_15_compact</code></td><td>Nombre para tarjetas compactas (se acorta con puntos suspensivos si supera los 14 caracteres)</td><td>curación</td></tr>
   <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>Cantidad total de la poción correspondiente</td><td>4</td></tr>
 </table>
 <ul>
@@ -193,6 +194,16 @@ Es una función de visualización de Assist. Es independiente de la pantalla de 
 <li>El diseño incluido «Tarjetas de atributos (oscuro)» usa tarjetas grandes y solo muestra los seis primeros tipos seleccionados. Un diseño HTML personalizado puede usar las claves de los 15 tipos.</li>
 <li>Las pociones sin identificar no se pueden seleccionar porque se desconoce su tipo. Tampoco hay valores mientras no se pueda leer el inventario.</li>
 </ul>
+
+<h3>Efectos y usos del equipo mágico</h3>
+<p>En la lista de equipo, marque la columna Hoja para el equipo mágico que desee mostrar. Solo se pueden seleccionar objetos identificados cuyo número de usos se pueda leer.</p>
+<table>
+  <tr><th>Clave</th><th>Contenido</th><th>Ejemplo</th></tr>
+  <tr><td><code>magic_item_1_name</code> … <code>magic_item_40_name</code></td><td>Nombre del equipo mágico</td><td>Nombre del objeto</td></tr>
+  <tr><td><code>magic_item_1_effect</code> … <code>magic_item_40_effect</code></td><td>Nombre del efecto mágico</td><td>Efecto mágico</td></tr>
+  <tr><td><code>magic_item_1_uses</code> … <code>magic_item_40_uses</code></td><td>Usos restantes</td><td>12</td></tr>
+</table>
+<p>Las 40 claves corresponden a las 40 ranuras del inventario de Arena; no son un límite arbitrario de tipos seleccionables.</p>
 
 <h2>Etiquetas</h2>
 <p>Claves para <code>{{label.key}}</code>. La etiqueta se inserta en el idioma de visualización.</p>
@@ -207,7 +218,7 @@ Es una función de visualización de Assist. Es independiente de la pantalla de 
   <tr><td><code>condition</code></td><td>Estado</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Cabeza, Hombro derecho, Hombro izquierdo, Pecho, Manos, Cintura y piernas, Pies</td></tr>
   <tr><td><code>title</code></td><td>Hoja de personaje</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>Atributos, Combate y magia, Salud y fatiga, Experiencia y oro, Defensa de armadura (AR), Pociones</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code> <code>section_magic_items</code></td><td>Atributos, Combate y magia, Salud y fatiga, Experiencia y oro, Defensa de armadura (AR), Pociones, Equipo mágico</td></tr>
   <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>Valor, Modificador, Base</td></tr>
   <tr><td><code>armor_note</code></td><td>Cuanto menor, mejor protección (+10 sin protección)</td></tr>
 </table>

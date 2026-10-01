@@ -186,6 +186,7 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
   <tr><th>Ключ</th><th>Содержание</th><th>Пример</th></tr>
   <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>Название выбранного зелья на языке интерфейса</td><td>Зелье исцеления</td></tr>
   <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>Краткое название выбранного зелья (фиксированное слово «Зелье» опускается)</td><td>исцеления</td></tr>
+  <tr><td><code>potion_1_compact</code> … <code>potion_15_compact</code></td><td>Название для компактных карточек (сокращается многоточием, если превышает 14 символов)</td><td>исцеления</td></tr>
   <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>Общее количество соответствующего зелья</td><td>4</td></tr>
 </table>
 <ul>
@@ -193,6 +194,16 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
 <li>Встроенный дизайн «Карточки атрибутов (тёмные)» использует крупные карточки и показывает только первые шесть выбранных типов. Пользовательский HTML-дизайн может использовать ключи всех 15 типов.</li>
 <li>Неопознанное зелье нельзя выбрать, поскольку его тип неизвестен. Значения также отсутствуют, пока инвентарь невозможно прочитать.</li>
 </ul>
+
+<h3>Эффекты и использования магического снаряжения</h3>
+<p>В списке снаряжения отметьте столбец листа для нужного магического предмета. Можно выбрать опознанные предметы, для которых читается число оставшихся использований.</p>
+<table>
+  <tr><th>Ключ</th><th>Содержимое</th><th>Пример</th></tr>
+  <tr><td><code>magic_item_1_name</code> … <code>magic_item_40_name</code></td><td>Название магического снаряжения</td><td>Название предмета</td></tr>
+  <tr><td><code>magic_item_1_effect</code> … <code>magic_item_40_effect</code></td><td>Название магического эффекта</td><td>Магический эффект</td></tr>
+  <tr><td><code>magic_item_1_uses</code> … <code>magic_item_40_uses</code></td><td>Оставшиеся использования</td><td>12</td></tr>
+</table>
+<p>40 ключей соответствуют 40 ячейкам инвентаря Arena и не являются произвольным ограничением числа выбираемых типов.</p>
 
 <h2>Подписи</h2>
 <p>Ключи для <code>{{label.key}}</code>. Подпись подставляется на языке отображения.</p>
@@ -207,7 +218,7 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
   <tr><td><code>condition</code></td><td>Состояние</td></tr>
   <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Голова, Правое плечо, Левое плечо, Грудь, Руки, Пояс и ноги, Ступни</td></tr>
   <tr><td><code>title</code></td><td>Лист персонажа</td></tr>
-  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code></td><td>Характеристики, Бой и магия, Здоровье и усталость, Опыт и золото, Класс брони (AR), Зелья</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code> <code>section_magic_items</code></td><td>Характеристики, Бой и магия, Здоровье и усталость, Опыт и золото, Класс брони (AR), Зелья, Магическое снаряжение</td></tr>
   <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>Значение, Модификатор, Базовое</td></tr>
   <tr><td><code>armor_note</code></td><td>Чем меньше, тем лучше защита (+10 без защиты)</td></tr>
 </table>

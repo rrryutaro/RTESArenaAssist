@@ -1234,7 +1234,7 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
     except (ImportError, OSError, AttributeError):
         pass
 from normal_play import normal_play_render as _normal_play_render
-from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_surface_dispatch, poll_lock_message_dispatch as _poll_lock_message_dispatch, poll_cinematic_dispatch as _poll_cinematic_dispatch, _poll_npc_popup_display, _poll_facility_render_dispatch, _poll_dialog_unit_dispatch, _close_facility_story_units
+from normal_play.normal_play_render import poll_c1_surface_dispatch as _poll_c1_surface_dispatch, poll_lock_message_dispatch as _poll_lock_message_dispatch, poll_static_action_text_dispatch as _poll_static_action_text_dispatch, poll_cinematic_dispatch as _poll_cinematic_dispatch, _poll_npc_popup_display, _poll_facility_render_dispatch, _poll_dialog_unit_dispatch, _close_facility_story_units
 from normal_play.status_popup_module import poll_status_popup as _poll_status_popup
 from normal_play.travel_map_module import STATE_NONE as _TRAVEL_STATE_NONE, classify_travel_l4 as _classify_travel_l4, render_travel_l4 as _render_travel_l4
 from screen_detector_play_common import is_inventory_screen as _is_inventory_screen
@@ -1282,6 +1282,7 @@ def _poll_band_c1_and_lock_units(w, *, _b30, _top_is_normal_play, _screen_displa
     _band = _poll_action_text_band(w, b30=_b30, active=_band_wanted, in_play=_top_is_normal_play)
     if not _screen_display_active:
         _poll_c1_surface_dispatch(w, _b30, inf_name=inf_name, mif_name=mif_name, c_area=_poll_hierarchy_area, band=_band, message_taken=_instore_resp_handled, runtime_dialog_context=_runtime_dialog_context)
+    _poll_static_action_text_dispatch(w, band=_band, in_play=_lock_in_play)
     _poll_lock_message_dispatch(w, _b30, near=_lock_near, band=_band, in_play=_lock_in_play)
 
 def _poll_level_up_and_item_pickup(w, *, _top_is_normal_play, _loading_post_settle, _newpop_gate, _b30_img_name, npc_dialog, _shop_buy_active, _shop_menu_visible, _active_facility_name, _inventory_screen_now):
