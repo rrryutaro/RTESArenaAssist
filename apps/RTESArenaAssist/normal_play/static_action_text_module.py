@@ -2,6 +2,7 @@ from __future__ import annotations
 import logging
 from arena_aexe import AKEY_ACD_OFFSETS, detect_image_base
 from assist_log import recog as _recog
+from display_intent import PASSIVE_PANEL_OWNERS
 import i18n_helper as i18n
 _log = logging.getLogger('RTESArenaAssist')
 OWNER = 'static_action_text'
@@ -66,7 +67,7 @@ def poll_static_action_text(w, *, band, in_play: bool) -> None:
     event = (band.episode, kind) if kind is not None else None
     if event is not None and event != getattr(w, '_static_action_event', None):
         owner = _panel_owner(w)
-        if owner in ('', OWNER):
+        if owner in {'', OWNER} | PASSIVE_PANEL_OWNERS:
             original, translated = _payload(w, kind)
             w._static_action_event = event
             w._static_action_spoken_seen = False

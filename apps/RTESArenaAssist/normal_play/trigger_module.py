@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from display_intent import PASSIVE_PANEL_OWNERS
 from arena_bridge import TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, get_trigger_text_by_index
 import inf_text_lookup as itl
 import mif_trigger
@@ -283,7 +284,7 @@ def compute_b30_state(w, *, in_gameplay: bool, c_area: str | None=None, c1_axis=
     w._b30_in_gameplay_prev = _in_gameplay
     w._b30_dialog_active_prev = _dialog_text_fg
     return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay, 'fg_ptr': _fg_ptr, 'dialog_text_fg': bool(_dialog_text_fg), 'dialog_text_fg_prev': _dialog_text_fg_prev}
-_RED_TEXT_REPLACEABLE_OWNERS = frozenset({'', 'red_text', 'red_text_dialog', 'trigger', 'gold_drop', 'c1_runtime_dialog'})
+_RED_TEXT_REPLACEABLE_OWNERS = frozenset({'', 'red_text', 'red_text_dialog', 'trigger', 'gold_drop', 'c1_runtime_dialog'}) | PASSIVE_PANEL_OWNERS
 
 def _red_text_is_framed(b30: dict) -> bool:
     from normal_play.c1_dialog_axis import AREA_RUNTIME_MSG, area_of

@@ -152,12 +152,14 @@ def poll_attributes(panel) -> None:
     try:
         hc = panel._read_u16(panel._anchor + OFF_HEALTH_CURR_U16)
         hm = panel._read_u16(panel._anchor + OFF_HEALTH_MAX_U16)
+        raw_hc = hc
         if panel._health_max_enabled and _cheat_can_write and (hc < hm) and (hm > 0):
             try:
                 panel._analyzer.write_bytes(panel._anchor + OFF_HEALTH_CURR_U16, bytes([hm & 255, hm >> 8 & 255]))
                 hc = hm
             except (OSError, AttributeError):
                 pass
+        panel._health_observer.observe(raw_hc, hm, effective_hp=hc)
         if panel._is_bonus_screen and hm > 0:
             hc = hm
         panel._stats['hp'].setText(f'{hc}/{hm}')

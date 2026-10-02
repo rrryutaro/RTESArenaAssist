@@ -111,6 +111,8 @@ def build_ui(win: 'AssistWindow') -> None:
     win._tab_log = TabLog()
     if getattr(win, '_log_store', None) is not None:
         win._tab_log.set_store(win._log_store)
+    if getattr(win, '_combat_log_store', None) is not None:
+        win._tab_log.set_combat_store(win._combat_log_store)
     if _TAB_MAP_AVAILABLE and TabMap is not None:
         win._tab_map = TabMap(name='map_tab')
     else:

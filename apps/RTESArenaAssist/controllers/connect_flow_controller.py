@@ -15,6 +15,8 @@ def _app_dir() -> str:
 def on_connect_done(win, pid: int, anchor: int):
     win._analyzer = win._worker.analyzer
     win._anchor = anchor
+    from normal_play.combat_info_module import reset_combat_info
+    reset_combat_info(win)
     win._npc_dialog_prev = ''
     from normal_play import npc_conversation_module as _npc_conversation
     _npc_conversation.reset_on_connect(win)

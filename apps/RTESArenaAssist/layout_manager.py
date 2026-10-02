@@ -62,6 +62,17 @@ def _get_rect(hwnd: int):
         return (r.left, r.top, r.right, r.bottom)
     return None
 
+def _get_client_rect(hwnd: int):
+    user32 = ctypes.windll.user32
+    origin = ctypes.wintypes.POINT(0, 0)
+    rect = ctypes.wintypes.RECT()
+    if not user32.GetClientRect(hwnd, ctypes.byref(rect)) or not user32.ClientToScreen(hwnd, ctypes.byref(origin)):
+        return None
+    width, height = (rect.right - rect.left, rect.bottom - rect.top)
+    if width <= 0 or height <= 0:
+        return None
+    return (origin.x, origin.y, origin.x + width, origin.y + height)
+
 def _screen_of(widget) -> 'QRect':
     from PySide6.QtWidgets import QApplication
     sc = widget.screen() if hasattr(widget, 'screen') and widget.screen() else None
@@ -154,6 +165,59 @@ class LayoutManager(QObject):
 
     def get_dosbox_hwnd(self) -> int:
         return self._dosbox_hwnd
+
+    def get_visible_dosbox_rect(self):
+        if not self._valid():
+            self.find_dosbox_hwnd()
+        if not self._valid():
+            return None
+        user32 = ctypes.windll.user32
+        if not user32.IsWindowVisible(self._dosbox_hwnd) or user32.IsIconic(self._dosbox_hwnd):
+            return None
+        rect = _get_rect(self._dosbox_hwnd)
+        if rect is None or rect[2] <= rect[0] or rect[3] <= rect[1]:
+            return None
+        return rect
+
+    def get_visible_dosbox_qt_rect(self):
+        rect = self.get_visible_dosbox_rect()
+        if rect is None:
+            return None
+        return self._physical_to_qt_rect(rect)
+
+    def get_visible_dosbox_client_qt_rect(self):
+        if self.get_visible_dosbox_rect() is None:
+            return None
+        client = _get_client_rect(self._dosbox_hwnd)
+        if client is None:
+            return None
+        return self._physical_to_qt_rect(client)
+
+    def _physical_to_qt_rect(self, rect):
+        try:
+            from PySide6.QtWidgets import QApplication
+
+            class _MONITORINFOEXW(ctypes.Structure):
+                _fields_ = [('cbSize', ctypes.wintypes.DWORD), ('rcMonitor', ctypes.wintypes.RECT), ('rcWork', ctypes.wintypes.RECT), ('dwFlags', ctypes.wintypes.DWORD), ('szDevice', ctypes.c_wchar * 32)]
+            user32 = ctypes.windll.user32
+            monitor = user32.MonitorFromWindow(self._dosbox_hwnd, 2)
+            info = _MONITORINFOEXW()
+            info.cbSize = ctypes.sizeof(info)
+            if monitor and user32.GetMonitorInfoW(monitor, ctypes.byref(info)):
+                screen = next((s for s in QApplication.screens() if s.name().casefold() == info.szDevice.casefold()), None)
+                if screen is not None:
+                    dpr = max(0.01, float(screen.devicePixelRatio()))
+                    geo = screen.geometry()
+                    ml, mt = (info.rcMonitor.left, info.rcMonitor.top)
+                    return (geo.left() + round((rect[0] - ml) / dpr), geo.top() + round((rect[1] - mt) / dpr), geo.left() + round((rect[2] - ml) / dpr), geo.top() + round((rect[3] - mt) / dpr))
+        except Exception:
+            _log.debug('DOSBox physical-to-Qt rect conversion failed', exc_info=True)
+        return rect
+
+    def is_dosbox_foreground(self) -> bool:
+        if not self._valid():
+            self.find_dosbox_hwnd()
+        return bool(self._valid() and ctypes.windll.user32.GetForegroundWindow() == self._dosbox_hwnd)
 
     def place_dosbox(self, x: int, y: int, w: int, h: int) -> bool:
         if not self._valid():

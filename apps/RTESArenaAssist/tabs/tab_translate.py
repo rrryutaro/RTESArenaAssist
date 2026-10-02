@@ -31,6 +31,8 @@ _MODE_APPEARANCE_FACES = 'appearance_faces'
 _MODE_FALLBACK_STATUS = 'fallback_status'
 _MODE_FALLBACK_MAP = 'fallback_map'
 _MODE_MAP_SCREEN = 'map_screen'
+_MODE_COMBAT_FULL = 'combat_full'
+_MODE_COMBAT_MAP = 'combat_map'
 
 class TabTranslate(QWidget):
     panel_mode_changed = Signal(str)
@@ -89,11 +91,27 @@ class TabTranslate(QWidget):
     def fallback_map_tab(self) -> TabMap:
         return self._fallback_map_tab
 
+    def combat_map_tab(self) -> TabMap:
+        return self._combat_map_tab
+
     def render_fallback_map_view(self, view, *args, **kwargs) -> None:
         self._fallback_map_tab.render_map_view(view, *args, **kwargs)
 
+    def render_combat_map_view(self, view, *args, **kwargs) -> None:
+        self._combat_map_tab.render_map_view(view, *args, **kwargs)
+
     def apply_map_settings(self) -> None:
         self._fallback_map_tab.apply_settings()
+        self._combat_map_tab.apply_settings()
+
+    def update_combat_view(self, data: dict) -> None:
+        common = {'target_name': data.get('target_name', ''), 'target_hp': int(data.get('target_hp', 0)), 'target_max_hp': int(data.get('target_max_hp', 1)), 'player_hp': int(data.get('player_hp', 0)), 'player_max_hp': int(data.get('player_max_hp', 1)), 'result': bool(data.get('result', False)), 'display_format': data.get('display_format', 'meters'), 'enemies': list(data.get('enemies', []))}
+        self._combat_full_panel.update_combat(**common, detail=data.get('detail_full', ''), message='')
+        self._combat_band_panel.update_combat(**common, detail=data.get('detail_compact', ''), message='')
+
+    def clear_combat_view(self) -> None:
+        self._combat_full_panel.clear_combat()
+        self._combat_band_panel.clear_combat()
 
     def set_panel_mode(self, mode: str) -> None:
         if mode == self._panel_mode:
@@ -134,6 +152,10 @@ class TabTranslate(QWidget):
             self._stack.setCurrentIndex(11)
         elif mode == _MODE_MAP_SCREEN:
             self._stack.setCurrentIndex(11)
+        elif mode == _MODE_COMBAT_FULL:
+            self._stack.setCurrentIndex(16)
+        elif mode == _MODE_COMBAT_MAP:
+            self._stack.setCurrentIndex(17)
         else:
             mode = _MODE_TRANSLATE
             self._stack.setCurrentIndex(0)

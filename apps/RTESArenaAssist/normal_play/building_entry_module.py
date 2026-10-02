@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from display_intent import PASSIVE_PANEL_OWNERS
 _log = logging.getLogger('RTESArenaAssist')
 _MAX_DIAG_DUMPS = 6
 _DIALOG_MENU_IMGS = frozenset({'MENU_RT.IMG', 'POPUP11.IMG', 'NEGOTBUT.IMG', 'YESNO.IMG', 'NEWPOP.IMG'})
@@ -48,7 +49,7 @@ def _push_entry(w, key: tuple, en: str, ja: str, *, speech_role: str | None) -> 
     if applied_owner == OWNER:
         w._building_entry_delivered = True
         return False
-    if applied_owner == '':
+    if applied_owner == '' or applied_owner in PASSIVE_PANEL_OWNERS:
         router.update_translation(OWNER, en, ja, **kwargs)
         return True
     return False

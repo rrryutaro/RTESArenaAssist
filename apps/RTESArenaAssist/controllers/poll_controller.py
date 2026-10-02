@@ -36,6 +36,10 @@ def _restore_chargen_cleared_maps(w, tab_map) -> None:
         w._tab_translate.fallback_map_tab().restore_map()
     except (AttributeError, RuntimeError):
         _log.exception('fallback_map.restore_map failed')
+    try:
+        w._tab_translate.combat_map_tab().restore_map()
+    except (AttributeError, RuntimeError):
+        _log.exception('combat_map.restore_map failed')
 _WILD_DIAG_CANDIDATES = [(43092, 'rt_x'), (43094, 'rt_z'), (43096, 'rt_a858'), (43098, 'rt_a85a'), (43084, 'rt_a84c'), (43086, 'rt_a84e'), (43088, 'rt_a850'), (43090, 'rt_a852')]
 _wild_diag_prev: dict[int, tuple[int, int]] = {}
 _wild_diag_hex_dumped: bool = False
@@ -1007,6 +1011,10 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
                 w._tab_translate.fallback_map_tab().clear_map()
             except (AttributeError, RuntimeError):
                 _log.exception('fallback_map.clear_map failed')
+            try:
+                w._tab_translate.combat_map_tab().clear_map()
+            except (AttributeError, RuntimeError):
+                _log.exception('combat_map.clear_map failed')
             w._map_cleared_for_chargen = True
     elif tab_map is not None and _current_top_level(w) == 'normal-play':
         if getattr(w, '_map_cleared_for_chargen', False):
@@ -1094,6 +1102,13 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
                         _log.warning('fallback_map render AttributeError: %s', _e)
                 except Exception:
                     _log.exception('fallback_map render failed')
+                try:
+                    w._tab_translate.render_combat_map_view(_map_view, place_text=place_text, suppress_map=_fallback_suppress_map, suppress_reason=_fallback_suppress_reason)
+                except AttributeError as _e:
+                    if 'render_combat_map_view' not in str(_e):
+                        _log.warning('combat_map render AttributeError: %s', _e)
+                except Exception:
+                    _log.exception('combat_map render failed')
         except Exception:
             _log.exception('tab_map update failed')
 
@@ -1351,6 +1366,10 @@ def _poll_display_phase(w, *, _active_facility_name, _b30, _b30_dialog_active, _
             _log.exception('translation_feed.on_screen_context failed')
     from top_level.chargen_state import poll as _poll_chargen
     _poll_chargen(w)
+    from normal_play.combat_info_module import poll_combat_info
+    poll_combat_info(w, gameplay=bool(_top_is_normal_play and _b30.get('in_gameplay')))
+    from normal_play.spell_effect_module import poll_spell_effects
+    poll_spell_effects(w, gameplay=bool(_top_is_normal_play and _b30.get('in_gameplay')))
     if ui_router is not None:
         ui_router.flush_poll_display()
 

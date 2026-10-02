@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Optional
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QComboBox, QGroupBox, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QVBoxLayout, QWidget
+from PySide6.QtWidgets import QComboBox, QGroupBox, QHBoxLayout, QLabel, QPushButton, QScrollArea, QSizePolicy, QTabBar, QVBoxLayout, QWidget
 import assist_settings as settings
 import i18n_helper as i18n
 from services.log_store import LogEntry, category_i18n_key, format_datetime, DEFAULT_LOG_DATETIME_FORMAT
@@ -16,7 +16,7 @@ def _datetime_label(ts: float) -> str:
         return format_datetime(datetime.fromtimestamp(ts), fmt)
     except Exception:
         return ''
-_CARD_HEADER_COLOR = {'situation': '#e0af68', 'conversation': '#7ab8d4'}
+_CARD_HEADER_COLOR = {'situation': '#e0af68', 'conversation': '#7ab8d4', 'combat': '#ef6b73'}
 _DEFAULT_HEADER_COLOR = '#9aa5ce'
 
 def _log_card_style(category: str) -> str:
@@ -59,7 +59,10 @@ class LogCard(QGroupBox):
     @staticmethod
     def _header(entry: LogEntry) -> str:
         cat_key = category_i18n_key(entry.category)
-        cat = i18n.tr(cat_key) if cat_key else entry.category
+        if entry.category == 'combat':
+            cat = i18n.tr(cat_key, default='戦闘')
+        else:
+            cat = i18n.tr(cat_key) if cat_key else entry.category
         parts = [p for p in (_datetime_label(entry.ts), cat, entry.location) if p]
         return '  ·  '.join(parts)
 
@@ -68,11 +71,21 @@ class TabLog(QWidget):
     def __init__(self, parent: Optional[QWidget]=None) -> None:
         super().__init__(parent)
         self._store = None
+        self._normal_store = None
+        self._combat_store = None
+        self._showing_combat = False
         self._cards: list[LogCard] = []
         self._log_dirty = False
         outer = QVBoxLayout(self)
         outer.setContentsMargins(6, 6, 6, 6)
         outer.setSpacing(4)
+        self._section_tabs = QTabBar()
+        self._section_tabs.addTab(i18n.tr('log.section.normal', default='通常ログ'))
+        self._section_tabs.addTab(i18n.tr('log.section.combat', default='戦闘ログ'))
+        self._section_tabs.setExpanding(False)
+        self._section_tabs.currentChanged.connect(self._on_section_changed)
+        self._section_tabs.hide()
+        outer.addWidget(self._section_tabs)
         bar = QHBoxLayout()
         self._sort_combo = QComboBox()
         self._sort_combo.addItem(i18n.tr('log.sort.newest', default='新しい順'), True)
@@ -112,11 +125,50 @@ class TabLog(QWidget):
         self._vbox.insertWidget(0, self._empty_lbl)
 
     def set_store(self, store) -> None:
-        self._store = store
+        self._normal_store = store
+        if not self._showing_combat:
+            self._store = store
         if store is not None:
             store.set_observer(self._on_new_entry)
-            store.set_changed_observer(self.refresh)
+            store.set_changed_observer(self._on_normal_store_changed)
+        self._sync_log_sections()
         self.refresh()
+
+    def set_combat_store(self, store) -> None:
+        self._combat_store = store
+        if store is not None:
+            store.set_observer(self._on_new_combat_entry)
+            store.set_changed_observer(self._on_combat_store_changed)
+        self._sync_log_sections()
+        self.refresh()
+
+    def _sync_log_sections(self) -> None:
+        has_combat = bool(self._combat_store is not None and self._combat_store.entries(newest_first=False))
+        self._section_tabs.setVisible(has_combat)
+        if not has_combat and self._showing_combat:
+            self._section_tabs.blockSignals(True)
+            self._section_tabs.setCurrentIndex(0)
+            self._section_tabs.blockSignals(False)
+            self._showing_combat = False
+            self._store = self._normal_store
+
+    def _on_section_changed(self, index: int) -> None:
+        self._showing_combat = bool(index == 1 and self._combat_store is not None)
+        self._store = self._combat_store if self._showing_combat else self._normal_store
+        self._filter_combo.blockSignals(True)
+        self._filter_combo.setCurrentIndex(0)
+        self._filter_combo.blockSignals(False)
+        self._filter_combo.setVisible(not self._showing_combat)
+        self.refresh()
+
+    def _on_normal_store_changed(self) -> None:
+        if not self._showing_combat:
+            self.refresh()
+
+    def _on_combat_store_changed(self) -> None:
+        self._sync_log_sections()
+        if self._showing_combat:
+            self.refresh()
 
     def _newest_first(self) -> bool:
         return bool(self._sort_combo.currentData())
@@ -140,6 +192,16 @@ class TabLog(QWidget):
         self._loc_combo.blockSignals(False)
 
     def _on_new_entry(self, entry: LogEntry) -> None:
+        if self._showing_combat:
+            return
+        self._append_visible_entry(entry)
+
+    def _on_new_combat_entry(self, entry: LogEntry) -> None:
+        self._sync_log_sections()
+        if self._showing_combat:
+            self._append_visible_entry(entry)
+
+    def _append_visible_entry(self, entry: LogEntry) -> None:
         if entry.location and self._loc_combo.findData(entry.location) < 0:
             self._loc_combo.addItem(entry.location, entry.location)
         cat = self._filter_category()
@@ -165,6 +227,7 @@ class TabLog(QWidget):
             self.refresh()
 
     def refresh(self) -> None:
+        self._sync_log_sections()
         if not self.isVisible():
             self._log_dirty = True
             return

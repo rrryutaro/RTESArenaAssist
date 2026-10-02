@@ -22,7 +22,7 @@ def format_datetime(dt, fmt: str) -> str:
         return fmt.replace('yyyy', f'{dt.year:04d}').replace('MM', f'{dt.month:02d}').replace('dd', f'{dt.day:02d}').replace('HH', f'{dt.hour:02d}').replace('mm', f'{dt.minute:02d}').replace('ss', f'{dt.second:02d}').replace('aaa', wd)
     except Exception:
         return ''
-_CATEGORY_KEYS = {'situation': 'log.category.situation', 'conversation': 'log.category.conversation'}
+_CATEGORY_KEYS = {'situation': 'log.category.situation', 'conversation': 'log.category.conversation', 'combat': 'log.category.combat'}
 
 def category_i18n_key(category: str) -> Optional[str]:
     return _CATEGORY_KEYS.get(category)
@@ -31,8 +31,8 @@ def ext_data_dir() -> str:
     from services.map_ext_store import ext_data_dir as _dir
     return _dir()
 
-def slot_filename(slot: int) -> str:
-    return f'log_ext.0{int(slot)}'
+def slot_filename(slot: int, prefix: str='log_ext') -> str:
+    return f'{prefix}.0{int(slot)}'
 
 def _entry_to_dict(e: LogEntry) -> dict:
     return asdict(e)
@@ -45,9 +45,12 @@ def _dict_to_entry(d: dict) -> Optional[LogEntry]:
 
 class LogStore:
 
-    def __init__(self, max_entries: int=2000, ext_dir: str | None=None) -> None:
+    def __init__(self, max_entries: int=2000, ext_dir: str | None=None, *, filename_prefix: str='log_ext', suppress_consecutive_duplicates: bool=True, commit_enabled: Callable[[], bool] | None=None) -> None:
         self._max = max_entries
         self._ext_dir_override = ext_dir
+        self._filename_prefix = filename_prefix
+        self._suppress_consecutive_duplicates = bool(suppress_consecutive_duplicates)
+        self._commit_enabled = commit_enabled
         self._active: list[LogEntry] = []
         self._persist: list[LogEntry] = []
         self._seq = 0
@@ -90,7 +93,7 @@ class LogStore:
         return self._ext_dir_override or ext_data_dir()
 
     def _slot_path(self, slot: int) -> str:
-        return os.path.join(self._ext_dir(), slot_filename(slot))
+        return os.path.join(self._ext_dir(), slot_filename(slot, self._filename_prefix))
 
     def _read_slot_file(self, slot: int) -> tuple[str | None, list[LogEntry]]:
         path = self._slot_path(slot)
@@ -122,7 +125,7 @@ class LogStore:
         if not text:
             return None
         key = (category, text)
-        if key == self._last_key:
+        if self._suppress_consecutive_duplicates and key == self._last_key:
             return None
         self._last_key = key
         self._seq += 1
@@ -182,6 +185,10 @@ class LogStore:
         self._notify_changed()
 
     def commit_to_slot(self, slot: int, save_id: str | None) -> None:
+        if self._commit_enabled is not None and (not self._commit_enabled()):
+            self.clear()
+            self.bind_slot(slot, save_id)
+            return
         merged = (self._persist + self._active)[-self._max:]
         self._write_slot_file(slot, save_id, merged)
         self._active = []

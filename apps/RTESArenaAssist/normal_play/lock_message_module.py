@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from display_intent import PASSIVE_PANEL_OWNERS
 import i18n_helper as i18n
 from assist_log import recog as _recog
 from normal_play import lock_difficulty
@@ -236,7 +237,7 @@ def _sentence_on_band(w, band) -> int | None:
 
 def _decide(w, b30, near, index: int):
     owner_now = _panel_owner(w)
-    if owner_now not in ('', OWNER):
+    if owner_now not in {'', OWNER} | PASSIVE_PANEL_OWNERS:
         return (None, None, f'他の表示が持ち主 owner={owner_now!r}', True)
     if not b30.get('in_gameplay'):
         return (None, None, 'in_gameplay=False', True)

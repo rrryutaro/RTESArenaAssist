@@ -134,3 +134,6 @@ class TabStatus(QWidget):
 
     def apply_cheat_settings(self) -> None:
         self._panel.apply_cheat_settings()
+
+    def health_observer(self):
+        return self._panel.health_observer()

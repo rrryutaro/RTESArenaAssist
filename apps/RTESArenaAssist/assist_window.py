@@ -12,6 +12,7 @@ import assist_log
 import assist_settings as settings
 import theme as theme_mod
 from assist_constants import APP_NAME, WIN_W, WIN_H, WIN_MIN_W, WIN_MIN_H
+from combat_text_ja import COMBAT_MESSAGE_TEMPLATE_SETTINGS
 from version import version_string
 from layout_manager import LayoutManager, TrackMode, LayoutCorner, LayoutForm, calc_layout_zones
 from layout_panel_translate import LayoutPanelTranslate
@@ -116,10 +117,12 @@ class AssistWindow(QMainWindow):
         except Exception:
             pass
         self._log_store = LogStore(max_entries=int(settings.get('log_max_entries', 2000)))
+        self._combat_log_store = LogStore(max_entries=int(settings.get('log_max_entries', 2000)), filename_prefix='combat_log_ext', suppress_consecutive_duplicates=False, commit_enabled=lambda: bool(settings.get('combat_log_enabled', False)))
         self._translation_feed = TranslationFeed(self._tts, self, log_store=self._log_store)
         try:
             from controllers.map_ext_lifecycle import get_lifecycle
             get_lifecycle().add_store(self._log_store)
+            get_lifecycle().add_store(self._combat_log_store)
             get_lifecycle().add_on_load(self._translation_feed.on_load)
             from normal_play.cinematic_module import forget_shown_scene_texts, reset_final_sequence
             get_lifecycle().add_on_load(lambda: reset_final_sequence(self))
@@ -131,6 +134,8 @@ class AssistWindow(QMainWindow):
             get_lifecycle().add_on_load(lambda: reset_location_on_load(self))
             from normal_play.level_up_module import reset_level_up_on_load
             get_lifecycle().add_on_load(lambda: reset_level_up_on_load(self))
+            from normal_play.spell_effect_module import reset_spell_effects
+            get_lifecycle().add_on_load(lambda: reset_spell_effects(self))
         except Exception:
             pass
         try:
@@ -394,6 +399,21 @@ class AssistWindow(QMainWindow):
         settings.set_val('wild_show_all_entrances', dlg.wild_show_all_entrances)
         settings.set_val('wild_show_static_flats', dlg.wild_show_static_flats)
         settings.set_val('translate_fallback_screen', dlg.translate_fallback_screen)
+        settings.set_val('combat_dosbox_enabled', dlg.combat_dosbox_enabled)
+        settings.set_val('combat_arena_xp_seconds', dlg.combat_arena_xp_seconds)
+        settings.set_val('spell_effect_arena_enabled', dlg.spell_effect_arena_enabled)
+        settings.set_val('spell_effect_arena_style', dlg.spell_effect_arena_style)
+        settings.set_val('spell_effect_time_unit', dlg.spell_effect_time_unit)
+        settings.set_val('combat_translate_tab_mode', dlg.combat_translate_tab_mode)
+        settings.set_val('combat_translate_tab_format', dlg.combat_translate_tab_format)
+        settings.set_val('combat_translate_panel_enabled', dlg.combat_translate_panel_enabled)
+        settings.set_val('combat_translate_panel_history_count', dlg.combat_translate_panel_history_count)
+        settings.set_val('combat_tts_enabled', dlg.combat_tts_enabled)
+        settings.set_val('combat_log_enabled', dlg.combat_log_enabled)
+        settings.set_val('combat_enemy_identifier_enabled', dlg.combat_enemy_identifier_enabled)
+        settings.set_val('combat_enemy_identifier_style', dlg.combat_enemy_identifier_style)
+        for _kind, _template in dlg.combat_message_templates.items():
+            settings.set_val(COMBAT_MESSAGE_TEMPLATE_SETTINGS[_kind], _template)
         try:
             self._tab_map.apply_settings()
         except AttributeError:
@@ -429,6 +449,7 @@ class AssistWindow(QMainWindow):
         settings.set_val('log_max_entries', dlg.log_max_entries)
         try:
             self._log_store.set_max_entries(dlg.log_max_entries)
+            self._combat_log_store.set_max_entries(dlg.log_max_entries)
         except Exception:
             pass
         try:
@@ -487,10 +508,14 @@ class AssistWindow(QMainWindow):
         from normal_play.lock_message_module import release_watch as _release_lock_watch
         from screen_display_copy import forget as _forget_display_copy
         from normal_play.cinematic_module import forget_scene as _forget_scene
+        from normal_play.combat_info_module import reset_combat_info
+        from normal_play.spell_effect_module import reset_spell_effects
         _forget_display_copy(self)
         _forget_scene(self)
         _shutdown_band(self)
         _release_lock_watch(self)
+        reset_combat_info(self)
+        reset_spell_effects(self)
         if self._analyzer:
             try:
                 self._analyzer.detach()

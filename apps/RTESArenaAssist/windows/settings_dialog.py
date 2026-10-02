@@ -6,7 +6,7 @@ import i18n_helper as i18n
 import assist_settings as settings
 import dosbox_conf as dc
 from layout_manager import TrackMode, LayoutCorner, LayoutForm
-from windows.settings_dialog_tabs import build_general_tab, build_display_tab, build_map_tab, build_translate_tab, build_tts_tab, build_cheat_tab, build_dosbox_tab
+from windows.settings_dialog_tabs import build_general_tab, build_display_tab, build_map_tab, build_translate_tab, build_combat_tab, build_tts_tab, build_cheat_tab, build_dosbox_tab
 _HERE = os.path.dirname(os.path.abspath(__file__))
 _APP_DIR = os.path.dirname(_HERE)
 _POLL_MS = 100
@@ -46,6 +46,7 @@ class _SettingsDialog(QDialog):
         self._tabs.addTab(_wrap_scroll(self._build_display_tab()), i18n.tr('settings.tab_display'))
         self._tabs.addTab(_wrap_scroll(self._build_map_tab()), i18n.tr('settings.tab_map'))
         self._tabs.addTab(_wrap_scroll(self._build_translate_tab()), i18n.tr('settings.tab_translate'))
+        self._tabs.addTab(_wrap_scroll(self._build_combat_tab()), self._combat_tab_title())
         self._tabs.addTab(_wrap_scroll(self._build_tts_tab()), i18n.tr('settings.tab_tts', default='読み上げ'))
         self._tabs.addTab(_wrap_scroll(self._build_cheat_tab()), i18n.tr('settings.tab_cheat'))
         self._tabs.addTab(_wrap_scroll(self._build_dosbox_tab()), i18n.tr('settings.tab_dosbox'))
@@ -111,6 +112,14 @@ class _SettingsDialog(QDialog):
 
     def _build_translate_tab(self) -> QWidget:
         return build_translate_tab(self)
+
+    def _build_combat_tab(self) -> QWidget:
+        return build_combat_tab(self)
+
+    @staticmethod
+    def _combat_tab_title() -> str:
+        from combat_text_ja import text as combat_ja
+        return combat_ja('settings.tab_combat')
 
     def _build_tts_tab(self) -> QWidget:
         return build_tts_tab(self)
@@ -687,6 +696,62 @@ class _SettingsDialog(QDialog):
         if 0 <= idx < len(self._fallback_items):
             return self._fallback_items[idx][0]
         return 'map'
+
+    @property
+    def combat_dosbox_enabled(self) -> bool:
+        return self._combat_dosbox_cb.isChecked()
+
+    @property
+    def combat_arena_xp_seconds(self) -> int:
+        return self._combat_arena_xp_spin.value()
+
+    @property
+    def spell_effect_arena_enabled(self) -> bool:
+        return self._spell_effect_arena_cb.isChecked()
+
+    @property
+    def spell_effect_arena_style(self) -> str:
+        return self._spell_effect_arena_style_combo.currentData() or 'E'
+
+    @property
+    def spell_effect_time_unit(self) -> str:
+        return self._spell_effect_time_unit_combo.currentData() or 'rounds'
+
+    @property
+    def combat_translate_tab_mode(self) -> str:
+        return self._combat_tab_mode_combo.currentData() or 'both'
+
+    @property
+    def combat_translate_tab_format(self) -> str:
+        return self._combat_tab_format_combo.currentData() or 'meters'
+
+    @property
+    def combat_translate_panel_enabled(self) -> bool:
+        return self._combat_panel_cb.isChecked()
+
+    @property
+    def combat_translate_panel_history_count(self) -> int:
+        return self._combat_panel_history_spin.value()
+
+    @property
+    def combat_log_enabled(self) -> bool:
+        return self._combat_log_cb.isChecked()
+
+    @property
+    def combat_tts_enabled(self) -> bool:
+        return self._combat_tts_cb.isChecked()
+
+    @property
+    def combat_enemy_identifier_enabled(self) -> bool:
+        return self._combat_enemy_identifier_cb.isChecked()
+
+    @property
+    def combat_enemy_identifier_style(self) -> str:
+        return self._combat_enemy_identifier_combo.currentData() or 'alphabet'
+
+    @property
+    def combat_message_templates(self) -> dict[str, str]:
+        return {kind: edit.text() for kind, edit in self._combat_message_edits.items()}
 
     @property
     def cheat_health_max(self) -> bool:

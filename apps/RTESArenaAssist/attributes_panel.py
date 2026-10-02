@@ -96,6 +96,8 @@ class AttributesPanel(QWidget):
         self._health_max_enabled: bool = self._compute_always_max('cheat_health_max')
         self._fatigue_max_enabled: bool = self._compute_always_max('cheat_fatigue_max')
         self._spell_max_enabled: bool = self._compute_always_max('cheat_spell_max')
+        from combat_info import PlayerHealthObserver
+        self._health_observer = PlayerHealthObserver()
         self._chargen_mode: bool = False
         self._is_bonus_screen: bool = False
         self._freeze_updates: bool = False
@@ -142,6 +144,7 @@ class AttributesPanel(QWidget):
     def set_memory_target(self, analyzer, anchor: int) -> None:
         self._analyzer = analyzer
         self._anchor = anchor
+        self._health_observer.reset()
         self._poll()
         self._poll_timer.start()
         self._apply_write_permission_state()
@@ -150,6 +153,7 @@ class AttributesPanel(QWidget):
         self._analyzer = None
         self._anchor = 0
         self._poll_timer.stop()
+        self._health_observer.reset()
         self._condition_log.reset()
 
     def set_chargen_mode(self, mode: bool) -> None:
@@ -270,13 +274,19 @@ class AttributesPanel(QWidget):
 
     def set_freeze_updates(self, freeze: bool) -> None:
         self._freeze_updates = freeze
+        if freeze:
+            self._health_observer.reset()
 
     def set_display_active(self, active: bool) -> None:
         if active:
             self._freeze_updates = False
         else:
             self._freeze_updates = True
+            self._health_observer.reset()
             self._clear_display()
+
+    def health_observer(self):
+        return self._health_observer
 
     def _clear_display(self) -> None:
         self._name_lbl.setText(UNKNOWN)

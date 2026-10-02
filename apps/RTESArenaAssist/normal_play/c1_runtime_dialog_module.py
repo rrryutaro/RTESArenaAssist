@@ -1,10 +1,11 @@
 from __future__ import annotations
 import logging
 from assist_log import recog as _recog
+from display_intent import PASSIVE_PANEL_OWNERS
 from normal_play.c1_dialog_axis import close_confirmed as _close_confirmed
 _log = logging.getLogger('RTESArenaAssist')
 C1_RUNTIME_DIALOG_OWNER = 'c1_runtime_dialog'
-_C1_RUNTIME_DIALOG_REPLACEABLE_OWNERS = frozenset({'', C1_RUNTIME_DIALOG_OWNER, 'gold_drop', 'trigger', 'red_text', 'red_text_dialog'})
+_C1_RUNTIME_DIALOG_REPLACEABLE_OWNERS = frozenset({'', C1_RUNTIME_DIALOG_OWNER, 'gold_drop', 'trigger', 'red_text', 'red_text_dialog'}) | PASSIVE_PANEL_OWNERS
 _SCENE_TEXT_REPLACEABLE_OWNERS = frozenset({'vision_cinematic'})
 
 def _replaceable_owners(w) -> frozenset:

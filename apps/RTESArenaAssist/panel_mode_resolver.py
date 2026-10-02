@@ -20,7 +20,7 @@ def closing_panel_mode(*, current_mode: str, img_name: str, screen_id: str, top_
         if mapped is not None:
             return mapped
     return MODE_TRANSLATE
-FOREGROUND_MODES = frozenset({'item_pickup', 'shop_buy', 'facility_list', 'equipment', 'spellbook', 'spell_detail', 'place_list', 'travel_table', 'journal', 'load_screen', 'choose_attributes', 'class_list', 'race_list', 'appearance_faces', 'map_screen'})
+FOREGROUND_MODES = frozenset({'item_pickup', 'shop_buy', 'facility_list', 'equipment', 'spellbook', 'spell_detail', 'place_list', 'travel_table', 'journal', 'load_screen', 'choose_attributes', 'class_list', 'race_list', 'appearance_faces', 'map_screen', 'combat_full', 'combat_map'})
 _TRANSLATE_FAMILY = frozenset({MODE_TRANSLATE, MODE_FALLBACK_MAP, MODE_FALLBACK_STATUS})
 OWNER_BOUND_MODES: dict[str, str] = {'load_screen': 'load_screen'}
 SCREEN_STATE_OWNERS: frozenset = frozenset(OWNER_BOUND_MODES.values())

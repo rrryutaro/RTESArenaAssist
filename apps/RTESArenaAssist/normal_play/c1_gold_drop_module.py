@@ -1,6 +1,7 @@
 from __future__ import annotations
 import logging
 import re as _re
+from display_intent import PASSIVE_PANEL_OWNERS
 import inf_text_lookup as itl
 from top_level.top_level_dispatcher import current_state as _current_top_level
 from normal_play.c1_dialog_axis import close_confirmed as _close_confirmed
@@ -10,7 +11,7 @@ _log = logging.getLogger('RTESArenaAssist')
 GOLD_DROP_OWNER = 'gold_drop'
 _GOLD_DROP_RE = _re.compile('^You have found \\d+ gold pieces?!!?')
 _INF_FRAG_EXCLUDE_RE = _re.compile('^(You have found |You open door |Bag of \\d+ gold pieces)', _re.IGNORECASE)
-_GOLD_DROP_REPLACEABLE_OWNERS = frozenset({'', GOLD_DROP_OWNER, 'trigger', 'red_text', 'red_text_dialog', 'c1_runtime_dialog'})
+_GOLD_DROP_REPLACEABLE_OWNERS = frozenset({'', GOLD_DROP_OWNER, 'trigger', 'red_text', 'red_text_dialog', 'c1_runtime_dialog'}) | PASSIVE_PANEL_OWNERS
 
 def _poll_gold_inf_fragment(w, b131_str: str, inf_name: str, mif_name: str) -> None:
     _log.debug('b131 0x929E changed but not gold-drop format: %r', b131_str[:64])

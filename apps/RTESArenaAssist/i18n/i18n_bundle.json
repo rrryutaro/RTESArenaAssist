@@ -4261,6 +4261,466 @@
           "id": 900849,
           "kind": "label",
           "debug_name": "charsheet.section.magic_items"
+        },
+        {
+          "id": 900850,
+          "kind": "label",
+          "debug_name": "combat.c3_damage_enemy"
+        },
+        {
+          "id": 900851,
+          "kind": "label",
+          "debug_name": "combat.c3_damage_player"
+        },
+        {
+          "id": 900852,
+          "kind": "label",
+          "debug_name": "combat.c3_defeated"
+        },
+        {
+          "id": 900853,
+          "kind": "label",
+          "debug_name": "combat.c3_defeated_no_xp"
+        },
+        {
+          "id": 900854,
+          "kind": "label",
+          "debug_name": "combat.c3_encounter"
+        },
+        {
+          "id": 900855,
+          "kind": "label",
+          "debug_name": "combat.c3_experience"
+        },
+        {
+          "id": 900856,
+          "kind": "label",
+          "debug_name": "combat.c_damage_enemy"
+        },
+        {
+          "id": 900857,
+          "kind": "label",
+          "debug_name": "combat.c_damage_player"
+        },
+        {
+          "id": 900858,
+          "kind": "label",
+          "debug_name": "combat.c_defeated"
+        },
+        {
+          "id": 900859,
+          "kind": "label",
+          "debug_name": "combat.c_defeated_damage"
+        },
+        {
+          "id": 900860,
+          "kind": "label",
+          "debug_name": "combat.c_defeated_damage_no_xp"
+        },
+        {
+          "id": 900861,
+          "kind": "label",
+          "debug_name": "combat.c_defeated_no_xp"
+        },
+        {
+          "id": 900862,
+          "kind": "label",
+          "debug_name": "combat.c_encounter"
+        },
+        {
+          "id": 900863,
+          "kind": "label",
+          "debug_name": "combat.c_experience"
+        },
+        {
+          "id": 900864,
+          "kind": "label",
+          "debug_name": "combat.damage_received"
+        },
+        {
+          "id": 900865,
+          "kind": "label",
+          "debug_name": "combat.defeated"
+        },
+        {
+          "id": 900866,
+          "kind": "label",
+          "debug_name": "combat.enemy"
+        },
+        {
+          "id": 900867,
+          "kind": "label",
+          "debug_name": "combat.enemy_number"
+        },
+        {
+          "id": 900868,
+          "kind": "label",
+          "debug_name": "combat.experience_popup"
+        },
+        {
+          "id": 900869,
+          "kind": "label",
+          "debug_name": "combat.hp"
+        },
+        {
+          "id": 900870,
+          "kind": "label",
+          "debug_name": "combat.player_hp"
+        },
+        {
+          "id": 900871,
+          "kind": "label",
+          "debug_name": "combat.result"
+        },
+        {
+          "id": 900872,
+          "kind": "label",
+          "debug_name": "combat.spell_points"
+        },
+        {
+          "id": 900873,
+          "kind": "label",
+          "debug_name": "combat.stamina"
+        },
+        {
+          "id": 900874,
+          "kind": "label",
+          "debug_name": "combat.summary_damage_dealt"
+        },
+        {
+          "id": 900875,
+          "kind": "label",
+          "debug_name": "combat.summary_damage_received"
+        },
+        {
+          "id": 900876,
+          "kind": "label",
+          "debug_name": "combat.summary_defeated"
+        },
+        {
+          "id": 900877,
+          "kind": "label",
+          "debug_name": "combat.summary_experience"
+        },
+        {
+          "id": 900878,
+          "kind": "label",
+          "debug_name": "combat.template.defeated"
+        },
+        {
+          "id": 900879,
+          "kind": "label",
+          "debug_name": "combat.template.encounter"
+        },
+        {
+          "id": 900880,
+          "kind": "label",
+          "debug_name": "combat.template.enemy_damage"
+        },
+        {
+          "id": 900881,
+          "kind": "label",
+          "debug_name": "combat.template.experience"
+        },
+        {
+          "id": 900882,
+          "kind": "label",
+          "debug_name": "combat.template.player_damage"
+        },
+        {
+          "id": 900883,
+          "kind": "label",
+          "debug_name": "combat.title"
+        },
+        {
+          "id": 900884,
+          "kind": "label",
+          "debug_name": "log.category.combat"
+        },
+        {
+          "id": 900885,
+          "kind": "label",
+          "debug_name": "log.section.combat"
+        },
+        {
+          "id": 900886,
+          "kind": "label",
+          "debug_name": "log.section.normal"
+        },
+        {
+          "id": 900887,
+          "kind": "label",
+          "debug_name": "settings.combat_arena_xp_seconds"
+        },
+        {
+          "id": 900888,
+          "kind": "label",
+          "debug_name": "settings.combat_dosbox"
+        },
+        {
+          "id": 900889,
+          "kind": "label",
+          "debug_name": "settings.combat_dosbox_note"
+        },
+        {
+          "id": 900890,
+          "kind": "label",
+          "debug_name": "settings.combat_enemy_identifier"
+        },
+        {
+          "id": 900891,
+          "kind": "label",
+          "debug_name": "settings.combat_enemy_identifier_alphabet"
+        },
+        {
+          "id": 900892,
+          "kind": "label",
+          "debug_name": "settings.combat_enemy_identifier_number"
+        },
+        {
+          "id": 900893,
+          "kind": "label",
+          "debug_name": "settings.combat_enemy_identifier_style"
+        },
+        {
+          "id": 900894,
+          "kind": "label",
+          "debug_name": "settings.combat_info_note"
+        },
+        {
+          "id": 900895,
+          "kind": "label",
+          "debug_name": "settings.combat_log"
+        },
+        {
+          "id": 900896,
+          "kind": "label",
+          "debug_name": "settings.combat_panel"
+        },
+        {
+          "id": 900897,
+          "kind": "label",
+          "debug_name": "settings.combat_panel_history"
+        },
+        {
+          "id": 900898,
+          "kind": "label",
+          "debug_name": "settings.combat_tab_format"
+        },
+        {
+          "id": 900899,
+          "kind": "label",
+          "debug_name": "settings.combat_tab_format_meters"
+        },
+        {
+          "id": 900900,
+          "kind": "label",
+          "debug_name": "settings.combat_tab_format_text"
+        },
+        {
+          "id": 900901,
+          "kind": "label",
+          "debug_name": "settings.combat_tab_mode"
+        },
+        {
+          "id": 900902,
+          "kind": "label",
+          "debug_name": "settings.combat_tab_mode_both"
+        },
+        {
+          "id": 900903,
+          "kind": "label",
+          "debug_name": "settings.combat_tab_mode_full"
+        },
+        {
+          "id": 900904,
+          "kind": "label",
+          "debug_name": "settings.combat_tab_mode_none"
+        },
+        {
+          "id": 900905,
+          "kind": "label",
+          "debug_name": "settings.combat_template_defeated"
+        },
+        {
+          "id": 900906,
+          "kind": "label",
+          "debug_name": "settings.combat_template_encounter"
+        },
+        {
+          "id": 900907,
+          "kind": "label",
+          "debug_name": "settings.combat_template_enemy_damage"
+        },
+        {
+          "id": 900908,
+          "kind": "label",
+          "debug_name": "settings.combat_template_experience"
+        },
+        {
+          "id": 900909,
+          "kind": "label",
+          "debug_name": "settings.combat_template_note"
+        },
+        {
+          "id": 900910,
+          "kind": "label",
+          "debug_name": "settings.combat_template_player_damage"
+        },
+        {
+          "id": 900911,
+          "kind": "label",
+          "debug_name": "settings.combat_tts"
+        },
+        {
+          "id": 900912,
+          "kind": "label",
+          "debug_name": "settings.entries_suffix"
+        },
+        {
+          "id": 900913,
+          "kind": "label",
+          "debug_name": "settings.group_arena_screen"
+        },
+        {
+          "id": 900914,
+          "kind": "label",
+          "debug_name": "settings.group_combat_common"
+        },
+        {
+          "id": 900915,
+          "kind": "label",
+          "debug_name": "settings.group_combat_messages"
+        },
+        {
+          "id": 900916,
+          "kind": "label",
+          "debug_name": "settings.group_spell_effect"
+        },
+        {
+          "id": 900917,
+          "kind": "label",
+          "debug_name": "settings.group_translate_panel"
+        },
+        {
+          "id": 900918,
+          "kind": "label",
+          "debug_name": "settings.group_translate_tab"
+        },
+        {
+          "id": 900919,
+          "kind": "label",
+          "debug_name": "settings.seconds_suffix"
+        },
+        {
+          "id": 900920,
+          "kind": "label",
+          "debug_name": "settings.spell_effect_enabled"
+        },
+        {
+          "id": 900921,
+          "kind": "label",
+          "debug_name": "settings.spell_effect_note"
+        },
+        {
+          "id": 900922,
+          "kind": "label",
+          "debug_name": "settings.spell_effect_rounds"
+        },
+        {
+          "id": 900923,
+          "kind": "label",
+          "debug_name": "settings.spell_effect_seconds"
+        },
+        {
+          "id": 900924,
+          "kind": "label",
+          "debug_name": "settings.spell_effect_style"
+        },
+        {
+          "id": 900925,
+          "kind": "label",
+          "debug_name": "settings.spell_effect_style_A"
+        },
+        {
+          "id": 900926,
+          "kind": "label",
+          "debug_name": "settings.spell_effect_style_B"
+        },
+        {
+          "id": 900927,
+          "kind": "label",
+          "debug_name": "settings.spell_effect_style_C"
+        },
+        {
+          "id": 900928,
+          "kind": "label",
+          "debug_name": "settings.spell_effect_style_D"
+        },
+        {
+          "id": 900929,
+          "kind": "label",
+          "debug_name": "settings.spell_effect_style_E"
+        },
+        {
+          "id": 900930,
+          "kind": "label",
+          "debug_name": "settings.spell_effect_style_F"
+        },
+        {
+          "id": 900931,
+          "kind": "label",
+          "debug_name": "settings.spell_effect_time_unit"
+        },
+        {
+          "id": 900932,
+          "kind": "label",
+          "debug_name": "settings.tab_combat"
+        },
+        {
+          "id": 900933,
+          "kind": "label",
+          "debug_name": "spell_effect.active"
+        },
+        {
+          "id": 900934,
+          "kind": "label",
+          "debug_name": "spell_effect.name.fire"
+        },
+        {
+          "id": 900935,
+          "kind": "label",
+          "debug_name": "spell_effect.name.levitate"
+        },
+        {
+          "id": 900936,
+          "kind": "label",
+          "debug_name": "spell_effect.name.light"
+        },
+        {
+          "id": 900937,
+          "kind": "label",
+          "debug_name": "spell_effect.name.shield"
+        },
+        {
+          "id": 900938,
+          "kind": "label",
+          "debug_name": "spell_effect.name.strength"
+        },
+        {
+          "id": 900939,
+          "kind": "label",
+          "debug_name": "spell_effect.remaining_points"
+        },
+        {
+          "id": 900940,
+          "kind": "label",
+          "debug_name": "spell_effect.remaining_rounds"
+        },
+        {
+          "id": 900941,
+          "kind": "label",
+          "debug_name": "spell_effect.remaining_seconds"
         }
       ]
     },
@@ -52091,6 +52551,374 @@
           "text": "Magic equipment"
         },
         {
+          "id": 900850,
+          "text": "You dealt {damage} damage to {name}. It has {hp} health remaining."
+        },
+        {
+          "id": 900851,
+          "text": "You received {damage} damage."
+        },
+        {
+          "id": 900852,
+          "text": "You defeated {name} and gained {xp} experience."
+        },
+        {
+          "id": 900853,
+          "text": "You defeated {name}."
+        },
+        {
+          "id": 900854,
+          "text": "You encountered {name}."
+        },
+        {
+          "id": 900855,
+          "text": "You gained {xp} experience."
+        },
+        {
+          "id": 900856,
+          "text": "{name}  -{damage} HP  {hp}/{max_hp}"
+        },
+        {
+          "id": 900857,
+          "text": "Damage received  -{damage} HP  {hp}/{max_hp}"
+        },
+        {
+          "id": 900858,
+          "text": "{name} defeated  +{xp} XP"
+        },
+        {
+          "id": 900859,
+          "text": "{name}  -{damage} HP  defeated  +{xp} XP"
+        },
+        {
+          "id": 900860,
+          "text": "{name}  -{damage} HP  defeated"
+        },
+        {
+          "id": 900861,
+          "text": "{name} defeated"
+        },
+        {
+          "id": 900862,
+          "text": "Encountered {name}  {hp}/{max_hp} HP"
+        },
+        {
+          "id": 900863,
+          "text": "Experience +{xp}"
+        },
+        {
+          "id": 900864,
+          "text": "Damage received"
+        },
+        {
+          "id": 900865,
+          "text": "Defeated"
+        },
+        {
+          "id": 900866,
+          "text": "Enemy"
+        },
+        {
+          "id": 900867,
+          "text": "Enemy {n}"
+        },
+        {
+          "id": 900868,
+          "text": "Experience  +{xp}"
+        },
+        {
+          "id": 900869,
+          "text": "Health"
+        },
+        {
+          "id": 900870,
+          "text": "Your health"
+        },
+        {
+          "id": 900871,
+          "text": "Combat result"
+        },
+        {
+          "id": 900872,
+          "text": "Spell Pts"
+        },
+        {
+          "id": 900873,
+          "text": "Fatigue"
+        },
+        {
+          "id": 900874,
+          "text": "Damage dealt: {value}"
+        },
+        {
+          "id": 900875,
+          "text": "Damage received: {value}"
+        },
+        {
+          "id": 900876,
+          "text": "Defeated: {names}"
+        },
+        {
+          "id": 900877,
+          "text": "Experience gained: +{value}"
+        },
+        {
+          "id": 900878,
+          "text": "{name} is defeated!"
+        },
+        {
+          "id": 900879,
+          "text": "{name} appears!"
+        },
+        {
+          "id": 900880,
+          "text": "{name} takes {damage} damage!"
+        },
+        {
+          "id": 900881,
+          "text": "You gain {xp} experience points!"
+        },
+        {
+          "id": 900882,
+          "text": "You take {damage} damage!"
+        },
+        {
+          "id": 900883,
+          "text": "Combat"
+        },
+        {
+          "id": 900884,
+          "text": "Combat"
+        },
+        {
+          "id": 900885,
+          "text": "Combat log"
+        },
+        {
+          "id": 900886,
+          "text": "Normal log"
+        },
+        {
+          "id": 900887,
+          "text": "Experience display duration"
+        },
+        {
+          "id": 900888,
+          "text": "Show combat information"
+        },
+        {
+          "id": 900889,
+          "text": "Show the most recently attacked enemy at the top and other enemies on the right."
+        },
+        {
+          "id": 900890,
+          "text": "Distinguish enemies of the same type"
+        },
+        {
+          "id": 900891,
+          "text": "Letters (A, B…)"
+        },
+        {
+          "id": 900892,
+          "text": "Numbers (1, 2…)"
+        },
+        {
+          "id": 900893,
+          "text": "Identifier style"
+        },
+        {
+          "id": 900894,
+          "text": "In the translation panel, existing messages, dialogue and lists take priority. Combat messages show recent history up to the chosen limit."
+        },
+        {
+          "id": 900895,
+          "text": "Save combat log"
+        },
+        {
+          "id": 900896,
+          "text": "Show combat messages"
+        },
+        {
+          "id": 900897,
+          "text": "Recent messages"
+        },
+        {
+          "id": 900898,
+          "text": "Combat format"
+        },
+        {
+          "id": 900899,
+          "text": "Enemy meters"
+        },
+        {
+          "id": 900900,
+          "text": "Text"
+        },
+        {
+          "id": 900901,
+          "text": "Display mode"
+        },
+        {
+          "id": 900902,
+          "text": "Combat and normal views"
+        },
+        {
+          "id": 900903,
+          "text": "Full combat view"
+        },
+        {
+          "id": 900904,
+          "text": "Off (keep normal view)"
+        },
+        {
+          "id": 900905,
+          "text": "Defeat"
+        },
+        {
+          "id": 900906,
+          "text": "Encounter"
+        },
+        {
+          "id": 900907,
+          "text": "Damage to enemy"
+        },
+        {
+          "id": 900908,
+          "text": "Experience"
+        },
+        {
+          "id": 900909,
+          "text": "{name}=enemy, {damage}=damage, {hp}=current HP, {max_hp}=maximum HP, {level}=level, {xp}=experience. Empty or invalid templates use the default."
+        },
+        {
+          "id": 900910,
+          "text": "Damage received"
+        },
+        {
+          "id": 900911,
+          "text": "Read new combat messages aloud"
+        },
+        {
+          "id": 900912,
+          "text": " entries"
+        },
+        {
+          "id": 900913,
+          "text": "Arena screen"
+        },
+        {
+          "id": 900914,
+          "text": "Common settings"
+        },
+        {
+          "id": 900915,
+          "text": "Combat message templates"
+        },
+        {
+          "id": 900916,
+          "text": "Arena screen · Ongoing spells"
+        },
+        {
+          "id": 900917,
+          "text": "Translation panel"
+        },
+        {
+          "id": 900918,
+          "text": "Translation tab"
+        },
+        {
+          "id": 900919,
+          "text": " s"
+        },
+        {
+          "id": 900920,
+          "text": "Show ongoing spells at top left"
+        },
+        {
+          "id": 900921,
+          "text": "Seconds start with an estimate, then adjust to measured game-round intervals. Shield shows remaining protection; Strength shows its bonus. The meter is hidden when the maximum is unknown."
+        },
+        {
+          "id": 900922,
+          "text": "Rounds (classic)"
+        },
+        {
+          "id": 900923,
+          "text": "Seconds (estimated, updated every second)"
+        },
+        {
+          "id": 900924,
+          "text": "Display style"
+        },
+        {
+          "id": 900925,
+          "text": "A | Name + remaining value"
+        },
+        {
+          "id": 900926,
+          "text": "B | Name + horizontal meter"
+        },
+        {
+          "id": 900927,
+          "text": "C | Icon + horizontal meter"
+        },
+        {
+          "id": 900928,
+          "text": "D | Icon + clockwise shade"
+        },
+        {
+          "id": 900929,
+          "text": "E | Icon + name + value + slim meter (recommended)"
+        },
+        {
+          "id": 900930,
+          "text": "F | Compact chip"
+        },
+        {
+          "id": 900931,
+          "text": "Timed-effect update"
+        },
+        {
+          "id": 900932,
+          "text": "Combat information"
+        },
+        {
+          "id": 900933,
+          "text": "Active"
+        },
+        {
+          "id": 900934,
+          "text": "Fire resistance"
+        },
+        {
+          "id": 900935,
+          "text": "Levitate"
+        },
+        {
+          "id": 900936,
+          "text": "Light"
+        },
+        {
+          "id": 900937,
+          "text": "Shield"
+        },
+        {
+          "id": 900938,
+          "text": "Fortify Strength"
+        },
+        {
+          "id": 900939,
+          "text": "{value} points left"
+        },
+        {
+          "id": 900940,
+          "text": "{value} R left"
+        },
+        {
+          "id": 900941,
+          "text": "~{value} s"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -80986,6 +81814,374 @@
         {
           "id": 900849,
           "text": "魔法装備"
+        },
+        {
+          "id": 900850,
+          "text": "{name}に{damage}ダメージ。残り体力は{hp}。"
+        },
+        {
+          "id": 900851,
+          "text": "{damage}ダメージを受けた。"
+        },
+        {
+          "id": 900852,
+          "text": "{name}を倒し、経験値{xp}を得た。"
+        },
+        {
+          "id": 900853,
+          "text": "{name}を倒した。"
+        },
+        {
+          "id": 900854,
+          "text": "{name}と会敵した。"
+        },
+        {
+          "id": 900855,
+          "text": "経験値{xp}を得た。"
+        },
+        {
+          "id": 900856,
+          "text": "{name}  -{damage} HP  {hp}/{max_hp}"
+        },
+        {
+          "id": 900857,
+          "text": "受けたダメージ  -{damage} HP  {hp}/{max_hp}"
+        },
+        {
+          "id": 900858,
+          "text": "{name}を撃破  +{xp} XP"
+        },
+        {
+          "id": 900859,
+          "text": "{name}  -{damage} HP  撃破  +{xp} XP"
+        },
+        {
+          "id": 900860,
+          "text": "{name}  -{damage} HP  撃破"
+        },
+        {
+          "id": 900861,
+          "text": "{name}を撃破"
+        },
+        {
+          "id": 900862,
+          "text": "{name}と会敵  {hp}/{max_hp} HP"
+        },
+        {
+          "id": 900863,
+          "text": "経験値 +{xp}"
+        },
+        {
+          "id": 900864,
+          "text": "受けたダメージ"
+        },
+        {
+          "id": 900865,
+          "text": "撃破"
+        },
+        {
+          "id": 900866,
+          "text": "敵"
+        },
+        {
+          "id": 900867,
+          "text": "敵{n}"
+        },
+        {
+          "id": 900868,
+          "text": "経験値  +{xp}"
+        },
+        {
+          "id": 900869,
+          "text": "体力"
+        },
+        {
+          "id": 900870,
+          "text": "自分の体力"
+        },
+        {
+          "id": 900871,
+          "text": "戦闘結果"
+        },
+        {
+          "id": 900872,
+          "text": "呪文P"
+        },
+        {
+          "id": 900873,
+          "text": "疲労"
+        },
+        {
+          "id": 900874,
+          "text": "与えたダメージ：{value}"
+        },
+        {
+          "id": 900875,
+          "text": "受けたダメージ：{value}"
+        },
+        {
+          "id": 900876,
+          "text": "倒した敵：{names}"
+        },
+        {
+          "id": 900877,
+          "text": "獲得経験値：+{value}"
+        },
+        {
+          "id": 900878,
+          "text": "{name}を たおした！"
+        },
+        {
+          "id": 900879,
+          "text": "{name}が あらわれた！"
+        },
+        {
+          "id": 900880,
+          "text": "{name}に {damage}の ダメージ！"
+        },
+        {
+          "id": 900881,
+          "text": "{xp}ポイントの けいけんちを かくとく！"
+        },
+        {
+          "id": 900882,
+          "text": "{damage}の ダメージを うけた！"
+        },
+        {
+          "id": 900883,
+          "text": "戦闘"
+        },
+        {
+          "id": 900884,
+          "text": "戦闘"
+        },
+        {
+          "id": 900885,
+          "text": "戦闘ログ"
+        },
+        {
+          "id": 900886,
+          "text": "通常ログ"
+        },
+        {
+          "id": 900887,
+          "text": "獲得経験値の表示時間"
+        },
+        {
+          "id": 900888,
+          "text": "戦闘情報を表示する"
+        },
+        {
+          "id": 900889,
+          "text": "直近攻撃した敵を画面上部、他の敵を右側に表示します。"
+        },
+        {
+          "id": 900890,
+          "text": "同名の敵に識別子を付ける"
+        },
+        {
+          "id": 900891,
+          "text": "アルファベット（A、B…）"
+        },
+        {
+          "id": 900892,
+          "text": "数字（1、2…）"
+        },
+        {
+          "id": 900893,
+          "text": "識別子の種類"
+        },
+        {
+          "id": 900894,
+          "text": "翻訳パネルでは、既存のメッセージ・会話・一覧を戦闘情報より優先します。戦闘メッセージは設定件数の直近履歴として表示します。"
+        },
+        {
+          "id": 900895,
+          "text": "戦闘ログを保存する"
+        },
+        {
+          "id": 900896,
+          "text": "戦闘メッセージを表示する"
+        },
+        {
+          "id": 900897,
+          "text": "直近履歴の表示件数"
+        },
+        {
+          "id": 900898,
+          "text": "戦闘情報の形式"
+        },
+        {
+          "id": 900899,
+          "text": "敵のメーター表示"
+        },
+        {
+          "id": 900900,
+          "text": "文字情報"
+        },
+        {
+          "id": 900901,
+          "text": "表示方法"
+        },
+        {
+          "id": 900902,
+          "text": "戦闘情報と通常表示の両方"
+        },
+        {
+          "id": 900903,
+          "text": "戦闘情報を全面表示"
+        },
+        {
+          "id": 900904,
+          "text": "表示なし（通常表示を維持）"
+        },
+        {
+          "id": 900905,
+          "text": "撃破"
+        },
+        {
+          "id": 900906,
+          "text": "会敵"
+        },
+        {
+          "id": 900907,
+          "text": "敵へのダメージ"
+        },
+        {
+          "id": 900908,
+          "text": "経験値"
+        },
+        {
+          "id": 900909,
+          "text": "{name}=敵名、{damage}=ダメージ、{hp}=残りHP、{max_hp}=最大HP、{level}=レベル、{xp}=経験値。空欄または使えない置換指定は、既定の文へ戻します。"
+        },
+        {
+          "id": 900910,
+          "text": "自分へのダメージ"
+        },
+        {
+          "id": 900911,
+          "text": "新しい戦闘メッセージを読み上げる"
+        },
+        {
+          "id": 900912,
+          "text": " 件"
+        },
+        {
+          "id": 900913,
+          "text": "Arena画面"
+        },
+        {
+          "id": 900914,
+          "text": "共通設定"
+        },
+        {
+          "id": 900915,
+          "text": "戦闘メッセージのテンプレート"
+        },
+        {
+          "id": 900916,
+          "text": "Arena画面・持続魔法"
+        },
+        {
+          "id": 900917,
+          "text": "翻訳パネル"
+        },
+        {
+          "id": 900918,
+          "text": "翻訳タブ"
+        },
+        {
+          "id": 900919,
+          "text": " 秒"
+        },
+        {
+          "id": 900920,
+          "text": "画面左上に持続魔法を表示"
+        },
+        {
+          "id": 900921,
+          "text": "秒は初期値から概算し、連続するゲーム内ラウンドの実測間隔で補正します。シールドは残り防御量、筋力強化は上昇量です。途中接続など最大値が不明な時はメーターを省きます。"
+        },
+        {
+          "id": 900922,
+          "text": "ラウンド（従来）"
+        },
+        {
+          "id": 900923,
+          "text": "秒（実測ペースによる概算・1秒ごと）"
+        },
+        {
+          "id": 900924,
+          "text": "表示方式"
+        },
+        {
+          "id": 900925,
+          "text": "A｜名前＋残り値"
+        },
+        {
+          "id": 900926,
+          "text": "B｜名前＋横メーター"
+        },
+        {
+          "id": 900927,
+          "text": "C｜アイコン＋横メーター"
+        },
+        {
+          "id": 900928,
+          "text": "D｜アイコン＋時計回りの暗転"
+        },
+        {
+          "id": 900929,
+          "text": "E｜アイコン＋名前＋残り値＋細メーター（推奨）"
+        },
+        {
+          "id": 900930,
+          "text": "F｜小型チップ"
+        },
+        {
+          "id": 900931,
+          "text": "時間型の更新"
+        },
+        {
+          "id": 900932,
+          "text": "戦闘情報"
+        },
+        {
+          "id": 900933,
+          "text": "効果中"
+        },
+        {
+          "id": 900934,
+          "text": "火炎耐性"
+        },
+        {
+          "id": 900935,
+          "text": "レビテート"
+        },
+        {
+          "id": 900936,
+          "text": "ライト"
+        },
+        {
+          "id": 900937,
+          "text": "シールド"
+        },
+        {
+          "id": 900938,
+          "text": "筋力強化"
+        },
+        {
+          "id": 900939,
+          "text": "残り{value}点"
+        },
+        {
+          "id": 900940,
+          "text": "残り{value}R"
+        },
+        {
+          "id": 900941,
+          "text": "約{value}秒"
         },
         {
           "id": 902000,
@@ -110693,6 +111889,374 @@
           "text": "Equipo mágico"
         },
         {
+          "id": 900850,
+          "text": "Infliges {damage} de daño a {name}. Le quedan {hp} PV."
+        },
+        {
+          "id": 900851,
+          "text": "Recibes {damage} de daño."
+        },
+        {
+          "id": 900852,
+          "text": "Derrotas a {name} y obtienes {xp} de experiencia."
+        },
+        {
+          "id": 900853,
+          "text": "Derrotas a {name}."
+        },
+        {
+          "id": 900854,
+          "text": "Te encuentras con {name}."
+        },
+        {
+          "id": 900855,
+          "text": "Obtienes {xp} de experiencia."
+        },
+        {
+          "id": 900856,
+          "text": "{name}  -{damage} PV  {hp}/{max_hp}"
+        },
+        {
+          "id": 900857,
+          "text": "Daño recibido  -{damage} PV  {hp}/{max_hp}"
+        },
+        {
+          "id": 900858,
+          "text": "{name} derrotado  +{xp} EXP"
+        },
+        {
+          "id": 900859,
+          "text": "{name}  -{damage} PV  derrotado  +{xp} EXP"
+        },
+        {
+          "id": 900860,
+          "text": "{name}  -{damage} PV  derrotado"
+        },
+        {
+          "id": 900861,
+          "text": "{name} derrotado"
+        },
+        {
+          "id": 900862,
+          "text": "Encuentro: {name}  {hp}/{max_hp} PV"
+        },
+        {
+          "id": 900863,
+          "text": "Experiencia +{xp}"
+        },
+        {
+          "id": 900864,
+          "text": "Daño recibido"
+        },
+        {
+          "id": 900865,
+          "text": "Derrotado"
+        },
+        {
+          "id": 900866,
+          "text": "Enemigo"
+        },
+        {
+          "id": 900867,
+          "text": "Enemigo {n}"
+        },
+        {
+          "id": 900868,
+          "text": "Experiencia  +{xp}"
+        },
+        {
+          "id": 900869,
+          "text": "Salud"
+        },
+        {
+          "id": 900870,
+          "text": "Tu salud"
+        },
+        {
+          "id": 900871,
+          "text": "Resultado del combate"
+        },
+        {
+          "id": 900872,
+          "text": "Puntos mág."
+        },
+        {
+          "id": 900873,
+          "text": "Resistencia"
+        },
+        {
+          "id": 900874,
+          "text": "Daño infligido: {value}"
+        },
+        {
+          "id": 900875,
+          "text": "Daño recibido: {value}"
+        },
+        {
+          "id": 900876,
+          "text": "Derrotados: {names}"
+        },
+        {
+          "id": 900877,
+          "text": "Experiencia obtenida: +{value}"
+        },
+        {
+          "id": 900878,
+          "text": "¡{name} ha sido derrotado!"
+        },
+        {
+          "id": 900879,
+          "text": "¡Aparece {name}!"
+        },
+        {
+          "id": 900880,
+          "text": "¡{name} recibe {damage} de daño!"
+        },
+        {
+          "id": 900881,
+          "text": "¡Obtienes {xp} puntos de experiencia!"
+        },
+        {
+          "id": 900882,
+          "text": "¡Recibes {damage} de daño!"
+        },
+        {
+          "id": 900883,
+          "text": "Combate"
+        },
+        {
+          "id": 900884,
+          "text": "Combate"
+        },
+        {
+          "id": 900885,
+          "text": "Registro de combate"
+        },
+        {
+          "id": 900886,
+          "text": "Registro normal"
+        },
+        {
+          "id": 900887,
+          "text": "Duración de experiencia"
+        },
+        {
+          "id": 900888,
+          "text": "Mostrar información de combate"
+        },
+        {
+          "id": 900889,
+          "text": "Muestra arriba al último enemigo atacado y los demás a la derecha."
+        },
+        {
+          "id": 900890,
+          "text": "Distinguir enemigos del mismo tipo"
+        },
+        {
+          "id": 900891,
+          "text": "Letras (A, B…)"
+        },
+        {
+          "id": 900892,
+          "text": "Números (1, 2…)"
+        },
+        {
+          "id": 900893,
+          "text": "Tipo de identificador"
+        },
+        {
+          "id": 900894,
+          "text": "En el panel de traducción tienen prioridad los mensajes, diálogos y listas existentes. Los mensajes de combate muestran el historial reciente hasta el límite elegido."
+        },
+        {
+          "id": 900895,
+          "text": "Guardar registro de combate"
+        },
+        {
+          "id": 900896,
+          "text": "Mostrar mensajes de combate"
+        },
+        {
+          "id": 900897,
+          "text": "Mensajes recientes"
+        },
+        {
+          "id": 900898,
+          "text": "Formato de combate"
+        },
+        {
+          "id": 900899,
+          "text": "Barras de enemigos"
+        },
+        {
+          "id": 900900,
+          "text": "Texto"
+        },
+        {
+          "id": 900901,
+          "text": "Modo de visualización"
+        },
+        {
+          "id": 900902,
+          "text": "Combate y vista normal"
+        },
+        {
+          "id": 900903,
+          "text": "Vista completa de combate"
+        },
+        {
+          "id": 900904,
+          "text": "Desactivado (vista normal)"
+        },
+        {
+          "id": 900905,
+          "text": "Derrota"
+        },
+        {
+          "id": 900906,
+          "text": "Encuentro"
+        },
+        {
+          "id": 900907,
+          "text": "Daño al enemigo"
+        },
+        {
+          "id": 900908,
+          "text": "Experiencia"
+        },
+        {
+          "id": 900909,
+          "text": "{name}=enemigo, {damage}=daño, {hp}=PV actuales, {max_hp}=PV máximos, {level}=nivel, {xp}=experiencia. Una plantilla vacía o no válida usa el texto predeterminado."
+        },
+        {
+          "id": 900910,
+          "text": "Daño recibido"
+        },
+        {
+          "id": 900911,
+          "text": "Leer en voz alta nuevos mensajes de combate"
+        },
+        {
+          "id": 900912,
+          "text": " entradas"
+        },
+        {
+          "id": 900913,
+          "text": "Pantalla de Arena"
+        },
+        {
+          "id": 900914,
+          "text": "Ajustes generales"
+        },
+        {
+          "id": 900915,
+          "text": "Plantillas de mensajes de combate"
+        },
+        {
+          "id": 900916,
+          "text": "Pantalla de Arena · Hechizos activos"
+        },
+        {
+          "id": 900917,
+          "text": "Panel de traducción"
+        },
+        {
+          "id": 900918,
+          "text": "Pestaña Traducción"
+        },
+        {
+          "id": 900919,
+          "text": " s"
+        },
+        {
+          "id": 900920,
+          "text": "Mostrar hechizos activos arriba a la izquierda"
+        },
+        {
+          "id": 900921,
+          "text": "Los segundos empiezan como estimación y se ajustan al medir las rondas. Escudo muestra la protección restante; Fuerza, el aumento. La barra se oculta si se desconoce el máximo."
+        },
+        {
+          "id": 900922,
+          "text": "Rondas (clásico)"
+        },
+        {
+          "id": 900923,
+          "text": "Segundos (estimado, cada segundo)"
+        },
+        {
+          "id": 900924,
+          "text": "Estilo de visualización"
+        },
+        {
+          "id": 900925,
+          "text": "A | Nombre y valor restante"
+        },
+        {
+          "id": 900926,
+          "text": "B | Nombre y barra horizontal"
+        },
+        {
+          "id": 900927,
+          "text": "C | Icono y barra horizontal"
+        },
+        {
+          "id": 900928,
+          "text": "D | Icono y sombreado horario"
+        },
+        {
+          "id": 900929,
+          "text": "E | Icono, nombre, valor y barra fina (recomendado)"
+        },
+        {
+          "id": 900930,
+          "text": "F | Indicador compacto"
+        },
+        {
+          "id": 900931,
+          "text": "Actualización de efectos temporales"
+        },
+        {
+          "id": 900932,
+          "text": "Información de combate"
+        },
+        {
+          "id": 900933,
+          "text": "Activo"
+        },
+        {
+          "id": 900934,
+          "text": "Resistencia al fuego"
+        },
+        {
+          "id": 900935,
+          "text": "Levitar"
+        },
+        {
+          "id": 900936,
+          "text": "Luz"
+        },
+        {
+          "id": 900937,
+          "text": "Escudo"
+        },
+        {
+          "id": 900938,
+          "text": "Fortalecer fuerza"
+        },
+        {
+          "id": 900939,
+          "text": "Quedan {value} puntos"
+        },
+        {
+          "id": 900940,
+          "text": "Quedan {value} R"
+        },
+        {
+          "id": 900941,
+          "text": "~{value} s"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -139588,6 +141152,374 @@
         {
           "id": 900849,
           "text": "Magische Ausrüstung"
+        },
+        {
+          "id": 900850,
+          "text": "Du fügst {name} {damage} Schaden zu. {hp} LP verbleiben."
+        },
+        {
+          "id": 900851,
+          "text": "Du erleidest {damage} Schaden."
+        },
+        {
+          "id": 900852,
+          "text": "Du besiegst {name} und erhältst {xp} Erfahrung."
+        },
+        {
+          "id": 900853,
+          "text": "Du besiegst {name}."
+        },
+        {
+          "id": 900854,
+          "text": "Du begegnest {name}."
+        },
+        {
+          "id": 900855,
+          "text": "Du erhältst {xp} Erfahrung."
+        },
+        {
+          "id": 900856,
+          "text": "{name}  -{damage} LP  {hp}/{max_hp}"
+        },
+        {
+          "id": 900857,
+          "text": "Erlittener Schaden  -{damage} LP  {hp}/{max_hp}"
+        },
+        {
+          "id": 900858,
+          "text": "{name} besiegt  +{xp} EP"
+        },
+        {
+          "id": 900859,
+          "text": "{name}  -{damage} LP  besiegt  +{xp} EP"
+        },
+        {
+          "id": 900860,
+          "text": "{name}  -{damage} LP  besiegt"
+        },
+        {
+          "id": 900861,
+          "text": "{name} besiegt"
+        },
+        {
+          "id": 900862,
+          "text": "{name} begegnet  {hp}/{max_hp} LP"
+        },
+        {
+          "id": 900863,
+          "text": "Erfahrung +{xp}"
+        },
+        {
+          "id": 900864,
+          "text": "Erlittener Schaden"
+        },
+        {
+          "id": 900865,
+          "text": "Besiegt"
+        },
+        {
+          "id": 900866,
+          "text": "Gegner"
+        },
+        {
+          "id": 900867,
+          "text": "Gegner {n}"
+        },
+        {
+          "id": 900868,
+          "text": "Erfahrung  +{xp}"
+        },
+        {
+          "id": 900869,
+          "text": "Leben"
+        },
+        {
+          "id": 900870,
+          "text": "Eigene Lebenspunkte"
+        },
+        {
+          "id": 900871,
+          "text": "Kampfergebnis"
+        },
+        {
+          "id": 900872,
+          "text": "Zauberpunkte"
+        },
+        {
+          "id": 900873,
+          "text": "Ausdauer"
+        },
+        {
+          "id": 900874,
+          "text": "Verursachter Schaden: {value}"
+        },
+        {
+          "id": 900875,
+          "text": "Erlittener Schaden: {value}"
+        },
+        {
+          "id": 900876,
+          "text": "Besiegt: {names}"
+        },
+        {
+          "id": 900877,
+          "text": "Erhaltene Erfahrung: +{value}"
+        },
+        {
+          "id": 900878,
+          "text": "{name} wurde besiegt!"
+        },
+        {
+          "id": 900879,
+          "text": "{name} erscheint!"
+        },
+        {
+          "id": 900880,
+          "text": "{name} erleidet {damage} Schaden!"
+        },
+        {
+          "id": 900881,
+          "text": "Du erhältst {xp} Erfahrungspunkte!"
+        },
+        {
+          "id": 900882,
+          "text": "Du erleidest {damage} Schaden!"
+        },
+        {
+          "id": 900883,
+          "text": "Kampf"
+        },
+        {
+          "id": 900884,
+          "text": "Kampf"
+        },
+        {
+          "id": 900885,
+          "text": "Kampfprotokoll"
+        },
+        {
+          "id": 900886,
+          "text": "Normales Protokoll"
+        },
+        {
+          "id": 900887,
+          "text": "Anzeigedauer für Erfahrung"
+        },
+        {
+          "id": 900888,
+          "text": "Kampfinformationen anzeigen"
+        },
+        {
+          "id": 900889,
+          "text": "Zeigt den zuletzt angegriffenen Gegner oben und weitere rechts an."
+        },
+        {
+          "id": 900890,
+          "text": "Gleichartige Gegner kennzeichnen"
+        },
+        {
+          "id": 900891,
+          "text": "Buchstaben (A, B…)"
+        },
+        {
+          "id": 900892,
+          "text": "Zahlen (1, 2…)"
+        },
+        {
+          "id": 900893,
+          "text": "Kennzeichenart"
+        },
+        {
+          "id": 900894,
+          "text": "Im Übersetzungsfenster haben vorhandene Meldungen, Dialoge und Listen Vorrang. Kampfmeldungen zeigen den letzten Verlauf bis zur gewählten Anzahl."
+        },
+        {
+          "id": 900895,
+          "text": "Kampfprotokoll speichern"
+        },
+        {
+          "id": 900896,
+          "text": "Kampfmeldungen anzeigen"
+        },
+        {
+          "id": 900897,
+          "text": "Letzte Meldungen"
+        },
+        {
+          "id": 900898,
+          "text": "Kampfformat"
+        },
+        {
+          "id": 900899,
+          "text": "Gegnerbalken"
+        },
+        {
+          "id": 900900,
+          "text": "Text"
+        },
+        {
+          "id": 900901,
+          "text": "Anzeigemodus"
+        },
+        {
+          "id": 900902,
+          "text": "Kampf- und normale Ansicht"
+        },
+        {
+          "id": 900903,
+          "text": "Vollbild-Kampfansicht"
+        },
+        {
+          "id": 900904,
+          "text": "Aus (normale Ansicht)"
+        },
+        {
+          "id": 900905,
+          "text": "Besiegter Gegner"
+        },
+        {
+          "id": 900906,
+          "text": "Begegnung"
+        },
+        {
+          "id": 900907,
+          "text": "Schaden am Gegner"
+        },
+        {
+          "id": 900908,
+          "text": "Erfahrung"
+        },
+        {
+          "id": 900909,
+          "text": "{name}=Gegner, {damage}=Schaden, {hp}=aktuelle LP, {max_hp}=maximale LP, {level}=Stufe, {xp}=Erfahrung. Bei leerer oder ungültiger Vorlage gilt der Standardtext."
+        },
+        {
+          "id": 900910,
+          "text": "Erlittener Schaden"
+        },
+        {
+          "id": 900911,
+          "text": "Neue Kampfmeldungen vorlesen"
+        },
+        {
+          "id": 900912,
+          "text": " Einträge"
+        },
+        {
+          "id": 900913,
+          "text": "Arena-Bildschirm"
+        },
+        {
+          "id": 900914,
+          "text": "Allgemeine Einstellungen"
+        },
+        {
+          "id": 900915,
+          "text": "Vorlagen für Kampfmeldungen"
+        },
+        {
+          "id": 900916,
+          "text": "Arena-Bildschirm · Anhaltende Zauber"
+        },
+        {
+          "id": 900917,
+          "text": "Übersetzungsfenster"
+        },
+        {
+          "id": 900918,
+          "text": "Übersetzungsregister"
+        },
+        {
+          "id": 900919,
+          "text": " s"
+        },
+        {
+          "id": 900920,
+          "text": "Anhaltende Zauber oben links anzeigen"
+        },
+        {
+          "id": 900921,
+          "text": "Sekunden beginnen als Schätzung und werden nach gemessenen Spielrunden angepasst. Schild zeigt den verbleibenden Schutz, Stärke den Bonus. Bei unbekanntem Maximum wird kein Balken gezeigt."
+        },
+        {
+          "id": 900922,
+          "text": "Runden (klassisch)"
+        },
+        {
+          "id": 900923,
+          "text": "Sekunden (geschätzt, jede Sekunde)"
+        },
+        {
+          "id": 900924,
+          "text": "Anzeigestil"
+        },
+        {
+          "id": 900925,
+          "text": "A | Name + Restwert"
+        },
+        {
+          "id": 900926,
+          "text": "B | Name + Balken"
+        },
+        {
+          "id": 900927,
+          "text": "C | Symbol + Balken"
+        },
+        {
+          "id": 900928,
+          "text": "D | Symbol + Uhrzeigersinn-Schatten"
+        },
+        {
+          "id": 900929,
+          "text": "E | Symbol, Name, Wert + schmaler Balken (empfohlen)"
+        },
+        {
+          "id": 900930,
+          "text": "F | Kompakte Kachel"
+        },
+        {
+          "id": 900931,
+          "text": "Aktualisierung von Zeiteffekten"
+        },
+        {
+          "id": 900932,
+          "text": "Kampfinformationen"
+        },
+        {
+          "id": 900933,
+          "text": "Aktiv"
+        },
+        {
+          "id": 900934,
+          "text": "Feuerresistenz"
+        },
+        {
+          "id": 900935,
+          "text": "Schweben"
+        },
+        {
+          "id": 900936,
+          "text": "Licht"
+        },
+        {
+          "id": 900937,
+          "text": "Schild"
+        },
+        {
+          "id": 900938,
+          "text": "Stärke erhöhen"
+        },
+        {
+          "id": 900939,
+          "text": "Noch {value} Punkte"
+        },
+        {
+          "id": 900940,
+          "text": "Noch {value} R"
+        },
+        {
+          "id": 900941,
+          "text": "~{value} s"
         },
         {
           "id": 902000,
@@ -168487,6 +170419,374 @@
           "text": "Équipement magique"
         },
         {
+          "id": 900850,
+          "text": "Vous infligez {damage} dégâts à {name}. Il lui reste {hp} PV."
+        },
+        {
+          "id": 900851,
+          "text": "Vous subissez {damage} dégâts."
+        },
+        {
+          "id": 900852,
+          "text": "Vous vainquez {name} et gagnez {xp} points d'expérience."
+        },
+        {
+          "id": 900853,
+          "text": "Vous vainquez {name}."
+        },
+        {
+          "id": 900854,
+          "text": "Vous rencontrez {name}."
+        },
+        {
+          "id": 900855,
+          "text": "Vous gagnez {xp} points d'expérience."
+        },
+        {
+          "id": 900856,
+          "text": "{name}  -{damage} PV  {hp}/{max_hp}"
+        },
+        {
+          "id": 900857,
+          "text": "Dégâts reçus  -{damage} PV  {hp}/{max_hp}"
+        },
+        {
+          "id": 900858,
+          "text": "{name} vaincu  +{xp} EXP"
+        },
+        {
+          "id": 900859,
+          "text": "{name}  -{damage} PV  vaincu  +{xp} EXP"
+        },
+        {
+          "id": 900860,
+          "text": "{name}  -{damage} PV  vaincu"
+        },
+        {
+          "id": 900861,
+          "text": "{name} vaincu"
+        },
+        {
+          "id": 900862,
+          "text": "Rencontre : {name}  {hp}/{max_hp} PV"
+        },
+        {
+          "id": 900863,
+          "text": "Expérience +{xp}"
+        },
+        {
+          "id": 900864,
+          "text": "Dégâts reçus"
+        },
+        {
+          "id": 900865,
+          "text": "Vaincu"
+        },
+        {
+          "id": 900866,
+          "text": "Ennemi"
+        },
+        {
+          "id": 900867,
+          "text": "Ennemi {n}"
+        },
+        {
+          "id": 900868,
+          "text": "Expérience  +{xp}"
+        },
+        {
+          "id": 900869,
+          "text": "Santé"
+        },
+        {
+          "id": 900870,
+          "text": "Votre santé"
+        },
+        {
+          "id": 900871,
+          "text": "Résultat du combat"
+        },
+        {
+          "id": 900872,
+          "text": "Pts de sort"
+        },
+        {
+          "id": 900873,
+          "text": "Endurance"
+        },
+        {
+          "id": 900874,
+          "text": "Dégâts infligés : {value}"
+        },
+        {
+          "id": 900875,
+          "text": "Dégâts reçus : {value}"
+        },
+        {
+          "id": 900876,
+          "text": "Ennemis vaincus : {names}"
+        },
+        {
+          "id": 900877,
+          "text": "Expérience gagnée : +{value}"
+        },
+        {
+          "id": 900878,
+          "text": "{name} est vaincu !"
+        },
+        {
+          "id": 900879,
+          "text": "{name} apparaît !"
+        },
+        {
+          "id": 900880,
+          "text": "{name} subit {damage} dégâts !"
+        },
+        {
+          "id": 900881,
+          "text": "Vous gagnez {xp} points d'expérience !"
+        },
+        {
+          "id": 900882,
+          "text": "Vous subissez {damage} dégâts !"
+        },
+        {
+          "id": 900883,
+          "text": "Combat"
+        },
+        {
+          "id": 900884,
+          "text": "Combat"
+        },
+        {
+          "id": 900885,
+          "text": "Journal de combat"
+        },
+        {
+          "id": 900886,
+          "text": "Journal normal"
+        },
+        {
+          "id": 900887,
+          "text": "Durée d'affichage de l'expérience"
+        },
+        {
+          "id": 900888,
+          "text": "Afficher les informations de combat"
+        },
+        {
+          "id": 900889,
+          "text": "Affiche en haut le dernier ennemi attaqué et les autres à droite."
+        },
+        {
+          "id": 900890,
+          "text": "Distinguer les ennemis du même type"
+        },
+        {
+          "id": 900891,
+          "text": "Lettres (A, B…)"
+        },
+        {
+          "id": 900892,
+          "text": "Chiffres (1, 2…)"
+        },
+        {
+          "id": 900893,
+          "text": "Type de repère"
+        },
+        {
+          "id": 900894,
+          "text": "Dans le panneau de traduction, les messages, dialogues et listes existants sont prioritaires. Les messages de combat montrent l'historique récent selon la limite choisie."
+        },
+        {
+          "id": 900895,
+          "text": "Enregistrer le journal de combat"
+        },
+        {
+          "id": 900896,
+          "text": "Afficher les messages de combat"
+        },
+        {
+          "id": 900897,
+          "text": "Messages récents"
+        },
+        {
+          "id": 900898,
+          "text": "Format de combat"
+        },
+        {
+          "id": 900899,
+          "text": "Jauges des ennemis"
+        },
+        {
+          "id": 900900,
+          "text": "Texte"
+        },
+        {
+          "id": 900901,
+          "text": "Mode d'affichage"
+        },
+        {
+          "id": 900902,
+          "text": "Combat et vue normale"
+        },
+        {
+          "id": 900903,
+          "text": "Vue de combat complète"
+        },
+        {
+          "id": 900904,
+          "text": "Désactivé (vue normale)"
+        },
+        {
+          "id": 900905,
+          "text": "Victoire"
+        },
+        {
+          "id": 900906,
+          "text": "Rencontre"
+        },
+        {
+          "id": 900907,
+          "text": "Dégâts à l'ennemi"
+        },
+        {
+          "id": 900908,
+          "text": "Expérience"
+        },
+        {
+          "id": 900909,
+          "text": "{name}=ennemi, {damage}=dégâts, {hp}=PV actuels, {max_hp}=PV max., {level}=niveau, {xp}=expérience. Un modèle vide ou invalide utilise le texte par défaut."
+        },
+        {
+          "id": 900910,
+          "text": "Dégâts reçus"
+        },
+        {
+          "id": 900911,
+          "text": "Lire les nouveaux messages de combat"
+        },
+        {
+          "id": 900912,
+          "text": " entrées"
+        },
+        {
+          "id": 900913,
+          "text": "Écran Arena"
+        },
+        {
+          "id": 900914,
+          "text": "Paramètres généraux"
+        },
+        {
+          "id": 900915,
+          "text": "Modèles de messages de combat"
+        },
+        {
+          "id": 900916,
+          "text": "Écran Arena · Sorts actifs"
+        },
+        {
+          "id": 900917,
+          "text": "Panneau de traduction"
+        },
+        {
+          "id": 900918,
+          "text": "Onglet Traduction"
+        },
+        {
+          "id": 900919,
+          "text": " s"
+        },
+        {
+          "id": 900920,
+          "text": "Afficher les sorts actifs en haut à gauche"
+        },
+        {
+          "id": 900921,
+          "text": "Les secondes commencent par une estimation, puis s'ajustent aux tours mesurés. Bouclier indique la protection restante ; Force, le bonus. La jauge est masquée si le maximum est inconnu."
+        },
+        {
+          "id": 900922,
+          "text": "Tours (classique)"
+        },
+        {
+          "id": 900923,
+          "text": "Secondes (estimées, chaque seconde)"
+        },
+        {
+          "id": 900924,
+          "text": "Style d'affichage"
+        },
+        {
+          "id": 900925,
+          "text": "A | Nom et valeur restante"
+        },
+        {
+          "id": 900926,
+          "text": "B | Nom et jauge horizontale"
+        },
+        {
+          "id": 900927,
+          "text": "C | Icône et jauge horizontale"
+        },
+        {
+          "id": 900928,
+          "text": "D | Icône et ombre horaire"
+        },
+        {
+          "id": 900929,
+          "text": "E | Icône, nom, valeur et jauge fine (recommandé)"
+        },
+        {
+          "id": 900930,
+          "text": "F | Pastille compacte"
+        },
+        {
+          "id": 900931,
+          "text": "Actualisation des effets temporisés"
+        },
+        {
+          "id": 900932,
+          "text": "Informations de combat"
+        },
+        {
+          "id": 900933,
+          "text": "Actif"
+        },
+        {
+          "id": 900934,
+          "text": "Résistance au feu"
+        },
+        {
+          "id": 900935,
+          "text": "Lévitation"
+        },
+        {
+          "id": 900936,
+          "text": "Lumière"
+        },
+        {
+          "id": 900937,
+          "text": "Bouclier"
+        },
+        {
+          "id": 900938,
+          "text": "Renforcement de force"
+        },
+        {
+          "id": 900939,
+          "text": "{value} points restants"
+        },
+        {
+          "id": 900940,
+          "text": "{value} tours restants"
+        },
+        {
+          "id": 900941,
+          "text": "~{value} s"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -197384,6 +199684,374 @@
           "text": "Equipaggiamento magico"
         },
         {
+          "id": 900850,
+          "text": "Infliggi {damage} danni a {name}. Gli restano {hp} PV."
+        },
+        {
+          "id": 900851,
+          "text": "Subisci {damage} danni."
+        },
+        {
+          "id": 900852,
+          "text": "Sconfiggi {name} e ottieni {xp} punti esperienza."
+        },
+        {
+          "id": 900853,
+          "text": "Sconfiggi {name}."
+        },
+        {
+          "id": 900854,
+          "text": "Incontri {name}."
+        },
+        {
+          "id": 900855,
+          "text": "Ottieni {xp} punti esperienza."
+        },
+        {
+          "id": 900856,
+          "text": "{name}  -{damage} PV  {hp}/{max_hp}"
+        },
+        {
+          "id": 900857,
+          "text": "Danni subiti  -{damage} PV  {hp}/{max_hp}"
+        },
+        {
+          "id": 900858,
+          "text": "{name} sconfitto  +{xp} PE"
+        },
+        {
+          "id": 900859,
+          "text": "{name}  -{damage} PV  sconfitto  +{xp} PE"
+        },
+        {
+          "id": 900860,
+          "text": "{name}  -{damage} PV  sconfitto"
+        },
+        {
+          "id": 900861,
+          "text": "{name} sconfitto"
+        },
+        {
+          "id": 900862,
+          "text": "Incontro: {name}  {hp}/{max_hp} PV"
+        },
+        {
+          "id": 900863,
+          "text": "Esperienza +{xp}"
+        },
+        {
+          "id": 900864,
+          "text": "Danni subiti"
+        },
+        {
+          "id": 900865,
+          "text": "Sconfitto"
+        },
+        {
+          "id": 900866,
+          "text": "Nemico"
+        },
+        {
+          "id": 900867,
+          "text": "Nemico {n}"
+        },
+        {
+          "id": 900868,
+          "text": "Esperienza  +{xp}"
+        },
+        {
+          "id": 900869,
+          "text": "Salute"
+        },
+        {
+          "id": 900870,
+          "text": "La tua salute"
+        },
+        {
+          "id": 900871,
+          "text": "Esito del combattimento"
+        },
+        {
+          "id": 900872,
+          "text": "Punti magia"
+        },
+        {
+          "id": 900873,
+          "text": "Resistenza"
+        },
+        {
+          "id": 900874,
+          "text": "Danni inflitti: {value}"
+        },
+        {
+          "id": 900875,
+          "text": "Danni subiti: {value}"
+        },
+        {
+          "id": 900876,
+          "text": "Sconfitti: {names}"
+        },
+        {
+          "id": 900877,
+          "text": "Esperienza ottenuta: +{value}"
+        },
+        {
+          "id": 900878,
+          "text": "{name} è sconfitto!"
+        },
+        {
+          "id": 900879,
+          "text": "Appare {name}!"
+        },
+        {
+          "id": 900880,
+          "text": "{name} subisce {damage} danni!"
+        },
+        {
+          "id": 900881,
+          "text": "Ottieni {xp} punti esperienza!"
+        },
+        {
+          "id": 900882,
+          "text": "Subisci {damage} danni!"
+        },
+        {
+          "id": 900883,
+          "text": "Combattimento"
+        },
+        {
+          "id": 900884,
+          "text": "Combattimento"
+        },
+        {
+          "id": 900885,
+          "text": "Registro di combattimento"
+        },
+        {
+          "id": 900886,
+          "text": "Registro normale"
+        },
+        {
+          "id": 900887,
+          "text": "Durata esperienza"
+        },
+        {
+          "id": 900888,
+          "text": "Mostra informazioni di combattimento"
+        },
+        {
+          "id": 900889,
+          "text": "Mostra in alto l'ultimo nemico attaccato e gli altri a destra."
+        },
+        {
+          "id": 900890,
+          "text": "Distingui nemici dello stesso tipo"
+        },
+        {
+          "id": 900891,
+          "text": "Lettere (A, B…)"
+        },
+        {
+          "id": 900892,
+          "text": "Numeri (1, 2…)"
+        },
+        {
+          "id": 900893,
+          "text": "Tipo di identificatore"
+        },
+        {
+          "id": 900894,
+          "text": "Nel pannello di traduzione, messaggi, dialoghi ed elenchi esistenti hanno la precedenza. I messaggi di combattimento mostrano la cronologia recente fino al limite scelto."
+        },
+        {
+          "id": 900895,
+          "text": "Salva registro di combattimento"
+        },
+        {
+          "id": 900896,
+          "text": "Mostra messaggi di combattimento"
+        },
+        {
+          "id": 900897,
+          "text": "Messaggi recenti"
+        },
+        {
+          "id": 900898,
+          "text": "Formato combattimento"
+        },
+        {
+          "id": 900899,
+          "text": "Indicatori dei nemici"
+        },
+        {
+          "id": 900900,
+          "text": "Testo"
+        },
+        {
+          "id": 900901,
+          "text": "Modalità di visualizzazione"
+        },
+        {
+          "id": 900902,
+          "text": "Combattimento e vista normale"
+        },
+        {
+          "id": 900903,
+          "text": "Vista completa del combattimento"
+        },
+        {
+          "id": 900904,
+          "text": "Disattivato (vista normale)"
+        },
+        {
+          "id": 900905,
+          "text": "Sconfitta"
+        },
+        {
+          "id": 900906,
+          "text": "Incontro"
+        },
+        {
+          "id": 900907,
+          "text": "Danni al nemico"
+        },
+        {
+          "id": 900908,
+          "text": "Esperienza"
+        },
+        {
+          "id": 900909,
+          "text": "{name}=nemico, {damage}=danni, {hp}=PV attuali, {max_hp}=PV massimi, {level}=livello, {xp}=esperienza. Un modello vuoto o non valido usa il testo predefinito."
+        },
+        {
+          "id": 900910,
+          "text": "Danni subiti"
+        },
+        {
+          "id": 900911,
+          "text": "Leggi i nuovi messaggi di combattimento"
+        },
+        {
+          "id": 900912,
+          "text": " voci"
+        },
+        {
+          "id": 900913,
+          "text": "Schermata Arena"
+        },
+        {
+          "id": 900914,
+          "text": "Impostazioni generali"
+        },
+        {
+          "id": 900915,
+          "text": "Modelli dei messaggi di combattimento"
+        },
+        {
+          "id": 900916,
+          "text": "Schermata Arena · Incantesimi attivi"
+        },
+        {
+          "id": 900917,
+          "text": "Pannello di traduzione"
+        },
+        {
+          "id": 900918,
+          "text": "Scheda Traduzione"
+        },
+        {
+          "id": 900919,
+          "text": " s"
+        },
+        {
+          "id": 900920,
+          "text": "Mostra gli incantesimi attivi in alto a sinistra"
+        },
+        {
+          "id": 900921,
+          "text": "I secondi iniziano come stima e si adattano ai turni misurati. Scudo indica la protezione rimasta; Forza, il bonus. La barra è nascosta se il massimo è sconosciuto."
+        },
+        {
+          "id": 900922,
+          "text": "Turni (classico)"
+        },
+        {
+          "id": 900923,
+          "text": "Secondi (stimati, ogni secondo)"
+        },
+        {
+          "id": 900924,
+          "text": "Stile di visualizzazione"
+        },
+        {
+          "id": 900925,
+          "text": "A | Nome e valore residuo"
+        },
+        {
+          "id": 900926,
+          "text": "B | Nome e barra orizzontale"
+        },
+        {
+          "id": 900927,
+          "text": "C | Icona e barra orizzontale"
+        },
+        {
+          "id": 900928,
+          "text": "D | Icona e ombra in senso orario"
+        },
+        {
+          "id": 900929,
+          "text": "E | Icona, nome, valore e barra sottile (consigliato)"
+        },
+        {
+          "id": 900930,
+          "text": "F | Riquadro compatto"
+        },
+        {
+          "id": 900931,
+          "text": "Aggiornamento degli effetti temporizzati"
+        },
+        {
+          "id": 900932,
+          "text": "Informazioni di combattimento"
+        },
+        {
+          "id": 900933,
+          "text": "Attivo"
+        },
+        {
+          "id": 900934,
+          "text": "Resistenza al fuoco"
+        },
+        {
+          "id": 900935,
+          "text": "Levitazione"
+        },
+        {
+          "id": 900936,
+          "text": "Luce"
+        },
+        {
+          "id": 900937,
+          "text": "Scudo"
+        },
+        {
+          "id": 900938,
+          "text": "Potenzia forza"
+        },
+        {
+          "id": 900939,
+          "text": "{value} punti rimasti"
+        },
+        {
+          "id": 900940,
+          "text": "{value} R rimasti"
+        },
+        {
+          "id": 900941,
+          "text": "~{value} s"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -226279,6 +228947,374 @@
         {
           "id": 900849,
           "text": "Магическое снаряжение"
+        },
+        {
+          "id": 900850,
+          "text": "Вы нанесли {name} {damage} урона. Осталось {hp} ОЗ."
+        },
+        {
+          "id": 900851,
+          "text": "Вы получили {damage} урона."
+        },
+        {
+          "id": 900852,
+          "text": "Вы победили {name} и получили {xp} опыта."
+        },
+        {
+          "id": 900853,
+          "text": "Вы победили {name}."
+        },
+        {
+          "id": 900854,
+          "text": "Вы встретили {name}."
+        },
+        {
+          "id": 900855,
+          "text": "Вы получили {xp} опыта."
+        },
+        {
+          "id": 900856,
+          "text": "{name}  -{damage} ОЗ  {hp}/{max_hp}"
+        },
+        {
+          "id": 900857,
+          "text": "Получен урон  -{damage} ОЗ  {hp}/{max_hp}"
+        },
+        {
+          "id": 900858,
+          "text": "{name} побеждён  +{xp} ОП"
+        },
+        {
+          "id": 900859,
+          "text": "{name}  -{damage} ОЗ  побеждён  +{xp} ОП"
+        },
+        {
+          "id": 900860,
+          "text": "{name}  -{damage} ОЗ  побеждён"
+        },
+        {
+          "id": 900861,
+          "text": "{name} побеждён"
+        },
+        {
+          "id": 900862,
+          "text": "Встречен {name}  {hp}/{max_hp} ОЗ"
+        },
+        {
+          "id": 900863,
+          "text": "Опыт +{xp}"
+        },
+        {
+          "id": 900864,
+          "text": "Полученный урон"
+        },
+        {
+          "id": 900865,
+          "text": "Побеждён"
+        },
+        {
+          "id": 900866,
+          "text": "Враг"
+        },
+        {
+          "id": 900867,
+          "text": "Враг {n}"
+        },
+        {
+          "id": 900868,
+          "text": "Опыт  +{xp}"
+        },
+        {
+          "id": 900869,
+          "text": "Здоровье"
+        },
+        {
+          "id": 900870,
+          "text": "Ваше здоровье"
+        },
+        {
+          "id": 900871,
+          "text": "Итог боя"
+        },
+        {
+          "id": 900872,
+          "text": "Очки магии"
+        },
+        {
+          "id": 900873,
+          "text": "Выносливость"
+        },
+        {
+          "id": 900874,
+          "text": "Нанесённый урон: {value}"
+        },
+        {
+          "id": 900875,
+          "text": "Полученный урон: {value}"
+        },
+        {
+          "id": 900876,
+          "text": "Побеждены: {names}"
+        },
+        {
+          "id": 900877,
+          "text": "Получено опыта: +{value}"
+        },
+        {
+          "id": 900878,
+          "text": "{name} побеждён!"
+        },
+        {
+          "id": 900879,
+          "text": "Появился {name}!"
+        },
+        {
+          "id": 900880,
+          "text": "{name} получает {damage} урона!"
+        },
+        {
+          "id": 900881,
+          "text": "Вы получаете {xp} очков опыта!"
+        },
+        {
+          "id": 900882,
+          "text": "Вы получаете {damage} урона!"
+        },
+        {
+          "id": 900883,
+          "text": "Бой"
+        },
+        {
+          "id": 900884,
+          "text": "Бой"
+        },
+        {
+          "id": 900885,
+          "text": "Журнал боя"
+        },
+        {
+          "id": 900886,
+          "text": "Обычный журнал"
+        },
+        {
+          "id": 900887,
+          "text": "Время показа опыта"
+        },
+        {
+          "id": 900888,
+          "text": "Показывать сведения о бое"
+        },
+        {
+          "id": 900889,
+          "text": "Последний атакованный враг показывается сверху, остальные — справа."
+        },
+        {
+          "id": 900890,
+          "text": "Различать однотипных врагов"
+        },
+        {
+          "id": 900891,
+          "text": "Буквы (A, B…)"
+        },
+        {
+          "id": 900892,
+          "text": "Числа (1, 2…)"
+        },
+        {
+          "id": 900893,
+          "text": "Тип обозначения"
+        },
+        {
+          "id": 900894,
+          "text": "На панели перевода обычные сообщения, диалоги и списки имеют приоритет. Сообщения о бое показывают недавнюю историю в заданном объёме."
+        },
+        {
+          "id": 900895,
+          "text": "Сохранять журнал боя"
+        },
+        {
+          "id": 900896,
+          "text": "Показывать сообщения о бое"
+        },
+        {
+          "id": 900897,
+          "text": "Последние сообщения"
+        },
+        {
+          "id": 900898,
+          "text": "Формат боя"
+        },
+        {
+          "id": 900899,
+          "text": "Шкалы врагов"
+        },
+        {
+          "id": 900900,
+          "text": "Текст"
+        },
+        {
+          "id": 900901,
+          "text": "Режим отображения"
+        },
+        {
+          "id": 900902,
+          "text": "Бой и обычный вид"
+        },
+        {
+          "id": 900903,
+          "text": "Полный экран боя"
+        },
+        {
+          "id": 900904,
+          "text": "Выкл. (обычный вид)"
+        },
+        {
+          "id": 900905,
+          "text": "Победа"
+        },
+        {
+          "id": 900906,
+          "text": "Встреча"
+        },
+        {
+          "id": 900907,
+          "text": "Урон врагу"
+        },
+        {
+          "id": 900908,
+          "text": "Опыт"
+        },
+        {
+          "id": 900909,
+          "text": "{name}=враг, {damage}=урон, {hp}=текущее здоровье, {max_hp}=макс. здоровье, {level}=уровень, {xp}=опыт. Пустой или неверный шаблон заменяется стандартным."
+        },
+        {
+          "id": 900910,
+          "text": "Полученный урон"
+        },
+        {
+          "id": 900911,
+          "text": "Озвучивать новые сообщения о бое"
+        },
+        {
+          "id": 900912,
+          "text": " записей"
+        },
+        {
+          "id": 900913,
+          "text": "Экран Arena"
+        },
+        {
+          "id": 900914,
+          "text": "Общие настройки"
+        },
+        {
+          "id": 900915,
+          "text": "Шаблоны сообщений о бое"
+        },
+        {
+          "id": 900916,
+          "text": "Экран Arena · Действующие заклинания"
+        },
+        {
+          "id": 900917,
+          "text": "Панель перевода"
+        },
+        {
+          "id": 900918,
+          "text": "Вкладка перевода"
+        },
+        {
+          "id": 900919,
+          "text": " с"
+        },
+        {
+          "id": 900920,
+          "text": "Показывать действующие заклинания слева вверху"
+        },
+        {
+          "id": 900921,
+          "text": "Секунды сначала оцениваются приблизительно, затем уточняются по измеренным раундам. Щит показывает остаток защиты, Сила — прибавку. Если максимум неизвестен, шкала скрыта."
+        },
+        {
+          "id": 900922,
+          "text": "Раунды (обычно)"
+        },
+        {
+          "id": 900923,
+          "text": "Секунды (оценка, раз в секунду)"
+        },
+        {
+          "id": 900924,
+          "text": "Стиль отображения"
+        },
+        {
+          "id": 900925,
+          "text": "A | Название и остаток"
+        },
+        {
+          "id": 900926,
+          "text": "B | Название и шкала"
+        },
+        {
+          "id": 900927,
+          "text": "C | Значок и шкала"
+        },
+        {
+          "id": 900928,
+          "text": "D | Значок и круговое затемнение"
+        },
+        {
+          "id": 900929,
+          "text": "E | Значок, название, остаток и тонкая шкала (рекомендуется)"
+        },
+        {
+          "id": 900930,
+          "text": "F | Компактный индикатор"
+        },
+        {
+          "id": 900931,
+          "text": "Обновление временных эффектов"
+        },
+        {
+          "id": 900932,
+          "text": "Сведения о бое"
+        },
+        {
+          "id": 900933,
+          "text": "Активно"
+        },
+        {
+          "id": 900934,
+          "text": "Сопротивление огню"
+        },
+        {
+          "id": 900935,
+          "text": "Левитация"
+        },
+        {
+          "id": 900936,
+          "text": "Свет"
+        },
+        {
+          "id": 900937,
+          "text": "Щит"
+        },
+        {
+          "id": 900938,
+          "text": "Усиление силы"
+        },
+        {
+          "id": 900939,
+          "text": "Осталось {value} ед."
+        },
+        {
+          "id": 900940,
+          "text": "Осталось {value} р."
+        },
+        {
+          "id": 900941,
+          "text": "≈{value} с"
         },
         {
           "id": 902000,

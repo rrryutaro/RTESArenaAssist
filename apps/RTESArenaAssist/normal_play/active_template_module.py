@@ -1,11 +1,12 @@
 from __future__ import annotations
 import logging
+from display_intent import PASSIVE_PANEL_OWNERS
 from hierarchy_state import FACILITY_OWNER_SETS_BY_SESSION
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 _RESPONSE_PTR_RANGES = ((4164, 512), (31097, 68), (37534, 512), (39582, 512))
 _TAVERN_SHOP_L4_KINDS = frozenset({'menu', 'rooms', 'drinks', 'rumor_type'})
-_ACTIVE_TEMPLATE_REPLACEABLE_OWNERS = frozenset({'', 'active_template'}) | FACILITY_OWNER_SETS_BY_SESSION['tavern']
+_ACTIVE_TEMPLATE_REPLACEABLE_OWNERS = frozenset({'', 'active_template'}) | PASSIVE_PANEL_OWNERS | FACILITY_OWNER_SETS_BY_SESSION['tavern']
 
 def should_poll_active_template(*, shop_menu_visible: bool, shop_buy_active: bool, active_facility: str, allow_during_shop_menu: bool, response_active: bool, in_negotiation: bool, top_level_state: str, tavern_l4_kind: str='', c_area: str='') -> bool:
     if c_area == 'dungeon':

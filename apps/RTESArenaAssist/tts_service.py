@@ -105,12 +105,14 @@ class _TTSRequest:
     text: str
     force: bool
     generation: int
+    tag: str | None = None
 
 class TTSService:
 
     def __init__(self, *, start_worker: bool=True) -> None:
         self._pending_lock = threading.Lock()
         self._pending = 0
+        self._pending_by_tag: dict[str, int] = {}
         self._enabled = False
         self._interrupt = False
         self._volume = 100
@@ -138,22 +140,33 @@ class TTSService:
             self._prewarm_worker = threading.Thread(target=self._run_prewarm, daemon=True)
             self._prewarm_worker.start()
 
-    def is_speaking(self) -> bool:
+    def is_speaking(self, tag: str | None=None) -> bool:
         with self._pending_lock:
+            if tag is not None:
+                return self._pending_by_tag.get(tag, 0) > 0
             return self._pending > 0
 
-    def _pending_add(self) -> None:
+    def _pending_add(self, tag: str | None=None) -> None:
         with self._pending_lock:
             self._pending += 1
+            if tag:
+                self._pending_by_tag[tag] = self._pending_by_tag.get(tag, 0) + 1
 
-    def _pending_done(self) -> None:
+    def _pending_done(self, tag: str | None=None) -> None:
         with self._pending_lock:
             if self._pending > 0:
                 self._pending -= 1
+            if tag and tag in self._pending_by_tag:
+                left = self._pending_by_tag[tag] - 1
+                if left > 0:
+                    self._pending_by_tag[tag] = left
+                else:
+                    self._pending_by_tag.pop(tag, None)
 
     def _pending_clear(self) -> None:
         with self._pending_lock:
             self._pending = 0
+            self._pending_by_tag.clear()
 
     def set_enabled(self, value: bool) -> None:
         with self._lock:
@@ -225,9 +238,9 @@ class TTSService:
         if self._enabled:
             self._enqueue(text, force=False)
 
-    def speak_queued(self, text: str) -> None:
+    def speak_queued(self, text: str, *, tag: str | None=None) -> None:
         if self._enabled:
-            self._enqueue(text, force=False, honor_interrupt=False)
+            self._enqueue(text, force=False, honor_interrupt=False, tag=tag)
 
     def speak_now(self, text: str) -> None:
         self._enqueue(text, force=True)
@@ -287,7 +300,7 @@ class TTSService:
         self._queue.put(None)
         self._prewarm_queue.put(None)
 
-    def _enqueue(self, text: str, *, force: bool, honor_interrupt: bool=True) -> None:
+    def _enqueue(self, text: str, *, force: bool, honor_interrupt: bool=True, tag: str | None=None) -> None:
         value = self._sanitize(text)
         if not value:
             return
@@ -306,8 +319,8 @@ class TTSService:
             self._pending_clear()
             if engine == 'voicevox':
                 self._stop_playback()
-        self._pending_add()
-        self._queue.put(_TTSRequest(value, force, generation))
+        self._pending_add(tag)
+        self._queue.put(_TTSRequest(value, force, generation, tag))
 
     def _drain(self) -> None:
         try:
@@ -442,7 +455,7 @@ class TTSService:
                 _log_tts('TTS worker error:\n' + traceback.format_exc())
                 continue
             finally:
-                self._pending_done()
+                self._pending_done(request.tag)
         speaker = None
         if had_sapi:
             try:

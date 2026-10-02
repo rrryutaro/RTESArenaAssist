@@ -46,7 +46,8 @@ class TranslationFeed:
         if not (key and bool(settings.get(key, True))):
             self._log_decision('suppress', 'target_off', panel_owner, speech_role, read_text)
             return
-        reannounce = speech_action == 'reannounce'
+        reannounce = speech_action in ('reannounce', 'queue_reannounce')
+        queued = speech_action in ('queue', 'queue_reannounce')
         same_unit = panel_owner == self._last_spoken_owner and speech_role == self._last_spoken_role
         if not reannounce and same_unit and (original == self._last_spoken_original) and (read_text == self._last_spoken):
             self._log_decision('suppress', 'same_unit_reassert', panel_owner, speech_role, read_text)
@@ -69,10 +70,13 @@ class TranslationFeed:
         self._remember_spoken(repeat_key)
         self._speaking_owner = panel_owner
         spoken_text = self._apply_name_reading(read_text)
-        if speech_action == 'queue':
+        if queued:
             speak_queued = getattr(self._tts, 'speak_queued', None)
             if callable(speak_queued):
-                speak_queued(spoken_text)
+                try:
+                    speak_queued(spoken_text, tag=panel_owner)
+                except TypeError:
+                    speak_queued(spoken_text)
             else:
                 self._tts.speak(spoken_text)
         else:
@@ -165,6 +169,13 @@ class TranslationFeed:
                     self._log_store.reset_active()
                 except Exception:
                     pass
+            if prev is not None and tl in ('pregame', 'chargen'):
+                combat_store = getattr(w, '_combat_log_store', None)
+                if combat_store is not None:
+                    try:
+                        combat_store.reset_active()
+                    except Exception:
+                        pass
 
     def reset_spoken(self) -> None:
         self._last_spoken = None

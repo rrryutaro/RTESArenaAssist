@@ -2,6 +2,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Optional
 from hierarchy_state import SeparationHierarchy
+COMBAT_INFO_OWNER = 'combat_info'
+PASSIVE_PANEL_OWNERS = frozenset({COMBAT_INFO_OWNER})
 
 @dataclass(frozen=True)
 class PollFrame:
@@ -41,6 +43,7 @@ class DisplayIntent:
     speech_role: Optional[str] = None
     speech_text: Optional[str] = None
     speech_action: str = 'replace'
+    speech_event_id: Optional[int] = None
     log_enabled: bool = True
 
     @classmethod
@@ -106,6 +109,10 @@ class DisplayIntent:
     @classmethod
     def journal_entries(cls, panel_owner: str, entries: list, *, panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True, priority: int=0, reason: str='') -> 'DisplayIntent':
         return cls(kind='journal_entries', panel_owner=panel_owner, mode='journal', items=entries, panel_en=panel_en, panel_ja=panel_ja, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled, priority=priority, reason=reason)
+
+    @classmethod
+    def combat_info(cls, data: dict, *, mode: str, panel_en: str='', panel_ja: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_event_id: Optional[int]=None, priority: int=-10, reason: str='combat_info') -> 'DisplayIntent':
+        return cls(kind='combat_info', panel_owner=COMBAT_INFO_OWNER, mode=mode, items=data, panel_en=panel_en, panel_ja=panel_ja, priority=priority, reason=reason, allowed_current_owners=('', 'combat_info'), speech_role=speech_role, speech_text=speech_text, speech_action='queue_reannounce', speech_event_id=speech_event_id, log_enabled=False)
 
     @classmethod
     def place_list(cls, panel_owner: str, items: list, *, title: str='', panel_en: str='', panel_ja: str='', priority: int=0, reason: str='') -> 'DisplayIntent':

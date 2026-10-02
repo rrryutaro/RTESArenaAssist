@@ -9,6 +9,7 @@ import i18n_helper as i18n
 from class_list_panel import ClassListPanel
 from race_list_panel import RaceListPanel
 from appearance_faces_panel import AppearanceFacesPanel
+from combat_widgets import CombatPanel
 from tabs.tab_map import TabMap
 
 def build_ui(tab: 'TabTranslate') -> None:
@@ -419,6 +420,15 @@ def build_ui(tab: 'TabTranslate') -> None:
     jg_lay.addWidget(journal_scroll, 1)
     jp_lay.addWidget(journal_group, 1)
     tab._fallback_map_tab = TabMap(name='fallback_map')
+    tab._combat_full_panel = CombatPanel(compact=False)
+    combat_map_page = QWidget()
+    _cmp_lay = QVBoxLayout(combat_map_page)
+    _cmp_lay.setContentsMargins(0, 0, 0, 0)
+    _cmp_lay.setSpacing(5)
+    tab._combat_band_panel = CombatPanel(compact=True)
+    tab._combat_map_tab = TabMap(name='combat_map')
+    _cmp_lay.addWidget(tab._combat_band_panel)
+    _cmp_lay.addWidget(tab._combat_map_tab, 1)
     tab._stack.addWidget(translate_page)
     tab._stack.addWidget(tab._class_list_panel)
     tab._stack.addWidget(tab._attr_slot)
@@ -435,5 +445,7 @@ def build_ui(tab: 'TabTranslate') -> None:
     tab._stack.addWidget(travel_table_page)
     tab._stack.addWidget(journal_page)
     tab._stack.addWidget(spellbook_page)
+    tab._stack.addWidget(tab._combat_full_panel)
+    tab._stack.addWidget(combat_map_page)
     cl.addWidget(tab._stack, 1)
     root.addWidget(tab._conn_widget)

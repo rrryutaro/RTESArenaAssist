@@ -132,9 +132,12 @@ class UiRouter:
         self._log_facility_display_invariant(frame)
 
     def _winner_has_content(self, intent: Optional[DisplayIntent]) -> bool:
-        if intent is None or intent.kind != 'translation':
+        if intent is None:
             return False
-        en = (intent.en or '').strip()
+        if intent.kind == 'translation':
+            en = (intent.en or '').strip()
+        else:
+            return False
         try:
             nd = i18n.tr('translate.no_data')
         except Exception:
@@ -224,7 +227,7 @@ class UiRouter:
             if not intent.keep_owner:
                 self._window._panel_owner = intent.panel_owner
             return
-        if intent.kind in ('clear', 'claim_owner', 'shop_buy_list', 'facility_list', 'item_pickup_list', 'load_screen_slots', 'equipment_list', 'spell_detail', 'place_list', 'travel_table', 'journal_entries'):
+        if intent.kind in ('clear', 'claim_owner', 'combat_info', 'shop_buy_list', 'facility_list', 'item_pickup_list', 'load_screen_slots', 'equipment_list', 'spell_detail', 'place_list', 'travel_table', 'journal_entries'):
             self._window._panel_owner = intent.panel_owner
 
     def update_translation(self, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace') -> None:
@@ -242,6 +245,29 @@ class UiRouter:
         w = self._window
         if intent.kind == 'translation':
             self._apply_translation(intent)
+            return
+        if intent.kind == 'combat_info':
+            data = intent.items or {}
+            w._tab_translate.update_combat_view(data)
+            if data.get('panel_enabled'):
+                _en = intent.panel_en or ''
+                _ja = intent.panel_ja or ''
+                if w._layout_translate_panel is not None:
+                    w._layout_translate_panel.update_translation(_en, _ja)
+                self._displayed_translation = (intent.panel_owner, _en, _ja)
+            elif self._displayed_translation is not None and self._displayed_translation[0] == 'combat_info':
+                if w._layout_translate_panel is not None:
+                    w._layout_translate_panel.update_translation('', '')
+                self._displayed_translation = None
+            w._panel_owner = intent.panel_owner
+            if self._translation_observer is not None and intent.speech_role:
+                _obs_key = (intent.panel_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled, intent.speech_event_id)
+                if self._obs_last_key != _obs_key:
+                    self._obs_last_key = _obs_key
+                    try:
+                        self._translation_observer(intent.panel_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.log_enabled, intent.speech_action)
+                    except Exception:
+                        _log.exception('translation_observer failed')
             return
         if intent.kind == 'clear':
             closed_owner = intent.closed_owner or self.current_owner()
@@ -267,7 +293,13 @@ class UiRouter:
             current = self.current_owner()
             if current != intent.panel_owner:
                 return
-            w._tab_translate.update_translation('', '', suppress_fallback=True)
+            if current == 'combat_info':
+                try:
+                    w._tab_translate.clear_combat_view()
+                except AttributeError:
+                    pass
+            else:
+                w._tab_translate.update_translation('', '', suppress_fallback=True)
             if intent.clear_place_list:
                 try:
                     w._tab_translate.update_place_list([])
@@ -419,7 +451,7 @@ class UiRouter:
             _obs_en = intent.en or (intent.panel_en or '')
             _obs_ja = intent.ja or (intent.panel_ja or '')
             _obs_owner = intent.panel_owner or self.current_owner()
-            _obs_key = (_obs_owner, _obs_en, _obs_ja, intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled)
+            _obs_key = (_obs_owner, _obs_en, _obs_ja, intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled, intent.speech_event_id)
             if self._obs_last_key != _obs_key:
                 self._obs_last_key = _obs_key
                 try:
