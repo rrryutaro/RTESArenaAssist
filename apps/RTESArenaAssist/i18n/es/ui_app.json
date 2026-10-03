@@ -848,6 +848,8 @@
   "settings.combat_dosbox": "Mostrar información de combate",
   "settings.combat_dosbox_note": "Muestra arriba al último enemigo atacado y los demás a la derecha.",
   "settings.combat_arena_xp_seconds": "Duración de experiencia",
+  "settings.combat_low_hp_effect": "Mostrar un borde tenue cuando la salud sea baja",
+  "settings.combat_low_hp_threshold": "Umbral de salud",
   "settings.combat_tab_mode": "Modo de visualización",
   "settings.combat_tab_mode_none": "Desactivado (vista normal)",
   "settings.combat_tab_mode_both": "Combate y vista normal",

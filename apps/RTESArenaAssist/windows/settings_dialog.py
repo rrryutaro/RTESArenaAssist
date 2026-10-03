@@ -706,6 +706,14 @@ class _SettingsDialog(QDialog):
         return self._combat_arena_xp_spin.value()
 
     @property
+    def combat_low_hp_effect_enabled(self) -> bool:
+        return self._combat_low_hp_cb.isChecked()
+
+    @property
+    def combat_low_hp_threshold_percent(self) -> int:
+        return self._combat_low_hp_threshold_spin.value()
+
+    @property
     def spell_effect_arena_enabled(self) -> bool:
         return self._spell_effect_arena_cb.isChecked()
 
@@ -740,6 +748,10 @@ class _SettingsDialog(QDialog):
     @property
     def combat_tts_enabled(self) -> bool:
         return self._combat_tts_cb.isChecked()
+
+    @property
+    def combat_tts_categories(self) -> dict[str, bool]:
+        return {kind: check.isChecked() for kind, check in self._combat_tts_category_cbs.items()}
 
     @property
     def combat_enemy_identifier_enabled(self) -> bool:

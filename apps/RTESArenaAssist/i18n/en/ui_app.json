@@ -848,6 +848,8 @@
   "settings.combat_dosbox": "Show combat information",
   "settings.combat_dosbox_note": "Show the most recently attacked enemy at the top and other enemies on the right.",
   "settings.combat_arena_xp_seconds": "Experience display duration",
+  "settings.combat_low_hp_effect": "Show a subtle border when health is low",
+  "settings.combat_low_hp_threshold": "Health threshold",
   "settings.combat_tab_mode": "Display mode",
   "settings.combat_tab_mode_none": "Off (keep normal view)",
   "settings.combat_tab_mode_both": "Combat and normal views",

@@ -4721,6 +4721,16 @@
           "id": 900941,
           "kind": "label",
           "debug_name": "spell_effect.remaining_seconds"
+        },
+        {
+          "id": 900942,
+          "kind": "label",
+          "debug_name": "settings.combat_low_hp_effect"
+        },
+        {
+          "id": 900943,
+          "kind": "label",
+          "debug_name": "settings.combat_low_hp_threshold"
         }
       ]
     },
@@ -52919,6 +52929,14 @@
           "text": "~{value} s"
         },
         {
+          "id": 900942,
+          "text": "Show a subtle border when health is low"
+        },
+        {
+          "id": 900943,
+          "text": "Health threshold"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -82182,6 +82200,14 @@
         {
           "id": 900941,
           "text": "約{value}秒"
+        },
+        {
+          "id": 900942,
+          "text": "低体力時に探索画面の縁を表示する"
+        },
+        {
+          "id": 900943,
+          "text": "表示を始める体力割合"
         },
         {
           "id": 902000,
@@ -112257,6 +112283,14 @@
           "text": "~{value} s"
         },
         {
+          "id": 900942,
+          "text": "Mostrar un borde tenue cuando la salud sea baja"
+        },
+        {
+          "id": 900943,
+          "text": "Umbral de salud"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -141520,6 +141554,14 @@
         {
           "id": 900941,
           "text": "~{value} s"
+        },
+        {
+          "id": 900942,
+          "text": "Bei niedriger Gesundheit einen dezenten Rahmen anzeigen"
+        },
+        {
+          "id": 900943,
+          "text": "Gesundheitsschwelle"
         },
         {
           "id": 902000,
@@ -170787,6 +170829,14 @@
           "text": "~{value} s"
         },
         {
+          "id": 900942,
+          "text": "Afficher une bordure discrète quand la santé est faible"
+        },
+        {
+          "id": 900943,
+          "text": "Seuil de santé"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -200052,6 +200102,14 @@
           "text": "~{value} s"
         },
         {
+          "id": 900942,
+          "text": "Mostra un bordo tenue quando la salute è bassa"
+        },
+        {
+          "id": 900943,
+          "text": "Soglia di salute"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -229315,6 +229373,14 @@
         {
           "id": 900941,
           "text": "≈{value} с"
+        },
+        {
+          "id": 900942,
+          "text": "Показывать неброскую рамку при низком здоровье"
+        },
+        {
+          "id": 900943,
+          "text": "Порог здоровья"
         },
         {
           "id": 902000,

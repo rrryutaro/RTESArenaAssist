@@ -848,6 +848,8 @@
   "settings.combat_dosbox": "Kampfinformationen anzeigen",
   "settings.combat_dosbox_note": "Zeigt den zuletzt angegriffenen Gegner oben und weitere rechts an.",
   "settings.combat_arena_xp_seconds": "Anzeigedauer für Erfahrung",
+  "settings.combat_low_hp_effect": "Bei niedriger Gesundheit einen dezenten Rahmen anzeigen",
+  "settings.combat_low_hp_threshold": "Gesundheitsschwelle",
   "settings.combat_tab_mode": "Anzeigemodus",
   "settings.combat_tab_mode_none": "Aus (normale Ansicht)",
   "settings.combat_tab_mode_both": "Kampf- und normale Ansicht",

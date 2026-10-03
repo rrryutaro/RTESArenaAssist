@@ -1,12 +1,15 @@
 from __future__ import annotations
+import math
 import time
 from dataclasses import dataclass
 from PySide6.QtCore import Qt, QTimer
+from PySide6.QtGui import QColor, QPainter
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QProgressBar, QVBoxLayout, QWidget
 from combat_text_ja import text as combat_ja
 _ARENA_NATIVE_HEIGHT = 200
 _ARENA_EXPLORATION_HEIGHT = 147
 _ARENA_DAMAGE_MARGIN = 2
+_ARENA_DAMAGE_SECONDS = 5.0
 
 def _hp_text(current: int, maximum: int) -> str:
     return f'{max(0, current)} / {maximum}'
@@ -217,7 +220,16 @@ class CombatOverlay(QWidget):
         self._xp_popups: list[_ExperiencePopup] = []
         self._last_xp_serial = 0
         self._clock = time.monotonic
-        self._combat_visible = False
+        self._low_hp_effect = False
+        self._low_hp_top = 0
+        self._last_damage_serial = 0
+        self._damage_expires_at = 0.0
+        self._damage_timer = QTimer(self)
+        self._damage_timer.setInterval(100)
+        self._damage_timer.timeout.connect(self._refresh_damage)
+        self._pulse_timer = QTimer(self)
+        self._pulse_timer.setInterval(80)
+        self._pulse_timer.timeout.connect(self.update)
         self._xp_timer = QTimer(self)
         self._xp_timer.setInterval(100)
         self._xp_timer.timeout.connect(self._refresh_xp)
@@ -273,15 +285,34 @@ class CombatOverlay(QWidget):
         self._expire_xp()
         if self.isHidden():
             return
-        if not self._xp_popups and (not self._combat_visible):
+        if not self._has_visible_content():
             self.hide()
             return
         exploration_bottom = round(self.height() * _ARENA_EXPLORATION_HEIGHT / _ARENA_NATIVE_HEIGHT)
         bottom_margin = max(2, round(self.height() * _ARENA_DAMAGE_MARGIN / _ARENA_NATIVE_HEIGHT))
         self._layout_xp(exploration_bottom, bottom_margin)
 
-    def render(self, view, *, name_of, rect: tuple[int, int, int, int], show_combat: bool=True, xp_seconds: int=5) -> None:
-        self.record_xp(view.events, duration_seconds=xp_seconds)
+    def _has_visible_content(self) -> bool:
+        return self._low_hp_effect or any((not widget.isHidden() for widget in (self._top, self._right, self._bottom))) or any((not popup.label.isHidden() for popup in self._xp_popups))
+
+    def _refresh_damage(self) -> None:
+        if self._damage_expires_at and self._clock() < self._damage_expires_at:
+            return
+        self._damage_expires_at = 0.0
+        self._damage_timer.stop()
+        self._bottom.hide()
+        if not self._has_visible_content():
+            self.hide()
+
+    def render(self, view, *, name_of, rect: tuple[int, int, int, int], show_combat: bool=True, xp_seconds: int=5, show_xp: bool=True, low_hp_effect: bool=False, low_hp_top: int=0) -> None:
+        if show_xp:
+            self.record_xp(view.events, duration_seconds=xp_seconds)
+        elif self._xp_popups:
+            self._xp_timer.stop()
+            for popup in self._xp_popups:
+                popup.label.hide()
+                popup.label.deleteLater()
+            self._xp_popups.clear()
         left, top, right, bottom = rect
         if right <= left or bottom <= top:
             self.hide()
@@ -291,11 +322,20 @@ class CombatOverlay(QWidget):
         target = view.target
         last_enemy = next((event for event in reversed(view.history) if event.enemy is not None and event.kind == 'enemy_damage'), None)
         last_defeat = next((event for event in reversed(view.history) if event.enemy is not None and event.kind == 'enemy_defeated'), None)
-        last_player = next((event for event in reversed(view.history) if event.kind == 'player_damage'), None)
+        new_player_damage = next((event for event in reversed(view.events) if event.kind == 'player_damage' and event.serial > self._last_damage_serial), None)
         self._top.hide()
         self._right.hide()
         self._bottom.hide()
-        self._combat_visible = show_combat
+        effect_top = min(height, max(0, int(low_hp_top)))
+        if self._low_hp_effect != low_hp_effect or self._low_hp_top != effect_top:
+            self._low_hp_effect = low_hp_effect
+            self._low_hp_top = effect_top
+            self.update()
+        if low_hp_effect:
+            if not self._pulse_timer.isActive():
+                self._pulse_timer.start()
+        else:
+            self._pulse_timer.stop()
         exploration_bottom = round(height * _ARENA_EXPLORATION_HEIGHT / _ARENA_NATIVE_HEIGHT)
         bottom_margin = max(2, round(height * _ARENA_DAMAGE_MARGIN / _ARENA_NATIVE_HEIGHT))
         if show_combat and target is not None:
@@ -325,21 +365,54 @@ class CombatOverlay(QWidget):
             self._right.adjustSize()
             self._right.move(max(8, width - self._right.width() - 12), max(10, (exploration_bottom - self._right.height()) // 2))
             self._right.show()
-        if show_combat and last_player is not None:
-            self._bottom.setText(f"{combat_ja('combat.damage_received')}  -{last_player.amount}  {_hp_text(view.snapshot.player_hp, view.snapshot.player_max_hp)}")
+        if new_player_damage is not None and show_combat:
+            self._last_damage_serial = new_player_damage.serial
+            self._bottom.setText(f"{combat_ja('combat.damage_received')}  -{new_player_damage.amount}  {_hp_text(new_player_damage.player_hp, new_player_damage.player_max_hp)}")
+            self._damage_expires_at = self._clock() + _ARENA_DAMAGE_SECONDS
+            self._damage_timer.start()
+        if not show_combat or (view.show_result and (not any((not enemy.dead for enemy in view.snapshot.enemies)))):
+            self._damage_expires_at = 0.0
+            self._damage_timer.stop()
+        if show_combat and self._damage_expires_at and (self._clock() < self._damage_expires_at):
             self._bottom.adjustSize()
             self._bottom.move((width - self._bottom.width()) // 2, max(10, exploration_bottom - self._bottom.height() - bottom_margin))
             self._bottom.show()
+        else:
+            self._bottom.hide()
         self._layout_xp(exploration_bottom, bottom_margin)
-        if any((not widget.isHidden() for widget in (self._top, self._right, self._bottom))) or any((not popup.label.isHidden() for popup in self._xp_popups)):
+        if self._has_visible_content():
             self.show()
             self.raise_()
         else:
             self.hide()
 
     def clear(self) -> None:
-        self._combat_visible = False
+        self._low_hp_effect = False
+        self._damage_expires_at = 0.0
+        self._damage_timer.stop()
+        self._pulse_timer.stop()
+        self._bottom.hide()
         self.hide()
+
+    def paintEvent(self, event) -> None:
+        super().paintEvent(event)
+        if not self._low_hp_effect:
+            return
+        bottom = round(self.height() * _ARENA_EXPLORATION_HEIGHT / _ARENA_NATIVE_HEIGHT)
+        top = self._low_hp_top
+        if bottom <= top:
+            return
+        painter = QPainter(self)
+        painter.setPen(Qt.PenStyle.NoPen)
+        pulse = 0.725 + 0.275 * math.sin(self._clock() * math.pi)
+        for offset, alpha in ((0, 104), (4, 88), (8, 72), (12, 56), (16, 40), (20, 24)):
+            color = QColor(190, 20, 38, round(alpha * pulse))
+            thickness = 4
+            painter.fillRect(offset, top + offset, max(0, self.width() - 2 * offset), thickness, color)
+            painter.fillRect(offset, max(top + offset, bottom - offset - thickness), max(0, self.width() - 2 * offset), thickness, color)
+            painter.fillRect(offset, top + offset, thickness, max(0, bottom - top - 2 * offset), color)
+            painter.fillRect(max(offset, self.width() - offset - thickness), top + offset, thickness, max(0, bottom - top - 2 * offset), color)
+        painter.end()
 
     def header_visible(self) -> bool:
         return not self.isHidden() and (not self._top.isHidden())
@@ -352,4 +425,5 @@ class CombatOverlay(QWidget):
             popup.label.deleteLater()
         self._xp_popups.clear()
         self._last_xp_serial = 0
+        self._last_damage_serial = 0
 __all__ = ['CombatOverlay', 'CombatPanel']

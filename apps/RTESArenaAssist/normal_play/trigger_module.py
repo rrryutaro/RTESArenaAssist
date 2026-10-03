@@ -354,6 +354,12 @@ def red_text_display_open(w) -> bool:
     return bool(getattr(w, '_red_text_open', ''))
 
 def release_red_text(w) -> None:
+    try:
+        owns_dialog = w._ui_router.current_owner() == 'red_text_dialog'
+    except (AttributeError, RuntimeError):
+        owns_dialog = getattr(w, '_panel_owner', '') == 'red_text_dialog'
+    if owns_dialog:
+        w._ui_router.clear_if_owner('red_text_dialog')
     _close_red_text_display(w)
 
 def poll_red_text_lifetime(w, *, b30: dict, band=None) -> None:

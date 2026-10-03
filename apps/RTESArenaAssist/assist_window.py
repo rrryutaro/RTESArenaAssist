@@ -401,6 +401,8 @@ class AssistWindow(QMainWindow):
         settings.set_val('translate_fallback_screen', dlg.translate_fallback_screen)
         settings.set_val('combat_dosbox_enabled', dlg.combat_dosbox_enabled)
         settings.set_val('combat_arena_xp_seconds', dlg.combat_arena_xp_seconds)
+        settings.set_val('combat_low_hp_effect_enabled', dlg.combat_low_hp_effect_enabled)
+        settings.set_val('combat_low_hp_threshold_percent', dlg.combat_low_hp_threshold_percent)
         settings.set_val('spell_effect_arena_enabled', dlg.spell_effect_arena_enabled)
         settings.set_val('spell_effect_arena_style', dlg.spell_effect_arena_style)
         settings.set_val('spell_effect_time_unit', dlg.spell_effect_time_unit)
@@ -409,6 +411,8 @@ class AssistWindow(QMainWindow):
         settings.set_val('combat_translate_panel_enabled', dlg.combat_translate_panel_enabled)
         settings.set_val('combat_translate_panel_history_count', dlg.combat_translate_panel_history_count)
         settings.set_val('combat_tts_enabled', dlg.combat_tts_enabled)
+        for _kind, _enabled in dlg.combat_tts_categories.items():
+            settings.set_val(f'combat_tts_{_kind}', _enabled)
         settings.set_val('combat_log_enabled', dlg.combat_log_enabled)
         settings.set_val('combat_enemy_identifier_enabled', dlg.combat_enemy_identifier_enabled)
         settings.set_val('combat_enemy_identifier_style', dlg.combat_enemy_identifier_style)

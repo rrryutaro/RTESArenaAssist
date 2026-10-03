@@ -848,6 +848,8 @@
   "settings.combat_dosbox": "戦闘情報を表示する",
   "settings.combat_dosbox_note": "直近攻撃した敵を画面上部、他の敵を右側に表示します。",
   "settings.combat_arena_xp_seconds": "獲得経験値の表示時間",
+  "settings.combat_low_hp_effect": "低体力時に探索画面の縁を表示する",
+  "settings.combat_low_hp_threshold": "表示を始める体力割合",
   "settings.combat_tab_mode": "表示方法",
   "settings.combat_tab_mode_none": "表示なし（通常表示を維持）",
   "settings.combat_tab_mode_both": "戦闘情報と通常表示の両方",

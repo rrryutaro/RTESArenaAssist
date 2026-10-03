@@ -5,9 +5,10 @@ import assist_settings as settings
 import i18n_helper as i18n
 from panel_mode_resolver import SCREEN_PANEL_PRIORITY, closing_panel_mode, screen_panel_mode
 from top_level.top_level_dispatcher import current_state as _current_top_level
+from normal_play import equipment_detail_module as _equipment_detail
 _log = logging.getLogger('char_screen_module')
 SCREEN_PANEL_OWNERS: dict[str, str] = {'equipment': 'equipment', 'spellbook': 'spellbook', 'spell_detail': 'spell_detail'}
-SCREEN_PANEL_OWNER_SET = frozenset(SCREEN_PANEL_OWNERS.values())
+SCREEN_PANEL_OWNER_SET = frozenset(SCREEN_PANEL_OWNERS.values()) | {_equipment_detail.OWNER}
 _STAFF_PIECES_RE = re.compile('^\\s*Staff\\s+Pieces\\s*\\((\\d+)\\)', re.I)
 
 def read_staff_pieces_row(w) -> dict | None:
@@ -144,9 +145,9 @@ def release_screen_panel_owner(w, screen_id: str) -> None:
 
 def on_screen_id_changed(w, screen_id: str) -> None:
     release_screen_panel_owner(w, screen_id)
-    if screen_id == 'equipment':
-        show_equipment_page(w)
-    elif screen_id == 'spellbook':
+    if screen_id != 'equipment':
+        _equipment_detail.reset_equipment_detail(w)
+    if screen_id == 'spellbook':
         show_spellbook_page(w)
     elif screen_id == 'spell_detail':
         show_spell_detail_page(w)
@@ -178,18 +179,21 @@ def poll_char_screen_pages(w, screen_id_stable) -> None:
                 w._spell_detail_text_marker = text_marker
                 show_spell_detail_page(w)
         elif screen_id_stable == 'equipment':
-            try:
-                _inv_marker = w._analyzer.read_bytes(w._anchor + 530, 19 * 40)
-            except (OSError, AttributeError):
-                _inv_marker = None
-            try:
-                _staff_marker = w._analyzer.read_bytes(w._anchor + 4164, 64)
-            except (OSError, AttributeError):
-                _staff_marker = None
-            if panel != 'equipment' or _inv_marker != w._equipment_marker or _staff_marker != getattr(w, '_equipment_staff_marker', None):
-                w._equipment_marker = _inv_marker
-                w._equipment_staff_marker = _staff_marker
-                show_equipment_page(w)
+            detail_visible = _equipment_detail.poll_equipment_detail(w)
+            if not detail_visible:
+                _equipment_detail.reset_equipment_detail(w)
+                try:
+                    _inv_marker = w._analyzer.read_bytes(w._anchor + 530, 19 * 40)
+                except (OSError, AttributeError):
+                    _inv_marker = None
+                try:
+                    _staff_marker = w._analyzer.read_bytes(w._anchor + 4164, 64)
+                except (OSError, AttributeError):
+                    _staff_marker = None
+                if panel != 'equipment' or _inv_marker != w._equipment_marker or _staff_marker != getattr(w, '_equipment_staff_marker', None):
+                    w._equipment_marker = _inv_marker
+                    w._equipment_staff_marker = _staff_marker
+                    show_equipment_page(w)
             reset_spell_detail_markers(w)
         elif screen_id_stable == 'spellbook':
             if panel != 'equipment':
@@ -198,6 +202,7 @@ def poll_char_screen_pages(w, screen_id_stable) -> None:
         elif screen_id_stable == 'race_select':
             reset_spell_detail_markers(w)
         else:
+            _equipment_detail.reset_equipment_detail(w)
             if getattr(w, '_char_screen_stable_prev', None) in _CHAR_SCREENS and panel in ('race_list', 'equipment', 'spell_detail'):
                 w._ui_router.set_panel_mode('translate', reason='screen:exit')
             reset_spell_detail_markers(w)

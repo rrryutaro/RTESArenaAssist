@@ -1366,10 +1366,11 @@ def _poll_display_phase(w, *, _active_facility_name, _b30, _b30_dialog_active, _
             _log.exception('translation_feed.on_screen_context failed')
     from top_level.chargen_state import poll as _poll_chargen
     _poll_chargen(w)
+    _arena_overlay_gameplay = bool(_top_is_normal_play and _b30.get('in_gameplay') and (not getattr(w, '_travel_l4_active', False)))
     from normal_play.combat_info_module import poll_combat_info
-    poll_combat_info(w, gameplay=bool(_top_is_normal_play and _b30.get('in_gameplay')))
+    poll_combat_info(w, gameplay=_arena_overlay_gameplay)
     from normal_play.spell_effect_module import poll_spell_effects
-    poll_spell_effects(w, gameplay=bool(_top_is_normal_play and _b30.get('in_gameplay')))
+    poll_spell_effects(w, gameplay=_arena_overlay_gameplay)
     if ui_router is not None:
         ui_router.flush_poll_display()
 

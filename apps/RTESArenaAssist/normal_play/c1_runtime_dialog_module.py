@@ -57,10 +57,12 @@ def _resolve_runtime_dialog_body(w, *, npc_dialog: str, msg_buf: str, fg_ptr: in
         return npc_dialog or ''
     return ''
 
-def poll_c1_runtime_dialog(w, *, npc_dialog: str, facility_active_now: bool, msg_buf: str='', axis=None) -> bool:
+def poll_c1_runtime_dialog(w, *, npc_dialog: str, facility_active_now: bool, msg_buf: str='', axis=None, gold_surface_body: str='') -> bool:
     if axis is None:
         return False
     _body = _resolve_runtime_dialog_body(w, npc_dialog=npc_dialog, msg_buf=msg_buf, fg_ptr=axis.current_ptr, dlgflg_active=axis.dlgflg)
+    if _body and _body == gold_surface_body:
+        _body = ''
     from normal_play.level_up_module import is_level_up_message
     if is_level_up_message(_body):
         _body = ''
@@ -122,6 +124,12 @@ def accepted_dialog_body(w) -> str:
     return str(getattr(w, '_c1_runtime_dialog_accepted_body', '') or '')
 
 def release_c1_runtime_dialog(w) -> None:
+    try:
+        owns_display = w._ui_router.current_owner() == C1_RUNTIME_DIALOG_OWNER
+    except (AttributeError, RuntimeError):
+        owns_display = getattr(w, '_panel_owner', '') == C1_RUNTIME_DIALOG_OWNER
+    if owns_display:
+        w._ui_router.clear_if_owner(C1_RUNTIME_DIALOG_OWNER)
     _close_c1_runtime_dialog_display(w)
     w._c1_runtime_dialog_body_prev = None
 

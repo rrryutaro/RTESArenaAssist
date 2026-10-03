@@ -226,9 +226,9 @@ def read_combat_snapshot_detailed(analyzer, anchor: int) -> CombatReadResult:
         z = _u16(sprite, 2)
         y = _u16(sprite, 4)
         enemies.append(EnemySnapshot(slot=slot, identity=(seed, race_id, class_id, max_hp), race_id=race_id, class_id=class_id, level=level, name=name, sprite_flat=sprite_flat, hp=hp, max_hp=max_hp, stamina=stamina, max_stamina=max_stamina, spell_points=spell_points, max_spell_points=max_spell_points, experience=_u32(rec, ENEMY_EXP_OFFSET), status_flags=status, x=x, y=y, z=z, sprite_flags=sprite_flags))
-        slot_details.append(f'{slot}:live name={name!r} anim_flat={sprite_flat} race={race_id} class={class_id} level={level} hp={hp}/{max_hp} stamina={stamina}/{max_stamina} spell={spell_points}/{max_spell_points} status=0x{status:04X} flags=0x{sprite_flags:04X} data={sprite_data}')
+        slot_details.append(f'{slot}:live name={name!r} anim_flat={sprite_flat} race={race_id} class={class_id} level={level} hp={hp}/{max_hp} stamina={stamina}/{max_stamina} spell={spell_points}/{max_spell_points} status=0x{status:04X} flags=0x{sprite_flags:04X} data={sprite_data} pos=({x},{z},{y})')
     snapshot = CombatSnapshot(player_hp=php, player_max_hp=pmax, player_experience=pexp, player_x=px, player_z=pz, player_angle_deg=angle_deg, enemies=tuple(enemies))
-    detail = f'player={php}/{pmax} exp={pexp} enemies={len(enemies)}; ' + '; '.join(slot_details)
+    detail = f'player={php}/{pmax} exp={pexp} pos=({px},{pz}) angle={angle_deg:.1f} enemies={len(enemies)}; ' + '; '.join(slot_details)
     return CombatReadResult(snapshot, CombatReadDiagnostics('ok', detail))
 
 def read_combat_snapshot(analyzer, anchor: int) -> Optional[CombatSnapshot]:
@@ -240,6 +240,8 @@ class CombatTracker:
 
     def __init__(self) -> None:
         self._previous: Optional[CombatSnapshot] = None
+        self._previous_visible: Optional[CombatSnapshot] = None
+        self._seen_visible: set[tuple[int, tuple[int, int, int, int]]] = set()
         self._serial = 0
         self._history: deque[CombatEvent] = deque(maxlen=64)
         self._active_left = 0
@@ -252,6 +254,8 @@ class CombatTracker:
 
     def reset(self) -> None:
         self._previous = None
+        self._previous_visible = None
+        self._seen_visible.clear()
         self._history.clear()
         self._active_left = 0
         self._result_left = 0
@@ -265,20 +269,30 @@ class CombatTracker:
         self._experience_gained = 0
         self._defeated.clear()
 
-    def update(self, snapshot: Optional[CombatSnapshot], *, enabled: bool, player_damage_observations: Optional[tuple[PlayerDamageObservation, ...]]=None) -> Optional[CombatView]:
+    def update(self, snapshot: Optional[CombatSnapshot], *, enabled: bool, player_damage_observations: Optional[tuple[PlayerDamageObservation, ...]]=None, visible_slots: Optional[frozenset[int]]=None) -> Optional[CombatView]:
         if not enabled:
             return None
         if snapshot is None:
             self.reset()
             return None
         previous = self._previous
+        previous_visible = self._previous_visible
         self._previous = snapshot
-        alive_enemies = [enemy for enemy in snapshot.enemies if not enemy.dead]
-        previous_alive = bool(previous and any((not enemy.dead for enemy in previous.enemies)))
+        visible_snapshot = snapshot if visible_slots is None else replace(snapshot, enemies=tuple((enemy for enemy in snapshot.enemies if enemy.slot in visible_slots)))
+        self._previous_visible = visible_snapshot
+        alive_enemies = [enemy for enemy in visible_snapshot.enemies if not enemy.dead]
+        previous_alive = bool(previous_visible and any((not enemy.dead for enemy in previous_visible.enemies)))
+        raw_alive = any((not enemy.dead for enemy in snapshot.enemies))
+        previous_raw_alive = bool(previous and any((not enemy.dead for enemy in previous.enemies)))
         prev_by_slot = {enemy.slot: enemy for enemy in previous.enemies} if previous is not None else {}
+        current_keys = {(enemy.slot, enemy.identity) for enemy in snapshot.enemies if not enemy.dead}
+        self._seen_visible.intersection_update(current_keys)
+        visible_keys = {(enemy.slot, enemy.identity) for enemy in visible_snapshot.enemies if not enemy.dead}
+        previously_visible_keys = {(enemy.slot, enemy.identity) for enemy in previous_visible.enemies} if previous_visible is not None else set()
         events: list[CombatEvent] = []
         deaths: list[int] = []
-        newly_live = [enemy for enemy in snapshot.enemies if not enemy.dead and (enemy.slot not in prev_by_slot or prev_by_slot[enemy.slot].identity != enemy.identity)]
+        newly_live = [enemy for enemy in visible_snapshot.enemies if not enemy.dead and (enemy.slot, enemy.identity) not in self._seen_visible]
+        self._seen_visible.update(visible_keys)
         if newly_live:
             enemy = newly_live[0]
             self._serial += 1
@@ -290,18 +304,19 @@ class CombatTracker:
                 if enemy.slot == self._target_slot:
                     self._target_slot = enemy.slot if not enemy.dead else None
                 continue
-            if enemy.hp < old.hp:
+            recognized = enemy.slot in (visible_slots if visible_slots is not None else range(ENEMY_COUNT)) or (enemy.slot, enemy.identity) in previously_visible_keys
+            if enemy.hp < old.hp and recognized:
                 self._serial += 1
                 amount = old.hp - enemy.hp
                 events.append(CombatEvent(serial=self._serial, kind='enemy_damage', amount=amount, enemy=enemy))
                 self._target_slot = enemy.slot
-            if enemy.dead and (not old.dead):
+            if enemy.dead and (not old.dead) and recognized:
                 self._serial += 1
                 deaths.append(len(events))
                 events.append(CombatEvent(serial=self._serial, kind='enemy_defeated', amount=max(0, old.hp - enemy.hp), enemy=enemy))
                 self._target_slot = enemy.slot
         if player_damage_observations is not None:
-            if alive_enemies or previous_alive:
+            if raw_alive or previous_raw_alive:
                 for observation in player_damage_observations:
                     self._serial += 1
                     events.append(CombatEvent(serial=self._serial, kind='player_damage', amount=observation.amount, player_hp=observation.hp, player_max_hp=observation.max_hp))
@@ -339,12 +354,14 @@ class CombatTracker:
             self._result_left = max(0, self._result_left - 1)
         if alive_enemies:
             self._active_left = self.ACTIVE_HOLD_POLLS
-            current_target = next((enemy for enemy in snapshot.enemies if enemy.slot == self._target_slot), None)
-            if current_target is None:
+            current_target = next((enemy for enemy in visible_snapshot.enemies if enemy.slot == self._target_slot), None)
+            if current_target is None or current_target.dead:
                 self._target_slot = alive_enemies[0].slot
-        elif previous_alive and (not events) and (self._result_left == 0):
+        elif previous_alive and (not raw_alive) and (not events) and (self._result_left == 0):
             self._active_left = 0
             self._target_slot = None
-        target = next((e for e in snapshot.enemies if e.slot == self._target_slot), None)
-        return CombatView(snapshot=snapshot, events=tuple(events), history=tuple(self._history), target=target, show_active=bool(alive_enemies) or self._active_left > 0, show_result=self._result_left > 0, damage_dealt=self._damage_dealt, damage_received=self._damage_received, experience_gained=self._experience_gained, defeated=tuple(self._defeated))
+        target = next((e for e in visible_snapshot.enemies if e.slot == self._target_slot), None)
+        if target is None and self._result_left > 0 and self._defeated:
+            target = self._defeated[-1]
+        return CombatView(snapshot=visible_snapshot, events=tuple(events), history=tuple(self._history), target=target, show_active=bool(alive_enemies) or self._active_left > 0, show_result=self._result_left > 0, damage_dealt=self._damage_dealt, damage_received=self._damage_received, experience_gained=self._experience_gained, defeated=tuple(self._defeated))
 __all__ = ['CombatEvent', 'CombatReadDiagnostics', 'CombatReadResult', 'CombatSnapshot', 'CombatTracker', 'CombatView', 'EnemySnapshot', 'PlayerDamageObservation', 'PlayerHealthObserver', 'read_combat_snapshot', 'read_combat_snapshot_detailed']

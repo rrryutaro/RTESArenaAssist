@@ -1,6 +1,7 @@
 from __future__ import annotations
 import logging
 import re as _re
+from typing import NamedTuple
 from display_intent import PASSIVE_PANEL_OWNERS
 import inf_text_lookup as itl
 from top_level.top_level_dispatcher import current_state as _current_top_level
@@ -11,6 +12,21 @@ _log = logging.getLogger('RTESArenaAssist')
 GOLD_DROP_OWNER = 'gold_drop'
 _GOLD_DROP_RE = _re.compile('^You have found \\d+ gold pieces?!!?')
 _INF_FRAG_EXCLUDE_RE = _re.compile('^(You have found |You open door |Bag of \\d+ gold pieces)', _re.IGNORECASE)
+
+class GoldDropObservation(NamedTuple):
+    text: str
+    changed: bool
+    is_gold: bool
+
+def observe_gold_drop(w) -> GoldDropObservation:
+    try:
+        raw = w._analyzer.read_bytes(w._anchor + 37534, 64)
+        body = raw.split(b'\x00', 1)[0].decode('ascii', errors='replace')
+    except (OSError, AttributeError):
+        body = ''
+    previous = getattr(w, '_b131_str_prev', '')
+    w._b131_str_prev = body
+    return GoldDropObservation(body, body != previous, bool(body and _GOLD_DROP_RE.match(body)))
 _GOLD_DROP_REPLACEABLE_OWNERS = frozenset({'', GOLD_DROP_OWNER, 'trigger', 'red_text', 'red_text_dialog', 'c1_runtime_dialog'}) | PASSIVE_PANEL_OWNERS
 
 def _poll_gold_inf_fragment(w, b131_str: str, inf_name: str, mif_name: str) -> None:
@@ -58,16 +74,12 @@ def _poll_gold_inf_fragment(w, b131_str: str, inf_name: str, mif_name: str) -> N
     else:
         _log.debug('b131 INF fragment fallback skipped (%s): %r', _skip_reason, b131_str[:48])
 
-def poll_gold_drop(w, *, b30: dict, inf_name: str, mif_name: str) -> None:
-    try:
-        _b131_raw = w._analyzer.read_bytes(w._anchor + 37534, 64)
-        _b131_str = _b131_raw.split(b'\x00', 1)[0].decode('ascii', errors='replace')
-    except (OSError, AttributeError):
-        _b131_str = ''
-    _b131_prev = getattr(w, '_b131_str_prev', '')
-    _b131_changed = _b131_str != _b131_prev
-    w._b131_str_prev = _b131_str
-    _b131_match = bool(_b131_str and _GOLD_DROP_RE.match(_b131_str))
+def poll_gold_drop(w, *, b30: dict, inf_name: str, mif_name: str, observation: GoldDropObservation | None=None) -> None:
+    if observation is None:
+        observation = observe_gold_drop(w)
+    _b131_str = observation.text
+    _b131_changed = observation.changed
+    _b131_match = observation.is_gold
     if _b131_changed and _b131_match:
         try:
             _owner_now = w._ui_router.current_owner() or ''
@@ -89,24 +101,43 @@ def poll_gold_drop(w, *, b30: dict, inf_name: str, mif_name: str) -> None:
         w._ui_router.update_translation(GOLD_DROP_OWNER, _b131_str, _b131_ja, speech_role='situation')
         _axis = b30.get('c1_dialog_axis')
         _ptr = getattr(_axis, 'current_ptr', None)
-        _open_gold_drop_display(w, area=getattr(_axis, 'area', '') or '')
+        _open_gold_drop_display(w, body=_b131_str, area=getattr(_axis, 'area', '') or '')
         _recog(_log, 'gold drop accepted (ptr=%s area=%s): %r → %r', '0x%04X' % _ptr if _ptr is not None else 'n/a', getattr(_axis, 'area', '') or '-', _b131_str, _b131_ja)
     elif _b131_changed and _b131_str:
         _poll_gold_inf_fragment(w, _b131_str, inf_name, mif_name)
 
-def _open_gold_drop_display(w, *, area: str='') -> None:
+def _open_gold_drop_display(w, *, body: str, area: str='') -> None:
     w._gold_drop_open = True
+    w._gold_drop_accepted_body = body
     w._gold_drop_area = area
     w._gold_drop_closed = False
     w._gold_drop_left_noted = False
 
 def _close_gold_drop_display(w) -> None:
     w._gold_drop_open = False
+    w._gold_drop_accepted_body = ''
     w._gold_drop_area = ''
     w._gold_drop_closed = False
     w._gold_drop_left_noted = False
 
+def accepted_gold_drop_body(w) -> str:
+    if not getattr(w, '_gold_drop_open', False):
+        return ''
+    try:
+        owns_display = w._ui_router.applied_owner() == GOLD_DROP_OWNER
+    except (AttributeError, RuntimeError):
+        owns_display = getattr(w, '_panel_owner', '') == GOLD_DROP_OWNER
+    if not owns_display:
+        return ''
+    return str(getattr(w, '_gold_drop_accepted_body', '') or '')
+
 def release_gold_drop(w) -> None:
+    try:
+        owns_display = w._ui_router.current_owner() == GOLD_DROP_OWNER
+    except (AttributeError, RuntimeError):
+        owns_display = getattr(w, '_panel_owner', '') == GOLD_DROP_OWNER
+    if owns_display:
+        w._ui_router.clear_if_owner(GOLD_DROP_OWNER)
     _close_gold_drop_display(w)
 
 def poll_gold_drop_lifetime(w, *, axis=None) -> None:
@@ -149,4 +180,4 @@ def poll_gold_drop_lifetime(w, *, axis=None) -> None:
         restore_last_trigger_display(w)
     else:
         w._ui_router.clear_display('', allowed_current_owners=('',))
-__all__ = ['GOLD_DROP_OWNER', 'poll_gold_drop', 'poll_gold_drop_lifetime', 'release_gold_drop']
+__all__ = ['GOLD_DROP_OWNER', 'GoldDropObservation', 'accepted_gold_drop_body', 'observe_gold_drop', 'poll_gold_drop', 'poll_gold_drop_lifetime', 'release_gold_drop']

@@ -859,6 +859,20 @@ def build_combat_tab(dlg: '_SettingsDialog') -> QWidget:
     arena_form.addRow('', _dosbox_note)
     dlg._combat_dosbox_cb.toggled.connect(dlg._combat_arena_xp_spin.setEnabled)
     dlg._combat_arena_xp_spin.setEnabled(dlg._combat_dosbox_cb.isChecked())
+    dlg._combat_low_hp_cb = QCheckBox(combat_ja('settings.combat_low_hp_effect'))
+    dlg._combat_low_hp_cb.setChecked(bool(settings.get('combat_low_hp_effect_enabled', False)))
+    arena_form.addRow('', dlg._combat_low_hp_cb)
+    dlg._combat_low_hp_threshold_spin = QSpinBox()
+    dlg._combat_low_hp_threshold_spin.setRange(1, 99)
+    try:
+        _low_hp_threshold = int(settings.get('combat_low_hp_threshold_percent', 25))
+    except (TypeError, ValueError):
+        _low_hp_threshold = 25
+    dlg._combat_low_hp_threshold_spin.setValue(max(1, min(99, _low_hp_threshold)))
+    dlg._combat_low_hp_threshold_spin.setSuffix('%')
+    arena_form.addRow(combat_ja('settings.combat_low_hp_threshold') + ':', dlg._combat_low_hp_threshold_spin)
+    dlg._combat_low_hp_cb.toggled.connect(dlg._combat_low_hp_threshold_spin.setEnabled)
+    dlg._combat_low_hp_threshold_spin.setEnabled(dlg._combat_low_hp_cb.isChecked())
     spell_group = QGroupBox(combat_ja('settings.group_spell_effect'))
     spell_form = QFormLayout(spell_group)
     spell_form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
@@ -915,6 +929,14 @@ def build_combat_tab(dlg: '_SettingsDialog') -> QWidget:
     dlg._combat_tts_cb = QCheckBox(combat_ja('settings.combat_tts'))
     dlg._combat_tts_cb.setChecked(bool(settings.get('combat_tts_enabled', False)))
     common_form.addRow('', dlg._combat_tts_cb)
+    dlg._combat_tts_category_cbs = {}
+    for kind in DEFAULT_COMBAT_MESSAGE_TEMPLATES:
+        check = QCheckBox(combat_ja(f'settings.combat_template_{kind}'))
+        check.setChecked(bool(settings.get(f'combat_tts_{kind}', True)))
+        dlg._combat_tts_category_cbs[kind] = check
+        common_form.addRow('', check)
+        dlg._combat_tts_cb.toggled.connect(check.setEnabled)
+        check.setEnabled(dlg._combat_tts_cb.isChecked())
     dlg._combat_log_cb = QCheckBox(combat_ja('settings.combat_log'))
     dlg._combat_log_cb.setChecked(bool(settings.get('combat_log_enabled', False)))
     common_form.addRow('', dlg._combat_log_cb)

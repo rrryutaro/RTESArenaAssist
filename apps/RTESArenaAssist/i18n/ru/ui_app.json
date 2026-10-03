@@ -848,6 +848,8 @@
   "settings.combat_dosbox": "Показывать сведения о бое",
   "settings.combat_dosbox_note": "Последний атакованный враг показывается сверху, остальные — справа.",
   "settings.combat_arena_xp_seconds": "Время показа опыта",
+  "settings.combat_low_hp_effect": "Показывать неброскую рамку при низком здоровье",
+  "settings.combat_low_hp_threshold": "Порог здоровья",
   "settings.combat_tab_mode": "Режим отображения",
   "settings.combat_tab_mode_none": "Выкл. (обычный вид)",
   "settings.combat_tab_mode_both": "Бой и обычный вид",

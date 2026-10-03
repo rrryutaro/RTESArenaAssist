@@ -32,22 +32,14 @@ def poll_c1_surface_dispatch(w, b30, *, inf_name, mif_name, c_area: str='', band
     if runtime_dialog_context is None:
         runtime_dialog_context = c_area == 'dungeon'
     if c_area != 'dungeon':
-        try:
-            _owner = w._ui_router.current_owner()
-        except (AttributeError, RuntimeError):
-            _owner = getattr(w, '_panel_owner', '') or ''
-        if _owner in ('gold_drop', 'red_text_dialog'):
-            w._ui_router.clear_if_owner(_owner)
         _release_gold_drop(w)
         _release_red_text(w)
         if not runtime_dialog_context:
-            if _owner == 'c1_runtime_dialog':
-                w._ui_router.clear_if_owner(_owner)
             _release_c1_runtime_dialog(w)
             return
     else:
         _poll_red_text(w, b30=b30, message_taken=message_taken)
-        _poll_gold_drop(w, b30=b30, inf_name=inf_name, mif_name=mif_name)
+        _poll_gold_drop(w, b30=b30, inf_name=inf_name, mif_name=mif_name, observation=b30.get('gold_observation'))
     _c1_axis = b30.get('c1_dialog_axis')
     if c_area == 'dungeon':
         _poll_red_text_lifetime(w, b30=b30, band=band)
@@ -388,6 +380,9 @@ def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dial
     from normal_play.building_entry_module import poll_building_entry as _poll_building_entry
     from normal_play.npc_message_module import poll_npc_message_popup_lifetime as _poll_npc_message_popup_lifetime, poll_travel_event_lifecycle as _poll_travel_event_lifecycle
     from normal_play.dungeon_splash_module import poll_dungeon_splash_lifecycle as _poll_dungeon_splash_lifecycle
+    if _b30 is not None and _poll_hierarchy_area == 'dungeon':
+        from normal_play.c1_gold_drop_module import observe_gold_drop
+        _b30['gold_observation'] = observe_gold_drop(w)
     try:
         from screen_detector import read_popup_frame, popup_frame_is_drawn
         _popup_frame = read_popup_frame(w._analyzer, w._anchor)
@@ -461,7 +456,14 @@ def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dial
         _pause_c1_runtime_dialog(w)
     elif _runtime_dialog_context and (not _entry_handled):
         from normal_play.c1_runtime_dialog_module import poll_c1_runtime_dialog as _poll_c1_runtime_dialog
-        if _poll_c1_runtime_dialog(w, npc_dialog=npc_dialog, facility_active_now=_facility_active_now, msg_buf=msg_buf, axis=_b30.get('c1_dialog_axis') if _b30 else None):
+        _gold_surface_body = ''
+        if _poll_hierarchy_area == 'dungeon':
+            from normal_play.c1_gold_drop_module import accepted_gold_drop_body
+            _gold_surface_body = accepted_gold_drop_body(w)
+            _gold_observation = _b30.get('gold_observation') if _b30 else None
+            if _gold_observation is not None and _gold_observation.changed and _gold_observation.is_gold and _b30.get('in_gameplay', False):
+                _gold_surface_body = _gold_observation.text
+        if _poll_c1_runtime_dialog(w, npc_dialog=npc_dialog, facility_active_now=_facility_active_now, msg_buf=msg_buf, axis=_b30.get('c1_dialog_axis') if _b30 else None, gold_surface_body=_gold_surface_body):
             _instore_resp_handled = True
             _entry_handled = True
     return (_entry_handled, _instore_resp_handled)
