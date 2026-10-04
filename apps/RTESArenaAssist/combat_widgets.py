@@ -112,8 +112,8 @@ class CombatPanel(QWidget):
         self._title.setText(combat_ja('combat.result') if result else combat_ja('combat.title'))
         meters = display_format == 'meters'
         enemy_rows = list(enemies or [])
-        self._target.setVisible(meters and (not enemy_rows))
-        self._enemy_hp.setVisible(meters and (not enemy_rows))
+        self._target.setVisible(meters and (not enemy_rows) and bool(target_name))
+        self._enemy_hp.setVisible(meters and (not enemy_rows) and bool(target_name))
         self._target.setText(target_name or combat_ja('combat.enemy'))
         maximum = max(1, target_max_hp)
         self._enemy_hp.setRange(0, maximum)
@@ -208,7 +208,7 @@ class CombatOverlay(QWidget):
         right_layout.setContentsMargins(5, 4, 5, 4)
         right_layout.setSpacing(4)
         self._right_rows = []
-        for _index in range(7):
+        for _index in range(8):
             row = _CompactEnemyRow(self._right)
             row.hide()
             right_layout.addWidget(row)
@@ -353,7 +353,7 @@ class CombatOverlay(QWidget):
             self._top.adjustSize()
             self._top.move((width - self._top.width()) // 2, max(10, height // 30))
             self._top.show()
-        others = [enemy for enemy in view.snapshot.enemies if show_combat and (not enemy.dead) and (enemy is not target)]
+        others = [enemy for enemy in view.known_enemies if show_combat and (not enemy.dead) and (enemy is not target)]
         for index, row in enumerate(self._right_rows):
             if index < len(others):
                 enemy = others[index]
@@ -370,7 +370,7 @@ class CombatOverlay(QWidget):
             self._bottom.setText(f"{combat_ja('combat.damage_received')}  -{new_player_damage.amount}  {_hp_text(new_player_damage.player_hp, new_player_damage.player_max_hp)}")
             self._damage_expires_at = self._clock() + _ARENA_DAMAGE_SECONDS
             self._damage_timer.start()
-        if not show_combat or (view.show_result and (not any((not enemy.dead for enemy in view.snapshot.enemies)))):
+        if not show_combat or (view.show_result and (not any((not enemy.dead for enemy in view.known_enemies)))):
             self._damage_expires_at = 0.0
             self._damage_timer.stop()
         if show_combat and self._damage_expires_at and (self._clock() < self._damage_expires_at):

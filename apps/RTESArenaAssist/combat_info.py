@@ -8,6 +8,9 @@ PLAYER_HP_OFFSET = 509
 PLAYER_MAX_HP_OFFSET = 511
 PLAYER_EXP_OFFSET = 1453
 PLAYER_BLOCK_END = PLAYER_EXP_OFFSET + 4
+PLAYER_NPC_DATA_OFFSET = 420
+COMBAT_ACTOR_SOURCE_OFFSET = 5120
+COMBAT_ACTOR_TARGET_OFFSET = 5122
 ENEMY_BASE_OFFSET = 177856
 ENEMY_COUNT = 8
 ENEMY_STRIDE = 1054
@@ -25,6 +28,7 @@ ENEMY_NAME_SIZE = 32
 SPRITE_BASE_OFFSET = 3159
 SPRITE_STRIDE = 28
 SPRITE_FLAT_OFFSET = 12
+SPRITE_FRAME_OFFSET = 13
 SPRITE_FLAGS_OFFSET = 15
 SPRITE_DATA_OFFSET = 18
 SPRITE_UNUSED_FLAG = 16384
@@ -50,6 +54,8 @@ class EnemySnapshot:
     y: int
     z: int
     sprite_flags: int
+    sprite_frame: int = 0
+    sprite_data: int = 0
 
     @property
     def dead(self) -> bool:
@@ -64,6 +70,7 @@ class CombatSnapshot:
     player_z: int
     player_angle_deg: float
     enemies: tuple[EnemySnapshot, ...]
+    actor_pair: Optional[tuple[int, int]] = None
 
 @dataclass(frozen=True)
 class CombatReadDiagnostics:
@@ -76,11 +83,46 @@ class CombatReadResult:
     diagnostics: CombatReadDiagnostics
 
 @dataclass(frozen=True)
+class CombatSource:
+    slot: int
+    identity: tuple[int, int, int, int]
+
+def read_player_health_sample(analyzer, anchor: int) -> tuple[int, int, Optional[CombatSource]]:
+    end = COMBAT_ACTOR_TARGET_OFFSET + 2
+    raw = analyzer.read_bytes(anchor + PLAYER_HP_OFFSET, end - PLAYER_HP_OFFSET)
+    if len(raw) != end - PLAYER_HP_OFFSET:
+        raise OSError('short player HP/combat context read')
+    hp = _u16(raw, 0)
+    max_hp = _u16(raw, PLAYER_MAX_HP_OFFSET - PLAYER_HP_OFFSET)
+    if not (0 <= hp <= max_hp <= 32767 and max_hp > 0):
+        raise ValueError('invalid player HP sample')
+    source_offset = _u16(raw, COMBAT_ACTOR_SOURCE_OFFSET - PLAYER_HP_OFFSET)
+    target_offset = _u16(raw, COMBAT_ACTOR_TARGET_OFFSET - PLAYER_HP_OFFSET)
+    if target_offset != PLAYER_NPC_DATA_OFFSET or source_offset >= ENEMY_COUNT * ENEMY_STRIDE or source_offset % ENEMY_STRIDE:
+        return (hp, max_hp, None)
+    slot = source_offset // ENEMY_STRIDE
+    try:
+        rec = analyzer.read_bytes(anchor + ENEMY_BASE_OFFSET + source_offset, ENEMY_MAX_HP_OFFSET + 2)
+        sprite = analyzer.read_bytes(anchor + SPRITE_BASE_OFFSET + slot * SPRITE_STRIDE, SPRITE_STRIDE)
+    except (OSError, RuntimeError):
+        return (hp, max_hp, None)
+    if len(rec) != ENEMY_MAX_HP_OFFSET + 2 or len(sprite) != SPRITE_STRIDE or _u16(sprite, SPRITE_DATA_OFFSET) != source_offset or _u16(sprite, SPRITE_FLAGS_OFFSET) & SPRITE_UNUSED_FLAG:
+        return (hp, max_hp, None)
+    level = rec[6]
+    enemy_hp = _i16(rec, ENEMY_HP_OFFSET)
+    enemy_max_hp = _u16(rec, ENEMY_MAX_HP_OFFSET)
+    if not (1 <= level <= 100 and 1 <= enemy_max_hp <= 32767 and (enemy_hp <= enemy_max_hp)):
+        return (hp, max_hp, None)
+    source = CombatSource(slot, (_u32(rec, 0), rec[4], rec[5], enemy_max_hp))
+    return (hp, max_hp, source)
+
+@dataclass(frozen=True)
 class PlayerDamageObservation:
     serial: int
     amount: int
     hp: int
     max_hp: int
+    source: Optional[CombatSource] = None
 
 class PlayerHealthObserver:
 
@@ -99,7 +141,7 @@ class PlayerHealthObserver:
         self._max_hp = None
         self._observations.clear()
 
-    def observe(self, hp: int, max_hp: int, *, effective_hp: Optional[int]=None) -> None:
+    def observe(self, hp: int, max_hp: int, *, effective_hp: Optional[int]=None, source: Optional[CombatSource]=None) -> None:
         hp = int(hp)
         max_hp = int(max_hp)
         after = hp if effective_hp is None else int(effective_hp)
@@ -112,7 +154,7 @@ class PlayerHealthObserver:
             return
         if hp < self._effective_hp:
             self._serial += 1
-            self._observations.append(PlayerDamageObservation(serial=self._serial, amount=self._effective_hp - hp, hp=hp, max_hp=max_hp))
+            self._observations.append(PlayerDamageObservation(serial=self._serial, amount=self._effective_hp - hp, hp=hp, max_hp=max_hp, source=source))
         self._effective_hp = after
         self._max_hp = max_hp
 
@@ -141,6 +183,8 @@ class CombatView:
     damage_received: int = 0
     experience_gained: int = 0
     defeated: tuple[EnemySnapshot, ...] = ()
+    known_enemies: tuple[EnemySnapshot, ...] = ()
+    attack_diagnostics: tuple[str, ...] = ()
 
     @property
     def latest_event(self) -> Optional[CombatEvent]:
@@ -194,6 +238,13 @@ def read_combat_snapshot_detailed(analyzer, anchor: int) -> CombatReadResult:
     pz = _u16(coord_raw, PLAYER_Z_OFFSET - PLAYER_X_OFFSET)
     angle_raw = _u16(angle_bytes, 0)
     angle_deg = ((angle_raw & PLAYER_ANGLE_MASK) - PLAYER_ANGLE_NORTH) * 360.0 / 512.0 % 360.0
+    actor_pair = None
+    try:
+        pair_raw = analyzer.read_bytes(anchor + COMBAT_ACTOR_SOURCE_OFFSET, 4)
+        if len(pair_raw) == 4:
+            actor_pair = (_u16(pair_raw, 0), _u16(pair_raw, 2))
+    except Exception:
+        pass
     enemies: list[EnemySnapshot] = []
     slot_details: list[str] = []
     for slot in range(ENEMY_COUNT):
@@ -225,10 +276,10 @@ def read_combat_snapshot_detailed(analyzer, anchor: int) -> CombatReadResult:
         x = _u16(sprite, 0)
         z = _u16(sprite, 2)
         y = _u16(sprite, 4)
-        enemies.append(EnemySnapshot(slot=slot, identity=(seed, race_id, class_id, max_hp), race_id=race_id, class_id=class_id, level=level, name=name, sprite_flat=sprite_flat, hp=hp, max_hp=max_hp, stamina=stamina, max_stamina=max_stamina, spell_points=spell_points, max_spell_points=max_spell_points, experience=_u32(rec, ENEMY_EXP_OFFSET), status_flags=status, x=x, y=y, z=z, sprite_flags=sprite_flags))
-        slot_details.append(f'{slot}:live name={name!r} anim_flat={sprite_flat} race={race_id} class={class_id} level={level} hp={hp}/{max_hp} stamina={stamina}/{max_stamina} spell={spell_points}/{max_spell_points} status=0x{status:04X} flags=0x{sprite_flags:04X} data={sprite_data} pos=({x},{z},{y})')
-    snapshot = CombatSnapshot(player_hp=php, player_max_hp=pmax, player_experience=pexp, player_x=px, player_z=pz, player_angle_deg=angle_deg, enemies=tuple(enemies))
-    detail = f'player={php}/{pmax} exp={pexp} pos=({px},{pz}) angle={angle_deg:.1f} enemies={len(enemies)}; ' + '; '.join(slot_details)
+        enemies.append(EnemySnapshot(slot=slot, identity=(seed, race_id, class_id, max_hp), race_id=race_id, class_id=class_id, level=level, name=name, sprite_flat=sprite_flat, hp=hp, max_hp=max_hp, stamina=stamina, max_stamina=max_stamina, spell_points=spell_points, max_spell_points=max_spell_points, experience=_u32(rec, ENEMY_EXP_OFFSET), status_flags=status, x=x, y=y, z=z, sprite_flags=sprite_flags, sprite_frame=sprite[SPRITE_FRAME_OFFSET], sprite_data=sprite_data))
+        slot_details.append(f'{slot}:live name={name!r} anim_flat={sprite_flat} frame={sprite[SPRITE_FRAME_OFFSET]} race={race_id} class={class_id} level={level} hp={hp}/{max_hp} stamina={stamina}/{max_stamina} spell={spell_points}/{max_spell_points} status=0x{status:04X} flags=0x{sprite_flags:04X} data={sprite_data} pos=({x},{z},{y})')
+    snapshot = CombatSnapshot(player_hp=php, player_max_hp=pmax, player_experience=pexp, player_x=px, player_z=pz, player_angle_deg=angle_deg, enemies=tuple(enemies), actor_pair=actor_pair)
+    detail = f'player={php}/{pmax} exp={pexp} pair={actor_pair} pos=({px},{pz}) angle={angle_deg:.1f} enemies={len(enemies)}; ' + '; '.join(slot_details)
     return CombatReadResult(snapshot, CombatReadDiagnostics('ok', detail))
 
 def read_combat_snapshot(analyzer, anchor: int) -> Optional[CombatSnapshot]:
@@ -246,11 +297,13 @@ class CombatTracker:
         self._history: deque[CombatEvent] = deque(maxlen=64)
         self._active_left = 0
         self._result_left = 0
-        self._target_slot: Optional[int] = None
+        self._target_key: Optional[tuple[int, tuple[int, int, int, int]]] = None
         self._damage_dealt = 0
         self._damage_received = 0
         self._experience_gained = 0
         self._defeated: list[EnemySnapshot] = []
+        self._attack_diagnostic_counts: dict[str, int] = {}
+        self._actor_pair_contiguous = False
 
     def reset(self) -> None:
         self._previous = None
@@ -259,7 +312,9 @@ class CombatTracker:
         self._history.clear()
         self._active_left = 0
         self._result_left = 0
-        self._target_slot = None
+        self._target_key = None
+        self._attack_diagnostic_counts.clear()
+        self._actor_pair_contiguous = False
         self._clear_encounter()
 
     def _clear_encounter(self) -> None:
@@ -269,25 +324,35 @@ class CombatTracker:
         self._experience_gained = 0
         self._defeated.clear()
 
+    def _attack_diagnostic(self, kind: str, detail: str) -> tuple[str, ...]:
+        count = self._attack_diagnostic_counts.get(kind, 0) + 1
+        self._attack_diagnostic_counts[kind] = count
+        if count <= 4 or count & count - 1 == 0:
+            return (f'{kind} sample={count} {detail}',)
+        return ()
+
     def update(self, snapshot: Optional[CombatSnapshot], *, enabled: bool, player_damage_observations: Optional[tuple[PlayerDamageObservation, ...]]=None, visible_slots: Optional[frozenset[int]]=None) -> Optional[CombatView]:
         if not enabled:
+            self._actor_pair_contiguous = False
             return None
         if snapshot is None:
             self.reset()
             return None
         previous = self._previous
         previous_visible = self._previous_visible
+        previous_known_alive = bool(previous and any((not enemy.dead and (enemy.slot, enemy.identity) in self._seen_visible for enemy in previous.enemies)))
         self._previous = snapshot
         visible_snapshot = snapshot if visible_slots is None else replace(snapshot, enemies=tuple((enemy for enemy in snapshot.enemies if enemy.slot in visible_slots)))
         self._previous_visible = visible_snapshot
-        alive_enemies = [enemy for enemy in visible_snapshot.enemies if not enemy.dead]
-        previous_alive = bool(previous_visible and any((not enemy.dead for enemy in previous_visible.enemies)))
         raw_alive = any((not enemy.dead for enemy in snapshot.enemies))
         previous_raw_alive = bool(previous and any((not enemy.dead for enemy in previous.enemies)))
         prev_by_slot = {enemy.slot: enemy for enemy in previous.enemies} if previous is not None else {}
         current_keys = {(enemy.slot, enemy.identity) for enemy in snapshot.enemies if not enemy.dead}
         self._seen_visible.intersection_update(current_keys)
+        if self._target_key not in current_keys:
+            self._target_key = None
         visible_keys = {(enemy.slot, enemy.identity) for enemy in visible_snapshot.enemies if not enemy.dead}
+        visible_slots_now = {slot for slot, _identity in visible_keys}
         previously_visible_keys = {(enemy.slot, enemy.identity) for enemy in previous_visible.enemies} if previous_visible is not None else set()
         events: list[CombatEvent] = []
         deaths: list[int] = []
@@ -297,32 +362,57 @@ class CombatTracker:
             enemy = newly_live[0]
             self._serial += 1
             events.append(CombatEvent(serial=self._serial, kind='enemy_encountered', amount=0, enemy=enemy))
-            self._target_slot = enemy.slot
         for enemy in snapshot.enemies:
             old = prev_by_slot.get(enemy.slot)
             if old is None or old.identity != enemy.identity:
-                if enemy.slot == self._target_slot:
-                    self._target_slot = enemy.slot if not enemy.dead else None
                 continue
             recognized = enemy.slot in (visible_slots if visible_slots is not None else range(ENEMY_COUNT)) or (enemy.slot, enemy.identity) in previously_visible_keys
             if enemy.hp < old.hp and recognized:
                 self._serial += 1
                 amount = old.hp - enemy.hp
                 events.append(CombatEvent(serial=self._serial, kind='enemy_damage', amount=amount, enemy=enemy))
-                self._target_slot = enemy.slot
+                if not enemy.dead:
+                    self._target_key = (enemy.slot, enemy.identity)
             if enemy.dead and (not old.dead) and recognized:
                 self._serial += 1
                 deaths.append(len(events))
                 events.append(CombatEvent(serial=self._serial, kind='enemy_defeated', amount=max(0, old.hp - enemy.hp), enemy=enemy))
-                self._target_slot = enemy.slot
+                if self._target_key == (enemy.slot, enemy.identity):
+                    self._target_key = None
         if player_damage_observations is not None:
             if raw_alive or previous_raw_alive:
                 for observation in player_damage_observations:
+                    source_enemy = None
+                    if observation.source is not None:
+                        source_enemy = next((enemy for enemy in snapshot.enemies if enemy.slot == observation.source.slot and enemy.identity == observation.source.identity and (not enemy.dead)), None)
+                        if source_enemy is None and previous is not None:
+                            source_enemy = next((enemy for enemy in previous.enemies if enemy.slot == observation.source.slot and enemy.identity == observation.source.identity and (not enemy.dead)), None)
+                    if source_enemy is not None and (source_enemy.slot, source_enemy.identity) in self._seen_visible:
+                        self._target_key = (source_enemy.slot, source_enemy.identity)
                     self._serial += 1
-                    events.append(CombatEvent(serial=self._serial, kind='player_damage', amount=observation.amount, player_hp=observation.hp, player_max_hp=observation.max_hp))
+                    events.append(CombatEvent(serial=self._serial, kind='player_damage', amount=observation.amount, enemy=source_enemy, player_hp=observation.hp, player_max_hp=observation.max_hp))
         elif previous is not None and snapshot.player_hp < previous.player_hp:
             self._serial += 1
             events.append(CombatEvent(serial=self._serial, kind='player_damage', amount=previous.player_hp - snapshot.player_hp, player_hp=snapshot.player_hp, player_max_hp=snapshot.player_max_hp))
+        attack_diagnostics: list[str] = []
+        pair = snapshot.actor_pair
+        pair_changed = bool(self._actor_pair_contiguous and previous is not None and (previous.actor_pair is not None) and (pair is not None) and (pair != previous.actor_pair))
+        if pair_changed:
+            source, destination = pair
+            enemy_offset = destination if source == PLAYER_NPC_DATA_OFFSET else source if destination == PLAYER_NPC_DATA_OFFSET else -1
+            paired_enemy = next((enemy for enemy in snapshot.enemies if enemy_offset == enemy.slot * ENEMY_STRIDE and enemy.sprite_data == enemy_offset and (not enemy.dead)), None)
+            known = bool(paired_enemy is not None and (paired_enemy.slot, paired_enemy.identity) in self._seen_visible)
+            hp_event = any((event.kind in ('enemy_damage', 'player_damage', 'enemy_defeated') for event in events))
+            selected = bool(known and (not hp_event))
+            if selected:
+                self._target_key = (paired_enemy.slot, paired_enemy.identity)
+            attack_diagnostics.extend(self._attack_diagnostic('actor_pair_change', f"old={previous.actor_pair} new={pair} slot={(paired_enemy.slot if paired_enemy else '-')} known={known} visible={bool(paired_enemy and paired_enemy.slot in visible_slots_now)} hp_event={hp_event} center={selected}"))
+        if previous is not None:
+            for enemy in snapshot.enemies:
+                old = prev_by_slot.get(enemy.slot)
+                if old is None or old.identity != enemy.identity or enemy.dead or ((enemy.slot, enemy.identity) not in self._seen_visible) or (not old.sprite_flags & 16) or enemy.sprite_flags & 16:
+                    continue
+                attack_diagnostics.extend(self._attack_diagnostic('sprite_bit10_fall', f'slot={enemy.slot} flags=0x{old.sprite_flags:04X}->0x{enemy.sprite_flags:04X} frame={old.sprite_frame}->{enemy.sprite_frame} enemy_hp={old.hp}->{enemy.hp} player_hp={previous.player_hp}->{snapshot.player_hp} pair={pair} visible={enemy.slot in visible_slots_now}'))
         xp_gain = max(0, snapshot.player_experience - previous.player_experience) if previous is not None else 0
         if deaths and xp_gain:
             index = deaths[0]
@@ -332,7 +422,7 @@ class CombatTracker:
             events.append(CombatEvent(serial=self._serial, kind='experience', amount=xp_gain, experience_gain=xp_gain))
         if events:
             new_encounter = any((event.kind == 'enemy_encountered' for event in events))
-            if new_encounter and (not previous_alive) or (self._active_left == 0 and self._result_left == 0):
+            if new_encounter and (not previous_known_alive) or (self._active_left == 0 and self._result_left == 0):
                 self._clear_encounter()
                 if new_encounter:
                     self._result_left = 0
@@ -352,16 +442,13 @@ class CombatTracker:
         else:
             self._active_left = max(0, self._active_left - 1)
             self._result_left = max(0, self._result_left - 1)
-        if alive_enemies:
+        known_enemies = tuple((enemy for enemy in snapshot.enemies if not enemy.dead and (enemy.slot, enemy.identity) in self._seen_visible))
+        if known_enemies:
             self._active_left = self.ACTIVE_HOLD_POLLS
-            current_target = next((enemy for enemy in visible_snapshot.enemies if enemy.slot == self._target_slot), None)
-            if current_target is None or current_target.dead:
-                self._target_slot = alive_enemies[0].slot
-        elif previous_alive and (not raw_alive) and (not events) and (self._result_left == 0):
+        elif previous_known_alive and (not raw_alive) and (not events) and (self._result_left == 0):
             self._active_left = 0
-            self._target_slot = None
-        target = next((e for e in visible_snapshot.enemies if e.slot == self._target_slot), None)
-        if target is None and self._result_left > 0 and self._defeated:
-            target = self._defeated[-1]
-        return CombatView(snapshot=visible_snapshot, events=tuple(events), history=tuple(self._history), target=target, show_active=bool(alive_enemies) or self._active_left > 0, show_result=self._result_left > 0, damage_dealt=self._damage_dealt, damage_received=self._damage_received, experience_gained=self._experience_gained, defeated=tuple(self._defeated))
-__all__ = ['CombatEvent', 'CombatReadDiagnostics', 'CombatReadResult', 'CombatSnapshot', 'CombatTracker', 'CombatView', 'EnemySnapshot', 'PlayerDamageObservation', 'PlayerHealthObserver', 'read_combat_snapshot', 'read_combat_snapshot_detailed']
+            self._target_key = None
+        target = next((e for e in visible_snapshot.enemies if (e.slot, e.identity) == self._target_key and (not e.dead)), None)
+        self._actor_pair_contiguous = True
+        return CombatView(snapshot=visible_snapshot, events=tuple(events), history=tuple(self._history), target=target, show_active=bool(known_enemies) or self._active_left > 0, show_result=self._result_left > 0, damage_dealt=self._damage_dealt, damage_received=self._damage_received, experience_gained=self._experience_gained, defeated=tuple(self._defeated), known_enemies=known_enemies, attack_diagnostics=tuple(attack_diagnostics))
+__all__ = ['CombatEvent', 'CombatReadDiagnostics', 'CombatReadResult', 'CombatSnapshot', 'CombatTracker', 'CombatView', 'EnemySnapshot', 'CombatSource', 'PlayerDamageObservation', 'PlayerHealthObserver', 'read_player_health_sample', 'read_combat_snapshot', 'read_combat_snapshot_detailed']

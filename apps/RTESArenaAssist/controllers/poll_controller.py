@@ -683,11 +683,12 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
     w._in_interior_prev = in_interior
     display_mif_name = mif_name
     interior_mif_name: str | None = None
+    interior_mif_source: str | None = None
     interior_facility_name: str | None = None
+    location = getattr(w, '_current_location', None)
     if in_interior:
         door_pos = getattr(w, '_entry_door_pos', None)
         location_name = gs.get('MapName') or ''
-        location = getattr(w, '_current_location', None)
         if door_pos is not None and location is not None:
             try:
                 from city_viewer_bridge import lookup_interior_facility
@@ -697,6 +698,7 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
                 facility_info = None
             if facility_info is not None and facility_info.mif_name:
                 interior_mif_name = facility_info.mif_name
+                interior_mif_source = 'door'
                 interior_facility_name = facility_info.name_ja or facility_info.name_en or None
                 from normal_play.shop_sign_unit import poll_shop_sign as _poll_shop_sign
                 _shown = _poll_shop_sign(w, door_pos=door_pos, facility_info=facility_info)
@@ -731,12 +733,14 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
                 _palace_mif = None
             if _palace_mif:
                 interior_mif_name = _palace_mif
+                interior_mif_source = 'palace'
                 display_mif_name = _palace_mif
                 _log.info('palace mif resolved door-free: %s (img=PALACE.XMI)', _palace_mif)
     effective_in_interior = in_interior
     field_active, field_mif, _field_label, field_name = _resolve_field_facility(w, interior_raw)
     if field_active and field_mif:
         interior_mif_name = field_mif
+        interior_mif_source = 'field'
         display_mif_name = field_mif
         interior_facility_name = field_name
         effective_in_interior = True
@@ -746,18 +750,34 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
         if getattr(w, '_interior_mif_name', None):
             _log.info('interior facility memory dropped: location %r -> %r', _prev_location, _cur_location)
         w._interior_mif_name = None
+        w._interior_mif_source = None
         w._interior_facility_name = None
         from normal_play.shop_sign_unit import release_shop_sign as _release_shop_sign
         _release_shop_sign(w)
         w._entry_door_pos = None
     if effective_in_interior and (not field_active):
+        previous_mif = getattr(w, '_interior_mif_name', None)
+        previous_source = getattr(w, '_interior_mif_source', None)
         if interior_facility_name is None:
             interior_facility_name = getattr(w, '_interior_facility_name', None)
-        if interior_mif_name is None:
-            interior_mif_name = getattr(w, '_interior_mif_name', None)
+        if interior_mif_name is None and previous_source != 'geometry':
+            interior_mif_name = previous_mif
             if interior_mif_name:
+                interior_mif_source = previous_source or 'entry'
                 display_mif_name = interior_mif_name
+        if interior_mif_name is None and location is not None and (_cur_location == getattr(location, 'name', None)):
+            from city_viewer_bridge import interior_mif_candidates
+            from interior_floor import match_interior_mif_by_geometry
+            candidates = interior_mif_candidates(location)
+            matched = match_interior_mif_by_geometry(w._analyzer, w._anchor, candidates)
+            if matched:
+                interior_mif_name = matched
+                interior_mif_source = 'geometry'
+                display_mif_name = matched
+                if previous_mif != matched or previous_source != 'geometry':
+                    _log.info('interior mif resolved from live geometry: %s', matched)
     w._interior_mif_name = interior_mif_name
+    w._interior_mif_source = interior_mif_source if interior_mif_name else None
     w._interior_facility_name = interior_facility_name
     if _cur_location:
         w._interior_location_name = _cur_location
@@ -963,6 +983,7 @@ def _poll_file_lifecycle(w) -> None:
 
 def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _loading_post_settle):
     from arena_bridge import RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_NORTH_RAW, RT_ANGLE_RANGE
+    combat_map_result = None
     interior_floor_hyp: int | None = None
     if in_interior and interior_mif_name:
         try:
@@ -1093,7 +1114,10 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
                 except Exception:
                     _log.exception('wild_diag failed')
             wild_location_name = gs.get('MapName') or '' if _resolved_area in ('city', 'wilderness') else None
-            _map_view = tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, location_ref=getattr(w, '_current_location', None), analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, item_pickup_kinds=_item_pickup_kinds, dungeon_floor=dungeon_floor, dungeon_floor_fresh=dungeon_level_hyp)
+            _map_result = tab_map.update_map_state(_map_mif_eff, _show_player_x, _show_player_y, _show_angle, player_floor=int(effective_floor), place_text=place_text, location_name=wild_location_name, location_ref=getattr(w, '_current_location', None), analyzer=w._analyzer, anchor=w._anchor, interior_mif_name=_map_interior_mif_eff, in_interior=_map_in_interior_eff, area=_map_area_eff, item_pickup_kinds=_item_pickup_kinds, dungeon_floor=dungeon_floor, dungeon_floor_fresh=dungeon_level_hyp)
+            _map_view = _map_result.canvas if _map_result is not None else None
+            if not _is_loading_for_map and _gate.shown:
+                combat_map_result = _map_result
             if _map_view is not None:
                 try:
                     w._tab_translate.render_fallback_map_view(_map_view, place_text=place_text, suppress_map=_fallback_suppress_map, suppress_reason=_fallback_suppress_reason)
@@ -1111,6 +1135,7 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
                     _log.exception('combat_map render failed')
         except Exception:
             _log.exception('tab_map update failed')
+    return combat_map_result
 
 def _signal_hunter(w):
     hunter = getattr(w, '_signal_hunter_obj', 'unset')
@@ -1341,7 +1366,7 @@ def _poll_facility_latch_phase(w, *, _img_name_early, _npc_phase_early, _resolve
     _poll_log_hierarchy_recognition_post_session(w, _resolved_area=_resolved_area, in_interior=in_interior, _npc_phase_early=_npc_phase_early, mif_name=mif_name, _img_name_early=_img_name_early, interior_mif_name=interior_mif_name, interior_raw=interior_raw)
     return (_active_facility_name, _equipment_active_now, _equipment_just_started, _facility_active_now, _field_temple_active_now, _mages_active_now, _mages_just_started, _tavern_active_now, _temple_active_now, _temple_just_started)
 
-def _poll_display_phase(w, *, _active_facility_name, _b30, _b30_dialog_active, _b30_dialog_active_prev, _b30_img_name, _b30_red_changed, _instore_resp_handled, _inventory_screen_now, _loading_post_settle, _newpop_gate, _npc_dialog_changed, _npc_phase_early, _poll_hierarchy_area, _runtime_dialog_context, _resolved_area, _screen_display_active, _screen_id, _screen_name, _shop_buy_active, _shop_img_name, _shop_menu_visible, _shop_state, _top_is_normal_play, _travel_view, in_interior, inf_name, mif_name, npc_dialog, player_floor, rt_x, rt_z, ui_router):
+def _poll_display_phase(w, *, _active_facility_name, _b30, _combat_map_result, _b30_dialog_active, _b30_dialog_active_prev, _b30_img_name, _b30_red_changed, _instore_resp_handled, _inventory_screen_now, _loading_post_settle, _newpop_gate, _npc_dialog_changed, _npc_phase_early, _poll_hierarchy_area, _runtime_dialog_context, _resolved_area, _screen_display_active, _screen_id, _screen_name, _shop_buy_active, _shop_img_name, _shop_menu_visible, _shop_state, _top_is_normal_play, _travel_view, in_interior, inf_name, mif_name, npc_dialog, player_floor, rt_x, rt_z, ui_router):
     _poll_display_copy(w, gameplay=bool(_top_is_normal_play and _b30.get('in_gameplay')))
     if _top_is_normal_play:
         _poll_cinematic_dispatch(w, _b30)
@@ -1368,7 +1393,7 @@ def _poll_display_phase(w, *, _active_facility_name, _b30, _b30_dialog_active, _
     _poll_chargen(w)
     _arena_overlay_gameplay = bool(_top_is_normal_play and _b30.get('in_gameplay') and (not getattr(w, '_travel_l4_active', False)))
     from normal_play.combat_info_module import poll_combat_info
-    poll_combat_info(w, gameplay=_arena_overlay_gameplay)
+    poll_combat_info(w, gameplay=_arena_overlay_gameplay, map_result=_combat_map_result)
     from normal_play.spell_effect_module import poll_spell_effects
     poll_spell_effects(w, gameplay=_arena_overlay_gameplay)
     if ui_router is not None:
@@ -1415,7 +1440,7 @@ class PollController:
             _shop_state = _poll_detect_shop_state(w, _shop_img_name=_shop_img_name, in_interior=in_interior, _active_facility_name=_active_facility_at_start, _allow_yesno_menu_recovery=_allow_yesno_menu_recovery, area=_poll_hierarchy_area)
             _poll_run_session_manager(w, _img_name_early=_img_name_early, _npc_phase_early=_npc_phase_early, in_interior=in_interior, _resolved_area=_resolved_area, mif_name=mif_name, interior_mif_name=interior_mif_name, shop_state=_shop_state, yesno_menu_recovery=_allow_yesno_menu_recovery, loading=bool(w._loading_state_active))
             _active_facility_name, _equipment_active_now, _equipment_just_started, _facility_active_now, _field_temple_active_now, _mages_active_now, _mages_just_started, _tavern_active_now, _temple_active_now, _temple_just_started = _poll_facility_latch_phase(w, _img_name_early=_img_name_early, _npc_phase_early=_npc_phase_early, _resolved_area=_resolved_area, _top_is_normal_play=_top_is_normal_play, in_interior=in_interior, interior_mif_name=interior_mif_name, interior_raw=interior_raw, mif_name=mif_name)
-            _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _loading_post_settle)
+            _combat_map_result = _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _loading_post_settle)
             _shop_menu_visible = False
             _shop_buy_active = False
             _tavern_l4_kind = ''
@@ -1503,7 +1528,7 @@ class PollController:
                 w._npc_dialog_prev = npc_dialog
             if _top_is_normal_play:
                 _poll_status_popup(w, entry_handled=_entry_handled)
-            _poll_display_phase(w, _active_facility_name=_active_facility_name, _b30=_b30, _b30_dialog_active=_b30_dialog_active, _b30_dialog_active_prev=_b30_dialog_active_prev, _b30_img_name=_b30_img_name, _b30_red_changed=_b30_red_changed, _instore_resp_handled=_instore_resp_handled, _inventory_screen_now=_inventory_screen_now, _loading_post_settle=_loading_post_settle, _newpop_gate=_newpop_gate, _npc_dialog_changed=_npc_dialog_changed, _npc_phase_early=_npc_phase_early, _poll_hierarchy_area=_poll_hierarchy_area, _runtime_dialog_context=_runtime_dialog_context, _resolved_area=_resolved_area, _screen_display_active=_screen_display_active, _screen_id=_screen_id, _screen_name=_screen_name, _shop_buy_active=_shop_buy_active, _shop_img_name=_shop_img_name, _shop_menu_visible=_shop_menu_visible, _shop_state=_shop_state, _top_is_normal_play=_top_is_normal_play, _travel_view=_travel_view, in_interior=in_interior, inf_name=inf_name, mif_name=mif_name, npc_dialog=npc_dialog, player_floor=player_floor, rt_x=rt_x, rt_z=rt_z, ui_router=ui_router)
+            _poll_display_phase(w, _active_facility_name=_active_facility_name, _b30=_b30, _combat_map_result=_combat_map_result, _b30_dialog_active=_b30_dialog_active, _b30_dialog_active_prev=_b30_dialog_active_prev, _b30_img_name=_b30_img_name, _b30_red_changed=_b30_red_changed, _instore_resp_handled=_instore_resp_handled, _inventory_screen_now=_inventory_screen_now, _loading_post_settle=_loading_post_settle, _newpop_gate=_newpop_gate, _npc_dialog_changed=_npc_dialog_changed, _npc_phase_early=_npc_phase_early, _poll_hierarchy_area=_poll_hierarchy_area, _runtime_dialog_context=_runtime_dialog_context, _resolved_area=_resolved_area, _screen_display_active=_screen_display_active, _screen_id=_screen_id, _screen_name=_screen_name, _shop_buy_active=_shop_buy_active, _shop_img_name=_shop_img_name, _shop_menu_visible=_shop_menu_visible, _shop_state=_shop_state, _top_is_normal_play=_top_is_normal_play, _travel_view=_travel_view, in_interior=in_interior, inf_name=inf_name, mif_name=mif_name, npc_dialog=npc_dialog, player_floor=player_floor, rt_x=rt_x, rt_z=rt_z, ui_router=ui_router)
         except OSError:
             w._disconnect()
         except Exception as exc:

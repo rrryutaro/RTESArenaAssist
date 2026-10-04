@@ -8,8 +8,8 @@ from combat_info import CombatEvent, CombatTracker, CombatView, read_combat_snap
 from combat_visibility import visible_enemy_slots
 from combat_text_ja import COMBAT_MESSAGE_TEMPLATE_SETTINGS, english_enemy_name_from_item, localized_enemy_name_from_item, format_combat_message, text as combat_ja
 from combat_widgets import CombatOverlay
-from display_intent import DisplayIntent
-from normal_play.map.dispatcher import get_dispatcher
+from display_intent import DisplayIntent, SpeechCue
+from normal_play.map.base import MapPollResult
 from player_class_reader import class_en_of, class_index_of
 _log = logging.getLogger(__name__)
 _PANEL_IDLE_SECONDS = 5.0
@@ -45,7 +45,7 @@ def _enemy_key(enemy) -> tuple[int, tuple[int, int, int, int]]:
 def _enemy_name_resolver(view: CombatView, *, identifiers_enabled: bool, identifier_style: str):
     enemies = []
     seen = set()
-    sources = list(view.snapshot.enemies)
+    sources = list(view.known_enemies)
     sources.extend((event.enemy for event in view.history if event.enemy is not None))
     sources.extend(view.defeated)
     for enemy in sources:
@@ -153,25 +153,38 @@ def _compact_events(events) -> list[CombatEvent]:
             compact.append(event)
     return compact
 
-def _speech_text(events, *, enemy_names, categories: dict[str, bool]) -> str:
-    fragments: list[str] = []
+def _speech_cues(events, *, enemy_names, categories: dict[str, bool], skip_defeated_damage: bool=False) -> tuple[SpeechCue, ...]:
+    cues: list[SpeechCue] = []
     kind_to_category = {'enemy_encountered': 'encounter', 'enemy_damage': 'enemy_damage', 'player_damage': 'player_damage', 'experience': 'experience'}
-    for event in _compact_events(events):
+    compact_events = _compact_events(events)
+    defeated_keys: set[tuple[int, tuple[int, int, int, int]]] = set()
+    for event in compact_events:
+        group = f'combat:{event.enemy.slot}:{event.enemy.identity}' if event.enemy is not None else None
         if event.kind != 'enemy_defeated':
+            if event.kind in ('enemy_damage', 'player_damage') and event.enemy is not None and ((event.enemy.slot, event.enemy.identity) in defeated_keys):
+                continue
             category = kind_to_category.get(event.kind)
             if category and categories.get(category, True):
-                fragments.append(_short_text(event, translated=True, enemy_names=enemy_names))
+                cues.append(SpeechCue(_short_text(event, translated=True, enemy_names=enemy_names), group=group))
             continue
         if event.enemy is None:
             continue
         name = enemy_names(event.enemy)[1]
-        if event.amount and categories.get('enemy_damage', True):
-            fragments.append(_message('enemy_damage', name=name, damage=event.amount, hp=0, max_hp=event.enemy.max_hp, level=event.enemy.level))
+        has_result_speech = categories.get('defeated', True) or (event.experience_gain and categories.get('experience', True))
+        skip_this_defeat = bool(skip_defeated_damage and has_result_speech)
+        if skip_this_defeat:
+            defeated_keys.add((event.enemy.slot, event.enemy.identity))
+            cues.append(SpeechCue('', cancel_group=group))
+        if event.amount and categories.get('enemy_damage', True) and (not skip_this_defeat):
+            cues.append(SpeechCue(_message('enemy_damage', name=name, damage=event.amount, hp=0, max_hp=event.enemy.max_hp, level=event.enemy.level), group=group))
         if categories.get('defeated', True):
-            fragments.append(_message('defeated', name=name, damage=event.amount, xp=event.experience_gain, level=event.enemy.level))
+            cues.append(SpeechCue(_message('defeated', name=name, damage=event.amount, xp=event.experience_gain, level=event.enemy.level)))
         if event.experience_gain and categories.get('experience', True):
-            fragments.append(_message('experience', xp=event.experience_gain))
-    return '\n'.join((fragment for fragment in fragments if fragment))
+            cues.append(SpeechCue(_message('experience', xp=event.experience_gain)))
+    return tuple(cues)
+
+def _speech_text(events, *, enemy_names, categories: dict[str, bool]) -> str:
+    return '\n'.join((cue.text for cue in _speech_cues(events, enemy_names=enemy_names, categories=categories) if cue.text))
 
 def _history_text(view: CombatView, count: int, *, enemy_names=_enemy_names) -> tuple[str, str]:
     if not view.history:
@@ -194,7 +207,7 @@ def _full_detail_text(view: CombatView, *, result: bool, enemy_names=_enemy_name
     summary = _summary_text(view, enemy_names=enemy_names)
     if result:
         return summary
-    alive = [f'{enemy_names(enemy)[1]}  {max(0, enemy.hp)}/{enemy.max_hp}' for enemy in view.snapshot.enemies if not enemy.dead and enemy is not view.target]
+    alive = [f'{enemy_names(enemy)[1]}  {max(0, enemy.hp)}/{enemy.max_hp}' for enemy in view.known_enemies if not enemy.dead and enemy is not view.target]
     sections = [_detail_text(view, enemy_names=enemy_names)]
     if alive:
         sections.append('\n'.join(alive))
@@ -259,20 +272,14 @@ class CombatInfoController:
     def _meter_rows(view: CombatView, *, enemy_names) -> list[dict]:
         ordered = []
         seen = set()
-        if view.target is not None:
+        if view.target is not None and (not view.target.dead):
             ordered.append(view.target)
             seen.add(_enemy_key(view.target))
-        for enemy in view.snapshot.enemies:
+        for enemy in view.known_enemies:
             key = _enemy_key(enemy)
             if key not in seen and (not enemy.dead):
                 ordered.append(enemy)
                 seen.add(key)
-        if not any((not enemy.dead for enemy in view.snapshot.enemies)):
-            for enemy in reversed(view.defeated):
-                key = _enemy_key(enemy)
-                if key not in seen:
-                    ordered.append(enemy)
-                    seen.add(key)
         return [{'name': f'{enemy_names(enemy)[1]}  Lv {enemy.level}', 'hp': enemy.hp, 'max_hp': enemy.max_hp} for enemy in ordered[:8]]
 
     def reset(self) -> None:
@@ -283,7 +290,7 @@ class CombatInfoController:
         observer = self._health_observer()
         self._health_observation_serial = observer.latest_serial if observer is not None else 0
 
-    def poll(self, *, gameplay: bool) -> None:
+    def poll(self, *, gameplay: bool, map_result: MapPollResult | None=None) -> None:
         w = self._w
         dosbox_enabled = bool(settings.get('combat_dosbox_enabled', False))
         try:
@@ -307,6 +314,7 @@ class CombatInfoController:
         except (TypeError, ValueError):
             panel_history_count = 10
         tts_enabled = bool(settings.get('combat_tts_enabled', False))
+        skip_defeated_damage = bool(settings.get('combat_tts_skip_defeated_damage', True))
         tts_categories = {kind: bool(settings.get(f'combat_tts_{kind}', True)) for kind in COMBAT_MESSAGE_TEMPLATE_SETTINGS}
         identifiers_enabled = bool(settings.get('combat_enemy_identifier_enabled', False))
         identifier_style = str(settings.get('combat_enemy_identifier_style', 'alphabet'))
@@ -334,32 +342,33 @@ class CombatInfoController:
             visible_slots = frozenset()
             visibility_source = 'unavailable'
             try:
-                dispatcher = get_dispatcher()
-                map_key = dispatcher.active_key()
-                if map_key in ('dungeon', 'interior'):
-                    observed = visible_enemy_slots(snapshot, dispatcher.get_canvas_data())
-                    if observed is not None:
-                        visible_slots = observed
-                        visibility_source = f'map:{map_key}'
-                    else:
-                        visibility_source = f'unmatched:{map_key}'
+                observed = visible_enemy_slots(snapshot, map_result)
+                if observed is not None:
+                    visible_slots = observed
+                    visibility_source = f'map:{map_result.axis}'
                 else:
-                    visibility_source = f'unsupported:{map_key}'
+                    visibility_source = f'unmatched:{map_result.axis}' if map_result is not None else 'unavailable'
             except Exception as exc:
                 visibility_source = f'error:{type(exc).__name__}'
             read_detail += f' visibility={visibility_source} visible_slots={sorted(visible_slots)}'
+            if map_result is not None and snapshot.enemies:
+                canvas = map_result.canvas
+                read_detail += f" map_parent={map_result.parent_area} map_key={getattr(canvas, 'map_key', None)!r} map_source={map_result.source_player} map_player=({getattr(canvas, 'player_x', None)},{getattr(canvas, 'player_y', None)}) map_projection={map_result.projection}"
         snapshot_key = None if snapshot is None else (snapshot.player_hp, snapshot.player_max_hp, tuple(((enemy.slot, enemy.identity, enemy.hp, enemy.max_hp, enemy.sprite_flat, enemy.status_flags, enemy.dead) for enemy in snapshot.enemies)))
         diagnostic_key = (enabled, read_status, snapshot_key, visible_slots, visibility_source, dosbox_enabled, tab_mode, tab_format, panel_enabled, panel_history_count, tts_enabled, identifiers_enabled, identifier_style)
         if diagnostic_key != self._diagnostic_key:
             self._diagnostic_key = diagnostic_key
             _recog(_log, 'combat_info read status=%s enabled=%s settings=DOSBox:%s tab:%s/%s panel:%s/%d TTS:%s ID:%s/%s detail=%s', read_status, enabled, dosbox_enabled, tab_mode, tab_format, panel_enabled, panel_history_count, tts_enabled, identifiers_enabled, identifier_style, read_detail)
         view = self._tracker.update(snapshot, enabled=enabled, player_damage_observations=damage_observations, visible_slots=visible_slots)
+        if view is not None:
+            for detail in view.attack_diagnostics:
+                _recog(_log, 'combat_info attack_probe %s', detail)
         enemy_names = _enemy_name_resolver(view, identifiers_enabled=identifiers_enabled, identifier_style=identifier_style) if view is not None else _enemy_names
         if view is not None and view.events:
             self._last_event_at = time.monotonic()
             _recog(_log, 'combat_info events %s', ', '.join((f"{event.kind}:{event.amount}:slot={(event.enemy.slot if event.enemy is not None else '-')}" for event in view.events)))
             self._append_combat_log(view.events, enemy_names=enemy_names)
-        alive = bool(view and any((not enemy.dead for enemy in view.snapshot.enemies)))
+        alive = bool(view and any((not enemy.dead for enemy in view.known_enemies)))
         low_hp_effect = bool(view and low_hp_enabled and (view.snapshot.player_max_hp > 0) and (view.snapshot.player_hp * 100 <= view.snapshot.player_max_hp * low_hp_threshold))
         speech_pending = self._combat_speech_pending()
         show_lifetime = bool(view and (view.show_active or view.show_result or (not alive and speech_pending)))
@@ -390,8 +399,9 @@ class CombatInfoController:
         show_tab = bool(tab_mode != 'none' and show_lifetime)
         show_panel = bool(panel_enabled and show_lifetime and view and view.history and (speech_pending or (self._last_event_at is not None and time.monotonic() - self._last_event_at < _PANEL_IDLE_SECONDS)))
         latest = view.latest_event if view is not None else None
-        speech_text = _speech_text(view.events, enemy_names=enemy_names, categories=tts_categories) if latest is not None and tts_enabled else ''
-        speak = bool(speech_text)
+        speech_cues = _speech_cues(view.events, enemy_names=enemy_names, categories=tts_categories, skip_defeated_damage=skip_defeated_damage) if latest is not None and tts_enabled else ()
+        speech_text = '\n'.join((cue.text for cue in speech_cues if cue.text))
+        speak = bool(speech_cues)
         if not show_tab and (not show_panel) and (not speak):
             router.propose_display(DisplayIntent.clear_if_owner('combat_info', mode='translate', priority=-10, reason='combat_info_end'))
             return
@@ -401,22 +411,21 @@ class CombatInfoController:
             target_name = enemy_names(target)[1]
             target_hp, target_max = (target.hp, target.max_hp)
         else:
-            last_enemy = next((e.enemy for e in reversed(view.history) if e.enemy is not None), None)
-            target_name = enemy_names(last_enemy)[1] if last_enemy else ''
-            target_hp = last_enemy.hp if last_enemy else 0
-            target_max = last_enemy.max_hp if last_enemy else 1
+            target_name = ''
+            target_hp = 0
+            target_max = 1
         show_result = bool(view and (not alive))
         text_history = _detail_text(view, count=panel_history_count, enemy_names=enemy_names)
         data = {'target_name': target_name, 'target_hp': target_hp, 'target_max_hp': target_max, 'player_hp': view.snapshot.player_hp, 'player_max_hp': view.snapshot.player_max_hp, 'display_format': tab_format, 'enemies': self._meter_rows(view, enemy_names=enemy_names), 'detail_full': text_history if tab_format == 'text' else _summary_text(view, enemy_names=enemy_names), 'detail_compact': text_history if tab_format == 'text' else _summary_text(view, enemy_names=enemy_names) if show_result else '', 'result': show_result, 'panel_enabled': show_panel}
-        router.propose_display(DisplayIntent.combat_info(data, mode=mode, panel_en=panel_en, panel_ja=panel_ja, speech_role='situation' if speak else None, speech_text=speech_text if speak else None, speech_event_id=latest.serial if speak else None))
+        router.propose_display(DisplayIntent.combat_info(data, mode=mode, panel_en=panel_en, panel_ja=panel_ja, speech_role='situation' if speak else None, speech_text=speech_text if speak else None, speech_event_id=latest.serial if speak else None, speech_cues=speech_cues))
 
-def poll_combat_info(window, *, gameplay: bool) -> None:
+def poll_combat_info(window, *, gameplay: bool, map_result: MapPollResult | None=None) -> None:
     controller = getattr(window, '_combat_info_controller', None)
     if controller is None:
         controller = CombatInfoController(window)
         window._combat_info_controller = controller
     try:
-        controller.poll(gameplay=gameplay)
+        controller.poll(gameplay=gameplay, map_result=map_result)
     except Exception:
         _log.exception('combat info poll failed')
         controller.reset()

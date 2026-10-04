@@ -861,6 +861,7 @@
   "settings.combat_panel_history": "Messages récents",
   "settings.combat_log": "Enregistrer le journal de combat",
   "settings.combat_tts": "Lire les nouveaux messages de combat",
+  "settings.combat_tts_skip_defeated_damage": "Après une victoire, ignorer les dégâts en attente de cet ennemi",
   "settings.combat_enemy_identifier": "Distinguer les ennemis du même type",
   "settings.combat_enemy_identifier_style": "Type de repère",
   "settings.combat_enemy_identifier_alphabet": "Lettres (A, B…)",

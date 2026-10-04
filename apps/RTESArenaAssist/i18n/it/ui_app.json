@@ -861,6 +861,7 @@
   "settings.combat_panel_history": "Messaggi recenti",
   "settings.combat_log": "Salva registro di combattimento",
   "settings.combat_tts": "Leggi i nuovi messaggi di combattimento",
+  "settings.combat_tts_skip_defeated_damage": "Alla sconfitta, salta i danni in attesa di quel nemico",
   "settings.combat_enemy_identifier": "Distingui nemici dello stesso tipo",
   "settings.combat_enemy_identifier_style": "Tipo di identificatore",
   "settings.combat_enemy_identifier_alphabet": "Lettere (A, B…)",

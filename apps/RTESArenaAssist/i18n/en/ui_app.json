@@ -861,6 +861,7 @@
   "settings.combat_panel_history": "Recent messages",
   "settings.combat_log": "Save combat log",
   "settings.combat_tts": "Read new combat messages aloud",
+  "settings.combat_tts_skip_defeated_damage": "On defeat, skip unread damage for that enemy",
   "settings.combat_enemy_identifier": "Distinguish enemies of the same type",
   "settings.combat_enemy_identifier_style": "Identifier style",
   "settings.combat_enemy_identifier_alphabet": "Letters (A, B…)",

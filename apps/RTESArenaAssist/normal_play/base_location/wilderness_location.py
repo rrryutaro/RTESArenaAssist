@@ -9,7 +9,7 @@ from services.wild_block_lists import get_block_lists, get_cache_source
 from services.wild_flats import extract_flat_marks, get_wild_flat_category_map
 from services.wild_chunk_tracker import WildChunkTracker
 from services.wild_voxel_assembler import CITY_ORIGIN_CHUNK_X, CITY_ORIGIN_CHUNK_Y, WILD_HEIGHT, WILD_WIDTH, build_wild_voxel_grid
-from normal_play.map.base import MapContext, MapSessionBase
+from normal_play.map.base import MapContext, MapSessionBase, MapTileProjection
 from normal_play.base_location.base_location_view import FieldEntranceContext
 _log = logging.getLogger('base_location.wilderness')
 _CHUNK = 64
@@ -504,6 +504,13 @@ class WildernessMapSession(MapSessionBase):
                     local_y = ly
         self._update_field_entrance_hint(local_x, local_y)
         return CanvasData(walkable=self._walkable, map1=self._map1, flor=self._flor, bitmap_grid=self._bitmap, notes=[], player_x=local_x, player_y=local_y, player_angle_deg=self._angle, level_up_index=None, level_down_index=None, entrance_cells=self._wild_entrance_cells(), facility_entrances=self._wild_facility_entrances(), flat_marks=self._wild_flat_marks(), edge_marks=self._wild_edge_marks(), crop_marks=self._wild_crop_marks(), wild_show_crops=self._show_crops, is_wilderness=True, chunk_origin=self._origin_chunk, wilderness_compact_view=self._compact_view, wild_distinguish_road=self._distinguish_road, wild_show_edge=self._show_edge, hidden_door_ids=frozenset(), menu_texture_indices=frozenset(), map_key='wilderness:%s:%s:%s' % (self._wild_seed if self._wild_seed is not None else '?', self._origin_chunk, self._grid_size))
+
+    def combat_projection(self, ctx: MapContext) -> tuple[Optional[tuple[int, int]], Optional[MapTileProjection]]:
+        if self._live_wild_blocks is None or self._live_origin is None or self._built_live_origin != self._live_origin or (self._built_live_blocks != self._live_wild_blocks) or (self._center_origin is None) or (self._origin_chunk is None) or (self._map1 is None) or (self._player_x is None) or (self._player_y is None):
+            return (None, None)
+        offset_x = (self._center_origin[0] - self._origin_chunk[0]) * _CHUNK
+        offset_y = (self._center_origin[1] - self._origin_chunk[1]) * _CHUNK
+        return ((int(self._player_x), int(self._player_y)), MapTileProjection(offset_x, offset_y, source_limit=_RT_MAX_DISPLAY + 1))
 
     def reset_progress(self) -> None:
         if self._walkable is not None:

@@ -143,4 +143,34 @@ def resolve_interior_floor(analyzer, anchor: Optional[int], mif_name: Optional[s
     if flags is None:
         return None
     return match_floor_by_topology(sigs, *flags)
-__all__ = ['read_stair_flags', 'read_loaded_level_map1', 'match_floor_by_geometry', 'match_floor_by_topology', 'level_stair_signatures', 'level_map1_arrays', 'resolve_interior_floor']
+
+def match_interior_mif_by_geometry(analyzer, anchor: Optional[int], mif_names) -> Optional[str]:
+    if analyzer is None or anchor is None or (not mif_names):
+        return None
+    live_by_shape = {}
+    scores: list[tuple[float, str]] = []
+    for name in dict.fromkeys(mif_names):
+        data = _level_data(name)
+        if data is None:
+            continue
+        _sigs, maps = data
+        best = -1.0
+        for level_map in maps:
+            if level_map is None:
+                continue
+            height, width = level_map.shape
+            shape = (width, height)
+            if shape not in live_by_shape:
+                live_by_shape[shape] = read_loaded_level_map1(analyzer, anchor, width, height)
+            live = live_by_shape[shape]
+            if live is not None and live.shape == level_map.shape:
+                best = max(best, float((level_map == live).mean()))
+        if best >= 0:
+            scores.append((best, name))
+    scores.sort(reverse=True)
+    if not scores or scores[0][0] < _GEOMETRY_MATCH_RATIO:
+        return None
+    if len(scores) > 1 and scores[0][0] - scores[1][0] < 0.1:
+        return None
+    return scores[0][1]
+__all__ = ['read_stair_flags', 'read_loaded_level_map1', 'match_floor_by_geometry', 'match_floor_by_topology', 'level_stair_signatures', 'level_map1_arrays', 'resolve_interior_floor', 'match_interior_mif_by_geometry']

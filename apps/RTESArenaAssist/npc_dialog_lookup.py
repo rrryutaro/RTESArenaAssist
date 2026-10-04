@@ -305,7 +305,7 @@ def _preprocess_placeholder_value(name: str, value: str, lang: str) -> str:
     return value
 _DS_PATTERN = re.compile('^(?:(.+?)\\s+)?(\\w+)\\s+called\\s+(.+)$')
 _PLACEHOLDER_NAMES: frozenset[str] = frozenset(['a', 'a2', 'adn', 'amn', 'an', 'ap', 'apr', 'arc', 'art', 'ba', 'ccs', 'cll', 'cn', 'cn2', 'cp', 'ct', 'da', 'de', 'di', 'dit', 'doc', 'ds', 'du', 'en', 'fn', 'fq', 'g', 'g2', 'g3', 'hc', 'hod', 'i', 'jok', 'lp', 'mi', 'mn', 'mpr', 'mt', 'n', 'nap', 'nc', 'nc2', 'nd', 'ne', 'nh', 'nhd', 'ni', 'nk', 'nr', 'nt', 'o', 'oap', 'oc', 'omq', 'opp', 'oth', 'pcf', 'pcn', 'qc', 'qmn', 'qt', 'r', 'ra', 'rcn', 'rf', 's', 'sn', 'st', 't', 'ta', 'tan', 'tc', 'tem', 'tg', 'ti', 'tl', 'tn', 'tq', 'tt', 'u'])
-_NHD_CAPTURE = '[A-Za-z]+,\\s+\\d{1,2}(?:st|nd|rd|th)\\s+of\\s+[A-Za-z]+'
+_NHD_CAPTURE = "[A-Za-z]+,\\s+\\d{1,2}(?:st|nd|rd|th)\\s+of\\s+[A-Z][A-Za-z']*(?:\\s+[A-Z][A-Za-z']*)?"
 
 def _template_to_regex(en_template: str, *, anchor_end: bool=True, allow_empty: bool=False) -> re.Pattern | None:
     seen: set[str] = set()

@@ -750,6 +750,10 @@ class _SettingsDialog(QDialog):
         return self._combat_tts_cb.isChecked()
 
     @property
+    def combat_tts_skip_defeated_damage(self) -> bool:
+        return self._combat_tts_skip_defeated_damage_cb.isChecked()
+
+    @property
     def combat_tts_categories(self) -> dict[str, bool]:
         return {kind: check.isChecked() for kind, check in self._combat_tts_category_cbs.items()}
 

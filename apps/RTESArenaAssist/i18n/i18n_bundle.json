@@ -4731,6 +4731,11 @@
           "id": 900943,
           "kind": "label",
           "debug_name": "settings.combat_low_hp_threshold"
+        },
+        {
+          "id": 900944,
+          "kind": "label",
+          "debug_name": "settings.combat_tts_skip_defeated_damage"
         }
       ]
     },
@@ -52937,6 +52942,10 @@
           "text": "Health threshold"
         },
         {
+          "id": 900944,
+          "text": "On defeat, skip unread damage for that enemy"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -59827,7 +59836,7 @@
         },
         {
           "id": 110537,
-          "text": "去年は %cn で %nh を過ごさなかったけど、今年は %nhd、%hod のためにここにいるはずだよ。"
+          "text": "去年は %cn で %nh を過ごさなかったけど、今年は %nhd にここにいるはずだよ。%hod"
         },
         {
           "id": 110538,
@@ -82208,6 +82217,10 @@
         {
           "id": 900943,
           "text": "表示を始める体力割合"
+        },
+        {
+          "id": 900944,
+          "text": "敵を倒したら、その敵の未読ダメージを飛ばす"
         },
         {
           "id": 902000,
@@ -112291,6 +112304,10 @@
           "text": "Umbral de salud"
         },
         {
+          "id": 900944,
+          "text": "Al derrotar a un enemigo, omitir sus daños pendientes"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -141562,6 +141579,10 @@
         {
           "id": 900943,
           "text": "Gesundheitsschwelle"
+        },
+        {
+          "id": 900944,
+          "text": "Nach einem Sieg ungelesene Schadensmeldungen dieses Gegners überspringen"
         },
         {
           "id": 902000,
@@ -170837,6 +170858,10 @@
           "text": "Seuil de santé"
         },
         {
+          "id": 900944,
+          "text": "Après une victoire, ignorer les dégâts en attente de cet ennemi"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -200110,6 +200135,10 @@
           "text": "Soglia di salute"
         },
         {
+          "id": 900944,
+          "text": "Alla sconfitta, salta i danni in attesa di quel nemico"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -229381,6 +229410,10 @@
         {
           "id": 900943,
           "text": "Порог здоровья"
+        },
+        {
+          "id": 900944,
+          "text": "После победы пропускать непрочитанный урон этому врагу"
         },
         {
           "id": 902000,

@@ -7,7 +7,7 @@ from services.arena_types import ArenaMenuType
 from services.city_lookup import get_facilities_for
 from services.city_voxel_assembler import build_city_voxel_grid_for
 from services.wild_flats import extract_flat_marks, get_city_flat_category_map
-from normal_play.map.base import MapContext, MapSessionBase
+from normal_play.map.base import MapContext, MapSessionBase, MapTileProjection
 _log = logging.getLogger('base_location.city')
 _WRAP_EDGE_MARGIN = 2
 
@@ -137,6 +137,14 @@ class CityMapSession(MapSessionBase):
             self._player_x, self._player_wrap_edge_x = project_wrapped_city_axis(raw_x, self._player_raw_x, width, self._player_wrap_edge_x)
             self._player_y, self._player_wrap_edge_y = project_wrapped_city_axis(raw_y, self._player_raw_y, height, self._player_wrap_edge_y)
         self._player_raw_x, self._player_raw_y = (raw_x, raw_y)
+
+    def combat_projection(self, ctx: MapContext) -> tuple[Optional[tuple[int, int]], Optional[MapTileProjection]]:
+        if ctx.player_tile_x is None or ctx.player_tile_y is None or self._player_wrap_edge_x or self._player_wrap_edge_y:
+            return (None, None)
+        source = (int(ctx.player_tile_x), int(ctx.player_tile_y))
+        if source != (self._player_raw_x, self._player_raw_y):
+            return (None, None)
+        return (source, MapTileProjection())
 
     def _load_city_grid(self, location) -> None:
         grid = None

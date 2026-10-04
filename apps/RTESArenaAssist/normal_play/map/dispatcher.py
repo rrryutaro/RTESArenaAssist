@@ -4,7 +4,7 @@ from typing import Optional
 from common_draw.automap_canvas import CanvasData
 from normal_play.base_location import BaseLocationDispatcher
 from normal_play.base_location.base_location_view import classify_map_axis
-from .base import MapContext, MapSessionBase
+from .base import MapContext, MapPollResult, MapSessionBase
 from .interior import InteriorMapSession
 _log = logging.getLogger('map.dispatcher')
 
@@ -52,6 +52,12 @@ class MapDispatcher:
         if self._active_path == 'base_location':
             return self.base_location.get_canvas_data()
         return CanvasData()
+
+    def get_poll_result(self, ctx: MapContext) -> MapPollResult:
+        axis = self.active_key()
+        session = self.interior if axis == 'interior' else self.base_location.active_session()
+        source_player, projection = session.combat_projection(ctx) if session is not None else (None, None)
+        return MapPollResult(canvas=self.get_canvas_data(), axis=axis, parent_area=ctx.area, source_player=source_player, projection=projection)
 
     def active_key(self) -> Optional[str]:
         if self._active_path == 'interior':

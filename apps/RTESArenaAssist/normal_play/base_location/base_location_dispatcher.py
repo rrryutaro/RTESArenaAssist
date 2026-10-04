@@ -45,6 +45,11 @@ class BaseLocationDispatcher:
     def active_key(self) -> Optional[str]:
         return self._active_key
 
+    def active_session(self) -> Optional[MapSessionBase]:
+        if self._active_key is None:
+            return None
+        return dict(self._sessions)[self._active_key]
+
     def suspended_key(self) -> Optional[str]:
         return self._suspended_key
 

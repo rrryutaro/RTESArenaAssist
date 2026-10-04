@@ -29,12 +29,12 @@ class TranslationFeed:
         self._last_screen_cut = False
         self._last_decision_log: tuple | None = None
 
-    def on_translation(self, panel_owner: str, original: str, text: str, speech_role: str | None=None, speech_text: str | None=None, log_enabled: bool=True, speech_action: str='replace') -> None:
+    def on_translation(self, panel_owner: str, original: str, text: str, speech_role: str | None=None, speech_text: str | None=None, log_enabled: bool=True, speech_action: str='replace', speech_cues=()) -> None:
         self._reset_guard_on_context_change()
         if speech_role is None:
             return
         read_text = speech_text if speech_text is not None else text
-        if not read_text:
+        if not read_text and (not speech_cues):
             self._log_decision('suppress', 'empty_text', panel_owner, speech_role, text)
             return
         if log_enabled and self._log_store is not None:
@@ -70,6 +70,28 @@ class TranslationFeed:
         self._remember_spoken(repeat_key)
         self._speaking_owner = panel_owner
         spoken_text = self._apply_name_reading(read_text)
+        if speech_cues:
+            for cue in speech_cues:
+                if cue.cancel_group:
+                    cancel = getattr(self._tts, 'cancel_group', None)
+                    if callable(cancel):
+                        cancel(cue.cancel_group)
+                        _recog(_log, 'speech cancel group: owner=%r group=%r', panel_owner, cue.cancel_group)
+                if not cue.text:
+                    continue
+                cue_text = self._apply_name_reading(cue.text)
+                speak_queued = getattr(self._tts, 'speak_queued', None)
+                if callable(speak_queued):
+                    try:
+                        speak_queued(cue_text, tag=panel_owner, group=cue.group)
+                    except TypeError:
+                        try:
+                            speak_queued(cue_text, tag=panel_owner)
+                        except TypeError:
+                            speak_queued(cue_text)
+                else:
+                    self._tts.speak(cue_text)
+            return
         if queued:
             speak_queued = getattr(self._tts, 'speak_queued', None)
             if callable(speak_queued):

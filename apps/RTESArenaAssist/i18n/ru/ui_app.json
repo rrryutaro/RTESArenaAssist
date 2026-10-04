@@ -861,6 +861,7 @@
   "settings.combat_panel_history": "Последние сообщения",
   "settings.combat_log": "Сохранять журнал боя",
   "settings.combat_tts": "Озвучивать новые сообщения о бое",
+  "settings.combat_tts_skip_defeated_damage": "После победы пропускать непрочитанный урон этому врагу",
   "settings.combat_enemy_identifier": "Различать однотипных врагов",
   "settings.combat_enemy_identifier_style": "Тип обозначения",
   "settings.combat_enemy_identifier_alphabet": "Буквы (A, B…)",

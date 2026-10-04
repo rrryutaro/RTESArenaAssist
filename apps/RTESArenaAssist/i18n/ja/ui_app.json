@@ -861,6 +861,7 @@
   "settings.combat_panel_history": "直近履歴の表示件数",
   "settings.combat_log": "戦闘ログを保存する",
   "settings.combat_tts": "新しい戦闘メッセージを読み上げる",
+  "settings.combat_tts_skip_defeated_damage": "敵を倒したら、その敵の未読ダメージを飛ばす",
   "settings.combat_enemy_identifier": "同名の敵に識別子を付ける",
   "settings.combat_enemy_identifier_style": "識別子の種類",
   "settings.combat_enemy_identifier_alphabet": "アルファベット（A、B…）",

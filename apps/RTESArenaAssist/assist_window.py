@@ -411,6 +411,7 @@ class AssistWindow(QMainWindow):
         settings.set_val('combat_translate_panel_enabled', dlg.combat_translate_panel_enabled)
         settings.set_val('combat_translate_panel_history_count', dlg.combat_translate_panel_history_count)
         settings.set_val('combat_tts_enabled', dlg.combat_tts_enabled)
+        settings.set_val('combat_tts_skip_defeated_damage', dlg.combat_tts_skip_defeated_damage)
         for _kind, _enabled in dlg.combat_tts_categories.items():
             settings.set_val(f'combat_tts_{_kind}', _enabled)
         settings.set_val('combat_log_enabled', dlg.combat_log_enabled)

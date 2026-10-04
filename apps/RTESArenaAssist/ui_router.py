@@ -261,11 +261,11 @@ class UiRouter:
                 self._displayed_translation = None
             w._panel_owner = intent.panel_owner
             if self._translation_observer is not None and intent.speech_role:
-                _obs_key = (intent.panel_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled, intent.speech_event_id)
+                _obs_key = (intent.panel_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled, intent.speech_event_id, intent.speech_cues)
                 if self._obs_last_key != _obs_key:
                     self._obs_last_key = _obs_key
                     try:
-                        self._translation_observer(intent.panel_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.log_enabled, intent.speech_action)
+                        self._translation_observer(intent.panel_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.log_enabled, intent.speech_action, intent.speech_cues)
                     except Exception:
                         _log.exception('translation_observer failed')
             return

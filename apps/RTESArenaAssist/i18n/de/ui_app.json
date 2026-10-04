@@ -861,6 +861,7 @@
   "settings.combat_panel_history": "Letzte Meldungen",
   "settings.combat_log": "Kampfprotokoll speichern",
   "settings.combat_tts": "Neue Kampfmeldungen vorlesen",
+  "settings.combat_tts_skip_defeated_damage": "Nach einem Sieg ungelesene Schadensmeldungen dieses Gegners überspringen",
   "settings.combat_enemy_identifier": "Gleichartige Gegner kennzeichnen",
   "settings.combat_enemy_identifier_style": "Kennzeichenart",
   "settings.combat_enemy_identifier_alphabet": "Buchstaben (A, B…)",

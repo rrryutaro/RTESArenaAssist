@@ -154,6 +154,28 @@ def lookup_interior_mif(location: 'Optional[LocationRef]', door_x: Optional[int]
     if info is None or not info.mif_name:
         return None
     return info.mif_name
+_INTERIOR_MIF_CANDIDATES: dict[tuple[int, int], tuple[str, ...]] = {}
+
+def interior_mif_candidates(location: 'Optional[LocationRef]') -> tuple[str, ...]:
+    if not _AVAILABLE or location is None:
+        return ()
+    key = (location.province_id, location.location_id)
+    cached = _INTERIOR_MIF_CANDIDATES.get(key)
+    if cached is not None:
+        return cached
+    try:
+        doors = get_city_doors_for(*key)
+        if doors is None:
+            return ()
+        names = {_mif_for_door(location, door) for door in doors}
+        from services.city_lookup import get_palace_mif_for
+        names.add(get_palace_mif_for(*key))
+    except Exception:
+        return ()
+    result = tuple(sorted((name for name in names if name)))
+    if result:
+        _INTERIOR_MIF_CANDIDATES[key] = result
+    return result
 _MIF_LEVEL_COUNT_CACHE: dict[str, int] = {}
 
 def _resolve_mif_dir() -> str:
@@ -176,4 +198,4 @@ def get_mif_level_count(mif_name: Optional[str]) -> Optional[int]:
         return count
     except Exception:
         return None
-__all__ = ['InteriorFacilityInfo', 'describe_facility_naming_at', 'extract_shop_sign', 'translate_shop_sign', 'is_available', 'lookup_interior_facility', 'lookup_interior_mif', 'get_mif_level_count']
+__all__ = ['InteriorFacilityInfo', 'describe_facility_naming_at', 'extract_shop_sign', 'translate_shop_sign', 'is_available', 'lookup_interior_facility', 'lookup_interior_mif', 'interior_mif_candidates', 'get_mif_level_count']

@@ -929,6 +929,11 @@ def build_combat_tab(dlg: '_SettingsDialog') -> QWidget:
     dlg._combat_tts_cb = QCheckBox(combat_ja('settings.combat_tts'))
     dlg._combat_tts_cb.setChecked(bool(settings.get('combat_tts_enabled', False)))
     common_form.addRow('', dlg._combat_tts_cb)
+    dlg._combat_tts_skip_defeated_damage_cb = QCheckBox(combat_ja('settings.combat_tts_skip_defeated_damage'))
+    dlg._combat_tts_skip_defeated_damage_cb.setChecked(bool(settings.get('combat_tts_skip_defeated_damage', True)))
+    dlg._combat_tts_cb.toggled.connect(dlg._combat_tts_skip_defeated_damage_cb.setEnabled)
+    dlg._combat_tts_skip_defeated_damage_cb.setEnabled(dlg._combat_tts_cb.isChecked())
+    common_form.addRow('', dlg._combat_tts_skip_defeated_damage_cb)
     dlg._combat_tts_category_cbs = {}
     for kind in DEFAULT_COMBAT_MESSAGE_TEMPLATES:
         check = QCheckBox(combat_ja(f'settings.combat_template_{kind}'))

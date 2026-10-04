@@ -8,7 +8,7 @@ import time
 import traceback
 import wave
 from collections import OrderedDict, deque
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 _SVSF_ASYNC = 1
 _SVSF_PURGE_BEFORE_SPEAK = 2
 _SAPI_WAIT_POLL_MS = 50
@@ -106,6 +106,8 @@ class _TTSRequest:
     force: bool
     generation: int
     tag: str | None = None
+    group: str | None = None
+    cancelled: threading.Event = field(default_factory=threading.Event, compare=False, repr=False)
 
 class TTSService:
 
@@ -131,6 +133,9 @@ class TTSService:
         self._voicevox_timing_history: dict[tuple[int, int], 'deque[tuple[int, float, float]]'] = {}
         self._queue: queue.Queue = queue.Queue()
         self._worker = None
+        self._outstanding: list[_TTSRequest] = []
+        self._active_request: _TTSRequest | None = None
+        self._request_local = threading.local()
         self._prewarm_queue: queue.Queue = queue.Queue()
         self._prewarm_seen: set[tuple[str, int, int, int]] = set()
         self._prewarm_worker = None
@@ -238,9 +243,18 @@ class TTSService:
         if self._enabled:
             self._enqueue(text, force=False)
 
-    def speak_queued(self, text: str, *, tag: str | None=None) -> None:
+    def speak_queued(self, text: str, *, tag: str | None=None, group: str | None=None) -> None:
         if self._enabled:
-            self._enqueue(text, force=False, honor_interrupt=False, tag=tag)
+            self._enqueue(text, force=False, honor_interrupt=False, tag=tag, group=group)
+
+    def cancel_group(self, group: str) -> None:
+        if not group:
+            return
+        with self._lock:
+            for request in self._outstanding:
+                if request.group == group:
+                    request.cancelled.set()
+            self._pause_cond.notify_all()
 
     def speak_now(self, text: str) -> None:
         self._enqueue(text, force=True)
@@ -300,7 +314,7 @@ class TTSService:
         self._queue.put(None)
         self._prewarm_queue.put(None)
 
-    def _enqueue(self, text: str, *, force: bool, honor_interrupt: bool=True, tag: str | None=None) -> None:
+    def _enqueue(self, text: str, *, force: bool, honor_interrupt: bool=True, tag: str | None=None, group: str | None=None) -> None:
         value = self._sanitize(text)
         if not value:
             return
@@ -319,13 +333,19 @@ class TTSService:
             self._pending_clear()
             if engine == 'voicevox':
                 self._stop_playback()
-        self._pending_add(tag)
-        self._queue.put(_TTSRequest(value, force, generation, tag))
+        request = _TTSRequest(value, force, generation, tag, group)
+        with self._lock:
+            self._outstanding.append(request)
+            self._pending_add(tag)
+            self._queue.put(request)
 
     def _drain(self) -> None:
         try:
             while True:
-                self._queue.get_nowait()
+                request = self._queue.get_nowait()
+                with self._lock:
+                    if request in self._outstanding:
+                        self._outstanding.remove(request)
         except queue.Empty:
             pass
 
@@ -393,13 +413,14 @@ class TTSService:
 
     def _is_generation_current(self, generation: int) -> bool:
         with self._lock:
-            return not self._stopping and generation == self._generation
+            cancelled = getattr(self._request_local, 'cancelled', None)
+            return not self._stopping and generation == self._generation and (not (cancelled is not None and cancelled.is_set()))
 
     def _wait_if_paused(self, generation: int) -> bool:
         with self._pause_cond:
-            while self._paused and (not self._stopping) and (generation == self._generation):
+            while self._paused and self._is_generation_current(generation):
                 self._pause_cond.wait(timeout=0.05)
-            return not self._stopping and generation == self._generation
+            return self._is_generation_current(generation)
 
     def _is_paused(self) -> bool:
         with self._lock:
@@ -419,8 +440,12 @@ class TTSService:
             request = entry
             try:
                 with self._lock:
+                    self._active_request = request
+                    self._request_local.cancelled = request.cancelled
                     enabled = self._enabled
                     engine = self._engine
+                if request.cancelled.is_set():
+                    continue
                 if not request.force and (not enabled):
                     continue
                 segments = self._split_sentences(request.text)
@@ -455,6 +480,12 @@ class TTSService:
                 _log_tts('TTS worker error:\n' + traceback.format_exc())
                 continue
             finally:
+                with self._lock:
+                    if self._active_request is request:
+                        self._active_request = None
+                    if request in self._outstanding:
+                        self._outstanding.remove(request)
+                    self._request_local.cancelled = None
                 self._pending_done(request.tag)
         speaker = None
         if had_sapi:
@@ -533,7 +564,7 @@ class TTSService:
         index = self._next_segment_index(segments, 0)
         if index < 0:
             return []
-        ctx = {'full': full_text, 'segments': segments, 'playing': None, 'requested': set(), 'lock': threading.Lock(), 'generation': generation}
+        ctx = {'full': full_text, 'segments': segments, 'playing': None, 'requested': set(), 'lock': threading.Lock(), 'generation': generation, 'cancel_event': getattr(self._request_local, 'cancelled', None)}
         result_queue, buffer_state = self._start_voicevox_prefetch(segments, index, generation, ctx)
         try:
             while self._is_generation_current(generation):
@@ -660,6 +691,7 @@ class TTSService:
 
         def worker() -> None:
             try:
+                self._request_local.cancelled = ctx.get('cancel_event') if ctx is not None else None
                 produce()
             except Exception:
                 _log_tts('VOICEVOX prefetch worker error:\n' + traceback.format_exc())

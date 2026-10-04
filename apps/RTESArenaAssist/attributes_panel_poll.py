@@ -150,8 +150,13 @@ def poll_attributes(panel) -> None:
         except OSError:
             pass
     try:
-        hc = panel._read_u16(panel._anchor + OFF_HEALTH_CURR_U16)
-        hm = panel._read_u16(panel._anchor + OFF_HEALTH_MAX_U16)
+        from combat_info import read_player_health_sample
+        try:
+            hc, hm, damage_source = read_player_health_sample(panel._analyzer, panel._anchor)
+        except (OSError, RuntimeError, ValueError):
+            hc = panel._read_u16(panel._anchor + OFF_HEALTH_CURR_U16)
+            hm = panel._read_u16(panel._anchor + OFF_HEALTH_MAX_U16)
+            damage_source = None
         raw_hc = hc
         if panel._health_max_enabled and _cheat_can_write and (hc < hm) and (hm > 0):
             try:
@@ -159,7 +164,7 @@ def poll_attributes(panel) -> None:
                 hc = hm
             except (OSError, AttributeError):
                 pass
-        panel._health_observer.observe(raw_hc, hm, effective_hp=hc)
+        panel._health_observer.observe(raw_hc, hm, effective_hp=hc, source=damage_source)
         if panel._is_bonus_screen and hm > 0:
             hc = hm
         panel._stats['hp'].setText(f'{hc}/{hm}')
