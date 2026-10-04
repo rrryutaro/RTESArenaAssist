@@ -846,6 +846,7 @@
   "settings.group_translate_panel": "Übersetzungsfenster",
   "settings.group_combat_common": "Allgemeine Einstellungen",
   "settings.combat_dosbox": "Kampfinformationen anzeigen",
+  "settings.overlay_obs": "Separate OBS-Fenster verwenden (Kampf und Zaubereffekte)",
   "settings.combat_dosbox_note": "Zeigt den zuletzt angegriffenen Gegner oben und weitere rechts an.",
   "settings.combat_arena_xp_seconds": "Anzeigedauer für Erfahrung",
   "settings.combat_low_hp_effect": "Bei niedriger Gesundheit einen dezenten Rahmen anzeigen",

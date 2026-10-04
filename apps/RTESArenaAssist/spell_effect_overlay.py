@@ -2,24 +2,25 @@ from __future__ import annotations
 from PySide6.QtCore import Qt, QRectF
 from PySide6.QtGui import QColor, QFont, QPainter, QPen
 from PySide6.QtWidgets import QWidget
+from obs_overlay import ObsOverlayWindow
 from spell_effects import SpellEffectRow
 STYLES = ('A', 'B', 'C', 'D', 'E', 'F')
 MAX_PAINT_SCALE = 1.1
 
-class SpellEffectOverlay(QWidget):
+class SpellEffectOverlay(ObsOverlayWindow, QWidget):
 
     def __init__(self, owner=None):
-        flags = Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowDoesNotAcceptFocus | Qt.WindowType.WindowTransparentForInput
-        super().__init__(owner, flags)
-        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
+        super().__init__(owner)
+        self.init_obs_window('RTESArenaAssist 持続魔法オーバーレイ')
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self._capture_window_ready = False
         self._rows: list[SpellEffectRow] = []
         self._style = 'E'
         self._top_offset = 10
         self.hide()
 
-    def render(self, rows: list[SpellEffectRow], *, style: str, rect: tuple[int, int, int, int], top_offset: int=10) -> None:
+    def render(self, rows: list[SpellEffectRow], *, style: str, rect: tuple[int, int, int, int], top_offset: int=10, foreground: bool=True) -> None:
         left, top, right, bottom = rect
         if not rows or right <= left or bottom <= top:
             self.clear()
@@ -28,12 +29,17 @@ class SpellEffectOverlay(QWidget):
         self._style = style if style in STYLES else 'E'
         self._top_offset = max(10, min(80, top_offset))
         self.setGeometry(left, top, right - left, bottom - top)
-        self.show()
-        self.raise_()
+        self._capture_window_ready = True
+        self.show_for_game(foreground=foreground)
         self.update()
 
     def clear(self) -> None:
         self._rows = []
+        self.show_blank_or_hide(ready=self._capture_window_ready)
+
+    def reset(self) -> None:
+        self._rows = []
+        self._capture_window_ready = False
         self.hide()
 
     def _text(self, painter: QPainter, rect: QRectF, text: str, *, size: int=12, bold: bool=False, color: str='#f3f8f9', align=Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft) -> None:
@@ -74,9 +80,13 @@ class SpellEffectOverlay(QWidget):
         painter.drawRoundedRect(QRectF(x, y, max(0.0, width * row.ratio), height), 2, 2)
 
     def paintEvent(self, _event) -> None:
-        if not self._rows or self.width() <= 0 or self.height() <= 0:
-            return
         painter = QPainter(self)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
+        painter.fillRect(_event.rect(), Qt.GlobalColor.transparent)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceOver)
+        if not self._rows or self.width() <= 0 or self.height() <= 0:
+            painter.end()
+            return
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         scale = min(self.width() / 640, self.height() / 400, MAX_PAINT_SCALE)
         painter.scale(scale, scale)

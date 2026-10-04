@@ -16,11 +16,13 @@ class SpellEffectController:
 
     def reset(self) -> None:
         self._tracker.reset()
-        self._overlay.clear()
+        self._overlay.reset()
         self._last_key = None
 
     def poll(self, *, gameplay: bool) -> None:
         window = self._window
+        obs_mode = bool(settings.get('overlay_obs', False))
+        self._overlay.set_obs_mode(obs_mode)
         if not gameplay or getattr(window, '_loading_state_active', False) or (not settings.get('spell_effect_arena_enabled', False)):
             self._tracker.pause()
             self._overlay.clear()
@@ -40,7 +42,8 @@ class SpellEffectController:
             self._overlay.clear()
             return
         layout = getattr(window, '_layout_mgr', None)
-        if layout is None or not layout.is_dosbox_foreground():
+        foreground = bool(layout and layout.is_dosbox_foreground())
+        if layout is None or (not foreground and (not obs_mode)):
             self._tracker.pause()
             self._overlay.clear()
             return
@@ -52,7 +55,7 @@ class SpellEffectController:
         style = str(settings.get('spell_effect_arena_style', 'E')).upper()
         combat = getattr(window, '_combat_info_controller', None)
         combat_top = bool(combat is not None and combat.arena_header_visible())
-        self._overlay.render(rows, style=style if style in STYLES else 'E', rect=rect, top_offset=70 if combat_top else 10)
+        self._overlay.render(rows, style=style if style in STYLES else 'E', rect=rect, top_offset=70 if combat_top else 10, foreground=foreground)
 
 def poll_spell_effects(window, *, gameplay: bool) -> None:
     controller = getattr(window, '_spell_effect_controller', None)

@@ -846,6 +846,7 @@
   "settings.group_translate_panel": "Панель перевода",
   "settings.group_combat_common": "Общие настройки",
   "settings.combat_dosbox": "Показывать сведения о бое",
+  "settings.overlay_obs": "Использовать отдельные окна для OBS (бой и магические эффекты)",
   "settings.combat_dosbox_note": "Последний атакованный враг показывается сверху, остальные — справа.",
   "settings.combat_arena_xp_seconds": "Время показа опыта",
   "settings.combat_low_hp_effect": "Показывать неброскую рамку при низком здоровье",

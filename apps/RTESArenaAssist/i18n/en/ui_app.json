@@ -846,6 +846,7 @@
   "settings.group_translate_panel": "Translation panel",
   "settings.group_combat_common": "Common settings",
   "settings.combat_dosbox": "Show combat information",
+  "settings.overlay_obs": "Use separate OBS capture windows (combat and spell effects)",
   "settings.combat_dosbox_note": "Show the most recently attacked enemy at the top and other enemies on the right.",
   "settings.combat_arena_xp_seconds": "Experience display duration",
   "settings.combat_low_hp_effect": "Show a subtle border when health is low",

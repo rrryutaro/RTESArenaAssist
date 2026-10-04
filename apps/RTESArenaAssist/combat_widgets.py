@@ -6,6 +6,7 @@ from PySide6.QtCore import Qt, QTimer
 from PySide6.QtGui import QColor, QPainter
 from PySide6.QtWidgets import QFrame, QHBoxLayout, QLabel, QProgressBar, QVBoxLayout, QWidget
 from combat_text_ja import text as combat_ja
+from obs_overlay import ObsOverlayWindow
 _ARENA_NATIVE_HEIGHT = 200
 _ARENA_EXPLORATION_HEIGHT = 147
 _ARENA_DAMAGE_MARGIN = 2
@@ -157,14 +158,15 @@ class CombatPanel(QWidget):
         for row_widget, _name, _hp in self._enemy_rows:
             row_widget.hide()
 
-class CombatOverlay(QWidget):
+class CombatOverlay(ObsOverlayWindow, QWidget):
 
     def __init__(self, owner=None):
-        flags = Qt.WindowType.Tool | Qt.WindowType.FramelessWindowHint | Qt.WindowType.WindowStaysOnTopHint | Qt.WindowType.WindowDoesNotAcceptFocus | Qt.WindowType.WindowTransparentForInput
-        super().__init__(owner, flags)
-        self.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground, True)
+        super().__init__(owner)
+        self.init_obs_window('RTESArenaAssist 戦闘オーバーレイ')
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self._capture_window_ready = False
+        self._game_foreground = True
         self._top = QFrame(self)
         self._top.setStyleSheet('QFrame { color:#fff; background:rgba(10,10,14,205); border:1px solid rgba(255,255,255,100); border-radius:6px; padding:5px 10px; }QLabel { color:#fff; background:transparent; border:0; font-weight:700; }QProgressBar { color:#fff; background:rgba(0,0,0,120); border:1px solid rgba(255,255,255,120); border-radius:3px; text-align:center; min-height:17px; }QProgressBar#topHp::chunk { background:#d8404f; border-radius:2px; }QProgressBar#topStamina::chunk { background:#d4a62a; border-radius:2px; }QProgressBar#topSpell::chunk { background:#4679d8; border-radius:2px; }')
         top_layout = QVBoxLayout(self._top)
@@ -286,7 +288,7 @@ class CombatOverlay(QWidget):
         if self.isHidden():
             return
         if not self._has_visible_content():
-            self.hide()
+            self.update()
             return
         exploration_bottom = round(self.height() * _ARENA_EXPLORATION_HEIGHT / _ARENA_NATIVE_HEIGHT)
         bottom_margin = max(2, round(self.height() * _ARENA_DAMAGE_MARGIN / _ARENA_NATIVE_HEIGHT))
@@ -302,9 +304,10 @@ class CombatOverlay(QWidget):
         self._damage_timer.stop()
         self._bottom.hide()
         if not self._has_visible_content():
-            self.hide()
+            self.update()
 
-    def render(self, view, *, name_of, rect: tuple[int, int, int, int], show_combat: bool=True, xp_seconds: int=5, show_xp: bool=True, low_hp_effect: bool=False, low_hp_top: int=0) -> None:
+    def render(self, view, *, name_of, rect: tuple[int, int, int, int], show_combat: bool=True, xp_seconds: int=5, show_xp: bool=True, low_hp_effect: bool=False, low_hp_top: int=0, foreground: bool=True) -> None:
+        self._game_foreground = foreground
         if show_xp:
             self.record_xp(view.events, duration_seconds=xp_seconds)
         elif self._xp_popups:
@@ -318,6 +321,7 @@ class CombatOverlay(QWidget):
             self.hide()
             return
         self.setGeometry(left, top, right - left, bottom - top)
+        self._capture_window_ready = True
         width, height = (self.width(), self.height())
         target = view.target
         last_enemy = next((event for event in reversed(view.history) if event.enemy is not None and event.kind == 'enemy_damage'), None)
@@ -381,28 +385,36 @@ class CombatOverlay(QWidget):
             self._bottom.hide()
         self._layout_xp(exploration_bottom, bottom_margin)
         if self._has_visible_content():
-            self.show()
-            self.raise_()
+            self.show_for_game(foreground=self._game_foreground)
         else:
-            self.hide()
+            self.show_blank_or_hide(ready=self._capture_window_ready)
 
     def clear(self) -> None:
         self._low_hp_effect = False
         self._damage_expires_at = 0.0
         self._damage_timer.stop()
         self._pulse_timer.stop()
+        self._top.hide()
+        self._right.hide()
         self._bottom.hide()
-        self.hide()
+        for popup in self._xp_popups:
+            popup.label.hide()
+        self.show_blank_or_hide(ready=self._capture_window_ready)
 
     def paintEvent(self, event) -> None:
         super().paintEvent(event)
+        painter = QPainter(self)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
+        painter.fillRect(event.rect(), Qt.GlobalColor.transparent)
+        painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceOver)
         if not self._low_hp_effect:
+            painter.end()
             return
         bottom = round(self.height() * _ARENA_EXPLORATION_HEIGHT / _ARENA_NATIVE_HEIGHT)
         top = self._low_hp_top
         if bottom <= top:
+            painter.end()
             return
-        painter = QPainter(self)
         painter.setPen(Qt.PenStyle.NoPen)
         pulse = 0.725 + 0.275 * math.sin(self._clock() * math.pi)
         for offset, alpha in ((0, 104), (4, 88), (8, 72), (12, 56), (16, 40), (20, 24)):
@@ -419,6 +431,8 @@ class CombatOverlay(QWidget):
 
     def reset(self) -> None:
         self.clear()
+        self._capture_window_ready = False
+        self.hide()
         self._xp_timer.stop()
         for popup in self._xp_popups:
             popup.label.hide()

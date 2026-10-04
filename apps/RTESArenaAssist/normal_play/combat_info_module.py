@@ -292,6 +292,8 @@ class CombatInfoController:
 
     def poll(self, *, gameplay: bool, map_result: MapPollResult | None=None) -> None:
         w = self._w
+        obs_mode = bool(settings.get('overlay_obs', False))
+        self._overlay.set_obs_mode(obs_mode)
         dosbox_enabled = bool(settings.get('combat_dosbox_enabled', False))
         try:
             xp_seconds = max(1, min(60, int(settings.get('combat_arena_xp_seconds', 5))))
@@ -376,7 +378,7 @@ class CombatInfoController:
             self._overlay.record_xp(view.events, duration_seconds=xp_seconds)
         if view is not None and (dosbox_enabled and (show_lifetime or self._overlay.has_active_xp()) or low_hp_effect):
             surface_active = bool(w._layout_mgr.is_dosbox_foreground())
-            rect = w._layout_mgr.get_visible_dosbox_qt_rect() if surface_active else None
+            rect = w._layout_mgr.get_visible_dosbox_qt_rect() if surface_active or obs_mode else None
             if not isinstance(rect, (tuple, list)) or len(rect) != 4:
                 rect = None
             if rect is not None:
@@ -387,7 +389,7 @@ class CombatInfoController:
                         low_hp_top = client_rect[1] - rect[1]
                     else:
                         low_hp_effect = False
-                self._overlay.render(view, name_of=lambda enemy: enemy_names(enemy)[1], rect=rect, show_combat=dosbox_enabled and show_lifetime, xp_seconds=xp_seconds, show_xp=dosbox_enabled, low_hp_effect=low_hp_effect, low_hp_top=low_hp_top)
+                self._overlay.render(view, name_of=lambda enemy: enemy_names(enemy)[1], rect=rect, show_combat=dosbox_enabled and show_lifetime, xp_seconds=xp_seconds, show_xp=dosbox_enabled, low_hp_effect=low_hp_effect, low_hp_top=low_hp_top, foreground=surface_active)
             else:
                 self._overlay.clear()
         else:

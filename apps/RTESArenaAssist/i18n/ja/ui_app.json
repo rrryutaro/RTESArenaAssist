@@ -846,6 +846,7 @@
   "settings.group_translate_panel": "翻訳パネル",
   "settings.group_combat_common": "共通設定",
   "settings.combat_dosbox": "戦闘情報を表示する",
+  "settings.overlay_obs": "OBS で映る独立ウィンドウにする（戦闘・持続魔法）",
   "settings.combat_dosbox_note": "直近攻撃した敵を画面上部、他の敵を右側に表示します。",
   "settings.combat_arena_xp_seconds": "獲得経験値の表示時間",
   "settings.combat_low_hp_effect": "低体力時に探索画面の縁を表示する",

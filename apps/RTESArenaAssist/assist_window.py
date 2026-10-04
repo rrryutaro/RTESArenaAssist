@@ -399,6 +399,7 @@ class AssistWindow(QMainWindow):
         settings.set_val('wild_show_all_entrances', dlg.wild_show_all_entrances)
         settings.set_val('wild_show_static_flats', dlg.wild_show_static_flats)
         settings.set_val('translate_fallback_screen', dlg.translate_fallback_screen)
+        settings.set_val('overlay_obs', dlg.overlay_obs)
         settings.set_val('combat_dosbox_enabled', dlg.combat_dosbox_enabled)
         settings.set_val('combat_arena_xp_seconds', dlg.combat_arena_xp_seconds)
         settings.set_val('combat_low_hp_effect_enabled', dlg.combat_low_hp_effect_enabled)

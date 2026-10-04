@@ -698,6 +698,10 @@ class _SettingsDialog(QDialog):
         return 'map'
 
     @property
+    def overlay_obs(self) -> bool:
+        return self._overlay_obs_cb.isChecked()
+
+    @property
     def combat_dosbox_enabled(self) -> bool:
         return self._combat_dosbox_cb.isChecked()
 

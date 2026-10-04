@@ -846,6 +846,7 @@
   "settings.group_translate_panel": "Panel de traducción",
   "settings.group_combat_common": "Ajustes generales",
   "settings.combat_dosbox": "Mostrar información de combate",
+  "settings.overlay_obs": "Usar ventanas separadas para OBS (combate y efectos mágicos)",
   "settings.combat_dosbox_note": "Muestra arriba al último enemigo atacado y los demás a la derecha.",
   "settings.combat_arena_xp_seconds": "Duración de experiencia",
   "settings.combat_low_hp_effect": "Mostrar un borde tenue cuando la salud sea baja",
