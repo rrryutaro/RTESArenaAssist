@@ -22,7 +22,13 @@ class SpellEffectController:
     def poll(self, *, gameplay: bool) -> None:
         window = self._window
         obs_mode = bool(settings.get('overlay_obs', False))
-        self._overlay.set_obs_mode(obs_mode)
+        combat = getattr(window, '_combat_info_controller', None)
+        capture_host = getattr(combat, '_overlay', None) if obs_mode else None
+        if capture_host is not None:
+            capture_host.set_obs_mode(True)
+        self._overlay.set_capture_host(capture_host)
+        if capture_host is None:
+            self._overlay.set_obs_mode(obs_mode)
         if not gameplay or getattr(window, '_loading_state_active', False) or (not settings.get('spell_effect_arena_enabled', False)):
             self._tracker.pause()
             self._overlay.clear()
@@ -52,10 +58,15 @@ class SpellEffectController:
             self._tracker.pause()
             self._overlay.clear()
             return
+        if capture_host is not None:
+            window_rect = layout.get_visible_dosbox_qt_rect()
+            if not isinstance(window_rect, (tuple, list)) or len(window_rect) != 4:
+                self._tracker.pause()
+                self._overlay.clear()
+                return
+            capture_host.prepare_capture(window_rect, foreground=foreground)
         style = str(settings.get('spell_effect_arena_style', 'E')).upper()
-        combat = getattr(window, '_combat_info_controller', None)
-        combat_top = bool(combat is not None and combat.arena_header_visible())
-        self._overlay.render(rows, style=style if style in STYLES else 'E', rect=rect, top_offset=70 if combat_top else 10, foreground=foreground)
+        self._overlay.render(rows, style=style if style in STYLES else 'E', rect=rect, foreground=foreground)
 
 def poll_spell_effects(window, *, gameplay: bool) -> None:
     controller = getattr(window, '_spell_effect_controller', None)

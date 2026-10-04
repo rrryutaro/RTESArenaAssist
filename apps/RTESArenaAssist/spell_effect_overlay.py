@@ -11,6 +11,7 @@ class SpellEffectOverlay(ObsOverlayWindow, QWidget):
 
     def __init__(self, owner=None):
         super().__init__(owner)
+        self._capture_host = None
         self.init_obs_window('RTESArenaAssist 持続魔法オーバーレイ')
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
@@ -20,27 +21,46 @@ class SpellEffectOverlay(ObsOverlayWindow, QWidget):
         self._top_offset = 10
         self.hide()
 
-    def render(self, rows: list[SpellEffectRow], *, style: str, rect: tuple[int, int, int, int], top_offset: int=10, foreground: bool=True) -> None:
+    def set_capture_host(self, host) -> None:
+        if host is self._capture_host:
+            return
+        self.hide()
+        old_host = self._capture_host
+        self._capture_host = host
+        if old_host is not None:
+            old_host.set_spell_active(False)
+
+    def render(self, rows: list[SpellEffectRow], *, style: str, rect: tuple[int, int, int, int], foreground: bool=True) -> None:
         left, top, right, bottom = rect
         if not rows or right <= left or bottom <= top:
             self.clear()
             return
         self._rows = rows[:8]
         self._style = style if style in STYLES else 'E'
-        self._top_offset = max(10, min(80, top_offset))
-        self.setGeometry(left, top, right - left, bottom - top)
+        self._top_offset = 10
+        if self._capture_host is None:
+            self.setGeometry(left, top, right - left, bottom - top)
         self._capture_window_ready = True
-        self.show_for_game(foreground=foreground)
+        if self._capture_host is not None:
+            self._capture_host.set_spell_active(True, foreground=foreground, spell_overlay=self, client_rect=rect)
+        else:
+            self.show_for_game(foreground=foreground)
         self.update()
 
     def clear(self) -> None:
         self._rows = []
-        self.show_blank_or_hide(ready=self._capture_window_ready)
+        if self._capture_host is not None:
+            self.hide()
+            self._capture_host.set_spell_active(False)
+        else:
+            self.show_blank_or_hide(ready=self._capture_window_ready)
 
     def reset(self) -> None:
         self._rows = []
         self._capture_window_ready = False
         self.hide()
+        if self._capture_host is not None:
+            self._capture_host.set_spell_active(False)
 
     def _text(self, painter: QPainter, rect: QRectF, text: str, *, size: int=12, bold: bool=False, color: str='#f3f8f9', align=Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft) -> None:
         font = QFont('Yu Gothic UI')
@@ -84,11 +104,14 @@ class SpellEffectOverlay(ObsOverlayWindow, QWidget):
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
         painter.fillRect(_event.rect(), Qt.GlobalColor.transparent)
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceOver)
-        if not self._rows or self.width() <= 0 or self.height() <= 0:
-            painter.end()
+        self.paint_rows(painter, self.width(), self.height())
+        painter.end()
+
+    def paint_rows(self, painter: QPainter, width: int, height: int) -> None:
+        if not self._rows or width <= 0 or height <= 0:
             return
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        scale = min(self.width() / 640, self.height() / 400, MAX_PAINT_SCALE)
+        scale = min(width / 640, height / 400, MAX_PAINT_SCALE)
         painter.scale(scale, scale)
         style = self._style
         y_base = self._top_offset
@@ -127,5 +150,4 @@ class SpellEffectOverlay(ObsOverlayWindow, QWidget):
                 self._text(painter, QRectF(53, y + 2, 102, 25), row.name, size=11, bold=True)
                 self._text(painter, QRectF(152, y + 2, 74, 25), row.value, size=10, bold=True, color=row.color, align=Qt.AlignmentFlag.AlignRight | Qt.AlignmentFlag.AlignVCenter)
                 self._meter(painter, 53, y + 30, 166, row, height=4)
-        painter.end()
 __all__ = ['SpellEffectOverlay', 'STYLES']

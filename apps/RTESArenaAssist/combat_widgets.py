@@ -162,11 +162,14 @@ class CombatOverlay(ObsOverlayWindow, QWidget):
 
     def __init__(self, owner=None):
         super().__init__(owner)
-        self.init_obs_window('RTESArenaAssist 戦闘オーバーレイ')
+        self.init_obs_window('RTESArenaAssist オーバーレイ')
         self.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True)
         self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self._capture_window_ready = False
         self._game_foreground = True
+        self._spell_active = False
+        self._spell_overlay = None
+        self._spell_client_rect = None
         self._top = QFrame(self)
         self._top.setStyleSheet('QFrame { color:#fff; background:rgba(10,10,14,205); border:1px solid rgba(255,255,255,100); border-radius:6px; padding:5px 10px; }QLabel { color:#fff; background:transparent; border:0; font-weight:700; }QProgressBar { color:#fff; background:rgba(0,0,0,120); border:1px solid rgba(255,255,255,120); border-radius:3px; text-align:center; min-height:17px; }QProgressBar#topHp::chunk { background:#d8404f; border-radius:2px; }QProgressBar#topStamina::chunk { background:#d4a62a; border-radius:2px; }QProgressBar#topSpell::chunk { background:#4679d8; border-radius:2px; }')
         top_layout = QVBoxLayout(self._top)
@@ -295,7 +298,7 @@ class CombatOverlay(ObsOverlayWindow, QWidget):
         self._layout_xp(exploration_bottom, bottom_margin)
 
     def _has_visible_content(self) -> bool:
-        return self._low_hp_effect or any((not widget.isHidden() for widget in (self._top, self._right, self._bottom))) or any((not popup.label.isHidden() for popup in self._xp_popups))
+        return self._spell_active or self._low_hp_effect or any((not widget.isHidden() for widget in (self._top, self._right, self._bottom))) or any((not popup.label.isHidden() for popup in self._xp_popups))
 
     def _refresh_damage(self) -> None:
         if self._damage_expires_at and self._clock() < self._damage_expires_at:
@@ -399,7 +402,30 @@ class CombatOverlay(ObsOverlayWindow, QWidget):
         self._bottom.hide()
         for popup in self._xp_popups:
             popup.label.hide()
-        self.show_blank_or_hide(ready=self._capture_window_ready)
+        if self._has_visible_content():
+            self.show_for_game(foreground=self._game_foreground)
+        else:
+            self.show_blank_or_hide(ready=self._capture_window_ready)
+
+    def prepare_capture(self, rect: tuple[int, int, int, int], *, foreground: bool) -> None:
+        left, top, right, bottom = rect
+        if right <= left or bottom <= top:
+            return
+        self.setGeometry(left, top, right - left, bottom - top)
+        self._capture_window_ready = True
+        self._game_foreground = foreground
+
+    def set_spell_active(self, active: bool, *, foreground: bool | None=None, spell_overlay=None, client_rect: tuple[int, int, int, int] | None=None) -> None:
+        self._spell_active = active
+        self._spell_overlay = spell_overlay if active else None
+        self._spell_client_rect = client_rect if active else None
+        if foreground is not None:
+            self._game_foreground = foreground
+        self.update()
+        if self._has_visible_content():
+            self.show_for_game(foreground=self._game_foreground)
+        else:
+            self.show_blank_or_hide(ready=self._capture_window_ready)
 
     def paintEvent(self, event) -> None:
         super().paintEvent(event)
@@ -407,6 +433,15 @@ class CombatOverlay(ObsOverlayWindow, QWidget):
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_Source)
         painter.fillRect(event.rect(), Qt.GlobalColor.transparent)
         painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceOver)
+        if self._spell_active and self._spell_overlay is not None and (self._spell_client_rect is not None):
+            left, top, right, bottom = self._spell_client_rect
+            width, height = (right - left, bottom - top)
+            if width > 0 and height > 0:
+                painter.save()
+                painter.translate(left - self.x(), top - self.y())
+                painter.setClipRect(0, 0, width, height)
+                self._spell_overlay.paint_rows(painter, width, height)
+                painter.restore()
         if not self._low_hp_effect:
             painter.end()
             return
@@ -430,6 +465,9 @@ class CombatOverlay(ObsOverlayWindow, QWidget):
         return not self.isHidden() and (not self._top.isHidden())
 
     def reset(self) -> None:
+        self._spell_active = False
+        self._spell_overlay = None
+        self._spell_client_rect = None
         self.clear()
         self._capture_window_ready = False
         self.hide()
