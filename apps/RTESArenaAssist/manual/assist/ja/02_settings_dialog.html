@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>設定ダイアログ詳細ガイド</title>
+<style>
+body { font-family: "メイリオ", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — 設定ダイアログ詳細ガイド</h1>
+<p>RTESArenaAssist の設定ダイアログにある各タブのキャプチャと、各 UI 要素の説明を掲載しています。</p>
+<p>画像は、お使いの表示言語の初期設定・既定の「ダーク」テーマの設定ダイアログを撮ったものです。</p>
+<p>DOSBox タブの値は、Assist 側の設定ファイルだけでなく、既定パスの <code>arena.conf</code> を読み取った結果も反映されます。そのため、利用環境の <code>arena.conf</code> が異なる場合は表示値も変わります。</p>
+<h2 id="目次"><a name="目次"></a>目次</h2>
+<ul>
+<li><a href="#全般タブ">全般タブ</a></li>
+<ul>
+<li><a href="#パス設定">パス設定</a></li>
+<li><a href="#動作">動作</a></li>
+<li><a href="#シャッター音">シャッター音</a></li>
+<li><a href="#キャプチャのショートカットキー">キャプチャのショートカットキー</a></li>
+<li><a href="#更新">更新</a></li>
+</ul>
+<li><a href="#表示タブ">表示タブ</a></li>
+<ul>
+<li><a href="#接続バー表示">接続バー表示</a></li>
+<li><a href="#アイテム一覧-装備マーク">アイテム一覧 装備マーク</a></li>
+<li><a href="#翻訳パネル-フォント">翻訳パネル フォント</a></li>
+<li><a href="#レイアウト">レイアウト</a></li>
+</ul>
+<li><a href="#マップタブ">マップタブ</a></li>
+<ul>
+<li><a href="#マップ表示設定">マップ表示設定</a></li>
+<li><a href="#フィールド拡張表示">フィールド拡張表示</a></li>
+<li><a href="#マップの表現と色">マップの表現と色</a></li>
+</ul>
+<li><a href="#翻訳タブ">翻訳タブ</a></li>
+<ul>
+<li><a href="#翻訳タブ・パネルの挙動">翻訳タブ・パネルの挙動</a></li>
+<li><a href="#翻訳タブ-拡張設定">翻訳タブ 拡張設定</a></li>
+</ul>
+<li><a href="#戦闘情報タブ">戦闘情報タブ</a></li>
+<ul>
+<li><a href="#arena画面">Arena画面</a></li>
+<li><a href="#arena画面・持続魔法">Arena画面・持続魔法</a></li>
+<li><a href="#翻訳タブの戦闘情報">翻訳タブの戦闘情報</a></li>
+<li><a href="#翻訳パネルの戦闘情報">翻訳パネルの戦闘情報</a></li>
+<li><a href="#共通設定とメッセージ">共通設定とメッセージ</a></li>
+</ul>
+<li><a href="#読み上げタブ">読み上げタブ</a></li>
+<ul>
+<li><a href="#読み上げ">読み上げ</a></li>
+<li><a href="#読み上げ対象">読み上げ対象</a></li>
+<li><a href="#その他--ログ">その他 / ログ</a></li>
+<li><a href="#キャラクター名の読み替え">キャラクター名の読み替え</a></li>
+</ul>
+<li><a href="#チートタブ">チートタブ</a></li>
+<li><a href="#dosbox-タブ">DOSBox タブ</a></li>
+<ul>
+<li><a href="#設定ファイル--ウィンドウ動作">設定ファイル / ウィンドウ動作</a></li>
+<li><a href="#ウィンドウ・表示">ウィンドウ・表示</a></li>
+<li><a href="#映像">映像</a></li>
+<li><a href="#パフォーマンス">パフォーマンス</a></li>
+<li><a href="#サウンド">サウンド</a></li>
+</ul>
+</ul>
+<h2 id="全般タブ"><a name="全般タブ"></a>全般タブ</h2>
+<p>パス、基本動作、シャッター音、キャプチャのショートカットキーを設定し、お使いの版を確かめるタブです。</p>
+<p><img src="img/settings_dark_tab_01.png" alt="全般タブ"></p>
+<h3 id="パス設定"><a name="パス設定"></a>パス設定</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>ゲームフォルダ:</code></td><td>空</td><td>Arena の <code>ARENA.EXE</code> やセーブファイルがあるフォルダ。未設定時は、セーブ管理やゲームデータ読み取りを利用できない</td></tr>
+<tr><td><code>バックアップ先:</code></td><td>空</td><td>セーブバックアップの保存先。空の場合は、ツール設定ファイル横の <code>saves_backup/</code> を使用する</td></tr>
+<tr><td><code>キャプチャ保存先:</code></td><td>空</td><td>スクリーンショットの保存先。空の場合は、バックアップ先と同じフォルダを使用する</td></tr>
+<tr><td><code>参照...</code></td><td>-</td><td>各フォルダを選択する</td></tr>
+</table>
+<h3 id="動作"><a name="動作"></a>動作</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>ポーリング間隔:</code></td><td><code>100 ms</code></td><td>DOSBox 画面やメモリ状態を監視する周期。短いメッセージを拾いやすくするため、初期値は短め</td></tr>
+<tr><td><code>削除前に確認する:</code></td><td>ON</td><td>キャプチャやバックアップを削除するときに確認ダイアログを表示する</td></tr>
+<tr><td><code>常に最前面:</code></td><td>OFF</td><td>Assist 本体ウィンドウを他のウィンドウより手前に表示する</td></tr>
+<tr><td><code>テーマ:</code></td><td>ダーク</td><td>UI の配色テーマを選択する</td></tr>
+<tr><td><code>表示言語:</code></td><td>自動（システム言語）</td><td>UI 言語。空設定ではシステム言語をもとに自動判定され、変更はアプリ再起動後に反映される</td></tr>
+</table>
+<h3 id="シャッター音"><a name="シャッター音"></a>シャッター音</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>有効</code></td><td>ON</td><td>スクリーンショット保存時に効果音を再生する</td></tr>
+<tr><td><code>種類:</code></td><td>携帯電話カメラ（標準）</td><td>再生するシャッター音。標準、短縮版、ダブル、高音強調、マイルドから選択できる</td></tr>
+<tr><td><code>音量:</code></td><td><code>30 %</code></td><td>シャッター音の再生音量</td></tr>
+<tr><td><code>▶</code></td><td>-</td><td>選択中のシャッター音を試聴する</td></tr>
+</table>
+<h3 id="キャプチャのショートカットキー"><a name="キャプチャのショートカットキー"></a>キャプチャのショートカットキー</h3>
+<p>ゲーム画面（DOSBox）にフォーカスがあるまま、キーを押すだけでキャプチャを保存できます。数秒で消えるメッセージを撮るときに使います。</p>
+<table>
+<tr><th>項目</th><th>既定値</th><th>説明</th></tr>
+<tr><td><code>有効</code></td><td>ON</td><td>ショートカットキーでのキャプチャを使う</td></tr>
+<tr><td><code>Ctrl</code> / <code>Alt</code> / <code>Shift</code></td><td>OFF</td><td>修飾キーを組み合わせる場合に ON にする</td></tr>
+<tr><td><code>キー:</code></td><td><code>F12</code></td><td>使うキー。F5〜F12、PrintScreen、Pause、ScrollLock、Insert、Home、End、PageUp、PageDown から選択できる</td></tr>
+</table>
+<ul>
+<li>押したキーはゲームには渡りません。ゲームや DOSBox が使うキー（F1 / F3 / F4 / F8、Ctrl+F5〜F12、Alt+F12、Alt+Pause）は選べないようにしてあります</li>
+<li>他のアプリが同じキーをショートカットに使っている場合、このアプリを起動している間はそのアプリのショートカットは動作しません。別のキーを選ぶと両立できます</li>
+<li>キーを登録できなかった場合はステータスバーに表示されます。その場合もツールバーのカメラボタンからは撮影できます</li>
+</ul>
+<h3 id="更新"><a name="更新"></a>更新</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>お使いの版:</code></td><td>-</td><td>使っている Assist の版</td></tr>
+<tr><td><code>リリースページを開く</code></td><td>-</td><td>Assist のリリースページ（Releases の一覧）をブラウザで開く。新しい版があるかは、ここで確かめる</td></tr>
+</table>
+<p>Assist はインターネットに接続しないため、更新の確認や自動更新は行いません。</p>
+<h2 id="表示タブ"><a name="表示タブ"></a>表示タブ</h2>
+<p>接続バー、アイテム一覧の装備マーク、翻訳パネルのフォント、レイアウトを設定するタブです。</p>
+<p><img src="img/settings_dark_tab_02.png" alt="表示タブ"></p>
+<h3 id="接続バー表示"><a name="接続バー表示"></a>接続バー表示</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>認識画面を表示する:</code></td><td>ON</td><td>接続バーに現在の認識画面名を表示する</td></tr>
+<tr><td><code>IMG 情報を表示する:</code></td><td>ON</td><td>接続バーに検出中の IMG 情報を表示する</td></tr>
+<tr><td><code>バージョンを表示する:</code></td><td>ON</td><td>接続バーやステータスバーにアプリのバージョンを表示する</td></tr>
+</table>
+<h3 id="アイテム一覧-装備マーク"><a name="アイテム一覧-装備マーク"></a>アイテム一覧 装備マーク</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>装備中:</code></td><td><code>Ｅ</code></td><td>装備中アイテムの左端に表示する 1 文字マーク</td></tr>
+<tr><td><code>装備可:</code></td><td>空</td><td>装備可能アイテムのマーク。初期値は空なので何も表示しない</td></tr>
+<tr><td><code>装備不可:</code></td><td><code>✕</code></td><td>装備できないアイテムの左端に表示する 1 文字マーク</td></tr>
+</table>
+<h3 id="翻訳パネル-フォント"><a name="翻訳パネル-フォント"></a>翻訳パネル フォント</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>右側を左側と同一設定にする</code></td><td>OFF</td><td>ON にすると、原文側のフォントとサイズを翻訳側と同じにする</td></tr>
+<tr><td><code>左側（翻訳）:</code></td><td>アプリ既定 / <code>14 pt</code></td><td>翻訳文に使うフォントとサイズ。フォント名が未保存の場合は、実行環境のアプリ既定フォントが選ばれる</td></tr>
+<tr><td><code>右側（原文）:</code></td><td>アプリ既定 / <code>12 pt</code></td><td>英語原文に使うフォントとサイズ。同期 OFF のため、翻訳側とは別に設定できる</td></tr>
+</table>
+<h3 id="レイアウト"><a name="レイアウト"></a>レイアウト</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>追従モード:</code></td><td>追従なし</td><td>DOSBox と Assist のどちらかが移動したときに、もう一方を追従させるかを選ぶ</td></tr>
+<tr><td><code>DOSBox コーナー:</code></td><td>左上</td><td>一発配置やレイアウトモードで DOSBox を置く画面上の基準コーナー</td></tr>
+<tr><td><code>配置形式:</code></td><td>形式2: 下全幅 + 右上（既定）</td><td>DOSBox と Assist パネル領域の分割形式。形式2は右上と下全幅を使う標準レイアウト</td></tr>
+<tr><td><code>レイアウトサイズ:</code></td><td><code>1920 x 1080</code></td><td>レイアウトモード時の全体キャンバスサイズ</td></tr>
+</table>
+<h2 id="マップタブ"><a name="マップタブ"></a>マップタブ</h2>
+<p>探索マップとフィールド拡張表示を設定するタブです。</p>
+<p><img src="img/settings_dark_tab_03.png" alt="マップタブ"></p>
+<h3 id="マップ表示設定"><a name="マップ表示設定"></a>マップ表示設定</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>マップでの壁の見通し:</code></td><td>OFF</td><td>OFF では、壁の向こうの未確認領域をマップに記録しない。ON にすると Arena 原作に近く、壁越しの領域も記録される</td></tr>
+<tr><td><code>全高の高台を壁として表示:</code></td><td>ON</td><td>床から天井まで詰まった高台を、壁の色で表示する。変わるのは表示の分け方だけで、視線の遮り方には影響しない。全高でない高台は高台のまま表示する</td></tr>
+<tr><td><code>高台が視線を遮る高さ:</code></td><td><code>0 %</code></td><td>天井の高さを 100% として、上端がこの高さ以上の高台がマップの視線を遮る。0% では全ての高台が視線を遮る</td></tr>
+<tr><td><code>未判明領域に床を表示:</code></td><td>OFF</td><td>OFF では判明済みセルだけ床色を表示し、未探索範囲の形を隠す。ON ではマップ全体を巻物地色で表示する</td></tr>
+<tr><td><code>キャラクター中心追従:</code></td><td>ON</td><td>キャラクター移動時にマップを自動でキャラクター中心へ追従させる。停止中は手動パンできる</td></tr>
+<tr><td><code>グリッド線を表示:</code></td><td>ON</td><td>セル境界のグリッド線を表示する</td></tr>
+<tr><td><code>チャンク境界を表示:</code></td><td>ON</td><td>フィールドマップで 64 マス単位のチャンク境界を強調表示する</td></tr>
+<tr><td><code>チャンク座標を表示:</code></td><td>ON</td><td>フィールドマップ上に各チャンク座標を表示し、位置把握を補助する</td></tr>
+<tr><td><code>再センタ境界を表示:</code></td><td>OFF</td><td>フィールドマップの再センタ境界を破線で表示する。位置調査や確認用の補助表示</td></tr>
+<tr><td><code>チャンク座標のフォントサイズ:</code></td><td><code>10 pt</code></td><td>チャンク座標ラベルの文字サイズ</td></tr>
+</table>
+<h3 id="フィールド拡張表示"><a name="フィールド拡張表示"></a>フィールド拡張表示</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>拡張表示を有効にする:</code></td><td>ON</td><td>フィールドマップ拡張表示の親スイッチ。OFF にするとゲーム内自動マップに近い表示になる</td></tr>
+<tr><td><code>道と壁を色分け:</code></td><td>ON</td><td>通行できる道と、建物や壁など通行できない部分を別色で描き分ける</td></tr>
+<tr><td><code>壁の輪郭を表示:</code></td><td>ON</td><td>壁の輪郭や edge 地形を表示する</td></tr>
+<tr><td><code>フェンス/生垣/庭を区別:</code></td><td>ON</td><td>フェンス、生垣、庭などの edge 系地形を接続線で区別する</td></tr>
+<tr><td><code>作物を表示:</code></td><td>ON</td><td>トウモロコシや畑などの作物を専用色やマークで表示する</td></tr>
+<tr><td><code>全ての建物入口を赤表示:</code></td><td>ON</td><td>家、酒場、神殿、街門などの入口も赤く表示する。クリプト、塔、ダンジョン入口はこの設定に関わらず赤表示</td></tr>
+<tr><td><code>地物（木・茂み等）を表示:</code></td><td>OFF</td><td>木、茂み、岩、墓、廃墟などを簡略マークで重ねる。数が多く地図が読みにくくなるため、初期値は OFF</td></tr>
+</table>
+<h3 id="マップの表現と色"><a name="マップの表現と色"></a>マップの表現と色</h3>
+<p>ゲームのマップは、壁の下を通る通路などを区別せずに描きます。ここでは、それらを 区別して描くかどうかと、各要素の色を設定します。各行の「表現する」を OFF にすると、その要素は ゲームのマップと同じ表示に戻ります（お宝のみ OFF で何も表示しません）。</p>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>隠し扉:</code></td><td>ON</td><td>発見済みの隠し扉を専用色で表示する。発見するまでは壁のまま</td></tr>
+<tr><td><code>壁の下の水路:</code></td><td>ON</td><td>壁の下を通る水路を専用色で表示する。実際にそこを通って発覚させるまでは表示しない</td></tr>
+<tr><td><code>壁の下の通路:</code></td><td>ON</td><td>壁の下を通る通路を表示する。実際にそこを通って発覚させるまでは表示しない</td></tr>
+<tr><td><code>壁の下の溶岩:</code></td><td>ON</td><td>壁の下を通る溶岩を専用色で表示する。実際にそこを通って発覚させるまでは表示しない</td></tr>
+<tr><td><code>お宝:</code></td><td>ON</td><td>お宝を入手した場所にマークを重ねる。右の欄でマークの文字を変更できる。チートタブの「マップを明らかにする」が ON のときは、入手したかどうかに関わらずお宝のある場所をすべて表示する</td></tr>
+<tr><td><code>鍵・クエストアイテム:</code></td><td>ON</td><td>お宝のうち、鍵とクエストの品のマークを別の色で表示する。OFF にするとお宝と同じ色で表示する。お宝を OFF にしたときは表示しない</td></tr>
+<tr><td><code>施設入口を色分け:</code></td><td>ON</td><td>街のマップで、宿屋・装備品店・神殿・魔術師ギルドの入口に接する建物色のセルを施設ごとの色に置き換える。赤い入口の色は変わらない。各施設の色は下の欄で変更できる</td></tr>
+<tr><td><code>下の通路の描き方:</code></td><td><code>管で示す</code> / 濃さ <code>100%</code></td><td>壁や高台の下を通る通路を、セルの中心を通る管で示す。OFF にすると従来どおりセル全体を色で塗る。管の色は穴と同じ色で、穴とは途切れず繋がる。<code>濃さ</code> を下げると管が控えめになる</td></tr>
+</table>
+<p>各項目の右にある色見本をクリックすると任意の色を選べます。隣の小さなボタンは 選びやすい候補色、<code>既定</code> は元の色に戻すボタンです。壁・高台・扉と出入口・階段（上・下）・ 水路・乾いた谷・溶岩といったゲーム本来の要素の色も、同じ方法で変更できます（既定はゲームと同じ色）。</p>
+<h2 id="翻訳タブ"><a name="翻訳タブ"></a>翻訳タブ</h2>
+<p>翻訳パネルや翻訳タブの補助表示を設定するタブです。</p>
+<p><img src="img/settings_dark_tab_04.png" alt="翻訳タブ"></p>
+<h3 id="翻訳タブ・パネルの挙動"><a name="翻訳タブ・パネルの挙動"></a>翻訳タブ・パネルの挙動</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>メッセージを次まで保持:</code></td><td>OFF</td><td>トリガーやオブジェクト対話メッセージを、次のメッセージが来るまで翻訳パネルに残すかを指定する</td></tr>
+<tr><td><code>翻訳情報なし時の優先表示:</code></td><td>マップ画面</td><td>探索中で翻訳文がないとき、翻訳タブ全域に何を表示するかを選ぶ。初期値ではマップ画面を優先する</td></tr>
+</table>
+<h3 id="翻訳タブ-拡張設定"><a name="翻訳タブ-拡張設定"></a>翻訳タブ 拡張設定</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>翻訳パネル非表示時挙動を翻訳タブで再現:</code></td><td>OFF</td><td>ON にすると、翻訳パネルを隠したときと同じように、翻訳結果やダイアログメッセージを翻訳タブ側へ表示する。検証用の拡張設定</td></tr>
+</table>
+<h2 id="戦闘情報タブ"><a name="戦闘情報タブ"></a>戦闘情報タブ</h2>
+<p>戦闘と持続魔法の表示先を個別に設定します。新しい表示・読み上げ・保存機能は既定でOFFです。以前の開発版で保存した設定値は、そのまま引き継がれます。表示文は日本語・英語・スペイン語・ドイツ語・フランス語・イタリア語・ロシア語に対応します。</p>
+<p><img src="img/settings_dark_tab_05.png" alt="戦闘情報タブ"></p>
+<h3 id="arena画面"><a name="arena画面"></a>Arena画面</h3>
+<table>
+<tr><th>項目</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>OBS で映る独立ウィンドウにする（戦闘・持続魔法）</code></td><td>OFF</td><td>戦闘情報と持続魔法を OBS のウィンドウキャプチャで選べる一つの窓にまとめる</td></tr>
+<tr><td><code>戦闘情報を表示する</code></td><td>OFF</td><td>会敵済みで現在視認中の直近の攻防相手を画面上部、ほかの会敵済み生存敵を視界外でも右側へ表示する。体力・疲労・呪文Pと、与えたダメージや撃破を確認できる。受けたダメージは探索領域の下端に表示する</td></tr>
+<tr><td><code>獲得経験値の表示時間</code></td><td>5秒</td><td>経験値を得た時点で右下に表示し、各枠を指定秒数後に消す。続けて得た場合は古い枠を左側へ送る（1〜60秒）</td></tr>
+<tr><td><code>低体力時に探索画面の縁を表示する</code></td><td>OFF</td><td>体力が指定割合以下になったとき、探索画面の縁を淡く明滅させる。戦闘情報の敵表示を使わなくても有効にできる</td></tr>
+<tr><td><code>表示を始める体力割合</code></td><td>25%</td><td>低体力の縁表示を始める割合（最大体力に対して1〜99%）</td></tr>
+</table>
+<p>受けたダメージ表示は発生から約5秒で自動的に消えます。敵の視界は場所を問わず同じ判定を使います。地図や座標が確定しない場合は敵を推測表示しません。</p>
+<p>OBS で収録する場合は、この設定を ON にしてから「ウィンドウキャプチャ」で「RTESArenaAssist オーバーレイ」を選び、透過を許可してゲーム映像より上に重ねます。戦闘情報と持続魔法は同じソースに映ります。</p>
+<h3 id="arena画面・持続魔法"><a name="arena画面・持続魔法"></a>Arena画面・持続魔法</h3>
+<table>
+<tr><th>項目</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>画面左上に持続魔法を表示</code></td><td>OFF</td><td>ライト、シールド、筋力強化、火炎耐性、レビテートの状態を表示する</td></tr>
+<tr><td><code>表示方式</code></td><td>E</td><td>A「名前＋残り値」、B「名前＋横メーター」、C「アイコン＋横メーター」、D「アイコン＋時計回りの暗転」、E「アイコン＋名前＋残り値＋細メーター」、F「小型チップ」から選ぶ</td></tr>
+<tr><td><code>時間型の更新</code></td><td>ラウンド</td><td>ライト・火炎耐性・レビテートをラウンドで更新するか、1秒ごとの概算秒数で更新するかを選ぶ。秒数はゲーム内の進行間隔から補正するため、DETAILなどで進行速度が変わっても固定倍率とは限らない</td></tr>
+</table>
+<p>シールドは残り防御量、筋力強化は上昇量を示します。最大値を確認できない途中接続では、メーターを省く場合があります。秒数表示は概算で、効果の終了判定はゲーム内の状態に従います。</p>
+<h3 id="翻訳タブの戦闘情報"><a name="翻訳タブの戦闘情報"></a>翻訳タブの戦闘情報</h3>
+<table>
+<tr><th>項目</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>表示方法</code></td><td>表示なし</td><td>通常表示を維持する／通常表示と戦闘情報を併用する／戦闘情報を全面表示する、から選ぶ</td></tr>
+<tr><td><code>戦闘情報の形式</code></td><td>敵のメーター表示</td><td>戦闘情報を出す場合に、文字情報か敵のメーター表示かを選ぶ</td></tr>
+</table>
+<h3 id="翻訳パネルの戦闘情報"><a name="翻訳パネルの戦闘情報"></a>翻訳パネルの戦闘情報</h3>
+<table>
+<tr><th>項目</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>戦闘メッセージを表示する</code></td><td>OFF</td><td>翻訳パネルへ戦闘文を表示する。従来のメッセージ・会話・一覧が出る場合は、そちらを優先する</td></tr>
+<tr><td><code>直近履歴の表示件数</code></td><td>10件</td><td>戦闘文の直近1〜50件を表示する。件数を超えたら古い文を外して新しい文を加える</td></tr>
+</table>
+<h3 id="共通設定とメッセージ"><a name="共通設定とメッセージ"></a>共通設定とメッセージ</h3>
+<table>
+<tr><th>項目</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>新しい戦闘メッセージを読み上げる</code></td><td>OFF</td><td>読み上げ全体を有効にした場合、新しい戦闘文を発生順に読む。直近の同一文を除外せず、次のダメージで前の読み上げを切り上げない</td></tr>
+<tr><td><code>敵を倒したら、その敵の未読ダメージを飛ばす</code></td><td>ON</td><td>撃破時に、その敵との与ダメージ・被ダメージの再生中と未読分を切り上げる。別の敵の読み上げは続ける</td></tr>
+<tr><td><code>戦闘ログを保存する</code></td><td>OFF</td><td>通常ログとは別に戦闘履歴を保存する。記録がある場合のみログタブ内に切替を表示する</td></tr>
+<tr><td><code>同名の敵に識別子を付ける</code></td><td>OFF</td><td>同じ名前の敵が複数いる場合だけ、名前の後ろに区別用の記号を付ける</td></tr>
+<tr><td><code>識別子の種類</code></td><td>アルファベット</td><td>A・B…または1・2…から選ぶ</td></tr>
+<tr><td><code>戦闘メッセージのテンプレート</code></td><td>各言語の既定文</td><td>会敵・敵へのダメージ・自分へのダメージ・撃破・経験値の文章を編集する。空欄や使えない置換指定は既定文へ戻る</td></tr>
+</table>
+<h2 id="読み上げタブ"><a name="読み上げタブ"></a>読み上げタブ</h2>
+<p>翻訳文の読み上げ、読み上げ対象、ログ表示、キャラクター名の読み替えを設定するタブです。</p>
+<p><img src="img/settings_dark_tab_06.png" alt="読み上げタブ"></p>
+<h3 id="読み上げ"><a name="読み上げ"></a>読み上げ</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>読み上げを有効にする:</code></td><td>OFF</td><td>翻訳文の読み上げ機能全体を有効化する</td></tr>
+<tr><td><code>エンジン:</code></td><td>Windows標準（SAPI5）</td><td>読み上げエンジンを選ぶ。VOICEVOX はローカルの VOICEVOX エンジンが起動している場合に選択できる</td></tr>
+<tr><td><code>代替の読み上げ:</code></td><td>ON</td><td>VOICEVOX を選んでいて使えないとき、読めなかった文を Windows の音声で読み上げる。OFF にすると読み上げない</td></tr>
+<tr><td><code>音声:</code></td><td>（既定）</td><td>エンジンが Windows標準（SAPI5）のときに表示される。使用する SAPI 音声。（既定）では OS 側の既定音声を使う</td></tr>
+<tr><td><code>キャラクター:</code></td><td>スタイル ID 0 のキャラクター</td><td>エンジンが VOICEVOX のときに表示される。読み上げに使う VOICEVOX のキャラクター</td></tr>
+<tr><td><code>スタイル:</code></td><td>スタイル ID 0</td><td>エンジンが VOICEVOX のときに表示される。選んだキャラクターの声のスタイル</td></tr>
+<tr><td><code>🔊 テスト再生</code></td><td>-</td><td>エンジンが VOICEVOX のときに表示される。選んでいるキャラクターとスタイルで、短い文を試しに読み上げる</td></tr>
+<tr><td><code>速度:</code></td><td>標準</td><td>読み上げ速度</td></tr>
+<tr><td><code>音量:</code></td><td><code>100</code></td><td>読み上げ音量。0 から 100 の範囲で設定する</td></tr>
+<tr><td><code>切り上げ:</code></td><td>ON</td><td>表示が切り替わったら前の読み上げを中止し、新しい内容を読み上げる</td></tr>
+<tr><td><code>閉じたら中断:</code></td><td>OFF</td><td>ダイアログや会話を閉じたら、進行中の読み上げを止める</td></tr>
+<tr><td><code>重複の抑止:</code></td><td>OFF</td><td>同じ内容を繰り返し読み上げない（ダンジョンの反復メッセージなど）。ログには残る</td></tr>
+<tr><td><code>読み上げ箇所の強調:</code></td><td>OFF</td><td>読み上げ中の文に色を付ける（翻訳パネル・翻訳タブ・ログ）</td></tr>
+</table>
+<p>VOICEVOX が見つからないときは「VOICEVOX を起動すると選択できます（127.0.0.1:50021）。」と表示されます。 VOICEVOX を起動してから設定ダイアログを開き直すと、キャラクターとスタイルを選べます。</p>
+<h3 id="読み上げ対象"><a name="読み上げ対象"></a>読み上げ対象</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>状況説明（トリガー・入店・出来事・各種ダイアログ）</code></td><td>ON</td><td>トリガー、入店、出来事、各種ダイアログなど、状況を説明する文章を読み上げ対象にする</td></tr>
+<tr><td><code>会話（NPC の応答・店主のセリフ・宮殿・価格交渉の応答）</code></td><td>ON</td><td>NPC の応答、店主のセリフ、宮殿、価格交渉の応答など、会話文を読み上げ対象にする</td></tr>
+</table>
+<p>メニュー、一覧、数値入力などのシステム表示は読み上げません。</p>
+<h3 id="その他--ログ"><a name="その他--ログ"></a>その他 / ログ</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>テキスト横にスピーカーアイコンを表示</code></td><td>OFF</td><td>表示テキストの横にクリック読み上げ用のスピーカーアイコンを出す</td></tr>
+<tr><td><code>ログに原文も併記する</code></td><td>OFF</td><td>翻訳ログに英語原文も併記する。OFF では翻訳のみを表示する</td></tr>
+<tr><td><code>ログ保存上限（件）:</code></td><td><code>2000</code></td><td>保存するログ件数の上限。超えた古いログは自動削除される</td></tr>
+<tr><td><code>ログに記録日時を表示する</code></td><td>ON</td><td>ログ項目に記録日時を表示する</td></tr>
+<tr><td><code>日時の表示形式:</code></td><td><code>yyyy/MM/dd(aaa) HH:mm:ss</code></td><td>ログ日時の表示フォーマット。プリセットまたはカスタム書式を選べる</td></tr>
+</table>
+<h3 id="キャラクター名の読み替え"><a name="キャラクター名の読み替え"></a>キャラクター名の読み替え</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>名前の読み:</code></td><td>空</td><td>ゲームから自動取得したキャラクター名を、読み上げ時だけ指定した読みに置き換える。表示とログには元の名前が残る</td></tr>
+</table>
+<h2 id="チートタブ"><a name="チートタブ"></a>チートタブ</h2>
+<p>ゲーム内数値の書き換えや常時 MAX 系の補助機能を設定するタブです。</p>
+<p><img src="img/settings_dark_tab_07.png" alt="チートタブ"></p>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>チート機能を有効にする:</code></td><td>OFF</td><td>チート系機能全体の親スイッチ。これだけを ON にしても、サブ設定を ON にしない限り何も変えない</td></tr>
+<tr><td><code>ステータス変更:</code></td><td>OFF</td><td>能力値編集などのステータス変更を許可する</td></tr>
+<tr><td><code>マップを明らかにする:</code></td><td>OFF</td><td>チート有効時にマップを全表示する</td></tr>
+<tr><td><code>体力 常時 MAX:</code></td><td>OFF</td><td>チート有効時、現在体力が最大値より低ければ最大値へ戻す</td></tr>
+<tr><td><code>疲労 常時 MAX:</code></td><td>OFF</td><td>チート有効時、現在疲労を最大値へ戻す</td></tr>
+<tr><td><code>呪文ポイント 常時 MAX:</code></td><td>OFF</td><td>チート有効時、現在呪文ポイントを最大値へ戻す</td></tr>
+</table>
+<h2 id="dosbox-タブ"><a name="dosbox-タブ"></a>DOSBox タブ</h2>
+<p>DOSBox の <code>arena.conf</code> を読み取り、ウィンドウ表示、映像、性能、音声を設定するタブです。</p>
+<p><img src="img/settings_dark_tab_08.png" alt="DOSBox タブ"></p>
+<h3 id="設定ファイル--ウィンドウ動作"><a name="設定ファイル--ウィンドウ動作"></a>設定ファイル / ウィンドウ動作</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>設定ファイル</code></td><td>既定パスの <code>arena.conf</code></td><td>DOSBox の設定ファイル。Assist 側の設定が空の場合、標準の Arena Steam 版配置を既定パスとして読む</td></tr>
+<tr><td><code>参照...</code></td><td>-</td><td>任意の <code>arena.conf</code> を選択する</td></tr>
+<tr><td><code>常に最前面表示:</code></td><td>OFF</td><td>DOSBox ウィンドウを他のウィンドウより手前に表示する</td></tr>
+</table>
+<h3 id="ウィンドウ・表示"><a name="ウィンドウ・表示"></a>ウィンドウ・表示</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>ウィンドウサイズ:</code></td><td><code>1024×768</code></td><td><code>windowresolution</code>。プリセットから選び、カスタム選択時は W/H の数値欄を編集する</td></tr>
+<tr><td><code>フルスクリーン解像度:</code></td><td><code>desktop</code></td><td><code>fullresolution</code>。フルスクリーン時の解像度を指定する</td></tr>
+<tr><td><code>フルスクリーン起動:</code></td><td>OFF</td><td><code>fullscreen</code>。DOSBox をフルスクリーンで起動するかを指定する</td></tr>
+<tr><td><code>出力方式:</code></td><td><code>ddraw</code></td><td><code>output</code>。DOSBox の描画出力方式</td></tr>
+<tr><td><code>マウス自動ロック:</code></td><td>ON</td><td><code>autolock</code>。DOSBox 画面内にマウスを自動ロックする</td></tr>
+<tr><td><code>マウス感度:</code></td><td><code>100</code></td><td><code>sensitivity</code>。DOSBox 内のマウス感度</td></tr>
+</table>
+<h3 id="映像"><a name="映像"></a>映像</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>アスペクト補正:</code></td><td>ON</td><td><code>aspect</code>。映像の縦横比を補正する</td></tr>
+<tr><td><code>スケーラー:</code></td><td><code>normal2x</code></td><td><code>scaler</code>。DOSBox の画面拡大フィルタ</td></tr>
+</table>
+<h3 id="パフォーマンス"><a name="パフォーマンス"></a>パフォーマンス</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>CPU サイクル:</code></td><td><code>fixed 25000</code></td><td><code>cycles</code>。CPU エミュレーション速度を指定する。<code>fixed</code> の場合は右側の数値欄が有効になる</td></tr>
+</table>
+<h3 id="サウンド"><a name="サウンド"></a>サウンド</h3>
+<table>
+<tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
+<tr><td><code>消音モード:</code></td><td>OFF</td><td><code>nosound</code>。DOSBox の音声を無効化する</td></tr>
+<tr><td><code>サンプリングレート:</code></td><td><code>44100</code></td><td><code>rate</code>。ミキサーのサンプリングレート</td></tr>
+<tr><td><code>MIDI デバイス:</code></td><td><code>default</code></td><td><code>mididevice</code>。MIDI 再生に使用するデバイス</td></tr>
+</table>
+
+</body>
+</html>

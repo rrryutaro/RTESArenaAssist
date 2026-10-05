@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Grundlegende Bedienung</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — Grundlegende Bedienung</h1>
+<p>RTESArenaAssist ist eine Hilfsanwendung für The Elder Scrolls: Arena. Sie blendet beim Spielen Übersetzung, Karte, Journal, Log, Spielstandverwaltung, Bildschirmaufnahmen, Wörterbuch und Handbuch als Zusatzanzeige ein.</p>
+<p>Die Bilder zeigen Assist in deiner Anzeigesprache, mit dem Thema „Dunkel“, den Standardeinstellungen und im nicht verbundenen Zustand. Bei bestehender Verbindung ändert sich die Anzeige je nach aktuellem Bildschirm und Spielzustand von Arena.</p>
+<p>Der übliche Ablauf: Starte Arena, verbinde Assist damit und spiele im Layoutmodus, den du über die Schaltfläche <code>⊞</code> aktivierst. Im Layoutmodus können das DOSBox-Spielfenster und die Übersetzung, die Karte und die Tabs von Assist nebeneinander in einem Bildschirm angeordnet werden, sodass du nicht mit Alt+Tab wechseln musst.</p>
+<p>Einzelheiten zu den Einstellungen findest du auf der Seite „Detaillierte Anleitung zum Einstellungsdialog“ dieses Handbuchs.</p>
+<h2 id="inhalt"><a name="inhalt"></a>Inhalt</h2>
+<ul>
+<li><a href="#erster-start">Erster Start</a></li>
+<ul>
+<li><a href="#sprache-waehlen">Sprache wählen</a></li>
+<li><a href="#arena-ordner-festlegen">Arena-Ordner festlegen</a></li>
+<li><a href="#uebersetzungsdateien-erzeugen">Übersetzungsdateien erzeugen</a></li>
+</ul>
+<li><a href="#hauptfenster">Hauptfenster</a></li>
+<ul>
+<li><a href="#nicht-verbunden">Nicht verbunden</a></li>
+<li><a href="#verbunden">Verbunden</a></li>
+</ul>
+<li><a href="#layoutmodus-als-standard">Den Layoutmodus als Standard verwenden</a></li>
+<li><a href="#die-tabs">Die Tabs</a></li>
+<ul>
+<li><a href="#tab-uebersetzung">Tab „Übersetzung“</a></li>
+<li><a href="#tab-status">Tab „Status“</a></li>
+<li><a href="#tab-karte">Tab „Karte“</a></li>
+<li><a href="#tab-journal">Tab „Journal“</a></li>
+<li><a href="#tab-log">Tab „Log“</a></li>
+<li><a href="#tab-speichern">Tab „Speichern“</a></li>
+<li><a href="#tab-erfassung">Tab „Erfassung“</a></li>
+<li><a href="#tab-woerterbuch">Tab „Wörterbuch“</a></li>
+<li><a href="#tab-handbuch">Tab „Handbuch“</a></li>
+</ul>
+<li><a href="#grundlegender-ablauf">Grundlegender Ablauf</a></li>
+</ul>
+<h2 id="erster-start"><a name="erster-start"></a>Erster Start</h2>
+<p>Die veröffentlichte Version enthält keine Originaltexte von Arena. Beim ersten Start erzeugt Assist die Übersetzungsdateien aus dem Arena-Ordner des Benutzers.</p>
+<h3 id="sprache-waehlen"><a name="sprache-waehlen"></a>Sprache wählen</h3>
+<p>Wähle zuerst die Anzeigesprache von Assist. Die gewählte Sprache wird sofort auf diesem Bildschirm übernommen. Dieser Bildschirm ist nur auf Japanisch, Englisch und Spanisch verfügbar; in allen anderen Sprachen erscheint er auf Englisch (so wie im Bild).</p>
+<p><img src="img/assist_first_run_language.png" alt="Erster Start: Sprachauswahl"></p>
+<table>
+<tr><th>Bedienelement</th><th>Beschreibung</th></tr>
+<tr><td>Sprachliste</td><td>Wählt die Sprache der Benutzeroberfläche von Assist. Auf diesem Bildschirm stehen Japanisch, English und Español zur Auswahl. Alle anderen Sprachen wählst du nach dem Start im Einstellungsdialog auf dem Tab „Allgemein“ unter „Sprache“.</td></tr>
+<tr><td><code>Next</code> (Weiter)</td><td>Weiter zur Festlegung des Arena-Ordners.</td></tr>
+</table>
+<h3 id="arena-ordner-festlegen"><a name="arena-ordner-festlegen"></a>Arena-Ordner festlegen</h3>
+<p>Wenn du Arena vor diesem Schritt startest, erkennt Assist den Installationsordner automatisch aus dem laufenden Arena. Gelingt das nicht, gibst du den Datenordner von Arena mit <code>Browse…</code> (Durchsuchen) an.</p>
+<p><img src="img/assist_first_run_arena.png" alt="Erster Start: Arena-Ordner festlegen"></p>
+<table>
+<tr><th>Element</th><th>Beschreibung</th></tr>
+<tr><td><code>Game install folder</code> (Installationsordner des Spiels)</td><td>Gib den Ordner <code>ARENA</code> von Arena an.</td></tr>
+<tr><td><code>Browse…</code> (Durchsuchen)</td><td>Wählt den Arena-Ordner in einem Ordnerauswahldialog.</td></tr>
+<tr><td><code>Re-check</code> (Erneut prüfen)</td><td>Sucht das laufende Arena erneut.</td></tr>
+<tr><td><code>Build translation files</code> (Übersetzungsdateien erstellen)</td><td>Sobald ein gültiger Arena-Ordner gefunden wurde, geht es weiter mit der Erzeugung der Übersetzungsdateien.</td></tr>
+</table>
+<h3 id="uebersetzungsdateien-erzeugen"><a name="uebersetzungsdateien-erzeugen"></a>Übersetzungsdateien erzeugen</h3>
+<p>Assist erzeugt die Übersetzungsdateien aus den Daten im Arena-Ordner. Danach öffnet sich das Hauptfenster.</p>
+<p><img src="img/assist_first_run_generate.png" alt="Erster Start: Übersetzungsdateien erzeugen"></p>
+<p>Während der Erzeugung zeigt Assist einen Fortschrittsbalken und den aktuellen Schritt an. Da auch Daten aus dem laufenden Arena gelesen werden, darfst du Arena erst schließen, wenn alles fertig ist.</p>
+<h2 id="hauptfenster"><a name="hauptfenster"></a>Hauptfenster</h2>
+<p>Oben in Assist befindet sich die Verbindungsleiste, in der Mitte der Tab-Bereich und unten die Statusleiste.</p>
+<h3 id="nicht-verbunden"><a name="nicht-verbunden"></a>Nicht verbunden</h3>
+<p>Direkt nach dem Start besteht keine Verbindung. Starte Arena / DOSBox und klicke dann oben rechts auf <code>Verbinden</code>.</p>
+<p><img src="img/assist_main_window.png" alt="Hauptfenster: nicht verbunden"></p>
+<table>
+<tr><th>Bereich</th><th>Beschreibung</th></tr>
+<tr><td>Verbindungsstatus</td><td>Zeigt „Nicht verbunden“ bzw. bei bestehender Verbindung den Namen des Bildschirms, den IMG-Namen und weitere Angaben.</td></tr>
+<tr><td>Verbinden / Trennen</td><td>Verbindet mit Arena in DOSBox oder trennt die Verbindung.</td></tr>
+<tr><td><code>⏸</code> / <code>▶</code> / <code>■</code></td><td>Hält das Vorlesen an / setzt es fort / beendet es. Das Vorlesen ist verfügbar, wenn du es im Einstellungsdialog auf dem Tab „Vorlesen“ aktivierst (standardmäßig AUS).</td></tr>
+<tr><td><code>⊞</code></td><td>Schaltet den Layoutmodus um. Ein Rechtsklick öffnet das Menü für die Anordnung.</td></tr>
+<tr><td><code>📷</code></td><td>Speichert einen Screenshot. Im Layoutmodus wird das gesamte Layout als ein Bild gespeichert. Auch solange das Spielfenster (DOSBox) den Fokus hat, speichert das Tastenkürzel (standardmäßig <code>F12</code>) auf dieselbe Weise.</td></tr>
+<tr><td><code>⚙</code></td><td>Öffnet den Einstellungsdialog.</td></tr>
+</table>
+<p>Die Meldung „Tastenkürzel F12 registriert“, die direkt nach dem Start in der Statusleiste erscheint, zeigt an, dass das Tastenkürzel für die Aufnahme einsatzbereit ist. Die Taste kannst du im Einstellungsdialog auf dem Tab „Allgemein“ ändern.</p>
+<h3 id="verbunden"><a name="verbunden"></a>Verbunden</h3>
+<p>Nach dem Verbinden steht links in der Verbindungsleiste der Name des erkannten Bildschirms. Im folgenden Beispiel ist Assist mit dem Titelbildschirm von Arena verbunden.</p>
+<p><img src="img/assist_connection_bar.png" alt="Verbindungsleiste: verbunden"></p>
+<p>Rechts neben dem Bildschirmnamen steht außerdem der IMG-Name, den dieser Bildschirm verwendet (bei Bildschirmen ohne IMG, wie dem Titelbildschirm, erscheint er nicht). Im Einstellungsdialog auf dem Tab „Anzeige“ kannst du umschalten, ob der Bildschirmname und der IMG-Name angezeigt werden.</p>
+<h2 id="layoutmodus-als-standard"><a name="layoutmodus-als-standard"></a>Den Layoutmodus als Standard verwenden</h2>
+<p>Assist ist grundsätzlich für den Einsatz im Layoutmodus gedacht. Die Tabs funktionieren auch im normalen Fenster, doch im Layoutmodus lassen sich Spielfenster, Übersetzung, Karte, Log und mehr in einem Bildschirm festsetzen und gemeinsam im Blick behalten.</p>
+<p>Im Standardlayout befindet sich links das DOSBox-Spielfenster, rechts die Haupt-Tabs von Assist und unten ein Hilfspanel. Während des Spiels kannst du rechts Karte oder Journal prüfen und unten oder im Tab „Übersetzung“ die Übersetzung des aktuellen Bildschirms ansehen.</p>
+<table>
+<tr><th>Bedienung</th><th>Beschreibung</th></tr>
+<tr><td>Linksklick auf <code>⊞</code></td><td>Startet bzw. beendet den Layoutmodus.</td></tr>
+<tr><td>Rechtsklick auf <code>⊞</code></td><td>Hier wählst du Layoutform, Ecke für die Anordnung, Folgemodus, erneutes Anordnen, Anzeige im Vordergrund und mehr.</td></tr>
+<tr><td><code>📷</code></td><td>Im Layoutmodus wird das gesamte Layout aus DOSBox und Assist als ein Bild gespeichert.</td></tr>
+<tr><td><code>Trennen</code></td><td>Trennt die Verbindung zu Arena. Beendest du zuerst den Layoutmodus und trennst danach, bleibt der Bildschirm übersichtlicher.</td></tr>
+</table>
+<h2 id="die-tabs"><a name="die-tabs"></a>Die Tabs</h2>
+<p>Die Screenshots der einzelnen Tabs dienen dazu, den Aufbau der Oberfläche zu zeigen. Bei bestehender Verbindung wird der Inhalt je nach aktuellem Bildschirm und Spielzustand von Arena aktualisiert.</p>
+<h3 id="tab-uebersetzung"><a name="tab-uebersetzung"></a>Tab „Übersetzung“</h3>
+<p>Der zentrale Tab, der die Übersetzung zum aktuellen Bildschirm zeigt. Die Anzeige wechselt je nach Situation, etwa beim Titelbildschirm, bei der Charaktererstellung, in Gesprächen, bei Einrichtungen, Gegenständen und Zaubern.</p>
+<p><img src="img/assist_tab_translate.png" alt="Tab Übersetzung"></p>
+<table>
+<tr><th>Anzeige</th><th>Beschreibung</th></tr>
+<tr><td>Übersetzung</td><td>Zeigt die Übersetzung des aktuellen Bildschirms oder Ereignisses in der Anzeigesprache.</td></tr>
+<tr><td>Original</td><td>Je nach Einstellung wird auch der zugehörige englische Originaltext angezeigt.</td></tr>
+<tr><td>Spezialanzeigen</td><td>Klassenliste, Rassenliste, Ausrüstung, Einrichtungslisten, Kauflisten und Ähnliches wechseln zu einer eigenen, übersichtlichen Anzeige.</td></tr>
+</table>
+<p>Auf dem Tab „Kampfinformationen“ der Einstellungen kannst du Kampfinformationen auch im Tab „Übersetzung“ anzeigen lassen. Wähle „Kampf- und normale Ansicht“ oder „Vollbild-Kampfansicht“ und lege fest, ob Text oder Gegnerbalken gezeigt werden. Standardmäßig ist keine Anzeige eingestellt, und die bisherige Anzeige des Tabs „Übersetzung“ bleibt erhalten.</p>
+<h3 id="tab-status"><a name="tab-status"></a>Tab „Status“</h3>
+<p>Der Tab zum Prüfen der Attribute und des Zustands des Charakters. Nach der Charaktererstellung oder während des Spiels zeigt er bei bestehender Verbindung die Statusinformationen an.</p>
+<p><img src="img/assist_tab_status.png" alt="Tab Status"></p>
+<table>
+<tr><th>Anzeige</th><th>Beschreibung</th></tr>
+<tr><td>Ansicht</td><td>Wähle „Standard“ (die bisherige Anzeige) oder ein beliebiges Design (einen Charakterbogen). Die Statusanzeige und die Verteilung der Attribute im Tab „Übersetzung“ verwenden ebenfalls die hier gewählte Ansicht.</td></tr>
+<tr><td>Attribute</td><td>Du kannst die Hauptattribute wie Stärke und Intelligenz prüfen.</td></tr>
+<tr><td>Zustandswerte</td><td>Du kannst Gesundheit, Erschöpfung, Zauberpunkte und Ähnliches prüfen.</td></tr>
+<tr><td>Änderungen</td><td>Nur wenn du die Cheat-Einstellung ausdrücklich aktivierst, sind Änderungen wie die der Attribute möglich (in der Ansicht „Standard“).</td></tr>
+</table>
+<h3 id="charakterbogen"><a name="charakterbogen"></a>Charakterbogen</h3>
+<p>Eine Funktion, die den Status in einem Design deiner Wahl anzeigt. Wählst du bei „Ansicht“ etwas anderes als „Standard“, wird der Status im gewählten Design angezeigt. Ein Design ist eine HTML-Datei (eine Vorlage); es werden 8 Designs mitgeliefert, und du kannst auch eigene erstellen. Manche Designs zeigen das Gesicht und das Ganzkörperbild (mit Ausrüstung), den Zustand des Charakters (krank, vergiftet, gelähmt und so weiter) und den Rüstungswert jedes Körperteils (aus der Ausrüstung berechnet; je kleiner, desto besser geschützt). Gesicht und Ganzkörperbild werden aus den Dateien deines Arena erzeugt.</p>
+<table>
+<tr><th>Bedienung</th><th>Beschreibung</th></tr>
+<tr><td>Ordner öffnen</td><td>Öffnet den Ordner für deine eigenen Charakterbögen (HTML-Dateien), nämlich <code>character_sheets</code> am selben Ort wie <code>RTESArenaAssist.exe</code>. Beim ersten Öffnen werden Kopien der mitgelieferten Designs dort abgelegt. Dateien im Ordner erscheinen in der Liste „Ansicht“ mit dem Zusatz „(Ordner)“.</td></tr>
+<tr><td>Neu laden</td><td>Liest die Charakterbögen im Ordner neu ein. Drücke es, nachdem du eine Datei geändert hast.</td></tr>
+</table>
+<p>Die Liste der mitgelieferten Designs, die Funktionsweise der Charakterbögen sowie die einsetzbaren Werte und ihre Schreibweise findest du auf der Seite „Status-Designs (Charakterbögen)“ dieses Handbuchs.</p>
+<h3 id="tab-karte"><a name="tab-karte"></a>Tab „Karte“</h3>
+<p>Zeigt die automatische Karte von Verliesen, Städten, Feldern und Innenräumen. Die Anzeige wird passend zum aktuellen Aufenthaltsort im Spiel aktualisiert.</p>
+<p><img src="img/assist_tab_map.png" alt="Tab Karte"></p>
+<table>
+<tr><th>Anzeige</th><th>Beschreibung</th></tr>
+<tr><td>Aktueller Standort</td><td>Zeigt anhand des Spielzustands bei bestehender Verbindung die aktuelle Karte und Position.</td></tr>
+<tr><td>Automatische Karte</td><td>Zeichnet erkundete Bereiche, Wände, Eingänge, Feldgelände und mehr.</td></tr>
+<tr><td>Anzeigeeinstellungen</td><td>Gitternetz, Chunk-Koordinaten, erweiterte Felddarstellung und Ähnliches kannst du im Einstellungsdialog anpassen.</td></tr>
+</table>
+<h3 id="tab-journal"><a name="tab-journal"></a>Tab „Journal“</h3>
+<p>Ein Tab, in dem du die Einträge des Logbuchs / Journals aus dem Spiel in der Anzeigesprache lesen kannst.</p>
+<p><img src="img/assist_tab_journal.png" alt="Tab Journal"></p>
+<table>
+<tr><th>Anzeige</th><th>Beschreibung</th></tr>
+<tr><td>Datum und Überschrift</td><td>Zeigt Datum und Kurzfassung der Journaleinträge.</td></tr>
+<tr><td>Text</td><td>Zeigt den Text des Logbuchs in der Anzeigesprache.</td></tr>
+<tr><td>Aktualisierung</td><td>Wird das Journal im Spiel aktualisiert, wird auch die Anzeige in Assist aktualisiert.</td></tr>
+</table>
+<h3 id="tab-log"><a name="tab-log"></a>Tab „Log“</h3>
+<p>Ein Tab, der die von Assist angezeigten Übersetzungen als Verlauf zeigt. Er eignet sich, um verpasste Texte später noch einmal nachzulesen.</p>
+<p><img src="img/assist_tab_log.png" alt="Tab Log"></p>
+<table>
+<tr><th>Bedienung</th><th>Beschreibung</th></tr>
+<tr><td>Reihenfolge</td><td>Wechselt zwischen neueste zuerst und älteste zuerst.</td></tr>
+<tr><td>Filter</td><td>Grenzt das Log nach Art oder Ort ein.</td></tr>
+<tr><td>Leeren</td><td>Löscht das angezeigte Log.</td></tr>
+</table>
+<p>Wenn du das Speichern des Kampfprotokolls aktiviert hast und Aufzeichnungen vorliegen, kannst du im Tab „Log“ zwischen dem normalen Log und dem Kampfprotokoll umschalten. Gibt es kein Kampfprotokoll, wird wie bisher nur das normale Log angezeigt.</p>
+<h3 id="tab-speichern"><a name="tab-speichern"></a>Tab „Speichern“</h3>
+<p>Ein Tab zur Verwaltung der Spielstand-Slots und Sicherungen von Arena. Er unterstützt Vorgänge an den Spielstanddaten, etwa die automatische Sicherung vor einer Wiederherstellung.</p>
+<p><img src="img/assist_tab_save.png" alt="Tab Speichern"></p>
+<table>
+<tr><th>Bedienung</th><th>Beschreibung</th></tr>
+<tr><td>Slot-Liste</td><td>Listet die Spielstand-Slots von Arena auf.</td></tr>
+<tr><td>Sicherung</td><td>Sichert den ausgewählten Spielstand.</td></tr>
+<tr><td>Wiederherstellen</td><td>Stellt Spielstanddaten aus einer Sicherung wieder her.</td></tr>
+<tr><td>Löschen</td><td>Löscht nicht mehr benötigte Sicherungen oder Spielstände.</td></tr>
+</table>
+<h3 id="tab-erfassung"><a name="tab-erfassung"></a>Tab „Erfassung“</h3>
+<p>Ein Tab, in dem du die mit der Schaltfläche <code>📷</code> gespeicherten Screenshots ansiehst. Auch im Layoutmodus aufgenommene Bilder kannst du von hier öffnen.</p>
+<p><img src="img/assist_tab_capture.png" alt="Tab Erfassung"></p>
+<table>
+<tr><th>Bedienung</th><th>Beschreibung</th></tr>
+<tr><td>Liste</td><td>Zeigt die gespeicherten Aufnahmen.</td></tr>
+<tr><td>Vorschau</td><td>Zeigt das ausgewählte Bild.</td></tr>
+<tr><td>Sperren</td><td>Schützt Bilder, die du behalten möchtest, vor dem Löschen.</td></tr>
+<tr><td>Löschen</td><td>Löscht das ausgewählte oder nicht mehr benötigte Bilder.</td></tr>
+</table>
+<h3 id="tab-woerterbuch"><a name="tab-woerterbuch"></a>Tab „Wörterbuch“</h3>
+<p>Ein Tab zum Durchsuchen des Übersetzungswörterbuchs und der Verlies-Texte von Assist. Du kannst damit Wörter und Sätze nachschlagen, die im Spiel aufgetaucht sind.</p>
+<p><img src="img/assist_tab_dict.png" alt="Tab Wörterbuch"></p>
+<table>
+<tr><th>Anzeigemodus</th><th>Beschreibung</th></tr>
+<tr><td>Wörterbuch</td><td>Suche nach englischem Stichwort, Übersetzung und Kategorie.</td></tr>
+<tr><td>Verlies-Text</td><td>Durchsucht und zeigt die aus INF stammenden Texte der Verliese.</td></tr>
+</table>
+<h3 id="tab-handbuch"><a name="tab-handbuch"></a>Tab „Handbuch“</h3>
+<p>Ein Tab, in dem du die grundlegende Bedienung und die Systeme von Arena sowie die Funktionen von Assist in deiner Anzeigesprache nachlesen kannst. Nutze ihn, wenn du während des Spiels Bedienung oder Begriffe nachschlagen möchtest.</p>
+<p><img src="img/assist_tab_manual.png" alt="Tab Handbuch"></p>
+<table>
+<tr><th>Bedienung</th><th>Beschreibung</th></tr>
+<tr><td>Einfach / Vollständig / Assist</td><td>Schaltet den angezeigten Inhalt um (siehe die Tabelle unten).</td></tr>
+<tr><td>Schlüsselwortsuche</td><td>Durchsucht das Handbuch.</td></tr>
+<tr><td>Liste links</td><td>Wechselt zwischen den Kapiteln, etwa Geschichte, Charaktererstellung, Steuerung und Kampf.</td></tr>
+</table>
+<table>
+<tr><th>Umschalter</th><th>Inhalt</th><th>Sprachen</th></tr>
+<tr><td>Einfach</td><td>Erklärung des Spiels (9 Kapitel)</td><td>7 Sprachen</td></tr>
+<tr><td>Vollständig</td><td>Übersetzung des offiziellen Handbuchs (das Übersetzungspaket wird importiert und angezeigt)</td><td>Derzeit nur Japanisch</td></tr>
+<tr><td>Assist</td><td>Erklärung der Funktionen von Assist (Grundlegende Bedienung, Einstellungsdialog, Status-Designs (Charakterbögen))</td><td>7 Sprachen</td></tr>
+</table>
+<p><b>Vollständige Version (Übersetzung des offiziellen Handbuchs)</b></p>
+<p>Unter „Vollständig“ kannst du die Übersetzung des offiziellen Handbuchs (Player's Guide und Nachtrag) lesen. Die Übersetzung wird als Übersetzungspaket für jede Anzeigesprache (<code>RTESArenaAssist-manual-&lt;Sprache&gt;.zip</code>) getrennt vom Programm auf der Download-Seite des Handbuchs verteilt (derzeit nur Japanisch). Bei der ersten Verwendung importierst du es so:</p>
+<p><img src="img/assist_tab_manual_full.png" alt="Tab Handbuch (Import der vollständigen Version)"></p>
+<ol><li>Klicke auf „Download-Seite des Handbuchs öffnen“. Die Download-Seite öffnet sich im Browser; lade dort das Übersetzungspaket für deine Anzeigesprache herunter.</li><li>Klicke auf „Importieren“ und wähle die heruntergeladene Datei aus.</li><li>Sobald die Kapitelliste erscheint, ist der Import abgeschlossen. Über der Liste stehen das Datum des importierten Übersetzungspakets sowie der Zugang zur Download-Seite und zum Import. Ein neues Übersetzungspaket ersetzt das alte, wenn du es auf dieselbe Weise importierst.</li></ol>
+<p>Die Bilder des Handbuchs werden aus der Datei <code>Player Guide.pdf</code> im Ordner <code>Docs</code> deines Arena (Steam-Version) erzeugt. Wird die PDF nicht gefunden oder ist die Version eine andere, wird nur der Text angezeigt. Prüfe den „Spielordner“ in den Einstellungen und klicke dann auf „Bilder neu erzeugen“, damit auch die Bilder angezeigt werden. Nach dem Import kannst du die heruntergeladene Datei löschen. Assist selbst stellt keine Internetverbindung her (der Download erfolgt in deinem Browser).</p>
+<p>Unter „Vollständig“ wird außerdem ein Link angezeigt, der das offizielle Handbuch (englische PDF) im Ordner <code>Docs</code> öffnet. Ist die Anzeigesprache Englisch, erscheint anstelle des Übersetzungspakets nur dieser Link.</p>
+<h2 id="grundlegender-ablauf"><a name="grundlegender-ablauf"></a>Grundlegender Ablauf</h2>
+<ol><li>Starte Arena.</li><li>Starte RTESArenaAssist.</li><li>Beim ersten Start legst du Sprache und Arena-Ordner fest und erzeugst die Übersetzungsdateien.</li><li>Klicke oben rechts in Assist auf <code>Verbinden</code>, um dich mit Arena / DOSBox zu verbinden.</li><li>Klicke auf <code>⊞</code>, um den Layoutmodus zu starten.</li><li>Bleibe normalerweise im Layoutmodus und wechsle zwischen den Tabs „Übersetzung“, „Karte“, „Journal“ und „Log“.</li><li>Wenn du einen Bildschirm festhalten möchtest, nimm ihn mit <code>📷</code> oder dem Tastenkürzel (standardmäßig <code>F12</code>) auf.</li><li>Beende am Ende mit <code>⊞</code> den Layoutmodus und klicke bei Bedarf auf <code>Trennen</code>.</li></ol>
+<p>Anzeigegröße des Layoutmodus, Layoutform, Übersetzungspanel, Speicherort der Aufnahmen und mehr passt du im Einstellungsdialog an. Auch das Vorlesen der Übersetzung aktivierst du im Einstellungsdialog auf dem Tab „Vorlesen“.</p>
+
+</body>
+</html>

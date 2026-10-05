@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Paramètres</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — Paramètres (guide détaillé)</h1>
+<p>Cette page présente une capture de chaque onglet de la boîte de dialogue des paramètres de RTESArenaAssist, ainsi que l'explication de chaque élément de l'interface.</p>
+<p>Les images ont été prises avec la boîte de dialogue des paramètres dans votre langue d'affichage, avec les réglages par défaut et le thème «&nbsp;Sombre&nbsp;» par défaut.</p>
+<p>Les valeurs de l'onglet DOSBox reflètent non seulement le fichier de paramètres d'Assist, mais aussi le résultat de la lecture de l'<code>arena.conf</code> situé au chemin par défaut. Si l'<code>arena.conf</code> de votre environnement diffère, les valeurs affichées changent donc aussi.</p>
+<h2 id="sommaire"><a name="sommaire"></a>Sommaire</h2>
+<ul>
+<li><a href="#onglet-general">Onglet Général</a></li>
+<ul>
+<li><a href="#chemins">Chemins</a></li>
+<li><a href="#comportement">Comportement</a></li>
+<li><a href="#son-de-l-obturateur">Son de l'obturateur</a></li>
+<li><a href="#raccourci-de-capture">Raccourci de capture</a></li>
+<li><a href="#mises-a-jour">Mises à jour</a></li>
+</ul>
+<li><a href="#onglet-affichage">Onglet Affichage</a></li>
+<ul>
+<li><a href="#barre-de-connexion">Affichage de la barre de connexion</a></li>
+<li><a href="#marques-de-la-liste-d-objets">Marques de la liste d'objets</a></li>
+<li><a href="#police-du-panneau-de-traduction">Police du panneau de traduction</a></li>
+<li><a href="#disposition">Disposition</a></li>
+</ul>
+<li><a href="#onglet-carte">Onglet Carte</a></li>
+<ul>
+<li><a href="#parametres-d-affichage-de-la-carte">Paramètres d'affichage de la carte</a></li>
+<li><a href="#affichage-etendu-de-la-region">Affichage étendu de la région</a></li>
+<li><a href="#representation-et-couleurs-de-la-carte">Représentation et couleurs de la carte</a></li>
+</ul>
+<li><a href="#onglet-traduction">Onglet Traduction</a></li>
+<ul>
+<li><a href="#comportement-de-l-onglet-et-du-panneau">Comportement de l'onglet / du panneau de traduction</a></li>
+<li><a href="#onglet-traduction-avance">Onglet Traduction — Avancé</a></li>
+</ul>
+<li><a href="#onglet-informations-de-combat">Onglet Informations de combat</a></li>
+<ul>
+<li><a href="#ecran-arena">Écran Arena</a></li>
+<li><a href="#ecran-arena-sorts-actifs">Écran Arena · Sorts actifs</a></li>
+<li><a href="#combat-onglet-traduction">Informations de combat dans l'onglet Traduction</a></li>
+<li><a href="#combat-panneau-de-traduction">Informations de combat dans le panneau de traduction</a></li>
+<li><a href="#parametres-generaux-et-messages">Paramètres généraux et messages</a></li>
+</ul>
+<li><a href="#onglet-lecture-a-voix-haute">Onglet Lecture à voix haute</a></li>
+<ul>
+<li><a href="#lecture-a-voix-haute">Lecture à voix haute</a></li>
+<li><a href="#cibles-de-lecture">Cibles de lecture</a></li>
+<li><a href="#autre-et-historique">Autre et historique</a></li>
+<li><a href="#prononciation-du-nom">Prononciation du nom du personnage</a></li>
+</ul>
+<li><a href="#onglet-triche">Onglet Triche</a></li>
+<li><a href="#onglet-dosbox">Onglet DOSBox</a></li>
+<ul>
+<li><a href="#fichier-de-configuration-et-fenetre">Fichier de configuration / Comportement de la fenêtre</a></li>
+<li><a href="#fenetre-et-affichage">Fenêtre / Affichage</a></li>
+<li><a href="#video">Vidéo</a></li>
+<li><a href="#performance">Performance</a></li>
+<li><a href="#son">Son</a></li>
+</ul>
+</ul>
+<h2 id="onglet-general"><a name="onglet-general"></a>Onglet Général</h2>
+<p>Cet onglet permet de régler les chemins, le comportement de base, le son de l'obturateur et le raccourci clavier de capture, et de vérifier votre version.</p>
+<p><img src="img/settings_dark_tab_01.png" alt="Onglet Général"></p>
+<h3 id="chemins"><a name="chemins"></a>Chemins</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Dossier du jeu:</code></td><td>Vide</td><td>Le dossier qui contient l'<code>ARENA.EXE</code> d'Arena et les fichiers de sauvegarde. Tant qu'il n'est pas défini, la gestion des sauvegardes et la lecture des données du jeu ne sont pas disponibles</td></tr>
+<tr><td><code>Dossier de sauvegarde:</code></td><td>Vide</td><td>Destination des sauvegardes de parties. Si elle est vide, le dossier <code>saves_backup/</code> situé à côté du fichier de paramètres de l'outil est utilisé</td></tr>
+<tr><td><code>Dossier des captures:</code></td><td>Vide</td><td>Destination des captures d'écran. Si elle est vide, le même dossier que celui des sauvegardes est utilisé</td></tr>
+<tr><td><code>Parcourir...</code></td><td>-</td><td>Sélectionne chacun des dossiers</td></tr>
+</table>
+<h3 id="comportement"><a name="comportement"></a>Comportement</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Intervalle d'interrogation:</code></td><td><code>100 ms</code></td><td>Période de surveillance de l'écran de DOSBox et de l'état de la mémoire. La valeur par défaut est courte pour capter plus facilement les messages brefs</td></tr>
+<tr><td><code>Confirmer avant la suppression:</code></td><td>Activé</td><td>Affiche une boîte de dialogue de confirmation avant de supprimer des captures ou des sauvegardes</td></tr>
+<tr><td><code>Toujours au premier plan:</code></td><td>Désactivé</td><td>Affiche la fenêtre principale d'Assist devant les autres fenêtres</td></tr>
+<tr><td><code>Thème:</code></td><td>Sombre</td><td>Choisit le thème de couleurs de l'interface</td></tr>
+<tr><td><code>Langue:</code></td><td>Automatique (système)</td><td>Langue de l'interface. Si rien n'est défini, elle est déterminée automatiquement d'après la langue du système ; une modification est prise en compte après le redémarrage de l'application</td></tr>
+</table>
+<h3 id="son-de-l-obturateur"><a name="son-de-l-obturateur"></a>Son de l'obturateur</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Activé</code></td><td>Activé</td><td>Joue un effet sonore quand une capture d'écran est enregistrée</td></tr>
+<tr><td><code>Type:</code></td><td><code>携帯電話カメラ（標準）</code> (appareil photo de téléphone, standard)</td><td>Le son d'obturateur joué. On peut choisir entre standard, version courte, double, aigus accentués et doux (les noms des sons s'affichent actuellement en japonais)</td></tr>
+<tr><td><code>Volume:</code></td><td><code>30 %</code></td><td>Volume de lecture du son de l'obturateur</td></tr>
+<tr><td><code>▶</code></td><td>-</td><td>Écoute le son d'obturateur sélectionné</td></tr>
+</table>
+<h3 id="raccourci-de-capture"><a name="raccourci-de-capture"></a>Raccourci de capture</h3>
+<p>Il suffit d'appuyer sur la touche pour enregistrer une capture, même quand la fenêtre du jeu (DOSBox) a le focus. Utilisez-le pour photographier un message qui disparaît au bout de quelques secondes.</p>
+<table>
+<tr><th>Élément</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Activé</code></td><td>Activé</td><td>Utilise le raccourci clavier pour les captures</td></tr>
+<tr><td><code>Ctrl</code> / <code>Alt</code> / <code>Shift</code></td><td>Désactivé</td><td>À activer pour combiner avec une touche de modification</td></tr>
+<tr><td><code>Touche:</code></td><td><code>F12</code></td><td>La touche utilisée. On peut choisir F5 à F12, PrintScreen, Pause, ScrollLock, Insert, Home, End, PageUp, PageDown</td></tr>
+</table>
+<ul>
+<li>La touche pressée n'est pas transmise au jeu. Les touches utilisées par le jeu ou par DOSBox (F1 / F3 / F4 / F8, Ctrl+F5 à F12, Alt+F12, Alt+Pause) ne peuvent pas être choisies</li>
+<li>Si une autre application utilise la même touche comme raccourci, le raccourci de cette application ne fonctionne pas tant que cette application est lancée. En choisissant une autre touche, les deux peuvent coexister</li>
+<li>Si la touche n'a pas pu être enregistrée, un message s'affiche dans la barre d'état. Vous pouvez alors toujours capturer avec le bouton appareil photo de la barre d'outils</li>
+</ul>
+<h3 id="mises-a-jour"><a name="mises-a-jour"></a>Mises à jour</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Version actuelle :</code></td><td>-</td><td>La version d'Assist que vous utilisez</td></tr>
+<tr><td><code>Ouvrir la page des versions</code></td><td>-</td><td>Ouvre dans le navigateur la page des versions d'Assist (la liste des Releases). C'est là qu'il faut vérifier s'il existe une nouvelle version</td></tr>
+</table>
+<p>Assist ne se connecte pas à Internet : il ne recherche pas de mises à jour et ne se met pas à jour automatiquement.</p>
+<h2 id="onglet-affichage"><a name="onglet-affichage"></a>Onglet Affichage</h2>
+<p>Cet onglet permet de régler la barre de connexion, les marques d'équipement de la liste d'objets, la police du panneau de traduction et la disposition.</p>
+<p><img src="img/settings_dark_tab_02.png" alt="Onglet Affichage"></p>
+<h3 id="barre-de-connexion"><a name="barre-de-connexion"></a>Affichage de la barre de connexion</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Afficher le nom de l'écran reconnu:</code></td><td>Activé</td><td>Affiche dans la barre de connexion le nom de l'écran actuellement reconnu</td></tr>
+<tr><td><code>Afficher les infos IMG:</code></td><td>Activé</td><td>Affiche dans la barre de connexion les informations sur l'IMG détectée</td></tr>
+<tr><td><code>Afficher la version:</code></td><td>Activé</td><td>Affiche la version de l'application dans la barre de connexion et la barre d'état</td></tr>
+</table>
+<h3 id="marques-de-la-liste-d-objets"><a name="marques-de-la-liste-d-objets"></a>Marques de la liste d'objets</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Équipé:</code></td><td><code>E</code></td><td>Marque d'un caractère affichée à gauche d'un objet équipé</td></tr>
+<tr><td><code>Équipable:</code></td><td>Vide</td><td>Marque des objets équipables. Elle est vide par défaut : rien n'est affiché</td></tr>
+<tr><td><code>Non équipable:</code></td><td><code>✕</code></td><td>Marque d'un caractère affichée à gauche d'un objet qui ne peut pas être équipé</td></tr>
+</table>
+<h3 id="police-du-panneau-de-traduction"><a name="police-du-panneau-de-traduction"></a>Police du panneau de traduction</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Reproduire à droite les réglages de gauche</code></td><td>Désactivé</td><td>Activé, il applique au côté du texte original la même police et la même taille qu'au côté de la traduction</td></tr>
+<tr><td><code>Gauche (Traduction):</code></td><td>Police par défaut de l'application / <code>14 pt</code></td><td>Police et taille utilisées pour le texte traduit. Si aucun nom de police n'est enregistré, la police par défaut de l'application dans votre environnement est choisie</td></tr>
+<tr><td><code>Droite (Original):</code></td><td>Police par défaut de l'application / <code>12 pt</code></td><td>Police et taille utilisées pour le texte original anglais. La synchronisation étant désactivée, on peut les régler séparément du côté de la traduction</td></tr>
+</table>
+<h3 id="disposition"><a name="disposition"></a>Disposition</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Mode de suivi:</code></td><td>Aucun suivi</td><td>Choisit si, lorsque DOSBox ou Assist est déplacé, l'autre le suit</td></tr>
+<tr><td><code>Coin de DOSBox:</code></td><td>Haut gauche</td><td>Le coin de l'écran qui sert de référence pour placer DOSBox lors d'une disposition ponctuelle ou en mode disposition</td></tr>
+<tr><td><code>Forme de la disposition:</code></td><td>Forme 2 : bas pleine largeur + haut droit (par défaut)</td><td>Forme de découpage entre DOSBox et la zone des panneaux d'Assist. La forme 2 est la disposition standard, qui utilise le haut droit et le bas pleine largeur</td></tr>
+<tr><td><code>Taille de la disposition:</code></td><td><code>1920 x 1080</code></td><td>Taille de la zone de travail entière en mode disposition</td></tr>
+</table>
+<h2 id="onglet-carte"><a name="onglet-carte"></a>Onglet Carte</h2>
+<p>Cet onglet permet de régler la carte d'exploration et l'affichage étendu de la région.</p>
+<p><img src="img/settings_dark_tab_03.png" alt="Onglet Carte"></p>
+<h3 id="parametres-d-affichage-de-la-carte"><a name="parametres-d-affichage-de-la-carte"></a>Paramètres d'affichage de la carte</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Visibilité à travers les murs sur la carte:</code></td><td>Désactivé</td><td>Désactivé, la carte n'enregistre pas les zones inexplorées derrière un mur. Activé, le comportement est plus proche d'Arena d'origine et les zones derrière les murs sont aussi enregistrées</td></tr>
+<tr><td><code>Afficher les plateformes surélevées pleine hauteur comme des murs:</code></td><td>Activé</td><td>Affiche avec la couleur des murs les plateformes surélevées qui vont du sol au plafond. Seule la classification d'affichage change ; le blocage de la ligne de vue n'est pas affecté. Les plateformes surélevées qui n'atteignent pas la pleine hauteur restent affichées comme plateformes surélevées</td></tr>
+<tr><td><code>Hauteur à partir de laquelle les plateformes surélevées bloquent la vue:</code></td><td><code>0 %</code></td><td>La hauteur du plafond valant 100 %, les plateformes surélevées dont le sommet atteint ou dépasse cette hauteur bloquent la ligne de vue sur la carte. À 0 %, toutes les plateformes surélevées bloquent la vue</td></tr>
+<tr><td><code>Afficher le sol des zones inexplorées:</code></td><td>Désactivé</td><td>Désactivé, seules les cases découvertes sont affichées avec la couleur du sol, ce qui cache la forme des zones inexplorées. Activé, toute la carte est affichée avec la couleur de fond parchemin</td></tr>
+<tr><td><code>Centrer sur le personnage:</code></td><td>Activé</td><td>Quand le personnage se déplace, la carte le suit automatiquement pour rester centrée sur lui. À l'arrêt, on peut la faire défiler à la main</td></tr>
+<tr><td><code>Afficher le quadrillage:</code></td><td>Activé</td><td>Affiche le quadrillage qui marque les limites des cases</td></tr>
+<tr><td><code>Afficher les limites des blocs:</code></td><td>Activé</td><td>Sur la carte d'une région, met en évidence les limites des blocs de 64 cases</td></tr>
+<tr><td><code>Afficher les coordonnées des blocs:</code></td><td>Activé</td><td>Affiche les coordonnées de chaque bloc sur la carte d'une région, pour aider à se repérer</td></tr>
+<tr><td><code>Afficher les limites de recentrage:</code></td><td>Désactivé</td><td>Affiche en pointillés les limites de recentrage de la carte d'une région. Affichage d'appoint pour l'étude des positions et la vérification</td></tr>
+<tr><td><code>Taille de police des coordonnées de bloc:</code></td><td><code>10 pt</code></td><td>Taille des caractères des étiquettes de coordonnées des blocs</td></tr>
+</table>
+<h3 id="affichage-etendu-de-la-region"><a name="affichage-etendu-de-la-region"></a>Affichage étendu de la région</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Activer l'affichage étendu:</code></td><td>Activé</td><td>Interrupteur principal de l'affichage étendu de la carte d'une région. Désactivé, l'affichage se rapproche de la carte automatique du jeu</td></tr>
+<tr><td><code>Distinguer la route du mur:</code></td><td>Activé</td><td>Dessine avec des couleurs différentes les routes où l'on peut passer et les parties infranchissables, comme les bâtiments et les murs</td></tr>
+<tr><td><code>Afficher les contours des murs:</code></td><td>Activé</td><td>Affiche les contours des murs et les terrains de type bordure</td></tr>
+<tr><td><code>Distinguer clôtures/haies/jardins:</code></td><td>Activé</td><td>Distingue par des lignes de raccord les terrains de type bordure : clôtures, haies, jardins, etc.</td></tr>
+<tr><td><code>Afficher les cultures:</code></td><td>Activé</td><td>Affiche les cultures, comme le maïs et les champs, avec une couleur ou une marque dédiée</td></tr>
+<tr><td><code>Afficher toutes les entrées de bâtiments en rouge:</code></td><td>Activé</td><td>Affiche aussi en rouge les entrées des maisons, des tavernes, des temples, des portes de la ville, etc. Les entrées des cryptes, des tours et des donjons sont affichées en rouge quel que soit ce réglage</td></tr>
+<tr><td><code>Afficher les points de repère (arbres, buissons, etc.):</code></td><td>Désactivé</td><td>Superpose des marques simplifiées pour les arbres, les buissons, les rochers, les tombes, les ruines, etc. Ils sont nombreux et rendent la carte difficile à lire : la valeur par défaut est donc « désactivé »</td></tr>
+</table>
+<h3 id="representation-et-couleurs-de-la-carte"><a name="representation-et-couleurs-de-la-carte"></a>Représentation et couleurs de la carte</h3>
+<p>La carte du jeu dessine sans les distinguer, par exemple, les passages qui passent sous un mur. Ici, vous réglez si ces éléments sont dessinés de façon distincte, ainsi que la couleur de chacun. Quand vous désactivez «&nbsp;Représenter&nbsp;» sur une ligne, l'élément revient au même affichage que la carte du jeu (pour les trésors, la désactivation n'affiche rien).</p>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Portes secrètes:</code></td><td>Activé</td><td>Affiche avec une couleur dédiée les portes secrètes découvertes. Tant qu'elle n'est pas découverte, la porte reste un mur</td></tr>
+<tr><td><code>Eau sous les murs:</code></td><td>Activé</td><td>Affiche avec une couleur dédiée l'eau qui passe sous un mur. Elle n'est pas affichée tant que vous n'y avez pas réellement passé pour la révéler</td></tr>
+<tr><td><code>Passages sous les murs:</code></td><td>Activé</td><td>Affiche les passages qui passent sous un mur. Ils ne sont pas affichés tant que vous n'y avez pas réellement passé pour les révéler</td></tr>
+<tr><td><code>Lave sous les murs:</code></td><td>Activé</td><td>Affiche avec une couleur dédiée la lave qui passe sous un mur. Elle n'est pas affichée tant que vous n'y avez pas réellement passé pour la révéler</td></tr>
+<tr><td><code>Trésors:</code></td><td>Activé</td><td>Superpose une marque à l'endroit où vous avez obtenu un trésor. Le caractère de la marque se change dans le champ de droite. Quand «&nbsp;Révéler la carte&nbsp;» de l'onglet Triche est activé, tous les endroits où se trouve un trésor sont affichés, que vous l'ayez obtenu ou non</td></tr>
+<tr><td><code>Clés et objets de quête:</code></td><td>Activé</td><td>Parmi les trésors, affiche avec une autre couleur la marque des clés et des objets de quête. Désactivé, ils sont affichés avec la même couleur que les trésors. Rien n'est affiché si «&nbsp;Trésors&nbsp;» est désactivé</td></tr>
+<tr><td><code>Couleurs des entrées d’établissement:</code></td><td>Activé</td><td>Sur la carte d'une ville, remplace par une couleur propre à chaque établissement les cases de couleur de bâtiment attenantes à l'entrée d'une auberge, d'un magasin d'équipement, d'un temple ou d'une guilde des mages. La couleur de l'entrée rouge ne change pas. La couleur de chaque établissement se change dans les champs en dessous</td></tr>
+<tr><td><code>Passages en dessous:</code></td><td><code>Montrer en conduits</code> / Intensité <code>100 %</code></td><td>Montre les passages sous les murs et les plateformes surélevées sous forme de conduits traversant le centre des cases. Désactivé, la case entière est colorée comme auparavant. La couleur du conduit est celle des gouffres ouverts, et il les rejoint sans rupture. En baissant l'<code>Intensité</code>, les conduits deviennent plus discrets</td></tr>
+</table>
+<p>Cliquez sur l'échantillon de couleur à droite de chaque élément pour choisir une couleur quelconque. Les petits boutons voisins proposent des couleurs candidates faciles à choisir, et <code>Défaut</code> rétablit la couleur d'origine. Les couleurs des éléments propres au jeu — mur, plateforme surélevée, porte et entrées, escalier (montant, descendant), eau, gouffre sec, lave — se changent de la même façon (par défaut, ce sont les couleurs du jeu).</p>
+<h2 id="onglet-traduction"><a name="onglet-traduction"></a>Onglet Traduction</h2>
+<p>Cet onglet permet de régler les affichages d'appoint du panneau de traduction et de l'onglet Traduction.</p>
+<p><img src="img/settings_dark_tab_04.png" alt="Onglet Traduction"></p>
+<h3 id="comportement-de-l-onglet-et-du-panneau"><a name="comportement-de-l-onglet-et-du-panneau"></a>Comportement de l'onglet / du panneau de traduction</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Conserver le message jusqu'au suivant:</code></td><td>Désactivé</td><td>Précise si un message de déclencheur ou d'interaction avec un objet reste dans le panneau de traduction jusqu'à l'arrivée du message suivant</td></tr>
+<tr><td><code>Affichage de repli en cas d'inactivité:</code></td><td>Écran de carte</td><td>Choisit ce qui s'affiche sur toute la zone de l'onglet Traduction pendant l'exploration quand il n'y a pas de traduction. Par défaut, l'écran de carte est prioritaire</td></tr>
+</table>
+<h3 id="onglet-traduction-avance"><a name="onglet-traduction-avance"></a>Onglet Traduction — Avancé</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Émuler le comportement du panneau masqué dans l'onglet Traduction:</code></td><td>Désactivé</td><td>Activé, les résultats de traduction et les messages de dialogue s'affichent dans l'onglet Traduction, comme lorsque le panneau de traduction est masqué. Réglage avancé destiné à la vérification</td></tr>
+</table>
+<h2 id="onglet-informations-de-combat"><a name="onglet-informations-de-combat"></a>Onglet Informations de combat</h2>
+<p>Cet onglet permet de régler séparément où s'affichent le combat et les sorts actifs. Les nouvelles fonctions d'affichage, de lecture à voix haute et d'enregistrement sont désactivées par défaut. Les valeurs enregistrées par une ancienne version de développement sont conservées telles quelles. Les textes affichés sont disponibles en japonais, anglais, espagnol, allemand, français, italien et russe.</p>
+<p><img src="img/settings_dark_tab_05.png" alt="Onglet Informations de combat"></p>
+<h3 id="ecran-arena"><a name="ecran-arena"></a>Écran Arena</h3>
+<table>
+<tr><th>Élément</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Utiliser des fenêtres distinctes pour OBS (combat et effets magiques)</code></td><td>Désactivé</td><td>Réunit les informations de combat et les sorts actifs dans une seule fenêtre que l'on peut choisir avec la capture de fenêtre d'OBS</td></tr>
+<tr><td><code>Afficher les informations de combat</code></td><td>Désactivé</td><td>Affiche en haut de l'écran le dernier adversaire engagé qui est actuellement en vue, et à droite les autres ennemis rencontrés encore en vie, même hors de vue. On peut y vérifier la santé, la fatigue et les points de sort, ainsi que les dégâts infligés et les victoires. Les dégâts reçus s'affichent en bas de la zone d'exploration</td></tr>
+<tr><td><code>Durée d'affichage de l'expérience</code></td><td>5 s</td><td>Affiche l'expérience en bas à droite au moment où elle est gagnée, et fait disparaître chaque encadré après le nombre de secondes indiqué. Si vous en gagnez de nouveau à la suite, les anciens encadrés sont repoussés vers la gauche (1 à 60 secondes)</td></tr>
+<tr><td><code>Afficher une bordure discrète quand la santé est faible</code></td><td>Désactivé</td><td>Quand la santé tombe à la proportion indiquée ou en dessous, fait clignoter doucement le bord de l'écran d'exploration. Peut être activé même si vous n'utilisez pas l'affichage des ennemis des informations de combat</td></tr>
+<tr><td><code>Seuil de santé</code></td><td>25%</td><td>Proportion à partir de laquelle la bordure de santé faible commence à s'afficher (1 à 99 % de la santé maximale)</td></tr>
+</table>
+<p>L'affichage des dégâts reçus disparaît automatiquement environ 5 secondes après leur survenue. La vue des ennemis suit le même critère quel que soit le lieu. Si la carte ou les coordonnées ne sont pas déterminées, les ennemis ne sont pas affichés par déduction.</p>
+<p>Pour enregistrer avec OBS, activez ce réglage, puis choisissez <code>RTESArenaAssist オーバーレイ</code> (le titre de la fenêtre s'affiche en japonais) dans «&nbsp;Capture de fenêtre&nbsp;», autorisez la transparence et superposez-le au-dessus de l'image du jeu. Les informations de combat et les sorts actifs apparaissent dans la même source.</p>
+<h3 id="ecran-arena-sorts-actifs"><a name="ecran-arena-sorts-actifs"></a>Écran Arena · Sorts actifs</h3>
+<table>
+<tr><th>Élément</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Afficher les sorts actifs en haut à gauche</code></td><td>Désactivé</td><td>Affiche l'état de Lumière, Bouclier, Renforcement de force, Résistance au feu et Lévitation</td></tr>
+<tr><td><code>Style d'affichage</code></td><td>E</td><td>À choisir entre A «&nbsp;Nom et valeur restante&nbsp;», B «&nbsp;Nom et jauge horizontale&nbsp;», C «&nbsp;Icône et jauge horizontale&nbsp;», D «&nbsp;Icône et ombre horaire&nbsp;», E «&nbsp;Icône, nom, valeur et jauge fine&nbsp;» et F «&nbsp;Pastille compacte&nbsp;»</td></tr>
+<tr><td><code>Actualisation des effets temporisés</code></td><td>Tours</td><td>Choisit si Lumière, Résistance au feu et Lévitation sont actualisés en tours («&nbsp;Tours (classique)&nbsp;») ou en secondes estimées, chaque seconde («&nbsp;Secondes (estimées, chaque seconde)&nbsp;»). Les secondes sont corrigées d'après l'intervalle de progression mesuré dans le jeu ; si la vitesse de progression change, par exemple avec DETAIL, ce n'est donc pas forcément un multiple fixe</td></tr>
+</table>
+<p>Bouclier indique la protection restante, et Renforcement de force le bonus. Dans une connexion en cours de partie où le maximum ne peut pas être vérifié, la jauge peut être omise. L'affichage en secondes est approximatif ; la fin d'un effet est déterminée d'après l'état dans le jeu.</p>
+<h3 id="combat-onglet-traduction"><a name="combat-onglet-traduction"></a>Informations de combat dans l'onglet Traduction</h3>
+<table>
+<tr><th>Élément</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Mode d'affichage</code></td><td>Désactivé</td><td>À choisir entre : conserver l'affichage normal («&nbsp;Désactivé (vue normale)&nbsp;») / utiliser ensemble l'affichage normal et les informations de combat («&nbsp;Combat et vue normale&nbsp;») / afficher les informations de combat en plein écran («&nbsp;Vue de combat complète&nbsp;»)</td></tr>
+<tr><td><code>Format de combat</code></td><td>Jauges des ennemis</td><td>Quand des informations de combat sont affichées, choisit entre les informations textuelles («&nbsp;Texte&nbsp;») et l'affichage en jauges des ennemis</td></tr>
+</table>
+<h3 id="combat-panneau-de-traduction"><a name="combat-panneau-de-traduction"></a>Informations de combat dans le panneau de traduction</h3>
+<table>
+<tr><th>Élément</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Afficher les messages de combat</code></td><td>Désactivé</td><td>Affiche les phrases de combat dans le panneau de traduction. Quand les messages, conversations ou listes habituels s'affichent, ceux-ci sont prioritaires</td></tr>
+<tr><td><code>Messages récents</code></td><td>10 entrées</td><td>Affiche les 1 à 50 dernières phrases de combat. Au-delà de ce nombre, les plus anciennes sont retirées pour ajouter les nouvelles</td></tr>
+</table>
+<h3 id="parametres-generaux-et-messages"><a name="parametres-generaux-et-messages"></a>Paramètres généraux et messages</h3>
+<table>
+<tr><th>Élément</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Lire les nouveaux messages de combat</code></td><td>Désactivé</td><td>Quand la lecture à voix haute est activée dans son ensemble, lit les nouvelles phrases de combat dans l'ordre où elles surviennent. Les phrases identiques récentes ne sont pas exclues, et les dégâts suivants n'interrompent pas la lecture précédente</td></tr>
+<tr><td><code>Après une victoire, ignorer les dégâts en attente de cet ennemi</code></td><td>Activé</td><td>À la victoire, interrompt la lecture en cours et les éléments non lus des dégâts infligés et reçus liés à cet ennemi. La lecture des autres ennemis continue</td></tr>
+<tr><td><code>Enregistrer le journal de combat</code></td><td>Désactivé</td><td>Enregistre l'historique de combat séparément de l'historique normal. Le sélecteur n'apparaît dans l'onglet Historique que s'il y a des enregistrements</td></tr>
+<tr><td><code>Distinguer les ennemis du même type</code></td><td>Désactivé</td><td>Seulement quand plusieurs ennemis portent le même nom, ajoute après le nom un signe distinctif</td></tr>
+<tr><td><code>Type de repère</code></td><td>Lettres</td><td>À choisir entre A, B… («&nbsp;Lettres (A, B…)&nbsp;») et 1, 2… («&nbsp;Chiffres (1, 2…)&nbsp;»)</td></tr>
+<tr><td><code>Modèles de messages de combat</code></td><td>Texte par défaut de chaque langue</td><td>Modifie les phrases de rencontre, de dégâts à l'ennemi, de dégâts reçus, de victoire et d'expérience. Un champ vide ou un remplacement inutilisable revient au texte par défaut</td></tr>
+</table>
+<h2 id="onglet-lecture-a-voix-haute"><a name="onglet-lecture-a-voix-haute"></a>Onglet Lecture à voix haute</h2>
+<p>Cet onglet permet de régler la lecture à voix haute des traductions, les cibles de lecture, l'affichage de l'historique et la prononciation du nom du personnage.</p>
+<p><img src="img/settings_dark_tab_06.png" alt="Onglet Lecture à voix haute"></p>
+<h3 id="lecture-a-voix-haute"><a name="lecture-a-voix-haute"></a>Lecture à voix haute</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Activer la synthèse vocale:</code></td><td>Désactivé</td><td>Active l'ensemble de la fonction de lecture à voix haute des traductions</td></tr>
+<tr><td><code>Moteur:</code></td><td>Windows (SAPI5)</td><td>Choisit le moteur de lecture. VOICEVOX peut être choisi si le moteur VOICEVOX local est lancé</td></tr>
+<tr><td><code>Voix de secours:</code></td><td>Activé</td><td>Quand VOICEVOX est choisi mais indisponible, lit avec la voix de Windows les phrases qui n'ont pas pu être lues. Désactivé, rien n'est lu</td></tr>
+<tr><td><code>Voix:</code></td><td>(par défaut)</td><td>Affiché quand le moteur est Windows (SAPI5). La voix SAPI utilisée. Avec (par défaut), la voix par défaut du système est utilisée</td></tr>
+<tr><td><code>Personnage:</code></td><td>Le personnage du style d'ID 0</td><td>Affiché quand le moteur est VOICEVOX. Le personnage VOICEVOX utilisé pour la lecture</td></tr>
+<tr><td><code>Style:</code></td><td>Style d'ID 0</td><td>Affiché quand le moteur est VOICEVOX. Le style de voix du personnage choisi</td></tr>
+<tr><td><code>🔊 Tester</code></td><td>-</td><td>Affiché quand le moteur est VOICEVOX. Lit à titre d'essai une courte phrase avec le personnage et le style choisis</td></tr>
+<tr><td><code>Vitesse:</code></td><td><code>標準</code> (standard)</td><td>Vitesse de lecture</td></tr>
+<tr><td><code>Volume:</code></td><td><code>100</code></td><td>Volume de lecture. Se règle de 0 à 100</td></tr>
+<tr><td><code>Interruption:</code></td><td>Activé</td><td>Quand l'affichage change, interrompt la lecture précédente et lit le nouveau contenu</td></tr>
+<tr><td><code>Annuler à la fermeture:</code></td><td>Désactivé</td><td>Quand une boîte de dialogue ou une conversation se ferme, arrête la lecture en cours</td></tr>
+<tr><td><code>Suppression des répétitions:</code></td><td>Désactivé</td><td>Ne relit pas de façon répétée le même contenu (par exemple les messages récurrents d'un donjon). Il reste dans l'historique</td></tr>
+<tr><td><code>Surlignage de la lecture:</code></td><td>Désactivé</td><td>Colore la phrase en cours de lecture (panneau de traduction, onglet Traduction, historique)</td></tr>
+</table>
+<p>Quand VOICEVOX est introuvable, le message «&nbsp;Démarrez VOICEVOX pour pouvoir le sélectionner (127.0.0.1:50021).&nbsp;» s'affiche. Après avoir lancé VOICEVOX, rouvrez la boîte de dialogue des paramètres : vous pourrez alors choisir le personnage et le style.</p>
+<h3 id="cibles-de-lecture"><a name="cibles-de-lecture"></a>Cibles de lecture</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Situation (déclencheurs, entrée dans un bâtiment, événements, diverses boîtes de dialogue)</code></td><td>Activé</td><td>Fait des textes qui décrivent la situation (déclencheurs, entrée dans un bâtiment, événements, diverses boîtes de dialogue, etc.) une cible de la lecture à voix haute</td></tr>
+<tr><td><code>Conversation (réponses des PNJ, répliques des commerçants, palais, réponses de négociation de prix)</code></td><td>Activé</td><td>Fait des textes de conversation (réponses des PNJ, répliques des commerçants, palais, réponses de négociation de prix, etc.) une cible de la lecture à voix haute</td></tr>
+</table>
+<p>Les affichages système tels que les menus, les listes et la saisie numérique ne sont pas lus.</p>
+<h3 id="autre-et-historique"><a name="autre-et-historique"></a>Autre et historique</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Afficher une icône de haut-parleur à côté du texte (cliquer pour lire à voix haute)</code></td><td>Désactivé</td><td>Affiche à côté du texte affiché une icône de haut-parleur sur laquelle on clique pour lire à voix haute</td></tr>
+<tr><td><code>Afficher aussi le texte original dans l'historique (désactivé = traduction seule)</code></td><td>Désactivé</td><td>Affiche aussi le texte original anglais dans l'historique des traductions. Désactivé, seule la traduction est affichée</td></tr>
+<tr><td><code>Nombre max. d'entrées de l'historique:</code></td><td><code>2000</code></td><td>Limite du nombre d'entrées d'historique conservées. Les plus anciennes au-delà sont supprimées automatiquement</td></tr>
+<tr><td><code>Afficher la date et l'heure d'enregistrement dans l'historique</code></td><td>Activé</td><td>Affiche la date et l'heure d'enregistrement sur les entrées de l'historique</td></tr>
+<tr><td><code>Affichage de la date/heure:</code></td><td><code>yyyy/MM/dd(aaa) HH:mm:ss</code></td><td>Format d'affichage de la date et de l'heure de l'historique. On peut choisir un préréglage ou un format personnalisé</td></tr>
+</table>
+<h3 id="prononciation-du-nom"><a name="prononciation-du-nom"></a>Prononciation du nom du personnage</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Prononciation du nom:</code></td><td>Vide</td><td>Remplace par la prononciation indiquée, uniquement lors de la lecture à voix haute, le nom du personnage récupéré automatiquement depuis le jeu. L'affichage et l'historique conservent le nom d'origine</td></tr>
+</table>
+<h2 id="onglet-triche"><a name="onglet-triche"></a>Onglet Triche</h2>
+<p>Cet onglet permet de régler les fonctions d'aide qui modifient des valeurs du jeu ou maintiennent certaines valeurs au maximum.</p>
+<p><img src="img/settings_dark_tab_07.png" alt="Onglet Triche"></p>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Activer le mode triche:</code></td><td>Désactivé</td><td>Interrupteur principal de l'ensemble des fonctions de triche. L'activer seul ne change rien tant que vous n'activez pas les réglages secondaires</td></tr>
+<tr><td><code>Modification du statut:</code></td><td>Désactivé</td><td>Autorise les modifications du statut, comme l'édition des attributs</td></tr>
+<tr><td><code>Révéler la carte:</code></td><td>Désactivé</td><td>Quand le mode triche est activé, affiche toute la carte</td></tr>
+<tr><td><code>Santé toujours au MAX:</code></td><td>Désactivé</td><td>Quand le mode triche est activé, ramène la santé actuelle au maximum si elle est inférieure</td></tr>
+<tr><td><code>Fatigue toujours au MAX:</code></td><td>Désactivé</td><td>Quand le mode triche est activé, ramène la fatigue actuelle au maximum</td></tr>
+<tr><td><code>Points de sorts toujours au MAX:</code></td><td>Désactivé</td><td>Quand le mode triche est activé, ramène les points de sort actuels au maximum</td></tr>
+</table>
+<h2 id="onglet-dosbox"><a name="onglet-dosbox"></a>Onglet DOSBox</h2>
+<p>Cet onglet lit l'<code>arena.conf</code> de DOSBox et permet de régler l'affichage de la fenêtre, la vidéo, les performances et le son.</p>
+<p><img src="img/settings_dark_tab_08.png" alt="Onglet DOSBox"></p>
+<h3 id="fichier-de-configuration-et-fenetre"><a name="fichier-de-configuration-et-fenetre"></a>Fichier de configuration / Comportement de la fenêtre</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Fichier de configuration</code></td><td><code>arena.conf</code> du chemin par défaut</td><td>Le fichier de configuration de DOSBox. Si le réglage côté Assist est vide, l'emplacement standard de la version Steam d'Arena est lu comme chemin par défaut</td></tr>
+<tr><td><code>Parcourir...</code></td><td>-</td><td>Sélectionne un <code>arena.conf</code> quelconque</td></tr>
+<tr><td><code>Toujours au premier plan:</code></td><td>Désactivé</td><td>Affiche la fenêtre de DOSBox devant les autres fenêtres</td></tr>
+</table>
+<h3 id="fenetre-et-affichage"><a name="fenetre-et-affichage"></a>Fenêtre / Affichage</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Taille de la fenêtre:</code></td><td><code>1024×768</code></td><td><code>windowresolution</code>. À choisir parmi les préréglages ; avec le choix personnalisé, on modifie les champs numériques L/H</td></tr>
+<tr><td><code>Résolution plein écran:</code></td><td><code>desktop</code></td><td><code>fullresolution</code>. Indique la résolution en plein écran</td></tr>
+<tr><td><code>Démarrer en plein écran:</code></td><td>Désactivé</td><td><code>fullscreen</code>. Indique si DOSBox démarre en plein écran</td></tr>
+<tr><td><code>Mode de sortie:</code></td><td><code>ddraw</code></td><td><code>output</code>. Le mode de sortie du rendu de DOSBox</td></tr>
+<tr><td><code>Verrouillage automatique de la souris:</code></td><td>Activé</td><td><code>autolock</code>. Verrouille automatiquement la souris dans la fenêtre de DOSBox</td></tr>
+<tr><td><code>Sensibilité de la souris:</code></td><td><code>100</code></td><td><code>sensitivity</code>. La sensibilité de la souris dans DOSBox</td></tr>
+</table>
+<h3 id="video"><a name="video"></a>Vidéo</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Correction d'aspect:</code></td><td>Activé</td><td><code>aspect</code>. Corrige le rapport hauteur/largeur de l'image</td></tr>
+<tr><td><code>Filtre de mise à l'échelle:</code></td><td><code>normal2x</code></td><td><code>scaler</code>. Le filtre d'agrandissement de l'écran de DOSBox</td></tr>
+</table>
+<h3 id="performance"><a name="performance"></a>Performance</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Cycles CPU:</code></td><td><code>fixed 25000</code></td><td><code>cycles</code>. Indique la vitesse d'émulation du CPU. Avec <code>fixed</code>, le champ numérique de droite est activé</td></tr>
+</table>
+<h3 id="son"><a name="son"></a>Son</h3>
+<table>
+<tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
+<tr><td><code>Mode silencieux:</code></td><td>Désactivé</td><td><code>nosound</code>. Désactive le son de DOSBox</td></tr>
+<tr><td><code>Taux d'échantillonnage:</code></td><td><code>44100</code></td><td><code>rate</code>. Le taux d'échantillonnage du mixeur</td></tr>
+<tr><td><code>Périphérique MIDI:</code></td><td><code>default</code></td><td><code>mididevice</code>. Le périphérique utilisé pour la lecture MIDI</td></tr>
+</table>
+
+</body>
+</html>

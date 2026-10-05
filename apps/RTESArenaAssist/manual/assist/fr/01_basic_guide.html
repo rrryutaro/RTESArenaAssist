@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Utilisation de base</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — Utilisation de base</h1>
+<p>RTESArenaAssist est une application qui accompagne The Elder Scrolls: Arena. Pendant que vous jouez, elle affiche en complément la traduction, la carte, le journal, l'historique, la gestion des sauvegardes, les captures, le dictionnaire et le manuel.</p>
+<p>Les images ont été prises avec Assist dans votre langue d'affichage, avec le thème «&nbsp;Sombre&nbsp;», les réglages par défaut et sans connexion. Une fois connecté, l'affichage change selon l'écran en cours d'Arena et l'état du jeu.</p>
+<p>L'utilisation de base consiste à lancer Arena, à connecter Assist, puis à jouer en passant en mode disposition avec le bouton <code>⊞</code>. Le mode disposition range l'écran de jeu DOSBox et la traduction, la carte et les onglets d'Assist dans le même écran, de sorte que vous pouvez tout consulter sans basculer avec Alt+Tab.</p>
+<p>Pour le détail des paramètres, voir la page «&nbsp;Paramètres&nbsp;» de ce manuel (guide détaillé de la boîte de dialogue des paramètres).</p>
+<h2 id="sommaire"><a name="sommaire"></a>Sommaire</h2>
+<ul>
+<li><a href="#premier-lancement">Premier lancement</a></li>
+<ul>
+<li><a href="#choisir-la-langue">Choisir la langue</a></li>
+<li><a href="#indiquer-le-dossier-arena">Indiquer le dossier d'Arena</a></li>
+<li><a href="#generer-les-fichiers-de-traduction">Générer les fichiers de traduction</a></li>
+</ul>
+<li><a href="#ecran-principal">Écran principal</a></li>
+<ul>
+<li><a href="#etat-non-connecte">État non connecté</a></li>
+<li><a href="#etat-connecte">État connecté</a></li>
+</ul>
+<li><a href="#utiliser-le-mode-disposition">Utiliser le mode disposition comme base</a></li>
+<li><a href="#les-onglets">Les onglets</a></li>
+<ul>
+<li><a href="#onglet-traduction">Onglet Traduction</a></li>
+<li><a href="#onglet-statut">Onglet Statut</a></li>
+<li><a href="#onglet-carte">Onglet Carte</a></li>
+<li><a href="#onglet-journal">Onglet Journal</a></li>
+<li><a href="#onglet-historique">Onglet Historique</a></li>
+<li><a href="#onglet-sauvegarde">Onglet Sauvegarde</a></li>
+<li><a href="#onglet-capture">Onglet Capture</a></li>
+<li><a href="#onglet-dictionnaire">Onglet Dictionnaire</a></li>
+<li><a href="#onglet-manuel">Onglet Manuel</a></li>
+</ul>
+<li><a href="#marche-a-suivre">Marche à suivre</a></li>
+</ul>
+<h2 id="premier-lancement"><a name="premier-lancement"></a>Premier lancement</h2>
+<p>La version publique n'inclut pas les données textuelles d'origine d'Arena. Au premier lancement, les fichiers de traduction sont générés à partir du dossier Arena de l'utilisateur.</p>
+<h3 id="choisir-la-langue"><a name="choisir-la-langue"></a>Choisir la langue</h3>
+<p>Commencez par choisir la langue d'affichage d'Assist. La langue choisie est appliquée immédiatement sur cet écran.</p>
+<p><img src="img/assist_first_run_language.png" alt="Premier lancement : choix de la langue"></p>
+<table>
+<tr><th>Action</th><th>Description</th></tr>
+<tr><td>Liste déroulante des langues (<code>Choose display language</code>)</td><td>Choisit la langue de l'interface d'Assist. Cet écran ne propose que le japonais, l'anglais (English) et l'espagnol (Español). Les autres langues se choisissent après le démarrage, avec «&nbsp;Langue&nbsp;» dans l'onglet «&nbsp;Général&nbsp;» de la boîte de dialogue des paramètres.</td></tr>
+<tr><td><code>Next</code> (Suivant)</td><td>Passe à l'indication du dossier d'Arena.</td></tr>
+</table>
+<h3 id="indiquer-le-dossier-arena"><a name="indiquer-le-dossier-arena"></a>Indiquer le dossier d'Arena</h3>
+<p>Si vous poursuivez alors qu'Arena est lancé, Assist détecte automatiquement le dossier d'installation à partir du jeu en cours d'exécution. Si la détection automatique échoue, indiquez le dossier de données d'Arena avec <code>Browse…</code> (Parcourir).</p>
+<p><img src="img/assist_first_run_arena.png" alt="Premier lancement : indiquer le dossier d'Arena"></p>
+<table>
+<tr><th>Élément</th><th>Description</th></tr>
+<tr><td>Dossier d'installation du jeu (<code>Game install folder</code>)</td><td>Indiquez le dossier <code>ARENA</code> d'Arena.</td></tr>
+<tr><td><code>Browse…</code> (Parcourir)</td><td>Indique le dossier d'Arena depuis une boîte de dialogue de sélection de dossier.</td></tr>
+<tr><td><code>Re-check</code> (Vérifier de nouveau)</td><td>Détecte de nouveau l'Arena en cours d'exécution.</td></tr>
+<tr><td><code>Build translation files</code> (Créer les fichiers de traduction)</td><td>Quand un dossier Arena valide a été trouvé, passe à la génération des fichiers de traduction.</td></tr>
+</table>
+<h3 id="generer-les-fichiers-de-traduction"><a name="generer-les-fichiers-de-traduction"></a>Générer les fichiers de traduction</h3>
+<p>Les fichiers de traduction d'Assist sont générés à partir des données du dossier Arena. Une fois la génération terminée, l'écran principal s'affiche.</p>
+<p><img src="img/assist_first_run_generate.png" alt="Premier lancement : génération des fichiers de traduction"></p>
+<p>Pendant la création, une barre de progression et l'étape en cours s'affichent. Des données sont aussi lues depuis Arena en cours d'exécution : ne fermez pas Arena avant la fin.</p>
+<h2 id="ecran-principal"><a name="ecran-principal"></a>Écran principal</h2>
+<p>Assist comporte une barre de connexion en haut, la zone des onglets au centre et la barre d'état en bas.</p>
+<h3 id="etat-non-connecte"><a name="etat-non-connecte"></a>État non connecté</h3>
+<p>Juste après le démarrage, Assist n'est pas connecté. Avec Arena / DOSBox lancé, appuyez sur le bouton <code>Connecter</code> en haut à droite.</p>
+<p><img src="img/assist_main_window.png" alt="Écran principal : non connecté"></p>
+<table>
+<tr><th>Zone</th><th>Description</th></tr>
+<tr><td>État de la connexion</td><td>Affiche «&nbsp;Non connecté&nbsp;» ou, une fois connecté, le nom de l'écran en cours, le nom de l'IMG, etc.</td></tr>
+<tr><td>Connecter / Déconnecter</td><td>Se connecte à Arena dans DOSBox, ou met fin à la connexion.</td></tr>
+<tr><td><code>⏸</code> / <code>▶</code> / <code>■</code></td><td>Met en pause / reprend / arrête la lecture à voix haute. Elle est utilisable une fois activée dans l'onglet «&nbsp;Lecture à voix haute&nbsp;» de la boîte de dialogue des paramètres (désactivée par défaut).</td></tr>
+<tr><td><code>⊞</code></td><td>Bascule le mode disposition. Un clic droit ouvre le menu de disposition.</td></tr>
+<tr><td><code>📷</code></td><td>Enregistre une capture d'écran. En mode disposition, la disposition entière est enregistrée en une seule image. Tant que la fenêtre du jeu (DOSBox) a le focus, le raccourci clavier (par défaut <code>F12</code>) enregistre une capture de la même façon.</td></tr>
+<tr><td><code>⚙</code></td><td>Ouvre la boîte de dialogue des paramètres.</td></tr>
+</table>
+<p>Le message «&nbsp;Raccourci F12 enregistré&nbsp;» qui apparaît dans la barre d'état juste après le démarrage indique que le raccourci clavier de capture est prêt à l'emploi. La touche se modifie dans l'onglet «&nbsp;Général&nbsp;» de la boîte de dialogue des paramètres.</p>
+<h3 id="etat-connecte"><a name="etat-connecte"></a>État connecté</h3>
+<p>Une fois connecté, le nom de l'écran reconnu s'affiche à gauche de la barre de connexion. L'exemple ci-dessous montre une connexion à l'écran titre d'Arena.</p>
+<p><img src="img/assist_connection_bar.png" alt="Barre de connexion : connecté"></p>
+<p>À droite du nom de l'écran s'affiche aussi le nom de l'IMG utilisée par cet écran (il n'apparaît pas pour un écran qui n'utilise pas d'IMG, comme l'écran titre). Dans l'onglet «&nbsp;Affichage&nbsp;» de la boîte de dialogue des paramètres, vous pouvez choisir d'afficher le nom de l'écran, celui de l'IMG, ou les deux.</p>
+<h2 id="utiliser-le-mode-disposition"><a name="utiliser-le-mode-disposition"></a>Utiliser le mode disposition comme base</h2>
+<p>Assist est conçu pour être utilisé en mode disposition. Les onglets restent utilisables dans la fenêtre normale, mais le mode disposition permet de garder l'écran de jeu, la traduction, la carte, l'historique, etc. fixés dans le même écran.</p>
+<p>Dans la disposition par défaut, l'écran de jeu DOSBox se trouve à gauche, les onglets principaux d'Assist à droite et un panneau auxiliaire en bas. Pendant le jeu, vous pouvez consulter la carte ou le journal à droite, et vérifier la traduction de l'écran en cours en bas ou dans l'onglet Traduction.</p>
+<table>
+<tr><th>Action</th><th>Description</th></tr>
+<tr><td>Clic gauche sur <code>⊞</code></td><td>Démarre ou quitte le mode disposition.</td></tr>
+<tr><td>Clic droit sur <code>⊞</code></td><td>Permet de choisir la forme de la disposition, le coin de placement, le mode de suivi, de redisposer, l'affichage au premier plan, etc.</td></tr>
+<tr><td><code>📷</code></td><td>En mode disposition, enregistre la disposition entière, DOSBox et Assist compris, en une seule image.</td></tr>
+<tr><td><code>Déconnecter</code></td><td>Met fin à la connexion avec Arena. Quitter le mode disposition avant de vous déconnecter facilite le rangement des fenêtres.</td></tr>
+</table>
+<h2 id="les-onglets"><a name="les-onglets"></a>Les onglets</h2>
+<p>Les captures d'écran de chaque onglet servent à montrer la structure de l'écran. Une fois connecté, le contenu est mis à jour selon l'écran en cours d'Arena et l'état du jeu.</p>
+<h3 id="onglet-traduction"><a name="onglet-traduction"></a>Onglet Traduction</h3>
+<p>C'est l'onglet principal, qui affiche la traduction correspondant à l'écran en cours. L'affichage change selon la situation : écran titre, création de personnage, conversations, établissements, objets, sorts, etc.</p>
+<p><img src="img/assist_tab_translate.png" alt="Onglet Traduction"></p>
+<table>
+<tr><th>Contenu affiché</th><th>Description</th></tr>
+<tr><td>Résultat de la traduction</td><td>Affiche la traduction de l'écran ou de l'événement en cours dans la langue d'affichage.</td></tr>
+<tr><td>Texte original</td><td>Selon les paramètres, affiche aussi le texte original anglais correspondant.</td></tr>
+<tr><td>Affichages dédiés</td><td>La liste des classes, la liste des races, l'équipement, la liste des établissements, la liste des achats, etc. passent à un affichage dédié, plus lisible.</td></tr>
+</table>
+<p>Dans l'onglet «&nbsp;Informations de combat&nbsp;» des paramètres, vous pouvez aussi afficher les informations de combat dans l'onglet Traduction. Choisissez «&nbsp;Combat et vue normale&nbsp;» ou «&nbsp;Vue de combat complète&nbsp;», puis précisez s'il s'agit d'informations textuelles ou de jauges des ennemis. Par défaut, rien n'est affiché et l'affichage habituel de l'onglet Traduction est conservé.</p>
+<h3 id="onglet-statut"><a name="onglet-statut"></a>Onglet Statut</h3>
+<p>Cet onglet permet de vérifier les attributs et l'état du personnage. Une fois le personnage créé, ou quand Assist est connecté pendant le jeu, les informations de statut s'affichent.</p>
+<p><img src="img/assist_tab_status.png" alt="Onglet Statut"></p>
+<table>
+<tr><th>Contenu affiché</th><th>Description</th></tr>
+<tr><td>Affichage</td><td>Choisissez «&nbsp;Standard&nbsp;» (l'affichage utilisé jusqu'ici) ou un design de votre choix (fiche de personnage). L'écran de statut et la répartition des attributs de l'onglet Traduction utilisent aussi l'affichage choisi ici.</td></tr>
+<tr><td>Attributs</td><td>Permet de vérifier les principaux attributs : Force, Intelligence, etc.</td></tr>
+<tr><td>Valeurs d'état</td><td>Permet de vérifier la santé, la fatigue, les points de sort, etc.</td></tr>
+<tr><td>Modifications</td><td>Les opérations comme la modification des attributs ne sont disponibles que si vous avez activé explicitement les paramètres de triche (affichage «&nbsp;Standard&nbsp;»).</td></tr>
+</table>
+<h3 id="fiche-de-personnage"><a name="fiche-de-personnage"></a>Fiche de personnage</h3>
+<p>Cette fonction affiche le statut dans le design de votre choix. Quand vous choisissez autre chose que «&nbsp;Standard&nbsp;» dans «&nbsp;Affichage&nbsp;», le statut s'affiche dans le design choisi. Un design est un fichier HTML (un modèle) ; 8 designs sont fournis, et vous pouvez aussi créer le vôtre. Certains designs affichent le visage et l'image en pied (équipement compris), l'état du personnage (maladie, poison, paralysie, etc.) et l'indice d'armure de chaque partie du corps (valeur calculée d'après l'équipement ; plus elle est basse, mieux on est protégé). Le visage et l'image en pied sont fabriqués à partir des fichiers de votre Arena.</p>
+<table>
+<tr><th>Action</th><th>Description</th></tr>
+<tr><td>Ouvrir le dossier</td><td>Ouvre le dossier où placer vos propres fiches de personnage (fichiers HTML) : <code>character_sheets</code>, au même endroit que <code>RTESArenaAssist.exe</code>. La première fois, des copies des designs fournis y sont placées. Les fichiers que vous y mettez apparaissent dans la liste «&nbsp;Affichage&nbsp;» avec la mention «&nbsp;(dossier)&nbsp;».</td></tr>
+<tr><td>Recharger</td><td>Relit les fiches de personnage du dossier. Appuyez dessus après avoir modifié un fichier.</td></tr>
+</table>
+<p>Pour la liste des designs fournis, le fonctionnement des fiches de personnage, les valeurs que l'on peut insérer et la façon de les écrire, voir la page «&nbsp;Designs de statut (fiches de personnage)&nbsp;» de ce manuel.</p>
+<h3 id="onglet-carte"><a name="onglet-carte"></a>Onglet Carte</h3>
+<p>Cet onglet affiche la carte automatique des donjons, des villes, des régions et des intérieurs. L'affichage est mis à jour selon votre position dans le jeu.</p>
+<p><img src="img/assist_tab_map.png" alt="Onglet Carte"></p>
+<table>
+<tr><th>Contenu affiché</th><th>Description</th></tr>
+<tr><td>Position actuelle</td><td>Affiche la carte et la position en cours à partir de l'état du jeu connecté.</td></tr>
+<tr><td>Carte automatique</td><td>Dessine les zones découvertes, les murs, les entrées, le relief des régions, etc.</td></tr>
+<tr><td>Réglages d'affichage</td><td>Le quadrillage, les coordonnées des blocs, l'affichage étendu de la région, etc. se règlent dans la boîte de dialogue des paramètres.</td></tr>
+</table>
+<h3 id="onglet-journal"><a name="onglet-journal"></a>Onglet Journal</h3>
+<p>Cet onglet permet de lire, dans votre langue, le contenu enregistré dans le Logbook / Journal du jeu.</p>
+<p><img src="img/assist_tab_journal.png" alt="Onglet Journal"></p>
+<table>
+<tr><th>Contenu affiché</th><th>Description</th></tr>
+<tr><td>Date et titre</td><td>Affiche la date et le résumé des entrées du journal.</td></tr>
+<tr><td>Texte</td><td>Affiche le texte du Logbook dans votre langue.</td></tr>
+<tr><td>Mise à jour</td><td>Quand le journal est mis à jour dans le jeu, l'affichage d'Assist l'est aussi.</td></tr>
+</table>
+<h3 id="onglet-historique"><a name="onglet-historique"></a>Onglet Historique</h3>
+<p>Cet onglet permet de relire, sous forme d'historique, les traductions affichées par Assist. Il est pratique pour relire plus tard un texte que vous avez manqué.</p>
+<p><img src="img/assist_tab_log.png" alt="Onglet Historique"></p>
+<table>
+<tr><th>Action</th><th>Description</th></tr>
+<tr><td>Ordre</td><td>Bascule entre «&nbsp;Plus récent d'abord&nbsp;» et «&nbsp;Plus ancien d'abord&nbsp;».</td></tr>
+<tr><td>Filtres</td><td>Filtre l'historique par type ou par lieu.</td></tr>
+<tr><td>Effacer</td><td>Efface l'historique affiché.</td></tr>
+</table>
+<p>Si l'enregistrement du journal de combat est activé et qu'il contient des entrées, vous pouvez basculer dans l'onglet Historique entre «&nbsp;Journal normal&nbsp;» et «&nbsp;Journal de combat&nbsp;». S'il n'y a pas de journal de combat, seul le journal normal est affiché, comme auparavant.</p>
+<h3 id="onglet-sauvegarde"><a name="onglet-sauvegarde"></a>Onglet Sauvegarde</h3>
+<p>Cet onglet gère les emplacements de sauvegarde d'Arena et leurs sauvegardes. Il facilite les opérations sur les données de sauvegarde, comme la sauvegarde automatique avant une restauration.</p>
+<p><img src="img/assist_tab_save.png" alt="Onglet Sauvegarde"></p>
+<table>
+<tr><th>Action</th><th>Description</th></tr>
+<tr><td>Liste des emplacements</td><td>Affiche la liste des emplacements de sauvegarde d'Arena.</td></tr>
+<tr><td>Sauvegarde</td><td>Sauvegarde la partie sélectionnée.</td></tr>
+<tr><td>Restaurer</td><td>Remet des données de sauvegarde depuis une sauvegarde.</td></tr>
+<tr><td>Supprimer</td><td>Supprime les sauvegardes ou les parties inutiles.</td></tr>
+</table>
+<h3 id="onglet-capture"><a name="onglet-capture"></a>Onglet Capture</h3>
+<p>Cet onglet permet de consulter les captures d'écran enregistrées avec le bouton <code>📷</code>. Les images prises en mode disposition peuvent aussi être ouvertes ici.</p>
+<p><img src="img/assist_tab_capture.png" alt="Onglet Capture"></p>
+<table>
+<tr><th>Action</th><th>Description</th></tr>
+<tr><td>Liste</td><td>Affiche les captures enregistrées.</td></tr>
+<tr><td>Aperçu</td><td>Permet de vérifier l'image sélectionnée.</td></tr>
+<tr><td>Verrouiller</td><td>Protège de la suppression les images que vous voulez conserver.</td></tr>
+<tr><td>Supprimer</td><td>Supprime l'image sélectionnée ou les images inutiles.</td></tr>
+</table>
+<h3 id="onglet-dictionnaire"><a name="onglet-dictionnaire"></a>Onglet Dictionnaire</h3>
+<p>Cet onglet permet de rechercher dans le dictionnaire de traduction et le texte de donjon d'Assist. Il sert à vérifier un mot ou une phrase rencontrés dans le jeu.</p>
+<p><img src="img/assist_tab_dict.png" alt="Onglet Dictionnaire"></p>
+<table>
+<tr><th>Mode d'affichage</th><th>Description</th></tr>
+<tr><td>Dictionnaire</td><td>Recherche par mot-clé anglais, par traduction ou par catégorie.</td></tr>
+<tr><td>Texte de donjon</td><td>Recherche et consulte les textes de donjon issus des INF.</td></tr>
+</table>
+<h3 id="onglet-manuel"><a name="onglet-manuel"></a>Onglet Manuel</h3>
+<p>Cet onglet permet de consulter, dans votre langue d'affichage, l'explication des commandes de base et du système d'Arena ainsi que celle des fonctions d'Assist. Utilisez-le pour vérifier une commande ou un terme pendant le jeu.</p>
+<p><img src="img/assist_tab_manual.png" alt="Onglet Manuel"></p>
+<table>
+<tr><th>Action</th><th>Description</th></tr>
+<tr><td>Simple / Complet / Assist</td><td>Change le contenu affiché (tableau ci-dessous).</td></tr>
+<tr><td>Recherche par mot-clé</td><td>Recherche dans le manuel.</td></tr>
+<tr><td>Liste de gauche</td><td>Passe d'un chapitre à l'autre : Histoire, Création de personnage, Commandes, Combat, etc.</td></tr>
+</table>
+<table>
+<tr><th>Mode</th><th>Contenu</th><th>Langues</th></tr>
+<tr><td>Simple</td><td>Explication du jeu (9 chapitres)</td><td>7 langues</td></tr>
+<tr><td>Complet</td><td>Traduction du manuel officiel (affichée après l'importation d'un paquet de traduction)</td><td>Actuellement le japonais uniquement</td></tr>
+<tr><td>Assist</td><td>Explication des fonctions d'Assist (utilisation de base, boîte de dialogue des paramètres, designs de statut (fiches de personnage))</td><td>7 langues</td></tr>
+</table>
+<p><b>Version complète (traduction du manuel officiel)</b></p>
+<p>Avec «&nbsp;Complet&nbsp;», vous pouvez lire la traduction du manuel officiel (le Player's Guide et son addendum). Les traductions sont distribuées, séparément de l'application, sous forme de paquet de traduction pour chaque langue d'affichage (<code>RTESArenaAssist-manual-&lt;langue&gt;.zip</code>) sur la page de téléchargement du manuel (actuellement le japonais uniquement). Lors de la première utilisation, importez-la comme suit.</p>
+<p><img src="img/assist_tab_manual_full.png" alt="Onglet Manuel (importation de la version complète)"></p>
+<ol><li>Appuyez sur «&nbsp;Ouvrir la page de téléchargement du manuel&nbsp;». La page de téléchargement s'ouvre dans le navigateur ; téléchargez le paquet de traduction de votre langue d'affichage.</li><li>Appuyez sur «&nbsp;Importer&nbsp;» et choisissez le fichier téléchargé.</li><li>Quand la liste des chapitres s'affiche, c'est terminé. Au-dessus de la liste figurent la date du paquet de traduction importé, ainsi que les accès à la page de téléchargement et à l'importation. Importer un paquet de traduction plus récent de la même façon remplace l'ancien.</li></ol>
+<p>Les images du manuel sont créées à partir de <code>Player Guide.pdf</code>, dans le dossier <code>Docs</code> de votre Arena (version Steam). Si le PDF est introuvable ou n'est pas la bonne version, seul le texte est affiché. Après avoir vérifié le «&nbsp;Dossier du jeu&nbsp;» dans les paramètres, appuyez sur «&nbsp;Recréer les images&nbsp;» pour afficher aussi les images. Une fois l'importation faite, vous pouvez supprimer le fichier téléchargé. Assist lui-même ne se connecte pas à Internet (le téléchargement se fait avec votre navigateur).</p>
+<p>«&nbsp;Complet&nbsp;» affiche aussi des liens pour ouvrir le manuel officiel (PDF en anglais) du dossier <code>Docs</code>. Si la langue d'affichage est l'anglais, seuls ces liens sont affichés à la place du paquet de traduction.</p>
+<h2 id="marche-a-suivre"><a name="marche-a-suivre"></a>Marche à suivre</h2>
+<ol><li>Lancez Arena.</li><li>Lancez RTESArenaAssist.</li><li>Au premier lancement, indiquez la langue et le dossier d'Arena, puis générez les fichiers de traduction.</li><li>Appuyez sur <code>Connecter</code> en haut à droite d'Assist pour vous connecter à Arena / DOSBox.</li><li>Appuyez sur <code>⊞</code> pour passer en mode disposition.</li><li>Restez normalement en mode disposition et passez d'un onglet à l'autre : Traduction, Carte, Journal, Historique.</li><li>Pour conserver un écran, faites une capture avec <code>📷</code> ou avec le raccourci clavier (par défaut <code>F12</code>).</li><li>En quittant, sortez du mode disposition avec <code>⊞</code>, puis, si nécessaire, appuyez sur <code>Déconnecter</code>.</li></ol>
+<p>La taille d'affichage du mode disposition, la forme de la disposition, le panneau de traduction, le dossier d'enregistrement des captures, etc. se règlent dans la boîte de dialogue des paramètres. Pour utiliser la lecture à voix haute des traductions, activez-la aussi dans l'onglet «&nbsp;Lecture à voix haute&nbsp;» de la boîte de dialogue des paramètres.</p>
+
+</body>
+</html>

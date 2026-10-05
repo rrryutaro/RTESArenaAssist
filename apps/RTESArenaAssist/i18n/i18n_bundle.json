@@ -4741,6 +4741,21 @@
           "id": 900945,
           "kind": "label",
           "debug_name": "settings.overlay_obs"
+        },
+        {
+          "id": 900946,
+          "kind": "label",
+          "debug_name": "manual.doc.assist.01_basic_guide"
+        },
+        {
+          "id": 900947,
+          "kind": "label",
+          "debug_name": "manual.doc.assist.02_settings_dialog"
+        },
+        {
+          "id": 900948,
+          "kind": "label",
+          "debug_name": "manual.doc.assist.03_status_designs"
         }
       ]
     },
@@ -52551,10 +52566,6 @@
           "text": "Attribute cards (dark)"
         },
         {
-          "id": 900845,
-          "text": "Status Designs (Character Sheets)"
-        },
-        {
           "id": 900846,
           "text": "Assist"
         },
@@ -52953,6 +52964,18 @@
         {
           "id": 900945,
           "text": "Use separate OBS capture windows (combat and spell effects)"
+        },
+        {
+          "id": 900946,
+          "text": "Basic Operation"
+        },
+        {
+          "id": 900947,
+          "text": "Settings Dialog"
+        },
+        {
+          "id": 900948,
+          "text": "Status Designs (Character Sheets)"
         },
         {
           "id": 902000,
@@ -81832,10 +81855,6 @@
           "text": "能力値カード（ダーク）"
         },
         {
-          "id": 900845,
-          "text": "ステータスのデザイン（キャラクターシート）"
-        },
-        {
           "id": 900846,
           "text": "Assist"
         },
@@ -82234,6 +82253,18 @@
         {
           "id": 900945,
           "text": "OBS で映る独立ウィンドウにする（戦闘・持続魔法）"
+        },
+        {
+          "id": 900946,
+          "text": "基本操作ガイド"
+        },
+        {
+          "id": 900947,
+          "text": "設定ダイアログ"
+        },
+        {
+          "id": 900948,
+          "text": "ステータスのデザイン（キャラクターシート）"
         },
         {
           "id": 902000,
@@ -111921,10 +111952,6 @@
           "text": "Tarjetas de atributos (oscuro)"
         },
         {
-          "id": 900845,
-          "text": "Diseños de estado (hojas de personaje)"
-        },
-        {
           "id": 900846,
           "text": "Assist"
         },
@@ -112323,6 +112350,18 @@
         {
           "id": 900945,
           "text": "Usar ventanas separadas para OBS (combate y efectos mágicos)"
+        },
+        {
+          "id": 900946,
+          "text": "Uso básico"
+        },
+        {
+          "id": 900947,
+          "text": "Configuración"
+        },
+        {
+          "id": 900948,
+          "text": "Diseños de estado (hojas de personaje)"
         },
         {
           "id": 902000,
@@ -141202,10 +141241,6 @@
           "text": "Attributkarten (dunkel)"
         },
         {
-          "id": 900845,
-          "text": "Status-Designs (Charakterbögen)"
-        },
-        {
           "id": 900846,
           "text": "Assist"
         },
@@ -141604,6 +141639,18 @@
         {
           "id": 900945,
           "text": "Separate OBS-Fenster verwenden (Kampf und Zaubereffekte)"
+        },
+        {
+          "id": 900946,
+          "text": "Grundbedienung"
+        },
+        {
+          "id": 900947,
+          "text": "Einstellungen"
+        },
+        {
+          "id": 900948,
+          "text": "Status-Designs (Charakterbögen)"
         },
         {
           "id": 902000,
@@ -170483,10 +170530,6 @@
           "text": "Cartes d'attributs (sombre)"
         },
         {
-          "id": 900845,
-          "text": "Designs de statut (fiches de personnage)"
-        },
-        {
           "id": 900846,
           "text": "Assist"
         },
@@ -170885,6 +170928,18 @@
         {
           "id": 900945,
           "text": "Utiliser des fenêtres distinctes pour OBS (combat et effets magiques)"
+        },
+        {
+          "id": 900946,
+          "text": "Utilisation de base"
+        },
+        {
+          "id": 900947,
+          "text": "Paramètres"
+        },
+        {
+          "id": 900948,
+          "text": "Designs de statut (fiches de personnage)"
         },
         {
           "id": 902000,
@@ -199764,10 +199819,6 @@
           "text": "Schede degli attributi (scuro)"
         },
         {
-          "id": 900845,
-          "text": "Design dello stato (schede del personaggio)"
-        },
-        {
           "id": 900846,
           "text": "Assist"
         },
@@ -200166,6 +200217,18 @@
         {
           "id": 900945,
           "text": "Usa finestre separate per OBS (combattimento ed effetti magici)"
+        },
+        {
+          "id": 900946,
+          "text": "Uso di base"
+        },
+        {
+          "id": 900947,
+          "text": "Impostazioni"
+        },
+        {
+          "id": 900948,
+          "text": "Design dello stato (schede del personaggio)"
         },
         {
           "id": 902000,
@@ -229045,10 +229108,6 @@
           "text": "Карточки характеристик (тёмные)"
         },
         {
-          "id": 900845,
-          "text": "Дизайны статуса (листы персонажа)"
-        },
-        {
           "id": 900846,
           "text": "Assist"
         },
@@ -229447,6 +229506,18 @@
         {
           "id": 900945,
           "text": "Использовать отдельные окна для OBS (бой и магические эффекты)"
+        },
+        {
+          "id": 900946,
+          "text": "Основы работы"
+        },
+        {
+          "id": 900947,
+          "text": "Настройки"
+        },
+        {
+          "id": 900948,
+          "text": "Дизайны статуса (листы персонажа)"
         },
         {
           "id": 902000,

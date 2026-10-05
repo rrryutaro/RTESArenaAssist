@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Guida dettagliata alla finestra Impostazioni</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — Guida dettagliata alla finestra Impostazioni</h1>
+<p>Questa pagina riporta le schermate di ogni scheda della finestra Impostazioni di RTESArenaAssist e la descrizione di ogni elemento dell'interfaccia.</p>
+<p>Le immagini mostrano la finestra Impostazioni con le impostazioni iniziali nella tua lingua di visualizzazione e con il tema «Scuro» predefinito.</p>
+<p>I valori della scheda DOSBox riflettono non solo il file di impostazioni di Assist, ma anche il risultato della lettura di <code>arena.conf</code> nel percorso predefinito. Per questo, se <code>arena.conf</code> è diverso nel tuo ambiente, cambiano anche i valori mostrati.</p>
+<h2 id="indice"><a name="indice"></a>Indice</h2>
+<ul>
+<li><a href="#scheda-generale">Scheda Generale</a></li>
+<ul>
+<li><a href="#percorsi">Percorsi</a></li>
+<li><a href="#comportamento">Comportamento</a></li>
+<li><a href="#suono-otturatore">Suono otturatore</a></li>
+<li><a href="#tasto-cattura">Tasto di scelta rapida per la cattura</a></li>
+<li><a href="#aggiornamenti">Aggiornamenti</a></li>
+</ul>
+<li><a href="#scheda-schermo">Scheda Schermo</a></li>
+<ul>
+<li><a href="#barra-di-connessione">Visualizzazione barra di connessione</a></li>
+<li><a href="#contrassegni-oggetti">Contrassegni elenco oggetti</a></li>
+<li><a href="#carattere-pannello">Carattere del pannello di traduzione</a></li>
+<li><a href="#disposizione">Disposizione</a></li>
+</ul>
+<li><a href="#scheda-mappa">Scheda Mappa</a></li>
+<ul>
+<li><a href="#impostazioni-mappa">Impostazioni visualizzazione mappa</a></li>
+<li><a href="#visualizzazione-campo">Visualizzazione estesa del campo</a></li>
+<li><a href="#rappresentazione-colori">Rappresentazione e colori della mappa</a></li>
+</ul>
+<li><a href="#scheda-traduzione">Scheda Traduzione</a></li>
+<ul>
+<li><a href="#comportamento-traduzione">Comportamento scheda/pannello Traduzione</a></li>
+<li><a href="#traduzione-avanzate">Scheda Traduzione — Avanzate</a></li>
+</ul>
+<li><a href="#scheda-combattimento">Scheda Informazioni di combattimento</a></li>
+<ul>
+<li><a href="#schermata-arena">Schermata Arena</a></li>
+<li><a href="#schermata-arena-incantesimi">Schermata Arena · Incantesimi attivi</a></li>
+<li><a href="#combattimento-scheda-traduzione">Combattimento nella scheda Traduzione</a></li>
+<li><a href="#combattimento-pannello">Combattimento nel pannello di traduzione</a></li>
+<li><a href="#impostazioni-generali-messaggi">Impostazioni generali e messaggi</a></li>
+</ul>
+<li><a href="#scheda-lettura">Scheda Lettura ad Alta Voce</a></li>
+<ul>
+<li><a href="#lettura-ad-alta-voce">Lettura ad Alta Voce</a></li>
+<li><a href="#contenuti-da-leggere">Contenuti da leggere</a></li>
+<li><a href="#altro-registro">Altro / Registro</a></li>
+<li><a href="#nome-personaggio">Lettura del nome del personaggio</a></li>
+</ul>
+<li><a href="#scheda-trucchi">Scheda Trucchi</a></li>
+<li><a href="#scheda-dosbox">Scheda DOSBox</a></li>
+<ul>
+<li><a href="#file-di-configurazione">File di configurazione / Comportamento finestra</a></li>
+<li><a href="#finestra-schermo">Finestra / Schermo</a></li>
+<li><a href="#video">Video</a></li>
+<li><a href="#prestazioni">Prestazioni</a></li>
+<li><a href="#audio">Audio</a></li>
+</ul>
+</ul>
+<h2 id="scheda-generale"><a name="scheda-generale"></a>Scheda Generale</h2>
+<p>È la scheda in cui impostare percorsi, comportamento di base, suono dell'otturatore e tasto di scelta rapida per la cattura, e in cui controllare la tua versione.</p>
+<p><img src="img/settings_dark_tab_01.png" alt="Scheda Generale"></p>
+<h3 id="percorsi"><a name="percorsi"></a>Percorsi</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Cartella di gioco:</code></td><td>Vuoto</td><td>La cartella in cui si trovano <code>ARENA.EXE</code> e i file di salvataggio di Arena. Se non è impostata, non si possono usare la gestione dei salvataggi e la lettura dei dati di gioco</td></tr>
+<tr><td><code>Cartella di backup:</code></td><td>Vuoto</td><td>Dove salvare i backup dei salvataggi. Se è vuoto, si usa <code>saves_backup/</code> accanto al file di impostazioni dello strumento</td></tr>
+<tr><td><code>Cartella delle catture:</code></td><td>Vuoto</td><td>Dove salvare gli screenshot. Se è vuoto, si usa la stessa cartella del backup</td></tr>
+<tr><td><code>Sfoglia...</code></td><td>-</td><td>Seleziona ciascuna cartella</td></tr>
+</table>
+<h3 id="comportamento"><a name="comportamento"></a>Comportamento</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Intervallo di polling:</code></td><td><code>100 ms</code></td><td>Intervallo con cui si controllano la schermata di DOSBox e lo stato della memoria. Il valore iniziale è breve per cogliere più facilmente i messaggi brevi</td></tr>
+<tr><td><code>Conferma prima di eliminare:</code></td><td>ON</td><td>Mostra una finestra di conferma quando si eliminano catture o backup</td></tr>
+<tr><td><code>Sempre in Primo Piano:</code></td><td>OFF</td><td>Mostra la finestra principale di Assist davanti alle altre finestre</td></tr>
+<tr><td><code>Tema:</code></td><td>Scuro</td><td>Sceglie il tema dei colori dell'interfaccia</td></tr>
+<tr><td><code>Lingua:</code></td><td>Automatica (sistema)</td><td>La lingua dell'interfaccia. Se non è impostata, viene determinata automaticamente in base alla lingua del sistema; la modifica ha effetto dopo il riavvio dell'applicazione</td></tr>
+</table>
+<h3 id="suono-otturatore"><a name="suono-otturatore"></a>Suono otturatore</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Attivo</code></td><td>ON</td><td>Riproduce un effetto sonoro quando si salva uno screenshot</td></tr>
+<tr><td><code>Tipo:</code></td><td><code>携帯電話カメラ（標準）</code> (fotocamera di un telefono cellulare, standard)</td><td>Il suono dell'otturatore da riprodurre. Si può scegliere tra standard, versione breve, doppio, acuti accentuati e morbido (i nomi nell'elenco sono mostrati in giapponese in tutte le lingue)</td></tr>
+<tr><td><code>Volume:</code></td><td><code>30 %</code></td><td>Il volume di riproduzione del suono dell'otturatore</td></tr>
+<tr><td><code>▶</code></td><td>-</td><td>Riproduce un'anteprima del suono dell'otturatore selezionato</td></tr>
+</table>
+<h3 id="tasto-cattura"><a name="tasto-cattura"></a>Tasto di scelta rapida per la cattura</h3>
+<p>Puoi salvare una cattura semplicemente premendo il tasto, mentre il focus resta sulla schermata di gioco (DOSBox). Serve per catturare i messaggi che scompaiono dopo pochi secondi.</p>
+<table>
+<tr><th>Voce</th><th>Valore predefinito</th><th>Descrizione</th></tr>
+<tr><td><code>Attivo</code></td><td>ON</td><td>Usa il tasto di scelta rapida per catturare</td></tr>
+<tr><td><code>Ctrl</code> / <code>Alt</code> / <code>Shift</code></td><td>OFF</td><td>Attivali (ON) se vuoi combinare dei tasti modificatori</td></tr>
+<tr><td><code>Tasto:</code></td><td><code>F12</code></td><td>Il tasto da usare. Si può scegliere tra F5–F12, PrintScreen, Pause, ScrollLock, Insert, Home, End, PageUp e PageDown</td></tr>
+</table>
+<ul>
+<li>Il tasto premuto non viene passato al gioco. I tasti usati dal gioco o da DOSBox (F1 / F3 / F4 / F8, Ctrl+F5–F12, Alt+F12, Alt+Pause) non si possono scegliere</li>
+<li>Se un'altra applicazione usa lo stesso tasto come scorciatoia, finché questa applicazione è in esecuzione la scorciatoia di quell'altra applicazione non funziona. Scegliendo un tasto diverso le due cose possono coesistere</li>
+<li>Se non è stato possibile registrare il tasto, viene indicato nella barra di stato. Anche in quel caso puoi catturare con il pulsante della fotocamera nella barra degli strumenti</li>
+</ul>
+<h3 id="aggiornamenti"><a name="aggiornamenti"></a>Aggiornamenti</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Versione attuale:</code></td><td>-</td><td>La versione di Assist che stai usando</td></tr>
+<tr><td><code>Apri la pagina delle versioni</code></td><td>-</td><td>Apre nel browser la pagina delle versioni di Assist (l'elenco di Releases). Per sapere se c'è una versione nuova, controlla qui</td></tr>
+</table>
+<p>Assist non si connette a Internet, quindi non controlla gli aggiornamenti e non si aggiorna da solo.</p>
+<h2 id="scheda-schermo"><a name="scheda-schermo"></a>Scheda Schermo</h2>
+<p>È la scheda in cui impostare la barra di connessione, i contrassegni dell'elenco oggetti, il carattere del pannello di traduzione e la disposizione.</p>
+<p><img src="img/settings_dark_tab_02.png" alt="Scheda Schermo"></p>
+<h3 id="barra-di-connessione"><a name="barra-di-connessione"></a>Visualizzazione barra di connessione</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Mostra il nome della schermata riconosciuta:</code></td><td>ON</td><td>Mostra nella barra di connessione il nome della schermata attualmente riconosciuta</td></tr>
+<tr><td><code>Mostra informazioni IMG:</code></td><td>ON</td><td>Mostra nella barra di connessione le informazioni sull'IMG rilevato</td></tr>
+<tr><td><code>Mostra versione:</code></td><td>ON</td><td>Mostra la versione dell'applicazione nella barra di connessione e nella barra di stato</td></tr>
+</table>
+<h3 id="contrassegni-oggetti"><a name="contrassegni-oggetti"></a>Contrassegni elenco oggetti</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Equipaggiato:</code></td><td><code>Ｅ</code></td><td>Il contrassegno di un carattere mostrato a sinistra degli oggetti equipaggiati</td></tr>
+<tr><td><code>Equipaggiabile:</code></td><td>Vuoto</td><td>Il contrassegno degli oggetti equipaggiabili. Il valore iniziale è vuoto, quindi non viene mostrato nulla</td></tr>
+<tr><td><code>Non equipaggiabile:</code></td><td><code>✕</code></td><td>Il contrassegno di un carattere mostrato a sinistra degli oggetti che non si possono equipaggiare</td></tr>
+</table>
+<h3 id="carattere-pannello"><a name="carattere-pannello"></a>Carattere del pannello di traduzione</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Rispecchia il lato destro da quello sinistro</code></td><td>OFF</td><td>Se attivo (ON), il carattere e la dimensione del lato dell'originale diventano uguali a quelli del lato della traduzione</td></tr>
+<tr><td><code>Sinistra (Traduzione):</code></td><td>Predefinito dell'app / <code>14 pt</code></td><td>Il carattere e la dimensione usati per il testo tradotto. Se il nome del carattere non è stato salvato, viene scelto il carattere predefinito dell'app nell'ambiente di esecuzione</td></tr>
+<tr><td><code>Destra (Originale):</code></td><td>Predefinito dell'app / <code>12 pt</code></td><td>Il carattere e la dimensione usati per il testo originale in inglese. Poiché la sincronizzazione è OFF, si possono impostare separatamente da quelli del lato della traduzione</td></tr>
+</table>
+<h3 id="disposizione"><a name="disposizione"></a>Disposizione</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Modalità di tracciamento:</code></td><td>Nessun tracciamento</td><td>Sceglie se, quando si sposta una delle due finestre (DOSBox o Assist), l'altra la deve seguire</td></tr>
+<tr><td><code>Angolo DOSBox:</code></td><td>In alto a sinistra</td><td>L'angolo dello schermo di riferimento in cui posizionare DOSBox con la disposizione immediata e nella modalità layout</td></tr>
+<tr><td><code>Forma della disposizione:</code></td><td>Forma 2: In basso a piena larghezza + In alto a destra (predefinita)</td><td>La forma di suddivisione tra DOSBox e l'area dei pannelli di Assist. La forma 2 è il layout standard, che usa l'alto a destra e il basso a piena larghezza</td></tr>
+<tr><td><code>Dimensione della disposizione:</code></td><td><code>1920 × 1080</code></td><td>La dimensione dell'area complessiva nella modalità layout</td></tr>
+</table>
+<h2 id="scheda-mappa"><a name="scheda-mappa"></a>Scheda Mappa</h2>
+<p>È la scheda in cui impostare la mappa di esplorazione e la visualizzazione estesa del campo.</p>
+<p><img src="img/settings_dark_tab_03.png" alt="Scheda Mappa"></p>
+<h3 id="impostazioni-mappa"><a name="impostazioni-mappa"></a>Impostazioni visualizzazione mappa</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Visuale attraverso i muri sulla mappa:</code></td><td>OFF</td><td>Se OFF, le aree non confermate oltre i muri non vengono registrate sulla mappa. Se ON, è più vicino all'Arena originale e vengono registrate anche le aree oltre i muri</td></tr>
+<tr><td><code>Mostra le piattaforme rialzate a tutta altezza come muri:</code></td><td>ON</td><td>Mostra con il colore dei muri le piattaforme rialzate che occupano tutto lo spazio dal pavimento al soffitto. Cambia solo il modo di distinguerle nella visualizzazione e non influisce su come viene bloccata la visuale. Le piattaforme rialzate non a tutta altezza restano mostrate come piattaforme rialzate</td></tr>
+<tr><td><code>Altezza alla quale le piattaforme rialzate bloccano la visuale:</code></td><td><code>0 %</code></td><td>Considerando l'altezza del soffitto come 100%, le piattaforme rialzate la cui sommità raggiunge o supera questa altezza bloccano la visuale sulla mappa. Con 0%, tutte le piattaforme rialzate bloccano la visuale</td></tr>
+<tr><td><code>Mostra il pavimento nelle aree inesplorate:</code></td><td>OFF</td><td>Se OFF, mostra il colore del pavimento solo per le celle già rivelate, nascondendo la forma dell'area non esplorata. Se ON, mostra l'intera mappa con il colore di sfondo della pergamena</td></tr>
+<tr><td><code>Centra sul personaggio:</code></td><td>ON</td><td>Quando il personaggio si muove, la mappa si centra automaticamente su di lui. Da fermo si può spostare la mappa a mano</td></tr>
+<tr><td><code>Mostra le linee della griglia:</code></td><td>ON</td><td>Mostra le linee della griglia ai confini delle celle</td></tr>
+<tr><td><code>Mostra i confini dei blocchi:</code></td><td>ON</td><td>Nella mappa del campo evidenzia i confini dei blocchi, in unità di 64 caselle</td></tr>
+<tr><td><code>Mostra le coordinate dei blocchi:</code></td><td>ON</td><td>Mostra le coordinate di ogni blocco sulla mappa del campo, per aiutare a capire la posizione</td></tr>
+<tr><td><code>Mostra i confini di ricentraggio:</code></td><td>OFF</td><td>Mostra con una linea tratteggiata i confini di ricentraggio della mappa del campo. È una visualizzazione ausiliaria per l'indagine e il controllo della posizione</td></tr>
+<tr><td><code>Dimensione carattere coordinate blocco:</code></td><td><code>10 pt</code></td><td>La dimensione del carattere delle etichette delle coordinate dei blocchi</td></tr>
+</table>
+<h3 id="visualizzazione-campo"><a name="visualizzazione-campo"></a>Visualizzazione estesa del campo</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Attiva la visualizzazione estesa:</code></td><td>ON</td><td>L'interruttore principale della visualizzazione estesa della mappa del campo. Se OFF, la visualizzazione si avvicina alla mappa automatica del gioco</td></tr>
+<tr><td><code>Distingui la strada dal muro:</code></td><td>ON</td><td>Disegna con colori diversi le strade percorribili e le parti non percorribili, come edifici e muri</td></tr>
+<tr><td><code>Mostra i bordi dei muri:</code></td><td>ON</td><td>Mostra il contorno dei muri e il terreno di tipo edge (bordo)</td></tr>
+<tr><td><code>Distingui recinzioni/siepi/giardini:</code></td><td>ON</td><td>Distingue con linee di collegamento il terreno di tipo edge (bordo) come recinzioni, siepi e giardini</td></tr>
+<tr><td><code>Mostra le colture:</code></td><td>ON</td><td>Mostra le colture, come il mais e i campi coltivati, con colori o contrassegni dedicati</td></tr>
+<tr><td><code>Mostra tutti gli ingressi degli edifici:</code></td><td>ON</td><td>Mostra in rosso anche gli ingressi di case, taverne, templi e porte della città. Gli ingressi di cripte, torri e dungeon sono rossi indipendentemente da questa impostazione</td></tr>
+<tr><td><code>Mostra i punti di riferimento (alberi, cespugli, ecc.):</code></td><td>OFF</td><td>Sovrappone contrassegni semplificati per alberi, cespugli, rocce, tombe, rovine e così via. Poiché sono numerosi e rendono la mappa più difficile da leggere, il valore iniziale è OFF</td></tr>
+</table>
+<h3 id="rappresentazione-colori"><a name="rappresentazione-colori"></a>Rappresentazione e colori della mappa</h3>
+<p>La mappa del gioco disegna senza distinguerli, per esempio, i passaggi che corrono sotto i muri. Qui imposti se disegnarli distinguendoli e il colore di ogni elemento. Se disattivi «Rappresenta» in una riga, quell'elemento torna alla stessa visualizzazione della mappa del gioco (per i tesori, se è disattivato non viene mostrato nulla).</p>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Porte segrete:</code></td><td>ON</td><td>Mostra con un colore dedicato le porte segrete scoperte. Finché non vengono scoperte restano muri</td></tr>
+<tr><td><code>Acqua sotto i muri:</code></td><td>ON</td><td>Mostra con un colore dedicato i canali d'acqua che passano sotto i muri. Non vengono mostrati finché non li fai emergere passandoci davvero</td></tr>
+<tr><td><code>Passaggi sotto i muri:</code></td><td>ON</td><td>Mostra i passaggi che corrono sotto i muri. Non vengono mostrati finché non li fai emergere passandoci davvero</td></tr>
+<tr><td><code>Lava sotto i muri:</code></td><td>ON</td><td>Mostra con un colore dedicato la lava che passa sotto i muri. Non viene mostrata finché non la fai emergere passandoci davvero</td></tr>
+<tr><td><code>Tesori:</code></td><td>ON</td><td>Sovrappone un contrassegno nei punti in cui hai ottenuto un tesoro. Nel campo a destra puoi cambiare il carattere del contrassegno. Quando «Rivela mappa» nella scheda Trucchi è ON, mostra tutti i punti in cui c'è un tesoro, indipendentemente dal fatto che tu lo abbia ottenuto o no</td></tr>
+<tr><td><code>Chiavi e oggetti delle missioni:</code></td><td>ON</td><td>Tra i tesori, mostra con un altro colore i contrassegni delle chiavi e degli oggetti delle missioni. Se OFF, vengono mostrati con lo stesso colore dei tesori. Se i tesori sono OFF, non vengono mostrati</td></tr>
+<tr><td><code>Colori degli ingressi delle strutture:</code></td><td>ON</td><td>Nella mappa della città, sostituisce con un colore per ogni struttura le celle del colore degli edifici adiacenti agli ingressi di locande, negozi di equipaggiamento, templi e gilde dei maghi. Il colore degli ingressi rossi non cambia. Il colore di ciascuna struttura si può cambiare nei campi sottostanti</td></tr>
+<tr><td><code>Passaggi sottostanti:</code></td><td><code>Mostra come condotti</code> / intensità <code>100 %</code></td><td>Mostra i passaggi che corrono sotto muri e piattaforme rialzate come condotti che attraversano il centro delle celle. Se OFF, si colora l'intera cella come prima. Il colore dei condotti è lo stesso dei fori e si congiunge ai fori senza interruzioni. Abbassando <code>Intensità</code> i condotti diventano più discreti</td></tr>
+</table>
+<p>Facendo clic sul campione di colore a destra di ogni voce puoi scegliere un colore qualsiasi. I piccoli pulsanti accanto sono colori proposti, facili da scegliere, e <code>Predef.</code> è il pulsante che ripristina il colore originale. Con lo stesso metodo puoi cambiare anche i colori degli elementi originali del gioco: muri, piattaforme rialzate, porte e ingressi, scale (su e giù), acqua, voragini asciutte e lava (per impostazione predefinita sono gli stessi colori del gioco).</p>
+<h2 id="scheda-traduzione"><a name="scheda-traduzione"></a>Scheda Traduzione</h2>
+<p>È la scheda in cui impostare la visualizzazione ausiliaria del pannello di traduzione e della scheda Traduci.</p>
+<p><img src="img/settings_dark_tab_04.png" alt="Scheda Traduzione"></p>
+<h3 id="comportamento-traduzione"><a name="comportamento-traduzione"></a>Comportamento scheda/pannello Traduzione</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Mantieni il messaggio fino al successivo:</code></td><td>OFF</td><td>Indica se i messaggi dei trigger e delle interazioni con gli oggetti restano nel pannello di traduzione fino all'arrivo del messaggio successivo</td></tr>
+<tr><td><code>Visualizzazione di riserva quando inattivo:</code></td><td>Schermata mappa</td><td>Sceglie che cosa mostrare in tutta la scheda Traduci quando si sta esplorando e non c'è un testo tradotto. Per impostazione predefinita ha la precedenza la schermata della mappa</td></tr>
+</table>
+<h3 id="traduzione-avanzate"><a name="traduzione-avanzate"></a>Scheda Traduzione — Avanzate</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Emula il comportamento a pannello nascosto nella scheda Traduzione:</code></td><td>OFF</td><td>Se ON, mostra nella scheda Traduci i risultati della traduzione e i messaggi di dialogo, come quando il pannello di traduzione è nascosto. È un'impostazione avanzata per la verifica</td></tr>
+</table>
+<h2 id="scheda-combattimento"><a name="scheda-combattimento"></a>Scheda Informazioni di combattimento</h2>
+<p>Imposta separatamente dove mostrare il combattimento e gli incantesimi attivi. Le nuove funzioni di visualizzazione, lettura ad alta voce e salvataggio sono OFF per impostazione predefinita. I valori salvati dalle precedenti versioni di sviluppo vengono mantenuti così come sono. I testi mostrati sono disponibili in giapponese, inglese, spagnolo, tedesco, francese, italiano e russo.</p>
+<p><img src="img/settings_dark_tab_05.png" alt="Scheda Informazioni di combattimento"></p>
+<h3 id="schermata-arena"><a name="schermata-arena"></a>Schermata Arena</h3>
+<table>
+<tr><th>Voce</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Usa finestre separate per OBS (combattimento ed effetti magici)</code></td><td>OFF</td><td>Riunisce le informazioni di combattimento e gli incantesimi attivi in un'unica finestra selezionabile con l'acquisizione finestra di OBS</td></tr>
+<tr><td><code>Mostra informazioni di combattimento</code></td><td>OFF</td><td>Mostra in alto nella schermata l'ultimo avversario con cui si è scambiato un attacco, già incontrato e attualmente in vista, e a destra gli altri nemici vivi già incontrati, anche se fuori dalla visuale. Puoi controllare salute, fatica, Punti Incantesimo e i danni inflitti o le sconfitte. I danni subiti vengono mostrati sul bordo inferiore dell'area di esplorazione</td></tr>
+<tr><td><code>Durata esperienza:</code></td><td>5 s</td><td>Mostra in basso a destra l'esperienza nel momento in cui la ottieni e fa scomparire ogni riquadro dopo il numero di secondi indicato. Se ne ottieni altra di seguito, i riquadri più vecchi vengono spostati a sinistra (da 1 a 60 secondi)</td></tr>
+<tr><td><code>Mostra un bordo tenue quando la salute è bassa:</code></td><td>OFF</td><td>Quando la salute scende alla percentuale indicata o al di sotto, fa lampeggiare debolmente il bordo della schermata di esplorazione. Si può attivare anche senza usare la visualizzazione dei nemici delle informazioni di combattimento</td></tr>
+<tr><td><code>Soglia di salute:</code></td><td>25%</td><td>La percentuale da cui inizia la visualizzazione del bordo per salute bassa (da 1 a 99% della salute massima)</td></tr>
+</table>
+<p>La visualizzazione dei danni subiti scompare da sola circa 5 secondi dopo che si sono verificati. La visuale dei nemici usa lo stesso criterio in qualsiasi luogo. Se la mappa o le coordinate non sono determinate, i nemici non vengono mostrati per congettura.</p>
+<p>Per registrare con OBS, attiva questa impostazione, poi in «Acquisizione finestra» scegli la finestra «<code>RTESArenaAssist オーバーレイ</code>» (il nome della finestra è lo stesso in tutte le lingue; la seconda parola significa «overlay»), consenti la trasparenza e sovrapponilo all'immagine del gioco. Le informazioni di combattimento e gli incantesimi attivi compaiono nella stessa sorgente.</p>
+<h3 id="schermata-arena-incantesimi"><a name="schermata-arena-incantesimi"></a>Schermata Arena · Incantesimi attivi</h3>
+<table>
+<tr><th>Voce</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Mostra gli incantesimi attivi in alto a sinistra</code></td><td>OFF</td><td>Mostra lo stato di Luce, Scudo, Forza potenziata, Resistenza al fuoco e Levitazione</td></tr>
+<tr><td><code>Stile di visualizzazione:</code></td><td>E</td><td>Si sceglie tra A «Nome e valore residuo», B «Nome e barra orizzontale», C «Icona e barra orizzontale», D «Icona e ombra in senso orario», E «Icona, nome, valore e barra sottile» e F «Riquadro compatto»</td></tr>
+<tr><td><code>Aggiornamento degli effetti temporizzati:</code></td><td>Turni (classico)</td><td>Sceglie se aggiornare Luce, Resistenza al fuoco e Levitazione per turni o con un numero approssimativo di secondi, ogni secondo. I secondi vengono corretti in base all'intervallo di avanzamento nel gioco, quindi se la velocità di avanzamento cambia, per esempio con DETAIL, non è detto che il rapporto sia fisso</td></tr>
+</table>
+<p>Scudo indica la protezione rimasta e Forza potenziata il valore di aumento. Nelle connessioni a partita già in corso, in cui non si può verificare il valore massimo, la barra può essere omessa. La visualizzazione in secondi è approssimativa, e la fine dell'effetto segue lo stato nel gioco.</p>
+<h3 id="combattimento-scheda-traduzione"><a name="combattimento-scheda-traduzione"></a>Combattimento nella scheda Traduzione</h3>
+<table>
+<tr><th>Voce</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Modalità di visualizzazione:</code></td><td>Disattivato (vista normale)</td><td>Si sceglie tra mantenere la visualizzazione normale / usare insieme la visualizzazione normale e le informazioni di combattimento / mostrare le informazioni di combattimento a tutto schermo</td></tr>
+<tr><td><code>Formato combattimento:</code></td><td>Indicatori dei nemici</td><td>Se mostri le informazioni di combattimento, sceglie se come testo o come indicatori dei nemici</td></tr>
+</table>
+<h3 id="combattimento-pannello"><a name="combattimento-pannello"></a>Combattimento nel pannello di traduzione</h3>
+<table>
+<tr><th>Voce</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Mostra messaggi di combattimento</code></td><td>OFF</td><td>Mostra nel pannello di traduzione i testi del combattimento. Se compaiono i tradizionali messaggi, conversazioni o elenchi, hanno la precedenza</td></tr>
+<tr><td><code>Messaggi recenti:</code></td><td>10 voci</td><td>Mostra da 1 a 50 testi di combattimento recenti. Quando si supera il numero, i testi più vecchi vengono tolti e ne vengono aggiunti di nuovi</td></tr>
+</table>
+<h3 id="impostazioni-generali-messaggi"><a name="impostazioni-generali-messaggi"></a>Impostazioni generali e messaggi</h3>
+<table>
+<tr><th>Voce</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Leggi i nuovi messaggi di combattimento</code></td><td>OFF</td><td>Se la lettura ad alta voce è attivata in generale, legge i nuovi testi di combattimento in ordine di comparsa. Non esclude i testi identici recenti e con il danno successivo non interrompe la lettura precedente</td></tr>
+<tr><td><code>Alla sconfitta, salta i danni in attesa di quel nemico</code></td><td>ON</td><td>Alla sconfitta, interrompe la lettura in corso e salta quella non ancora letta dei danni inflitti e subiti con quel nemico. La lettura degli altri nemici continua</td></tr>
+<tr><td><code>Salva registro di combattimento</code></td><td>OFF</td><td>Salva la cronologia del combattimento separatamente dal registro normale. L'interruttore nella scheda Registro viene mostrato solo se ci sono dati registrati</td></tr>
+<tr><td><code>Distingui nemici dello stesso tipo</code></td><td>OFF</td><td>Solo quando ci sono più nemici con lo stesso nome, aggiunge dopo il nome un segno per distinguerli</td></tr>
+<tr><td><code>Tipo di identificatore:</code></td><td>Lettere (A, B…)</td><td>Si sceglie tra A, B… e 1, 2…</td></tr>
+<tr><td><code>Modelli dei messaggi di combattimento</code></td><td>Il testo predefinito di ogni lingua</td><td>Modifica i testi di incontro, danni al nemico, danni a se stessi, sconfitta ed esperienza. Un campo vuoto o un segnaposto non utilizzabile torna al testo predefinito</td></tr>
+</table>
+<h2 id="scheda-lettura"><a name="scheda-lettura"></a>Scheda Lettura ad Alta Voce</h2>
+<p>È la scheda in cui impostare la lettura ad alta voce dei testi tradotti, che cosa leggere, la visualizzazione del registro e la pronuncia del nome del personaggio.</p>
+<p><img src="img/settings_dark_tab_06.png" alt="Scheda Lettura ad Alta Voce"></p>
+<h3 id="lettura-ad-alta-voce"><a name="lettura-ad-alta-voce"></a>Lettura ad Alta Voce</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Attiva la sintesi vocale:</code></td><td>OFF</td><td>Attiva nel suo insieme la funzione di lettura ad alta voce dei testi tradotti</td></tr>
+<tr><td><code>Motore:</code></td><td>Windows (SAPI5)</td><td>Sceglie il motore di lettura. VOICEVOX si può scegliere se il motore VOICEVOX locale è in esecuzione</td></tr>
+<tr><td><code>Voce alternativa:</code></td><td>ON</td><td>Se hai scelto VOICEVOX e non è utilizzabile, legge con la voce di Windows le frasi che non è stato possibile leggere. Se OFF, non legge</td></tr>
+<tr><td><code>Voce:</code></td><td>(predefinita)</td><td>Compare quando il motore è Windows (SAPI5). La voce SAPI da usare. Con (predefinita) si usa la voce predefinita del sistema operativo</td></tr>
+<tr><td><code>Personaggio:</code></td><td>Il personaggio con ID di stile 0</td><td>Compare quando il motore è VOICEVOX. Il personaggio VOICEVOX da usare per la lettura</td></tr>
+<tr><td><code>Stile:</code></td><td>ID di stile 0</td><td>Compare quando il motore è VOICEVOX. Lo stile di voce del personaggio scelto</td></tr>
+<tr><td><code>🔊 Prova</code></td><td>-</td><td>Compare quando il motore è VOICEVOX. Legge a titolo di prova una frase breve con il personaggio e lo stile scelti</td></tr>
+<tr><td><code>Velocità:</code></td><td><code>標準</code> (standard)</td><td>La velocità di lettura (i valori nell'elenco sono mostrati in giapponese in tutte le lingue)</td></tr>
+<tr><td><code>Volume:</code></td><td><code>100</code></td><td>Il volume di lettura. Si imposta da 0 a 100</td></tr>
+<tr><td><code>Interrompi:</code></td><td>ON</td><td>Quando la visualizzazione cambia, interrompe la lettura precedente e legge il nuovo contenuto</td></tr>
+<tr><td><code>Interrompi alla chiusura:</code></td><td>OFF</td><td>Quando chiudi una finestra di dialogo o una conversazione, ferma la lettura in corso</td></tr>
+<tr><td><code>Sopprimi ripetizioni:</code></td><td>OFF</td><td>Non legge ripetutamente lo stesso contenuto (per esempio i messaggi ricorrenti dei dungeon). Resta comunque nel registro</td></tr>
+<tr><td><code>Evidenzia lettura:</code></td><td>OFF</td><td>Colora la frase in lettura (pannello di traduzione, scheda Traduci, registro)</td></tr>
+</table>
+<p>Se VOICEVOX non viene trovato, compare «Avvia VOICEVOX per selezionarlo (127.0.0.1:50021).». Dopo aver avviato VOICEVOX, riapri la finestra Impostazioni e potrai scegliere il personaggio e lo stile.</p>
+<h3 id="contenuti-da-leggere"><a name="contenuti-da-leggere"></a>Contenuti da leggere</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Situazione (trigger, ingresso in un edificio, eventi, varie finestre di dialogo)</code></td><td>ON</td><td>Include nella lettura i testi che spiegano la situazione: trigger, ingresso in un edificio, eventi, varie finestre di dialogo</td></tr>
+<tr><td><code>Conversazione (risposte degli NPC, battute dei negozianti, palazzo, risposte alla contrattazione del prezzo)</code></td><td>ON</td><td>Include nella lettura i testi delle conversazioni: risposte degli NPC, battute dei negozianti, palazzo, risposte alla contrattazione del prezzo</td></tr>
+</table>
+<p>Le visualizzazioni di sistema, come menu, elenchi e inserimento di numeri, non vengono lette ad alta voce.</p>
+<h3 id="altro-registro"><a name="altro-registro"></a>Altro / Registro</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Mostra un'icona altoparlante accanto al testo (clic per leggere ad alta voce)</code></td><td>OFF</td><td>Mostra accanto al testo visualizzato un'icona di altoparlante per la lettura con un clic</td></tr>
+<tr><td><code>Mostra anche il testo originale nel registro (OFF = solo traduzione)</code></td><td>OFF</td><td>Nel registro delle traduzioni riporta accanto anche il testo originale in inglese. Se OFF, mostra solo la traduzione</td></tr>
+<tr><td><code>Numero massimo di voci nel registro:</code></td><td><code>2000</code></td><td>Il numero massimo di voci di registro da conservare. Le voci più vecchie oltre il limite vengono eliminate automaticamente</td></tr>
+<tr><td><code>Mostra la data e l'ora di registrazione nel registro</code></td><td>ON</td><td>Mostra la data e l'ora di registrazione nelle voci del registro</td></tr>
+<tr><td><code>Formato data/ora:</code></td><td><code>yyyy/MM/dd(aaa) HH:mm:ss</code></td><td>Il formato di visualizzazione della data e dell'ora del registro. Si può scegliere un formato predefinito o personalizzato</td></tr>
+</table>
+<h3 id="nome-personaggio"><a name="nome-personaggio"></a>Lettura del nome del personaggio</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Pronuncia del nome:</code></td><td>Vuoto</td><td>Sostituisce con la pronuncia indicata, solo durante la lettura ad alta voce, il nome del personaggio ottenuto automaticamente dal gioco. Nella visualizzazione e nel registro resta il nome originale</td></tr>
+</table>
+<h2 id="scheda-trucchi"><a name="scheda-trucchi"></a>Scheda Trucchi</h2>
+<p>È la scheda in cui impostare le funzioni di supporto, come la modifica dei valori nel gioco e quelle che mantengono i valori sempre al MASSIMO.</p>
+<p><img src="img/settings_dark_tab_07.png" alt="Scheda Trucchi"></p>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Attiva la modalità trucchi:</code></td><td>OFF</td><td>L'interruttore principale di tutte le funzioni di trucco. Attivando solo questo non cambia nulla, a meno che non attivi anche le sotto-impostazioni</td></tr>
+<tr><td><code>Modifica stato:</code></td><td>OFF</td><td>Consente di modificare lo stato, come la modifica degli attributi</td></tr>
+<tr><td><code>Rivela mappa:</code></td><td>OFF</td><td>Con i trucchi attivi, mostra l'intera mappa</td></tr>
+<tr><td><code>Salute sempre al MASSIMO:</code></td><td>OFF</td><td>Con i trucchi attivi, se la salute attuale è inferiore al massimo, la riporta al massimo</td></tr>
+<tr><td><code>Affaticamento sempre al MASSIMO:</code></td><td>OFF</td><td>Con i trucchi attivi, riporta la fatica attuale al massimo</td></tr>
+<tr><td><code>Punti Incantesimo sempre al MASSIMO:</code></td><td>OFF</td><td>Con i trucchi attivi, riporta i Punti Incantesimo attuali al massimo</td></tr>
+</table>
+<h2 id="scheda-dosbox"><a name="scheda-dosbox"></a>Scheda DOSBox</h2>
+<p>È la scheda che legge <code>arena.conf</code> di DOSBox e in cui impostare la visualizzazione della finestra, il video, le prestazioni e l'audio.</p>
+<p><img src="img/settings_dark_tab_08.png" alt="Scheda DOSBox"></p>
+<h3 id="file-di-configurazione"><a name="file-di-configurazione"></a>File di configurazione / Comportamento finestra</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>File di configurazione</code></td><td><code>arena.conf</code> nel percorso predefinito</td><td>Il file di impostazioni di DOSBox. Se l'impostazione di Assist è vuota, viene letto come percorso predefinito quello della disposizione standard di Arena versione Steam</td></tr>
+<tr><td><code>Sfoglia...</code></td><td>-</td><td>Seleziona un <code>arena.conf</code> qualsiasi</td></tr>
+<tr><td><code>Sempre in primo piano:</code></td><td>OFF</td><td>Mostra la finestra di DOSBox davanti alle altre finestre</td></tr>
+</table>
+<h3 id="finestra-schermo"><a name="finestra-schermo"></a>Finestra / Schermo</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Dimensione finestra:</code></td><td><code>1024×768</code></td><td><code>windowresolution</code>. Si sceglie tra i valori predefiniti; scegliendo quello personalizzato si modificano i campi numerici W/H</td></tr>
+<tr><td><code>Risoluzione a schermo intero:</code></td><td><code>desktop</code></td><td><code>fullresolution</code>. Indica la risoluzione a schermo intero</td></tr>
+<tr><td><code>Avvia a schermo intero:</code></td><td>OFF</td><td><code>fullscreen</code>. Indica se avviare DOSBox a schermo intero</td></tr>
+<tr><td><code>Modalità di output:</code></td><td><code>ddraw</code></td><td><code>output</code>. Il metodo di output del rendering di DOSBox</td></tr>
+<tr><td><code>Blocco automatico del mouse:</code></td><td>ON</td><td><code>autolock</code>. Blocca automaticamente il mouse all'interno della schermata di DOSBox</td></tr>
+<tr><td><code>Sensibilità del mouse:</code></td><td><code>100</code></td><td><code>sensitivity</code>. La sensibilità del mouse in DOSBox</td></tr>
+</table>
+<h3 id="video"><a name="video"></a>Video</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Correzione aspetto:</code></td><td>ON</td><td><code>aspect</code>. Corregge le proporzioni dell'immagine</td></tr>
+<tr><td><code>Scaler:</code></td><td><code>normal2x</code></td><td><code>scaler</code>. Il filtro di ingrandimento dell'immagine di DOSBox</td></tr>
+</table>
+<h3 id="prestazioni"><a name="prestazioni"></a>Prestazioni</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Cicli CPU:</code></td><td><code>fixed 25000</code></td><td><code>cycles</code>. Indica la velocità di emulazione della CPU. Con <code>fixed</code> si attiva il campo numerico a destra</td></tr>
+</table>
+<h3 id="audio"><a name="audio"></a>Audio</h3>
+<table>
+<tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
+<tr><td><code>Modalità silenziosa:</code></td><td>OFF</td><td><code>nosound</code>. Disattiva l'audio di DOSBox</td></tr>
+<tr><td><code>Frequenza di campionamento:</code></td><td><code>44100</code></td><td><code>rate</code>. La frequenza di campionamento del mixer</td></tr>
+<tr><td><code>Dispositivo MIDI:</code></td><td><code>default</code></td><td><code>mididevice</code>. Il dispositivo da usare per la riproduzione MIDI</td></tr>
+</table>
+
+</body>
+</html>

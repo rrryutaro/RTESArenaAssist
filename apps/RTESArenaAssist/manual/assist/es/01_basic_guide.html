@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Guía de uso básico</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — Guía de uso básico</h1>
+<p>RTESArenaAssist es una aplicación que, mientras juegas a The Elder Scrolls: Arena, muestra como ayuda la traducción, el mapa, el diario, el registro, la gestión de partidas guardadas, las capturas, el diccionario y el manual.</p>
+<p>Las imágenes son de Assist con tu idioma de visualización, el tema «Oscuro», los ajustes iniciales y sin conexión. Con la conexión activa, lo que se muestra cambia según la pantalla actual de Arena y el estado dentro del juego.</p>
+<p>El uso básico consiste en iniciar Arena, conectar Assist y entrar en el modo de diseño con el botón <code>⊞</code> para jugar. En el modo de diseño, la pantalla del juego en DOSBox y la traducción, el mapa y las pestañas de Assist se colocan en una misma pantalla, de modo que puedes consultarlos sin cambiar de ventana con Alt+Tab.</p>
+<p>Para los detalles de cada ajuste, consulta la página «Guía detallada del cuadro de ajustes» de este manual.</p>
+<h2 id="indice"><a name="indice"></a>Índice</h2>
+<ul>
+<li><a href="#primer-inicio">Primer inicio</a></li>
+<ul>
+<li><a href="#elegir-idioma">Elegir el idioma</a></li>
+<li><a href="#carpeta-de-arena">Indicar la carpeta de Arena</a></li>
+<li><a href="#generar-traducciones">Generar los archivos de traducción</a></li>
+</ul>
+<li><a href="#pantalla-principal">Pantalla principal</a></li>
+<ul>
+<li><a href="#sin-conexion">Sin conexión</a></li>
+<li><a href="#con-conexion">Con conexión</a></li>
+</ul>
+<li><a href="#modo-de-diseno">Usar el modo de diseño como base</a></li>
+<li><a href="#pestanas">Pestañas</a></li>
+<ul>
+<li><a href="#pestana-traducir">Pestaña Traducir</a></li>
+<li><a href="#pestana-estado">Pestaña Estado</a></li>
+<li><a href="#pestana-mapa">Pestaña Mapa</a></li>
+<li><a href="#pestana-diario">Pestaña Diario</a></li>
+<li><a href="#pestana-registro">Pestaña Registro</a></li>
+<li><a href="#pestana-guardar">Pestaña Guardar</a></li>
+<li><a href="#pestana-captura">Pestaña Captura</a></li>
+<li><a href="#pestana-diccionario">Pestaña Diccionario</a></li>
+<li><a href="#pestana-manual">Pestaña Manual</a></li>
+</ul>
+<li><a href="#procedimiento-basico">Procedimiento básico</a></li>
+</ul>
+<h2 id="primer-inicio"><a name="primer-inicio"></a>Primer inicio</h2>
+<p>La versión pública no incluye los datos de texto original de Arena. En el primer inicio, Assist genera los archivos de traducción a partir de la carpeta de Arena del usuario.</p>
+<h3 id="elegir-idioma"><a name="elegir-idioma"></a>Elegir el idioma</h3>
+<p>Primero se elige el idioma de visualización de Assist. El idioma elegido se aplica enseguida en esta misma pantalla.</p>
+<p><img src="img/assist_first_run_language.png" alt="Primer inicio: elección de idioma"></p>
+<table>
+<tr><th>Operación</th><th>Descripción</th></tr>
+<tr><td>Lista de idiomas</td><td>Elige el idioma de la interfaz de Assist. En esta pantalla solo se pueden elegir japonés, English y Español. Los demás idiomas se eligen después del inicio, en el cuadro de ajustes, en la pestaña «General», con «Idioma».</td></tr>
+<tr><td>Siguiente</td><td>Pasa a indicar la carpeta de Arena.</td></tr>
+</table>
+<h3 id="carpeta-de-arena"><a name="carpeta-de-arena"></a>Indicar la carpeta de Arena</h3>
+<p>Si sigues con Arena en ejecución, Assist detecta automáticamente la carpeta de instalación a partir del Arena que está abierto. Si no se detecta automáticamente, indica la carpeta de datos de Arena con <code>Examinar...</code>.</p>
+<p><img src="img/assist_first_run_arena.png" alt="Primer inicio: indicar la carpeta de Arena"></p>
+<table>
+<tr><th>Elemento</th><th>Descripción</th></tr>
+<tr><td>Carpeta de instalación del juego</td><td>Indica la carpeta <code>ARENA</code> de Arena.</td></tr>
+<tr><td>Examinar...</td><td>Elige la carpeta de Arena en el cuadro de selección de carpeta.</td></tr>
+<tr><td>Volver a comprobar</td><td>Vuelve a detectar el Arena en ejecución.</td></tr>
+<tr><td>Generar archivos de traducción</td><td>Cuando se encuentra una carpeta de Arena válida, pasa a la generación de los archivos de traducción.</td></tr>
+</table>
+<h3 id="generar-traducciones"><a name="generar-traducciones"></a>Generar los archivos de traducción</h3>
+<p>Se generan los archivos de traducción de Assist a partir de los datos de la carpeta de Arena. Al terminar, se pasa a la pantalla principal.</p>
+<p><img src="img/assist_first_run_generate.png" alt="Primer inicio: generación de los archivos de traducción"></p>
+<p>Durante la generación se muestran una barra de progreso y la fase en curso. Como los datos también se leen del Arena en ejecución, no cierres Arena hasta que termine.</p>
+<h2 id="pantalla-principal"><a name="pantalla-principal"></a>Pantalla principal</h2>
+<p>Assist tiene la barra de conexión en la parte superior, el área de pestañas en el centro y la barra de estado en la parte inferior.</p>
+<h3 id="sin-conexion"><a name="sin-conexion"></a>Sin conexión</h3>
+<p>Justo después de iniciar, no hay conexión. Con Arena / DOSBox en ejecución, pulsa el botón <code>Conectar</code> de la parte superior derecha.</p>
+<p><img src="img/assist_main_window.png" alt="Pantalla principal sin conexión"></p>
+<table>
+<tr><th>Zona</th><th>Descripción</th></tr>
+<tr><td>Estado de la conexión</td><td>Muestra «Desconectado» o, con conexión, el nombre de la pantalla, el nombre del IMG, etc.</td></tr>
+<tr><td>Conectar / Desconectar</td><td>Conecta con Arena en DOSBox o termina la conexión.</td></tr>
+<tr><td><code>⏸</code> / <code>▶</code> / <code>■</code></td><td>Pausa / reanuda / detiene la lectura en voz alta. La lectura en voz alta se puede usar si la activas en la pestaña «Lectura en voz alta» del cuadro de ajustes (por defecto está desactivada).</td></tr>
+<tr><td><code>⊞</code></td><td>Activa o desactiva el modo de diseño. Con clic derecho se abre el menú de colocación.</td></tr>
+<tr><td><code>📷</code></td><td>Guarda una captura de pantalla. En el modo de diseño, guarda todo el diseño en una sola imagen. También puedes guardarla del mismo modo con la tecla de captura (por defecto <code>F12</code>) mientras el foco está en la pantalla del juego (DOSBox).</td></tr>
+<tr><td><code>⚙</code></td><td>Abre el cuadro de ajustes.</td></tr>
+</table>
+<p>El mensaje «Tecla F12 registrada» que aparece en la barra de estado justo después de iniciar indica que la tecla de captura ya se puede usar. La tecla se puede cambiar en la pestaña «General» del cuadro de ajustes.</p>
+<h3 id="con-conexion"><a name="con-conexion"></a>Con conexión</h3>
+<p>Al conectar, el extremo izquierdo de la barra de conexión muestra el nombre de la pantalla reconocida. El ejemplo de abajo es la conexión con la pantalla de título de Arena.</p>
+<p><img src="img/assist_connection_bar.png" alt="Barra de conexión con la conexión activa"></p>
+<p>A la derecha del nombre de la pantalla se muestra también el nombre del IMG que usa esa pantalla (no aparece en pantallas que no usan IMG, como la pantalla de título). En la pestaña «Pantalla» del cuadro de ajustes puedes elegir si mostrar el nombre de la pantalla, el nombre del IMG o ambos.</p>
+<h2 id="modo-de-diseno"><a name="modo-de-diseno"></a>Usar el modo de diseño como base</h2>
+<p>Assist está pensado para usarse básicamente en el modo de diseño. Las pestañas también funcionan en una ventana normal, pero con el modo de diseño puedes tener fijos en la misma pantalla el juego, la traducción, el mapa, el registro, etc.</p>
+<p>En el diseño predeterminado, a la izquierda está la pantalla del juego en DOSBox, a la derecha las pestañas principales de Assist y en la parte inferior los paneles auxiliares. Durante el juego puedes consultar el mapa o el diario a la derecha y ver la traducción de la pantalla actual en la parte inferior o en la pestaña Traducir.</p>
+<table>
+<tr><th>Operación</th><th>Descripción</th></tr>
+<tr><td>Clic izquierdo en <code>⊞</code></td><td>Inicia o termina el modo de diseño.</td></tr>
+<tr><td>Clic derecho en <code>⊞</code></td><td>Permite elegir la forma de diseño, la esquina de colocación, el modo de seguimiento, volver a colocar, mantener en primer plano, etc.</td></tr>
+<tr><td><code>📷</code></td><td>En el modo de diseño, guarda todo el diseño, con DOSBox y Assist, como una sola imagen.</td></tr>
+<tr><td><code>Desconectar</code></td><td>Termina la conexión con Arena. Si sales del modo de diseño antes de desconectar, es más fácil ordenar las ventanas.</td></tr>
+</table>
+<h2 id="pestanas"><a name="pestanas"></a>Pestañas</h2>
+<p>Las capturas de cada pestaña sirven para ver cómo está organizada la pantalla. Con la conexión activa, el contenido se actualiza según la pantalla actual de Arena y el estado dentro del juego.</p>
+<h3 id="pestana-traducir"><a name="pestana-traducir"></a>Pestaña Traducir</h3>
+<p>Es la pestaña principal, que muestra la traducción correspondiente a la pantalla actual. Lo que se muestra cambia según la situación: pantalla de título, creación de personaje, conversaciones, instalaciones, objetos, hechizos, etc.</p>
+<p><img src="img/assist_tab_translate.png" alt="Pestaña Traducir"></p>
+<table>
+<tr><th>Contenido</th><th>Descripción</th></tr>
+<tr><td>Traducción</td><td>Muestra la traducción de la pantalla o del evento actual en el idioma de visualización.</td></tr>
+<tr><td>Original</td><td>Según los ajustes, muestra también el texto original en inglés correspondiente.</td></tr>
+<tr><td>Vistas específicas</td><td>La lista de clases, la lista de razas, el equipo, la lista de instalaciones, la lista de compras, etc. pasan a una vista específica más fácil de leer.</td></tr>
+</table>
+<p>En la pestaña «Información de combate» de los ajustes puedes mostrar también en la pestaña Traducir la información durante el combate. Elige «Combate y vista normal» o «Vista completa de combate» y define si se muestra como texto o como barras de enemigos. Por defecto no se muestra, y se mantiene la presentación anterior de la pestaña Traducir.</p>
+<h3 id="pestana-estado"><a name="pestana-estado"></a>Pestaña Estado</h3>
+<p>Es la pestaña para ver los atributos y el estado del personaje. Tras crear el personaje, o con la conexión activa durante el juego, se muestra la información de estado.</p>
+<p><img src="img/assist_tab_status.png" alt="Pestaña Estado"></p>
+<table>
+<tr><th>Contenido</th><th>Descripción</th></tr>
+<tr><td>Vista</td><td>Elige «Estándar» (la presentación usada hasta ahora) o uno de los diseños (hojas de personaje). La pantalla de estado y la distribución de atributos de la pestaña Traducir también usan la vista elegida aquí.</td></tr>
+<tr><td>Atributos</td><td>Permite ver los atributos principales, como Fuerza e Inteligencia.</td></tr>
+<tr><td>Valores de estado</td><td>Permite ver la salud, la fatiga, los puntos de hechizo, etc.</td></tr>
+<tr><td>Operaciones de cambio</td><td>Solo si activas explícitamente el modo de trampa se pueden usar operaciones como cambiar los atributos (vista «Estándar»).</td></tr>
+</table>
+<h3 id="hoja-de-personaje"><a name="hoja-de-personaje"></a>Hoja de personaje</h3>
+<p>Es una función para mostrar el estado con el diseño que elijas. Si en «Vista» eliges algo distinto de «Estándar», el estado se muestra con el diseño elegido. Un diseño es un archivo HTML (una plantilla) y hay 8 diseños incluidos. También puedes crear el tuyo. Algunos diseños muestran la cara y la imagen de cuerpo entero (con el equipo), el estado del personaje (enfermedad, veneno, parálisis, etc.) y la defensa de armadura de cada parte del cuerpo (un valor calculado a partir del equipo; cuanto menor, mejor protección). La cara y la imagen de cuerpo entero se crean a partir de los archivos de tu Arena.</p>
+<table>
+<tr><th>Operación</th><th>Descripción</th></tr>
+<tr><td>Abrir carpeta</td><td>Abre la carpeta donde se colocan tus propias hojas de personaje (archivos HTML), que es <code>character_sheets</code>, en el mismo lugar que <code>RTESArenaAssist.exe</code>. La primera vez que se abre, se colocan copias de los diseños incluidos. Los archivos colocados aparecen en la lista «Vista» con «(carpeta)».</td></tr>
+<tr><td>Recargar</td><td>Vuelve a leer las hojas de personaje de la carpeta. Púlsalo después de modificar un archivo.</td></tr>
+</table>
+<p>Para la lista de diseños incluidos, el funcionamiento de las hojas de personaje y los valores que se pueden insertar y cómo escribirlos, consulta la página «Diseños de estado (hojas de personaje)» de este manual.</p>
+<h3 id="pestana-mapa"><a name="pestana-mapa"></a>Pestaña Mapa</h3>
+<p>Muestra el mapa automático de calabozos, ciudades, campo, interiores, etc. Lo que se muestra se actualiza según la posición actual dentro del juego.</p>
+<p><img src="img/assist_tab_map.png" alt="Pestaña Mapa"></p>
+<table>
+<tr><th>Contenido</th><th>Descripción</th></tr>
+<tr><td>Posición actual</td><td>Muestra el mapa y la posición actuales a partir del estado del juego conectado.</td></tr>
+<tr><td>Mapa automático</td><td>Dibuja las zonas ya descubiertas, los muros, las entradas, el terreno del campo, etc.</td></tr>
+<tr><td>Ajustes de visualización</td><td>La cuadrícula, las coordenadas de chunk, la visualización ampliada del campo, etc. se pueden ajustar en el cuadro de ajustes.</td></tr>
+</table>
+<h3 id="pestana-diario"><a name="pestana-diario"></a>Pestaña Diario</h3>
+<p>Es la pestaña para ver, en tu idioma de visualización, lo que está anotado en el Logbook / Journal del juego.</p>
+<p><img src="img/assist_tab_journal.png" alt="Pestaña Diario"></p>
+<table>
+<tr><th>Contenido</th><th>Descripción</th></tr>
+<tr><td>Fecha y encabezado</td><td>Muestra la fecha y el resumen de cada entrada del diario.</td></tr>
+<tr><td>Texto</td><td>Muestra el texto del Logbook en el idioma de visualización.</td></tr>
+<tr><td>Actualización</td><td>Cuando el diario se actualiza en el juego, también se actualiza lo que muestra Assist.</td></tr>
+</table>
+<h3 id="pestana-registro"><a name="pestana-registro"></a>Pestaña Registro</h3>
+<p>Es la pestaña para consultar como historial las traducciones que ha mostrado Assist. Resulta útil para volver a leer un texto que se te pasó.</p>
+<p><img src="img/assist_tab_log.png" alt="Pestaña Registro"></p>
+<table>
+<tr><th>Operación</th><th>Descripción</th></tr>
+<tr><td>Orden</td><td>Alterna entre más recientes primero y más antiguos primero.</td></tr>
+<tr><td>Filtro</td><td>Filtra el registro por tipo o por lugar.</td></tr>
+<tr><td>Limpiar</td><td>Borra el registro que se muestra.</td></tr>
+</table>
+<p>Si activas guardar el registro de combate y se ha registrado algo, dentro de la pestaña Registro puedes alternar entre el «registro normal» y el «registro de combate». Si no hay registro de combate, solo se muestra el registro normal, como antes.</p>
+<h3 id="pestana-guardar"><a name="pestana-guardar"></a>Pestaña Guardar</h3>
+<p>Es la pestaña para gestionar los espacios de partida guardada de Arena y sus copias de seguridad. Ayuda con las operaciones sobre los datos guardados, como la copia de seguridad automática antes de restaurar.</p>
+<p><img src="img/assist_tab_save.png" alt="Pestaña Guardar"></p>
+<table>
+<tr><th>Operación</th><th>Descripción</th></tr>
+<tr><td>Lista de espacios</td><td>Muestra la lista de espacios de partida guardada de Arena.</td></tr>
+<tr><td>Copia de seguridad</td><td>Hace una copia de seguridad de la partida guardada seleccionada.</td></tr>
+<tr><td>Restaurar</td><td>Devuelve los datos guardados desde una copia de seguridad.</td></tr>
+<tr><td>Eliminar</td><td>Elimina las copias de seguridad o partidas guardadas que ya no necesites.</td></tr>
+</table>
+<h3 id="pestana-captura"><a name="pestana-captura"></a>Pestaña Captura</h3>
+<p>Es la pestaña para ver las capturas de pantalla guardadas con el botón <code>📷</code>. Desde aquí también se pueden abrir las imágenes tomadas en el modo de diseño.</p>
+<p><img src="img/assist_tab_capture.png" alt="Pestaña Captura"></p>
+<table>
+<tr><th>Operación</th><th>Descripción</th></tr>
+<tr><td>Lista</td><td>Muestra las capturas guardadas.</td></tr>
+<tr><td>Vista previa</td><td>Permite ver la imagen seleccionada.</td></tr>
+<tr><td>Bloqueo</td><td>Protege de la eliminación las imágenes que quieras conservar.</td></tr>
+<tr><td>Eliminar</td><td>Elimina la imagen seleccionada o las imágenes que ya no necesites.</td></tr>
+</table>
+<h3 id="pestana-diccionario"><a name="pestana-diccionario"></a>Pestaña Diccionario</h3>
+<p>Es la pestaña para buscar en el diccionario de traducción y en los textos de calabozos de Assist. Sirve para consultar palabras y frases que aparecen en el juego.</p>
+<p><img src="img/assist_tab_dict.png" alt="Pestaña Diccionario"></p>
+<table>
+<tr><th>Modo de visualización</th><th>Descripción</th></tr>
+<tr><td>Diccionario</td><td>Busca por palabra clave en inglés, traducción y categoría.</td></tr>
+<tr><td>Texto de calabozos</td><td>Busca y consulta los textos de calabozos procedentes de los INF.</td></tr>
+</table>
+<h3 id="pestana-manual"><a name="pestana-manual"></a>Pestaña Manual</h3>
+<p>Es la pestaña para consultar, en tu idioma de visualización, la explicación de los controles básicos y del sistema de Arena y la explicación de las funciones de Assist. Úsala cuando quieras consultar un control o un término durante el juego.</p>
+<p><img src="img/assist_tab_manual.png" alt="Pestaña Manual"></p>
+<table>
+<tr><th>Operación</th><th>Descripción</th></tr>
+<tr><td>Simple / Completo / Assist</td><td>Cambia el contenido que se muestra (tabla de abajo).</td></tr>
+<tr><td>Búsqueda por palabra clave</td><td>Busca dentro del manual.</td></tr>
+<tr><td>Lista de la izquierda</td><td>Cambia entre capítulos como Historia, Creación de personaje, Controles y Combate.</td></tr>
+</table>
+<table>
+<tr><th>Cambio</th><th>Contenido</th><th>Idiomas</th></tr>
+<tr><td>Simple</td><td>Explicación del juego (9 capítulos)</td><td>7 idiomas</td></tr>
+<tr><td>Completo</td><td>Traducción del manual oficial (se muestra importando un paquete de traducción)</td><td>Actualmente solo japonés</td></tr>
+<tr><td>Assist</td><td>Explicación de las funciones de Assist (uso básico, cuadro de ajustes, diseños de estado (hojas de personaje))</td><td>7 idiomas</td></tr>
+</table>
+<p><b>Versión completa (traducción del manual oficial)</b></p>
+<p>En «Completo» puedes leer la traducción del manual oficial (la Player's Guide y su anexo). La traducción se distribuye, aparte de la aplicación, en la página de descarga del manual como un paquete de traducción para cada idioma de visualización (<code>RTESArenaAssist-manual-&lt;idioma&gt;.zip</code>) (actualmente solo en japonés). La primera vez que lo uses, impórtalo con los siguientes pasos.</p>
+<p><img src="img/assist_tab_manual_full.png" alt="Pestaña Manual (importación de la versión completa)"></p>
+<ol><li>Pulsa «Abrir la página de descarga del manual». La página de descarga se abre en el navegador; descarga el paquete de traducción de tu idioma de visualización.</li><li>Pulsa «Importar» y elige el archivo descargado.</li><li>Cuando aparezca la lista de capítulos, ya está listo. Encima de la lista se muestran la fecha del paquete de traducción importado y los accesos a la página de descarga y a la importación. Un paquete de traducción nuevo, importado con los mismos pasos, sustituye al anterior.</li></ol>
+<p>Las imágenes del manual se crean a partir de <code>Player Guide.pdf</code>, que está en la carpeta <code>Docs</code> de tu Arena (versión de Steam). Si no se encuentra el PDF o es de otra versión, solo se muestra el texto. Comprueba la «Carpeta del juego» en los ajustes y pulsa «Volver a crear las imágenes» para que también se muestren las imágenes. Después de importar, puedes borrar el archivo descargado. Assist no se conecta a internet (la descarga se hace con tu navegador).</p>
+<p>En «Completo» también se muestran los enlaces para abrir el manual oficial (el PDF en inglés) de la carpeta <code>Docs</code>. Si el idioma de visualización es el inglés, se muestran solo estos enlaces en lugar del paquete de traducción.</p>
+<h2 id="procedimiento-basico"><a name="procedimiento-basico"></a>Procedimiento básico</h2>
+<ol><li>Inicia Arena.</li><li>Inicia RTESArenaAssist.</li><li>En el primer inicio, indica el idioma y la carpeta de Arena y genera los archivos de traducción.</li><li>Pulsa <code>Conectar</code>, en la parte superior derecha de Assist, para conectar con Arena / DOSBox.</li><li>Pulsa <code>⊞</code> para entrar en el modo de diseño.</li><li>Normalmente, sigue en el modo de diseño y alterna entre las pestañas Traducir, Mapa, Diario y Registro.</li><li>Cuando quieras conservar la pantalla, captúrala con <code>📷</code> o con la tecla de captura (por defecto <code>F12</code>).</li><li>Al terminar, sal del modo de diseño con <code>⊞</code> y, si hace falta, pulsa <code>Desconectar</code>.</li></ol>
+<p>El tamaño del modo de diseño, la forma de diseño, el panel de traducción, la carpeta de captura, etc. se pueden ajustar en el cuadro de ajustes. Si quieres usar la lectura en voz alta de la traducción, también se activa en la pestaña «Lectura en voz alta» del cuadro de ajustes.</p>
+
+</body>
+</html>

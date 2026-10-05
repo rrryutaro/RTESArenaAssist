@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Settings Dialog Detailed Guide</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — Settings Dialog Detailed Guide</h1>
+<p>This page shows a capture of each tab of RTESArenaAssist's Settings dialog, with an explanation of each UI element.</p>
+<p>The images were taken of the Settings dialog with the default settings in your display language and the default "Dark" theme.</p>
+<p>The values in the DOSBox tab reflect not only Assist's own settings file but also what was read from <code>arena.conf</code> at the default path. If the <code>arena.conf</code> in your environment is different, the values shown will differ too.</p>
+<h2 id="contents"><a name="contents"></a>Contents</h2>
+<ul>
+<li><a href="#general-tab">General tab</a></li>
+<ul>
+<li><a href="#paths">Paths</a></li>
+<li><a href="#behavior">Behavior</a></li>
+<li><a href="#shutter-sound">Shutter Sound</a></li>
+<li><a href="#capture-hotkey">Capture hotkey</a></li>
+<li><a href="#updates">Updates</a></li>
+</ul>
+<li><a href="#display-tab">Display tab</a></li>
+<ul>
+<li><a href="#connection-bar">Connection Bar</a></li>
+<li><a href="#item-list-marks">Item List Marks</a></li>
+<li><a href="#translation-panel-font">Translation Panel Font</a></li>
+<li><a href="#layout">Layout</a></li>
+</ul>
+<li><a href="#map-tab">Map tab</a></li>
+<ul>
+<li><a href="#map-display-settings">Map Display Settings</a></li>
+<li><a href="#field-extended-display">Field extended display</a></li>
+<li><a href="#map-expression-and-colours">Map expression and colours</a></li>
+</ul>
+<li><a href="#translation-tab">Translation tab</a></li>
+<ul>
+<li><a href="#translate-tab-panel-behavior">Translate Tab / Panel Behavior</a></li>
+<li><a href="#translate-tab-advanced">Translate Tab — Advanced</a></li>
+</ul>
+<li><a href="#combat-information-tab">Combat information tab</a></li>
+<ul>
+<li><a href="#arena-screen">Arena screen</a></li>
+<li><a href="#arena-screen-ongoing-spells">Arena screen · Ongoing spells</a></li>
+<li><a href="#combat-info-translation-tab">Combat information on the Translation tab</a></li>
+<li><a href="#combat-info-translation-panel">Combat information on the Translation panel</a></li>
+<li><a href="#common-settings-and-messages">Common settings and messages</a></li>
+</ul>
+<li><a href="#read-aloud-tab">Read Aloud tab</a></li>
+<ul>
+<li><a href="#read-aloud">Read Aloud</a></li>
+<li><a href="#read-targets">Read targets</a></li>
+<li><a href="#other-log">Other / Log</a></li>
+<li><a href="#character-name-reading">Character name reading</a></li>
+</ul>
+<li><a href="#cheat-tab">Cheat tab</a></li>
+<li><a href="#dosbox-tab">DOSBox tab</a></li>
+<ul>
+<li><a href="#config-file-window-behavior">Config file / Window Behavior</a></li>
+<li><a href="#window-display">Window / Display</a></li>
+<li><a href="#video">Video</a></li>
+<li><a href="#performance">Performance</a></li>
+<li><a href="#sound">Sound</a></li>
+</ul>
+</ul>
+<h2 id="general-tab"><a name="general-tab"></a>General tab</h2>
+<p>This tab sets the paths, the basic behavior, the shutter sound and the capture shortcut key, and lets you check your version.</p>
+<p><img src="img/settings_dark_tab_01.png" alt="General tab"></p>
+<h3 id="paths"><a name="paths"></a>Paths</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Game Folder:</code></td><td>Empty</td><td>The folder that contains Arena's <code>ARENA.EXE</code> and the save files. While it is not set, save management and reading game data are unavailable</td></tr>
+<tr><td><code>Backup Folder:</code></td><td>Empty</td><td>Where save backups are stored. When empty, <code>saves_backup/</code> next to the tool's settings file is used</td></tr>
+<tr><td><code>Capture Folder:</code></td><td>Empty</td><td>Where screenshots are saved. When empty, the same folder as the backup folder is used</td></tr>
+<tr><td><code>Browse...</code></td><td>-</td><td>Selects each folder</td></tr>
+</table>
+<h3 id="behavior"><a name="behavior"></a>Behavior</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Polling Interval:</code></td><td><code>100 ms</code></td><td>How often the DOSBox screen and memory state are checked. The default is short so that short messages are easier to catch</td></tr>
+<tr><td><code>Confirm before delete:</code></td><td>ON</td><td>Shows a confirmation dialog when deleting captures or backups</td></tr>
+<tr><td><code>Always on Top:</code></td><td>OFF</td><td>Shows Assist's main window in front of other windows</td></tr>
+<tr><td><code>Theme:</code></td><td>Dark</td><td>Chooses the color theme of the UI</td></tr>
+<tr><td><code>Language:</code></td><td>Auto (system)</td><td>The UI language. When empty, it is detected automatically from the system language, and a change takes effect after the app is restarted</td></tr>
+</table>
+<h3 id="shutter-sound"><a name="shutter-sound"></a>Shutter Sound</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Enabled</code></td><td>ON</td><td>Plays a sound effect when a screenshot is saved</td></tr>
+<tr><td><code>Kind:</code></td><td><code>携帯電話カメラ（標準）</code> (mobile phone camera, standard)</td><td>The shutter sound to play. You can choose from standard, short version, double, treble-boosted and mild</td></tr>
+<tr><td><code>Volume:</code></td><td><code>30 %</code></td><td>The playback volume of the shutter sound</td></tr>
+<tr><td><code>▶</code></td><td>-</td><td>Previews the selected shutter sound</td></tr>
+</table>
+<h3 id="capture-hotkey"><a name="capture-hotkey"></a>Capture hotkey</h3>
+<p>You can save a capture just by pressing a key while the game screen (DOSBox) keeps the focus. Use it to capture messages that disappear after a few seconds.</p>
+<table>
+<tr><th>Item</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Enabled</code></td><td>ON</td><td>Uses the shortcut key for capturing</td></tr>
+<tr><td><code>Ctrl</code> / <code>Alt</code> / <code>Shift</code></td><td>OFF</td><td>Turn ON to combine modifier keys</td></tr>
+<tr><td><code>Key:</code></td><td><code>F12</code></td><td>The key to use. You can choose from F5 to F12, PrintScreen, Pause, ScrollLock, Insert, Home, End, PageUp and PageDown</td></tr>
+</table>
+<ul>
+<li>The key you press is not passed to the game. Keys that the game or DOSBox uses (F1 / F3 / F4 / F8, Ctrl+F5 to F12, Alt+F12, Alt+Pause) cannot be chosen</li>
+<li>If another app uses the same key as a shortcut, that app's shortcut does not work while this app is running. Choosing a different key lets both work</li>
+<li>If the key could not be registered, a message is shown in the status bar. Even then, you can still capture with the camera button on the toolbar</li>
+</ul>
+<h3 id="updates"><a name="updates"></a>Updates</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Current version:</code></td><td>-</td><td>The version of Assist you are using</td></tr>
+<tr><td><code>Open the releases page</code></td><td>-</td><td>Opens Assist's releases page (the list of Releases) in your browser. Check here to find out whether a newer version exists</td></tr>
+</table>
+<p>Assist does not connect to the internet, so it does not check for updates or update itself.</p>
+<h2 id="display-tab"><a name="display-tab"></a>Display tab</h2>
+<p>This tab sets the connection bar, the equipment marks in item lists, the translation panel font and the layout.</p>
+<p><img src="img/settings_dark_tab_02.png" alt="Display tab"></p>
+<h3 id="connection-bar"><a name="connection-bar"></a>Connection Bar</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Show recognized screen name:</code></td><td>ON</td><td>Shows the name of the currently recognized screen in the connection bar</td></tr>
+<tr><td><code>Show IMG info:</code></td><td>ON</td><td>Shows the IMG information being detected in the connection bar</td></tr>
+<tr><td><code>Show version:</code></td><td>ON</td><td>Shows the app version in the connection bar and the status bar</td></tr>
+</table>
+<h3 id="item-list-marks"><a name="item-list-marks"></a>Item List Marks</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Equipped:</code></td><td><code>E</code></td><td>A one-character mark shown at the left end of equipped items</td></tr>
+<tr><td><code>Equippable:</code></td><td>Empty</td><td>The mark for equippable items. The default is empty, so nothing is shown</td></tr>
+<tr><td><code>Unequippable:</code></td><td><code>✕</code></td><td>A one-character mark shown at the left end of items that cannot be equipped</td></tr>
+</table>
+<h3 id="translation-panel-font"><a name="translation-panel-font"></a>Translation Panel Font</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Mirror right side from left</code></td><td>OFF</td><td>When ON, the font and size of the original text side are made the same as the translation side</td></tr>
+<tr><td><code>Left (Translation):</code></td><td>App default / <code>14 pt</code></td><td>The font and size used for the translated text. If no font name has been saved, the app's default font for your environment is chosen</td></tr>
+<tr><td><code>Right (Original):</code></td><td>App default / <code>12 pt</code></td><td>The font and size used for the original English text. Because mirroring is OFF, it can be set separately from the translation side</td></tr>
+</table>
+<h3 id="layout"><a name="layout"></a>Layout</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Track Mode:</code></td><td>No tracking</td><td>Chooses whether, when either DOSBox or Assist is moved, the other follows it</td></tr>
+<tr><td><code>DOSBox Corner:</code></td><td>Top-Left</td><td>The reference corner of the screen where DOSBox is placed by one-shot arrangement and by layout mode</td></tr>
+<tr><td><code>Layout Form:</code></td><td>Form 2: Bottom full-width + Top-right (default)</td><td>How the area is divided between DOSBox and the Assist panels. Form 2 is the standard layout that uses the top right and the full-width bottom</td></tr>
+<tr><td><code>Layout Size:</code></td><td><code>1920 x 1080</code></td><td>The size of the whole canvas in layout mode</td></tr>
+</table>
+<h2 id="map-tab"><a name="map-tab"></a>Map tab</h2>
+<p>This tab sets the exploration map and the field extended display.</p>
+<p><img src="img/settings_dark_tab_03.png" alt="Map tab"></p>
+<h3 id="map-display-settings"><a name="map-display-settings"></a>Map Display Settings</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Wall line-of-sight on the map:</code></td><td>OFF</td><td>When OFF, unexplored areas behind walls are not recorded on the map. When ON, it is closer to the original Arena, and areas seen through walls are recorded too</td></tr>
+<tr><td><code>Show full-height raised platforms as walls:</code></td><td>ON</td><td>Shows raised platforms that fill the space from floor to ceiling in the wall color. Only how things are classified for display changes; how sight is blocked is not affected. Raised platforms that are not full height are still shown as raised platforms</td></tr>
+<tr><td><code>Height at which raised platforms block sight:</code></td><td><code>0 %</code></td><td>With the ceiling height as 100%, raised platforms whose top reaches this height or more block sight on the map. At 0%, every raised platform blocks sight</td></tr>
+<tr><td><code>Show floor for unexplored area:</code></td><td>OFF</td><td>When OFF, only explored cells show the floor color, which hides the shape of the unexplored area. When ON, the whole map is shown in the parchment color</td></tr>
+<tr><td><code>Center on character:</code></td><td>ON</td><td>Makes the map follow the character automatically when the character moves. While the character is stopped, you can pan manually</td></tr>
+<tr><td><code>Show grid lines:</code></td><td>ON</td><td>Shows grid lines at cell boundaries</td></tr>
+<tr><td><code>Show chunk boundaries:</code></td><td>ON</td><td>Highlights the chunk boundaries (units of 64 tiles) on the field map</td></tr>
+<tr><td><code>Show chunk coordinates:</code></td><td>ON</td><td>Shows the coordinates of each chunk on the field map, to help you grasp your position</td></tr>
+<tr><td><code>Show re-center boundaries:</code></td><td>OFF</td><td>Shows the re-center boundaries of the field map as dashed lines. A supplementary display for investigating or checking positions</td></tr>
+<tr><td><code>Chunk coordinate font size:</code></td><td><code>10 pt</code></td><td>The text size of the chunk coordinate labels</td></tr>
+</table>
+<h3 id="field-extended-display"><a name="field-extended-display"></a>Field extended display</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Enable extended display:</code></td><td>ON</td><td>The master switch for the field map extended display. When OFF, the display is close to the in-game automap</td></tr>
+<tr><td><code>Distinguish road from wall:</code></td><td>ON</td><td>Draws roads you can walk on and impassable parts such as buildings and walls in different colors</td></tr>
+<tr><td><code>Show wall edges:</code></td><td>ON</td><td>Shows the outlines of walls and edge terrain</td></tr>
+<tr><td><code>Distinguish fences/hedges/gardens:</code></td><td>ON</td><td>Tells edge terrain such as fences, hedges and gardens apart by connecting lines</td></tr>
+<tr><td><code>Show crops:</code></td><td>ON</td><td>Shows crops such as corn and fields with a dedicated color or mark</td></tr>
+<tr><td><code>Show all building entrances:</code></td><td>ON</td><td>Also shows the entrances of houses, taverns, temples, city gates and so on in red. Crypt, tower and dungeon entrances are shown in red regardless of this setting</td></tr>
+<tr><td><code>Show landmarks (trees, bushes, etc.):</code></td><td>OFF</td><td>Overlays simple marks for trees, bushes, rocks, graves, ruins and so on. They are numerous and make the map hard to read, so the default is OFF</td></tr>
+</table>
+<h3 id="map-expression-and-colours"><a name="map-expression-and-colours"></a>Map expression and colours</h3>
+<p>The game's map draws things such as passages under walls without telling them apart. Here you set whether to draw them distinguished, and the color of each element. If you turn "Express" OFF on a row, that element returns to the same display as the game's map (turning Treasure OFF shows nothing).</p>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Hidden doors:</code></td><td>ON</td><td>Shows discovered hidden doors in a dedicated color. Until discovered, they remain walls</td></tr>
+<tr><td><code>Water under walls:</code></td><td>ON</td><td>Shows waterways running under walls in a dedicated color. They are not shown until you actually pass through there and reveal them</td></tr>
+<tr><td><code>Passages under walls:</code></td><td>ON</td><td>Shows passages running under walls. They are not shown until you actually pass through there and reveal them</td></tr>
+<tr><td><code>Lava under walls:</code></td><td>ON</td><td>Shows lava running under walls in a dedicated color. It is not shown until you actually pass through there and reveal it</td></tr>
+<tr><td><code>Treasure:</code></td><td>ON</td><td>Overlays a mark where you obtained treasure. You can change the mark's character in the field on the right. While "Reveal map" in the Cheat tab is ON, every place with treasure is shown, whether or not you obtained it</td></tr>
+<tr><td><code>Keys and quest items:</code></td><td>ON</td><td>Among treasure, shows the marks of keys and quest items in a different color. When OFF, they are shown in the same color as treasure. They are not shown when Treasure is OFF</td></tr>
+<tr><td><code>Facility entrance colors:</code></td><td>ON</td><td>On city maps, replaces the building-colored cells touching the entrance of a tavern, equipment shop, temple or Mages Guild with a color for each facility. The color of the red entrance does not change. The color of each facility can be changed in the fields below</td></tr>
+<tr><td><code>Passages underneath:</code></td><td><code>Show as pipes</code> / Strength <code>100 %</code></td><td>Shows passages running under walls and raised platforms as pipes through the center of the cell. When OFF, the whole cell is filled with color as before. The pipe color is the same as that of pits, and it joins the pits without a break. Lowering <code>Strength</code> makes the pipes more subtle</td></tr>
+</table>
+<p>Click the color swatch to the right of each item to choose any color. The small buttons next to it are suggested colors that are easy to choose, and <code>Default</code> is the button that returns it to the original color. You can change the colors of the game's own elements in the same way: walls, raised platforms, doors and entrances, stairs (up and down), water, dry chasms and lava (the defaults are the same colors as the game).</p>
+<h2 id="translation-tab"><a name="translation-tab"></a>Translation tab</h2>
+<p>This tab sets the supplementary display of the translation panel and the Translate tab.</p>
+<p><img src="img/settings_dark_tab_04.png" alt="Translation tab"></p>
+<h3 id="translate-tab-panel-behavior"><a name="translate-tab-panel-behavior"></a>Translate Tab / Panel Behavior</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Keep message until next:</code></td><td>OFF</td><td>Specifies whether trigger and object-interaction messages stay in the translation panel until the next message arrives</td></tr>
+<tr><td><code>Fallback display on idle:</code></td><td>Map screen</td><td>Chooses what to show across the whole Translate tab while exploring when there is no translated text. By default, the map screen takes priority</td></tr>
+</table>
+<h3 id="translate-tab-advanced"><a name="translate-tab-advanced"></a>Translate Tab — Advanced</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Emulate panel-hidden behavior in Translate tab:</code></td><td>OFF</td><td>When ON, translation results and dialog messages are shown in the Translate tab, just as when the translation panel is hidden. An advanced setting for verification</td></tr>
+</table>
+<h2 id="combat-information-tab"><a name="combat-information-tab"></a>Combat information tab</h2>
+<p>You set where combat and ongoing spells are displayed, separately. The new display, reading aloud and saving features are OFF by default. Setting values saved by earlier development versions are carried over as they are. The displayed text is available in Japanese, English, Spanish, German, French, Italian and Russian.</p>
+<p><img src="img/settings_dark_tab_05.png" alt="Combat information tab"></p>
+<h3 id="arena-screen"><a name="arena-screen"></a>Arena screen</h3>
+<table>
+<tr><th>Item</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Use separate OBS capture windows (combat and spell effects)</code></td><td>OFF</td><td>Gathers combat information and ongoing spells into one window that you can select with OBS's window capture</td></tr>
+<tr><td><code>Show combat information</code></td><td>OFF</td><td>Shows the enemy you most recently exchanged blows with, who has been encountered and is currently in sight, at the top of the screen, and the other encountered living enemies on the right, even out of sight. You can check health, fatigue, spell points, and the damage dealt and defeats. Damage you take is shown at the bottom edge of the exploration area</td></tr>
+<tr><td><code>Experience display duration:</code></td><td>5 s</td><td>Shows experience at the bottom right at the moment you gain it, and removes each frame after the specified number of seconds. When you gain more in succession, the older frames are moved to the left (1 to 60 seconds)</td></tr>
+<tr><td><code>Show a subtle border when health is low</code></td><td>OFF</td><td>When health falls to the specified percentage or below, makes the edge of the exploration screen flash faintly. It can be enabled even if you do not use the enemy display of combat information</td></tr>
+<tr><td><code>Health threshold:</code></td><td>25%</td><td>The percentage at which the low-health border starts to show (1 to 99% of maximum health)</td></tr>
+</table>
+<p>The damage-received display disappears automatically about 5 seconds after it occurs. The same rule is used for enemy sight in any place. When the map or the coordinates are not determined, enemies are not shown by guesswork.</p>
+<p>To record with OBS, turn this setting ON, then choose <code>RTESArenaAssist オーバーレイ</code> (the window title is shown in Japanese in every language) in "Window Capture", allow transparency and overlay it above the game video. Combat information and ongoing spells appear in the same source.</p>
+<h3 id="arena-screen-ongoing-spells"><a name="arena-screen-ongoing-spells"></a>Arena screen · Ongoing spells</h3>
+<table>
+<tr><th>Item</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Show ongoing spells at top left</code></td><td>OFF</td><td>Shows the state of Light, Shield, Strength, Fire Resistance and Levitate</td></tr>
+<tr><td><code>Display style:</code></td><td><code>E | Icon + name + value + slim meter (recommended)</code></td><td>Choose from A "Name + remaining value", B "Name + horizontal meter", C "Icon + horizontal meter", D "Icon + clockwise shade", E "Icon + name + value + slim meter" and F "Compact chip"</td></tr>
+<tr><td><code>Timed-effect update:</code></td><td>Rounds (classic)</td><td>Chooses whether Light, Fire Resistance and Levitate are updated in rounds or in estimated seconds, once per second. Seconds are corrected from the in-game progress interval, so they are not necessarily a fixed multiple when the speed of progress changes, for example with DETAIL</td></tr>
+</table>
+<p>Shield shows the remaining protection, and Strength shows the amount of increase. When the maximum value cannot be confirmed, as when you connect partway through, the meter may be left out. The seconds display is an estimate, and when an effect ends follows the state in the game.</p>
+<h3 id="combat-info-translation-tab"><a name="combat-info-translation-tab"></a>Combat information on the Translation tab</h3>
+<table>
+<tr><th>Item</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Display mode:</code></td><td>Off (keep normal view)</td><td>Choose from keeping the normal view, using the normal view together with combat information, and showing combat information full screen</td></tr>
+<tr><td><code>Combat format:</code></td><td>Enemy meters</td><td>When combat information is shown, chooses text or the enemy meter display</td></tr>
+</table>
+<h3 id="combat-info-translation-panel"><a name="combat-info-translation-panel"></a>Combat information on the Translation panel</h3>
+<table>
+<tr><th>Item</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Show combat messages</code></td><td>OFF</td><td>Shows combat text in the translation panel. When an existing message, conversation or list appears, that takes priority</td></tr>
+<tr><td><code>Recent messages:</code></td><td>10 entries</td><td>Shows the most recent 1 to 50 combat lines. When the number is exceeded, the oldest lines are removed and new ones added</td></tr>
+</table>
+<h3 id="common-settings-and-messages"><a name="common-settings-and-messages"></a>Common settings and messages</h3>
+<table>
+<tr><th>Item</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Read new combat messages aloud</code></td><td>OFF</td><td>When reading aloud is enabled overall, reads new combat lines in the order they occur. It does not exclude identical recent lines, and the next damage does not cut off the previous reading</td></tr>
+<tr><td><code>On defeat, skip unread damage for that enemy</code></td><td>ON</td><td>On a defeat, cuts off the damage dealt to and received from that enemy that is being played and the unread part. Reading for other enemies continues</td></tr>
+<tr><td><code>Save combat log</code></td><td>OFF</td><td>Saves the combat history separately from the normal log. Only when there are records is a switch shown in the Log tab</td></tr>
+<tr><td><code>Distinguish enemies of the same type</code></td><td>OFF</td><td>Only when there are several enemies with the same name, adds a distinguishing symbol after the name</td></tr>
+<tr><td><code>Identifier style:</code></td><td>Letters (A, B…)</td><td>Choose A, B… or 1, 2…</td></tr>
+<tr><td><code>Combat message templates</code></td><td>The default text for each language</td><td>Edits the text for Encounter, Damage to enemy, Damage received, Defeat and Experience. Empty fields and placeholders that cannot be used revert to the default text</td></tr>
+</table>
+<h2 id="read-aloud-tab"><a name="read-aloud-tab"></a>Read Aloud tab</h2>
+<p>This tab sets reading aloud of translated text, the read targets, the log display and the reading of the character name.</p>
+<p><img src="img/settings_dark_tab_06.png" alt="Read Aloud tab"></p>
+<h3 id="read-aloud"><a name="read-aloud"></a>Read Aloud</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Enable text-to-speech:</code></td><td>OFF</td><td>Enables the whole feature of reading translated text aloud</td></tr>
+<tr><td><code>Engine:</code></td><td>Windows (SAPI5)</td><td>Chooses the reading engine. VOICEVOX can be chosen when a local VOICEVOX engine is running</td></tr>
+<tr><td><code>Fallback voice:</code></td><td>ON</td><td>When VOICEVOX is chosen but unavailable, reads the sentences that could not be read with the Windows voice. When OFF, they are not read</td></tr>
+<tr><td><code>Voice:</code></td><td>(default)</td><td>Shown when the engine is Windows (SAPI5). The SAPI voice to use. With (default), the OS's default voice is used</td></tr>
+<tr><td><code>Character:</code></td><td>The character of style ID 0</td><td>Shown when the engine is VOICEVOX. The VOICEVOX character used for reading</td></tr>
+<tr><td><code>Style:</code></td><td>Style ID 0</td><td>Shown when the engine is VOICEVOX. The voice style of the chosen character</td></tr>
+<tr><td><code>🔊 Test</code></td><td>-</td><td>Shown when the engine is VOICEVOX. Reads a short sentence as a trial with the chosen character and style</td></tr>
+<tr><td><code>Speed:</code></td><td><code>標準</code> (standard)</td><td>The reading speed</td></tr>
+<tr><td><code>Volume:</code></td><td><code>100</code></td><td>The reading volume. Set it in the range 0 to 100</td></tr>
+<tr><td><code>Interrupt:</code></td><td>ON</td><td>When the display switches, stops the previous reading and reads the new content</td></tr>
+<tr><td><code>Cancel on close:</code></td><td>OFF</td><td>Stops the reading in progress when a dialog or conversation is closed</td></tr>
+<tr><td><code>Suppress repeats:</code></td><td>OFF</td><td>Does not read the same content repeatedly (such as recurring dungeon messages). It stays in the log</td></tr>
+<tr><td><code>Highlight reading:</code></td><td>OFF</td><td>Colors the sentence being read (translation panel, Translate tab, log)</td></tr>
+</table>
+<p>When VOICEVOX cannot be found, "Start VOICEVOX to select it (127.0.0.1:50021)." is shown. After you start VOICEVOX and reopen the Settings dialog, you can choose the character and the style.</p>
+<h3 id="read-targets"><a name="read-targets"></a>Read targets</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Situation (triggers, building entry, events, various dialogs)</code></td><td>ON</td><td>Makes text that explains the situation, such as triggers, building entry, events and various dialogs, a read target</td></tr>
+<tr><td><code>Conversation (NPC replies, shopkeeper lines, palace, price-negotiation replies)</code></td><td>ON</td><td>Makes conversation text, such as NPC replies, shopkeeper lines, the palace and price-negotiation replies, a read target</td></tr>
+</table>
+<p>System displays such as menus, lists and numeric input are not read aloud.</p>
+<h3 id="other-log"><a name="other-log"></a>Other / Log</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Show a speaker icon next to text (click to read aloud)</code></td><td>OFF</td><td>Shows a speaker icon next to displayed text, for reading aloud by clicking</td></tr>
+<tr><td><code>Also show original text in the log (off = translation only)</code></td><td>OFF</td><td>Shows the original English text alongside the translation in the translation log. When OFF, only the translation is shown</td></tr>
+<tr><td><code>Max log entries:</code></td><td><code>2000</code></td><td>The upper limit on the number of log entries saved. Older logs beyond it are deleted automatically</td></tr>
+<tr><td><code>Show the record date/time in the log</code></td><td>ON</td><td>Shows the record date and time on log entries</td></tr>
+<tr><td><code>Date/time display:</code></td><td><code>yyyy/MM/dd(aaa) HH:mm:ss</code></td><td>The display format of the log date and time. You can choose a preset or a custom format</td></tr>
+</table>
+<h3 id="character-name-reading"><a name="character-name-reading"></a>Character name reading</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Name reading:</code></td><td>Empty</td><td>Replaces the character name obtained automatically from the game with the reading you specify, only when reading aloud. The original name remains in the display and the log</td></tr>
+</table>
+<h2 id="cheat-tab"><a name="cheat-tab"></a>Cheat tab</h2>
+<p>This tab sets helper features such as rewriting in-game values and always-MAX functions.</p>
+<p><img src="img/settings_dark_tab_07.png" alt="Cheat tab"></p>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Enable cheat mode:</code></td><td>OFF</td><td>The master switch for the cheat features as a whole. Even if only this is turned ON, nothing changes unless you turn ON the sub-settings</td></tr>
+<tr><td><code>Status change:</code></td><td>OFF</td><td>Allows status changes such as editing attributes</td></tr>
+<tr><td><code>Reveal map:</code></td><td>OFF</td><td>While cheats are enabled, shows the whole map</td></tr>
+<tr><td><code>Health always MAX:</code></td><td>OFF</td><td>While cheats are enabled, returns current health to the maximum if it is lower</td></tr>
+<tr><td><code>Fatigue always MAX:</code></td><td>OFF</td><td>While cheats are enabled, returns current fatigue to the maximum</td></tr>
+<tr><td><code>Spell points always MAX:</code></td><td>OFF</td><td>While cheats are enabled, returns current spell points to the maximum</td></tr>
+</table>
+<h2 id="dosbox-tab"><a name="dosbox-tab"></a>DOSBox tab</h2>
+<p>This tab reads DOSBox's <code>arena.conf</code> and sets the window display, video, performance and sound.</p>
+<p><img src="img/settings_dark_tab_08.png" alt="DOSBox tab"></p>
+<h3 id="config-file-window-behavior"><a name="config-file-window-behavior"></a>Config file / Window Behavior</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Config file</code></td><td><code>arena.conf</code> at the default path</td><td>DOSBox's configuration file. When Assist's own setting is empty, the standard Arena Steam version location is read as the default path</td></tr>
+<tr><td><code>Browse...</code></td><td>-</td><td>Selects any <code>arena.conf</code></td></tr>
+<tr><td><code>Always on top:</code></td><td>OFF</td><td>Shows the DOSBox window in front of other windows</td></tr>
+</table>
+<h3 id="window-display"><a name="window-display"></a>Window / Display</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Window size:</code></td><td><code>1024×768</code></td><td><code>windowresolution</code>. Choose from the presets; when custom is chosen, edit the W/H number fields</td></tr>
+<tr><td><code>Fullscreen resolution:</code></td><td><code>desktop</code></td><td><code>fullresolution</code>. Specifies the resolution used in fullscreen</td></tr>
+<tr><td><code>Start fullscreen:</code></td><td>OFF</td><td><code>fullscreen</code>. Specifies whether DOSBox starts in fullscreen</td></tr>
+<tr><td><code>Output mode:</code></td><td><code>ddraw</code></td><td><code>output</code>. DOSBox's rendering output method</td></tr>
+<tr><td><code>Mouse auto-lock:</code></td><td>ON</td><td><code>autolock</code>. Automatically locks the mouse inside the DOSBox screen</td></tr>
+<tr><td><code>Mouse sensitivity:</code></td><td><code>100</code></td><td><code>sensitivity</code>. The mouse sensitivity inside DOSBox</td></tr>
+</table>
+<h3 id="video"><a name="video"></a>Video</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Aspect correction:</code></td><td>ON</td><td><code>aspect</code>. Corrects the aspect ratio of the video</td></tr>
+<tr><td><code>Scaler:</code></td><td><code>normal2x</code></td><td><code>scaler</code>. DOSBox's screen enlargement filter</td></tr>
+</table>
+<h3 id="performance"><a name="performance"></a>Performance</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>CPU cycles:</code></td><td><code>fixed 25000</code></td><td><code>cycles</code>. Specifies the CPU emulation speed. With <code>fixed</code>, the number field on the right becomes active</td></tr>
+</table>
+<h3 id="sound"><a name="sound"></a>Sound</h3>
+<table>
+<tr><th>Label</th><th>Default</th><th>Description</th></tr>
+<tr><td><code>Silent mode:</code></td><td>OFF</td><td><code>nosound</code>. Disables DOSBox's sound</td></tr>
+<tr><td><code>Sample rate:</code></td><td><code>44100</code></td><td><code>rate</code>. The mixer's sampling rate</td></tr>
+<tr><td><code>MIDI device:</code></td><td><code>default</code></td><td><code>mididevice</code>. The device used for MIDI playback</td></tr>
+</table>
+
+</body>
+</html>

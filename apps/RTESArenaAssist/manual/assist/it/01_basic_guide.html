@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Guida all'uso di base</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — Guida all'uso di base</h1>
+<p>RTESArenaAssist è un'applicazione che, mentre giochi a The Elder Scrolls: Arena, mostra a lato traduzioni, mappa, diario, registro, gestione dei salvataggi, catture, dizionario e manuale.</p>
+<p>Le immagini mostrano Assist nella tua lingua di visualizzazione, con il tema «Scuro», le impostazioni iniziali e senza connessione. Quando è connesso, ciò che viene mostrato cambia in base alla schermata attuale di Arena e allo stato di gioco.</p>
+<p>Il modo di usarlo di base è avviare Arena, connettere Assist e giocare entrando nella modalità layout con il pulsante <code>⊞</code>. Nella modalità layout puoi disporre nella stessa schermata la finestra di gioco di DOSBox e la traduzione, la mappa e le schede di Assist, così non devi passare da una finestra all'altra con Alt+Tab.</p>
+<p>Per i dettagli sulle impostazioni, consulta la pagina «Impostazioni» di questo manuale.</p>
+<h2 id="indice"><a name="indice"></a>Indice</h2>
+<ul>
+<li><a href="#primo-avvio">Primo avvio</a></li>
+<ul>
+<li><a href="#scelta-della-lingua">Scegliere la lingua</a></li>
+<li><a href="#cartella-di-arena">Indicare la cartella di Arena</a></li>
+<li><a href="#creazione-file-traduzione">Creare i file di traduzione</a></li>
+</ul>
+<li><a href="#schermata-principale">Schermata principale</a></li>
+<ul>
+<li><a href="#non-connesso">Stato non connesso</a></li>
+<li><a href="#connesso">Stato connesso</a></li>
+</ul>
+<li><a href="#usare-la-modalita-layout">Usare la modalità layout come base</a></li>
+<li><a href="#schede">Le schede</a></li>
+<ul>
+<li><a href="#scheda-traduci">Scheda Traduci</a></li>
+<li><a href="#scheda-stato">Scheda Stato</a></li>
+<li><a href="#scheda-mappa">Scheda Mappa</a></li>
+<li><a href="#scheda-diario">Scheda Diario</a></li>
+<li><a href="#scheda-registro">Scheda Registro</a></li>
+<li><a href="#scheda-salvataggio">Scheda Salvataggio</a></li>
+<li><a href="#scheda-cattura">Scheda Cattura</a></li>
+<li><a href="#scheda-dizionario">Scheda Dizionario</a></li>
+<li><a href="#scheda-manuale">Scheda Manuale</a></li>
+</ul>
+<li><a href="#procedura-di-base">Procedura di base</a></li>
+</ul>
+<h2 id="primo-avvio"><a name="primo-avvio"></a>Primo avvio</h2>
+<p>La versione pubblica non include i dati originali di Arena. Al primo avvio, i file di traduzione vengono generati a partire dalla cartella di Arena dell'utente.</p>
+<h3 id="scelta-della-lingua"><a name="scelta-della-lingua"></a>Scegliere la lingua</h3>
+<p>Come prima cosa scegli la lingua di visualizzazione di Assist. La lingua scelta viene applicata subito in questa schermata.</p>
+<p><img src="img/assist_first_run_language.png" alt="Primo avvio: scelta della lingua"></p>
+<table>
+<tr><th>Operazione</th><th>Descrizione</th></tr>
+<tr><td>Menu a discesa della lingua</td><td>Sceglie la lingua dell'interfaccia di Assist. In questa schermata si può scegliere solo tra giapponese, English ed Español. Le altre lingue si scelgono dopo l'avvio, con «Lingua» nella scheda «Generale» della finestra Impostazioni.</td></tr>
+<tr><td><code>Next</code> (Avanti)</td><td>Passa alla scelta della cartella di Arena.</td></tr>
+</table>
+<h3 id="cartella-di-arena"><a name="cartella-di-arena"></a>Indicare la cartella di Arena</h3>
+<p>Se prosegui con Arena già avviato, Assist rileva automaticamente la cartella di installazione dal gioco in esecuzione. Se il rilevamento automatico non riesce, indica la cartella dei dati di Arena con <code>Browse...</code> (Sfoglia).</p>
+<p><img src="img/assist_first_run_arena.png" alt="Primo avvio: indicare la cartella di Arena"></p>
+<table>
+<tr><th>Voce</th><th>Descrizione</th></tr>
+<tr><td><code>Game install folder</code> (cartella di installazione del gioco)</td><td>Indica la cartella <code>ARENA</code> di Arena.</td></tr>
+<tr><td><code>Browse...</code> (Sfoglia)</td><td>Indica la cartella di Arena con la finestra di selezione cartella.</td></tr>
+<tr><td><code>Re-check</code> (Ricontrolla)</td><td>Rileva di nuovo l'Arena in esecuzione.</td></tr>
+<tr><td><code>Build translation files</code> (Crea i file di traduzione)</td><td>Quando è stata trovata una cartella di Arena valida, passa alla generazione dei file di traduzione.</td></tr>
+</table>
+<h3 id="creazione-file-traduzione"><a name="creazione-file-traduzione"></a>Creare i file di traduzione</h3>
+<p>Genera i file di traduzione per Assist a partire dai dati della cartella di Arena. Al termine si passa alla schermata principale.</p>
+<p><img src="img/assist_first_run_generate.png" alt="Primo avvio: generazione dei file di traduzione"></p>
+<p>Durante la creazione vengono mostrati una barra di avanzamento e la fase in corso. I dati vengono letti anche da Arena in esecuzione, quindi non chiudere Arena fino al termine.</p>
+<h2 id="schermata-principale"><a name="schermata-principale"></a>Schermata principale</h2>
+<p>In alto in Assist c'è la barra di connessione, al centro l'area delle schede e in basso la barra di stato.</p>
+<h3 id="non-connesso"><a name="non-connesso"></a>Stato non connesso</h3>
+<p>Subito dopo l'avvio non c'è connessione. Con Arena / DOSBox avviato, premi il pulsante <code>Connetti</code> in alto a destra.</p>
+<p><img src="img/assist_main_window.png" alt="Schermata principale non connessa"></p>
+<table>
+<tr><th>Area</th><th>Descrizione</th></tr>
+<tr><td>Stato della connessione</td><td>Mostra se non c'è connessione, il nome della schermata in corso e il nome dell'IMG.</td></tr>
+<tr><td>Connetti / Disconnetti</td><td>Si connette ad Arena in DOSBox, oppure interrompe la connessione.</td></tr>
+<tr><td><code>⏸</code> / <code>▶</code> / <code>■</code></td><td>Mette in pausa / riprende / ferma la lettura ad alta voce. La lettura ad alta voce si può usare dopo averla attivata nella scheda «Lettura ad Alta Voce» della finestra Impostazioni (per impostazione predefinita è OFF).</td></tr>
+<tr><td><code>⊞</code></td><td>Attiva o disattiva la modalità layout. Con il clic destro si apre il menu della disposizione.</td></tr>
+<tr><td><code>📷</code></td><td>Salva uno screenshot. Nella modalità layout salva l'intero layout in una sola immagine. Anche mentre il focus è sulla finestra di gioco (DOSBox), il tasto di scelta rapida (per impostazione predefinita <code>F12</code>) salva allo stesso modo.</td></tr>
+<tr><td><code>⚙</code></td><td>Apre la finestra Impostazioni.</td></tr>
+</table>
+<p>Il messaggio «Tasto F12 registrato», che compare nella barra di stato subito dopo l'avvio, indica che il tasto di scelta rapida per la cattura è utilizzabile. Il tasto si può cambiare nella scheda «Generale» della finestra Impostazioni.</p>
+<h3 id="connesso"><a name="connesso"></a>Stato connesso</h3>
+<p>Una volta connesso, all'estremità sinistra della barra di connessione compare il nome della schermata riconosciuta. L'esempio seguente mostra la connessione alla schermata del titolo di Arena.</p>
+<p><img src="img/assist_connection_bar.png" alt="Barra di connessione: stato connesso"></p>
+<p>A destra del nome della schermata compare anche il nome dell'IMG usato da quella schermata (non compare per le schermate che non usano IMG, come la schermata del titolo). Nella scheda «Schermo» della finestra Impostazioni puoi scegliere se mostrare il nome della schermata, il nome dell'IMG o entrambi.</p>
+<h2 id="usare-la-modalita-layout"><a name="usare-la-modalita-layout"></a>Usare la modalità layout come base</h2>
+<p>Assist è pensato per essere usato di norma nella modalità layout. Le schede funzionano anche nella finestra normale, ma con la modalità layout puoi tenere fissi nella stessa schermata il gioco, la traduzione, la mappa, il registro e altro ancora.</p>
+<p>Nel layout predefinito, a sinistra c'è la schermata di gioco di DOSBox, a destra le schede principali di Assist e in basso un pannello ausiliario. Durante il gioco puoi consultare a destra la mappa o il diario e controllare la traduzione della schermata attuale in basso o nella scheda Traduci.</p>
+<table>
+<tr><th>Operazione</th><th>Descrizione</th></tr>
+<tr><td>Clic sinistro su <code>⊞</code></td><td>Avvia o termina la modalità layout.</td></tr>
+<tr><td>Clic destro su <code>⊞</code></td><td>Permette di scegliere la forma della disposizione, l'angolo di posizionamento, la modalità di tracciamento, la nuova disposizione, il primo piano e altro.</td></tr>
+<tr><td><code>📷</code></td><td>Nella modalità layout salva l'intero layout, DOSBox e Assist compresi, in una sola immagine.</td></tr>
+<tr><td><code>Disconnetti</code></td><td>Interrompe la connessione con Arena. Se esci dalla modalità layout prima di disconnetterti, è più facile rimettere in ordine le finestre.</td></tr>
+</table>
+<h2 id="schede"><a name="schede"></a>Le schede</h2>
+<p>Le schermate di ogni scheda servono a mostrare com'è fatta la schermata. Quando sei connesso, il contenuto viene aggiornato in base alla schermata attuale di Arena e allo stato di gioco.</p>
+<h3 id="scheda-traduci"><a name="scheda-traduci"></a>Scheda Traduci</h3>
+<p>È la scheda principale, che mostra la traduzione corrispondente alla schermata attuale. Il contenuto cambia in base alla situazione: schermata del titolo, creazione del personaggio, conversazioni, strutture, oggetti, incantesimi e così via.</p>
+<p><img src="img/assist_tab_translate.png" alt="Scheda Traduci"></p>
+<table>
+<tr><th>Contenuto</th><th>Descrizione</th></tr>
+<tr><td>Traduzione</td><td>Mostra la traduzione, nella lingua di visualizzazione, della schermata o dell'evento attuale.</td></tr>
+<tr><td>Originale</td><td>In base alle impostazioni, mostra anche il corrispondente testo originale in inglese.</td></tr>
+<tr><td>Visualizzazioni dedicate</td><td>Elenco delle classi, elenco delle razze, equipaggiamento, elenco delle strutture, elenco degli acquisti e simili passano a una visualizzazione dedicata, più leggibile.</td></tr>
+</table>
+<p>Con la scheda «Informazioni di combattimento» delle impostazioni puoi mostrare le informazioni di combattimento anche nella scheda Traduci. Scegli «Combattimento e vista normale» oppure «Vista completa del combattimento», poi indica se vuoi le informazioni come testo o come indicatori dei nemici. Per impostazione predefinita è «Disattivato (vista normale)», che mantiene la visualizzazione tradizionale della scheda Traduci.</p>
+<h3 id="scheda-stato"><a name="scheda-stato"></a>Scheda Stato</h3>
+<p>È la scheda in cui controllare gli attributi e la condizione del personaggio. Dopo la creazione del personaggio, oppure se sei connesso durante il gioco, vengono mostrate le informazioni di stato.</p>
+<p><img src="img/assist_tab_status.png" alt="Scheda Stato"></p>
+<table>
+<tr><th>Contenuto</th><th>Descrizione</th></tr>
+<tr><td>Vista</td><td>Scegli «Standard» (la visualizzazione usata finora) oppure un design a piacere (una scheda del personaggio). Anche la schermata di stato e la distribuzione degli attributi nella scheda Traduci usano la vista scelta qui.</td></tr>
+<tr><td>Attributi</td><td>Puoi controllare gli attributi principali, come Forza e Intelligenza.</td></tr>
+<tr><td>Valori di stato</td><td>Puoi controllare salute, fatica, Punti Incantesimo e così via.</td></tr>
+<tr><td>Operazioni di modifica</td><td>Le operazioni come la modifica degli attributi sono disponibili solo se hai attivato esplicitamente le impostazioni dei trucchi (nella vista «Standard»).</td></tr>
+</table>
+<h3 id="scheda-del-personaggio"><a name="scheda-del-personaggio"></a>Scheda del personaggio</h3>
+<p>È la funzione che mostra lo stato con un design a scelta. Se in «Vista» scegli qualcosa di diverso da «Standard», lo stato viene mostrato con il design scelto. Un design è un file HTML (un modello) e i design inclusi sono 8. Puoi anche crearne uno tuo. Alcuni design mostrano il volto e l'immagine a figura intera (equipaggiamento compreso), la condizione del personaggio (malattia, veleno, paralisi e così via) e la classe armatura di ogni parte del corpo (un valore calcolato dall'equipaggiamento; più è basso, meglio si è protetti). Il volto e l'immagine a figura intera vengono creati dai file del tuo Arena.</p>
+<table>
+<tr><th>Operazione</th><th>Descrizione</th></tr>
+<tr><td>Apri cartella</td><td>Apre la cartella in cui mettere le tue schede del personaggio (file HTML): <code>character_sheets</code>, nella stessa posizione di <code>RTESArenaAssist.exe</code>. La prima volta che la apri vi vengono messe le copie dei design inclusi. I file che metti compaiono nell'elenco «Vista» con «(cartella)» accanto al nome.</td></tr>
+<tr><td>Ricarica</td><td>Rilegge le schede del personaggio della cartella. Premilo dopo aver modificato un file.</td></tr>
+</table>
+<p>Per l'elenco dei design inclusi, il funzionamento delle schede del personaggio, i valori che si possono inserire e come scriverli, consulta la pagina «Design dello stato (schede del personaggio)» di questo manuale.</p>
+<h3 id="scheda-mappa"><a name="scheda-mappa"></a>Scheda Mappa</h3>
+<p>Mostra la mappa automatica di dungeon, città, campo aperto, interni e così via. La visualizzazione si aggiorna in base alla posizione attuale nel gioco.</p>
+<p><img src="img/assist_tab_map.png" alt="Scheda Mappa"></p>
+<table>
+<tr><th>Contenuto</th><th>Descrizione</th></tr>
+<tr><td>Posizione attuale</td><td>Dallo stato di gioco connesso, mostra la mappa e la posizione attuali.</td></tr>
+<tr><td>Mappa automatica</td><td>Disegna le aree già note, i muri, gli ingressi, il terreno del campo e così via.</td></tr>
+<tr><td>Impostazioni di visualizzazione</td><td>Griglia, coordinate dei blocchi, visualizzazione estesa del campo e altro si regolano dalla finestra Impostazioni.</td></tr>
+</table>
+<h3 id="scheda-diario"><a name="scheda-diario"></a>Scheda Diario</h3>
+<p>È la scheda in cui consultare, nella lingua di visualizzazione, ciò che è registrato nel Diario (Logbook) del gioco.</p>
+<p><img src="img/assist_tab_journal.png" alt="Scheda Diario"></p>
+<table>
+<tr><th>Contenuto</th><th>Descrizione</th></tr>
+<tr><td>Data e titolo</td><td>Mostra la data e il riepilogo delle voci del diario.</td></tr>
+<tr><td>Testo</td><td>Mostra il testo del Diario nella lingua di visualizzazione.</td></tr>
+<tr><td>Aggiornamento</td><td>Quando il diario viene aggiornato nel gioco, si aggiorna anche la visualizzazione di Assist.</td></tr>
+</table>
+<h3 id="scheda-registro"><a name="scheda-registro"></a>Scheda Registro</h3>
+<p>È la scheda in cui consultare come cronologia le traduzioni mostrate da Assist. È utile per rileggere in seguito un testo che ti è sfuggito.</p>
+<p><img src="img/assist_tab_log.png" alt="Scheda Registro"></p>
+<table>
+<tr><th>Operazione</th><th>Descrizione</th></tr>
+<tr><td>Ordine</td><td>Alterna tra «prima le più recenti» e «prima le più vecchie».</td></tr>
+<tr><td>Filtro</td><td>Restringe il registro per tipo o per luogo.</td></tr>
+<tr><td>Cancella</td><td>Cancella il registro mostrato.</td></tr>
+</table>
+<p>Se hai attivato il salvataggio del registro di combattimento e c'è qualcosa di registrato, nella scheda Registro puoi passare da «Registro normale» a «Registro di combattimento». Se non c'è alcun registro di combattimento, viene mostrato solo il registro normale, come prima.</p>
+<h3 id="scheda-salvataggio"><a name="scheda-salvataggio"></a>Scheda Salvataggio</h3>
+<p>È la scheda per gestire gli slot di salvataggio di Arena e i backup. Aiuta nelle operazioni sui dati di salvataggio, come il backup automatico prima del ripristino.</p>
+<p><img src="img/assist_tab_save.png" alt="Scheda Salvataggio"></p>
+<table>
+<tr><th>Operazione</th><th>Descrizione</th></tr>
+<tr><td>Elenco degli slot</td><td>Mostra l'elenco degli slot di salvataggio di Arena.</td></tr>
+<tr><td>Backup</td><td>Esegue il backup del salvataggio selezionato.</td></tr>
+<tr><td>Ripristino</td><td>Ripristina i dati di salvataggio da un backup.</td></tr>
+<tr><td>Eliminazione</td><td>Elimina i backup o i salvataggi non più necessari.</td></tr>
+</table>
+<h3 id="scheda-cattura"><a name="scheda-cattura"></a>Scheda Cattura</h3>
+<p>È la scheda in cui consultare gli screenshot salvati con il pulsante <code>📷</code>. Da qui si aprono anche le immagini catturate nella modalità layout.</p>
+<p><img src="img/assist_tab_capture.png" alt="Scheda Cattura"></p>
+<table>
+<tr><th>Operazione</th><th>Descrizione</th></tr>
+<tr><td>Elenco</td><td>Mostra le catture salvate.</td></tr>
+<tr><td>Anteprima</td><td>Permette di controllare l'immagine selezionata.</td></tr>
+<tr><td>Blocco</td><td>Protegge dall'eliminazione le immagini che vuoi conservare.</td></tr>
+<tr><td>Eliminazione</td><td>Elimina l'immagine selezionata o le immagini non più necessarie.</td></tr>
+</table>
+<h3 id="scheda-dizionario"><a name="scheda-dizionario"></a>Scheda Dizionario</h3>
+<p>È la scheda per cercare nel dizionario di traduzione e nei testi dei dungeon di Assist. Serve a controllare parole e frasi comparse nel gioco.</p>
+<p><img src="img/assist_tab_dict.png" alt="Scheda Dizionario"></p>
+<table>
+<tr><th>Modalità di visualizzazione</th><th>Descrizione</th></tr>
+<tr><td>Dizionario</td><td>Cerca per parola chiave in inglese, traduzione e categoria.</td></tr>
+<tr><td>Testo del Dungeon</td><td>Cerca e consulta i testi dei dungeon provenienti dai file INF.</td></tr>
+</table>
+<h3 id="scheda-manuale"><a name="scheda-manuale"></a>Scheda Manuale</h3>
+<p>È la scheda in cui consultare, nella lingua di visualizzazione, la spiegazione dei comandi di base e del sistema di Arena e quella delle funzioni di Assist. La usi quando durante il gioco vuoi controllare un comando o un termine.</p>
+<p><img src="img/assist_tab_manual.png" alt="Scheda Manuale"></p>
+<table>
+<tr><th>Operazione</th><th>Descrizione</th></tr>
+<tr><td>Semplice / Completo / Assist</td><td>Cambia il contenuto mostrato (tabella seguente).</td></tr>
+<tr><td>Ricerca per parola chiave</td><td>Cerca all'interno del manuale.</td></tr>
+<tr><td>Elenco a sinistra</td><td>Permette di passare da un capitolo all'altro: storia, creazione del personaggio, comandi, combattimento e così via.</td></tr>
+</table>
+<table>
+<tr><th>Modalità</th><th>Contenuto</th><th>Lingue</th></tr>
+<tr><td>Semplice</td><td>Spiegazione del gioco (9 capitoli)</td><td>7 lingue</td></tr>
+<tr><td>Completo</td><td>Traduzione del manuale ufficiale (mostrata dopo aver importato un pacchetto di traduzione)</td><td>Al momento solo giapponese</td></tr>
+<tr><td>Assist</td><td>Spiegazione delle funzioni di Assist (uso di base, finestra Impostazioni, design dello stato (schede del personaggio))</td><td>7 lingue</td></tr>
+</table>
+<p><b>Versione completa (traduzione del manuale ufficiale)</b></p>
+<p>Con «Completo» puoi leggere la traduzione del manuale ufficiale (la Player's Guide e il relativo addendum). Le traduzioni sono distribuite, separatamente dall'applicazione, come pacchetti di traduzione per ogni lingua di visualizzazione (<code>RTESArenaAssist-manual-&lt;lingua&gt;.zip</code>) nella pagina di download del manuale (al momento solo giapponese). La prima volta che lo usi, importalo con la procedura seguente.</p>
+<p><img src="img/assist_tab_manual_full.png" alt="Scheda Manuale (importazione della versione completa)"></p>
+<ol><li>Premi «Apri la pagina di download del manuale». Nel browser si apre la pagina di download: scarica il pacchetto di traduzione della tua lingua di visualizzazione.</li><li>Premi «Importa» e scegli il file scaricato.</li><li>Quando compare l'elenco dei capitoli, hai finito. Sopra l'elenco vengono mostrati la data del pacchetto di traduzione importato e i collegamenti alla pagina di download e all'importazione. Un nuovo pacchetto di traduzione si sostituisce a quello precedente importandolo con la stessa procedura.</li></ol>
+<p>Le immagini del manuale vengono create da <code>Player Guide.pdf</code>, che si trova nella cartella <code>Docs</code> del tuo Arena (versione Steam). Se il PDF non viene trovato o è di un'altra versione, viene mostrato solo il testo. Controlla la «Cartella di gioco» nelle impostazioni e poi premi «Ricrea le immagini»: compariranno anche le immagini. Dopo l'importazione puoi eliminare il file scaricato. Assist non si connette a Internet (il download si fa con il tuo browser).</p>
+<p>In «Completo» compaiono anche i collegamenti per aprire il manuale ufficiale (PDF in inglese) che si trova nella cartella <code>Docs</code>. Se la lingua di visualizzazione è l'inglese, al posto del pacchetto di traduzione vengono mostrati solo questi collegamenti.</p>
+<h2 id="procedura-di-base"><a name="procedura-di-base"></a>Procedura di base</h2>
+<ol><li>Avvia Arena.</li><li>Avvia RTESArenaAssist.</li><li>Al primo avvio, indica la lingua e la cartella di Arena e genera i file di traduzione.</li><li>Premi <code>Connetti</code> in alto a destra in Assist per connetterti ad Arena / DOSBox.</li><li>Premi <code>⊞</code> per entrare nella modalità layout.</li><li>Di solito resti nella modalità layout e passi da una scheda all'altra: Traduci, Mappa, Diario, Registro.</li><li>Per conservare una schermata, cattura con <code>📷</code> o con il tasto di scelta rapida (per impostazione predefinita <code>F12</code>).</li><li>Alla fine esci dalla modalità layout con <code>⊞</code> e, se serve, premi <code>Disconnetti</code>.</li></ol>
+<p>Dimensione della visualizzazione della modalità layout, forma della disposizione, pannello di traduzione, cartella di salvataggio delle catture e altro si regolano dalla finestra Impostazioni. Anche per usare la lettura ad alta voce delle traduzioni, la attivi nella scheda «Lettura ad Alta Voce» della finestra Impostazioni.</p>
+
+</body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Einstellungsdialog im Detail</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — Einstellungsdialog im Detail</h1>
+<p>Diese Seite zeigt die Tabs des Einstellungsdialogs von RTESArenaAssist als Screenshots und erklärt jedes Bedienelement.</p>
+<p>Die Bilder zeigen den Einstellungsdialog mit den Standardeinstellungen in deiner Anzeigesprache und dem standardmäßigen Thema „Dunkel“.</p>
+<p>Die Werte auf dem Tab „DOSBox“ spiegeln nicht nur die Einstellungsdatei von Assist wider, sondern auch das Ergebnis des Lesens der <code>arena.conf</code> am Standardpfad. Weicht die <code>arena.conf</code> in deiner Umgebung ab, ändern sich daher auch die angezeigten Werte.</p>
+<h2 id="inhalt"><a name="inhalt"></a>Inhalt</h2>
+<ul>
+<li><a href="#tab-allgemein">Tab „Allgemein“</a></li>
+<ul>
+<li><a href="#pfade">Pfade</a></li>
+<li><a href="#verhalten">Verhalten</a></li>
+<li><a href="#ausloeserklang">Auslöserklang</a></li>
+<li><a href="#tastenkuerzel-fuer-aufnahme">Tastenkürzel für Aufnahme</a></li>
+<li><a href="#aktualisierungen">Aktualisierungen</a></li>
+</ul>
+<li><a href="#tab-anzeige">Tab „Anzeige“</a></li>
+<ul>
+<li><a href="#verbindungsleiste">Verbindungsleiste</a></li>
+<li><a href="#markierungen-in-der-gegenstandsliste">Markierungen in der Gegenstandsliste</a></li>
+<li><a href="#schriftart-des-uebersetzungspanels">Schriftart des Übersetzungspanels</a></li>
+<li><a href="#layout">Layout</a></li>
+</ul>
+<li><a href="#tab-karte">Tab „Karte“</a></li>
+<ul>
+<li><a href="#karteneinstellungen">Karteneinstellungen</a></li>
+<li><a href="#erweiterte-felddarstellung">Erweiterte Felddarstellung</a></li>
+<li><a href="#kartendarstellung-und-farben">Kartendarstellung und Farben</a></li>
+</ul>
+<li><a href="#tab-uebersetzung">Tab „Übersetzung“</a></li>
+<ul>
+<li><a href="#verhalten-von-uebersetzungstab-und-panel">Verhalten von Übersetzungstab/-panel</a></li>
+<li><a href="#uebersetzungstab-erweitert">Übersetzungstab — Erweitert</a></li>
+</ul>
+<li><a href="#tab-kampfinformationen">Tab „Kampfinformationen“</a></li>
+<ul>
+<li><a href="#arena-bildschirm">Arena-Bildschirm</a></li>
+<li><a href="#arena-bildschirm-anhaltende-zauber">Arena-Bildschirm · Anhaltende Zauber</a></li>
+<li><a href="#kampfinformationen-im-uebersetzungsregister">Übersetzungsregister</a></li>
+<li><a href="#kampfinformationen-im-uebersetzungsfenster">Übersetzungsfenster</a></li>
+<li><a href="#allgemeine-einstellungen-und-meldungen">Allgemeine Einstellungen</a></li>
+</ul>
+<li><a href="#tab-vorlesen">Tab „Vorlesen“</a></li>
+<ul>
+<li><a href="#vorlesen">Vorlesen</a></li>
+<li><a href="#vorlesen-ziele">Vorlesen-Ziele</a></li>
+<li><a href="#sonstiges-und-log">Sonstiges / Log</a></li>
+<li><a href="#aussprache-des-charakternamens">Aussprache des Charakternamens</a></li>
+</ul>
+<li><a href="#tab-cheat">Tab „Cheat“</a></li>
+<li><a href="#tab-dosbox">Tab „DOSBox“</a></li>
+<ul>
+<li><a href="#konfigurationsdatei-und-fensterverhalten">Konfigurationsdatei / Fensterverhalten</a></li>
+<li><a href="#fenster-und-anzeige">Fenster / Anzeige</a></li>
+<li><a href="#video">Video</a></li>
+<li><a href="#leistung">Leistung</a></li>
+<li><a href="#sound">Sound</a></li>
+</ul>
+</ul>
+<h2 id="tab-allgemein"><a name="tab-allgemein"></a>Tab „Allgemein“</h2>
+<p>Auf diesem Tab legst du Pfade, das Grundverhalten, den Auslöserklang und das Tastenkürzel für die Aufnahme fest und siehst deine Version.</p>
+<p><img src="img/settings_dark_tab_01.png" alt="Tab Allgemein"></p>
+<h3 id="pfade"><a name="pfade"></a>Pfade</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Spielordner:</code></td><td>Leer</td><td>Der Ordner mit <code>ARENA.EXE</code> und den Spielstanddateien von Arena. Solange er nicht festgelegt ist, sind die Spielstandverwaltung und das Lesen der Spieldaten nicht nutzbar</td></tr>
+<tr><td><code>Sicherungsordner:</code></td><td>Leer</td><td>Zielordner für Spielstandsicherungen. Ist er leer, wird <code>saves_backup/</code> neben der Einstellungsdatei des Tools verwendet</td></tr>
+<tr><td><code>Erfassungsordner:</code></td><td>Leer</td><td>Speicherort für Screenshots. Ist er leer, wird derselbe Ordner wie für die Sicherungen verwendet</td></tr>
+<tr><td><code>Durchsuchen...</code></td><td>-</td><td>Wählt den jeweiligen Ordner aus</td></tr>
+</table>
+<h3 id="verhalten"><a name="verhalten"></a>Verhalten</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Abfrageintervall:</code></td><td><code>100 ms</code></td><td>Zeitabstand, in dem das DOSBox-Fenster und der Speicherzustand überwacht werden. Der Standardwert ist kurz gewählt, damit auch kurze Meldungen erfasst werden</td></tr>
+<tr><td><code>Vor dem Löschen bestätigen:</code></td><td>AN</td><td>Zeigt beim Löschen von Aufnahmen oder Sicherungen einen Bestätigungsdialog an</td></tr>
+<tr><td><code>Immer im Vordergrund:</code></td><td>AUS</td><td>Zeigt das Hauptfenster von Assist vor allen anderen Fenstern an</td></tr>
+<tr><td><code>Thema:</code></td><td>Dunkel</td><td>Wählt das Farbschema der Oberfläche</td></tr>
+<tr><td><code>Sprache:</code></td><td>Automatisch (System)</td><td>Sprache der Oberfläche. Ist nichts festgelegt, wird sie anhand der Systemsprache automatisch bestimmt; eine Änderung wird nach einem Neustart der Anwendung wirksam</td></tr>
+</table>
+<h3 id="ausloeserklang"><a name="ausloeserklang"></a>Auslöserklang</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Aktiviert</code></td><td>AN</td><td>Spielt beim Speichern eines Screenshots einen Klang ab</td></tr>
+<tr><td><code>Art:</code></td><td><code>携帯電話カメラ（標準）</code> (Handykamera, Standard)</td><td>Der abgespielte Auslöserklang. Zur Auswahl stehen Standard, Kurzfassung, Doppelt, Betonte Höhen und Mild (die Namen in der Liste erscheinen auf Japanisch)</td></tr>
+<tr><td><code>Lautstärke:</code></td><td><code>30 %</code></td><td>Wiedergabelautstärke des Auslöserklangs</td></tr>
+<tr><td><code>▶</code></td><td>-</td><td>Spielt den ausgewählten Auslöserklang zur Probe ab</td></tr>
+</table>
+<h3 id="tastenkuerzel-fuer-aufnahme"><a name="tastenkuerzel-fuer-aufnahme"></a>Tastenkürzel für Aufnahme</h3>
+<p>Während das Spielfenster (DOSBox) den Fokus hat, genügt ein Tastendruck, um eine Aufnahme zu speichern. Nutze das, um Meldungen festzuhalten, die nach wenigen Sekunden verschwinden.</p>
+<table>
+<tr><th>Element</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Aktiviert</code></td><td>AN</td><td>Verwendet das Tastenkürzel für die Aufnahme</td></tr>
+<tr><td><code>Ctrl</code> / <code>Alt</code> / <code>Shift</code></td><td>AUS</td><td>Aktiviere sie, wenn du Modifikatortasten kombinieren möchtest</td></tr>
+<tr><td><code>Taste:</code></td><td><code>F12</code></td><td>Die verwendete Taste. Zur Auswahl stehen F5 bis F12, PrintScreen, Pause, ScrollLock, Insert, Home, End, PageUp und PageDown</td></tr>
+</table>
+<ul>
+<li>Die gedrückte Taste wird nicht an das Spiel weitergegeben. Tasten, die das Spiel oder DOSBox verwenden (F1 / F3 / F4 / F8, Ctrl+F5 bis F12, Alt+F12, Alt+Pause), lassen sich nicht auswählen</li>
+<li>Verwendet eine andere Anwendung dieselbe Taste als Tastenkürzel, funktioniert deren Tastenkürzel nicht, solange diese Anwendung läuft. Mit einer anderen Taste lassen sich beide nutzen</li>
+<li>Konnte die Taste nicht registriert werden, erscheint eine Meldung in der Statusleiste. Auch dann kannst du über die Kamera-Schaltfläche in der Werkzeugleiste aufnehmen</li>
+</ul>
+<h3 id="aktualisierungen"><a name="aktualisierungen"></a>Aktualisierungen</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Aktuelle Version:</code></td><td>-</td><td>Die Version von Assist, die du verwendest</td></tr>
+<tr><td><code>Release-Seite öffnen</code></td><td>-</td><td>Öffnet die Release-Seite von Assist (die Liste der Releases) im Browser. Ob es eine neue Version gibt, prüfst du dort</td></tr>
+</table>
+<p>Assist stellt keine Internetverbindung her und sucht daher nicht nach Aktualisierungen und aktualisiert sich nicht selbst.</p>
+<h2 id="tab-anzeige"><a name="tab-anzeige"></a>Tab „Anzeige“</h2>
+<p>Auf diesem Tab stellst du die Verbindungsleiste, die Markierungen in der Gegenstandsliste, die Schriftart des Übersetzungspanels und das Layout ein.</p>
+<p><img src="img/settings_dark_tab_02.png" alt="Tab Anzeige"></p>
+<h3 id="verbindungsleiste"><a name="verbindungsleiste"></a>Verbindungsleiste</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Erkannten Bildschirmnamen anzeigen:</code></td><td>AN</td><td>Zeigt in der Verbindungsleiste den Namen des aktuell erkannten Bildschirms an</td></tr>
+<tr><td><code>IMG-Informationen anzeigen:</code></td><td>AN</td><td>Zeigt in der Verbindungsleiste die gerade erkannten IMG-Informationen an</td></tr>
+<tr><td><code>Version anzeigen:</code></td><td>AN</td><td>Zeigt die Version der Anwendung in der Verbindungsleiste und der Statusleiste an</td></tr>
+</table>
+<h3 id="markierungen-in-der-gegenstandsliste"><a name="markierungen-in-der-gegenstandsliste"></a>Markierungen in der Gegenstandsliste</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Ausgerüstet:</code></td><td><code>E</code></td><td>Ein Zeichen, das links neben ausgerüsteten Gegenständen angezeigt wird</td></tr>
+<tr><td><code>Ausrüstbar:</code></td><td>Leer</td><td>Markierung für ausrüstbare Gegenstände. Der Standardwert ist leer, daher wird nichts angezeigt</td></tr>
+<tr><td><code>Nicht ausrüstbar:</code></td><td><code>✕</code></td><td>Ein Zeichen, das links neben Gegenständen angezeigt wird, die nicht ausgerüstet werden können</td></tr>
+</table>
+<h3 id="schriftart-des-uebersetzungspanels"><a name="schriftart-des-uebersetzungspanels"></a>Schriftart des Übersetzungspanels</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Rechte Seite an linke Seite angleichen</code></td><td>AUS</td><td>Bei AN haben Schriftart und Größe der Originalseite dieselben Werte wie die der Übersetzungsseite</td></tr>
+<tr><td><code>Links (Übersetzung):</code></td><td>App-Standard / <code>14 pt</code></td><td>Schriftart und Größe des Übersetzungstextes. Ist kein Schriftname gespeichert, wird die Standardschriftart der Anwendung in deiner Umgebung gewählt</td></tr>
+<tr><td><code>Rechts (Original):</code></td><td>App-Standard / <code>12 pt</code></td><td>Schriftart und Größe des englischen Originaltextes. Da die Synchronisierung AUS ist, kannst du sie getrennt von der Übersetzungsseite einstellen</td></tr>
+</table>
+<h3 id="layout"><a name="layout"></a>Layout</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Verfolgungsmodus:</code></td><td>Kein Folgen</td><td>Legt fest, ob das andere Fenster folgt, wenn DOSBox oder Assist verschoben wird</td></tr>
+<tr><td><code>DOSBox-Ecke:</code></td><td>Oben links</td><td>Die Bezugsecke auf dem Bildschirm, in der DOSBox bei der einmaligen Anordnung und im Layoutmodus platziert wird</td></tr>
+<tr><td><code>Layoutform:</code></td><td>Form 2: Unten volle Breite + Oben rechts (Standard)</td><td>Aufteilung des Bereichs zwischen DOSBox und den Assist-Panels. Form 2 ist das Standardlayout, das oben rechts und die volle Breite unten verwendet</td></tr>
+<tr><td><code>Layoutgröße:</code></td><td><code>1920 x 1080</code></td><td>Größe der gesamten Arbeitsfläche im Layoutmodus</td></tr>
+</table>
+<h2 id="tab-karte"><a name="tab-karte"></a>Tab „Karte“</h2>
+<p>Auf diesem Tab stellst du die Erkundungskarte und die erweiterte Felddarstellung ein.</p>
+<p><img src="img/settings_dark_tab_03.png" alt="Tab Karte"></p>
+<h3 id="karteneinstellungen"><a name="karteneinstellungen"></a>Karteneinstellungen</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Sichtlinie durch Wände auf der Karte:</code></td><td>AUS</td><td>Bei AUS werden unbestätigte Bereiche hinter einer Wand nicht auf der Karte erfasst. Bei AN entspricht es eher dem Original von Arena, und auch Bereiche hinter Wänden werden erfasst</td></tr>
+<tr><td><code>Erhöhungen voller Höhe als Mauern anzeigen:</code></td><td>AN</td><td>Zeigt Erhöhungen, die vom Boden bis zur Decke reichen, in der Farbe von Wänden an. Es ändert sich nur die Art der Darstellung, nicht, wie Sichtlinien blockiert werden. Erhöhungen, die nicht die volle Höhe haben, werden weiterhin als Erhöhung angezeigt</td></tr>
+<tr><td><code>Höhe, ab der Erhöhungen die Sicht blockieren:</code></td><td><code>0 %</code></td><td>Bei einer Deckenhöhe von 100 % blockieren Erhöhungen, deren Oberkante mindestens diese Höhe hat, die Sichtlinie auf der Karte. Bei 0 % blockieren alle Erhöhungen die Sicht</td></tr>
+<tr><td><code>Boden für unerforschte Bereiche anzeigen:</code></td><td>AUS</td><td>Bei AUS wird nur für bekannte Felder die Bodenfarbe angezeigt, sodass die Form des unerforschten Bereichs verborgen bleibt. Bei AN wird die ganze Karte in der Farbe des Schriftrollenhintergrunds angezeigt</td></tr>
+<tr><td><code>Auf Charakter zentrieren:</code></td><td>AN</td><td>Lässt die Karte dem Charakter automatisch folgen, sodass er in der Mitte bleibt, wenn er sich bewegt. Im Stillstand kannst du die Karte von Hand verschieben</td></tr>
+<tr><td><code>Gitternetzlinien anzeigen:</code></td><td>AN</td><td>Zeigt die Gitternetzlinien an den Feldgrenzen an</td></tr>
+<tr><td><code>Chunk-Grenzen anzeigen:</code></td><td>AN</td><td>Hebt auf der Feldkarte die Chunk-Grenzen im Abstand von 64 Feldern hervor</td></tr>
+<tr><td><code>Chunk-Koordinaten anzeigen:</code></td><td>AN</td><td>Zeigt auf der Feldkarte die Koordinaten jedes Chunks an und erleichtert so die Orientierung</td></tr>
+<tr><td><code>Neuzentrierungsgrenzen anzeigen:</code></td><td>AUS</td><td>Zeigt die Neuzentrierungsgrenzen der Feldkarte als gestrichelte Linien an. Eine Hilfsanzeige zur Positionsuntersuchung und -prüfung</td></tr>
+<tr><td><code>Schriftgröße der Chunk-Koordinaten:</code></td><td><code>10 pt</code></td><td>Schriftgröße der Beschriftungen der Chunk-Koordinaten</td></tr>
+</table>
+<h3 id="erweiterte-felddarstellung"><a name="erweiterte-felddarstellung"></a>Erweiterte Felddarstellung</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Erweiterte Darstellung aktivieren:</code></td><td>AN</td><td>Der übergeordnete Schalter für die erweiterte Darstellung der Feldkarte. Bei AUS ähnelt die Anzeige der automatischen Karte im Spiel</td></tr>
+<tr><td><code>Straße von Wand unterscheiden:</code></td><td>AN</td><td>Zeichnet passierbare Straßen und nicht passierbare Teile wie Gebäude und Wände in verschiedenen Farben</td></tr>
+<tr><td><code>Wandränder anzeigen:</code></td><td>AN</td><td>Zeigt Wandkonturen und Randgelände (edge) an</td></tr>
+<tr><td><code>Zäune/Hecken/Gärten unterscheiden:</code></td><td>AN</td><td>Unterscheidet Randgelände (edge) wie Zäune, Hecken und Gärten durch Verbindungslinien</td></tr>
+<tr><td><code>Feldfrüchte anzeigen:</code></td><td>AN</td><td>Zeigt Feldfrüchte wie Mais und Äcker in eigenen Farben oder mit Symbolen an</td></tr>
+<tr><td><code>Alle Gebäudeeingänge anzeigen:</code></td><td>AN</td><td>Zeigt auch die Eingänge von Häusern, Gasthäusern, Tempeln, Stadttoren und so weiter rot an. Eingänge von Krypten, Türmen und Verliesen werden unabhängig von dieser Einstellung rot angezeigt</td></tr>
+<tr><td><code>Landmarken anzeigen (Bäume, Büsche usw.):</code></td><td>AUS</td><td>Legt vereinfachte Markierungen für Bäume, Büsche, Felsen, Gräber, Ruinen und mehr darüber. Da es viele sind und die Karte dadurch schwerer lesbar wird, ist der Standardwert AUS</td></tr>
+</table>
+<h3 id="kartendarstellung-und-farben"><a name="kartendarstellung-und-farben"></a>Kartendarstellung und Farben</h3>
+<p>Die Karte des Spiels zeichnet unter anderem Gänge unter Mauern, ohne sie zu unterscheiden. Hier legst du fest, ob sie unterschieden gezeichnet werden, und die Farbe jedes Elements. Schaltest du „Darstellen“ in einer Zeile aus, kehrt dieses Element zur Anzeige der Karte des Spiels zurück (nur bei den Schätzen wird bei AUS gar nichts angezeigt).</p>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Geheimtüren:</code></td><td>AN</td><td>Zeigt entdeckte Geheimtüren in einer eigenen Farbe an. Bis zur Entdeckung bleiben sie eine Wand</td></tr>
+<tr><td><code>Wasser unter Mauern:</code></td><td>AN</td><td>Zeigt Wasser, das unter einer Mauer hindurchführt, in einer eigenen Farbe an. Es wird erst angezeigt, wenn du es tatsächlich durchquert und so aufgedeckt hast</td></tr>
+<tr><td><code>Gänge unter Mauern:</code></td><td>AN</td><td>Zeigt Gänge an, die unter einer Mauer hindurchführen. Sie werden erst angezeigt, wenn du sie tatsächlich durchquert und so aufgedeckt hast</td></tr>
+<tr><td><code>Lava unter Mauern:</code></td><td>AN</td><td>Zeigt Lava, die unter einer Mauer hindurchführt, in einer eigenen Farbe an. Sie wird erst angezeigt, wenn du sie tatsächlich durchquert und so aufgedeckt hast</td></tr>
+<tr><td><code>Schätze:</code></td><td>AN</td><td>Legt eine Markierung auf Orte, an denen du einen Schatz erhalten hast. Das Zeichen der Markierung kannst du im Feld rechts ändern. Ist auf dem Tab „Cheat“ „Karte aufdecken“ aktiviert, werden alle Orte mit Schätzen angezeigt, unabhängig davon, ob du sie erhalten hast</td></tr>
+<tr><td><code>Schlüssel und Questgegenstände:</code></td><td>AN</td><td>Zeigt unter den Schätzen die Markierungen von Schlüsseln und Questgegenständen in einer anderen Farbe an. Bei AUS erscheinen sie in derselben Farbe wie Schätze. Sind die Schätze AUS, werden sie nicht angezeigt</td></tr>
+<tr><td><code>Einrichtungen farblich markieren:</code></td><td>AN</td><td>Ersetzt auf der Stadtkarte Felder in Gebäudefarbe, die an den Eingang eines Gasthauses, Ausrüstungsladens, Tempels oder einer Magiergilde grenzen, durch die Farbe der jeweiligen Einrichtung. Die Farbe der roten Eingänge ändert sich nicht. Die Farbe jeder Einrichtung kannst du in den Feldern darunter ändern</td></tr>
+<tr><td><code>Gänge darunter:</code></td><td><code>Als Röhren zeigen</code> / Stärke <code>100 %</code></td><td>Zeigt Gänge, die unter Mauern und Erhöhungen hindurchführen, als Röhren durch die Mitte des Feldes. Bei AUS wird wie bisher das ganze Feld farbig gefüllt. Die Röhren haben dieselbe Farbe wie Löcher und gehen ohne Unterbrechung in sie über. Eine geringere <code>Stärke</code> macht die Röhren dezenter</td></tr>
+</table>
+<p>Mit einem Klick auf das Farbfeld rechts neben jedem Eintrag wählst du eine beliebige Farbe. Die kleinen Schaltflächen daneben bieten leicht auswählbare Vorschläge, und <code>Standard</code> stellt die ursprüngliche Farbe wieder her. Auf dieselbe Weise änderst du auch die Farben der ursprünglichen Elemente des Spiels: Mauer, Erhöhung, Tür und Eingänge, Treppe (aufwärts und abwärts), Wasser, trockener Abgrund und Lava (standardmäßig dieselben Farben wie im Spiel).</p>
+<h2 id="tab-uebersetzung"><a name="tab-uebersetzung"></a>Tab „Übersetzung“</h2>
+<p>Auf diesem Tab stellst du die Zusatzanzeigen des Übersetzungspanels und des Übersetzungstabs ein.</p>
+<p><img src="img/settings_dark_tab_04.png" alt="Tab Übersetzung"></p>
+<h3 id="verhalten-von-uebersetzungstab-und-panel"><a name="verhalten-von-uebersetzungstab-und-panel"></a>Verhalten von Übersetzungstab/-panel</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Meldung bis zur nächsten beibehalten:</code></td><td>AUS</td><td>Legt fest, ob Meldungen zu Triggern und Objektinteraktionen im Übersetzungspanel stehen bleiben, bis die nächste Meldung eintrifft</td></tr>
+<tr><td><code>Ausweichanzeige im Leerlauf:</code></td><td>Kartenbildschirm</td><td>Wählt, was auf der gesamten Fläche des Übersetzungstabs angezeigt wird, wenn du erkundest und es keinen Übersetzungstext gibt. Standardmäßig hat der Kartenbildschirm Vorrang</td></tr>
+</table>
+<h3 id="uebersetzungstab-erweitert"><a name="uebersetzungstab-erweitert"></a>Übersetzungstab — Erweitert</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Verhalten bei ausgeblendetem Panel im Übersetzungstab nachbilden:</code></td><td>AUS</td><td>Bei AN werden Übersetzungsergebnisse und Dialogmeldungen im Übersetzungstab angezeigt, genau wie bei ausgeblendetem Übersetzungspanel. Eine erweiterte Einstellung zur Überprüfung</td></tr>
+</table>
+<h2 id="tab-kampfinformationen"><a name="tab-kampfinformationen"></a>Tab „Kampfinformationen“</h2>
+<p>Hier legst du getrennt fest, wo Kämpfe und anhaltende Zauber angezeigt werden. Die neuen Funktionen für Anzeige, Vorlesen und Speichern sind standardmäßig AUS. In einer früheren Entwicklungsversion gespeicherte Einstellungswerte werden unverändert übernommen. Die Anzeigetexte gibt es auf Japanisch, Englisch, Spanisch, Deutsch, Französisch, Italienisch und Russisch.</p>
+<p><img src="img/settings_dark_tab_05.png" alt="Tab Kampfinformationen"></p>
+<h3 id="arena-bildschirm"><a name="arena-bildschirm"></a>Arena-Bildschirm</h3>
+<table>
+<tr><th>Element</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Separate OBS-Fenster verwenden (Kampf und Zaubereffekte)</code></td><td>AUS</td><td>Fasst Kampfinformationen und anhaltende Zauber in einem Fenster zusammen, das du in der Fensteraufnahme von OBS auswählen kannst</td></tr>
+<tr><td><code>Kampfinformationen anzeigen</code></td><td>AUS</td><td>Zeigt den zuletzt angegriffenen Gegner, den du gerade siehst und dem du begegnet bist, oben auf dem Bildschirm an, weitere lebende Gegner, denen du begegnet bist, auch außerhalb der Sichtweite rechts. Du kannst Gesundheit, Erschöpfung und Zauberpunkte sowie zugefügten Schaden und Siege prüfen. Erlittener Schaden wird am unteren Rand des Erkundungsbereichs angezeigt</td></tr>
+<tr><td><code>Anzeigedauer für Erfahrung</code></td><td>5 s</td><td>Zeigt Erfahrung unten rechts an, sobald du sie erhältst, und blendet jedes Feld nach der angegebenen Anzahl Sekunden aus. Erhältst du kurz hintereinander weitere, werden ältere Felder nach links verschoben (1 bis 60 Sekunden)</td></tr>
+<tr><td><code>Bei niedriger Gesundheit einen dezenten Rahmen anzeigen</code></td><td>AUS</td><td>Lässt den Rand des Erkundungsbildschirms leicht pulsieren, wenn die Gesundheit auf den angegebenen Anteil oder darunter fällt. Du kannst dies auch aktivieren, ohne die Gegneranzeige der Kampfinformationen zu nutzen</td></tr>
+<tr><td><code>Gesundheitsschwelle</code></td><td>25%</td><td>Der Anteil, ab dem die Randanzeige bei niedriger Gesundheit beginnt (1 bis 99 % der maximalen Gesundheit)</td></tr>
+</table>
+<p>Die Anzeige des erlittenen Schadens verschwindet nach etwa 5 Sekunden automatisch. Die Sicht der Gegner wird an jedem Ort gleich beurteilt. Steht die Karte oder die Koordinate nicht fest, werden Gegner nicht auf Verdacht angezeigt.</p>
+<p>Zur Aufnahme mit OBS aktivierst du diese Einstellung, wählst in der „Fensteraufnahme“ <code>RTESArenaAssist オーバーレイ</code> (der Fenstertitel wird in allen Sprachen auf Japanisch angezeigt) aus, erlaubst Transparenz und legst es über das Spielbild. Kampfinformationen und anhaltende Zauber erscheinen in derselben Quelle.</p>
+<h3 id="arena-bildschirm-anhaltende-zauber"><a name="arena-bildschirm-anhaltende-zauber"></a>Arena-Bildschirm · Anhaltende Zauber</h3>
+<table>
+<tr><th>Element</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Anhaltende Zauber oben links anzeigen</code></td><td>AUS</td><td>Zeigt den Zustand von Licht, Schild, Stärke, Feuerresistenz und Schweben an</td></tr>
+<tr><td><code>Anzeigestil</code></td><td>E</td><td>Zur Auswahl stehen A „Name + Restwert“, B „Name + waagerechter Balken“, C „Symbol + waagerechter Balken“, D „Symbol + Abdunkelung im Uhrzeigersinn“, E „Symbol + Name + Restwert + schmaler Balken“ und F „Kompakte Kachel“</td></tr>
+<tr><td><code>Aktualisierung von Zeiteffekten</code></td><td>Runden</td><td>Legt fest, ob Licht, Feuerresistenz und Schweben in Runden oder in geschätzten Sekunden (jede Sekunde) aktualisiert werden. Die Sekunden werden anhand des Spielfortschritts angepasst; ändert sich die Fortschrittsgeschwindigkeit, etwa durch DETAIL, ist daher nicht unbedingt ein fester Faktor im Spiel</td></tr>
+</table>
+<p>Schild zeigt den verbleibenden Schutz, Stärke den Bonus. Bei einer Verbindung, die erst später zustande kam und bei der das Maximum nicht bekannt ist, kann der Balken entfallen. Die Sekundenanzeige ist eine Schätzung; das Ende eines Effekts richtet sich nach dem Zustand im Spiel.</p>
+<h3 id="kampfinformationen-im-uebersetzungsregister"><a name="kampfinformationen-im-uebersetzungsregister"></a>Übersetzungsregister</h3>
+<table>
+<tr><th>Element</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Anzeigemodus</code></td><td>Aus (normale Ansicht)</td><td>Zur Auswahl stehen: normale Anzeige beibehalten / normale Anzeige und Kampfinformationen gemeinsam / Kampfinformationen im Vollbild</td></tr>
+<tr><td><code>Kampfformat</code></td><td>Gegnerbalken</td><td>Legt fest, ob die Kampfinformationen als Text oder als Gegnerbalken gezeigt werden</td></tr>
+</table>
+<h3 id="kampfinformationen-im-uebersetzungsfenster"><a name="kampfinformationen-im-uebersetzungsfenster"></a>Übersetzungsfenster</h3>
+<table>
+<tr><th>Element</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Kampfmeldungen anzeigen</code></td><td>AUS</td><td>Zeigt Kampftexte im Übersetzungspanel an. Erscheinen bisherige Meldungen, Gespräche oder Listen, haben diese Vorrang</td></tr>
+<tr><td><code>Letzte Meldungen</code></td><td>10 Einträge</td><td>Zeigt die letzten 1 bis 50 Kampftexte an. Wird die Anzahl überschritten, fallen die ältesten Texte weg und neue kommen hinzu</td></tr>
+</table>
+<h3 id="allgemeine-einstellungen-und-meldungen"><a name="allgemeine-einstellungen-und-meldungen"></a>Allgemeine Einstellungen</h3>
+<table>
+<tr><th>Element</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Neue Kampfmeldungen vorlesen</code></td><td>AUS</td><td>Ist das Vorlesen insgesamt aktiviert, werden neue Kampftexte in der Reihenfolge ihres Auftretens gelesen. Gleiche Texte kurz hintereinander werden nicht ausgeschlossen, und beim nächsten Schaden wird das vorherige Vorlesen nicht abgebrochen</td></tr>
+<tr><td><code>Nach einem Sieg ungelesene Schadensmeldungen dieses Gegners überspringen</code></td><td>AN</td><td>Beendet beim Sieg die laufende und die noch ungelesene Wiedergabe von zugefügtem und erlittenem Schaden dieses Gegners. Das Vorlesen anderer Gegner wird fortgesetzt</td></tr>
+<tr><td><code>Kampfprotokoll speichern</code></td><td>AUS</td><td>Speichert den Kampfverlauf getrennt vom normalen Log. Der Umschalter im Tab „Log“ erscheint nur, wenn Aufzeichnungen vorliegen</td></tr>
+<tr><td><code>Gleichartige Gegner kennzeichnen</code></td><td>AUS</td><td>Hängt nur dann ein Unterscheidungszeichen an den Namen, wenn es mehrere Gegner mit demselben Namen gibt</td></tr>
+<tr><td><code>Kennzeichenart</code></td><td>Buchstaben (A, B…)</td><td>Zur Auswahl stehen A, B… oder 1, 2…</td></tr>
+<tr><td><code>Vorlagen für Kampfmeldungen</code></td><td>Standardtexte der jeweiligen Sprache</td><td>Hier bearbeitest du die Texte für Begegnung, Schaden am Gegner, Schaden an dir selbst, besiegten Gegner und Erfahrung. Leere Felder oder nicht verwendbare Platzhalter werden auf den Standardtext zurückgesetzt</td></tr>
+</table>
+<h2 id="tab-vorlesen"><a name="tab-vorlesen"></a>Tab „Vorlesen“</h2>
+<p>Auf diesem Tab stellst du das Vorlesen von Übersetzungstexten, die Ziele des Vorlesens, die Anzeige im Log und die Aussprache von Charakternamen ein.</p>
+<p><img src="img/settings_dark_tab_06.png" alt="Tab Vorlesen"></p>
+<h3 id="vorlesen"><a name="vorlesen"></a>Vorlesen</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Sprachausgabe aktivieren:</code></td><td>AUS</td><td>Aktiviert die Funktion zum Vorlesen von Übersetzungstexten insgesamt</td></tr>
+<tr><td><code>Engine:</code></td><td>Windows (SAPI5)</td><td>Wählt die Engine für das Vorlesen. VOICEVOX ist auswählbar, wenn die lokale VOICEVOX-Engine läuft</td></tr>
+<tr><td><code>Ersatzstimme:</code></td><td>AN</td><td>Ist VOICEVOX gewählt, aber nicht verfügbar, werden Sätze, die nicht gelesen werden konnten, mit der Windows-Stimme vorgelesen. Bei AUS wird nichts vorgelesen</td></tr>
+<tr><td><code>Stimme:</code></td><td>(Standard)</td><td>Wird angezeigt, wenn die Engine Windows (SAPI5) ist. Die verwendete SAPI-Stimme. Bei (Standard) wird die Standardstimme des Betriebssystems verwendet</td></tr>
+<tr><td><code>Charakter:</code></td><td>Charakter mit Stil-ID 0</td><td>Wird angezeigt, wenn die Engine VOICEVOX ist. Der VOICEVOX-Charakter, der zum Vorlesen verwendet wird</td></tr>
+<tr><td><code>Stil:</code></td><td>Stil-ID 0</td><td>Wird angezeigt, wenn die Engine VOICEVOX ist. Der Stimmstil des gewählten Charakters</td></tr>
+<tr><td><code>🔊 Test</code></td><td>-</td><td>Wird angezeigt, wenn die Engine VOICEVOX ist. Liest einen kurzen Satz mit dem gewählten Charakter und Stil zur Probe vor</td></tr>
+<tr><td><code>Geschwindigkeit:</code></td><td><code>標準</code> (Standard)</td><td>Vorlesegeschwindigkeit</td></tr>
+<tr><td><code>Lautstärke:</code></td><td><code>100</code></td><td>Lautstärke des Vorlesens. Einstellbar im Bereich von 0 bis 100</td></tr>
+<tr><td><code>Unterbrechen:</code></td><td>AN</td><td>Wechselt die Anzeige, wird das vorherige Vorlesen abgebrochen und der neue Inhalt vorgelesen</td></tr>
+<tr><td><code>Beim Schließen abbrechen:</code></td><td>AUS</td><td>Beendet das laufende Vorlesen, wenn ein Dialog oder ein Gespräch geschlossen wird</td></tr>
+<tr><td><code>Wiederholungen unterdrücken:</code></td><td>AUS</td><td>Liest denselben Inhalt nicht wiederholt vor (etwa wiederkehrende Meldungen in Verliesen). Im Log bleibt er erhalten</td></tr>
+<tr><td><code>Lesehervorhebung:</code></td><td>AUS</td><td>Färbt den Satz ein, der gerade vorgelesen wird (Übersetzungspanel, Übersetzungstab, Log)</td></tr>
+</table>
+<p>Wird VOICEVOX nicht gefunden, erscheint „Starte VOICEVOX, um es auszuwählen (127.0.0.1:50021).“. Starte VOICEVOX und öffne den Einstellungsdialog erneut, dann kannst du Charakter und Stil auswählen.</p>
+<h3 id="vorlesen-ziele"><a name="vorlesen-ziele"></a>Vorlesen-Ziele</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Situation (Trigger, Betreten von Gebäuden, Ereignisse, verschiedene Dialoge)</code></td><td>AN</td><td>Macht Texte, die eine Situation beschreiben, zum Ziel des Vorlesens, etwa Trigger, das Betreten von Gebäuden, Ereignisse und verschiedene Dialoge</td></tr>
+<tr><td><code>Gespräch (NSC-Antworten, Ladenbesitzer-Zeilen, Palast, Antworten bei Preisverhandlungen)</code></td><td>AN</td><td>Macht Gesprächstexte zum Ziel des Vorlesens, etwa Antworten von NSC, Zeilen von Ladenbesitzern, Palast und Antworten bei Preisverhandlungen</td></tr>
+</table>
+<p>Systemanzeigen wie Menüs, Listen und Zahleneingaben werden nicht vorgelesen.</p>
+<h3 id="sonstiges-und-log"><a name="sonstiges-und-log"></a>Sonstiges / Log</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Lautsprechersymbol neben dem Text anzeigen (Klick zum Vorlesen)</code></td><td>AUS</td><td>Zeigt neben dem angezeigten Text ein Lautsprechersymbol an, mit dem du per Klick vorlesen lässt</td></tr>
+<tr><td><code>Originaltext ebenfalls im Log anzeigen (AUS = nur Übersetzung)</code></td><td>AUS</td><td>Zeigt im Übersetzungslog auch den englischen Originaltext an. Bei AUS wird nur die Übersetzung angezeigt</td></tr>
+<tr><td><code>Maximale Log-Einträge:</code></td><td><code>2000</code></td><td>Obergrenze für die Anzahl gespeicherter Log-Einträge. Ältere Einträge über dieser Grenze werden automatisch gelöscht</td></tr>
+<tr><td><code>Aufzeichnungsdatum/-uhrzeit im Log anzeigen</code></td><td>AN</td><td>Zeigt bei den Log-Einträgen Datum und Uhrzeit der Aufzeichnung an</td></tr>
+<tr><td><code>Datums-/Uhrzeitanzeige:</code></td><td><code>yyyy/MM/dd(aaa) HH:mm:ss</code></td><td>Anzeigeformat für Datum und Uhrzeit im Log. Du kannst eine Voreinstellung oder ein eigenes Format wählen</td></tr>
+</table>
+<h3 id="aussprache-des-charakternamens"><a name="aussprache-des-charakternamens"></a>Aussprache des Charakternamens</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Aussprache des Namens:</code></td><td>Leer</td><td>Ersetzt den automatisch aus dem Spiel übernommenen Charakternamen nur beim Vorlesen durch die angegebene Aussprache. In der Anzeige und im Log bleibt der ursprüngliche Name erhalten</td></tr>
+</table>
+<h2 id="tab-cheat"><a name="tab-cheat"></a>Tab „Cheat“</h2>
+<p>Auf diesem Tab stellst du Hilfsfunktionen ein, die Werte im Spiel überschreiben oder bestimmte Werte dauerhaft auf MAX halten.</p>
+<p><img src="img/settings_dark_tab_07.png" alt="Tab Cheat"></p>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Cheat-Modus aktivieren:</code></td><td>AUS</td><td>Der übergeordnete Schalter für alle Cheat-Funktionen. Wenn nur er AN ist, ändert sich nichts, solange du keine Untereinstellung aktivierst</td></tr>
+<tr><td><code>Statusänderung:</code></td><td>AUS</td><td>Erlaubt Statusänderungen wie das Bearbeiten von Attributen</td></tr>
+<tr><td><code>Karte aufdecken:</code></td><td>AUS</td><td>Zeigt bei aktivierten Cheats die ganze Karte an</td></tr>
+<tr><td><code>Gesundheit stets MAX:</code></td><td>AUS</td><td>Setzt bei aktivierten Cheats die aktuelle Gesundheit auf das Maximum zurück, wenn sie darunter liegt</td></tr>
+<tr><td><code>Ermüdung stets MAX:</code></td><td>AUS</td><td>Setzt bei aktivierten Cheats die aktuelle Erschöpfung auf das Maximum zurück</td></tr>
+<tr><td><code>Zauberpunkte stets MAX:</code></td><td>AUS</td><td>Setzt bei aktivierten Cheats die aktuellen Zauberpunkte auf das Maximum zurück</td></tr>
+</table>
+<h2 id="tab-dosbox"><a name="tab-dosbox"></a>Tab „DOSBox“</h2>
+<p>Auf diesem Tab liest du die <code>arena.conf</code> von DOSBox und stellst Fensteranzeige, Video, Leistung und Ton ein.</p>
+<p><img src="img/settings_dark_tab_08.png" alt="Tab DOSBox"></p>
+<h3 id="konfigurationsdatei-und-fensterverhalten"><a name="konfigurationsdatei-und-fensterverhalten"></a>Konfigurationsdatei / Fensterverhalten</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Konfigurationsdatei</code></td><td><code>arena.conf</code> am Standardpfad</td><td>Die Konfigurationsdatei von DOSBox. Ist die Einstellung in Assist leer, wird die Standardanordnung der Steam-Version von Arena als Standardpfad gelesen</td></tr>
+<tr><td><code>Durchsuchen...</code></td><td>-</td><td>Wählt eine beliebige <code>arena.conf</code> aus</td></tr>
+<tr><td><code>Immer im Vordergrund:</code></td><td>AUS</td><td>Zeigt das DOSBox-Fenster vor allen anderen Fenstern an</td></tr>
+</table>
+<h3 id="fenster-und-anzeige"><a name="fenster-und-anzeige"></a>Fenster / Anzeige</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Fenstergröße:</code></td><td><code>1024×768</code></td><td><code>windowresolution</code>. Wähle eine Voreinstellung; bei „Benutzerdefiniert“ bearbeitest du die Zahlenfelder für B/H</td></tr>
+<tr><td><code>Vollbildauflösung:</code></td><td><code>desktop</code></td><td><code>fullresolution</code>. Legt die Auflösung im Vollbildmodus fest</td></tr>
+<tr><td><code>Im Vollbild starten:</code></td><td>AUS</td><td><code>fullscreen</code>. Legt fest, ob DOSBox im Vollbild gestartet wird</td></tr>
+<tr><td><code>Ausgabemodus:</code></td><td><code>ddraw</code></td><td><code>output</code>. Die Ausgabemethode für die Darstellung in DOSBox</td></tr>
+<tr><td><code>Automatische Maussperre:</code></td><td>AN</td><td><code>autolock</code>. Sperrt die Maus automatisch im DOSBox-Fenster</td></tr>
+<tr><td><code>Mausempfindlichkeit:</code></td><td><code>100</code></td><td><code>sensitivity</code>. Die Mausempfindlichkeit in DOSBox</td></tr>
+</table>
+<h3 id="video"><a name="video"></a>Video</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Seitenverhältnis-Korrektur:</code></td><td>AN</td><td><code>aspect</code>. Korrigiert das Seitenverhältnis des Bildes</td></tr>
+<tr><td><code>Skalierer:</code></td><td><code>normal2x</code></td><td><code>scaler</code>. Der Filter zur Vergrößerung des DOSBox-Bildes</td></tr>
+</table>
+<h3 id="leistung"><a name="leistung"></a>Leistung</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>CPU-Zyklen:</code></td><td><code>fixed 25000</code></td><td><code>cycles</code>. Legt die Geschwindigkeit der CPU-Emulation fest. Bei <code>fixed</code> ist das Zahlenfeld rechts aktiv</td></tr>
+</table>
+<h3 id="sound"><a name="sound"></a>Sound</h3>
+<table>
+<tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
+<tr><td><code>Stummschaltung:</code></td><td>AUS</td><td><code>nosound</code>. Deaktiviert den Ton von DOSBox</td></tr>
+<tr><td><code>Abtastrate:</code></td><td><code>44100</code></td><td><code>rate</code>. Die Abtastrate des Mixers</td></tr>
+<tr><td><code>MIDI-Gerät:</code></td><td><code>default</code></td><td><code>mididevice</code>. Das Gerät, das für die MIDI-Wiedergabe verwendet wird</td></tr>
+</table>
+
+</body>
+</html>

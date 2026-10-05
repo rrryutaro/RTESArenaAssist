@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Basic Operation Guide</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — Basic Operation Guide</h1>
+<p>RTESArenaAssist is an app that assists you while you play The Elder Scrolls: Arena. It shows translations, maps, the journal, logs, save management, screenshot capture, a dictionary and the manual alongside the game.</p>
+<p>The images were taken with Assist in your display language, with the "Dark" theme, default settings and no connection. While connected, the display changes with the current Arena screen and the state of the game.</p>
+<p>The basic way to use Assist is to start Arena, connect with Assist, and press the <code>⊞</code> button to enter layout mode and play. In layout mode you can line up the DOSBox game screen and Assist's translation, map and other tabs on one screen, so you can check them without switching with Alt+Tab.</p>
+<p>For details on the settings, see the "Settings Dialog" page of this manual.</p>
+<h2 id="contents"><a name="contents"></a>Contents</h2>
+<ul>
+<li><a href="#first-run">First Run</a></li>
+<ul>
+<li><a href="#choose-a-language">Choose a Language</a></li>
+<li><a href="#specify-the-arena-folder">Specify the Arena Folder</a></li>
+<li><a href="#generate-the-translation-files">Generate the Translation Files</a></li>
+</ul>
+<li><a href="#main-window">Main Window</a></li>
+<ul>
+<li><a href="#disconnected">Disconnected</a></li>
+<li><a href="#connected">Connected</a></li>
+</ul>
+<li><a href="#use-layout-mode-as-the-default">Use Layout Mode as the Default</a></li>
+<li><a href="#tabs">Tabs</a></li>
+<ul>
+<li><a href="#translate-tab">Translate Tab</a></li>
+<li><a href="#status-tab">Status Tab</a></li>
+<li><a href="#map-tab">Map Tab</a></li>
+<li><a href="#journal-tab">Journal Tab</a></li>
+<li><a href="#log-tab">Log Tab</a></li>
+<li><a href="#save-tab">Save Tab</a></li>
+<li><a href="#capture-tab">Capture Tab</a></li>
+<li><a href="#dictionary-tab">Dictionary Tab</a></li>
+<li><a href="#manual-tab">Manual Tab</a></li>
+</ul>
+<li><a href="#basic-steps">Basic Steps</a></li>
+</ul>
+<h2 id="first-run"><a name="first-run"></a>First Run</h2>
+<p>The public version does not include Arena's original text data. On the first run, Assist generates the translation files from the Arena folder on your computer.</p>
+<h3 id="choose-a-language"><a name="choose-a-language"></a>Choose a Language</h3>
+<p>First, choose Assist's display language. The language you choose takes effect immediately on this screen.</p>
+<p><img src="img/assist_first_run_language.png" alt="First run: choosing the language"></p>
+<table>
+<tr><th>Control</th><th>Description</th></tr>
+<tr><td>Language drop-down</td><td>Chooses the language of Assist's interface. This screen offers only Japanese, English and Español. For other languages, choose one after startup under "Language" in the "General" tab of the Settings dialog.</td></tr>
+<tr><td>Next</td><td>Goes on to specifying the Arena folder.</td></tr>
+</table>
+<h3 id="specify-the-arena-folder"><a name="specify-the-arena-folder"></a>Specify the Arena Folder</h3>
+<p>If you continue with Arena running, Assist detects the installation location from the running Arena automatically. If it cannot be detected, specify Arena's data folder with <code>Browse…</code>.</p>
+<p><img src="img/assist_first_run_arena.png" alt="First run: specifying the Arena folder"></p>
+<table>
+<tr><th>Item</th><th>Description</th></tr>
+<tr><td>Game install folder</td><td>Specify Arena's <code>ARENA</code> folder.</td></tr>
+<tr><td>Browse…</td><td>Specifies the Arena folder from a folder selection dialog.</td></tr>
+<tr><td>Re-check</td><td>Detects the running Arena again.</td></tr>
+<tr><td>Build translation files</td><td>Once a valid Arena folder is found, goes on to generate the translation files.</td></tr>
+</table>
+<h3 id="generate-the-translation-files"><a name="generate-the-translation-files"></a>Generate the Translation Files</h3>
+<p>Assist generates its translation files from the data in the Arena folder. When it finishes, the main window opens.</p>
+<p><img src="img/assist_first_run_generate.png" alt="First run: generating the translation files"></p>
+<p>While the files are being built, a progress bar and the current step are shown. Data is also read from the running Arena, so do not close Arena until it finishes.</p>
+<h2 id="main-window"><a name="main-window"></a>Main Window</h2>
+<p>Assist has the connection bar at the top, the tab area in the middle and the status bar at the bottom.</p>
+<h3 id="disconnected"><a name="disconnected"></a>Disconnected</h3>
+<p>Assist is disconnected right after startup. With Arena / DOSBox running, press the <code>Connect</code> button at the top right.</p>
+<p><img src="img/assist_main_window.png" alt="Main window: disconnected"></p>
+<table>
+<tr><th>Area</th><th>Description</th></tr>
+<tr><td>Connection status</td><td>Shows Disconnected, or, while connected, the name of the recognized screen, the IMG name and so on.</td></tr>
+<tr><td>Connect / Disconnect</td><td>Connects to Arena inside DOSBox, or disconnects.</td></tr>
+<tr><td><code>⏸</code> / <code>▶</code> / <code>■</code></td><td>Pauses / resumes / stops reading aloud. Reading aloud becomes available once you enable it in the "Read Aloud" tab of the Settings dialog (it is OFF by default).</td></tr>
+<tr><td><code>⊞</code></td><td>Switches layout mode. Right-click to open the layout menu.</td></tr>
+<tr><td><code>📷</code></td><td>Saves a screenshot. In layout mode, the whole layout is saved as one image. While the game screen (DOSBox) has focus, the shortcut key (<code>F12</code> by default) saves it in the same way.</td></tr>
+<tr><td><code>⚙</code></td><td>Opens the Settings dialog.</td></tr>
+</table>
+<p>The "Hotkey F12 registered" message shown in the status bar right after startup tells you that the capture shortcut key is ready to use. You can change the key in the "General" tab of the Settings dialog.</p>
+<h3 id="connected"><a name="connected"></a>Connected</h3>
+<p>Once connected, the name of the recognized screen is shown at the left end of the connection bar. The example below shows a connection to Arena's title screen.</p>
+<p><img src="img/assist_connection_bar.png" alt="Connection bar: connected"></p>
+<p>The IMG name used by that screen is also shown to the right of the screen name (it does not appear on screens that use no IMG, such as the title screen). In the "Display" tab of the Settings dialog, you can choose whether to show the screen name and the IMG name.</p>
+<h2 id="use-layout-mode-as-the-default"><a name="use-layout-mode-as-the-default"></a>Use Layout Mode as the Default</h2>
+<p>Assist is designed to be used in layout mode. The tabs work in a normal window too, but in layout mode you can fix the game screen, the translation, the map, the log and more on one screen and check them together.</p>
+<p>In the default layout, the DOSBox game screen is on the left, Assist's main tabs are on the right and the supplementary panel is at the bottom. During play you can check the map or the journal on the right, and check the translation of the current screen in the bottom panel or the Translate tab.</p>
+<table>
+<tr><th>Action</th><th>Description</th></tr>
+<tr><td>Left-click <code>⊞</code></td><td>Starts / ends layout mode.</td></tr>
+<tr><td>Right-click <code>⊞</code></td><td>Lets you choose the layout form, the corner for placement, the tracking mode, re-arranging, always on top and more.</td></tr>
+<tr><td><code>📷</code></td><td>In layout mode, saves the whole layout, including DOSBox and Assist, as one image.</td></tr>
+<tr><td><code>Disconnect</code></td><td>Disconnects from Arena. It is easier to tidy up the screen if you end layout mode before disconnecting.</td></tr>
+</table>
+<h2 id="tabs"><a name="tabs"></a>Tabs</h2>
+<p>The screenshot of each tab is there to show how the screen is organized. While connected, the display is updated according to the current Arena screen and the state of the game.</p>
+<h3 id="translate-tab"><a name="translate-tab"></a>Translate Tab</h3>
+<p>This is the central tab that shows the translation for the current screen. The display switches according to the situation: the title screen, character creation, conversations, facilities, items, spells and so on.</p>
+<p><img src="img/assist_tab_translate.png" alt="Translate tab"></p>
+<table>
+<tr><th>Display</th><th>Description</th></tr>
+<tr><td>Translation</td><td>Shows the translation of the current screen or event.</td></tr>
+<tr><td>Original</td><td>Depending on the settings, also shows the corresponding original English text.</td></tr>
+<tr><td>Dedicated views</td><td>Class lists, race lists, equipment, facility lists, purchase lists and so on switch to a dedicated, easy-to-read view.</td></tr>
+</table>
+<p>With the "Combat information" tab of the settings, you can also show combat information in the Translate tab. Choose "Combat and normal views" or "Full combat view", then choose Text or Enemy meters. The default is Off, which keeps the usual Translate tab display.</p>
+<h3 id="status-tab"><a name="status-tab"></a>Status Tab</h3>
+<p>This tab shows the character's attributes and condition. After character creation, or while connected during play, the status information is displayed.</p>
+<p><img src="img/assist_tab_status.png" alt="Status tab"></p>
+<table>
+<tr><th>Display</th><th>Description</th></tr>
+<tr><td>View</td><td>Choose "Standard" (the display used until now) or one of the designs (character sheets). The status screen and the attribute distribution in the Translate tab also use the view chosen here.</td></tr>
+<tr><td>Attributes</td><td>Shows the main attributes such as Strength and Intelligence.</td></tr>
+<tr><td>Condition values</td><td>Shows HP, fatigue, spell points and so on.</td></tr>
+<tr><td>Changing values</td><td>Operations such as changing attributes are available only when you have explicitly enabled the cheat settings (in the "Standard" view).</td></tr>
+</table>
+<h3 id="character-sheet"><a name="character-sheet"></a>Character Sheet</h3>
+<p>This feature shows the status in a design of your choice. If you choose anything other than "Standard" in "View", the status is shown in the chosen design. A design is an HTML file (a template), and there are 8 bundled designs. You can also make your own. Some designs show the face and the full-body image (including equipment), the character's condition (disease, poison, paralysis and so on) and the armor rating of each body part (a value calculated from the equipment; lower is better protected). The face and the full-body image are made from the files of your Arena.</p>
+<table>
+<tr><th>Control</th><th>Description</th></tr>
+<tr><td>Open folder</td><td>Opens the folder for your own character sheets (HTML files), which is <code>character_sheets</code> in the same place as <code>RTESArenaAssist.exe</code>. The first time you open it, copies of the bundled designs are placed there. The files you put there appear in the "View" list with "(folder)" added.</td></tr>
+<tr><td>Reload</td><td>Reloads the character sheets in the folder. Press it after changing a file.</td></tr>
+</table>
+<p>For the list of bundled designs, how character sheets work, and the values you can insert and how to write them, see the "Status Designs (Character Sheets)" page of this manual.</p>
+<h3 id="map-tab"><a name="map-tab"></a>Map Tab</h3>
+<p>This tab shows the automap of dungeons, cities, the field, interiors and so on. The display is updated to match your current position in the game.</p>
+<p><img src="img/assist_tab_map.png" alt="Map tab"></p>
+<table>
+<tr><th>Display</th><th>Description</th></tr>
+<tr><td>Current position</td><td>Shows the current map and position from the state of the connected game.</td></tr>
+<tr><td>Automap</td><td>Draws the explored areas, walls, entrances, field terrain and so on.</td></tr>
+<tr><td>Display settings</td><td>The grid, chunk coordinates, the field extended display and so on can be adjusted in the Settings dialog.</td></tr>
+</table>
+<h3 id="journal-tab"><a name="journal-tab"></a>Journal Tab</h3>
+<p>This tab lets you read, in your display language, what is recorded in the game's Logbook / Journal.</p>
+<p><img src="img/assist_tab_journal.png" alt="Journal tab"></p>
+<table>
+<tr><th>Display</th><th>Description</th></tr>
+<tr><td>Date and heading</td><td>Shows the date and the summary of each journal entry.</td></tr>
+<tr><td>Body</td><td>Shows the body of the Logbook in your display language.</td></tr>
+<tr><td>Updates</td><td>When the journal is updated in the game, Assist's display is updated too.</td></tr>
+</table>
+<h3 id="log-tab"><a name="log-tab"></a>Log Tab</h3>
+<p>This tab lets you review the translations Assist has shown, as a history. It is useful for reading again a passage you missed.</p>
+<p><img src="img/assist_tab_log.png" alt="Log tab"></p>
+<table>
+<tr><th>Control</th><th>Description</th></tr>
+<tr><td>Sort order</td><td>Switches between newest first and oldest first.</td></tr>
+<tr><td>Filter</td><td>Narrows the log down by category or location.</td></tr>
+<tr><td>Clear</td><td>Clears the log being shown.</td></tr>
+</table>
+<p>If you have enabled saving the combat log and some has been recorded, you can switch between the "Normal log" and the "Combat log" inside the Log tab. If there is no combat log, only the normal log is shown as before.</p>
+<h3 id="save-tab"><a name="save-tab"></a>Save Tab</h3>
+<p>This tab manages Arena's save slots and backups. It assists with save data operations such as the automatic backup made before a restore.</p>
+<p><img src="img/assist_tab_save.png" alt="Save tab"></p>
+<table>
+<tr><th>Control</th><th>Description</th></tr>
+<tr><td>Slot list</td><td>Lists Arena's save slots.</td></tr>
+<tr><td>Backup</td><td>Backs up the selected save.</td></tr>
+<tr><td>Restore</td><td>Restores save data from a backup.</td></tr>
+<tr><td>Delete</td><td>Deletes backups or saves you no longer need.</td></tr>
+</table>
+<h3 id="capture-tab"><a name="capture-tab"></a>Capture Tab</h3>
+<p>This tab lets you check the screenshots saved with the <code>📷</code> button. Images taken in layout mode can be opened here too.</p>
+<p><img src="img/assist_tab_capture.png" alt="Capture tab"></p>
+<table>
+<tr><th>Control</th><th>Description</th></tr>
+<tr><td>List</td><td>Shows the saved captures.</td></tr>
+<tr><td>Preview</td><td>Lets you check the selected image.</td></tr>
+<tr><td>Lock</td><td>Protects images you want to keep from being deleted.</td></tr>
+<tr><td>Delete</td><td>Deletes the selected image or images you no longer need.</td></tr>
+</table>
+<h3 id="dictionary-tab"><a name="dictionary-tab"></a>Dictionary Tab</h3>
+<p>This tab searches Assist's translation dictionary and the dungeon text. You can use it to look up words and sentences that appear in the game.</p>
+<p><img src="img/assist_tab_dict.png" alt="Dictionary tab"></p>
+<table>
+<tr><th>Display mode</th><th>Description</th></tr>
+<tr><td>Dictionary</td><td>Searches by English keyword, translation and category.</td></tr>
+<tr><td>Dungeon Text</td><td>Searches and shows the dungeon text that comes from INF.</td></tr>
+</table>
+<h3 id="manual-tab"><a name="manual-tab"></a>Manual Tab</h3>
+<p>This tab lets you read, in your display language, explanations of Arena's basic operation and systems, and explanations of Assist's features. Use it when you want to check controls or terms during play.</p>
+<p><img src="img/assist_tab_manual.png" alt="Manual tab"></p>
+<table>
+<tr><th>Control</th><th>Description</th></tr>
+<tr><td>Simple / Full / Assist</td><td>Switches what is shown (see the table below).</td></tr>
+<tr><td>Keyword search</td><td>Searches the manual.</td></tr>
+<tr><td>List on the left</td><td>Switches between chapters such as Story, Character Creation, Controls and Combat &amp; Magic.</td></tr>
+</table>
+<table>
+<tr><th>Switch</th><th>Content</th><th>Languages</th></tr>
+<tr><td>Simple</td><td>An explanation of the game (9 chapters)</td><td>7 languages</td></tr>
+<tr><td>Full</td><td>A translation of the official manual (shown after importing a translation pack)</td><td>Currently Japanese only</td></tr>
+<tr><td>Assist</td><td>An explanation of Assist's features (Basic Operation, Settings Dialog, Status Designs (Character Sheets))</td><td>7 languages</td></tr>
+</table>
+<p><b>Full version (a translation of the official manual)</b></p>
+<p>In "Full", you can read a translation of the official manual (the Player's Guide and its addendum). The translations are distributed, separately from the main app, as a translation pack for each display language (<code>RTESArenaAssist-manual-&lt;language&gt;.zip</code>) on the manual download page (currently Japanese only). The first time you use it, import the pack with the following steps.</p>
+<p><img src="img/assist_tab_manual_full.png" alt="Manual tab (importing the Full version)"></p>
+<ol><li>Press "Open the manual download page". The download page opens in your browser, so download the translation pack for your display language.</li><li>Press "Import" and select the downloaded file.</li><li>When the list of chapters appears, you are done. Above the list, the date of the imported translation pack and the entries for the download page and for importing are shown. A newer translation pack replaces the old one when you import it in the same way.</li></ol>
+<p>The images in the manual are made from <code>Player Guide.pdf</code> in the <code>Docs</code> folder of your Arena (Steam version). If the PDF is not found or is a different version, only the text is shown. Check the "Game Folder" in the settings and press "Rebuild the images", and the images will be shown too. After importing, you may delete the downloaded file. Assist itself does not connect to the internet (the download is done in your own browser).</p>
+<p>"Full" also shows a link that opens the official manual (an English PDF) in the <code>Docs</code> folder. When the display language is English, only this link is shown instead of a translation pack.</p>
+<h2 id="basic-steps"><a name="basic-steps"></a>Basic Steps</h2>
+<ol><li>Start Arena.</li><li>Start RTESArenaAssist.</li><li>On the first run, specify the language and the Arena folder, and generate the translation files.</li><li>Press <code>Connect</code> at the top right of Assist to connect to Arena / DOSBox.</li><li>Press <code>⊞</code> to enter layout mode.</li><li>Normally, stay in layout mode and switch between the Translate, Map, Journal and Log tabs as you use them.</li><li>When you want to keep a screen, capture it with <code>📷</code> or the shortcut key (<code>F12</code> by default).</li><li>When you finish, end layout mode with <code>⊞</code>, then press <code>Disconnect</code> if needed.</li></ol>
+<p>The display size of layout mode, the layout form, the translation panel, the capture folder and more can be adjusted in the Settings dialog. To use reading aloud for the translations, also enable it in the "Read Aloud" tab of the Settings dialog.</p>
+
+</body>
+</html>

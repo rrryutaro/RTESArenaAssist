@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>基本操作ガイド</title>
+<style>
+body { font-family: "メイリオ", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — 基本操作ガイド</h1>
+<p>RTESArenaAssist は、The Elder Scrolls: Arena を遊ぶときに、翻訳、マップ、ジャーナル、ログ、セーブ管理、キャプチャ、辞書、マニュアルを補助表示するアプリです。</p>
+<p>画像は、お使いの表示言語・テーマ「ダーク」・初期設定・未接続の状態の Assist を撮ったものです。接続中は、Arena の現在の画面やゲーム内の状態に応じて表示が変わります。</p>
+<p>基本的な使い方は、Arena を起動して Assist で接続し、<code>⊞</code> ボタンからレイアウトモードに入って遊ぶ流れです。レイアウトモードでは、DOSBox のゲーム画面と Assist の翻訳・マップ・各タブを同じ画面内に並べられるため、Alt+Tab で切り替えずに確認できます。</p>
+<p>設定項目の詳細は、このマニュアルの「設定ダイアログ詳細ガイド」の頁を参照してください。</p>
+<h2 id="目次"><a name="目次"></a>目次</h2>
+<ul>
+<li><a href="#初回起動">初回起動</a></li>
+<ul>
+<li><a href="#言語を選ぶ">言語を選ぶ</a></li>
+<li><a href="#arena-フォルダを指定する">Arena フォルダを指定する</a></li>
+<li><a href="#翻訳ファイルを生成する">翻訳ファイルを生成する</a></li>
+</ul>
+<li><a href="#基本画面">基本画面</a></li>
+<ul>
+<li><a href="#未接続状態">未接続状態</a></li>
+<li><a href="#接続状態">接続状態</a></li>
+</ul>
+<li><a href="#レイアウトモードを基本に使う">レイアウトモードを基本に使う</a></li>
+<li><a href="#各タブ">各タブ</a></li>
+<ul>
+<li><a href="#翻訳タブ">翻訳タブ</a></li>
+<li><a href="#ステータスタブ">ステータスタブ</a></li>
+<li><a href="#マップタブ">マップタブ</a></li>
+<li><a href="#ジャーナルタブ">ジャーナルタブ</a></li>
+<li><a href="#ログタブ">ログタブ</a></li>
+<li><a href="#セーブタブ">セーブタブ</a></li>
+<li><a href="#キャプチャタブ">キャプチャタブ</a></li>
+<li><a href="#辞書タブ">辞書タブ</a></li>
+<li><a href="#マニュアルタブ">マニュアルタブ</a></li>
+</ul>
+<li><a href="#基本的な使用手順">基本的な使用手順</a></li>
+</ul>
+<h2 id="初回起動"><a name="初回起動"></a>初回起動</h2>
+<p>公開版は Arena の原文データを同梱しません。初回起動時に、ユーザーの Arena フォルダから翻訳用ファイルを生成します。</p>
+<h3 id="言語を選ぶ"><a name="言語を選ぶ"></a>言語を選ぶ</h3>
+<p>最初に Assist の表示言語を選びます。選択した言語は、この画面上ですぐに反映されます。</p>
+<p><img src="img/assist_first_run_language.png" alt="初回起動 言語選択"></p>
+<table>
+<tr><th>操作</th><th>説明</th></tr>
+<tr><td>言語プルダウン</td><td>Assist の UI 言語を選びます。この画面で選べるのは日本語・English・Español です。ほかの言語は、起動後に設定ダイアログの「全般」タブの「表示言語」で選びます。</td></tr>
+<tr><td>次へ</td><td>Arena フォルダ指定へ進みます。</td></tr>
+</table>
+<h3 id="arena-フォルダを指定する"><a name="arena-フォルダを指定する"></a>Arena フォルダを指定する</h3>
+<p>Arena を起動した状態で進めると、Assist が実行中の Arena からインストール先を自動検出します。自動検出できない場合は、<code>参照...</code> で Arena のデータフォルダを指定します。</p>
+<p><img src="img/assist_first_run_arena.png" alt="初回起動 Arena フォルダ指定"></p>
+<table>
+<tr><th>項目</th><th>説明</th></tr>
+<tr><td>ゲームのインストール先フォルダ</td><td>Arena の <code>ARENA</code> フォルダを指定します。</td></tr>
+<tr><td>参照...</td><td>フォルダ選択ダイアログから Arena フォルダを指定します。</td></tr>
+<tr><td>再確認</td><td>起動中の Arena を再検出します。</td></tr>
+<tr><td>翻訳ファイルを作成</td><td>有効な Arena フォルダが見つかったら、翻訳ファイル生成へ進みます。</td></tr>
+</table>
+<h3 id="翻訳ファイルを生成する"><a name="翻訳ファイルを生成する"></a>翻訳ファイルを生成する</h3>
+<p>Arena フォルダのデータから Assist 用の翻訳ファイルを生成します。完了すると本体画面へ進みます。</p>
+<p><img src="img/assist_first_run_generate.png" alt="初回起動 翻訳ファイル生成"></p>
+<p>作成中は、進み具合のバーと、いま行っている段階が表示されます。起動中の Arena からもデータを読み取るため、終わるまで Arena を閉じないでください。</p>
+<h2 id="基本画面"><a name="基本画面"></a>基本画面</h2>
+<p>Assist の上部には接続バー、中央にはタブ領域、下部にはステータスバーがあります。</p>
+<h3 id="未接続状態"><a name="未接続状態"></a>未接続状態</h3>
+<p>起動直後は未接続です。Arena / DOSBox を起動した状態で、右上の <code>接続</code> ボタンを押します。</p>
+<p><img src="img/assist_main_window.png" alt="基本画面 未接続"></p>
+<table>
+<tr><th>領域</th><th>説明</th></tr>
+<tr><td>接続状態</td><td>未接続、接続中の画面名、IMG 名などを表示します。</td></tr>
+<tr><td>接続 / 切断</td><td>DOSBox 内の Arena へ接続、または接続解除します。</td></tr>
+<tr><td><code>⏸</code> / <code>▶</code> / <code>■</code></td><td>読み上げを一時停止 / 再開 / 停止します。読み上げは設定ダイアログの「読み上げ」タブで有効にすると使えます（初期設定は OFF）。</td></tr>
+<tr><td><code>⊞</code></td><td>レイアウトモードを切り替えます。右クリックで配置メニューを開きます。</td></tr>
+<tr><td><code>📷</code></td><td>スクリーンショットを保存します。レイアウトモード中はレイアウト全体を1枚で保存します。ゲーム画面（DOSBox）にフォーカスがある間も、ショートカットキー（初期設定は <code>F12</code>）で同じように保存できます。</td></tr>
+<tr><td><code>⚙</code></td><td>設定ダイアログを開きます。</td></tr>
+</table>
+<p>起動直後にステータスバーへ出る「ショートカットキー F12 を登録しました」は、キャプチャのショートカットキーが使える状態になったことの知らせです。キーは設定ダイアログの「全般」タブで変更できます。</p>
+<h3 id="接続状態"><a name="接続状態"></a>接続状態</h3>
+<p>接続すると、接続バーの左端に認識中の画面名が表示されます。下の例は Arena のタイトル画面に接続している状態です。</p>
+<p><img src="img/assist_connection_bar.png" alt="接続バー 接続状態"></p>
+<p>画面名の右には、その画面が使っている IMG 名も表示されます（タイトル画面のように IMG を使わない画面では出ません）。設定ダイアログの「表示」タブで、画面名と IMG 名のどちらを出すかを切り替えられます。</p>
+<h2 id="レイアウトモードを基本に使う"><a name="レイアウトモードを基本に使う"></a>レイアウトモードを基本に使う</h2>
+<p>Assist は、基本的にレイアウトモードで使うことを想定しています。通常ウィンドウのままでも各タブは使えますが、レイアウトモードにするとゲーム画面、翻訳、マップ、ログなどを同じ画面に固定して確認できます。</p>
+<p>既定のレイアウトでは、左側に DOSBox のゲーム画面、右側に Assist のメインタブ、下部に補助パネルが配置されます。ゲーム中は、右側でマップやジャーナルを確認しながら、下部や翻訳タブで現在画面の翻訳を確認できます。</p>
+<table>
+<tr><th>操作</th><th>説明</th></tr>
+<tr><td><code>⊞</code> を左クリック</td><td>レイアウトモードの開始 / 終了を切り替えます。</td></tr>
+<tr><td><code>⊞</code> を右クリック</td><td>配置形式、配置コーナー、追従モード、再配置、最前面表示などを選べます。</td></tr>
+<tr><td><code>📷</code></td><td>レイアウトモード中は、DOSBox と Assist を含むレイアウト全体を1枚の画像として保存します。</td></tr>
+<tr><td><code>切断</code></td><td>Arena との接続を解除します。レイアウトモードを終了してから切断すると画面整理がしやすくなります。</td></tr>
+</table>
+<h2 id="各タブ"><a name="各タブ"></a>各タブ</h2>
+<p>各タブのスクリーンショットは画面構成を確認するためのものです。接続中は、Arena の現在画面やゲーム内状態に応じて表示内容が更新されます。</p>
+<h3 id="翻訳タブ"><a name="翻訳タブ"></a>翻訳タブ</h3>
+<p>現在の画面に対応する翻訳を表示する中心的なタブです。タイトル画面、キャラクター作成、会話、施設、アイテム、呪文など、状況に応じて表示が切り替わります。</p>
+<p><img src="img/assist_tab_translate.png" alt="翻訳タブ"></p>
+<table>
+<tr><th>表示内容</th><th>説明</th></tr>
+<tr><td>翻訳結果</td><td>現在画面やイベントの日本語訳を表示します。</td></tr>
+<tr><td>原文</td><td>設定に応じて、対応する英語原文も表示します。</td></tr>
+<tr><td>専用表示</td><td>クラス一覧、種族一覧、装備、施設一覧、購入一覧などは専用の見やすい表示へ切り替わります。</td></tr>
+</table>
+<p>設定の「戦闘情報」タブで、戦闘中の情報を翻訳タブにも表示できます。「通常表示と併用」または「戦闘情報を全面表示」を選び、文字情報か敵のメーター表示かを指定します。既定は表示なしで、従来の翻訳タブ表示を維持します。</p>
+<h3 id="ステータスタブ"><a name="ステータスタブ"></a>ステータスタブ</h3>
+<p>キャラクターの能力値や状態を確認するタブです。キャラクター作成後、またはゲーム中に接続していると、ステータス情報が表示されます。</p>
+<p><img src="img/assist_tab_status.png" alt="ステータスタブ"></p>
+<table>
+<tr><th>表示内容</th><th>説明</th></tr>
+<tr><td>表示</td><td>「標準」（これまでの表示）か、任意のデザイン（キャラクターシート）を選びます。翻訳タブのステータス画面・能力値の割り振りでも、ここで選んだ表示が使われます。</td></tr>
+<tr><td>能力値</td><td>Strength、Intelligence などの主要能力値を確認できます。</td></tr>
+<tr><td>状態値</td><td>HP、疲労、呪文ポイントなどを確認できます。</td></tr>
+<tr><td>変更操作</td><td>チート設定を明示的に有効にした場合のみ、能力値変更などの操作が使えます（「標準」の表示）。</td></tr>
+</table>
+<h3 id="キャラクターシート"><a name="キャラクターシート"></a>キャラクターシート</h3>
+<p>ステータスを任意のデザインで表示する機能です。「表示」で「標準」以外を選ぶと、ステータスを選んだデザインで表示します。 デザインは HTML のファイル（テンプレート）で、同梱のデザインは 8 種です。自分で作ることもできます。 顔と全身像（装備を含む）、キャラクターの状態（病気・毒・麻痺など）、部位ごとのアーマーレーティング（装備から計算した値・ 小さいほど守りが固い）を表示するデザインもあります。顔と全身像は、お使いの Arena のファイルから作ります。</p>
+<table>
+<tr><th>操作</th><th>説明</th></tr>
+<tr><td>フォルダを開く</td><td>自作のキャラクターシート（HTML ファイル）を置くフォルダを開きます（<code>RTESArenaAssist.exe</code> と同じ場所の <code>character_sheets</code>）。初めて開く時は、同梱のデザインの写しを置きます。置いたファイルは「表示」の一覧に「（フォルダ）」付きで出ます。</td></tr>
+<tr><td>再読込</td><td>フォルダのキャラクターシートを読み直します。ファイルを書き換えた後に押します。</td></tr>
+</table>
+<p>同梱のデザインの一覧、キャラクターシートの仕組み、差し込める値と書き方は このマニュアルの「ステータスのデザイン（キャラクターシート）」の頁を参照してください。</p>
+<h3 id="マップタブ"><a name="マップタブ"></a>マップタブ</h3>
+<p>ダンジョン、街、フィールド、室内などの自動マップを表示します。ゲーム内の現在地に合わせて表示が更新されます。</p>
+<p><img src="img/assist_tab_map.png" alt="マップタブ"></p>
+<table>
+<tr><th>表示内容</th><th>説明</th></tr>
+<tr><td>現在地表示</td><td>接続中のゲーム状態から、現在のマップや位置を表示します。</td></tr>
+<tr><td>自動マップ</td><td>判明済みエリア、壁、入口、フィールド地形などを描画します。</td></tr>
+<tr><td>表示設定</td><td>グリッド、チャンク座標、フィールド拡張表示などは設定ダイアログから調整できます。</td></tr>
+</table>
+<h3 id="ジャーナルタブ"><a name="ジャーナルタブ"></a>ジャーナルタブ</h3>
+<p>ゲーム内の Logbook / Journal に記録された内容を、日本語で確認するタブです。</p>
+<p><img src="img/assist_tab_journal.png" alt="ジャーナルタブ"></p>
+<table>
+<tr><th>表示内容</th><th>説明</th></tr>
+<tr><td>日付・見出し</td><td>ジャーナル項目の日付や概要を表示します。</td></tr>
+<tr><td>本文</td><td>Logbook の本文を日本語で表示します。</td></tr>
+<tr><td>更新</td><td>ゲーム内でジャーナルが更新されると、Assist 側の表示も更新されます。</td></tr>
+</table>
+<h3 id="ログタブ"><a name="ログタブ"></a>ログタブ</h3>
+<p>Assist が表示した翻訳を履歴として確認するタブです。見逃した文章を後から読み返す用途に向いています。</p>
+<p><img src="img/assist_tab_log.png" alt="ログタブ"></p>
+<table>
+<tr><th>操作</th><th>説明</th></tr>
+<tr><td>並び順</td><td>新しい順 / 古い順を切り替えます。</td></tr>
+<tr><td>フィルタ</td><td>種別や場所でログを絞り込みます。</td></tr>
+<tr><td>クリア</td><td>表示中のログを消去します。</td></tr>
+</table>
+<p>戦闘ログの保存を有効にして記録ができた場合は、ログタブ内で「通常ログ」と「戦闘ログ」を切り替えられます。戦闘ログがない場合は、従来どおり通常ログだけを表示します。</p>
+<h3 id="セーブタブ"><a name="セーブタブ"></a>セーブタブ</h3>
+<p>Arena のセーブスロットとバックアップを管理するタブです。復元前の自動バックアップなど、セーブデータ操作を補助します。</p>
+<p><img src="img/assist_tab_save.png" alt="セーブタブ"></p>
+<table>
+<tr><th>操作</th><th>説明</th></tr>
+<tr><td>スロット一覧</td><td>Arena のセーブスロットを一覧表示します。</td></tr>
+<tr><td>バックアップ</td><td>選択したセーブをバックアップします。</td></tr>
+<tr><td>復元</td><td>バックアップからセーブデータを戻します。</td></tr>
+<tr><td>削除</td><td>不要なバックアップやセーブを削除します。</td></tr>
+</table>
+<h3 id="キャプチャタブ"><a name="キャプチャタブ"></a>キャプチャタブ</h3>
+<p><code>📷</code> ボタンで保存したスクリーンショットを確認するタブです。レイアウトモード中に撮った画像もここから開けます。</p>
+<p><img src="img/assist_tab_capture.png" alt="キャプチャタブ"></p>
+<table>
+<tr><th>操作</th><th>説明</th></tr>
+<tr><td>一覧</td><td>保存済みキャプチャを表示します。</td></tr>
+<tr><td>プレビュー</td><td>選択した画像を確認します。</td></tr>
+<tr><td>ロック</td><td>残したい画像を削除対象から守ります。</td></tr>
+<tr><td>削除</td><td>選択画像または不要な画像を削除します。</td></tr>
+</table>
+<h3 id="辞書タブ"><a name="辞書タブ"></a>辞書タブ</h3>
+<p>Assist が持つ翻訳辞書とダンジョンテキストを検索するタブです。ゲーム内で出てきた単語や文章の確認に使えます。</p>
+<p><img src="img/assist_tab_dict.png" alt="辞書タブ"></p>
+<table>
+<tr><th>表示モード</th><th>説明</th></tr>
+<tr><td>辞書</td><td>英語キーワード、日本語訳、カテゴリで検索します。</td></tr>
+<tr><td>ダンジョンテキスト</td><td>INF 由来のダンジョン文章を検索・確認します。</td></tr>
+</table>
+<h3 id="マニュアルタブ"><a name="マニュアルタブ"></a>マニュアルタブ</h3>
+<p>Arena の基本操作やシステムの説明と、Assist の機能の説明を、表示言語で確認できるタブです。ゲーム中に操作や用語を確認したいときに使います。</p>
+<p><img src="img/assist_tab_manual.png" alt="マニュアルタブ"></p>
+<table>
+<tr><th>操作</th><th>説明</th></tr>
+<tr><td>簡易 / 詳細 / Assist</td><td>表示する内容を切り替えます（下の表）。</td></tr>
+<tr><td>キーワード検索</td><td>マニュアル内を検索します。</td></tr>
+<tr><td>左側リスト</td><td>ストーリー、キャラクター作成、操作方法、戦闘などの章を切り替えます。</td></tr>
+</table>
+<table>
+<tr><th>切り替え</th><th>内容</th><th>言語</th></tr>
+<tr><td>簡易</td><td>ゲームの説明（9章）</td><td>7言語</td></tr>
+<tr><td>詳細</td><td>公式マニュアルの訳（翻訳パックを取り込んで表示）</td><td>現在は日本語のみ</td></tr>
+<tr><td>Assist</td><td>Assist の機能の説明（基本操作・設定ダイアログ・ステータスのデザイン（キャラクターシート））</td><td>7言語</td></tr>
+</table>
+<p><b>詳細版（公式マニュアルの訳）</b></p>
+<p>「詳細」では、公式マニュアル（Player's Guide と追補）の訳を読めます。訳は表示言語ごとの翻訳パック（<code>RTESArenaAssist-manual-&lt;言語&gt;.zip</code>）として、本体とは別に マニュアルのダウンロードページ で配っています（現在は日本語のみ）。初めて使うときは、次の手順で取り込みます。</p>
+<p><img src="img/assist_tab_manual_full.png" alt="マニュアルタブ（詳細版の取り込み）"></p>
+<ol><li>「マニュアルのダウンロードページを開く」を押します。ブラウザでダウンロードページが開くので、表示言語の翻訳パックをダウンロードします。</li><li>「取り込む」を押し、ダウンロードしたファイルを選びます。</li><li>章の一覧が表示されれば完了です。一覧の上に、取り込んだ翻訳パックの日付と、ダウンロードページ・取り込みの入口が表示されます。新しい翻訳パックは、同じ手順で取り込むと置き換わります。</li></ol>
+<p>マニュアルの画像は、お使いの Arena（Steam 版）の <code>Docs</code> フォルダにある <code>Player Guide.pdf</code> から作ります。PDF が見つからない場合や版が異なる場合は、文章だけを表示します。設定の「ゲームフォルダ」を確かめてから「画像を作り直す」を押すと、画像も表示されます。取り込んだ後は、ダウンロードしたファイルを削除しても構いません。Assist 自身はインターネットに接続しません（ダウンロードはお使いのブラウザで行います）。</p>
+<p>「詳細」には、<code>Docs</code> フォルダにある公式マニュアル（英語の PDF）を開くリンクも表示します。表示言語が英語の場合は、翻訳パックの代わりにこのリンクだけを表示します。</p>
+<h2 id="基本的な使用手順"><a name="基本的な使用手順"></a>基本的な使用手順</h2>
+<ol><li>Arena を起動します。</li><li>RTESArenaAssist を起動します。</li><li>初回起動時は、言語と Arena フォルダを指定して翻訳ファイルを生成します。</li><li>Assist 右上の <code>接続</code> を押して Arena / DOSBox に接続します。</li><li><code>⊞</code> を押してレイアウトモードに入ります。</li><li>普段はレイアウトモードのまま、翻訳タブ、マップタブ、ジャーナルタブ、ログタブを切り替えて使います。</li><li>画面を残したいときは <code>📷</code> か、ショートカットキー（初期設定は <code>F12</code>）でキャプチャします。</li><li>終了時は <code>⊞</code> でレイアウトモードを終了してから、必要に応じて <code>切断</code> します。</li></ol>
+<p>レイアウトモードの表示サイズ、配置形式、翻訳パネル、キャプチャ保存先などは、設定ダイアログから調整できます。翻訳の読み上げを使う場合も、設定ダイアログの「読み上げ」タブで有効にします。</p>
+
+</body>
+</html>
