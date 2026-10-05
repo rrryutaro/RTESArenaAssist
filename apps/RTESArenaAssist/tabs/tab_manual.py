@@ -186,6 +186,9 @@ class TabManual(QWidget):
         if text.startswith('rtesaa:'):
             self._on_pack_link(text)
             return
+        if url.hasFragment() and url.scheme() in ('', 'file'):
+            self._browser.scrollToAnchor(url.fragment())
+            return
         place = riddle_guide.parse_place(text)
         if place is not None:
             self._guide_place = None if place < 0 else place
