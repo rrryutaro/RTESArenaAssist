@@ -644,7 +644,7 @@
   "settings.tts_voice": "Voice",
   "settings.tts_voice_default": "(default)",
   "settings.tts_rate": "Speed",
-  "settings.tts_interrupt": "When the display changes, stop the current speech and read the new content",
+  "settings.tts_interrupt": "When the display changes, stop the current speech and read the new content (also stops when returning from an NPC reply to the menu)",
   "settings.tts_interrupt_label": "Interrupt",
   "settings.tts_cancel_on_close": "Cancel speech when a dialog or conversation is closed",
   "settings.tts_cancel_on_close_label": "Cancel on close",

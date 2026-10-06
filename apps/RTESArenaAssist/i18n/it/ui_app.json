@@ -644,7 +644,7 @@
   "settings.tts_voice": "Voce",
   "settings.tts_voice_default": "(predefinita)",
   "settings.tts_rate": "Velocità",
-  "settings.tts_interrupt": "Quando il testo visualizzato cambia, interrompi la lettura in corso e leggi il nuovo contenuto",
+  "settings.tts_interrupt": "Quando il testo visualizzato cambia, interrompi la lettura in corso e leggi il nuovo contenuto (anche quando si torna dalla risposta di un NPC al menu)",
   "settings.tts_interrupt_label": "Interrompi",
   "settings.tts_cancel_on_close": "Interrompi la lettura quando una finestra di dialogo o una conversazione viene chiusa",
   "settings.tts_cancel_on_close_label": "Interrompi alla chiusura",

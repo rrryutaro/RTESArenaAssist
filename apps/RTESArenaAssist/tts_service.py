@@ -239,9 +239,9 @@ class TTSService:
         current_seg = segs[cur] if cur is not None and 0 <= cur < len(segs) else None
         self._notify_segment(ctx['full'], current_seg, prefetched)
 
-    def speak(self, text: str) -> None:
+    def speak(self, text: str, *, tag: str | None=None) -> None:
         if self._enabled:
-            self._enqueue(text, force=False)
+            self._enqueue(text, force=False, tag=tag)
 
     def speak_queued(self, text: str, *, tag: str | None=None, group: str | None=None) -> None:
         if self._enabled:
@@ -255,6 +255,22 @@ class TTSService:
                 if request.group == group:
                     request.cancelled.set()
             self._pause_cond.notify_all()
+
+    def cancel_tag(self, tag: str) -> None:
+        if not tag:
+            return
+        stop_audio = False
+        with self._pause_cond:
+            for request in self._outstanding:
+                if request.tag == tag:
+                    request.cancelled.set()
+            active = self._active_request
+            if active is not None and active.tag == tag:
+                stop_audio = True
+            self._pause_cond.notify_all()
+        if stop_audio:
+            self._stop_playback()
+            self._notify_segment(None, None)
 
     def speak_now(self, text: str) -> None:
         self._enqueue(text, force=True)

@@ -653,7 +653,7 @@
   "settings.tts_voice": "Voz",
   "settings.tts_voice_default": "(predeterminado)",
   "settings.tts_rate": "Velocidad",
-  "settings.tts_interrupt": "Cuando cambie la pantalla, detener la lectura actual y leer el nuevo contenido",
+  "settings.tts_interrupt": "Cuando cambie la pantalla, detener la lectura actual y leer el nuevo contenido (también al volver de la respuesta de un PNJ al menú)",
   "settings.tts_interrupt_label": "Interrumpir",
   "settings.tts_cancel_on_close": "Cancelar la lectura al cerrar un diálogo o una conversación",
   "settings.tts_cancel_on_close_label": "Cancelar al cerrar",

@@ -85,7 +85,6 @@ _CURRENT_TEXT_PTR_OFFSET = 43076
 TEMPLE_MENU_PTR_LO = 29279
 TEMPLE_MENU_PTR_HI = 30303
 _POPUP_GATE_OFFSET = 36724
-_GATE_MENU_FOREGROUND = 81
 _GATE_POPUP_OPEN = 0
 
 def read_popup_gate(analyzer, anchor: int) -> int | None:
@@ -98,7 +97,7 @@ def read_popup_gate(analyzer, anchor: int) -> int | None:
     return raw[0]
 
 def gate_menu_foreground(gate: int | None) -> bool:
-    return gate == _GATE_MENU_FOREGROUND
+    return gate is not None and gate != _GATE_POPUP_OPEN
 
 def gate_popup_open(gate: int | None) -> bool:
     return gate == _GATE_POPUP_OPEN
@@ -115,7 +114,7 @@ def temple_gate_foreground(w, analyzer, anchor: int) -> tuple[bool, bool, int]:
     w._temple_gate_stable_value = gate
     w._temple_gate_stable_count = cnt
     stable = cnt >= _GATE_HYSTERESIS_POLLS
-    menu_fg = bool(stable and gate == _GATE_MENU_FOREGROUND)
+    menu_fg = bool(stable and gate_menu_foreground(gate))
     popup_fg = bool(stable and gate == _GATE_POPUP_OPEN)
     return (menu_fg, popup_fg, gate if gate is not None else -1)
 _PHASE_NPC_OFFSET = 43077
@@ -160,7 +159,7 @@ def classify_temple_view(analyzer, anchor: int) -> TempleViewState:
     intent = _read_u8(analyzer, anchor, _RESULT_INTENT_HINT_OFFSET)
     result_lo = result_ptr & 255 if isinstance(result_ptr, int) else None
     values = {'gate': gate, 'npc': npc, 'sel': sel, 'aux': aux, 'mode': mode, 'result_ptr': result_ptr, 'result_lo': result_lo, 'intent': intent}
-    if gate == _GATE_MENU_FOREGROUND:
+    if gate_menu_foreground(gate):
         return TempleViewState('menu', 'menu', values)
     if sel == _PHASE_ACTIVE_VALUE and npc == 0 and (aux == 0) and (result_ptr == _LEGACY_BLESS_RESULT_PTR or (intent == _BLESS_RESULT_INTENT_VALUE and result_lo in _BLESS_RESULT_VIEW_LO_BYTES)):
         return TempleViewState('donation_blessing', 'select_input', values)

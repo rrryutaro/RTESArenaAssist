@@ -314,9 +314,12 @@ def _template_to_regex(en_template: str, *, anchor_end: bool=True, allow_empty: 
     text = en_template
     token_re = re.compile('%([a-z][a-z0-9]*)')
 
+    def _esc(part: str) -> str:
+        return re.escape(part).replace('"', '"?')
+
     def _literal(part: str, *, before_ph: bool, after_ph: bool) -> str:
         if not allow_empty:
-            return re.escape(part)
+            return _esc(part)
         lead = ''
         tail = ''
         if after_ph:
@@ -329,7 +332,7 @@ def _template_to_regex(en_template: str, *, anchor_end: bool=True, allow_empty: 
             if stripped != part:
                 tail = '\\s*'
             part = stripped
-        return lead + re.escape(part) + tail
+        return lead + _esc(part) + tail
     last = 0
     after_ph = False
     for m in token_re.finditer(text):

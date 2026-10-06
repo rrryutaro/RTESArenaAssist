@@ -644,7 +644,7 @@
   "settings.tts_voice": "音声",
   "settings.tts_voice_default": "（既定）",
   "settings.tts_rate": "速度",
-  "settings.tts_interrupt": "表示が切り替わったら前の読み上げを中止して新しい内容を読む",
+  "settings.tts_interrupt": "表示が切り替わったら前の読み上げを中止して新しい内容を読む（NPC の返答からメニューへ戻った時も止まる）",
   "settings.tts_interrupt_label": "切り上げ",
   "settings.tts_cancel_on_close": "ダイアログ・会話を閉じたら読み上げを中断する",
   "settings.tts_cancel_on_close_label": "閉じたら中断",

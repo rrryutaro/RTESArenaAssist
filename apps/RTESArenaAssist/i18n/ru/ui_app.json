@@ -644,7 +644,7 @@
   "settings.tts_voice": "Голос",
   "settings.tts_voice_default": "(по умолчанию)",
   "settings.tts_rate": "Скорость",
-  "settings.tts_interrupt": "При смене экрана прерывать текущее чтение и озвучивать новое содержимое",
+  "settings.tts_interrupt": "При смене экрана прерывать текущее чтение и озвучивать новое содержимое (в том числе при возврате от ответа NPC в меню)",
   "settings.tts_interrupt_label": "Прерывание",
   "settings.tts_cancel_on_close": "Останавливать чтение вслух при закрытии диалога или разговора",
   "settings.tts_cancel_on_close_label": "Отмена при закрытии",

@@ -22,57 +22,41 @@ class UiRouter:
         self._pending_display_order = 0
         self._translation_observer = None
         self._obs_last_key = None
-        self._clear_observer = None
-        self._context_end_observer = None
-        self._replacement_observer = None
+        self._unit_end_observer = None
         self._displayed_translation: Optional[tuple[str, str, str]] = None
 
     def set_translation_observer(self, callback) -> None:
         self._translation_observer = callback
 
-    def set_clear_observer(self, callback) -> None:
-        self._clear_observer = callback
-
-    def set_context_end_observer(self, callback) -> None:
-        self._context_end_observer = callback
-
-    def set_replacement_observer(self, callback) -> None:
-        self._replacement_observer = callback
+    def set_unit_end_observer(self, callback) -> None:
+        self._unit_end_observer = callback
 
     def notify_display_unit_closed(self, panel_owner: str) -> None:
         self._notify_clear(panel_owner)
 
     def notify_display_context_ended(self, panel_owner: str) -> None:
-        if not panel_owner:
-            return
-        if self._obs_last_key is not None and self._obs_last_key[0] == panel_owner:
-            self._obs_last_key = None
-        if self._context_end_observer is not None:
-            self._context_end_observer(panel_owner)
+        self._emit_unit_end(panel_owner, 'context_ended', forget_key=True)
 
     def notify_display_unit_replaced(self, panel_owner: str) -> None:
-        if not panel_owner:
-            return
-        if self._obs_last_key is not None and self._obs_last_key[0] == panel_owner:
-            self._obs_last_key = None
-        if self._replacement_observer is None:
-            return
-        try:
-            self._replacement_observer(panel_owner)
-        except Exception:
-            _log.exception('replacement_observer failed')
+        self._emit_unit_end(panel_owner, 'replaced', forget_key=True)
+
+    def notify_display_page_ended(self, panel_owner: str) -> None:
+        self._emit_unit_end(panel_owner, 'page_ended', forget_key=False)
 
     def _notify_clear(self, owner: str) -> None:
+        self._emit_unit_end(owner, 'cleared', forget_key=True)
+
+    def _emit_unit_end(self, owner: str, reason: str, *, forget_key: bool) -> None:
         if not owner:
             return
-        if self._obs_last_key is not None and self._obs_last_key[0] == owner:
+        if forget_key and self._obs_last_key is not None and (self._obs_last_key[0] == owner):
             self._obs_last_key = None
-        if self._clear_observer is None:
+        if self._unit_end_observer is None:
             return
         try:
-            self._clear_observer(owner)
+            self._unit_end_observer(owner, reason)
         except Exception:
-            _log.exception('clear_observer failed')
+            _log.exception('unit_end_observer failed')
 
     def begin_poll_frame(self, frame: PollFrame) -> None:
         self._poll_frame = frame
@@ -496,8 +480,8 @@ class UiRouter:
     def clear_if_owner(self, panel_owner: str, *, mode: Optional[str]=None, clear_place_list: bool=False, clear_travel_table: bool=False, notify_close: bool=True) -> None:
         self.propose_display(DisplayIntent.clear_if_owner(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, notify_close=notify_close))
 
-    def clear_display(self, panel_owner: str='', *, mode: Optional[str]='translate', clear_place_list: bool=False, clear_travel_table: bool=False, allowed_current_owners: Optional[tuple]=None, priority: int=0) -> None:
-        self.propose_display(DisplayIntent.clear(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, priority=priority, allowed_current_owners=allowed_current_owners))
+    def clear_display(self, panel_owner: str='', *, mode: Optional[str]='translate', clear_place_list: bool=False, clear_travel_table: bool=False, allowed_current_owners: Optional[tuple]=None, priority: int=0, notify_close: bool=True) -> None:
+        self.propose_display(DisplayIntent.clear(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, priority=priority, allowed_current_owners=allowed_current_owners, notify_close=notify_close))
 
     def update_panel_translation(self, panel_en: str, panel_ja: str, *, speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True, priority: int=0) -> None:
         self.propose_display(DisplayIntent.panel_translation(panel_en, panel_ja, priority=priority, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled))

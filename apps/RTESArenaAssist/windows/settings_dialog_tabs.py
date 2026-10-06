@@ -690,7 +690,7 @@ def build_tts_tab(dlg: '_SettingsDialog') -> QWidget:
     _vol_w = QWidget()
     _vol_w.setLayout(_vol_row)
     form.addRow(i18n.tr('settings.tts_volume', default='音量') + ':', _vol_w)
-    dlg._tts_interrupt_cb = QCheckBox(i18n.tr('settings.tts_interrupt', default='表示が切り替わったら前の読み上げを中止して新しい内容を読む'))
+    dlg._tts_interrupt_cb = QCheckBox(i18n.tr('settings.tts_interrupt', default='表示が切り替わったら前の読み上げを中止して新しい内容を読む（NPC の返答からメニューへ戻った時も止まる）'))
     dlg._tts_interrupt_cb.setChecked(bool(settings.get('tts_interrupt', True)))
     form.addRow(i18n.tr('settings.tts_interrupt_label', default='切り上げ') + ':', dlg._tts_interrupt_cb)
     dlg._tts_cancel_on_close_cb = QCheckBox(i18n.tr('settings.tts_cancel_on_close', default='ダイアログ・会話を閉じたら読み上げを中断する'))

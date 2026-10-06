@@ -6,7 +6,9 @@ from panel_mode_resolver import closing_panel_mode, screen_panel_mode
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 NPC_CONVERSATION_OWNER = 'npc_conversation'
+_CONVERSATION_UNIT_OWNERS = ('npc_dialog', NPC_CONVERSATION_OWNER, 'npc_message')
 _SHOWN_ATTR = '_npc_conversation_shown'
+_RESPONSE_OPEN_ATTR = '_npc_conversation_response_open'
 _LAST_FAILURE: dict[str, str] = {}
 
 def _normalized(text: str) -> str:
@@ -17,6 +19,14 @@ def _is_shown(w, key: tuple) -> bool:
 
 def _mark_shown(w, key: tuple) -> None:
     setattr(w, _SHOWN_ATTR, key)
+    if key and key[0] == 'response':
+        setattr(w, _RESPONSE_OPEN_ATTR, True)
+    elif getattr(w, _RESPONSE_OPEN_ATTR, False):
+        setattr(w, _RESPONSE_OPEN_ATTR, False)
+        try:
+            w._ui_router.notify_display_page_ended(NPC_CONVERSATION_OWNER)
+        except (AttributeError, RuntimeError):
+            pass
 
 def _log_failure_once(where: str) -> None:
     exc = sys.exc_info()[1]
@@ -208,14 +218,17 @@ def show_dynamic_place_list(w) -> None:
 
 def _reset_internal_state(w) -> None:
     setattr(w, _SHOWN_ATTR, None)
+    setattr(w, _RESPONSE_OPEN_ATTR, False)
     w._popup11_substate_diag_prev = None
 
 def reset_npc_dialog_display(w, *, clear_display: bool=True) -> None:
     try:
         if clear_display:
+            for owner in _CONVERSATION_UNIT_OWNERS:
+                w._ui_router.notify_display_unit_closed(owner)
             clear_mode = npc_clear_panel_mode(w)
             if w._tab_translate is not None:
-                w._ui_router.clear_display('', mode=clear_mode, clear_place_list=True, allowed_current_owners=('', 'npc_dialog', NPC_CONVERSATION_OWNER, 'npc_message'))
+                w._ui_router.clear_display('', mode=clear_mode, clear_place_list=True, allowed_current_owners=('',) + _CONVERSATION_UNIT_OWNERS, notify_close=False)
         _reset_internal_state(w)
     except (AttributeError, RuntimeError) as exc:
         _log.debug('reset_npc_dialog_display skipped: %s', exc)

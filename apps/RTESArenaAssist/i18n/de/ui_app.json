@@ -644,7 +644,7 @@
   "settings.tts_voice": "Stimme",
   "settings.tts_voice_default": "(Standard)",
   "settings.tts_rate": "Geschwindigkeit",
-  "settings.tts_interrupt": "Beim Wechsel der Anzeige die aktuelle Sprachausgabe abbrechen und den neuen Inhalt vorlesen",
+  "settings.tts_interrupt": "Beim Wechsel der Anzeige die aktuelle Sprachausgabe abbrechen und den neuen Inhalt vorlesen (auch beim Zurückkehren von der Antwort eines NPCs ins Menü)",
   "settings.tts_interrupt_label": "Unterbrechen",
   "settings.tts_cancel_on_close": "Vorlesen abbrechen, wenn ein Dialog oder Gespräch geschlossen wird",
   "settings.tts_cancel_on_close_label": "Beim Schließen abbrechen",
