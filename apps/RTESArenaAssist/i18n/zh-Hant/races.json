@@ -1,0 +1,34 @@
+{
+  "races.0.0": {
+    "value": "布列頓人",
+    "plural": "布列頓人"
+  },
+  "races.1.0": {
+    "value": "紅衛人",
+    "plural": "紅衛人"
+  },
+  "races.2.0": {
+    "value": "諾德人",
+    "plural": "諾德人"
+  },
+  "races.3.0": {
+    "value": "黑暗精靈",
+    "plural": "黑暗精靈"
+  },
+  "races.4.0": {
+    "value": "高等精靈",
+    "plural": "高等精靈"
+  },
+  "races.5.0": {
+    "value": "木精靈",
+    "plural": "木精靈"
+  },
+  "races.6.0": {
+    "value": "卡吉特人",
+    "plural": "卡吉特人"
+  },
+  "races.7.0": {
+    "value": "阿爾貢人",
+    "plural": "阿爾貢人"
+  }
+}

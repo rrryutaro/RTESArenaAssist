@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<title>操作与界面</title>
+<style>
+body { font-family: "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+<h1>操作与界面</h1>
+
+<h2>角色表 — 第1页</h2>
+<table>
+  <tr><th>栏位</th><th>说明</th></tr>
+  <tr><td>姓名 / 种族 / 职业</td><td>角色的基本身份</td></tr>
+  <tr><td>经验</td><td>当前累计的经验值</td></tr>
+  <tr><td>等级</td><td>角色当前等级</td></tr>
+  <tr><td>生命</td><td>当前生命值</td></tr>
+  <tr><td>疲劳</td><td>范围为2到200</td></tr>
+  <tr><td>金币</td><td>当前持有的金币</td></tr>
+  <tr><td>下一页</td><td>前往第2页（装备列表）</td></tr>
+  <tr><td>完成</td><td>关闭角色表</td></tr>
+</table>
+
+<h2>角色表 — 第2页（装备）</h2>
+<table>
+  <tr><th>颜色</th><th>含义</th></tr>
+  <tr><td style="color:#ffd700">黄色</td><td>当前已装备的物品</td></tr>
+  <tr><td style="color:#d2b48c">棕褐色</td><td>可装备的物品</td></tr>
+  <tr><td style="color:#ff6b6b">红色</td><td>无法装备</td></tr>
+  <tr><td style="color:#00ffff">青色</td><td>未鉴定的魔法物品</td></tr>
+  <tr><td style="color:#88ffff">亮青色</td><td>未鉴定的魔法物品（已装备）</td></tr>
+</table>
+<p><strong>左键单击</strong>可装备物品。<strong>右键单击</strong>可查看物品信息。滚动箭头最多可浏览40件物品。</p>
+<p><strong>丢弃</strong>：丢弃高亮的物品。<strong>法术书</strong>：显示法术。<strong>退出</strong>：返回第1页。</p>
+
+<h2>鼠标操作</h2>
+<table>
+  <tr><th>动作</th><th>效果</th></tr>
+  <tr><td>左键单击（场景中）</td><td>前进 / 互动 / 装备</td></tr>
+  <tr><td>右键单击（场景中）</td><td>后退</td></tr>
+  <tr><td>左键单击（界面）</td><td>选择 / 确认</td></tr>
+  <tr><td>右键单击（物品）</td><td>显示物品信息</td></tr>
+  <tr><td>鼠标左右移动</td><td>向左 / 向右转向</td></tr>
+  <tr><td>鼠标上下移动</td><td>向上 / 向下看</td></tr>
+</table>
+
+<h2>键盘操作</h2>
+<table>
+  <tr><th>按键</th><th>动作</th></tr>
+  <tr><td><span class="key">↑</span> / <span class="key">W</span></td><td>前进</td></tr>
+  <tr><td><span class="key">↓</span> / <span class="key">S</span></td><td>后退</td></tr>
+  <tr><td><span class="key">←</span> / <span class="key">A</span></td><td>向左转</td></tr>
+  <tr><td><span class="key">→</span> / <span class="key">D</span></td><td>向右转</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>切换自动地图</td></tr>
+  <tr><td><span class="key">C</span></td><td>角色表</td></tr>
+  <tr><td><span class="key">L</span></td><td>日志</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>菜单 / 返回</td></tr>
+  <tr><td><span class="key">F1</span></td><td>帮助</td></tr>
+  <tr><td><span class="key">Alt+F4</span></td><td>退出游戏</td></tr>
+</table>
+
+<div class="note">
+<strong>DOSBox小技巧：</strong><span class="key">Ctrl+F10</span> 切换鼠标捕获。<span class="key">Alt+Enter</span> 切换全屏 / 窗口模式。
+</div>
+
+<h2>游戏内动作</h2>
+<table>
+  <tr><th>动作</th><th>说明</th></tr>
+  <tr><td>交谈</td><td>与NPC交谈以获取信息和任务</td></tr>
+  <tr><td>偷窃</td><td>从目标身上偷取物品（成功率取决于AGI）</td></tr>
+  <tr><td>拾取</td><td>捡起地上的物品</td></tr>
+  <tr><td>休息 / 扎营</td><td>恢复生命和疲劳；莉娅可能会在梦中出现</td></tr>
+  <tr><td>施法</td><td>使用法术书中的法术</td></tr>
+  <tr><td>使用</td><td>使用手持的物品</td></tr>
+</table>
+
+</body>
+</html>

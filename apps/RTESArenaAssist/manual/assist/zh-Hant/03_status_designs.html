@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>屬性介面設計（角色表）</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>屬性介面設計（角色表）</h1>
+
+<p>此功能會以你選擇的設計（角色表）在「狀態」分頁中顯示狀態。請用「狀態」分頁上方的「檢視」選擇設計。「翻譯」分頁中的狀態畫面與屬性分配（建立角色與升級）也使用同一種設計。</p>
+<p>設計是一個 HTML 檔案（範本）。你可以選用內建設計，也可以自己製作。除了屬性及其修正值，角色表還可以顯示角色的狀態、各身體部位的護甲等級，以及臉部圖像與全身圖像。</p>
+
+<div class="note">
+這是 Assist 的顯示功能，與遊戲本身的狀態畫面（官方手冊中稱為「角色表」）是分開的，遊戲的畫面不會改變。
+</div>
+
+<h2>切換檢視</h2>
+<p>用「狀態」分頁上方的「檢視」，選擇「標準」（之前一直使用的顯示方式）或其中一種角色表設計。你的選擇會保留到下次啟動。</p>
+<ul>
+<li>「翻譯」分頁中的狀態畫面與屬性分配會使用這裡選擇的檢視。「翻譯」分頁沒有自己的選擇器。</li>
+<li>數值是 Assist 從遊戲中讀取的值，與「標準」檢視相同。角色表只負責顯示，絕不會更改遊戲中的數值（透過作弊設定更改數值，請在「標準」檢視中進行）。</li>
+<li>只有在 Assist 已連線到遊戲且正在顯示狀態時，才會顯示角色表。</li>
+</ul>
+
+<h2>內建設計</h2>
+<p>內建 8 種設計，這裡依「檢視」清單的順序列出。在「檢視」中選擇其中一種，即可查看它的外觀。</p>
+<table>
+  <tr><th>設計</th><th>說明</th></tr>
+  <tr><td>Arena 風格</td><td>仿照遊戲的狀態畫面排版：修正值位於屬性列上，全身圖像位於右側</td></tr>
+  <tr><td>屬性卡片</td><td>淺色。每項屬性一張卡片，並附上依賴該屬性的修正值（力量：傷害與最大負重，依此類推；與遊戲狀態畫面上的配對相同）。頂部是生命、疲勞與魔法點數的量表</td></tr>
+  <tr><td>屬性卡片（深色）</td><td>採用 Assist 深色視窗配色的屬性卡片。左側是屬性；右側是各身體部位的護甲等級與全身圖像</td></tr>
+  <tr><td>精簡</td><td>在一個較短的頁面內使用小字型，適合小視窗</td></tr>
+  <tr><td>儀表板</td><td>深色面板。生命、疲勞、魔法點數與經驗值以量表顯示</td></tr>
+  <tr><td>大字體</td><td>黑底上的大型白色與黃色文字</td></tr>
+  <tr><td>桌上角色扮演遊戲（記錄表）</td><td>黑白的記錄表</td></tr>
+  <tr><td>桌上角色扮演遊戲（羊皮紙）</td><td>羊皮紙配色與襯線字型</td></tr>
+</table>
+<ul>
+<li>內建設計經過調整，可讓 1920×1080 版面模式下的「狀態」分頁與「翻譯」分頁不需捲動即可完整顯示。</li>
+<li>部分設計在較窄的視窗中會出現水平捲軸（屬性卡片（深色）在約 740 px 以下，Arena 風格與儀表板在約 540 px 以下）。「精簡」適合小視窗。</li>
+<li>量表的顏色與遊戲畫面中臉部圖像旁的量表一致（生命＝綠色，疲勞＝紅色，魔法點數＝藍色）。</li>
+</ul>
+
+<h2>你自己的角色表</h2>
+
+<h3>存放位置</h3>
+<p>按下「狀態」分頁上的「開啟資料夾」，即可開啟存放你自己的角色表的資料夾。</p>
+<ul>
+<li>該資料夾是 <code>character_sheets</code>，與 RTESArenaAssist.exe 位於同一位置。</li>
+<li>第一次開啟時，Assist 會建立該資料夾，並放入內建設計的副本（不會覆蓋既有檔案）。最簡單的入門方式是編輯一份副本。</li>
+<li>資料夾中的每個 <code>.html</code> 檔案都會出現在「檢視」清單中。名稱是檔案的 <code>&lt;title&gt;</code> 文字（沒有則使用檔名），後面加上「（資料夾）」。修改 <code>&lt;title&gt;</code> 即可重新命名。</li>
+<li>編輯檔案後，請按下「狀態」分頁上的「重新載入」。</li>
+<li>請將檔案儲存為 UTF-8。</li>
+</ul>
+
+<h3>支援的 HTML</h3>
+<p>角色表使用 Qt 的簡易 HTML 顯示，而不是瀏覽器（不會使用網際網路連線）。</p>
+<ul>
+<li>支援：表格（<code>table</code>）、文字的顏色、大小、粗細與字型、背景色、框線（<code>border</code>、<code>border-collapse</code>）、間距（<code>padding</code>、<code>margin</code>）、圖片（<code>img</code>）、<code>&lt;style&gt;</code> 區塊中的類別等。詳情請參閱 Qt 文件中的「Supported HTML Subset」。</li>
+<li>不支援：指令碼、<code>flex</code> 與 <code>grid</code>、重疊（<code>position</code>）、圓角等。請用表格來建構版面。</li>
+<li>同一資料夾中的圖片與樣式表可以用相對路徑使用（例如 <code>&lt;img src="bg.png"&gt;</code>）。資料夾之外的檔案與網際網路上的檔案不會被讀取，連結也不會被開啟。</li>
+<li>寬度為 100% 的表格，在每一欄都以 % 指定寬度時更能維持形狀。</li>
+</ul>
+
+<h2>語法</h2>
+<p>在 HTML 中寫入以下內容，該位置就會插入對應的值。</p>
+<table>
+  <tr><th>語法</th><th>意義</th></tr>
+  <tr><td><code>{{key}}</code></td><td>一個值（見「數值」）。在尚無法讀取該值時顯示「—」</td></tr>
+  <tr><td><code>{{label.key}}</code></td><td>一個標籤（見「標籤」），以顯示語言呈現</td></tr>
+  <tr><td><code>{{img.face}}</code> / <code>{{img.body}}</code></td><td>臉部圖像或全身圖像（見「圖像」）。請以 <code>&lt;img src="{{img.face}}"&gt;</code> 的形式使用</td></tr>
+  <tr><td><code>{{#if key}}</code> … <code>{{else}}</code> … <code>{{/if}}</code></td><td>僅當 key 的值可以讀取（不為空）時顯示前半部分，否則顯示 <code>{{else}}</code> 之後的部分。<code>{{else}}</code> 可以省略。區塊可以巢狀使用。<code>0</code> 算作可以讀取的值</td></tr>
+</table>
+<ul>
+<li>未知的 key 會顯示為 <code>[key?]</code>，方便發現拼字錯誤（例如 <code>{{golf}}</code> 會變成 <code>[golf?]</code>）。不成對的 <code>{{else}}</code> 或 <code>{{/if}}</code> 會顯示為 <code>[else?]</code> 或 <code>[/if?]</code>，未關閉的 <code>{{#if}}</code> 會在文件末尾加上 <code>[/if?]</code>。</li>
+<li>大括號內允許有空格，例如 <code>{{ key }}</code>。</li>
+<li>HTML 註解（<code>&lt;!-- … --&gt;</code>）內不會插入任何內容。每個內建設計頂部的註解中列出了各個 key。</li>
+<li>值會以對 HTML 安全的形式插入（值中的 <code>&lt;</code> 或 <code>&amp;</code> 會依原字元顯示）。</li>
+</ul>
+
+<h2>數值</h2>
+<p><code>{{key}}</code> 可用的 key。範例全部來自同一個角色。</p>
+
+<h3>名稱、種族、職業等</h3>
+<table>
+  <tr><th>Key</th><th>內容</th><th>範例</th></tr>
+  <tr><td><code>name</code></td><td>名稱</td><td>Seraphine</td></tr>
+  <tr><td><code>race</code> / <code>race_en</code></td><td>種族（顯示語言 / 英文）</td><td>高等精靈</td></tr>
+  <tr><td><code>class</code> / <code>class_en</code></td><td>職業（顯示語言 / 英文）</td><td>魔劍士</td></tr>
+  <tr><td><code>level</code></td><td>等級</td><td>5</td></tr>
+  <tr><td><code>gold</code></td><td>金幣</td><td>1284</td></tr>
+</table>
+
+<h3>屬性與修正值</h3>
+<table>
+  <tr><th>Key</th><th>內容</th><th>範例</th></tr>
+  <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>屬性（力量、智力、意志力、敏捷、速度、耐力、魅力、幸運）</td><td>58</td></tr>
+  <tr><td><code>str_base</code> <code>int_base</code> <code>wil_base</code> <code>agi_base</code> <code>spd_base</code> <code>end_base</code> <code>per_base</code> <code>luc_base</code></td><td>修正前的基礎屬性（正常遊玩時，僅在與目前值不同時可用）</td><td>50</td></tr>
+  <tr><td><code>str_change</code> <code>int_change</code> <code>wil_change</code> <code>agi_change</code> <code>spd_change</code> <code>end_change</code> <code>per_change</code> <code>luc_change</code></td><td>目前值減去基礎值，帶正負號，如 <code>+8</code> 或 <code>-8</code>（僅在不為零時可用）</td><td>+8</td></tr>
+  <tr><td><code>damage</code></td><td>傷害（來自力量的修正）</td><td>+1</td></tr>
+  <tr><td><code>max_kilos</code></td><td>最大負重</td><td>116</td></tr>
+  <tr><td><code>magic_def</code></td><td>魔法防禦</td><td>+1</td></tr>
+  <tr><td><code>to_hit</code> / <code>to_defend</code></td><td>命中 / 防禦</td><td>+1 / +1</td></tr>
+  <tr><td><code>health</code></td><td>生命修正（來自耐力）</td><td>+1</td></tr>
+  <tr><td><code>heal_mod</code></td><td>治療修正</td><td>+1</td></tr>
+  <tr><td><code>charisma</code></td><td>魅力</td><td>+0</td></tr>
+  <tr><td><code>bonus_pts</code></td><td>尚未分配的點數（僅在建立角色與屬性分配期間有值）</td><td>12</td></tr>
+</table>
+
+<p>僅在屬性被修正時才顯示變化值與基礎值的範例：</p>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;span class="current"&gt;{{str}}&lt;/span&gt;
+{{#if str_change}}&lt;span class="change"&gt;{{str_change}}&lt;br&gt;({{str_base}})&lt;/span&gt;{{/if}}</pre></td></tr></table>
+<p>沒有變化時 <code>str_change</code> 為空，因此條件部分會消失，只剩下目前值。把 <code>str</code> 以同樣的方式換成 <code>int</code> 與其他屬性的 key 即可。</p>
+
+<h3>生命、疲勞、魔法點數與經驗值</h3>
+<table>
+  <tr><th>Key</th><th>內容</th><th>範例</th></tr>
+  <tr><td><code>hp</code> / <code>hp_curr</code> / <code>hp_max</code></td><td>生命（「目前/最大」形式 / 目前 / 最大）</td><td>37/58 / 37 / 58</td></tr>
+  <tr><td><code>fatigue</code> / <code>fatigue_curr</code> / <code>fatigue_max</code></td><td>疲勞（同樣的三種形式）</td><td>101/121 / 101 / 121</td></tr>
+  <tr><td><code>spell_pts</code> / <code>spell_pts_curr</code> / <code>spell_pts_max</code></td><td>魔法點數（同樣的三種形式）</td><td>88/142 / 88 / 142</td></tr>
+  <tr><td><code>experience</code></td><td>經驗值</td><td>5210</td></tr>
+  <tr><td><code>experience_next</code></td><td>升到下一等級所需的經驗值</td><td>7910</td></tr>
+  <tr><td><code>experience_to_next</code></td><td>距離下一等級還需要的經驗值</td><td>2700</td></tr>
+</table>
+
+<h3>量表用的數值</h3>
+<table>
+  <tr><th>Key</th><th>內容</th><th>範例</th></tr>
+  <tr><td><code>hp_pct</code> / <code>fatigue_pct</code> / <code>spell_pts_pct</code></td><td>以百分比表示的目前值（0 到 100）。最大值為 0 時沒有此值（例如無法施法的職業的魔法點數）</td><td>64 / 83 / 62</td></tr>
+  <tr><td><code>experience_pct</code></td><td>從本等級開始到下一等級的進度（0 到 100）</td><td>27</td></tr>
+  <tr><td><code>hp_pct_rest</code> / <code>fatigue_pct_rest</code> / <code>spell_pts_pct_rest</code> / <code>experience_pct_rest</code></td><td>剩餘部分（100 − 該百分比）</td><td>36 / 17 / 38 / 73</td></tr>
+</table>
+<p>量表的繪製方法請參閱「範例」。</p>
+
+<h3>狀態</h3>
+<table>
+  <tr><th>Key</th><th>內容</th><th>範例</th></tr>
+  <tr><td><code>condition</code></td><td>目前所有狀態連在一起。沒有任何狀態時為「健康」</td><td>中毒</td></tr>
+  <tr><td><code>condition_bad</code></td><td>僅包含不良狀態（染病、中毒、醉酒、沉默、麻痺、詛咒、被吸取）。沒有時不存在此值</td><td>中毒</td></tr>
+  <tr><td><code>condition_good</code></td><td>僅包含良好效果（隱形、非目標、抗火等抗性、漂浮、可吸收法術、可反射法術、抵抗法術、再生）。沒有時不存在此值</td><td>（無）</td></tr>
+</table>
+<ul>
+<li>用語與遊戲狀態視窗中的相同。多個狀態之間以「、」分隔。</li>
+<li>目前不顯示：瀕危、護盾、疾病的名稱、祝福。</li>
+<li>建立角色期間不存在此值。</li>
+</ul>
+
+<h3>各身體部位的護甲等級</h3>
+<table>
+  <tr><th>Key</th><th>身體部位</th><th>範例</th></tr>
+  <tr><td><code>ar_head</code></td><td>頭部</td><td>+7</td></tr>
+  <tr><td><code>ar_shoulder_right</code> / <code>ar_shoulder_left</code></td><td>右肩 / 左肩</td><td>+1 / -1</td></tr>
+  <tr><td><code>ar_chest</code></td><td>胸部</td><td>-1</td></tr>
+  <tr><td><code>ar_hands</code></td><td>雙手</td><td>+5</td></tr>
+  <tr><td><code>ar_legs</code></td><td>腰部與雙腿</td><td>+4</td></tr>
+  <tr><td><code>ar_feet</code></td><td>雙腳</td><td>+4</td></tr>
+</table>
+<ul>
+<li>與遊戲的裝備畫面（狀態畫面的第 2 頁）中身體旁邊顯示的數字相同，依裝備計算而得。數值越低防護越好；什麼都不穿時為 +10。</li>
+<li>計算方式：10 − 護甲（該部位）− 盾牌（其涵蓋的部位）− 飾品（所有部位）− 來自敏捷的防禦修正（<code>to_defend</code>）。</li>
+<li>無法讀取裝備時不存在此值。</li>
+</ul>
+
+<h3>藥水數量</h3>
+<p>在遊戲的裝備清單中，為每種想要顯示的藥水勾選「角色表」欄。遊戲中已鑑定的 15 種藥水都可以選擇。治療、恢復能量與治癒疾病為初始選取項目。</p>
+<table>
+  <tr><th>Key</th><th>內容</th><th>範例</th></tr>
+  <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>以顯示語言呈現的所選藥水名稱</td><td>治療藥水</td></tr>
+  <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>以顯示語言呈現的所選藥水簡稱（省略固定的「藥水」字樣）</td><td>治療</td></tr>
+  <tr><td><code>potion_1_compact</code> … <code>potion_15_compact</code></td><td>精簡卡片用的名稱（簡稱超過 14 個字元時以省略號截斷）</td><td>治療</td></tr>
+  <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>對應藥水的持有總數</td><td>4</td></tr>
+</table>
+<ul>
+<li>編號依藥水種類被選取的先後順序排列。未使用的欄位沒有值。</li>
+<li>內建的「屬性卡片（深色）」設計使用大型卡片，只顯示最先選取的六種。自訂的 HTML 設計可以使用全部 15 種的 key。</li>
+<li>未鑑定的藥水因種類未知而無法選擇。無法讀取物品欄時，這些值也不存在。</li>
+</ul>
+
+<h3>魔法裝備的效果與使用次數</h3>
+<p>在遊戲的裝備清單中，為每件想要顯示的魔法裝備勾選「角色表」欄。已鑑定且剩餘使用次數可讀取的物品可以選擇。同名的實體物品會分開顯示。</p>
+<table>
+  <tr><th>Key</th><th>內容</th><th>範例</th></tr>
+  <tr><td><code>magic_item_1_name</code> … <code>magic_item_40_name</code></td><td>以顯示語言呈現的所選魔法裝備名稱</td><td>物品名稱</td></tr>
+  <tr><td><code>magic_item_1_effect</code> … <code>magic_item_40_effect</code></td><td>以顯示語言呈現的魔法效果名稱</td><td>魔法效果</td></tr>
+  <tr><td><code>magic_item_1_uses</code> … <code>magic_item_40_uses</code></td><td>剩餘使用次數</td><td>12</td></tr>
+</table>
+<ul>
+<li>40 並不是可選種類的上限；它代表 Arena 物品欄的全部 40 個欄位。儲存的選擇沒有任意的種類上限。</li>
+<li>未鑑定的物品與沒有使用次數的裝備無法選擇。已選取但目前未持有的物品不會產生值。</li>
+</ul>
+
+<h2>標籤</h2>
+<p><code>{{label.key}}</code> 可用的 key。標籤會以顯示語言插入。</p>
+<table>
+  <tr><th>Key</th><th>以繁體中文顯示</th></tr>
+  <tr><td><code>name</code> <code>race</code> <code>class</code> <code>level</code> <code>gold</code> <code>experience</code></td><td>名稱、種族、職業、等級、金幣、經驗值</td></tr>
+  <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>力量、智力、意志力、敏捷、速度、耐力、魅力、幸運</td></tr>
+  <tr><td><code>str_code</code> <code>int_code</code> <code>wil_code</code> <code>agi_code</code> <code>spd_code</code> <code>end_code</code> <code>per_code</code> <code>luc_code</code></td><td>STR, INT, WIL, AGI, SPD, END, PER, LUC</td></tr>
+  <tr><td><code>damage</code> <code>max_kilos</code> <code>magic_def</code> <code>to_hit</code> <code>to_defend</code> <code>health</code> <code>heal_mod</code> <code>charisma</code> <code>spell_pts</code> <code>bonus_pts</code></td><td>傷害、最大負重、魔法防禦、命中、防禦、生命、治療修正、魅力、魔法點數、BONUS PTS</td></tr>
+  <tr><td><code>hp</code> <code>fatigue</code></td><td>生命、疲勞</td></tr>
+  <tr><td><code>experience_next</code> <code>experience_to_next</code></td><td>下一等級、距離下一等級</td></tr>
+  <tr><td><code>condition</code></td><td>狀態</td></tr>
+  <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>頭部、右肩、左肩、胸部、雙手、腰部與雙腿、雙腳</td></tr>
+  <tr><td><code>title</code></td><td>角色表</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code> <code>section_magic_items</code></td><td>屬性、戰鬥與魔法、生命與疲勞、經驗值與金幣、護甲等級 (AR)、藥水、魔法裝備</td></tr>
+  <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>數值、修正、基礎值</td></tr>
+  <tr><td><code>armor_note</code></td><td>數值越低，防護越好（未穿戴時為 +10）</td></tr>
+</table>
+
+<h2>圖像</h2>
+<table>
+  <tr><th>Key</th><th>內容</th><th>大小</th></tr>
+  <tr><td><code>img.face</code></td><td>臉部圖像（遊戲畫面下方顯示的那一張）</td><td>80×70</td></tr>
+  <tr><td><code>img.body</code></td><td>狀態畫面上的人像（穿著裝備的狀態）</td><td>300×480</td></tr>
+</table>
+<ul>
+<li>它們是根據你的 Arena 檔案製作的（Assist 不內建 Arena 的圖像）。無法製作時，會使用相同大小的透明圖像。</li>
+<li>指定 <code>width</code> / <code>height</code> 後，圖像會以該尺寸顯示（不做平滑縮放，保留粗糙的像素）。取整數倍的效果最好（例如臉部圖像用 <code>width="160" height="140"</code>）。</li>
+<li>全身圖像上的裝備每秒檢查一次，只有在發生變化時才會重新產生圖像。</li>
+</ul>
+
+<h2>範例</h2>
+<p>HTML 字元請照原樣書寫（這裡為了方便閱讀而以易讀的形式顯示）。</p>
+
+<h3>最簡單的角色表</h3>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;我的角色表&lt;/title&gt;
+&lt;style&gt;
+  body { background-color: #1a1a2e; color: #e0e0e0;
+         font-family: "Segoe UI", "Yu Gothic UI", sans-serif; }
+  .v   { font-weight: bold; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;table width="100%" cellspacing="0" cellpadding="6"&gt;
+&lt;tr&gt;
+  &lt;td width="90"&gt;&lt;img src="{{img.face}}"&gt;&lt;/td&gt;
+  &lt;td&gt;&lt;span class="v"&gt;{{name}}&lt;/span&gt;&lt;br&gt;{{race}} / {{class}}&lt;br&gt;{{label.level}} {{level}}&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;table width="100%" cellspacing="0" cellpadding="4"&gt;
+&lt;tr&gt;&lt;td width="50%"&gt;{{label.str}}&lt;/td&gt;&lt;td width="50%" align="right"&gt;&lt;span class="v"&gt;{{str}}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;{{label.hp}}&lt;/td&gt;&lt;td align="right"&gt;&lt;span class="v"&gt;{{hp}}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre></td></tr></table>
+
+<h3>用 {{#if}} 只在適用時才顯示</h3>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;!-- 只在分配點數時顯示 --&gt;
+{{#if bonus_pts}}&lt;p&gt;{{label.bonus_pts}}: {{bonus_pts}}&lt;/p&gt;{{/if}}
+
+&lt;!-- 有不良狀態時以紅色顯示 --&gt;
+&lt;p&gt;{{label.condition}}:
+{{#if condition_bad}}&lt;span style="color: #ff5050;"&gt;{{condition}}&lt;/span&gt;{{else}}{{condition}}{{/if}}&lt;/p&gt;</pre></td></tr></table>
+
+<h3>量表</h3>
+<table class="code" cellpadding="8"><tr><td><pre>{{#if hp_pct}}
+&lt;table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; font-size: 1px;"&gt;
+&lt;tr&gt;
+  &lt;td width="{{hp_pct}}%" bgcolor="#4caf50" style="padding-top: 4px; padding-bottom: 4px;"&gt;&lt;/td&gt;
+  &lt;td width="{{hp_pct_rest}}%" bgcolor="#1f3326"&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+{{/if}}</pre></td></tr></table>
+<ul>
+<li>兩個儲存格都要指定寬度（只指定其中一個時，值為 0 看起來會是滿的）。</li>
+<li>儲存格保持空白，並用上下內距來決定高度。在表格上設定較小的字型大小（<code>font-size: 1px</code>）可讓空白儲存格保持低矮。</li>
+<li>最大值為 0 時沒有百分比，因此把量表包在 <code>{{#if hp_pct}}</code> 中，就能隱藏整個量表。</li>
+</ul>
+
+<h2>顯示不正常時</h2>
+<table>
+  <tr><th>症狀</th><th>檢查項目</th></tr>
+  <tr><td>顯示 <code>[key?]</code></td><td>key 的拼寫（見「數值」與「標籤」）</td></tr>
+  <tr><td>顯示「—」</td><td>尚無法讀取該值（例如在建立角色期間）</td></tr>
+  <tr><td>清單中沒有該角色表</td><td>副檔名是否為 <code>.html</code>？檔案是否在 <code>character_sheets</code> 資料夾中？新增後是否按了「重新載入」？</td></tr>
+  <tr><td>版面跑掉</td><td>檔案是否使用了不支援的功能（<code>flex</code>、<code>grid</code> 等）？請用表格來建構版面</td></tr>
+  <tr><td>圖片沒有顯示</td><td>圖片檔案是否在 <code>character_sheets</code> 資料夾內？（資料夾之外的檔案不會被讀取）</td></tr>
+  <tr><td>文字亂碼</td><td>檔案是否儲存為 UTF-8？</td></tr>
+  <tr><td>什麼都沒有顯示</td><td>Assist 是否已連線到遊戲，且正在顯示狀態？（例如在標題畫面上就不會顯示任何內容）</td></tr>
+</table>
+
+</body>
+</html>

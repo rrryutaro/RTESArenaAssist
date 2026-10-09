@@ -6,8 +6,10 @@ import os
 from typing import Any
 try:
     import i18n_language_config as _langcfg
+    import i18n_user as _user
 except ImportError:
     from . import i18n_language_config as _langcfg
+    from . import i18n_user as _user
 logger = logging.getLogger(__name__)
 _BASE_DIR: str = ''
 _I18N_DIR: str = ''
@@ -21,6 +23,8 @@ _original_merged: dict[str, str] = {}
 _originals_by_cat: dict[str, dict[str, Any]] = {}
 _value_index: dict[str, dict[str, str]] = {}
 _PUBLIC_RUNTIME = False
+_USER_TRANSLATIONS_DIR: str | None = None
+_USER = _user.UserPacks()
 _PUBLIC_RUNTIME_EN_FILES = frozenset({'ui_app.json', 'ui.json', 'setup.json'})
 try:
     from PySide6.QtCore import QObject, Signal
@@ -51,7 +55,20 @@ _PHASE5_PARTIAL_OBS_ALLOWLIST = frozenset({'items', 'equipment', 'mages', 'chara
 
 def _v2_locale_tag(lang: str) -> str:
     code = (lang or '').lower()
-    return _langcfg.locale_tag_for(code, _meta_all.get(code) or None)
+    meta = _meta_all.get(lang) or next((m for c, m in _meta_all.items() if c.lower() == code), None)
+    return _langcfg.locale_tag_for(code, meta or None)
+
+def _v2_text(nid: int, lang: str | None=None) -> str | None:
+    code = lang or _lang
+    if _V2_PUBLIC is None:
+        return None
+    if not (_meta_all.get(code) or {}).get('user_defined'):
+        return _V2_PUBLIC.resolve_text(nid, _v2_locale_tag(code))
+    for c in _fallback_chain(code):
+        v = _V2_PUBLIC.resolve_text(nid, _v2_locale_tag(c))
+        if v is not None:
+            return v
+    return None
 
 def enable_v2(*, bundle_path: str, legacy_map_path: str, localpack_path: str | None=None, mods_dir: str | None=None) -> None:
     global _V2_COMPAT
@@ -81,6 +98,7 @@ def enable_v2_public(*, bundle_path: str, source_id_map_path: str, localpack_pat
     _V2_SURFACE_WARNINGS = {}
     _V2_SLOT_INDEX = {}
     _V2_SECTION_INDEX = {}
+    _attach_user_modset()
 
 def disable_v2_public() -> None:
     global _V2_PUBLIC, _V2_SOURCE_ID_MAP, _V2_RUNTIME_ENABLED, _V2_CATEGORIES_ENABLED
@@ -161,12 +179,11 @@ def text_by_source_id(source_id: str, *, category: str | None=None, lang: str | 
         return None
     nid = _v2_pick_id(source_id, category)
     if nid is not None:
-        return _V2_PUBLIC.resolve_text(nid, _v2_locale_tag(lang or _lang))
+        return _v2_text(nid, lang)
     ids = _v2_ids_for_source_id(source_id)
     if len(ids) <= 1:
         return None
-    loc = _v2_locale_tag(lang or _lang)
-    texts = {_V2_PUBLIC.resolve_text(int(i), loc) for i in ids}
+    texts = {_v2_text(int(i), lang) for i in ids}
     texts.discard(None)
     if len(texts) == 1:
         return next(iter(texts))
@@ -193,13 +210,12 @@ def v2_category_entries(category: str, *, lang: str | None=None) -> list:
     meta = _V2_PUBLIC.bundle.categories.get(category)
     if not meta:
         return []
-    loc = _v2_locale_tag(lang or _lang)
     out = []
     for e in meta.get('entries', []):
         if e.get('retired'):
             continue
         eid = int(e['id'])
-        out.append({'id': eid, 'source_id': (e.get('source') or {}).get('source_id'), 'kind': e.get('kind'), 'original': _V2_PUBLIC.resolve_original_surface(eid), 'text': _V2_PUBLIC.resolve_text(eid, loc), 'rich': _V2_PUBLIC.rich_meta(eid), 'context': e.get('context') or {}, 'debug_name': e.get('debug_name')})
+        out.append({'id': eid, 'source_id': (e.get('source') or {}).get('source_id'), 'kind': e.get('kind'), 'original': _V2_PUBLIC.resolve_original_surface(eid), 'text': _v2_text(eid, lang), 'rich': _V2_PUBLIC.rich_meta(eid), 'context': e.get('context') or {}, 'debug_name': e.get('debug_name')})
     return out
 
 def v2_bundle_categories() -> list:
@@ -218,7 +234,6 @@ def _v2_value_index(category: str) -> dict:
         if _V2_PUBLIC is not None:
             meta = _V2_PUBLIC.bundle.categories.get(category)
             if meta:
-                loc = _v2_locale_tag(_lang)
                 for e in meta.get('entries', []):
                     if e.get('retired'):
                         continue
@@ -232,8 +247,8 @@ def _v2_value_index(category: str) -> dict:
                     if prev is None:
                         idx[o] = eid
                     elif prev != eid:
-                        t_prev = _V2_PUBLIC.resolve_text(prev, loc)
-                        t_cur = _V2_PUBLIC.resolve_text(eid, loc)
+                        t_prev = _v2_text(prev)
+                        t_cur = _v2_text(eid)
                         if t_prev != t_cur and o not in dup_warn:
                             dup_warn.append(o)
         _V2_VALUE_INDEX[category] = idx
@@ -275,13 +290,13 @@ def value_by_surface(category: str, original_text: str, *, section: str | None=N
         nid = _v2_section_index(category).get((section, original_text))
         if nid is None:
             return None
-        return _V2_PUBLIC.resolve_text(nid, _v2_locale_tag(lang or _lang))
+        return _v2_text(nid, lang)
     nid = _v2_value_index(category).get(original_text)
     if nid is None:
         return None
     if original_text in _V2_SURFACE_WARNINGS.get(category, ()):
         return None
-    return _V2_PUBLIC.resolve_text(nid, _v2_locale_tag(lang or _lang))
+    return _v2_text(nid, lang)
 
 def value_section(category: str, original_text: str, section: str) -> str | None:
     if not original_text:
@@ -316,7 +331,7 @@ def value_by_slot(category: str, slot: int, *, lang: str | None=None) -> str | N
     nid = _v2_slot_index(category).get(int(slot))
     if nid is None:
         return None
-    return _V2_PUBLIC.resolve_text(nid, _v2_locale_tag(lang or _lang))
+    return _v2_text(nid, lang)
 
 def v2_category_mixed_complete(category: str) -> bool:
     if _V2_PUBLIC is None:
@@ -379,8 +394,8 @@ def merge_user_observations(user_dir: str) -> int:
         _v2_clear_surface_caches()
     return len(obs)
 
-def init(base_dir: str, lang: str | None=None, *, public_runtime: bool=False) -> None:
-    global _PUBLIC_RUNTIME
+def init(base_dir: str, lang: str | None=None, *, public_runtime: bool=False, user_dir: str | None=None) -> None:
+    global _PUBLIC_RUNTIME, _USER_TRANSLATIONS_DIR
     global _BASE_DIR, _I18N_DIR, _lang_cache, _lang_raw_cache, _rules_cache
     global _originals_by_cat, _value_index
     _PUBLIC_RUNTIME = bool(public_runtime)
@@ -393,8 +408,179 @@ def init(base_dir: str, lang: str | None=None, *, public_runtime: bool=False) ->
     _value_index = {}
     _load_meta()
     _load_originals()
+    _USER_TRANSLATIONS_DIR = os.path.join(user_dir, 'translations') if user_dir else None
+    _reload_user_packs()
     resolved = _resolve_initial_lang(lang)
     _set_active(resolved)
+
+def _value_text(v: Any) -> str:
+    if isinstance(v, str):
+        return v
+    if isinstance(v, dict):
+        t = v.get('value', '')
+        return t if isinstance(t, str) else ''
+    return ''
+
+def bundled_category(lang: str, cat: str) -> 'dict[str, str] | None':
+    if not isinstance(cat, str) or not cat or cat.startswith('_') or any((c in cat for c in ('/', '\\', '.'))):
+        return None
+    txt = _i18n_read_text(lang, cat + '.json')
+    if txt is None:
+        return None
+    try:
+        data = json.loads(txt)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(data, dict):
+        return None
+    return {k: _value_text(v) for k, v in data.items() if not k.startswith('_')}
+
+def bundled_language_codes() -> dict[str, str]:
+    out: dict[str, str] = {}
+    for name in _i18n_listdir():
+        if name.startswith('_') or not _i18n_isdir(name):
+            continue
+        if _language_selectable(_meta_all.get(name, {})):
+            out[name.lower()] = name
+    return out
+
+def user_translations_dir() -> str | None:
+    return _USER_TRANSLATIONS_DIR
+
+def _reload_user_packs() -> None:
+    global _USER
+    packs = _user.UserPacks()
+    if _USER_TRANSLATIONS_DIR:
+        try:
+            packs = _user.load_dir(_USER_TRANSLATIONS_DIR, bundled=bundled_language_codes(), category_loader=bundled_category)
+        except Exception:
+            logger.warning('i18n: 利用者翻訳の読み込みに失敗（無視して継続）', exc_info=True)
+            packs = _user.UserPacks()
+    _USER = packs
+    _sync_user_language_meta()
+    if packs.files:
+        logger.info('i18n: 利用者翻訳 %d ファイル・%d 項目・警告 %d 件', len(packs.files), packs.entry_count(), len(packs.warnings))
+        for w in packs.warnings[:200]:
+            logger.info('i18n: 利用者翻訳 %s', w)
+
+def _sync_user_language_meta() -> None:
+    for code in [c for c, m in _meta_all.items() if m.get('user_defined')]:
+        del _meta_all[code]
+    for code, meta in _USER.langs.items():
+        if code not in _meta_all:
+            _meta_all[code] = dict(meta)
+
+def reload_user_translations() -> None:
+    _reload_user_packs()
+    _lang_cache.clear()
+    _attach_user_modset()
+
+def user_translation_status() -> list[dict]:
+    rows = []
+    for f in _USER.files:
+        row = dict(f)
+        meta = _meta_all.get(row.get('lang', ''), {})
+        row['display_name'] = meta.get('display_name', row.get('lang', ''))
+        rows.append(row)
+    return rows
+
+def _build_user_modset():
+    if _V2_PUBLIC is None or _V2_SOURCE_ID_MAP is None or (not _USER.overlay):
+        return None
+    import category_source_id as csid
+    import i18n_mods
+    categories = _V2_PUBLIC.bundle.categories
+    mods = []
+    mapped = unmapped = 0
+    for lang, overlay in _USER.overlay.items():
+        table: dict[int, str] = {}
+        cats = _USER.categories.get(lang, {})
+        for key, text in overlay.items():
+            cat = cats.get(key)
+            if cat not in categories:
+                continue
+            try:
+                sid = csid.source_id_for(cat, key)
+            except Exception:
+                sid = None
+            nid = _v2_pick_id(sid, cat) if sid else None
+            if nid is None:
+                unmapped += 1
+                continue
+            table[nid] = text
+            mapped += 1
+        if table:
+            mods.append(i18n_mods.TranslationMod(filename='(user translations)', locale=_v2_locale_tag(lang), priority=0, texts=table, registry_hash=''))
+    if unmapped:
+        logger.info('i18n: 利用者翻訳のうち v2 へ反映できない項目 %d 件（v1 には反映済み）', unmapped)
+    return i18n_mods.ModSet(mods, []) if mods else None
+_user_modset = None
+
+def _attach_user_modset() -> None:
+    global _user_modset
+    if _V2_PUBLIC is None:
+        return
+    ms = _build_user_modset()
+    if ms is not None:
+        _V2_PUBLIC.mods = ms
+    elif _user_modset is not None and _V2_PUBLIC.mods is _user_modset:
+        _V2_PUBLIC.mods = None
+    _user_modset = ms
+    _v2_clear_surface_caches()
+
+def _arena_originals(cat: str, keys) -> dict[str, str]:
+    if _V2_PUBLIC is None or getattr(_V2_PUBLIC, 'localpack', None) is None:
+        return {}
+    import category_source_id as csid
+    out: dict[str, str] = {}
+    for key in keys:
+        try:
+            sid = csid.source_id_for(cat, key)
+        except Exception:
+            sid = None
+        nid = _v2_pick_id(sid, cat) if sid else None
+        if nid is None:
+            continue
+        o = _V2_PUBLIC.resolve_original_surface(nid)
+        if isinstance(o, str) and o:
+            out[key] = o
+    return out
+
+def _template_sources(cat: str, base: dict) -> 'dict[str, str] | None':
+    en = bundled_category('en', cat)
+    if en:
+        return en
+    return _arena_originals(cat, base.keys())
+
+def export_user_template(lang: str, path: str, *, with_source: bool=False, app_version: str='') -> int:
+    cats = sorted((n[:-5] for n in _i18n_listdir(lang) if n.endswith('.json') and (not n.startswith('_'))))
+    data = _user.build_template(lang, categories=cats, category_loader=bundled_category, source_loader=_template_sources if with_source else None, app_version=app_version)
+    _user.write_template(path, data)
+    return sum((len(v) for v in data['texts'].values()))
+
+def export_new_language_template(path: str, *, with_source: bool=False, app_version: str='', reference_lang: str='ja') -> int:
+    codes = bundled_language_codes()
+    ref = codes.get(reference_lang.lower()) or codes.get('ja') or next(iter(codes.values()), '')
+    cats = sorted((n[:-5] for n in _i18n_listdir(ref) if n.endswith('.json') and (not n.startswith('_'))))
+    data = _user.build_new_language_template(categories=cats, category_loader=bundled_category, reference_lang=ref, source_loader=_template_sources if with_source else None, app_version=app_version)
+    _user.write_template(path, data)
+    return sum((len(v) for v in data['texts'].values()))
+
+def install_user_translation(src_path: str, *, overwrite: bool=False):
+    if not _USER_TRANSLATIONS_DIR:
+        return _user.InstallResult('invalid', reason='利用者フォルダが未設定')
+    result = _user.install(src_path, _USER_TRANSLATIONS_DIR, bundled=bundled_language_codes(), category_loader=bundled_category, overwrite=overwrite)
+    if result.status == 'ok':
+        reload_user_translations()
+    return result
+
+def remove_user_translation(filename: str) -> bool:
+    if not _USER_TRANSLATIONS_DIR:
+        return False
+    ok = _user.remove_file(_USER_TRANSLATIONS_DIR, filename)
+    if ok:
+        reload_user_translations()
+    return ok
 
 def public_runtime_enabled() -> bool:
     return _PUBLIC_RUNTIME
@@ -510,6 +696,9 @@ def available_languages() -> list[dict[str, str]]:
         if not _language_selectable(meta):
             continue
         results.append({'code': name, 'display_name': meta.get('display_name', name), 'direction': meta.get('direction', 'ltr')})
+    for code, meta in _meta_all.items():
+        if meta.get('user_defined'):
+            results.append({'code': code, 'display_name': meta.get('display_name', code), 'direction': meta.get('direction', 'ltr')})
     return results
 
 def _language_selectable(meta: dict[str, Any]) -> bool:
@@ -555,6 +744,11 @@ def _match_tag(tag: str, avail: set[str]) -> str | None:
     tag = tag.replace('_', '-')
     lower_map = {c.lower(): c for c in avail}
     parts = tag.split('-')
+    if parts[0].lower() == 'zh' and (not any((p.lower() in ('hans', 'hant') for p in parts[1:]))):
+        region = next((p.upper() for p in parts[1:] if len(p) == 2), '')
+        want = 'zh-hant' if region in ('TW', 'HK', 'MO') else 'zh-hans'
+        if want in lower_map:
+            return lower_map[want]
     for i in range(len(parts), 0, -1):
         cand = '-'.join(parts[:i]).lower()
         if cand in lower_map:
@@ -601,6 +795,9 @@ def _load_lang_merged(lang: str) -> dict[str, str]:
                 continue
             if s != '':
                 merged[k] = s
+    overlay = _USER.overlay.get(lang)
+    if overlay:
+        merged.update(overlay)
     _lang_cache[lang] = merged
     return merged
 
@@ -782,6 +979,13 @@ def current_meta() -> dict[str, Any]:
 
 def direction() -> str:
     return current_meta().get('direction', 'ltr')
+
+def ui_font_families() -> list[str] | None:
+    fams = current_meta().get('ui_font_families')
+    if isinstance(fams, list):
+        names = [str(f).strip() for f in fams if str(f).strip()]
+        return names or None
+    return None
 
 def font_hint() -> str | None:
     return current_meta().get('font_hint') or None

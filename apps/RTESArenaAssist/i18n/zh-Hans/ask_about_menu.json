@@ -1,0 +1,22 @@
+{
+  "ask_about_menu.title_ask_about.0": "询问",
+  "ask_about_menu.opt_who_are_you.0": "你是谁？",
+  "ask_about_menu.opt_where_is.0": "在哪里……",
+  "ask_about_menu.opt_rumors.0": "传闻",
+  "ask_about_menu.opt_exit.0": "退出",
+  "ask_about_menu.title_rumor_type.0": "传闻类型",
+  "ask_about_menu.opt_general.0": "一般",
+  "ask_about_menu.opt_work.0": "工作",
+  "ask_about_menu.place_inn.0": "旅店",
+  "ask_about_menu.place_temple.0": "神殿",
+  "ask_about_menu.place_equipment_store.0": "装备店",
+  "ask_about_menu.place_mages_guild.0": "法师公会",
+  "ask_about_menu.place_palace.0": "宫殿",
+  "ask_about_menu.place_city_gates.0": "城门",
+  "ask_about_menu.place_nearest_inn.0": "最近的旅店",
+  "ask_about_menu.place_nearest_temple.0": "最近的神殿",
+  "ask_about_menu.place_nearest_store.0": "最近的商店",
+  "ask_about_menu.place_nearest_dungeon.0": "最近的地下城",
+  "ask_about_menu.fallback_no_rumor.0": "我不打听传闻……",
+  "ask_about_menu.fallback_not_sure.0": "我不确定。去问问外面的人吧。"
+}

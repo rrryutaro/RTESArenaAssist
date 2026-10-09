@@ -57,6 +57,7 @@ a { color: #7ec8e3; }
 <ul>
 <li><a href="#comportement-de-l-onglet-et-du-panneau">Comportement de l'onglet / du panneau de traduction</a></li>
 <li><a href="#onglet-traduction-avance">Onglet Traduction — Avancé</a></li>
+<li><a href="#user-translations">Vos traductions</a></li>
 </ul>
 <li><a href="#onglet-informations-de-combat">Onglet Informations de combat</a></li>
 <ul>
@@ -219,6 +220,38 @@ a { color: #7ec8e3; }
 <tr><th>Libellé affiché</th><th>Valeur par défaut</th><th>Description</th></tr>
 <tr><td><code>Émuler le comportement du panneau masqué dans l'onglet Traduction:</code></td><td>Désactivé</td><td>Activé, les résultats de traduction et les messages de dialogue s'affichent dans l'onglet Traduction, comme lorsque le panneau de traduction est masqué. Réglage avancé destiné à la vérification</td></tr>
 </table>
+<h3 id="user-translations"><a name="user-translations"></a>Vos traductions</h3>
+<p>Vous pouvez remplacer une partie d'une traduction fournie par la vôtre, ou ajouter une nouvelle langue.</p>
+<ol>
+<li>Choisissez une langue sous <code>Exporter un modèle</code> (pour créer une nouvelle langue, choisissez <code>(modèle vide pour une nouvelle langue)</code>), cliquez sur <code>Exporter...</code> et enregistrez le fichier JSON. Si vous activez <code>Inclure l'original anglais</code>, l'original anglais est ajouté (celui du texte du jeu n'est ajouté que sur une machine où le dossier du jeu est configuré et le dictionnaire créé). Enregistrez-le en dehors du dossier des traductions (voir plus bas).</li>
+<li>Ouvrez le JSON enregistré dans un éditeur de texte (UTF-8) et modifiez le <code>text</code> des entrées à changer. Les entrées dont le <code>text</code> est vide gardent la traduction fournie (pour une nouvelle langue, celle de la langue de <code>meta.fallback</code>). Ne modifiez ni les clés ni les variables comme <code>%xx</code> et <code>{name}</code> (les entrées contenant des variables absentes de la traduction de référence, ou <code>&lt;</code> ou <code>&gt;</code>, ne sont pas chargées). <code>source</code> (l'original anglais) et <code>ref</code> (une traduction à titre de référence) ne servent pas au chargement.<br>Pour une nouvelle langue, renseignez toujours <code>lang</code> en tête (un code de langue, par exemple <code>tr</code>) et <code>meta.display_name</code> (le nom affiché dans la liste des langues). <code>meta.fallback</code> est la langue fournie utilisée pour les entrées non traduites (<code>en</code> par défaut) ; avec <code>meta.direction</code> sur <code>rtl</code>, l'affichage se fait de droite à gauche.</li>
+<li>Sous <code>Importer un fichier de traduction</code>, cliquez sur <code>Importer...</code> et choisissez le fichier modifié. Il est importé s'il passe les contrôles. Une nouvelle langue s'ajoute aux langues d'affichage de l'onglet Général. Les changements s'appliquent après le redémarrage de l'application.</li>
+</ol>
+<p>Le modèle d'une langue fournie contient la traduction actuelle de toutes les entrées. Supprimez les entrées que vous ne modifiez pas ou laissez leur <code>text</code> vide. Les entrées conservées restent figées sur votre formulation et ne bénéficient pas des améliorations ultérieures de la traduction fournie.</p>
+<p>Exemple 1 : modifier une seule entrée de la traduction allemande fournie (seules les entrées que vous écrivez sont remplacées).</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "de",
+  "texts": {
+    "ui_app": {
+      "settings.title": "Meine Einstellungen"
+    }
+  }
+}</pre></td></tr></table>
+<p>Exemple 2 : une nouvelle langue (turc). <code>ref</code> sert de référence et n'est pas utilisé au chargement.</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "tr",
+  "meta": { "display_name": "Türkçe", "fallback": "en", "direction": "ltr" },
+  "texts": {
+    "ui_app": {
+      "settings.title": { "ref": "Settings", "text": "Ayarlar" }
+    }
+  }
+}</pre></td></tr></table>
+<p>Les fichiers importés apparaissent dans la liste <code>Chargés</code>. Sélectionnez-en un et cliquez sur <code>Supprimer</code> pour revenir à la traduction fournie (une nouvelle langue est supprimée). <code>Ouvrir le dossier</code> ouvre le dossier <code>translations</code>, placé à côté du fichier de paramètres. Les JSON déposés ici sont chargés automatiquement au démarrage. Pour une langue ajoutée, les documents comme le manuel s'affichent en anglais.</p>
 <h2 id="onglet-informations-de-combat"><a name="onglet-informations-de-combat"></a>Onglet Informations de combat</h2>
 <p>Cet onglet permet de régler séparément où s'affichent le combat et les sorts actifs. Les nouvelles fonctions d'affichage, de lecture à voix haute et d'enregistrement sont désactivées par défaut. Les valeurs enregistrées par une ancienne version de développement sont conservées telles quelles. Les textes affichés sont disponibles en japonais, anglais, espagnol, allemand, français, italien et russe.</p>
 <p><img src="img/settings_dark_tab_05.png" alt="Onglet Informations de combat"></p>

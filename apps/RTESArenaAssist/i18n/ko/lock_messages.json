@@ -1,0 +1,18 @@
+{
+  "lock_messages.difficulty.0": "이 자물쇠는 당신을 전혀 두려워하지 않아요…",
+  "lock_messages.difficulty.1": "이 자물쇠를 딴다면 기적일 거예요…",
+  "lock_messages.difficulty.2": "이 자물쇠는 당신의 솜씨로는 무리인 것 같아요…",
+  "lock_messages.difficulty.3": "이 자물쇠를 열 수 있을지 자신이 없어요…",
+  "lock_messages.difficulty.4": "이 자물쇠는 어려워 보여요…",
+  "lock_messages.difficulty.5": "이 자물쇠는 꽤 애를 먹을 것 같아요…",
+  "lock_messages.difficulty.6": "이 자물쇠는 해볼 만한 도전이 될 것 같아요…",
+  "lock_messages.difficulty.7": "이 자물쇠는 딸 수 있을 것 같아요…",
+  "lock_messages.difficulty.8": "이 자물쇠는 비교적 쉬워 보여요…",
+  "lock_messages.difficulty.9": "이 자물쇠가 우스워 보여요…",
+  "lock_messages.difficulty.10": "이 자물쇠의 어설픈 만듦새에 웃음이 나요…",
+  "lock_messages.difficulty.11": "자물쇠라고 부르기도 민망한 물건이에요…",
+  "lock_messages.difficulty.12": "이 자물쇠는 당신의 실력에 대한 모욕이에요…",
+  "lock_messages.difficulty.13": "이것은 마법으로 잠겨 있어요…",
+  "lock_messages.key_picked_up.0": "%s 열쇠를 찾았어요.",
+  "lock_messages.door_unlocked_with_key.0": "%s 열쇠로 문을 열었어요."
+}

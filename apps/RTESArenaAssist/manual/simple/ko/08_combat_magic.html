@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>전투와 마법</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.danger { background: #2e1a1a; border-left: 3px solid #a03030; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>전투와 마법</h1>
+
+<h2>전투 기본</h2>
+<p>아레나는 실시간 전투를 사용해요. 클릭하면 공격해요. 공격이 맞는지, 피해를 얼마나 주는지는 능력치, 장비, 그리고 적의 방어 등급(AR)에 따라 달라져요.</p>
+
+<h2>명중률에 영향을 주는 요소</h2>
+<table>
+  <tr><th>요소</th><th>효과</th></tr>
+  <tr><td>민첩 (AGI)</td><td>공격하는 쪽은 명중 보너스, 방어하는 쪽은 회피 보너스</td></tr>
+  <tr><td>행운 (LUC)</td><td>모든 행동에 무작위 보정이 적용돼요</td></tr>
+  <tr><td>레드가드 종족</td><td>명중과 피해에 +레벨÷3 (근접 공격만 해당)</td></tr>
+  <tr><td>우드 엘프 종족</td><td>명중과 피해에 +레벨÷3 (활만 해당)</td></tr>
+  <tr><td>다크 엘프 종족</td><td>명중과 피해에 +레벨÷4 (근접과 원거리 모두 해당)</td></tr>
+</table>
+
+<h2>피해</h2>
+<p>피해 = 무기 기본값 + STR 보정 + 종족 보너스. 대상의 방어 등급(AR)은 받는 피해를 줄여 줘요. AR이 낮을수록 보호가 더 좋아요.</p>
+
+<h2>치명타</h2>
+<div class="note">
+<strong>치명타 = 일반 무기 피해의 3배.</strong><br>
+도둑 계열 캐릭터는 레벨마다 치명타 확률이 생겨요. 암살자의 확률이 가장 높아요. 불한당, 빈집털이, 음유시인, 곡예사, 수도사, 궁수(활 사용 시), 나이트블레이드도 이 능력이 있어요.
+</div>
+
+<h2>내성 굴림</h2>
+<p>주문이나 특수 효과의 대상이 되었을 때 내성 굴림에 성공하면 효과가 줄거나 사라져요. 성공 확률은 WIL(의지력)이 좌우해요.</p>
+<table>
+  <tr><th>직업 / 종족</th><th>내성 결과</th></tr>
+  <tr><td>기본</td><td>성공하면 피해가 절반</td></tr>
+  <tr><td>수도사</td><td>성공하면 피해 없음</td></tr>
+  <tr><td>노드</td><td>냉기에 대한 내성 굴림에 성공하면 피해 없음</td></tr>
+  <tr><td>브레튼</td><td>마법에 대한 내성 굴림에 성공하면 피해 없음</td></tr>
+</table>
+
+<h2>상태 이상</h2>
+<table>
+  <tr><th>상태</th><th>효과</th><th>해제 방법</th></tr>
+  <tr><td>질병</td><td>능력치 감소, 회복 저하</td><td>사원, 치유 주문</td></tr>
+  <tr><td>중독</td><td>시간이 지나며 계속 피해를 입어요</td><td>사원, 해독 물약</td></tr>
+  <tr><td>저주</td><td>능력치 감소</td><td>사원</td></tr>
+  <tr><td>축복</td><td>일시적인 능력치 증가 (이로운 효과)</td><td>시간이 지나면 사라져요</td></tr>
+  <tr><td>마비</td><td>행동할 수 없어요</td><td>시간이 지나면 사라져요, 해제 주문</td></tr>
+  <tr><td>침묵</td><td>주문을 쓸 수 없어요</td><td>시간이 지나면 사라져요, 해제 주문</td></tr>
+  <tr><td>무게 초과</td><td>이동과 행동에 불이익이 있어요</td><td>아이템 버리기 / 강화</td></tr>
+</table>
+<div class="danger">
+<strong>마비 면역:</strong> 기사와 하이 엘프는 마비에 완전히 면역이에요.<br>
+<strong>독 면역:</strong> 야만전사는 독에 완전히 면역이에요.
+</div>
+
+<h2>마법 체계</h2>
+<p>주문은 주문서(캐릭터 시트 2페이지)에서 골라요. 주문마다 주문 포인트(SP)가 들어요. SP가 0이 되면 주문을 쓸 수 없어요. SP는 INT에 직업별 배수를 곱해 정해져요.</p>
+
+<h2>주문 포인트 배수</h2>
+<table>
+  <tr><th>직업</th><th>SP = INT ×</th></tr>
+  <tr><td>마법사</td><td>× 2</td></tr>
+  <tr><td>소서러</td><td>최대 × 3 (주문에서 흡수하며, 스스로 생성하지 않아요)</td></tr>
+  <tr><td>치유사</td><td>× 1.75</td></tr>
+  <tr><td>전투 마법사</td><td>× 1.75</td></tr>
+  <tr><td>마검사</td><td>× 1.5</td></tr>
+  <tr><td>나이트블레이드</td><td>× 1.5</td></tr>
+  <tr><td>음유시인</td><td>= INT (× 1)</td></tr>
+</table>
+
+<h2>주문 분류</h2>
+<table>
+  <tr><th>분류</th><th>예시</th><th>용도</th></tr>
+  <tr><td>피해</td><td>화염 피해, 서리, 전격</td><td>적에게 피해를 줘요</td></tr>
+  <tr><td>치유</td><td>치유, 타인 치유</td><td>체력을 회복해요</td></tr>
+  <tr><td>방어</td><td>방패, 강화, 낙하 완화</td><td>보호를 높여요</td></tr>
+  <tr><td>이동</td><td>부유, 순간이동, 귀환</td><td>이동과 탈출</td></tr>
+  <tr><td>은신</td><td>투명화, 카멜레온</td><td>모습을 숨겨요</td></tr>
+  <tr><td>탐지</td><td>생명 탐지, 야간 시야, 빛</td><td>적과 주변을 볼 수 있어요</td></tr>
+  <tr><td>약화</td><td>마비, 침묵, 매혹</td><td>적을 무력화해요</td></tr>
+  <tr><td>보조</td><td>열기, 감정, 벽 통과</td><td>잠금 해제, 감정, 벽 통과</td></tr>
+</table>
+
+<h2>주문 제작</h2>
+<p>마법사 길드에서 이용할 수 있어요. 효과, 사거리, 지속 시간, 위력을 조합해 나만의 주문을 만들어요. 치유사는 방어 효과에서, 전투 마법사는 공격 효과에서 할인을 받아요.</p>
+
+<h2>경험치와 레벨 업</h2>
+<p>적을 물리치고 퀘스트를 완료하면 경험치를 얻어요. 레벨이 오르면 능력치와 체력(주문을 쓰는 직업은 SP도)이 늘어요.</p>
+<div class="note">
+<strong>레벨 업 때 늘어나는 체력:</strong> 직업의 체력 주사위를 한 번 굴린 뒤, END 체력 보정을 더하거나 빼요. 예를 들어 d18은 1~18이 나오고, 체력 보정이 +4라면 체력은 5~22 늘어요. 직업의 체력 주사위는 캐릭터 직업의 시작 체력에 나오는 “25 + dN”의 “dN”이에요.
+</div>
+<div class="note">
+<strong>레벨 업 속도 (빠른 순):</strong> 도둑 → 전사 → 전사 계열 직업 → 도둑 계열 직업 → 마법사 → 마법사 계열 직업
+</div>
+
+</body>
+</html>

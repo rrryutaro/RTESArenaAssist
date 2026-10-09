@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<title>角色属性</title>
+<style>
+body { font-family: "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #c9d1e0; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 5px 8px; text-align: left; font-size: 12px; border: 1px solid #1e3a4a; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.stat-label { color: #7ec8e3; font-weight: bold; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+<h1>角色属性</h1>
+
+<div class="note">所有属性的范围是1–100。<strong>50为平均水平</strong>——帝国有50%的人口在该项属性上比你强，另外50%不如你。</div>
+
+<h2>8项主要属性</h2>
+
+<h3><span class="stat-label">STR — 力量</span></h3>
+<p>决定你在战斗中造成的伤害。影响最大负重（Max Kilos）、疲劳和跳跃距离。<strong>对战士类职业至关重要。</strong></p>
+
+<h3><span class="stat-label">INT — 智力</span></h3>
+<p>决定施法者的法术点总数。影响交涉、讨价还价和开锁的成功率。<strong>对法师类和盗贼类职业至关重要。</strong></p>
+
+<h3><span class="stat-label">WIL — 意志</span></h3>
+<p>决定对法术的抵抗能力（魔法防御）。也有助于交涉。<strong>对任何想要获得法术防护的角色都很重要。</strong></p>
+
+<h3><span class="stat-label">AGI — 敏捷</span></h3>
+<p>直接影响近战命中率（To Hit）、被命中的几率（To Def），以及闪避指向性法术的几率。也决定偷窃和开锁。<strong>对盗贼类职业至关重要。</strong></p>
+
+<h3><span class="stat-label">SPD — 速度</span></h3>
+<p>控制移动速度、转身速度和远程武器的射速。有时能决定生死。<strong>对所有职业都很重要。</strong></p>
+
+<h3><span class="stat-label">END — 耐力</span></h3>
+<p>决定生命值总量、恢复速度和疲劳。也影响对毒药和药物的抗性。<strong>对战士类职业至关重要。</strong></p>
+
+<h3><span class="stat-label">PER — 魅力</span></h3>
+<p>决定魅力修正值。直接影响交涉能力、获得更优惠价格的能力以及打听消息的能力。<strong>对社交互动很重要。</strong></p>
+
+<h3><span class="stat-label">LUC — 幸运</span></h3>
+<p>对每一个行动都有强大的修正作用——攻击、防御、偷窃，无一例外。平均值为50，越高越好。<strong>影响所有角色。</strong></p>
+
+<h2>属性修正值对照</h2>
+<table>
+  <tr><th>属性</th><th>修正项</th><th>说明</th></tr>
+  <tr><td>STR</td><td>伤害</td><td>STR达到55以上时获得正向加成；45及以下则受到减益</td></tr>
+  <tr><td>STR</td><td>最大负重</td><td>超过该值会受到疲劳惩罚，直至无法移动</td></tr>
+  <tr><td>INT</td><td>法术点</td><td>非施法者：0。巫师：最高可达INT×3</td></tr>
+  <tr><td>WIL</td><td>魔法防御</td><td>WIL越高，敌人越难用法术命中你</td></tr>
+  <tr><td>AGI</td><td>命中</td><td>对近战攻击判定的加成或减益</td></tr>
+  <tr><td>AGI</td><td>防御</td><td>从你的护甲值中扣除（护甲值越低，防护越好）</td></tr>
+  <tr><td>END</td><td>生命</td><td>升级时加到职业生命骰的结果上，或从中扣除（参见“经验与升级”）</td></tr>
+  <tr><td>END</td><td>恢复修正</td><td>对基础休息恢复速度的百分比修正</td></tr>
+  <tr><td>PER</td><td>魅力</td><td>对NPC交涉成功几率的修正</td></tr>
+  <tr><td>LUC</td><td>通用</td><td>对你所采取的所有行动的潜在影响</td></tr>
+</table>
+
+<h2>护甲值（AR）</h2>
+<p>AR显示在角色表第2页的角色肖像上。<strong>AR越低，防护越好</strong>（+10表示没有防护；负值表示重甲防护）。</p>
+<table>
+  <tr><th>身体部位</th><th>护甲部件</th></tr>
+  <tr><td>头部</td><td>头盔</td></tr>
+  <tr><td>胸部</td><td>胸甲</td></tr>
+  <tr><td>手部</td><td>护手</td></tr>
+  <tr><td>腰部和大腿</td><td>护腿甲</td></tr>
+  <tr><td>小腿和脚部</td><td>靴子</td></tr>
+  <tr><td>肩部（左、右）</td><td>肩甲</td></tr>
+</table>
+
+</body>
+</html>

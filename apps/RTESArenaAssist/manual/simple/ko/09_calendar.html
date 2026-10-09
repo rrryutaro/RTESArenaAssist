@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>날짜와 달력</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.meaning { color: #d8c7a8; }
+</style>
+</head>
+<body>
+
+<h1>날짜와 달력</h1>
+
+<p>탐리엘의 한 해는 <b>360일</b>(30일짜리 12개월)이고, 한 주는 <b>7일</b>이에요. 연도는 “시대 + 그 시대의 몇 년”으로 적어요. 예: <b>3E 389</b> = 제3시대 389년. 한 시대는 약 1000년 동안 이어져요.</p>
+
+<div class="note">
+이 페이지는 날짜에 나오는 달력 이름을 빠르게 찾아보는 참고용이에요. 게임에서 본 요일이나 달 이름이 무슨 뜻인지 맞춰 볼 때 쓰세요.
+</div>
+
+<h2>요일 (7)</h2>
+<p>요일 이름은 고유 명사예요(일반적인 요일 단어가 아니에요). 평소 쓰는 요일과는 다음과 같이 대응돼요.</p>
+<table>
+  <tr><th>이름</th><th>요일</th></tr>
+  <tr><td>Morndas</td><td>월요일 (첫째 날)</td></tr>
+  <tr><td>Tirdas</td><td>화요일</td></tr>
+  <tr><td>Middas</td><td>수요일 (주중)</td></tr>
+  <tr><td>Turdas</td><td>목요일</td></tr>
+  <tr><td>Fredas</td><td>금요일</td></tr>
+  <tr><td>Loredas</td><td>토요일</td></tr>
+  <tr><td>Sundas</td><td>일요일 (일곱째 날)</td></tr>
+</table>
+<div class="note">참고: “by Middas”의 Middas는 사람 이름이 아니라 요일 Middas(주중)를 뜻해요.</div>
+
+<h2>달 (12)</h2>
+<table>
+  <tr><th>#</th><th>이름</th><th class="meaning">뜻</th><th>계절</th></tr>
+  <tr><td>1</td><td>샛별의 달</td><td class="meaning">한 해의 첫 별</td><td>겨울</td></tr>
+  <tr><td>2</td><td>해돋이의 달</td><td class="meaning">해가 돋는 때</td><td>봄</td></tr>
+  <tr><td>3</td><td>첫 씨앗의 달</td><td class="meaning">첫 파종</td><td>봄</td></tr>
+  <tr><td>4</td><td>비의 손길의 달</td><td class="meaning">비의 손길</td><td>봄</td></tr>
+  <tr><td>5</td><td>둘째 씨앗의 달</td><td class="meaning">두 번째 파종</td><td>여름</td></tr>
+  <tr><td>6</td><td>한 해 중반의 달</td><td class="meaning">한 해의 한가운데</td><td>여름</td></tr>
+  <tr><td>7</td><td>해의 절정의 달</td><td class="meaning">해가 가장 높은 때</td><td>여름</td></tr>
+  <tr><td>8</td><td>마지막 씨앗의 달</td><td class="meaning">마지막 파종 / 수확</td><td>가을</td></tr>
+  <tr><td>9</td><td>화롯불의 달</td><td class="meaning">난롯불</td><td>가을</td></tr>
+  <tr><td>10</td><td>서리내림의 달</td><td class="meaning">서리가 내리는 때</td><td>가을</td></tr>
+  <tr><td>11</td><td>해넘이의 달</td><td class="meaning">해가 지는 때</td><td>겨울</td></tr>
+  <tr><td>12</td><td>저녁별의 달</td><td class="meaning">저녁 별</td><td>겨울</td></tr>
+</table>
+
+<h2>축일</h2>
+<p>한 해 동안 특별한 축일이 있고, 그날에는 일부 서비스를 특별한 가격으로 제공해요(예: 전사 축제 = 무기 반값).</p>
+<table>
+  <tr><th>이름</th><th>날짜</th></tr>
+  <tr><td>새 생명 축제</td><td>샛별의 달 1일</td></tr>
+  <tr><td>남풍의 기도</td><td>샛별의 달 15일</td></tr>
+  <tr><td>하츠 데이</td><td>해돋이의 달 16일</td></tr>
+  <tr><td>첫 파종제</td><td>첫 씨앗의 달 7일</td></tr>
+  <tr><td>광대의 날</td><td>비의 손길의 달 28일</td></tr>
+  <tr><td>두 번째 파종제</td><td>둘째 씨앗의 달 7일</td></tr>
+  <tr><td>한 해 중반 축제</td><td>한 해 중반의 달 16일</td></tr>
+  <tr><td>상인 축제</td><td>해의 절정의 달 10일</td></tr>
+  <tr><td>태양의 휴일</td><td>해의 절정의 달 20일</td></tr>
+  <tr><td>수확의 끝</td><td>마지막 씨앗의 달 27일</td></tr>
+  <tr><td>이야기와 양초의 밤</td><td>화롯불의 달 3일</td></tr>
+  <tr><td>마녀 축제</td><td>서리내림의 달 13일</td></tr>
+  <tr><td>황제의 날</td><td>서리내림의 달 30일</td></tr>
+  <tr><td>전사 축제</td><td>해넘이의 달 20일</td></tr>
+  <tr><td>북풍의 기도</td><td>저녁별의 달 1일</td></tr>
+</table>
+
+<h2>날짜 형식</h2>
+<p>날짜는 “(요일), (연도), (달)의 (N)일째 날” 형태로 적어요.</p>
+<div class="note">
+예: <b>Tirdas, 3E 389년 화롯불의 달 5일째 날</b><br>
+= 화요일, 제3시대 389년 화롯불의 달(가을 달) 5일.
+</div>
+
+</body>
+</html>

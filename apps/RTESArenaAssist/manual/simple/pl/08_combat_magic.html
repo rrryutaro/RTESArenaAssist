@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Walka i magia</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.danger { background: #2e1a1a; border-left: 3px solid #a03030; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Walka i magia</h1>
+
+<h2>Podstawy walki</h2>
+<p>Arena wykorzystuje walkę w czasie rzeczywistym. Kliknij, aby zaatakować. To, czy trafisz i jak duże obrażenia zadasz, zależy od twoich statystyk, wyposażenia oraz wartości pancerza (AR) przeciwnika.</p>
+
+<h2>Czynniki szansy na trafienie</h2>
+<table>
+  <tr><th>Czynnik</th><th>Efekt</th></tr>
+  <tr><td>AGI (Zwinność)</td><td>Premia do trafienia dla atakującego; premia do obrony dla broniącego się</td></tr>
+  <tr><td>LUC (Szczęście)</td><td>Losowy modyfikator stosowany do wszystkich działań</td></tr>
+  <tr><td>Rasa Redguard</td><td>+poziom÷3 do trafienia i obrażeń (tylko walka wręcz)</td></tr>
+  <tr><td>Rasa Leśny Elf</td><td>+poziom÷3 do trafienia i obrażeń (tylko łuki)</td></tr>
+  <tr><td>Rasa Mroczny Elf</td><td>+poziom÷4 do trafienia i obrażeń (walka wręcz i dystansowa)</td></tr>
+</table>
+
+<h2>Obrażenia</h2>
+<p>Obrażenia = wartość bazowa broni + modyfikator STR + premia rasowa. Wartość pancerza (AR) celu zmniejsza otrzymywane obrażenia — im niższe AR, tym lepsza ochrona.</p>
+
+<h2>Trafienie krytyczne</h2>
+<div class="note">
+<strong>Trafienie krytyczne = 3× normalne obrażenia od broni.</strong><br>
+Postacie klas złodziejskich zyskują z każdym poziomem szansę na jego zadanie. Zabójca ma tę szansę największą. Zdolność tę mają także Łotrzyk, Włamywacz, Bard, Akrobata, Mnich, Łucznik (z łukami) i Nocne Ostrze.
+</div>
+
+<h2>Rzut obronny</h2>
+<p>Gdy celem jest czar lub efekt specjalny, udany rzut obronny zmniejsza lub znosi jego działanie. Szansę powodzenia określa WIL (Siła woli).</p>
+<table>
+  <tr><th>Klasa / rasa</th><th>Wynik rzutu obronnego</th></tr>
+  <tr><td>Domyślnie</td><td>Powodzenie = połowa obrażeń</td></tr>
+  <tr><td>Mnich</td><td>Powodzenie = zero obrażeń</td></tr>
+  <tr><td>Nord</td><td>Udany rzut obronny przeciw zimnu = zero obrażeń</td></tr>
+  <tr><td>Breton</td><td>Udany rzut obronny przeciw magii = zero obrażeń</td></tr>
+</table>
+
+<h2>Stany</h2>
+<table>
+  <tr><th>Stan</th><th>Efekt</th><th>Jak usunąć</th></tr>
+  <tr><td>Chory</td><td>Kary do statystyk, osłabione leczenie</td><td>Świątynia, czar leczący</td></tr>
+  <tr><td>Zatruty</td><td>Ciągłe obrażenia z upływem czasu</td><td>Świątynia, mikstura odtrutki</td></tr>
+  <tr><td>Przeklęty</td><td>Kary do statystyk</td><td>Świątynia</td></tr>
+  <tr><td>Błogosławiony</td><td>Tymczasowe premie do statystyk (korzystne)</td><td>Mija z czasem</td></tr>
+  <tr><td>Sparaliżowany</td><td>Brak możliwości działania</td><td>Mija z czasem, czar rozpraszający</td></tr>
+  <tr><td>Uciszony</td><td>Nie można rzucać czarów</td><td>Mija z czasem, czar rozpraszający</td></tr>
+  <tr><td>Przeciążony</td><td>Kary do ruchu i działań</td><td>Wyrzuć przedmioty / Wzmocnienie</td></tr>
+</table>
+<div class="danger">
+<strong>Odporność na paraliż:</strong> Rycerz i Wysoki Elf są całkowicie odporni na paraliż.<br>
+<strong>Odporność na trucizny:</strong> Barbarzyńca jest całkowicie odporny na trucizny.
+</div>
+
+<h2>System magii</h2>
+<p>Czary wybiera się z księgi zaklęć (karta postaci, strona 2). Każdy czar kosztuje punkty zaklęć (SP). Gdy SP spadną do 0, nie można rzucać czarów. Liczba SP wynika z INT × mnożnik zależny od klasy.</p>
+
+<h2>Mnożniki punktów zaklęć</h2>
+<table>
+  <tr><th>Klasa</th><th>SP = INT ×</th></tr>
+  <tr><td>Mag</td><td>× 2</td></tr>
+  <tr><td>Czarodziej</td><td>Do × 3 (pochłaniane z czarów, nie wytwarzane samodzielnie)</td></tr>
+  <tr><td>Uzdrowiciel</td><td>× 1,75</td></tr>
+  <tr><td>Mag Bojowy</td><td>× 1,75</td></tr>
+  <tr><td>Czarownik-Wojownik</td><td>× 1,5</td></tr>
+  <tr><td>Nocne Ostrze</td><td>× 1,5</td></tr>
+  <tr><td>Bard</td><td>= INT (× 1)</td></tr>
+</table>
+
+<h2>Kategorie czarów</h2>
+<table>
+  <tr><th>Kategoria</th><th>Przykłady</th><th>Przeznaczenie</th></tr>
+  <tr><td>Obrażenia</td><td>Obrażenia od ognia, Mróz, Porażenie</td><td>Zadawanie obrażeń wrogom</td></tr>
+  <tr><td>Leczenie</td><td>Leczenie, Leczenie innych</td><td>Przywracanie punktów zdrowia</td></tr>
+  <tr><td>Obrona</td><td>Tarcza, Wzmocnienie, Powolny upadek</td><td>Zwiększanie ochrony</td></tr>
+  <tr><td>Ruch</td><td>Lewitacja, Teleportacja, Powrót</td><td>Podróże i ucieczka</td></tr>
+  <tr><td>Skradanie</td><td>Niewidzialność, Kameleon</td><td>Ukrywanie się</td></tr>
+  <tr><td>Wykrywanie</td><td>Wykrycie życia, Nocne oko, Światło</td><td>Dostrzeganie wrogów i otoczenia</td></tr>
+  <tr><td>Osłabianie</td><td>Paraliż, Cisza, Urok</td><td>Unieszkodliwianie wrogów</td></tr>
+  <tr><td>Użytkowe</td><td>Otwarcie, Identyfikacja, Przejście przez mur</td><td>Otwieranie, ocena przedmiotów, przenikanie przez ściany</td></tr>
+</table>
+
+<h2>Kreator czarów</h2>
+<p>Dostępny w Gildii Magów. Pozwala tworzyć własne czary, łącząc efekty, zasięg, czas trwania i siłę. Uzdrowiciele otrzymują zniżki na efekty obronne, a Magowie Bojowi na efekty ofensywne.</p>
+
+<h2>Doświadczenie i awans</h2>
+<p>Doświadczenie zdobywa się, pokonując wrogów i wykonując zadania. Awans na wyższy poziom zwiększa statystyki i zdrowie (a w przypadku klas używających magii także SP).</p>
+<div class="note">
+<strong>Zdrowie zdobywane przy awansie:</strong> Rzuć raz kością zdrowia klasy, a następnie dodaj lub odejmij modyfikator zdrowia z END. Na przykład k18 daje wynik 1–18; przy modyfikatorze zdrowia +4 zdrowie rośnie o 5–22. Kość zdrowia klasy to „kN” w zapisie „25 + kN” w pozycji Zdrowie początkowe w opisie klas postaci.
+</div>
+<div class="note">
+<strong>Tempo awansu (od najszybszego):</strong> Złodziej → Wojownik → podklasy Wojownika → podklasy Złodzieja → Mag → podklasy Maga
+</div>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "lock_messages.difficulty.0": "这把锁根本不怕你……",
+  "lock_messages.difficulty.1": "你要是能撬开这把锁，那就是奇迹了……",
+  "lock_messages.difficulty.2": "这把锁似乎超出了你的技艺……",
+  "lock_messages.difficulty.3": "你怀疑自己能否打开这把锁……",
+  "lock_messages.difficulty.4": "这把锁看起来很难……",
+  "lock_messages.difficulty.5": "这把锁会让你吃些苦头……",
+  "lock_messages.difficulty.6": "这把锁会是个不错的挑战……",
+  "lock_messages.difficulty.7": "你觉得自己应该能撬开这把锁……",
+  "lock_messages.difficulty.8": "这把锁似乎相对简单……",
+  "lock_messages.difficulty.9": "这把锁让你觉得好笑……",
+  "lock_messages.difficulty.10": "这把锁的外行水准让你忍不住发笑……",
+  "lock_messages.difficulty.11": "你看到的这玩意儿也配叫锁，真可怜……",
+  "lock_messages.difficulty.12": "这把锁简直是对你本事的侮辱……",
+  "lock_messages.difficulty.13": "这是一把被魔法封住的锁……",
+  "lock_messages.key_picked_up.0": "你找到了%s的钥匙。",
+  "lock_messages.door_unlocked_with_key.0": "你用%s的钥匙打开了门。"
+}

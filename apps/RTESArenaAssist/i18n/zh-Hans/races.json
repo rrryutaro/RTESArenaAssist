@@ -1,0 +1,34 @@
+{
+  "races.0.0": {
+    "value": "不列颠人",
+    "plural": "不列颠人"
+  },
+  "races.1.0": {
+    "value": "红卫人",
+    "plural": "红卫人"
+  },
+  "races.2.0": {
+    "value": "诺德人",
+    "plural": "诺德人"
+  },
+  "races.3.0": {
+    "value": "暗精灵",
+    "plural": "暗精灵"
+  },
+  "races.4.0": {
+    "value": "高精灵",
+    "plural": "高精灵"
+  },
+  "races.5.0": {
+    "value": "木精灵",
+    "plural": "木精灵"
+  },
+  "races.6.0": {
+    "value": "卡吉特人",
+    "plural": "卡吉特人"
+  },
+  "races.7.0": {
+    "value": "阿尔贡人",
+    "plural": "阿尔贡人"
+  }
+}

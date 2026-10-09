@@ -1,0 +1,18 @@
+{
+  "lock_messages.difficulty.0": "Esta fechadura não tem nada a temer de você...",
+  "lock_messages.difficulty.1": "Seria um milagre você arrombar esta fechadura...",
+  "lock_messages.difficulty.2": "Esta fechadura parece estar além de suas habilidades...",
+  "lock_messages.difficulty.3": "Você duvida de sua capacidade de abrir esta fechadura...",
+  "lock_messages.difficulty.4": "Esta fechadura parece difícil...",
+  "lock_messages.difficulty.5": "Esta fechadura seria um desafio para você...",
+  "lock_messages.difficulty.6": "Esta fechadura seria um bom desafio...",
+  "lock_messages.difficulty.7": "Você acha que conseguiria arrombar esta fechadura...",
+  "lock_messages.difficulty.8": "Esta fechadura parece relativamente fácil...",
+  "lock_messages.difficulty.9": "Esta fechadura diverte você...",
+  "lock_messages.difficulty.10": "Você ri da qualidade amadora desta fechadura...",
+  "lock_messages.difficulty.11": "Você vê uma desculpa patética de fechadura...",
+  "lock_messages.difficulty.12": "Esta fechadura é um insulto às suas habilidades...",
+  "lock_messages.difficulty.13": "Esta é uma fechadura selada por magia...",
+  "lock_messages.key_picked_up.0": "Você encontrou a chave %s.",
+  "lock_messages.door_unlocked_with_key.0": "Você abre a porta com a chave %s."
+}

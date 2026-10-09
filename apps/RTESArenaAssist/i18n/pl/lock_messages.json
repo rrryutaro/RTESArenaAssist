@@ -1,0 +1,18 @@
+{
+  "lock_messages.difficulty.0": "Ten zamek nie ma się czego obawiać z twojej strony...",
+  "lock_messages.difficulty.1": "Cud, jeśli uda ci się otworzyć ten zamek...",
+  "lock_messages.difficulty.2": "Ten zamek wydaje się przekraczać twoje umiejętności...",
+  "lock_messages.difficulty.3": "Wątpisz, czy zdołasz otworzyć ten zamek...",
+  "lock_messages.difficulty.4": "Ten zamek wygląda na trudny...",
+  "lock_messages.difficulty.5": "Ten zamek byłby dla ciebie wyzwaniem...",
+  "lock_messages.difficulty.6": "Ten zamek byłby dobrym wyzwaniem...",
+  "lock_messages.difficulty.7": "Myślisz, że powinno ci się udać otworzyć ten zamek...",
+  "lock_messages.difficulty.8": "Ten zamek wydaje się stosunkowo łatwy...",
+  "lock_messages.difficulty.9": "Ten zamek cię bawi...",
+  "lock_messages.difficulty.10": "Śmiejesz się z amatorskiego wykonania tego zamka...",
+  "lock_messages.difficulty.11": "Widzisz żałosną namiastkę zamka...",
+  "lock_messages.difficulty.12": "Ten zamek to obraza dla twoich umiejętności...",
+  "lock_messages.difficulty.13": "To zamek zamknięty magią...",
+  "lock_messages.key_picked_up.0": "Znajdujesz klucz: %s.",
+  "lock_messages.door_unlocked_with_key.0": "Otwierasz drzwi kluczem: %s."
+}

@@ -1,0 +1,22 @@
+{
+  "setup.window_title": "RTESArenaAssist — 首次设置",
+  "setup.lang.title": "选择显示语言",
+  "setup.lang.prompt": "请选择此辅助工具的显示语言。之后可在设置中更改。",
+  "setup.lang.system": "系统语言（自动）",
+  "setup.arena.title": "指定游戏位置",
+  "setup.arena.intro": "现在开始准备翻译。请先运行《上古卷轴：竞技场》并保持运行。翻译文件将根据你的游戏数据生成。",
+  "setup.arena.running_required": "请先启动游戏（Arena），再继续。启动后请点击“重新检测”。",
+  "setup.arena.detected": "已检测到正在运行的游戏，安装位置已自动填入。",
+  "setup.arena.folder_label": "游戏安装文件夹",
+  "setup.arena.ok": "✓ 游戏文件夹有效。",
+  "setup.arena.invalid": "✗ 这不是有效的游戏文件夹。请选择游戏的安装文件夹。",
+  "setup.arena.browse": "浏览…",
+  "setup.arena.refresh": "重新检测",
+  "setup.btn.next": "下一步",
+  "setup.btn.back": "返回",
+  "setup.btn.generate": "生成翻译文件",
+  "setup.btn.skip": "稍后设置",
+  "setup.gen.running": "正在生成，可能需要最多一分钟……",
+  "setup.gen.done": "✓ 翻译文件已生成。",
+  "setup.gen.failed": "✗ 生成失败：{msg}"
+}

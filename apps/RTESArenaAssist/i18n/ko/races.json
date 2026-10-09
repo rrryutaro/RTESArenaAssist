@@ -1,0 +1,34 @@
+{
+  "races.0.0": {
+    "value": "브레튼",
+    "plural": "브레튼족"
+  },
+  "races.1.0": {
+    "value": "레드가드",
+    "plural": "레드가드족"
+  },
+  "races.2.0": {
+    "value": "노드",
+    "plural": "노드족"
+  },
+  "races.3.0": {
+    "value": "다크 엘프",
+    "plural": "다크 엘프족"
+  },
+  "races.4.0": {
+    "value": "하이 엘프",
+    "plural": "하이 엘프족"
+  },
+  "races.5.0": {
+    "value": "우드 엘프",
+    "plural": "우드 엘프족"
+  },
+  "races.6.0": {
+    "value": "카짓",
+    "plural": "카짓족"
+  },
+  "races.7.0": {
+    "value": "아르고니안",
+    "plural": "아르고니안족"
+  }
+}

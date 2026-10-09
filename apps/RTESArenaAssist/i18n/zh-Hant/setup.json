@@ -1,0 +1,22 @@
+{
+  "setup.window_title": "RTESArenaAssist — 首次設定",
+  "setup.lang.title": "選擇顯示語言",
+  "setup.lang.prompt": "請選擇此輔助工具的顯示語言。之後可在設定中變更。",
+  "setup.lang.system": "系統語言（自動）",
+  "setup.arena.title": "指定遊戲位置",
+  "setup.arena.intro": "接下來要準備翻譯。請啟動《The Elder Scrolls: Arena》並保持執行。翻譯檔案將根據你的遊戲資料建立。",
+  "setup.arena.running_required": "請先啟動遊戲（Arena）再繼續。啟動後，請按「重新檢查」。",
+  "setup.arena.detected": "已偵測到執行中的遊戲，安裝位置已自動填入。",
+  "setup.arena.folder_label": "遊戲安裝資料夾",
+  "setup.arena.ok": "✓ 這是有效的遊戲資料夾。",
+  "setup.arena.invalid": "✗ 這不是有效的遊戲資料夾。請選擇遊戲的安裝資料夾。",
+  "setup.arena.browse": "瀏覽…",
+  "setup.arena.refresh": "重新檢查",
+  "setup.btn.next": "下一步",
+  "setup.btn.back": "上一步",
+  "setup.btn.generate": "建立翻譯檔案",
+  "setup.btn.skip": "稍後再設定",
+  "setup.gen.running": "建立中，可能需要一分鐘左右……",
+  "setup.gen.done": "✓ 已建立翻譯檔案。",
+  "setup.gen.failed": "✗ 建立失敗：{msg}"
+}

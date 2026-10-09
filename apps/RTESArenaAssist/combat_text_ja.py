@@ -52,7 +52,7 @@ def is_builtin_combat_template(kind: str, template: object) -> bool:
     if template == DEFAULT_COMBAT_MESSAGE_TEMPLATES[kind]:
         return True
     key = f'combat.template.{kind}'
-    return any((template == i18n.lang_value_in(key, lang) for lang in ('en', 'ja', 'es', 'de', 'fr', 'it', 'ru')))
+    return any((template == i18n.lang_value_in(key, lang) for lang in ('en', 'ja', 'es', 'de', 'fr', 'it', 'ru', 'zh-Hans', 'pt-BR', 'pl', 'ko', 'zh-Hant')))
 
 def format_combat_message(kind: str, template: object, **values) -> str:
     default = default_combat_template(kind)

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<title>战斗与魔法</title>
+<style>
+body { font-family: "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.danger { background: #2e1a1a; border-left: 3px solid #a03030; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+<h1>战斗与魔法</h1>
+
+<h2>战斗基础</h2>
+<p>《Arena》采用即时战斗。单击即可攻击。能否命中以及造成多少伤害，取决于你的属性、装备以及敌人的护甲值（AR）。</p>
+
+<h2>命中率影响因素</h2>
+<table>
+  <tr><th>因素</th><th>效果</th></tr>
+  <tr><td>AGI（敏捷）</td><td>攻击方获得命中加成；防御方获得防御加成</td></tr>
+  <tr><td>LUC（幸运）</td><td>对所有行动施加的随机修正</td></tr>
+  <tr><td>红卫人种族</td><td>命中和伤害 +等级÷3（仅限近战）</td></tr>
+  <tr><td>木精灵种族</td><td>命中和伤害 +等级÷3（仅限弓）</td></tr>
+  <tr><td>暗精灵种族</td><td>命中和伤害 +等级÷4（近战和远程）</td></tr>
+</table>
+
+<h2>伤害</h2>
+<p>伤害 = 武器基础值 + STR修正 + 种族加成。目标的护甲值（AR）会减少受到的伤害——AR越低，防护越好。</p>
+
+<h2>暴击</h2>
+<div class="note">
+<strong>暴击 = 3倍正常武器伤害。</strong><br>
+盗贼类职业的角色每级都会获得一定的暴击几率。刺客的几率最高。盗贼、窃贼、吟游诗人、杂技师、武僧、弓箭手（使用弓时）和夜刃也拥有这项能力。
+</div>
+
+<h2>豁免检定</h2>
+<p>当成为法术或特殊效果的目标时，豁免检定成功可以减轻或抵消该效果。成功几率取决于WIL（意志）。</p>
+<table>
+  <tr><th>职业 / 种族</th><th>豁免结果</th></tr>
+  <tr><td>默认</td><td>成功 = 伤害减半</td></tr>
+  <tr><td>武僧</td><td>成功 = 零伤害</td></tr>
+  <tr><td>诺德人</td><td>对冰冷豁免成功 = 零伤害</td></tr>
+  <tr><td>不列颠人</td><td>对魔法豁免成功 = 零伤害</td></tr>
+</table>
+
+<h2>状态</h2>
+<table>
+  <tr><th>状态</th><th>效果</th><th>解除方法</th></tr>
+  <tr><td>患病</td><td>属性减益，恢复受阻</td><td>神殿、治疗法术</td></tr>
+  <tr><td>中毒</td><td>持续受到伤害</td><td>神殿、解毒药水</td></tr>
+  <tr><td>受诅咒</td><td>属性减益</td><td>神殿</td></tr>
+  <tr><td>受祝福</td><td>临时属性加成（有益）</td><td>随时间消退</td></tr>
+  <tr><td>麻痹</td><td>无法行动</td><td>自行消退、驱散法术</td></tr>
+  <tr><td>沉默</td><td>无法施法</td><td>自行消退、驱散法术</td></tr>
+  <tr><td>超载</td><td>移动和行动受到减益</td><td>丢弃物品 / 强化</td></tr>
+</table>
+<div class="danger">
+<strong>免疫麻痹：</strong>骑士和高精灵完全免疫麻痹。<br>
+<strong>免疫毒药：</strong>野蛮人完全免疫毒药。
+</div>
+
+<h2>魔法系统</h2>
+<p>法术从你的法术书（角色表第2页）中选择。每个法术消耗法术点（SP）。SP降到0时，就无法施法。SP由INT乘以职业专属的倍率决定。</p>
+
+<h2>法术点倍率</h2>
+<table>
+  <tr><th>职业</th><th>SP = INT ×</th></tr>
+  <tr><td>法师</td><td>× 2</td></tr>
+  <tr><td>巫师</td><td>最高 × 3（从法术中吸收，不能自行产生）</td></tr>
+  <tr><td>治疗师</td><td>× 1.75</td></tr>
+  <tr><td>战斗法师</td><td>× 1.75</td></tr>
+  <tr><td>魔剑士</td><td>× 1.5</td></tr>
+  <tr><td>夜刃</td><td>× 1.5</td></tr>
+  <tr><td>吟游诗人</td><td>= INT（× 1）</td></tr>
+</table>
+
+<h2>法术类别</h2>
+<table>
+  <tr><th>类别</th><th>示例</th><th>用途</th></tr>
+  <tr><td>伤害</td><td>火焰伤害、冰霜、闪电</td><td>对敌人造成伤害</td></tr>
+  <tr><td>治疗</td><td>治疗、治疗他人</td><td>恢复生命值</td></tr>
+  <tr><td>防御</td><td>护盾、强化、缓降</td><td>增强防护</td></tr>
+  <tr><td>移动</td><td>漂浮、传送、回归</td><td>旅行与逃脱</td></tr>
+  <tr><td>潜行</td><td>隐身、变色</td><td>隐藏自己</td></tr>
+  <tr><td>探测</td><td>探测生命、夜视、光亮</td><td>察觉敌人和周围环境</td></tr>
+  <tr><td>减益</td><td>麻痹、沉默、魅惑</td><td>使敌人丧失行动能力</td></tr>
+  <tr><td>实用</td><td>开锁、鉴定、穿墙</td><td>开锁、估价、穿越墙壁</td></tr>
+</table>
+
+<h2>法术制造</h2>
+<p>在法师公会可用。通过组合效果、范围、持续时间和强度来创造自定义法术。治疗师在防御类效果上享有折扣；战斗法师在攻击类效果上享有折扣。</p>
+
+<h2>经验与升级</h2>
+<p>通过击败敌人和完成任务来获得经验。升级会提升属性和生命值（施法者还会提升SP）。</p>
+<div class="note">
+<strong>升级时获得的生命：</strong>掷一次职业生命骰，再加上或减去END的生命修正值。例如，d18会掷出1–18；若生命修正值为 +4，则生命增加5–22。职业生命骰就是“角色职业”中“初始生命”下“25 + dN”里的“dN”。
+</div>
+<div class="note">
+<strong>升级速度（由快到慢）：</strong>小偷 → 战士 → 战士类分支职业 → 盗贼类分支职业 → 法师 → 法师类分支职业
+</div>
+
+</body>
+</html>

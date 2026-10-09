@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Podstawowa obsługa</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — podstawowa obsługa</h1>
+<p>RTESArenaAssist to aplikacja, która wspiera cię podczas gry w The Elder Scrolls: Arena. Obok gry pokazuje tłumaczenia, mapy, dziennik, log, zarządzanie zapisami, przechwytywanie zrzutów ekranu, słownik i podręcznik.</p>
+<p>Zrzuty ekranu wykonano w Assist w języku interfejsu, z motywem „Ciemny”, ustawieniami domyślnymi i bez połączenia. Po połączeniu wygląd zmienia się zależnie od bieżącego ekranu Areny i stanu gry.</p>
+<p>Podstawowy sposób korzystania z Assist: uruchom Arenę, połącz się z Assist i naciśnij przycisk <code>⊞</code>, aby wejść w tryb układu i grać. W trybie układu możesz ustawić obok siebie ekran gry w DOSBox oraz karty Assist (tłumaczenie, mapę i inne) na jednym ekranie, dzięki czemu sprawdzisz je bez przełączania klawiszami Alt+Tab.</p>
+<p>Szczegóły ustawień znajdziesz na stronie „Okno ustawień” w tym podręczniku.</p>
+<h2 id="contents"><a name="contents"></a>Spis treści</h2>
+<ul>
+<li><a href="#first-run">Pierwsze uruchomienie</a></li>
+<ul>
+<li><a href="#choose-a-language">Wybór języka</a></li>
+<li><a href="#specify-the-arena-folder">Wskazanie folderu Areny</a></li>
+<li><a href="#generate-the-translation-files">Tworzenie plików tłumaczeń</a></li>
+</ul>
+<li><a href="#main-window">Okno główne</a></li>
+<ul>
+<li><a href="#disconnected">Brak połączenia</a></li>
+<li><a href="#connected">Połączono</a></li>
+</ul>
+<li><a href="#use-layout-mode-as-the-default">Tryb układu jako domyślny</a></li>
+<li><a href="#tabs">Karty</a></li>
+<ul>
+<li><a href="#translate-tab">Karta Tłumaczenie</a></li>
+<li><a href="#status-tab">Karta Status</a></li>
+<li><a href="#map-tab">Karta Mapa</a></li>
+<li><a href="#journal-tab">Karta Dziennik</a></li>
+<li><a href="#log-tab">Karta Log</a></li>
+<li><a href="#save-tab">Karta Zapis</a></li>
+<li><a href="#capture-tab">Karta Zrzut</a></li>
+<li><a href="#dictionary-tab">Karta Słownik</a></li>
+<li><a href="#manual-tab">Karta Podręcznik</a></li>
+</ul>
+<li><a href="#basic-steps">Podstawowe kroki</a></li>
+</ul>
+<h2 id="first-run"><a name="first-run"></a>Pierwsze uruchomienie</h2>
+<p>Wersja publiczna nie zawiera oryginalnych danych tekstowych Areny. Przy pierwszym uruchomieniu Assist tworzy pliki tłumaczeń na podstawie folderu Areny na twoim komputerze.</p>
+<h3 id="choose-a-language"><a name="choose-a-language"></a>Wybór języka</h3>
+<p>Najpierw wybierz język interfejsu Assist. Wybrany język zaczyna działać od razu na tym ekranie.</p>
+<p><img src="img/assist_first_run_language.png" alt="Pierwsze uruchomienie: wybór języka"></p>
+<table>
+<tr><th>Element</th><th>Opis</th></tr>
+<tr><td>Lista rozwijana języka</td><td>Wybiera język interfejsu Assist. Ten ekran oferuje tylko japoński, angielski i Español. Aby użyć innego języka, wybierz go po uruchomieniu w pozycji „Język” na karcie „Ogólne” okna Ustawienia.</td></tr>
+<tr><td>Dalej</td><td>Przechodzi do wskazania folderu Areny.</td></tr>
+</table>
+<h3 id="specify-the-arena-folder"><a name="specify-the-arena-folder"></a>Wskazanie folderu Areny</h3>
+<p>Jeśli przejdziesz dalej przy uruchomionej Arenie, Assist wykryje miejsce instalacji automatycznie na podstawie działającej gry. Jeśli wykrycie się nie powiedzie, wskaż folder danych Areny przyciskiem <code>Przeglądaj…</code>.</p>
+<p><img src="img/assist_first_run_arena.png" alt="Pierwsze uruchomienie: wskazanie folderu Areny"></p>
+<table>
+<tr><th>Pozycja</th><th>Opis</th></tr>
+<tr><td>Folder instalacji gry</td><td>Wskaż folder <code>ARENA</code> Areny.</td></tr>
+<tr><td>Przeglądaj…</td><td>Wskazuje folder Areny w oknie wyboru folderu.</td></tr>
+<tr><td>Sprawdź ponownie</td><td>Ponownie wykrywa działającą Arenę.</td></tr>
+<tr><td>Utwórz pliki tłumaczeń</td><td>Gdy zostanie znaleziony prawidłowy folder Areny, przechodzi do tworzenia plików tłumaczeń.</td></tr>
+</table>
+<h3 id="generate-the-translation-files"><a name="generate-the-translation-files"></a>Tworzenie plików tłumaczeń</h3>
+<p>Assist tworzy pliki tłumaczeń na podstawie danych z folderu Areny. Po zakończeniu otwiera się okno główne.</p>
+<p><img src="img/assist_first_run_generate.png" alt="Pierwsze uruchomienie: tworzenie plików tłumaczeń"></p>
+<p>Podczas tworzenia plików widać pasek postępu i bieżący krok. Dane są odczytywane także z działającej Areny, więc nie zamykaj jej do końca procesu.</p>
+<h2 id="main-window"><a name="main-window"></a>Okno główne</h2>
+<p>Assist ma u góry pasek połączenia, pośrodku obszar kart, a na dole pasek stanu.</p>
+<h3 id="disconnected"><a name="disconnected"></a>Brak połączenia</h3>
+<p>Tuż po uruchomieniu Assist nie jest połączony. Przy działającej Arenie / DOSBox naciśnij przycisk <code>Połącz</code> w prawym górnym rogu.</p>
+<p><img src="img/assist_main_window.png" alt="Okno główne: brak połączenia"></p>
+<table>
+<tr><th>Obszar</th><th>Opis</th></tr>
+<tr><td>Stan połączenia</td><td>Pokazuje Rozłączono, a po połączeniu nazwę rozpoznanego ekranu, nazwę IMG itp.</td></tr>
+<tr><td>Połącz / Rozłącz</td><td>Łączy z Areną w DOSBox albo rozłącza.</td></tr>
+<tr><td><code>⏸</code> / <code>▶</code> / <code>■</code></td><td>Wstrzymuje / wznawia / zatrzymuje czytanie na głos. Czytanie na głos staje się dostępne po włączeniu go na karcie „Czytanie na głos” okna Ustawienia (domyślnie jest wyłączone).</td></tr>
+<tr><td><code>⊞</code></td><td>Przełącza tryb układu. Kliknij prawym przyciskiem myszy, aby otworzyć menu układu.</td></tr>
+<tr><td><code>📷</code></td><td>Zapisuje zrzut ekranu. W trybie układu cały układ zostaje zapisany jako jeden obraz. Gdy fokus ma ekran gry (DOSBox), skrót klawiszowy (domyślnie <code>F12</code>) zapisuje zrzut w taki sam sposób.</td></tr>
+<tr><td><code>⚙</code></td><td>Otwiera okno Ustawienia.</td></tr>
+</table>
+<p>Komunikat „Zarejestrowano skrót F12” widoczny na pasku stanu tuż po uruchomieniu informuje, że skrót klawiszowy zrzutu jest gotowy do użycia. Klawisz możesz zmienić na karcie „Ogólne” okna Ustawienia.</p>
+<h3 id="connected"><a name="connected"></a>Połączono</h3>
+<p>Po połączeniu nazwa rozpoznanego ekranu jest widoczna na lewym końcu paska połączenia. Poniższy przykład pokazuje połączenie z ekranem tytułowym Areny.</p>
+<p><img src="img/assist_connection_bar.png" alt="Pasek połączenia: połączono"></p>
+<p>Nazwa IMG używanego przez dany ekran jest pokazana także na prawo od nazwy ekranu (nie pojawia się na ekranach bez IMG, takich jak ekran tytułowy). Na karcie „Wyświetlanie” okna Ustawienia możesz wybrać, czy pokazywać nazwę ekranu i nazwę IMG.</p>
+<h2 id="use-layout-mode-as-the-default"><a name="use-layout-mode-as-the-default"></a>Tryb układu jako domyślny</h2>
+<p>Assist jest zaprojektowany do pracy w trybie układu. Karty działają także w zwykłym oknie, ale w trybie układu możesz ustawić na jednym ekranie grę, tłumaczenie, mapę, log i inne elementy i sprawdzać je razem.</p>
+<p>W układzie domyślnym ekran gry DOSBox jest po lewej, główne karty Assist po prawej, a panel uzupełniający na dole. Podczas gry możesz po prawej sprawdzać mapę lub dziennik, a tłumaczenie bieżącego ekranu na dolnym panelu lub na karcie Tłumaczenie.</p>
+<table>
+<tr><th>Działanie</th><th>Opis</th></tr>
+<tr><td>Kliknięcie lewym przyciskiem <code>⊞</code></td><td>Włącza / kończy tryb układu.</td></tr>
+<tr><td>Kliknięcie prawym przyciskiem <code>⊞</code></td><td>Pozwala wybrać formę układu, róg ustawienia, tryb śledzenia, ponowne ułożenie, zawsze na wierzchu i inne opcje.</td></tr>
+<tr><td><code>📷</code></td><td>W trybie układu zapisuje cały układ, razem z DOSBox i Assist, jako jeden obraz.</td></tr>
+<tr><td><code>Rozłącz</code></td><td>Rozłącza z Areną. Łatwiej uporządkować ekran, jeśli przed rozłączeniem zakończysz tryb układu.</td></tr>
+</table>
+<h2 id="tabs"><a name="tabs"></a>Karty</h2>
+<p>Zrzut ekranu każdej karty pokazuje, jak zorganizowany jest ekran. Po połączeniu wygląd jest aktualizowany zależnie od bieżącego ekranu Areny i stanu gry.</p>
+<h3 id="translate-tab"><a name="translate-tab"></a>Karta Tłumaczenie</h3>
+<p>To główna karta, która pokazuje tłumaczenie bieżącego ekranu. Widok zmienia się zależnie od sytuacji: ekran tytułowy, tworzenie postaci, rozmowy, budynki, przedmioty, zaklęcia i tak dalej.</p>
+<p><img src="img/assist_tab_translate.png" alt="Karta Tłumaczenie"></p>
+<table>
+<tr><th>Widok</th><th>Opis</th></tr>
+<tr><td>Tłumaczenie</td><td>Pokazuje tłumaczenie bieżącego ekranu lub zdarzenia.</td></tr>
+<tr><td>Oryginał</td><td>Zależnie od ustawień pokazuje także odpowiadający mu oryginalny tekst angielski.</td></tr>
+<tr><td>Widoki dedykowane</td><td>Listy klas, listy ras, wyposażenie, listy budynków, listy zakupów i tym podobne przełączają się na dedykowany, czytelny widok.</td></tr>
+</table>
+<p>Na karcie „Informacje o walce” w ustawieniach możesz też pokazywać informacje o walce na karcie Tłumaczenie. Wybierz „Walka i zwykły widok” lub „Pełny widok walki”, a następnie Tekst lub Paski wrogów. Domyślnie opcja jest wyłączona, co zachowuje zwykły wygląd karty Tłumaczenie.</p>
+<h3 id="status-tab"><a name="status-tab"></a>Karta Status</h3>
+<p>Ta karta pokazuje atrybuty i kondycję postaci. Po stworzeniu postaci lub po połączeniu w trakcie gry wyświetlane są informacje o statusie.</p>
+<p><img src="img/assist_tab_status.png" alt="Karta Status"></p>
+<table>
+<tr><th>Widok</th><th>Opis</th></tr>
+<tr><td>Widok</td><td>Wybierz „Standardowy” (dotychczasowy wygląd) lub jeden z wzorów (kart postaci). Ekran statusu i rozdzielanie punktów atrybutów na karcie Tłumaczenie także używają widoku wybranego tutaj.</td></tr>
+<tr><td>Atrybuty</td><td>Pokazuje główne atrybuty, takie jak Siła i Inteligencja.</td></tr>
+<tr><td>Wartości kondycji</td><td>Pokazuje HP, zmęczenie, Punkty Magii i tym podobne.</td></tr>
+<tr><td>Zmiana wartości</td><td>Operacje takie jak zmiana atrybutów są dostępne tylko po jawnym włączeniu ustawień cheatów (w widoku „Standardowy”).</td></tr>
+</table>
+<h3 id="character-sheet"><a name="character-sheet"></a>Karta postaci</h3>
+<p>Ta funkcja pokazuje status we wzorze według twojego wyboru. Jeśli w polu „Widok” wybierzesz cokolwiek innego niż „Standardowy”, status zostanie pokazany w wybranym wzorze. Wzór to plik HTML (szablon); w zestawie jest 8 wzorów. Możesz też stworzyć własny. Niektóre wzory pokazują twarz i pełną sylwetkę (razem z wyposażeniem), kondycję postaci (choroba, trucizna, paraliż i tym podobne) oraz wartość pancerza każdej części ciała (wartość wyliczana z wyposażenia; im niższa, tym lepsza ochrona). Twarz i pełna sylwetka powstają z plików twojej Areny.</p>
+<table>
+<tr><th>Element</th><th>Opis</th></tr>
+<tr><td>Otwórz folder</td><td>Otwiera folder na własne karty postaci (pliki HTML), czyli <code>character_sheets</code> w tym samym miejscu co <code>RTESArenaAssist.exe</code>. Przy pierwszym otwarciu zostają tam umieszczone kopie wzorów z zestawu. Pliki, które tam umieścisz, pojawiają się na liście „Widok” z dopiskiem „(folder)”.</td></tr>
+<tr><td>Wczytaj ponownie</td><td>Ponownie wczytuje karty postaci z folderu. Naciśnij po zmianie pliku.</td></tr>
+</table>
+<p>Listę wzorów z zestawu, sposób działania kart postaci oraz wartości, które możesz wstawiać, i sposób ich zapisu znajdziesz na stronie „Wzory statusu (karty postaci)” w tym podręczniku.</p>
+<h3 id="map-tab"><a name="map-tab"></a>Karta Mapa</h3>
+<p>Ta karta pokazuje automapę lochów, miast, pól, wnętrz i tym podobnych. Widok jest aktualizowany zgodnie z twoim bieżącym położeniem w grze.</p>
+<p><img src="img/assist_tab_map.png" alt="Karta Mapa"></p>
+<table>
+<tr><th>Widok</th><th>Opis</th></tr>
+<tr><td>Bieżące położenie</td><td>Pokazuje bieżącą mapę i położenie na podstawie stanu połączonej gry.</td></tr>
+<tr><td>Automapa</td><td>Rysuje zbadane obszary, ściany, wejścia, ukształtowanie terenu pól i tym podobne.</td></tr>
+<tr><td>Ustawienia wyświetlania</td><td>Siatkę, współrzędne chunków, rozszerzony widok pól i inne elementy możesz dostosować w oknie Ustawienia.</td></tr>
+</table>
+<h3 id="journal-tab"><a name="journal-tab"></a>Karta Dziennik</h3>
+<p>Ta karta pozwala czytać w języku interfejsu to, co jest zapisane w dzienniku gry (Dziennik).</p>
+<p><img src="img/assist_tab_journal.png" alt="Karta Dziennik"></p>
+<table>
+<tr><th>Widok</th><th>Opis</th></tr>
+<tr><td>Data i nagłówek</td><td>Pokazuje datę i streszczenie każdego wpisu dziennika.</td></tr>
+<tr><td>Treść</td><td>Pokazuje treść dziennika w języku interfejsu.</td></tr>
+<tr><td>Aktualizacje</td><td>Gdy dziennik w grze zostanie zaktualizowany, widok Assist również się aktualizuje.</td></tr>
+</table>
+<h3 id="log-tab"><a name="log-tab"></a>Karta Log</h3>
+<p>Ta karta pozwala przejrzeć jako historię tłumaczenia, które pokazał Assist. Przydaje się, gdy chcesz ponownie przeczytać fragment, który ci umknął.</p>
+<p><img src="img/assist_tab_log.png" alt="Karta Log"></p>
+<table>
+<tr><th>Element</th><th>Opis</th></tr>
+<tr><td>Kolejność sortowania</td><td>Przełącza między „Najpierw najnowsze” a „Najpierw najstarsze”.</td></tr>
+<tr><td>Filtr</td><td>Zawęża log według kategorii lub miejsca.</td></tr>
+<tr><td>Wyczyść</td><td>Czyści wyświetlany log.</td></tr>
+</table>
+<p>Jeśli włączysz zapisywanie dziennika walki i coś zostało zapisane, w karcie Log możesz przełączać się między „Dziennik zwykły” a „Dziennik walki”. Jeśli dziennika walki nie ma, jak dotąd widoczny jest tylko dziennik zwykły.</p>
+<h3 id="save-tab"><a name="save-tab"></a>Karta Zapis</h3>
+<p>Ta karta zarządza slotami zapisu i kopiami zapasowymi Areny. Wspiera operacje na danych zapisu, takie jak automatyczna kopia wykonywana przed przywróceniem.</p>
+<p><img src="img/assist_tab_save.png" alt="Karta Zapis"></p>
+<table>
+<tr><th>Element</th><th>Opis</th></tr>
+<tr><td>Lista slotów</td><td>Wyświetla sloty zapisu Areny.</td></tr>
+<tr><td>Kopia zapasowa</td><td>Tworzy kopię zapasową wybranego zapisu.</td></tr>
+<tr><td>Przywróć</td><td>Przywraca dane zapisu z kopii zapasowej.</td></tr>
+<tr><td>Usuń</td><td>Usuwa niepotrzebne kopie zapasowe lub zapisy.</td></tr>
+</table>
+<h3 id="capture-tab"><a name="capture-tab"></a>Karta Zrzut</h3>
+<p>Ta karta pozwala sprawdzić zrzuty ekranu zapisane przyciskiem <code>📷</code>. Można tu otwierać także obrazy wykonane w trybie układu.</p>
+<p><img src="img/assist_tab_capture.png" alt="Karta Zrzut"></p>
+<table>
+<tr><th>Element</th><th>Opis</th></tr>
+<tr><td>Lista</td><td>Pokazuje zapisane zrzuty.</td></tr>
+<tr><td>Podgląd</td><td>Pozwala sprawdzić wybrany obraz.</td></tr>
+<tr><td>Blokada</td><td>Chroni przed usunięciem obrazy, które chcesz zachować.</td></tr>
+<tr><td>Usuń</td><td>Usuwa wybrany obraz lub niepotrzebne obrazy.</td></tr>
+</table>
+<h3 id="dictionary-tab"><a name="dictionary-tab"></a>Karta Słownik</h3>
+<p>Ta karta przeszukuje słownik tłumaczeń Assist i tekst lochów. Możesz jej użyć do sprawdzania słów i zdań, które pojawiają się w grze.</p>
+<p><img src="img/assist_tab_dict.png" alt="Karta Słownik"></p>
+<table>
+<tr><th>Tryb wyświetlania</th><th>Opis</th></tr>
+<tr><td>Słownik</td><td>Wyszukuje według angielskiego słowa kluczowego, tłumaczenia i kategorii.</td></tr>
+<tr><td>Tekst lochu</td><td>Wyszukuje i pokazuje tekst lochów pochodzący z INF.</td></tr>
+</table>
+<h3 id="manual-tab"><a name="manual-tab"></a>Karta Podręcznik</h3>
+<p>Ta karta pozwala czytać w języku interfejsu objaśnienia podstawowej obsługi i systemów Areny oraz objaśnienia funkcji Assist. Korzystaj z niej, gdy podczas gry chcesz sprawdzić sterowanie lub pojęcia.</p>
+<p><img src="img/assist_tab_manual.png" alt="Karta Podręcznik"></p>
+<table>
+<tr><th>Element</th><th>Opis</th></tr>
+<tr><td>Uproszczony / Pełny / Assist</td><td>Przełącza wyświetlaną zawartość (zobacz tabelę poniżej).</td></tr>
+<tr><td>Wyszukiwanie słowa kluczowego</td><td>Przeszukuje podręcznik.</td></tr>
+<tr><td>Lista po lewej</td><td>Przełącza między rozdziałami, takimi jak Fabuła, Tworzenie postaci, Sterowanie oraz Walka i magia.</td></tr>
+</table>
+<table>
+<tr><th>Przełącznik</th><th>Zawartość</th><th>Języki</th></tr>
+<tr><td>Uproszczony</td><td>Objaśnienie gry (9 rozdziałów)</td><td>12 języków</td></tr>
+<tr><td>Pełny</td><td>Tłumaczenie oficjalnego podręcznika (widoczne po zaimportowaniu paczki tłumaczenia)</td><td>Obecnie tylko japoński</td></tr>
+<tr><td>Assist</td><td>Objaśnienie funkcji Assist (Podstawowa obsługa, Okno ustawień, Wzory statusu (karty postaci))</td><td>12 języków</td></tr>
+</table>
+<p><b>Wersja pełna (tłumaczenie oficjalnego podręcznika)</b></p>
+<p>W trybie „Pełny” możesz czytać tłumaczenie oficjalnego podręcznika (Przewodnika gracza i jego dodatku). Tłumaczenia są dystrybuowane oddzielnie od głównej aplikacji, jako paczka tłumaczenia dla każdego języka interfejsu (<code>RTESArenaAssist-manual-&lt;język&gt;.zip</code>) na stronie pobierania podręcznika (obecnie tylko japoński). Przy pierwszym użyciu zaimportuj paczkę według poniższych kroków.</p>
+<p><img src="img/assist_tab_manual_full.png" alt="Karta Podręcznik (import wersji Pełnej)"></p>
+<ol><li>Naciśnij „Otwórz stronę pobierania podręcznika”. Strona pobierania otworzy się w przeglądarce, skąd pobierzesz paczkę tłumaczenia dla swojego języka interfejsu.</li><li>Naciśnij „Importuj” i wybierz pobrany plik.</li><li>Gdy pojawi się lista rozdziałów, wszystko gotowe. Nad listą widać datę zaimportowanej paczki tłumaczenia oraz pozycje strony pobierania i importu. Nowsza paczka tłumaczenia zastępuje starą, gdy zaimportujesz ją w ten sam sposób.</li></ol>
+<p>Obrazy w podręczniku powstają z pliku <code>Player Guide.pdf</code> w folderze <code>Docs</code> twojej Areny (wersja Steam). Jeśli plik PDF nie zostanie znaleziony albo jest w innej wersji, widoczny jest tylko tekst. Sprawdź „Folder gry” w ustawieniach i naciśnij „Odbuduj obrazy”, a obrazy też zostaną pokazane. Po imporcie możesz usunąć pobrany plik. Sam Assist nie łączy się z internetem (pobieranie odbywa się w twojej przeglądarce).</p>
+<p>W trybie „Pełny” widoczny jest też odnośnik, który otwiera oficjalny podręcznik (angielski PDF) z folderu <code>Docs</code>. Gdy językiem interfejsu jest angielski, zamiast paczki tłumaczenia pokazywany jest tylko ten odnośnik.</p>
+<h2 id="basic-steps"><a name="basic-steps"></a>Podstawowe kroki</h2>
+<ol><li>Uruchom Arenę.</li><li>Uruchom RTESArenaAssist.</li><li>Przy pierwszym uruchomieniu wskaż język i folder Areny oraz utwórz pliki tłumaczeń.</li><li>Naciśnij <code>Połącz</code> w prawym górnym rogu Assist, aby połączyć się z Areną / DOSBox.</li><li>Naciśnij <code>⊞</code>, aby wejść w tryb układu.</li><li>Zwykle pozostań w trybie układu i przełączaj się między kartami Tłumaczenie, Mapa, Dziennik i Log zależnie od potrzeby.</li><li>Gdy chcesz zachować jakiś ekran, przechwyć go przyciskiem <code>📷</code> lub skrótem klawiszowym (domyślnie <code>F12</code>).</li><li>Na koniec zakończ tryb układu przyciskiem <code>⊞</code>, a w razie potrzeby naciśnij <code>Rozłącz</code>.</li></ol>
+<p>Rozmiar wyświetlania w trybie układu, formę układu, panel tłumaczenia, folder zrzutów i inne opcje możesz dostosować w oknie Ustawienia. Aby używać czytania tłumaczeń na głos, włącz je także na karcie „Czytanie na głos” okna Ustawienia.</p>
+
+</body>
+</html>

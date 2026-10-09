@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>操作與介面</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>操作與介面</h1>
+
+<h2>角色資料表 — 第 1 頁</h2>
+<table>
+  <tr><th>欄位</th><th>說明</th></tr>
+  <tr><td>姓名 / 種族 / 職業</td><td>角色的基本身分</td></tr>
+  <tr><td>經驗值</td><td>目前累積的經驗值</td></tr>
+  <tr><td>等級</td><td>角色目前的等級</td></tr>
+  <tr><td>生命值</td><td>目前的生命值</td></tr>
+  <tr><td>疲勞值</td><td>範圍為 2 到 200</td></tr>
+  <tr><td>金幣</td><td>目前持有的金幣</td></tr>
+  <tr><td>下一頁</td><td>前往第 2 頁（裝備清單）</td></tr>
+  <tr><td>完成</td><td>關閉角色資料表</td></tr>
+</table>
+
+<h2>角色資料表 — 第 2 頁（裝備）</h2>
+<table>
+  <tr><th>顏色</th><th>意義</th></tr>
+  <tr><td style="color:#ffd700">黃色</td><td>目前已裝備的物品</td></tr>
+  <tr><td style="color:#d2b48c">棕褐色</td><td>可裝備的物品</td></tr>
+  <tr><td style="color:#ff6b6b">紅色</td><td>無法裝備</td></tr>
+  <tr><td style="color:#00ffff">青色</td><td>未鑑定的魔法物品</td></tr>
+  <tr><td style="color:#88ffff">亮青色</td><td>未鑑定的魔法物品（已裝備）</td></tr>
+</table>
+<p><strong>左鍵點擊</strong>可裝備物品。<strong>右鍵點擊</strong>可查看物品資訊。捲動箭頭最多可瀏覽 40 件物品。</p>
+<p><strong>丟棄</strong>：丟棄反白的物品。<strong>法術書</strong>：顯示法術。<strong>離開</strong>：返回第 1 頁。</p>
+
+<h2>滑鼠操作</h2>
+<table>
+  <tr><th>動作</th><th>效果</th></tr>
+  <tr><td>左鍵點擊（場景中）</td><td>前進 / 互動 / 裝備</td></tr>
+  <tr><td>右鍵點擊（場景中）</td><td>後退</td></tr>
+  <tr><td>左鍵點擊（介面）</td><td>選擇 / 確認</td></tr>
+  <tr><td>右鍵點擊（物品）</td><td>顯示物品資訊</td></tr>
+  <tr><td>滑鼠左右移動</td><td>向左 / 向右轉向</td></tr>
+  <tr><td>滑鼠上下移動</td><td>向上 / 向下看</td></tr>
+</table>
+
+<h2>鍵盤操作</h2>
+<table>
+  <tr><th>按鍵</th><th>動作</th></tr>
+  <tr><td><span class="key">↑</span> / <span class="key">W</span></td><td>前進</td></tr>
+  <tr><td><span class="key">↓</span> / <span class="key">S</span></td><td>後退</td></tr>
+  <tr><td><span class="key">←</span> / <span class="key">A</span></td><td>向左轉</td></tr>
+  <tr><td><span class="key">→</span> / <span class="key">D</span></td><td>向右轉</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>切換自動地圖</td></tr>
+  <tr><td><span class="key">C</span></td><td>角色資料表</td></tr>
+  <tr><td><span class="key">L</span></td><td>日誌</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>選單 / 返回</td></tr>
+  <tr><td><span class="key">F1</span></td><td>說明</td></tr>
+  <tr><td><span class="key">Alt+F4</span></td><td>結束遊戲</td></tr>
+</table>
+
+<div class="note">
+<strong>DOSBox 小技巧：</strong><span class="key">Ctrl+F10</span> 切換滑鼠捕捉。<span class="key">Alt+Enter</span> 切換全螢幕 / 視窗模式。
+</div>
+
+<h2>遊戲內動作</h2>
+<table>
+  <tr><th>動作</th><th>說明</th></tr>
+  <tr><td>交談</td><td>與 NPC 交談以取得資訊和任務</td></tr>
+  <tr><td>偷竊</td><td>從目標身上偷取物品（成功率取決於 AGI）</td></tr>
+  <tr><td>拿取</td><td>撿起地上的物品</td></tr>
+  <tr><td>休息 / 紮營</td><td>恢復生命值和疲勞值；莉亞‧西爾瑪恩可能會在夢中出現</td></tr>
+  <tr><td>施法</td><td>使用法術書中的法術</td></tr>
+  <tr><td>使用</td><td>使用手持的物品</td></tr>
+</table>
+
+</body>
+</html>

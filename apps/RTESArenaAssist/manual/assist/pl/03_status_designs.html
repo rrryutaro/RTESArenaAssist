@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Wygląd statusu (karty postaci)</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Wygląd statusu (karty postaci)</h1>
+
+<p>Ta funkcja pokazuje status na zakładce Status w wybranym przez Ciebie wyglądzie (karta postaci). Wygląd wybierasz w polu „Widok” u góry zakładki Status. Ekran statusu oraz rozdział atrybutów (tworzenie postaci i awans) na zakładce Tłumaczenie używają tego samego wyglądu.</p>
+<p>Wygląd to plik HTML (szablon). Możesz wybrać jeden z dołączonych wyglądów albo stworzyć własny. Poza atrybutami i ich modyfikatorami karta może pokazywać stan postaci, wartość pancerza dla każdej części ciała oraz twarz i obraz całej postaci.</p>
+
+<div class="note">
+To funkcja wyświetlania w Assist. Jest niezależna od ekranu statusu samej gry (w oficjalnym podręczniku zwanego „kartą postaci”); ekran gry się nie zmienia.
+</div>
+
+<h2>Przełączanie widoku</h2>
+<p>W polu „Widok” u góry zakładki Status wybierz „Standardowy” (dotychczasowy sposób wyświetlania) albo jeden z wyglądów karty postaci. Wybór zostaje zapamiętany do następnego uruchomienia.</p>
+<ul>
+<li>Ekran statusu i rozdział atrybutów na zakładce Tłumaczenie używają widoku wybranego tutaj. Zakładka Tłumaczenie nie ma własnego wyboru.</li>
+<li>Wartości to te, które Assist odczytuje z gry, tak samo jak w widoku „Standardowy”. Karta postaci tylko je wyświetla i nigdy nie zmienia wartości w grze (zmiana wartości za pomocą ustawień cheatów odbywa się w widoku „Standardowy”).</li>
+<li>Karta jest pokazywana tylko wtedy, gdy Assist jest połączony z grą i wyświetlany jest status.</li>
+</ul>
+
+<h2>Dołączone wyglądy</h2>
+<p>Dołączono 8 wyglądów, wymienionych tu w kolejności z listy „Widok”. Wybierz jeden w polu „Widok”, aby zobaczyć, jak wygląda.</p>
+<table>
+  <tr><th>Wygląd</th><th>Opis</th></tr>
+  <tr><td>Styl Areny</td><td>Układ jak na ekranie statusu gry: modyfikatory przy wierszach atrybutów, obraz całej postaci po prawej</td></tr>
+  <tr><td>Karty atrybutów</td><td>Jasne kolory. Jedna karta na atrybut, z modyfikatorami, które od niego zależą (Siła: Obrażenia i Maks. udźwig itd.; te same pary co na ekranie statusu gry). U góry paski zdrowia, zmęczenia i punktów zaklęć</td></tr>
+  <tr><td>Karty atrybutów (ciemne)</td><td>Karty atrybutów w kolorach ciemnego okna Assist. Atrybuty po lewej; wartość pancerza dla każdej części ciała i obraz całej postaci po prawej</td></tr>
+  <tr><td>Kompaktowy</td><td>Mała czcionka na jednej krótkiej stronie, dla małego okna</td></tr>
+  <tr><td>Panel</td><td>Ciemne panele. Zdrowie, zmęczenie, punkty zaklęć i doświadczenie pokazane jako paski</td></tr>
+  <tr><td>Duża czcionka</td><td>Duże białe i żółte litery na czarnym tle</td></tr>
+  <tr><td>Papierowe RPG (arkusz zapisu)</td><td>Czarno-biały arkusz zapisu</td></tr>
+  <tr><td>Papierowe RPG (pergamin)</td><td>Kolory pergaminu i czcionka szeryfowa</td></tr>
+</table>
+<ul>
+<li>Dołączone wyglądy są dopasowane tak, by mieściły się bez przewijania na zakładkach Status i Tłumaczenie w trybie układu 1920×1080.</li>
+<li>Niektóre wyglądy pokazują poziomy pasek przewijania w wąskim oknie (Karty atrybutów (ciemne) poniżej ok. 740 px, Styl Areny i Panel poniżej ok. 540 px). „Kompaktowy” nadaje się do małego okna.</li>
+<li>Kolory pasków odpowiadają paskom obok twarzy na ekranie gry (zdrowie = zielony, zmęczenie = czerwony, punkty zaklęć = niebieski).</li>
+</ul>
+
+<h2>Własne karty postaci</h2>
+
+<h3>Gdzie je umieścić</h3>
+<p>Naciśnij „Otwórz folder” na zakładce Status, aby otworzyć folder na własne karty postaci.</p>
+<ul>
+<li>Folder nazywa się <code>character_sheets</code> i leży w tym samym miejscu co RTESArenaAssist.exe.</li>
+<li>Przy pierwszym otwarciu Assist tworzy folder i wkłada do niego kopie dołączonych wyglądów (istniejące pliki nie są nadpisywane). Najłatwiej zacząć od edycji kopii.</li>
+<li>Każdy plik <code>.html</code> w folderze pojawia się na liście „Widok”. Jego nazwą jest tekst z <code>&lt;title&gt;</code> pliku (albo nazwa pliku, jeśli go brak), a po nim „(folder)”. Aby zmienić nazwę, zmień <code>&lt;title&gt;</code>.</li>
+<li>Po edycji pliku naciśnij „Wczytaj ponownie” na zakładce Status.</li>
+<li>Zapisz plik w kodowaniu UTF-8.</li>
+</ul>
+
+<h3>Obsługiwany HTML</h3>
+<p>Karty są wyświetlane za pomocą prostego widoku HTML z Qt, a nie przeglądarki (połączenie z internetem nie jest używane).</p>
+<ul>
+<li>Obsługiwane: tabele (<code>table</code>), kolor, rozmiar, grubość i krój tekstu, kolory tła, obramowania (<code>border</code>, <code>border-collapse</code>), odstępy (<code>padding</code>, <code>margin</code>), obrazy (<code>img</code>), klasy w bloku <code>&lt;style&gt;</code> itd. Szczegóły znajdziesz w dokumentacji Qt w części „Supported HTML Subset”.</li>
+<li>Nieobsługiwane: skrypty, <code>flex</code> i <code>grid</code>, nakładanie elementów (<code>position</code>), zaokrąglone rogi itp. Układ buduj za pomocą tabel.</li>
+<li>Obrazy i arkusze stylów z tego samego folderu można podawać ścieżkami względnymi (na przykład <code>&lt;img src="bg.png"&gt;</code>). Pliki spoza folderu i pliki z internetu nie są wczytywane. Linki nie są otwierane.</li>
+<li>Tabela o szerokości 100% lepiej trzyma kształt, gdy każda kolumna ma szerokość w %.</li>
+</ul>
+
+<h2>Składnia</h2>
+<p>Wpisz poniższe w kodzie HTML, a wartość zostanie wstawiona w tym miejscu.</p>
+<table>
+  <tr><th>Składnia</th><th>Znaczenie</th></tr>
+  <tr><td><code>{{key}}</code></td><td>Wartość (zob. „Wartości”). „—”, dopóki wartości nie da się odczytać</td></tr>
+  <tr><td><code>{{label.key}}</code></td><td>Etykieta (zob. „Etykiety”), w języku interfejsu</td></tr>
+  <tr><td><code>{{img.face}}</code> / <code>{{img.body}}</code></td><td>Twarz lub obraz całej postaci (zob. „Obrazy”). Użyj jako <code>&lt;img src="{{img.face}}"&gt;</code></td></tr>
+  <tr><td><code>{{#if key}}</code> … <code>{{else}}</code> … <code>{{/if}}</code></td><td>Pokazuje pierwszą część tylko wtedy, gdy wartość klucza da się odczytać (nie jest pusta), a w przeciwnym razie część po <code>{{else}}</code>. <code>{{else}}</code> można pominąć. Bloki można zagnieżdżać. <code>0</code> liczy się jako odczytalna wartość</td></tr>
+</table>
+<ul>
+<li>Nieznany klucz jest pokazywany jako <code>[key?]</code>, aby łatwo zauważyć literówkę (na przykład <code>{{golf}}</code> zmienia się w <code>[golf?]</code>). Niepasujące <code>{{else}}</code> lub <code>{{/if}}</code> jest pokazywane jako <code>[else?]</code> lub <code>[/if?]</code>, a niezamknięte <code>{{#if}}</code> dopisuje <code>[/if?]</code> na końcu dokumentu.</li>
+<li>Spacje wewnątrz nawiasów są dozwolone, np. <code>{{ key }}</code>.</li>
+<li>Wewnątrz komentarzy HTML (<code>&lt;!-- … --&gt;</code>) nic nie jest wstawiane. Komentarz na początku każdego dołączonego wyglądu wylicza klucze.</li>
+<li>Wartości są wstawiane w postaci bezpiecznej dla HTML (znak <code>&lt;</code> lub <code>&amp;</code> w wartości pojawia się jako ten znak).</li>
+</ul>
+
+<h2>Wartości</h2>
+<p>Klucze dla <code>{{key}}</code>. Wszystkie przykłady pochodzą od tej samej postaci.</p>
+
+<h3>Imię, rasa, klasa itd.</h3>
+<table>
+  <tr><th>Klucz</th><th>Zawartość</th><th>Przykład</th></tr>
+  <tr><td><code>name</code></td><td>Imię</td><td>Seraphine</td></tr>
+  <tr><td><code>race</code> / <code>race_en</code></td><td>Rasa (w języku interfejsu / po angielsku)</td><td>Wysoki Elf</td></tr>
+  <tr><td><code>class</code> / <code>class_en</code></td><td>Klasa (w języku interfejsu / po angielsku)</td><td>Czarownik-Wojownik</td></tr>
+  <tr><td><code>level</code></td><td>Poziom</td><td>5</td></tr>
+  <tr><td><code>gold</code></td><td>Złoto</td><td>1284</td></tr>
+</table>
+
+<h3>Atrybuty i modyfikatory</h3>
+<table>
+  <tr><th>Klucz</th><th>Zawartość</th><th>Przykład</th></tr>
+  <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Atrybuty (Siła, Inteligencja, Siła woli, Zwinność, Szybkość, Wytrzymałość, Osobowość, Szczęście)</td><td>58</td></tr>
+  <tr><td><code>str_base</code> <code>int_base</code> <code>wil_base</code> <code>agi_base</code> <code>spd_base</code> <code>end_base</code> <code>per_base</code> <code>luc_base</code></td><td>Atrybuty bazowe przed modyfikatorami (podczas zwykłej gry dostępne tylko wtedy, gdy różnią się od bieżącej wartości)</td><td>50</td></tr>
+  <tr><td><code>str_change</code> <code>int_change</code> <code>wil_change</code> <code>agi_change</code> <code>spd_change</code> <code>end_change</code> <code>per_change</code> <code>luc_change</code></td><td>Bieżąca wartość minus wartość bazowa, ze znakiem, np. <code>+8</code> lub <code>-8</code> (dostępne tylko wtedy, gdy różne od zera)</td><td>+8</td></tr>
+  <tr><td><code>damage</code></td><td>Obrażenia (modyfikator od Siły)</td><td>+1</td></tr>
+  <tr><td><code>max_kilos</code></td><td>Maks. udźwig</td><td>116</td></tr>
+  <tr><td><code>magic_def</code></td><td>Obrona magiczna</td><td>+1</td></tr>
+  <tr><td><code>to_hit</code> / <code>to_defend</code></td><td>Trafienie / Obrona</td><td>+1 / +1</td></tr>
+  <tr><td><code>health</code></td><td>Modyfikator zdrowia (od Wytrzymałości)</td><td>+1</td></tr>
+  <tr><td><code>heal_mod</code></td><td>Mod. leczenia</td><td>+1</td></tr>
+  <tr><td><code>charisma</code></td><td>Charyzma</td><td>+0</td></tr>
+  <tr><td><code>bonus_pts</code></td><td>Punkty pozostałe do rozdzielenia (ma wartość tylko podczas tworzenia postaci i rozdzielania atrybutów)</td><td>12</td></tr>
+</table>
+
+<p>Przykład, który pokazuje zmianę i wartość bazową tylko wtedy, gdy atrybut jest zmodyfikowany:</p>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;span class="current"&gt;{{str}}&lt;/span&gt;
+{{#if str_change}}&lt;span class="change"&gt;{{str_change}}&lt;br&gt;({{str_base}})&lt;/span&gt;{{/if}}</pre></td></tr></table>
+<p>Gdy nie ma zmiany, <code>str_change</code> jest puste, więc część warunkowa znika i zostaje tylko bieżąca wartość. W ten sam sposób zamień <code>str</code> na <code>int</code> i pozostałe klucze atrybutów.</p>
+
+<h3>Zdrowie, zmęczenie, punkty zaklęć i doświadczenie</h3>
+<table>
+  <tr><th>Klucz</th><th>Zawartość</th><th>Przykład</th></tr>
+  <tr><td><code>hp</code> / <code>hp_curr</code> / <code>hp_max</code></td><td>Zdrowie (jako „bieżące/maks.” / bieżące / maks.)</td><td>37/58 / 37 / 58</td></tr>
+  <tr><td><code>fatigue</code> / <code>fatigue_curr</code> / <code>fatigue_max</code></td><td>Zmęczenie (te same trzy postacie)</td><td>101/121 / 101 / 121</td></tr>
+  <tr><td><code>spell_pts</code> / <code>spell_pts_curr</code> / <code>spell_pts_max</code></td><td>Punkty zaklęć (te same trzy postacie)</td><td>88/142 / 88 / 142</td></tr>
+  <tr><td><code>experience</code></td><td>Doświadczenie</td><td>5210</td></tr>
+  <tr><td><code>experience_next</code></td><td>Doświadczenie potrzebne do następnego poziomu</td><td>7910</td></tr>
+  <tr><td><code>experience_to_next</code></td><td>Doświadczenie, którego jeszcze brakuje do następnego poziomu</td><td>2700</td></tr>
+</table>
+
+<h3>Wartości dla pasków</h3>
+<table>
+  <tr><th>Klucz</th><th>Zawartość</th><th>Przykład</th></tr>
+  <tr><td><code>hp_pct</code> / <code>fatigue_pct</code> / <code>spell_pts_pct</code></td><td>Bieżąca wartość w procentach (od 0 do 100). Brak, gdy maksimum wynosi 0 (na przykład punkty zaklęć klasy, która nie potrafi rzucać zaklęć)</td><td>64 / 83 / 62</td></tr>
+  <tr><td><code>experience_pct</code></td><td>Postęp od początku tego poziomu do następnego (od 0 do 100)</td><td>27</td></tr>
+  <tr><td><code>hp_pct_rest</code> / <code>fatigue_pct_rest</code> / <code>spell_pts_pct_rest</code> / <code>experience_pct_rest</code></td><td>Reszta (100 − wartość procentowa)</td><td>36 / 17 / 38 / 73</td></tr>
+</table>
+<p>Jak narysować pasek, pokazują „Przykłady”.</p>
+
+<h3>Stan</h3>
+<table>
+  <tr><th>Klucz</th><th>Zawartość</th><th>Przykład</th></tr>
+  <tr><td><code>condition</code></td><td>Wszystkie bieżące stany połączone razem. „zdrowy”, gdy nie ma żadnego</td><td>zatruty</td></tr>
+  <tr><td><code>condition_bad</code></td><td>Tylko złe stany (chory, zatruty, pijany, uciszony, sparaliżowany, przeklęty, wysysany). Brak, gdy nie ma żadnego</td><td>zatruty</td></tr>
+  <tr><td><code>condition_good</code></td><td>Tylko dobre efekty (niewidzialność, brak celu, odporność na ogień i inne odporności, lewitacja, możliwość pochłaniania zaklęć, możliwość odbijania zaklęć, odporność na zaklęcia, regeneracja). Brak, gdy nie ma żadnego</td><td>(brak)</td></tr>
+</table>
+<ul>
+<li>Słowa są takie same jak w oknie statusu gry. Kilka stanów jest rozdzielonych znakami „, ”.</li>
+<li>Na razie nie są pokazywane: stan krytyczny, tarcza, nazwa choroby, błogosławieństwo.</li>
+<li>Brak podczas tworzenia postaci.</li>
+</ul>
+
+<h3>Wartość pancerza według części ciała</h3>
+<table>
+  <tr><th>Klucz</th><th>Część ciała</th><th>Przykład</th></tr>
+  <tr><td><code>ar_head</code></td><td>Głowa</td><td>+7</td></tr>
+  <tr><td><code>ar_shoulder_right</code> / <code>ar_shoulder_left</code></td><td>Prawy bark / Lewy bark</td><td>+1 / -1</td></tr>
+  <tr><td><code>ar_chest</code></td><td>Tors</td><td>-1</td></tr>
+  <tr><td><code>ar_hands</code></td><td>Dłonie</td><td>+5</td></tr>
+  <tr><td><code>ar_legs</code></td><td>Pas i nogi</td><td>+4</td></tr>
+  <tr><td><code>ar_feet</code></td><td>Stopy</td><td>+4</td></tr>
+</table>
+<ul>
+<li>Te same liczby, które ekran wyposażenia gry (strona 2 ekranu statusu) pokazuje obok ciała, obliczone na podstawie wyposażenia. Im niższa wartość, tym lepsza ochrona; +10 bez niczego na sobie.</li>
+<li>Obliczenie: 10 − pancerz (ta część) − tarcza (części, które zasłania) − biżuteria (wszystkie części) − modyfikator obrony od Zwinności (<code>to_defend</code>).</li>
+<li>Brak, dopóki wyposażenia nie da się odczytać.</li>
+</ul>
+
+<h3>Liczba mikstur</h3>
+<p>Na liście wyposażenia w grze zaznacz kolumnę Karta przy każdej miksturze, którą chcesz pokazać. Można wybrać wszystkie 15 rozpoznanych w grze rodzajów mikstur. Początkowo wybrane są leczenie, odnowa mocy i leczenie chorób.</p>
+<table>
+  <tr><th>Klucz</th><th>Zawartość</th><th>Przykład</th></tr>
+  <tr><td><code>potion_1_name</code> … <code>potion_15_name</code></td><td>Nazwa wybranej mikstury w języku interfejsu</td><td>Mikstura Leczenia</td></tr>
+  <tr><td><code>potion_1_short</code> … <code>potion_15_short</code></td><td>Krótka nazwa wybranej mikstury w języku interfejsu (stałe słowo „Mikstura” jest pominięte)</td><td>Leczenie</td></tr>
+  <tr><td><code>potion_1_compact</code> … <code>potion_15_compact</code></td><td>Nazwa na kompaktowej karcie (skracana wielokropkiem, gdy krótka nazwa przekracza 14 znaków)</td><td>Leczenie</td></tr>
+  <tr><td><code>potion_1_count</code> … <code>potion_15_count</code></td><td>Łączna posiadana liczba danej mikstury</td><td>4</td></tr>
+</table>
+<ul>
+<li>Numery odpowiadają kolejności, w jakiej wybierano rodzaje mikstur. Nieużywane miejsca nie mają wartości.</li>
+<li>Dołączony wygląd Karty atrybutów (ciemne) używa dużych kart i pokazuje tylko pierwsze sześć wybranych rodzajów. Własny wygląd HTML może używać kluczy dla wszystkich 15 rodzajów.</li>
+<li>Nierozpoznanej mikstury nie można wybrać, bo jej rodzaj jest nieznany. Wartości nie ma też, dopóki nie da się odczytać ekwipunku.</li>
+</ul>
+
+<h3>Efekty i użycia magicznego wyposażenia</h3>
+<p>Na liście wyposażenia w grze zaznacz kolumnę Karta przy magicznym wyposażeniu, które chcesz pokazać. Można wybrać rozpoznane przedmioty z możliwym do odczytania pozostałym użyciem. Osobne przedmioty o tej samej nazwie są pokazywane oddzielnie.</p>
+<table>
+  <tr><th>Klucz</th><th>Zawartość</th><th>Przykład</th></tr>
+  <tr><td><code>magic_item_1_name</code> … <code>magic_item_40_name</code></td><td>Nazwa wybranego magicznego wyposażenia w języku interfejsu</td><td>Nazwa przedmiotu</td></tr>
+  <tr><td><code>magic_item_1_effect</code> … <code>magic_item_40_effect</code></td><td>Nazwa efektu magicznego w języku interfejsu</td><td>Efekt magiczny</td></tr>
+  <tr><td><code>magic_item_1_uses</code> … <code>magic_item_40_uses</code></td><td>Pozostałe użycia</td><td>12</td></tr>
+</table>
+<ul>
+<li>Czterdzieści nie jest limitem wybieranych rodzajów; oznacza wszystkie 40 miejsc ekwipunku w Arenie. Zapisany wybór nie ma dowolnego limitu rodzajów.</li>
+<li>Nierozpoznanych przedmiotów i wyposażenia bez użyć nie można wybrać. Wybrany przedmiot, którego aktualnie nie posiadasz, nie daje wartości.</li>
+</ul>
+
+<h2>Etykiety</h2>
+<p>Klucze dla <code>{{label.key}}</code>. Etykieta jest wstawiana w języku interfejsu.</p>
+<table>
+  <tr><th>Klucz</th><th>Wyświetlane po polsku</th></tr>
+  <tr><td><code>name</code> <code>race</code> <code>class</code> <code>level</code> <code>gold</code> <code>experience</code></td><td>Imię, Rasa, Klasa, Poziom, Złoto, Doświadczenie</td></tr>
+  <tr><td><code>str</code> <code>int</code> <code>wil</code> <code>agi</code> <code>spd</code> <code>end</code> <code>per</code> <code>luc</code></td><td>Siła, Inteligencja, Siła woli, Zwinność, Szybkość, Wytrzymałość, Osobowość, Szczęście</td></tr>
+  <tr><td><code>str_code</code> <code>int_code</code> <code>wil_code</code> <code>agi_code</code> <code>spd_code</code> <code>end_code</code> <code>per_code</code> <code>luc_code</code></td><td>STR, INT, WIL, AGI, SPD, END, PER, LUC</td></tr>
+  <tr><td><code>damage</code> <code>max_kilos</code> <code>magic_def</code> <code>to_hit</code> <code>to_defend</code> <code>health</code> <code>heal_mod</code> <code>charisma</code> <code>spell_pts</code> <code>bonus_pts</code></td><td>Obrażenia, Maks. udźwig, Obrona magiczna, Trafienie, Obrona, Zdrowie, Mod. leczenia, Charyzma, Pkt magii, BONUS PTS</td></tr>
+  <tr><td><code>hp</code> <code>fatigue</code></td><td>Zdrowie, Zmęczenie</td></tr>
+  <tr><td><code>experience_next</code> <code>experience_to_next</code></td><td>Następny poziom, Do następnego poziomu</td></tr>
+  <tr><td><code>condition</code></td><td>Stan</td></tr>
+  <tr><td><code>ar_head</code> <code>ar_shoulder_right</code> <code>ar_shoulder_left</code> <code>ar_chest</code> <code>ar_hands</code> <code>ar_legs</code> <code>ar_feet</code></td><td>Głowa, Prawy bark, Lewy bark, Tors, Dłonie, Pas i nogi, Stopy</td></tr>
+  <tr><td><code>title</code></td><td>Karta postaci</td></tr>
+  <tr><td><code>section_attributes</code> <code>section_combat</code> <code>section_vitals</code> <code>section_record</code> <code>section_armor</code> <code>section_potions</code> <code>section_magic_items</code></td><td>Atrybuty, Walka i magia, Zdrowie i zmęczenie, Doświadczenie i złoto, Klasa pancerza (AR), Mikstury, Magiczne wyposażenie</td></tr>
+  <tr><td><code>col_value</code> <code>col_modifier</code> <code>col_base</code></td><td>Wartość, Modyfikator, Bazowa</td></tr>
+  <tr><td><code>armor_note</code></td><td>Im niższa wartość, tym lepsza ochrona (+10 bez ochrony)</td></tr>
+</table>
+
+<h2>Obrazy</h2>
+<table>
+  <tr><th>Klucz</th><th>Zawartość</th><th>Rozmiar</th></tr>
+  <tr><td><code>img.face</code></td><td>Twarz (ta, którą widać u dołu ekranu gry)</td><td>80×70</td></tr>
+  <tr><td><code>img.body</code></td><td>Postać z ekranu statusu (z założonym wyposażeniem)</td><td>300×480</td></tr>
+</table>
+<ul>
+<li>Są tworzone z plików Twojej Areny (Assist nie dołącza obrazów Areny). Gdy nie da się ich utworzyć, używany jest przezroczysty obraz tego samego rozmiaru.</li>
+<li>Za pomocą <code>width</code> / <code>height</code> obraz jest pokazywany w podanym rozmiarze (skalowany bez wygładzania, z zachowaniem grubych pikseli). Najlepiej wyglądają całkowite wielokrotności (na przykład <code>width="160" height="140"</code> dla twarzy).</li>
+<li>Wyposażenie na obrazie całej postaci jest sprawdzane raz na sekundę, a obraz jest budowany od nowa tylko wtedy, gdy się zmieni.</li>
+</ul>
+
+<h2>Przykłady</h2>
+<p>Znaki HTML wpisuj tak, jak są (tutaj pokazano je w czytelnej postaci).</p>
+
+<h3>Minimalna karta</h3>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+&lt;meta charset="utf-8"&gt;
+&lt;title&gt;My sheet&lt;/title&gt;
+&lt;style&gt;
+  body { background-color: #1a1a2e; color: #e0e0e0;
+         font-family: "Segoe UI", "Yu Gothic UI", sans-serif; }
+  .v   { font-weight: bold; }
+&lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;table width="100%" cellspacing="0" cellpadding="6"&gt;
+&lt;tr&gt;
+  &lt;td width="90"&gt;&lt;img src="{{img.face}}"&gt;&lt;/td&gt;
+  &lt;td&gt;&lt;span class="v"&gt;{{name}}&lt;/span&gt;&lt;br&gt;{{race}} / {{class}}&lt;br&gt;{{label.level}} {{level}}&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+&lt;table width="100%" cellspacing="0" cellpadding="4"&gt;
+&lt;tr&gt;&lt;td width="50%"&gt;{{label.str}}&lt;/td&gt;&lt;td width="50%" align="right"&gt;&lt;span class="v"&gt;{{str}}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;tr&gt;&lt;td&gt;{{label.hp}}&lt;/td&gt;&lt;td align="right"&gt;&lt;span class="v"&gt;{{hp}}&lt;/span&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre></td></tr></table>
+
+<h3>Pokazywanie części tylko wtedy, gdy mają zastosowanie, za pomocą {{#if}}</h3>
+<table class="code" cellpadding="8"><tr><td><pre>&lt;!-- only while points are being distributed --&gt;
+{{#if bonus_pts}}&lt;p&gt;{{label.bonus_pts}}: {{bonus_pts}}&lt;/p&gt;{{/if}}
+
+&lt;!-- in red when there is a bad state --&gt;
+&lt;p&gt;{{label.condition}}:
+{{#if condition_bad}}&lt;span style="color: #ff5050;"&gt;{{condition}}&lt;/span&gt;{{else}}{{condition}}{{/if}}&lt;/p&gt;</pre></td></tr></table>
+
+<h3>Pasek</h3>
+<table class="code" cellpadding="8"><tr><td><pre>{{#if hp_pct}}
+&lt;table width="100%" cellspacing="0" cellpadding="0" style="border-collapse: collapse; font-size: 1px;"&gt;
+&lt;tr&gt;
+  &lt;td width="{{hp_pct}}%" bgcolor="#4caf50" style="padding-top: 4px; padding-bottom: 4px;"&gt;&lt;/td&gt;
+  &lt;td width="{{hp_pct_rest}}%" bgcolor="#1f3326"&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/table&gt;
+{{/if}}</pre></td></tr></table>
+<ul>
+<li>Nadaj szerokość obu komórkom (przy jednej wartość 0 wygląda jak pełny pasek).</li>
+<li>Zostaw komórki puste, a wysokość nadaj górnym i dolnym dopełnieniem (padding). Mała czcionka tabeli (<code>font-size: 1px</code>) sprawia, że puste komórki są niskie.</li>
+<li>Gdy maksimum wynosi 0, nie ma wartości procentowej, więc ujęcie paska w <code>{{#if hp_pct}}</code> ukrywa cały pasek.</li>
+</ul>
+
+<h2>Gdy coś nie wyświetla się poprawnie</h2>
+<table>
+  <tr><th>Objaw</th><th>Co sprawdzić</th></tr>
+  <tr><td>Widać <code>[key?]</code></td><td>Pisownię klucza (zob. „Wartości” i „Etykiety”)</td></tr>
+  <tr><td>Widać „—”</td><td>Wartości nie da się jeszcze odczytać (na przykład podczas tworzenia postaci)</td></tr>
+  <tr><td>Karty nie ma na liście</td><td>Czy plik ma rozszerzenie <code>.html</code>? Czy leży w folderze <code>character_sheets</code>? Czy po dodaniu naciśnięto „Wczytaj ponownie”?</td></tr>
+  <tr><td>Układ jest zepsuty</td><td>Czy plik używa czegoś nieobsługiwanego (<code>flex</code>, <code>grid</code> itp.)? Układ buduj za pomocą tabel</td></tr>
+  <tr><td>Obraz się nie wyświetla</td><td>Czy plik obrazu leży w folderze <code>character_sheets</code>? (pliki spoza niego nie są wczytywane)</td></tr>
+  <tr><td>Krzaczki zamiast tekstu</td><td>Czy plik zapisano w kodowaniu UTF-8?</td></tr>
+  <tr><td>Nic nie jest pokazywane</td><td>Czy Assist jest połączony z grą i czy wyświetlany jest status? (na przykład na ekranie tytułowym nic się nie pokazuje)</td></tr>
+</table>
+
+</body>
+</html>

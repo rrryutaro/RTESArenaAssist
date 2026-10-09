@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Sterowanie i interfejs</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Sterowanie i interfejs</h1>
+
+<h2>Karta postaci — strona 1</h2>
+<table>
+  <tr><th>Pole</th><th>Opis</th></tr>
+  <tr><td>Imię / Rasa / Klasa</td><td>Podstawowe dane postaci</td></tr>
+  <tr><td>Doświadczenie</td><td>Aktualnie zgromadzone punkty doświadczenia</td></tr>
+  <tr><td>Poziom</td><td>Aktualny poziom postaci</td></tr>
+  <tr><td>Zdrowie</td><td>Aktualne punkty zdrowia</td></tr>
+  <tr><td>Zmęczenie</td><td>Zakres od 2 do 200</td></tr>
+  <tr><td>Złoto</td><td>Złoto przy sobie</td></tr>
+  <tr><td>Następna strona</td><td>Przejście do strony 2 (lista ekwipunku)</td></tr>
+  <tr><td>Gotowe</td><td>Zamknięcie karty postaci</td></tr>
+</table>
+
+<h2>Karta postaci — strona 2 (ekwipunek)</h2>
+<table>
+  <tr><th>Kolor</th><th>Znaczenie</th></tr>
+  <tr><td style="color:#ffd700">Żółty</td><td>Aktualnie założony przedmiot</td></tr>
+  <tr><td style="color:#d2b48c">Beżowy</td><td>Przedmiot, który można założyć</td></tr>
+  <tr><td style="color:#ff6b6b">Czerwony</td><td>Przedmiotu nie można założyć</td></tr>
+  <tr><td style="color:#00ffff">Turkusowy</td><td>Niezidentyfikowany przedmiot magiczny</td></tr>
+  <tr><td style="color:#88ffff">Jasnoturkusowy</td><td>Niezidentyfikowany przedmiot magiczny (założony)</td></tr>
+</table>
+<p><strong>Lewy przycisk myszy</strong> zakłada przedmiot. <strong>Prawy przycisk myszy</strong> pokazuje informacje o przedmiocie. Strzałki przewijania obsługują do 40 przedmiotów.</p>
+<p><strong>Upuść</strong>: upuszcza zaznaczony przedmiot. <strong>Księga zaklęć</strong>: pokazuje zaklęcia. <strong>Wyjście</strong>: powrót do strony 1.</p>
+
+<h2>Sterowanie myszą</h2>
+<table>
+  <tr><th>Akcja</th><th>Efekt</th></tr>
+  <tr><td>Lewy przycisk (w świecie gry)</td><td>Ruch do przodu / interakcja / zakładanie</td></tr>
+  <tr><td>Prawy przycisk (w świecie gry)</td><td>Ruch do tyłu</td></tr>
+  <tr><td>Lewy przycisk (interfejs)</td><td>Wybór / potwierdzenie</td></tr>
+  <tr><td>Prawy przycisk (przedmiot)</td><td>Informacje o przedmiocie</td></tr>
+  <tr><td>Ruch myszą w lewo/prawo</td><td>Obrót w lewo/prawo</td></tr>
+  <tr><td>Ruch myszą w górę/dół</td><td>Patrzenie w górę/dół</td></tr>
+</table>
+
+<h2>Sterowanie klawiaturą</h2>
+<table>
+  <tr><th>Klawisz</th><th>Akcja</th></tr>
+  <tr><td><span class="key">↑</span> / <span class="key">W</span></td><td>Ruch do przodu</td></tr>
+  <tr><td><span class="key">↓</span> / <span class="key">S</span></td><td>Ruch do tyłu</td></tr>
+  <tr><td><span class="key">←</span> / <span class="key">A</span></td><td>Obrót w lewo</td></tr>
+  <tr><td><span class="key">→</span> / <span class="key">D</span></td><td>Obrót w prawo</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>Włączenie/wyłączenie automapy</td></tr>
+  <tr><td><span class="key">C</span></td><td>Karta postaci</td></tr>
+  <tr><td><span class="key">L</span></td><td>Dziennik</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>Menu / powrót</td></tr>
+  <tr><td><span class="key">F1</span></td><td>Pomoc</td></tr>
+  <tr><td><span class="key">Alt+F4</span></td><td>Zamknięcie gry</td></tr>
+</table>
+
+<div class="note">
+<strong>Wskazówki do DOSBox:</strong> <span class="key">Ctrl+F10</span> włącza/wyłącza przechwytywanie myszy. <span class="key">Alt+Enter</span> przełącza tryb pełnoekranowy i okienkowy.
+</div>
+
+<h2>Akcje w grze</h2>
+<table>
+  <tr><th>Akcja</th><th>Opis</th></tr>
+  <tr><td>Rozmawiaj</td><td>Rozmowa z postaciami niezależnymi: informacje i zadania</td></tr>
+  <tr><td>Kradnij</td><td>Kradzież przedmiotu celowi (szansa zależy od AGI)</td></tr>
+  <tr><td>Chwyć</td><td>Podniesienie przedmiotu z ziemi</td></tr>
+  <tr><td>Odpoczynek / Obóz</td><td>Odzyskiwanie zdrowia i zmęczenia; we śnie może pojawić się Ria</td></tr>
+  <tr><td>Rzuć</td><td>Użycie zaklęcia z księgi zaklęć</td></tr>
+  <tr><td>Użyj</td><td>Użycie trzymanego przedmiotu</td></tr>
+</table>
+
+</body>
+</html>

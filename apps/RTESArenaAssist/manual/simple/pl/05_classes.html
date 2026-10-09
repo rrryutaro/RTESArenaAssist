@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Klasy postaci</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 13px; color: #5bc0de; margin-top: 4px; margin-bottom: 2px; }
+h3 { font-size: 12px; color: #7a8899; margin: 14px 0 2px 0; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+p { margin: 0 0 6px 0; font-size: 12px; }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 10px 0; font-size: 11px; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 3px 6px; text-align: left; border: 1px solid #1e3a4a; }
+td { padding: 3px 6px; border: 1px solid #1e3a4a; }
+tr:nth-child(even) { background: #111e2c; }
+.ability { color: #a8d8a8; font-size: 11px; margin: 2px 0 6px 0; }
+.note { background: #14283a; border-left: 3px solid #5bc0de; padding: 7px 10px; margin: 8px 0 12px 0; color: #b8cfe0; font-size: 12px; }
+.section-header { background: #1c2e3f; color: #a0c4d8; font-size: 13px; font-weight: bold; padding: 5px 8px; margin: 18px 0 6px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Klasy postaci (wszystkie 18)</h1>
+
+<div class="note"><strong>Kość zdrowia:</strong> „dN” we wpisie Zdrowie początkowe każdej klasy to jej kość zdrowia. Tą samą dN rzuca się raz przy każdym awansie na kolejny poziom.</div>
+
+<div class="section-header">Klasy złodziei — główne statystyki: Zwinność (AGI) i Inteligencja (INT)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">Wszystkie klasy złodziei potrafią otwierać zamki, okradać kieszenie i kraść. Wysoka Szybkość też jest pożądana.</p>
+
+<h2>Złodziej</h2>
+<p>Szybki i zwinny. Przydatny w walce dzięki zaskoczeniu, zwiadowi i trafieniom krytycznym. Najszybciej z wszystkich klas zdobywa kolejne poziomy.</p>
+<div class="ability">★ Z każdym poziomem zyskuje szansę na trafienie krytyczne (3× obrażeń)</div>
+<table><tr><th>Broń</th><td>Sztylet, Krótki miecz, Szeroki miecz, Szabla, Topór bojowy, Krótki łuk</td></tr>
+<tr><th>Pancerz</th><td>Tylko skórzany</td></tr><tr><th>Tarcza</th><td>Tylko puklerz</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d10</td></tr></table>
+
+<h2>Włamywacz</h2>
+<p>Mistrz otwierania zamków i przenikania do miejsc zabronionych. Nie może używać tarcz.</p>
+<div class="ability">★ Z każdym poziomem zyskuje szansę na trafienie krytyczne (niższą niż Złodziej)</div>
+<table><tr><th>Broń</th><td>Sztylet, Krótki miecz, Tanto, Krótki łuk</td></tr>
+<tr><th>Pancerz</th><td>Tylko skórzany</td></tr><tr><th>Tarcza</th><td>Brak</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d8</td></tr></table>
+
+<h2>Zabójca</h2>
+<p>Poświęcony zabijaniu. Ma najwyższą szansę na trafienie krytyczne ze wszystkich klas. Może używać dowolnej broni, ale tylko skórzanego pancerza i bez tarczy.</p>
+<div class="ability">★ Z każdym poziomem zyskuje najwyższą szansę na trafienie krytyczne ze wszystkich klas</div>
+<table><tr><th>Broń</th><td>Dowolna</td></tr>
+<tr><th>Pancerz</th><td>Tylko skórzany</td></tr><tr><th>Tarcza</th><td>Brak</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d12</td></tr></table>
+
+<h2>Łotrzyk</h2>
+<p>Złodziej wyszkolony w posługiwaniu się bronią i pancerzem. W walce dorównuje wojownikom, zachowując umiejętność otwierania zamków i okradania kieszeni.</p>
+<div class="ability">★ Z każdym poziomem zyskuje niewielką szansę na trafienie krytyczne</div>
+<table><tr><th>Broń</th><td>Dowolna</td></tr>
+<tr><th>Pancerz</th><td>Tylko skórzany lub kolczugowy</td></tr><tr><th>Tarcza</th><td>Dowolna oprócz wieżowej</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d14</td></tr></table>
+
+<h2>Akrobata</h2>
+<p>Nadnaturalnie zwinny — najszybsza postać na piechotę. Biernie zmniejsza podstawową szansę trafienia przeciwnika.</p>
+<div class="ability">★ Zmniejsza podstawową szansę trafienia przeciwnika / Z każdym poziomem zyskuje szansę na trafienie krytyczne</div>
+<table><tr><th>Broń</th><td>Sztylet, Krótki miecz, Szeroki miecz, Tanto, Krótki łuk</td></tr>
+<tr><th>Pancerz</th><td>Tylko skórzany</td></tr><tr><th>Tarcza</th><td>Brak</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d8</td></tr></table>
+
+<h2>Bard</h2>
+<p>„Złota rączka”. Radzi sobie z trafieniami krytycznymi, bronią, złodziejstwem i magią. Punkty zaklęć = INT.</p>
+<table><tr><th>Broń</th><td>Sztylet, Krótki miecz, Szeroki miecz, Szabla, Buława, Topór bojowy, Krótki łuk</td></tr>
+<tr><th>Pancerz</th><td>Tylko skórzany lub kolczugowy</td></tr><tr><th>Tarcza</th><td>Dowolna oprócz wieżowej</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d10</td></tr></table>
+
+<div class="section-header">Klasy wojowników — główne statystyki: Siła (STR) i Wytrzymałość (END)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">Nie potrafią rzucać zaklęć, chyba że zaznaczono inaczej. Zwinność jest też ważna dla klasy pancerza.</p>
+
+<h2>Wojownik</h2>
+<p>Filar Tamriel. Może używać dowolnej broni, pancerza i tarczy. Drugi pod względem tempa zdobywania poziomów. Zaklęty pancerz płytowy mogą nosić tylko Wojownicy, Rycerze i Zwiadowcy.</p>
+<table><tr><th>Broń</th><td>Dowolna</td></tr><tr><th>Pancerz</th><td>Dowolny</td></tr><tr><th>Tarcza</th><td>Dowolna</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d20</td></tr></table>
+
+<h2>Rycerz</h2>
+<p>Szlachetny wojownik. Automatycznie naprawia całą broń i cały pancerz w ekwipunku.</p>
+<div class="ability">★ Odporny na paraliż (zaklęcia i trucizna) / Automatycznie naprawia broń i pancerz</div>
+<table><tr><th>Broń</th><td>Dowolna</td></tr><tr><th>Pancerz</th><td>Każdy oprócz skórzanego</td></tr><tr><th>Tarcza</th><td>Dowolna</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d18</td></tr></table>
+
+<h2>Zwiadowca</h2>
+<p>Tropiciel i mistrz przetrwania. Automatycznie skraca czas podróży między miastami. Zadaje dodatkowe obrażenia równe poziomowi.</p>
+<div class="ability">★ Skrócony czas podróży między miastami / Dodatkowe obrażenia = poziom</div>
+<table><tr><th>Broń</th><td>Dowolna</td></tr><tr><th>Pancerz</th><td>Dowolny</td></tr><tr><th>Tarcza</th><td>Dowolna oprócz wieżowej</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d18</td></tr></table>
+
+<h2>Łucznik</h2>
+<p>Strzelec wyborowy wyspecjalizowany w broni miotanej. Z każdym poziomem zyskuje szansę na trafienie krytyczne z łuku. Nie może używać tarcz.</p>
+<div class="ability">★ Z każdym poziomem zyskuje szansę na trafienie krytyczne bronią miotaną</div>
+<table><tr><th>Broń</th><td>Dowolna</td></tr><tr><th>Pancerz</th><td>Tylko skórzany lub kolczugowy</td></tr><tr><th>Tarcza</th><td>Brak</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d16</td></tr></table>
+
+<h2>Mnich</h2>
+<p>Umysł i ciało wyszkolone w maszynę do zabijania. Bez pancerza i tarczy. Z każdym poziomem szansa trafienia wrogów maleje. Udany rzut obronny przed zaklęciem oznacza brak obrażeń.</p>
+<div class="ability">★ Z każdym poziomem zmniejsza szansę trafienia wrogów / Udany rzut obronny przed zaklęciem = zero obrażeń / Trafienie krytyczne (tylko w walce wręcz)</div>
+<table><tr><th>Broń</th><td>Dowolna</td></tr><tr><th>Pancerz</th><td>Brak</td></tr><tr><th>Tarcza</th><td>Brak</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d14</td></tr></table>
+
+<h2>Barbarzyńca</h2>
+<p>Przetrwał w surowych krainach. Ma największe zdrowie początkowe ze wszystkich klas. Odzyskuje dodatkowe zdrowie zależne od Wytrzymałości.</p>
+<div class="ability">★ Odporny na truciznę / Dodatkowe zdrowie odzyskiwane przy każdym odpoczynku, zależne od END</div>
+<table><tr><th>Broń</th><td>Dowolna</td></tr><tr><th>Pancerz</th><td>Do kolczugowego</td></tr><tr><th>Tarcza</th><td>Dowolna</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d30 (najwyższe ze wszystkich klas)</td></tr></table>
+
+<div class="section-header">Klasy magów — główne statystyki: Inteligencja (INT) i Siła woli (WIL)</div>
+
+<h2>Mag</h2>
+<p>Stworzony do magii. Punkty zaklęć = INT×2. W ataku i obronie polega wyłącznie na zaklęciach. Bez pancerza i tarczy.</p>
+<table><tr><th>Broń</th><td>Sztylet, Kostur</td></tr><tr><th>Pancerz</th><td>Brak</td></tr><tr><th>Tarcza</th><td>Tylko puklerz</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d6</td></tr></table>
+
+<h2>Czarodziej</h2>
+<p>Magiczny „akumulator”. Nie wytwarza punktów zaklęć sam z siebie; zamiast tego pochłania je z zaklęć rzuconych w niego (do INT×3). Gdy jest w pełni naładowany, bywa najpotężniejszą z klas magów.</p>
+<div class="ability">★ Pochłania zaklęcia wymierzone w niego → brak obrażeń + zyskuje punkty zaklęć / Nie może pochłaniać własnych zaklęć / Brak naturalnej regeneracji punktów zaklęć</div>
+<table><tr><th>Broń</th><td>Dowolna</td></tr><tr><th>Pancerz</th><td>Do kolczugowego</td></tr><tr><th>Tarcza</th><td>Brak</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d6</td></tr></table>
+
+<h2>Uzdrowiciel</h2>
+<p>Specjalista od magii obronnej. Punkty zaklęć = INT×1,75. Zaklęcia obronne są tańsze w Kreatorze zaklęć. Zwiększone podstawowe tempo leczenia.</p>
+<table><tr><th>Broń</th><td>Sztylet, Kostur, Buława, Cep</td></tr><tr><th>Pancerz</th><td>Tylko skórzany lub kolczugowy</td></tr><tr><th>Tarcza</th><td>Do okrągłej</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d8</td></tr></table>
+
+<h2>Mag Bojowy</h2>
+<p>Specjalista od zaklęć ofensywnych. Punkty zaklęć = INT×1,75. Zaklęcia ofensywne są tańsze w Kreatorze zaklęć.</p>
+<table><tr><th>Broń</th><td>Dowolna</td></tr><tr><th>Pancerz</th><td>Tylko skórzany</td></tr><tr><th>Tarcza</th><td>Do okrągłej</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d10</td></tr></table>
+
+<h2>Czarownik-Wojownik</h2>
+<p>Może rzucać zaklęcia w pancerzu. Wszechstronny wojownik-mag. Punkty zaklęć = INT×1,5.</p>
+<table><tr><th>Broń</th><td>Dowolna</td></tr><tr><th>Pancerz</th><td>Tylko skórzany lub kolczugowy</td></tr><tr><th>Tarcza</th><td>Dowolna oprócz wieżowej</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d12</td></tr></table>
+
+<h2>Nocne Ostrze</h2>
+<p>Mag skradania się i infiltracji. Otwiera zamki na poziomie porównywalnym z Łotrzykami. Z każdym poziomem zyskuje szansę na trafienie krytyczne. Punkty zaklęć = INT×1,5.</p>
+<div class="ability">★ Z każdym poziomem zyskuje szansę na trafienie krytyczne</div>
+<table><tr><th>Broń</th><td>Sztylet, Kostur, Krótki łuk, Krótki miecz, Szabla</td></tr><tr><th>Pancerz</th><td>Tylko skórzany</td></tr><tr><th>Tarcza</th><td>Tylko puklerz</td></tr>
+<tr><th>Zdrowie początkowe</th><td>25 + d8</td></tr></table>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "dungeon.imperial_city.0": "Cidade Imperial",
+  "dungeon.dungeon.0": "masmorra",
+  "dungeon.wilderness.0": "região selvagem",
+  "dungeon.city.0": "cidade",
+  "dungeon.town.0": "vila",
+  "dungeon.north.0": "norte",
+  "dungeon.northeast.0": "nordeste",
+  "dungeon.east.0": "leste",
+  "dungeon.southeast.0": "sudeste",
+  "dungeon.south.0": "sul",
+  "dungeon.southwest.0": "sudoeste",
+  "dungeon.west.0": "oeste",
+  "dungeon.northwest.0": "noroeste",
+  "dungeon.iron.0": "Ferro",
+  "dungeon.steel.0": "Aço",
+  "dungeon.silver.0": "Prata",
+  "dungeon.elven.0": "Élfico",
+  "dungeon.dwarven.0": "Anão",
+  "dungeon.mithril.0": "Mithril",
+  "dungeon.adamantium.0": "Adamantium",
+  "dungeon.ebony.0": "Ébano"
+}

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Guia de operação básica</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — Guia de operação básica</h1>
+<p>O RTESArenaAssist é um aplicativo que ajuda você enquanto joga The Elder Scrolls: Arena. Ele exibe, ao lado do jogo, traduções, mapas, o diário, registros, o gerenciamento de jogos salvos, a captura de telas, um dicionário e o manual.</p>
+<p>As imagens foram feitas com o Assist no seu idioma de exibição, com o tema "Escuro", as configurações padrão e sem conexão. Enquanto o Assist está conectado, a exibição muda conforme a tela atual do Arena e o estado do jogo.</p>
+<p>O modo básico de usar o Assist é iniciar o Arena, conectar o Assist e clicar no botão <code>⊞</code> para entrar no modo de layout e jogar. No modo de layout, você pode alinhar em uma só tela a imagem do jogo no DOSBox e as abas de tradução, mapa e outras do Assist, para consultá-las sem alternar com Alt+Tab.</p>
+<p>Para os detalhes das configurações, consulte a página "Janela de configurações" deste manual.</p>
+<h2 id="contents"><a name="contents"></a>Conteúdo</h2>
+<ul>
+<li><a href="#first-run">Primeira execução</a></li>
+<ul>
+<li><a href="#choose-a-language">Escolher um idioma</a></li>
+<li><a href="#specify-the-arena-folder">Indicar a pasta do Arena</a></li>
+<li><a href="#generate-the-translation-files">Criar os arquivos de tradução</a></li>
+</ul>
+<li><a href="#main-window">Janela principal</a></li>
+<ul>
+<li><a href="#disconnected">Desconectado</a></li>
+<li><a href="#connected">Conectado</a></li>
+</ul>
+<li><a href="#use-layout-mode-as-the-default">Usar o modo de layout como padrão</a></li>
+<li><a href="#tabs">Abas</a></li>
+<ul>
+<li><a href="#translate-tab">Aba Tradução</a></li>
+<li><a href="#status-tab">Aba Status</a></li>
+<li><a href="#map-tab">Aba Mapa</a></li>
+<li><a href="#journal-tab">Aba Diário</a></li>
+<li><a href="#log-tab">Aba Registro</a></li>
+<li><a href="#save-tab">Aba Jogo salvo</a></li>
+<li><a href="#capture-tab">Aba Captura</a></li>
+<li><a href="#dictionary-tab">Aba Dicionário</a></li>
+<li><a href="#manual-tab">Aba Manual</a></li>
+</ul>
+<li><a href="#basic-steps">Passos básicos</a></li>
+</ul>
+<h2 id="first-run"><a name="first-run"></a>Primeira execução</h2>
+<p>A versão pública não inclui os dados de texto originais do Arena. Na primeira execução, o Assist cria os arquivos de tradução a partir da pasta do Arena no seu computador.</p>
+<h3 id="choose-a-language"><a name="choose-a-language"></a>Escolher um idioma</h3>
+<p>Primeiro, escolha o idioma de exibição do Assist. O idioma escolhido passa a valer imediatamente nesta tela.</p>
+<p><img src="img/assist_first_run_language.png" alt="Primeira execução: escolha do idioma"></p>
+<table>
+<tr><th>Controle</th><th>Descrição</th></tr>
+<tr><td>Lista de idiomas</td><td>Escolhe o idioma da interface do Assist. Esta tela oferece apenas japonês, English e Español. Para os outros idiomas, escolha-os depois da inicialização, em "Idioma" na aba "Geral" da janela de configurações.</td></tr>
+<tr><td>Avançar</td><td>Segue para a indicação da pasta do Arena.</td></tr>
+</table>
+<h3 id="specify-the-arena-folder"><a name="specify-the-arena-folder"></a>Indicar a pasta do Arena</h3>
+<p>Se você continuar com o Arena em execução, o Assist detecta automaticamente o local de instalação a partir do Arena em execução. Se não for possível detectá-lo, indique a pasta de dados do Arena com <code>Abrir…</code>.</p>
+<p><img src="img/assist_first_run_arena.png" alt="Primeira execução: indicação da pasta do Arena"></p>
+<table>
+<tr><th>Item</th><th>Descrição</th></tr>
+<tr><td>Pasta de instalação do jogo</td><td>Indique a pasta <code>ARENA</code> do Arena.</td></tr>
+<tr><td>Abrir…</td><td>Indica a pasta do Arena por meio de uma janela de seleção de pasta.</td></tr>
+<tr><td>Verificar novamente</td><td>Detecta de novo o Arena em execução.</td></tr>
+<tr><td>Criar arquivos de tradução</td><td>Quando uma pasta válida do Arena é encontrada, segue para a criação dos arquivos de tradução.</td></tr>
+</table>
+<h3 id="generate-the-translation-files"><a name="generate-the-translation-files"></a>Criar os arquivos de tradução</h3>
+<p>O Assist cria seus arquivos de tradução a partir dos dados da pasta do Arena. Quando termina, a janela principal é aberta.</p>
+<p><img src="img/assist_first_run_generate.png" alt="Primeira execução: criação dos arquivos de tradução"></p>
+<p>Durante a criação, são exibidos uma barra de progresso e a etapa atual. Os dados também são lidos do Arena em execução, portanto não feche o Arena até o fim do processo.</p>
+<h2 id="main-window"><a name="main-window"></a>Janela principal</h2>
+<p>O Assist tem a barra de conexão na parte superior, a área de abas no meio e a barra de status na parte inferior.</p>
+<h3 id="disconnected"><a name="disconnected"></a>Desconectado</h3>
+<p>O Assist fica desconectado logo após a inicialização. Com o Arena / DOSBox em execução, clique no botão <code>Conectar</code> no canto superior direito.</p>
+<p><img src="img/assist_main_window.png" alt="Janela principal: desconectado"></p>
+<table>
+<tr><th>Área</th><th>Descrição</th></tr>
+<tr><td>Estado da conexão</td><td>Mostra Desconectado ou, durante a conexão, o nome da tela reconhecida, o nome da IMG e assim por diante.</td></tr>
+<tr><td>Conectar / Desconectar</td><td>Conecta ao Arena dentro do DOSBox ou desconecta.</td></tr>
+<tr><td><code>⏸</code> / <code>▶</code> / <code>■</code></td><td>Pausa / retoma / interrompe a leitura em voz alta. A leitura em voz alta fica disponível depois que você a ativa na aba "Leitura em voz alta" da janela de configurações (ela vem DESATIVADA por padrão).</td></tr>
+<tr><td><code>⊞</code></td><td>Alterna o modo de layout. Clique com o botão direito para abrir o menu de layout.</td></tr>
+<tr><td><code>📷</code></td><td>Salva uma captura de tela. No modo de layout, o layout inteiro é salvo como uma única imagem. Enquanto a tela do jogo (DOSBox) está em foco, a tecla de atalho (<code>F12</code> por padrão) salva da mesma forma.</td></tr>
+<tr><td><code>⚙</code></td><td>Abre a janela de configurações.</td></tr>
+</table>
+<p>A mensagem "Tecla de atalho F12 registrada", exibida na barra de status logo após a inicialização, indica que a tecla de atalho de captura está pronta para uso. Você pode mudar a tecla na aba "Geral" da janela de configurações.</p>
+<h3 id="connected"><a name="connected"></a>Conectado</h3>
+<p>Depois de conectado, o nome da tela reconhecida aparece na extremidade esquerda da barra de conexão. O exemplo abaixo mostra uma conexão com a tela de título do Arena.</p>
+<p><img src="img/assist_connection_bar.png" alt="Barra de conexão: conectado"></p>
+<p>O nome da IMG usada por essa tela também aparece à direita do nome da tela (ele não aparece em telas que não usam IMG, como a tela de título). Na aba "Exibição" da janela de configurações, você pode escolher se quer mostrar o nome da tela e o nome da IMG.</p>
+<h2 id="use-layout-mode-as-the-default"><a name="use-layout-mode-as-the-default"></a>Usar o modo de layout como padrão</h2>
+<p>O Assist foi projetado para ser usado no modo de layout. As abas funcionam também em uma janela normal, mas no modo de layout você pode fixar em uma só tela a imagem do jogo, a tradução, o mapa, o registro e mais, e consultá-los em conjunto.</p>
+<p>No layout padrão, a imagem do jogo no DOSBox fica à esquerda, as abas principais do Assist ficam à direita e o painel complementar fica na parte inferior. Durante o jogo, você pode consultar o mapa ou o diário à direita e conferir a tradução da tela atual no painel inferior ou na aba Tradução.</p>
+<table>
+<tr><th>Ação</th><th>Descrição</th></tr>
+<tr><td>Clique com o botão esquerdo em <code>⊞</code></td><td>Inicia / encerra o modo de layout.</td></tr>
+<tr><td>Clique com o botão direito em <code>⊞</code></td><td>Permite escolher a forma de disposição, o canto de posicionamento, o modo de acompanhamento, reorganizar, manter sempre no topo e mais.</td></tr>
+<tr><td><code>📷</code></td><td>No modo de layout, salva o layout inteiro, incluindo o DOSBox e o Assist, como uma única imagem.</td></tr>
+<tr><td><code>Desconectar</code></td><td>Desconecta do Arena. É mais fácil organizar a tela se você encerrar o modo de layout antes de desconectar.</td></tr>
+</table>
+<h2 id="tabs"><a name="tabs"></a>Abas</h2>
+<p>A captura de tela de cada aba serve para mostrar como a tela é organizada. Durante a conexão, a exibição é atualizada conforme a tela atual do Arena e o estado do jogo.</p>
+<h3 id="translate-tab"><a name="translate-tab"></a>Aba Tradução</h3>
+<p>Esta é a aba central, que mostra a tradução da tela atual. A exibição muda conforme a situação: tela de título, criação de personagem, conversas, estabelecimentos, itens, magias e assim por diante.</p>
+<p><img src="img/assist_tab_translate.png" alt="Aba Tradução"></p>
+<table>
+<tr><th>Exibição</th><th>Descrição</th></tr>
+<tr><td>Tradução</td><td>Mostra a tradução da tela ou do evento atual.</td></tr>
+<tr><td>Original</td><td>Dependendo das configurações, mostra também o texto original correspondente em inglês.</td></tr>
+<tr><td>Visões dedicadas</td><td>Listas de classes, listas de raças, equipamentos, listas de estabelecimentos, listas de compras e assim por diante passam para uma visão dedicada e fácil de ler.</td></tr>
+</table>
+<p>Com a aba "Informações de combate" das configurações, você também pode mostrar informações de combate na aba Tradução. Escolha "Visões de combate e normal" ou "Visão de combate completa" e depois escolha Texto ou Medidores de inimigos. O padrão é Desligado, que mantém a exibição habitual da aba Tradução.</p>
+<h3 id="status-tab"><a name="status-tab"></a>Aba Status</h3>
+<p>Esta aba mostra os atributos e a condição do personagem. Depois da criação do personagem, ou durante o jogo enquanto o Assist está conectado, as informações de status são exibidas.</p>
+<p><img src="img/assist_tab_status.png" alt="Aba Status"></p>
+<table>
+<tr><th>Exibição</th><th>Descrição</th></tr>
+<tr><td>Exibição</td><td>Escolha "Padrão" (a exibição usada até agora) ou um dos designs (fichas de personagem). A tela de status e a distribuição de atributos na aba Tradução também usam a exibição escolhida aqui.</td></tr>
+<tr><td>Atributos</td><td>Mostra os atributos principais, como Força e Inteligência.</td></tr>
+<tr><td>Valores de condição</td><td>Mostra HP, fadiga, pontos de magia e assim por diante.</td></tr>
+<tr><td>Alteração de valores</td><td>Operações como alterar atributos só estão disponíveis quando você ativou explicitamente as configurações de trapaça (na exibição "Padrão").</td></tr>
+</table>
+<h3 id="character-sheet"><a name="character-sheet"></a>Ficha de personagem</h3>
+<p>Este recurso mostra o status em um design de sua escolha. Se você escolher qualquer opção diferente de "Padrão" em "Exibição", o status é mostrado no design escolhido. Um design é um arquivo HTML (um modelo), e há 8 designs incluídos. Você também pode criar os seus. Alguns designs mostram o rosto e a imagem de corpo inteiro (incluindo o equipamento), a condição do personagem (doença, veneno, paralisia e assim por diante) e a classe de armadura de cada parte do corpo (um valor calculado a partir do equipamento; quanto menor, melhor a proteção). O rosto e a imagem de corpo inteiro são criados a partir dos arquivos do seu Arena.</p>
+<table>
+<tr><th>Controle</th><th>Descrição</th></tr>
+<tr><td>Abrir pasta</td><td>Abre a pasta das suas próprias fichas de personagem (arquivos HTML), que é <code>character_sheets</code>, no mesmo local de <code>RTESArenaAssist.exe</code>. Na primeira vez que você a abre, cópias dos designs incluídos são colocadas nela. Os arquivos que você colocar ali aparecem na lista "Exibição" com "(pasta)" acrescentado.</td></tr>
+<tr><td>Recarregar</td><td>Recarrega as fichas de personagem da pasta. Clique depois de alterar um arquivo.</td></tr>
+</table>
+<p>Para a lista dos designs incluídos, o funcionamento das fichas de personagem e os valores que podem ser inseridos e como escrevê-los, consulte a página "Designs de status (fichas de personagem)" deste manual.</p>
+<h3 id="map-tab"><a name="map-tab"></a>Aba Mapa</h3>
+<p>Esta aba mostra o automapa de masmorras, cidades, do campo, de interiores e assim por diante. A exibição é atualizada de acordo com a sua posição atual no jogo.</p>
+<p><img src="img/assist_tab_map.png" alt="Aba Mapa"></p>
+<table>
+<tr><th>Exibição</th><th>Descrição</th></tr>
+<tr><td>Posição atual</td><td>Mostra o mapa e a posição atuais a partir do estado do jogo conectado.</td></tr>
+<tr><td>Automapa</td><td>Desenha as áreas exploradas, as paredes, as entradas, o terreno do campo e assim por diante.</td></tr>
+<tr><td>Configurações de exibição</td><td>A grade, as coordenadas dos blocos, a exibição estendida do campo e assim por diante podem ser ajustadas na janela de configurações.</td></tr>
+</table>
+<h3 id="journal-tab"><a name="journal-tab"></a>Aba Diário</h3>
+<p>Esta aba permite ler, no seu idioma de exibição, o que está registrado no Diário de Bordo do jogo.</p>
+<p><img src="img/assist_tab_journal.png" alt="Aba Diário"></p>
+<table>
+<tr><th>Exibição</th><th>Descrição</th></tr>
+<tr><td>Data e título</td><td>Mostra a data e o resumo de cada entrada do diário.</td></tr>
+<tr><td>Texto</td><td>Mostra o texto do Diário de Bordo no seu idioma de exibição.</td></tr>
+<tr><td>Atualizações</td><td>Quando o diário é atualizado no jogo, a exibição do Assist também é atualizada.</td></tr>
+</table>
+<h3 id="log-tab"><a name="log-tab"></a>Aba Registro</h3>
+<p>Esta aba permite rever, como um histórico, as traduções que o Assist exibiu. É útil para reler uma passagem que você perdeu.</p>
+<p><img src="img/assist_tab_log.png" alt="Aba Registro"></p>
+<table>
+<tr><th>Controle</th><th>Descrição</th></tr>
+<tr><td>Ordem</td><td>Alterna entre mais recentes primeiro e mais antigas primeiro.</td></tr>
+<tr><td>Filtro</td><td>Restringe o registro por categoria ou local.</td></tr>
+<tr><td>Limpar</td><td>Limpa o registro que está sendo exibido.</td></tr>
+</table>
+<p>Se você ativou o salvamento do registro de combate e já há algo gravado, é possível alternar entre o "Registro normal" e o "Registro de combate" dentro da aba Registro. Se não houver registro de combate, apenas o registro normal é exibido, como antes.</p>
+<h3 id="save-tab"><a name="save-tab"></a>Aba Jogo salvo</h3>
+<p>Esta aba gerencia os slots de jogos salvos e os backups do Arena. Ela auxilia nas operações com os dados salvos, como o backup automático feito antes de uma restauração.</p>
+<p><img src="img/assist_tab_save.png" alt="Aba Jogo salvo"></p>
+<table>
+<tr><th>Controle</th><th>Descrição</th></tr>
+<tr><td>Lista de slots</td><td>Lista os slots de jogos salvos do Arena.</td></tr>
+<tr><td>Criar backup</td><td>Faz o backup do jogo salvo selecionado.</td></tr>
+<tr><td>Restaurar</td><td>Restaura os dados salvos a partir de um backup.</td></tr>
+<tr><td>Excluir</td><td>Exclui backups ou jogos salvos de que você não precisa mais.</td></tr>
+</table>
+<h3 id="capture-tab"><a name="capture-tab"></a>Aba Captura</h3>
+<p>Esta aba permite conferir as capturas de tela salvas com o botão <code>📷</code>. As imagens feitas no modo de layout também podem ser abertas aqui.</p>
+<p><img src="img/assist_tab_capture.png" alt="Aba Captura"></p>
+<table>
+<tr><th>Controle</th><th>Descrição</th></tr>
+<tr><td>Lista</td><td>Mostra as capturas salvas.</td></tr>
+<tr><td>Prévia</td><td>Permite conferir a imagem selecionada.</td></tr>
+<tr><td>Bloquear</td><td>Protege contra exclusão as imagens que você quer manter.</td></tr>
+<tr><td>Excluir</td><td>Exclui a imagem selecionada ou as imagens de que você não precisa mais.</td></tr>
+</table>
+<h3 id="dictionary-tab"><a name="dictionary-tab"></a>Aba Dicionário</h3>
+<p>Esta aba pesquisa o dicionário de tradução do Assist e os textos das masmorras. Você pode usá-la para consultar palavras e frases que aparecem no jogo.</p>
+<p><img src="img/assist_tab_dict.png" alt="Aba Dicionário"></p>
+<table>
+<tr><th>Modo de exibição</th><th>Descrição</th></tr>
+<tr><td>Dicionário</td><td>Pesquisa por palavra-chave em inglês, por tradução e por categoria.</td></tr>
+<tr><td>Texto da Masmorra</td><td>Pesquisa e mostra os textos das masmorras que vêm dos arquivos INF.</td></tr>
+</table>
+<h3 id="manual-tab"><a name="manual-tab"></a>Aba Manual</h3>
+<p>Esta aba permite ler, no seu idioma de exibição, explicações sobre a operação básica e os sistemas do Arena, além de explicações sobre os recursos do Assist. Use-a quando quiser conferir controles ou termos durante o jogo.</p>
+<p><img src="img/assist_tab_manual.png" alt="Aba Manual"></p>
+<table>
+<tr><th>Controle</th><th>Descrição</th></tr>
+<tr><td>Resumido / Completo / Assist</td><td>Alterna o que é exibido (veja a tabela abaixo).</td></tr>
+<tr><td>Busca por palavra-chave</td><td>Pesquisa no manual.</td></tr>
+<tr><td>Lista à esquerda</td><td>Alterna entre capítulos como História, Criação de personagem, Controles e Combate e magia.</td></tr>
+</table>
+<table>
+<tr><th>Opção</th><th>Conteúdo</th><th>Idiomas</th></tr>
+<tr><td>Resumido</td><td>Uma explicação do jogo (9 capítulos)</td><td>12 idiomas</td></tr>
+<tr><td>Completo</td><td>Uma tradução do manual oficial (exibida depois de importar um pacote de tradução)</td><td>Atualmente apenas japonês</td></tr>
+<tr><td>Assist</td><td>Uma explicação dos recursos do Assist (Operação básica, Janela de configurações, Designs de status (fichas de personagem))</td><td>12 idiomas</td></tr>
+</table>
+<p><b>Versão completa (uma tradução do manual oficial)</b></p>
+<p>Em "Completo", você pode ler uma tradução do manual oficial (o Player's Guide e seu adendo). As traduções são distribuídas, separadamente do aplicativo principal, como um pacote de tradução para cada idioma de exibição (<code>RTESArenaAssist-manual-&lt;idioma&gt;.zip</code>) na página de download do manual (atualmente apenas em japonês). Na primeira vez que usar, importe o pacote com os passos a seguir.</p>
+<p><img src="img/assist_tab_manual_full.png" alt="Aba Manual (importação da versão completa)"></p>
+<ol><li>Clique em "Abrir a página de download do manual". A página de download é aberta no seu navegador; baixe o pacote de tradução do seu idioma de exibição.</li><li>Clique em "Importar" e selecione o arquivo baixado.</li><li>Quando a lista de capítulos aparecer, está pronto. Acima da lista são exibidos a data do pacote de tradução importado e as entradas para a página de download e para a importação. Um pacote de tradução mais novo substitui o antigo quando você o importa da mesma forma.</li></ol>
+<p>As imagens do manual são criadas a partir de <code>Player Guide.pdf</code>, na pasta <code>Docs</code> do seu Arena (versão Steam). Se o PDF não for encontrado ou for de outra versão, apenas o texto é exibido. Verifique a "Pasta do jogo" nas configurações e clique em "Gerar as imagens novamente" para que as imagens também sejam exibidas. Depois da importação, você pode apagar o arquivo baixado. O próprio Assist não se conecta à internet (o download é feito no seu próprio navegador).</p>
+<p>"Completo" também mostra um link que abre o manual oficial (um PDF em inglês) na pasta <code>Docs</code>. Quando o idioma de exibição é o inglês, apenas esse link é exibido, no lugar de um pacote de tradução.</p>
+<h2 id="basic-steps"><a name="basic-steps"></a>Passos básicos</h2>
+<ol><li>Inicie o Arena.</li><li>Inicie o RTESArenaAssist.</li><li>Na primeira execução, indique o idioma e a pasta do Arena e crie os arquivos de tradução.</li><li>Clique em <code>Conectar</code>, no canto superior direito do Assist, para conectar ao Arena / DOSBox.</li><li>Clique em <code>⊞</code> para entrar no modo de layout.</li><li>Normalmente, permaneça no modo de layout e alterne entre as abas Tradução, Mapa, Diário e Registro conforme precisar.</li><li>Quando quiser guardar uma tela, capture-a com <code>📷</code> ou com a tecla de atalho (<code>F12</code> por padrão).</li><li>Ao terminar, encerre o modo de layout com <code>⊞</code> e, se necessário, clique em <code>Desconectar</code>.</li></ol>
+<p>O tamanho de exibição do modo de layout, a forma de disposição, o painel de tradução, a pasta de capturas e mais podem ser ajustados na janela de configurações. Para usar a leitura em voz alta das traduções, ative-a também na aba "Leitura em voz alta" da janela de configurações.</p>
+
+</body>
+</html>

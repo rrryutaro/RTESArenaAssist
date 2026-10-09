@@ -1,0 +1,23 @@
+{
+  "dungeon.imperial_city.0": "帝都",
+  "dungeon.dungeon.0": "地下城",
+  "dungeon.wilderness.0": "荒野",
+  "dungeon.city.0": "城市",
+  "dungeon.town.0": "城鎮",
+  "dungeon.north.0": "北",
+  "dungeon.northeast.0": "東北",
+  "dungeon.east.0": "東",
+  "dungeon.southeast.0": "東南",
+  "dungeon.south.0": "南",
+  "dungeon.southwest.0": "西南",
+  "dungeon.west.0": "西",
+  "dungeon.northwest.0": "西北",
+  "dungeon.iron.0": "鐵",
+  "dungeon.steel.0": "鋼",
+  "dungeon.silver.0": "銀",
+  "dungeon.elven.0": "精靈",
+  "dungeon.dwarven.0": "矮人",
+  "dungeon.mithril.0": "秘銀",
+  "dungeon.adamantium.0": "精金",
+  "dungeon.ebony.0": "黑檀"
+}

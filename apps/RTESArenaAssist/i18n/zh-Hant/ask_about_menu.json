@@ -1,0 +1,22 @@
+{
+  "ask_about_menu.title_ask_about.0": "詢問",
+  "ask_about_menu.opt_who_are_you.0": "你是誰？",
+  "ask_about_menu.opt_where_is.0": "哪裡有……",
+  "ask_about_menu.opt_rumors.0": "傳聞",
+  "ask_about_menu.opt_exit.0": "離開",
+  "ask_about_menu.title_rumor_type.0": "傳聞類型",
+  "ask_about_menu.opt_general.0": "一般",
+  "ask_about_menu.opt_work.0": "工作",
+  "ask_about_menu.place_inn.0": "旅店",
+  "ask_about_menu.place_temple.0": "神殿",
+  "ask_about_menu.place_equipment_store.0": "裝備店",
+  "ask_about_menu.place_mages_guild.0": "法師公會",
+  "ask_about_menu.place_palace.0": "宮殿",
+  "ask_about_menu.place_city_gates.0": "城門",
+  "ask_about_menu.place_nearest_inn.0": "最近的旅店",
+  "ask_about_menu.place_nearest_temple.0": "最近的神殿",
+  "ask_about_menu.place_nearest_store.0": "最近的商店",
+  "ask_about_menu.place_nearest_dungeon.0": "最近的地下城",
+  "ask_about_menu.fallback_no_rumor.0": "我不打聽傳聞……",
+  "ask_about_menu.fallback_not_sure.0": "我不太確定。你去問問外面的人吧。"
+}

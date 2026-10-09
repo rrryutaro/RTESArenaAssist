@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>基本操作指南</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — 基本操作指南</h1>
+<p>RTESArenaAssist 是在你遊玩《The Elder Scrolls: Arena》時提供輔助的應用程式。它會在遊戲旁顯示翻譯、地圖、日誌、紀錄、存檔管理、擷圖、辭典與手冊。</p>
+<p>文中的圖片是在 Assist 使用你的顯示語言、「深色」主題、預設設定且未連線的狀態下擷取的。連線後，顯示內容會隨目前的 Arena 畫面與遊戲狀態而改變。</p>
+<p>Assist 的基本用法是：啟動 Arena，用 Assist 連線，再按下 <code>⊞</code> 按鈕進入版面模式開始遊玩。在版面模式下，可以把 DOSBox 遊戲畫面與 Assist 的翻譯、地圖等分頁排列在同一個螢幕上，不必用 Alt+Tab 切換就能隨時查看。</p>
+<p>設定的詳細說明，請參閱本手冊的「設定對話方塊」頁面。</p>
+<h2 id="contents"><a name="contents"></a>目錄</h2>
+<ul>
+<li><a href="#first-run">首次執行</a></li>
+<ul>
+<li><a href="#choose-a-language">選擇語言</a></li>
+<li><a href="#specify-the-arena-folder">指定 Arena 資料夾</a></li>
+<li><a href="#generate-the-translation-files">建立翻譯檔案</a></li>
+</ul>
+<li><a href="#main-window">主視窗</a></li>
+<ul>
+<li><a href="#disconnected">未連線</a></li>
+<li><a href="#connected">已連線</a></li>
+</ul>
+<li><a href="#use-layout-mode-as-the-default">預設使用版面模式</a></li>
+<li><a href="#tabs">分頁</a></li>
+<ul>
+<li><a href="#translate-tab">翻譯分頁</a></li>
+<li><a href="#status-tab">狀態分頁</a></li>
+<li><a href="#map-tab">地圖分頁</a></li>
+<li><a href="#journal-tab">日誌分頁</a></li>
+<li><a href="#log-tab">記錄分頁</a></li>
+<li><a href="#save-tab">存檔分頁</a></li>
+<li><a href="#capture-tab">擷圖分頁</a></li>
+<li><a href="#dictionary-tab">辭典分頁</a></li>
+<li><a href="#manual-tab">手冊分頁</a></li>
+</ul>
+<li><a href="#basic-steps">基本步驟</a></li>
+</ul>
+<h2 id="first-run"><a name="first-run"></a>首次執行</h2>
+<p>公開版不包含 Arena 的原始文字資料。首次執行時，Assist 會根據你電腦上的 Arena 資料夾建立翻譯檔案。</p>
+<h3 id="choose-a-language"><a name="choose-a-language"></a>選擇語言</h3>
+<p>首先選擇 Assist 的顯示語言。所選的語言會立即套用在此畫面上。</p>
+<p><img src="img/assist_first_run_language.png" alt="首次執行：選擇語言"></p>
+<table>
+<tr><th>控制項</th><th>說明</th></tr>
+<tr><td>語言下拉選單</td><td>選擇 Assist 介面的語言。此畫面只提供日文、English 與 Español。若要使用其他語言，請在啟動後到「設定」對話方塊「一般」分頁的「顯示語言」中選擇。</td></tr>
+<tr><td>下一步</td><td>繼續前往指定 Arena 資料夾。</td></tr>
+</table>
+<h3 id="specify-the-arena-folder"><a name="specify-the-arena-folder"></a>指定 Arena 資料夾</h3>
+<p>若在 Arena 執行中繼續，Assist 會自動從執行中的 Arena 偵測安裝位置。若偵測不到，請以 <code>瀏覽…</code> 指定 Arena 的資料夾。</p>
+<p><img src="img/assist_first_run_arena.png" alt="首次執行：指定 Arena 資料夾"></p>
+<table>
+<tr><th>項目</th><th>說明</th></tr>
+<tr><td>遊戲安裝資料夾</td><td>指定 Arena 的 <code>ARENA</code> 資料夾。</td></tr>
+<tr><td>瀏覽…</td><td>從資料夾選擇對話方塊指定 Arena 資料夾。</td></tr>
+<tr><td>重新檢查</td><td>重新偵測執行中的 Arena。</td></tr>
+<tr><td>建立翻譯檔案</td><td>找到有效的 Arena 資料夾後，繼續建立翻譯檔案。</td></tr>
+</table>
+<h3 id="generate-the-translation-files"><a name="generate-the-translation-files"></a>建立翻譯檔案</h3>
+<p>Assist 會根據 Arena 資料夾中的資料建立翻譯檔案。完成後會開啟主視窗。</p>
+<p><img src="img/assist_first_run_generate.png" alt="首次執行：建立翻譯檔案"></p>
+<p>建立期間會顯示進度列與目前的步驟。程式也會從執行中的 Arena 讀取資料，因此在完成之前請不要關閉 Arena。</p>
+<h2 id="main-window"><a name="main-window"></a>主視窗</h2>
+<p>Assist 的上方是連線列，中間是分頁區域，下方是狀態列。</p>
+<h3 id="disconnected"><a name="disconnected"></a>未連線</h3>
+<p>Assist 啟動後處於未連線狀態。在 Arena / DOSBox 執行中，按下右上角的 <code>連線</code> 按鈕。</p>
+<p><img src="img/assist_main_window.png" alt="主視窗：未連線"></p>
+<table>
+<tr><th>區域</th><th>說明</th></tr>
+<tr><td>連線狀態</td><td>顯示「未連線」；連線時則顯示辨識到的畫面名稱、IMG 名稱等。</td></tr>
+<tr><td>連線 / 中斷連線</td><td>連線到 DOSBox 內的 Arena，或中斷連線。</td></tr>
+<tr><td><code>⏸</code> / <code>▶</code> / <code>■</code></td><td>暫停 / 繼續 / 停止朗讀。在「設定」對話方塊的「語音朗讀」分頁啟用後即可使用朗讀（預設為關閉）。</td></tr>
+<tr><td><code>⊞</code></td><td>切換版面模式。按右鍵可開啟版面選單。</td></tr>
+<tr><td><code>📷</code></td><td>儲存螢幕擷圖。在版面模式下，整個版面會儲存為一張圖片。當遊戲畫面（DOSBox）取得焦點時，按快速鍵（預設為 <code>F12</code>）也能以同樣方式儲存。</td></tr>
+<tr><td><code>⚙</code></td><td>開啟「設定」對話方塊。</td></tr>
+</table>
+<p>啟動後狀態列顯示的「已註冊快速鍵 F12」訊息，表示擷圖快速鍵已可使用。你可以在「設定」對話方塊的「一般」分頁中變更按鍵。</p>
+<h3 id="connected"><a name="connected"></a>已連線</h3>
+<p>連線後，辨識到的畫面名稱會顯示在連線列的最左側。下方的範例是連線到 Arena 標題畫面的情形。</p>
+<p><img src="img/assist_connection_bar.png" alt="連線列：已連線"></p>
+<p>該畫面所使用的 IMG 名稱也會顯示在畫面名稱的右側（標題畫面等不使用 IMG 的畫面不會顯示）。在「設定」對話方塊的「顯示」分頁中，可以選擇是否顯示畫面名稱與 IMG 名稱。</p>
+<h2 id="use-layout-mode-as-the-default"><a name="use-layout-mode-as-the-default"></a>預設使用版面模式</h2>
+<p>Assist 是以版面模式使用為前提設計的。分頁在一般視窗中也能使用，但在版面模式下，你可以把遊戲畫面、翻譯、地圖、記錄等固定在同一個螢幕上一起查看。</p>
+<p>在預設版面中，DOSBox 遊戲畫面在左側，Assist 的主要分頁在右側，輔助面板在下方。遊玩時可在右側查看地圖或日誌，並在下方面板或翻譯分頁查看目前畫面的翻譯。</p>
+<table>
+<tr><th>操作</th><th>說明</th></tr>
+<tr><td>按一下 <code>⊞</code></td><td>開始 / 結束版面模式。</td></tr>
+<tr><td>在 <code>⊞</code> 上按右鍵</td><td>可選擇面板形式、DOSBox 角落、跟隨模式、重新配置、永遠在最上層等。</td></tr>
+<tr><td><code>📷</code></td><td>在版面模式下，將包含 DOSBox 與 Assist 的整個版面儲存為一張圖片。</td></tr>
+<tr><td><code>中斷連線</code></td><td>中斷與 Arena 的連線。先結束版面模式再中斷連線，比較容易整理畫面。</td></tr>
+</table>
+<h2 id="tabs"><a name="tabs"></a>分頁</h2>
+<p>各分頁的螢幕擷圖是用來說明畫面的組成。連線時，顯示內容會隨目前的 Arena 畫面與遊戲狀態更新。</p>
+<h3 id="translate-tab"><a name="translate-tab"></a>翻譯分頁</h3>
+<p>這是顯示目前畫面翻譯的核心分頁。顯示內容會依情況切換：標題畫面、角色建立、對話、設施、物品、法術等。</p>
+<p><img src="img/assist_tab_translate.png" alt="翻譯分頁"></p>
+<table>
+<tr><th>顯示內容</th><th>說明</th></tr>
+<tr><td>翻譯</td><td>顯示目前畫面或事件的翻譯。</td></tr>
+<tr><td>原文</td><td>依設定，也會一併顯示對應的英文原文。</td></tr>
+<tr><td>專用檢視</td><td>職業清單、種族清單、裝備、設施清單、購買清單等會切換為專用且易讀的檢視。</td></tr>
+</table>
+<p>在設定的「戰鬥資訊」分頁中，也可以讓翻譯分頁顯示戰鬥資訊。請選擇「戰鬥資訊與一般顯示並用」或「全面顯示戰鬥資訊」，再選擇「文字資訊」或「敵人量表顯示」。預設為「不顯示（維持一般顯示）」，即維持一般的翻譯分頁顯示。</p>
+<h3 id="status-tab"><a name="status-tab"></a>狀態分頁</h3>
+<p>這個分頁顯示角色的屬性與狀態。角色建立完成後，或在遊玩中連線時，會顯示狀態資訊。</p>
+<p><img src="img/assist_tab_status.png" alt="狀態分頁"></p>
+<table>
+<tr><th>顯示內容</th><th>說明</th></tr>
+<tr><td>檢視</td><td>選擇「標準」（沿用至今的顯示）或其中一種設計（角色表）。翻譯分頁中的狀態畫面與屬性分配，也會使用這裡選擇的檢視。</td></tr>
+<tr><td>屬性</td><td>顯示力量、智力等主要屬性。</td></tr>
+<tr><td>狀態數值</td><td>顯示生命、疲勞、魔法點數等。</td></tr>
+<tr><td>變更數值</td><td>變更屬性等操作，僅在你明確啟用作弊設定時才能使用（在「標準」檢視中）。</td></tr>
+</table>
+<h3 id="character-sheet"><a name="character-sheet"></a>角色表</h3>
+<p>這項功能可用你選擇的設計來顯示狀態。若在「檢視」中選擇「標準」以外的項目，狀態就會以所選的設計顯示。設計是一個 HTML 檔案（範本），內建有 8 種設計，你也可以自己製作。部分設計會顯示臉部與全身圖（包含裝備）、角色的狀態（疾病、中毒、麻痺等），以及各身體部位的護甲等級（由裝備計算出的數值，數值越低防護越好）。臉部與全身圖是由你的 Arena 檔案製作而成。</p>
+<table>
+<tr><th>控制項</th><th>說明</th></tr>
+<tr><td>開啟資料夾</td><td>開啟存放自製角色表（HTML 檔案）的資料夾，位於 <code>RTESArenaAssist.exe</code> 所在位置的 <code>character_sheets</code>。第一次開啟時，會放入內建設計的副本。放進該資料夾的檔案，會在「檢視」清單中加上「（資料夾）」後顯示。</td></tr>
+<tr><td>重新載入</td><td>重新載入資料夾中的角色表。修改檔案後請按此按鈕。</td></tr>
+</table>
+<p>內建設計的清單、角色表的運作方式，以及可插入的數值與寫法，請參閱本手冊的「屬性介面設計（角色表）」頁面。</p>
+<h3 id="map-tab"><a name="map-tab"></a>地圖分頁</h3>
+<p>這個分頁顯示地下城、城市、野外、室內等的自動地圖。顯示內容會隨你在遊戲中的目前位置更新。</p>
+<p><img src="img/assist_tab_map.png" alt="地圖分頁"></p>
+<table>
+<tr><th>顯示內容</th><th>說明</th></tr>
+<tr><td>目前位置</td><td>根據已連線的遊戲狀態，顯示目前的地圖與位置。</td></tr>
+<tr><td>自動地圖</td><td>繪製已探索的區域、牆壁、入口、野外地形等。</td></tr>
+<tr><td>顯示設定</td><td>格線、區塊座標、野外擴充顯示等，可在「設定」對話方塊中調整。</td></tr>
+</table>
+<h3 id="journal-tab"><a name="journal-tab"></a>日誌分頁</h3>
+<p>這個分頁讓你以顯示語言閱讀遊戲中日誌所記錄的內容。</p>
+<p><img src="img/assist_tab_journal.png" alt="日誌分頁"></p>
+<table>
+<tr><th>顯示內容</th><th>說明</th></tr>
+<tr><td>日期與標題</td><td>顯示各筆日誌的日期與摘要。</td></tr>
+<tr><td>內文</td><td>以顯示語言顯示日誌的內文。</td></tr>
+<tr><td>更新</td><td>遊戲中的日誌更新時，Assist 的顯示也會跟著更新。</td></tr>
+</table>
+<h3 id="log-tab"><a name="log-tab"></a>記錄分頁</h3>
+<p>這個分頁讓你以歷史紀錄的形式回顧 Assist 顯示過的翻譯。想重讀漏看的內容時很方便。</p>
+<p><img src="img/assist_tab_log.png" alt="記錄分頁"></p>
+<table>
+<tr><th>控制項</th><th>說明</th></tr>
+<tr><td>排序</td><td>在「由新到舊」與「由舊到新」之間切換。</td></tr>
+<tr><td>篩選</td><td>依分類或地點縮小記錄的範圍。</td></tr>
+<tr><td>清除</td><td>清除目前顯示的記錄。</td></tr>
+</table>
+<p>若你已啟用儲存戰鬥紀錄，且已有記錄，就可以在記錄分頁中切換「一般紀錄」與「戰鬥紀錄」。若沒有戰鬥紀錄，則和以往一樣只顯示一般紀錄。</p>
+<h3 id="save-tab"><a name="save-tab"></a>存檔分頁</h3>
+<p>這個分頁管理 Arena 的存檔欄位與備份。它協助進行存檔資料的操作，例如還原前自動備份。</p>
+<p><img src="img/assist_tab_save.png" alt="存檔分頁"></p>
+<table>
+<tr><th>控制項</th><th>說明</th></tr>
+<tr><td>欄位清單</td><td>列出 Arena 的存檔欄位。</td></tr>
+<tr><td>備份</td><td>備份所選的存檔。</td></tr>
+<tr><td>還原</td><td>從備份還原存檔資料。</td></tr>
+<tr><td>刪除</td><td>刪除不再需要的備份或存檔。</td></tr>
+</table>
+<h3 id="capture-tab"><a name="capture-tab"></a>擷圖分頁</h3>
+<p>這個分頁讓你查看以 <code>📷</code> 按鈕儲存的螢幕擷圖。在版面模式下擷取的圖片也能在這裡開啟。</p>
+<p><img src="img/assist_tab_capture.png" alt="擷圖分頁"></p>
+<table>
+<tr><th>控制項</th><th>說明</th></tr>
+<tr><td>清單</td><td>顯示已儲存的擷圖。</td></tr>
+<tr><td>預覽</td><td>讓你查看所選的圖片。</td></tr>
+<tr><td>鎖定</td><td>保護想保留的圖片，避免被刪除。</td></tr>
+<tr><td>刪除</td><td>刪除所選的圖片或不再需要的圖片。</td></tr>
+</table>
+<h3 id="dictionary-tab"><a name="dictionary-tab"></a>辭典分頁</h3>
+<p>這個分頁用來搜尋 Assist 的翻譯辭典與地下城文字。可用來查詢遊戲中出現的單字與句子。</p>
+<p><img src="img/assist_tab_dict.png" alt="辭典分頁"></p>
+<table>
+<tr><th>顯示模式</th><th>說明</th></tr>
+<tr><td>辭典</td><td>依英文關鍵字、翻譯與分類搜尋。</td></tr>
+<tr><td>地下城文字</td><td>搜尋並顯示來自 INF 的地下城文字。</td></tr>
+</table>
+<h3 id="manual-tab"><a name="manual-tab"></a>手冊分頁</h3>
+<p>這個分頁讓你以顯示語言閱讀 Arena 基本操作與系統的說明，以及 Assist 功能的說明。想在遊玩時確認操作方式或用語時可以使用。</p>
+<p><img src="img/assist_tab_manual.png" alt="手冊分頁"></p>
+<table>
+<tr><th>控制項</th><th>說明</th></tr>
+<tr><td>簡易 / 完整 / Assist</td><td>切換顯示的內容（見下表）。</td></tr>
+<tr><td>搜尋關鍵字</td><td>搜尋手冊。</td></tr>
+<tr><td>左側清單</td><td>在故事、角色建立、操作方式、戰鬥與魔法等章節之間切換。</td></tr>
+</table>
+<table>
+<tr><th>切換項目</th><th>內容</th><th>語言</th></tr>
+<tr><td>簡易</td><td>遊戲的說明（9 章）</td><td>12 種語言</td></tr>
+<tr><td>完整</td><td>官方手冊的翻譯（匯入翻譯包後顯示）</td><td>目前僅有日文</td></tr>
+<tr><td>Assist</td><td>Assist 功能的說明（基本操作、設定對話方塊、屬性介面設計（角色表））</td><td>12 種語言</td></tr>
+</table>
+<p><b>完整版（官方手冊的翻譯）</b></p>
+<p>在「完整」中，你可以閱讀官方手冊（Player's Guide 及其補充說明）的翻譯。翻譯內容與主程式分開發布，會依各顯示語言製作成翻譯包（<code>RTESArenaAssist-manual-&lt;language&gt;.zip</code>），放在手冊下載頁面上（目前僅有日文）。第一次使用時，請依下列步驟匯入翻譯包。</p>
+<p><img src="img/assist_tab_manual_full.png" alt="手冊分頁（匯入完整版）"></p>
+<ol><li>按下「開啟手冊下載頁面」。下載頁面會在瀏覽器中開啟，請下載對應你顯示語言的翻譯包。</li><li>按下「匯入」，並選擇下載的檔案。</li><li>出現章節清單就完成了。清單上方會顯示已匯入翻譯包的日期，以及下載頁面與匯入的項目。以同樣方式匯入較新的翻譯包時，會取代舊的翻譯包。</li></ol>
+<p>手冊中的圖片是由你的 Arena（Steam 版）的 <code>Docs</code> 資料夾中的 <code>Player Guide.pdf</code> 製作而成。若找不到該 PDF，或版本不同，就只會顯示文字。請確認設定中的「遊戲資料夾」並按下「重新製作圖片」，圖片就會顯示出來。匯入後，可以刪除下載的檔案。Assist 本身不會連上網際網路（下載是在你自己的瀏覽器中進行）。</p>
+<p>「完整」中也會顯示一個連結，用來開啟 <code>Docs</code> 資料夾中的官方手冊（英文 PDF）。當顯示語言為英文時，只會顯示這個連結，而不是翻譯包。</p>
+<h2 id="basic-steps"><a name="basic-steps"></a>基本步驟</h2>
+<ol><li>啟動 Arena。</li><li>啟動 RTESArenaAssist。</li><li>首次執行時，指定語言與 Arena 資料夾，並建立翻譯檔案。</li><li>按下 Assist 右上角的 <code>連線</code>，連線到 Arena / DOSBox。</li><li>按下 <code>⊞</code> 進入版面模式。</li><li>一般情況下維持在版面模式，並依需要在翻譯、地圖、日誌與記錄分頁之間切換。</li><li>想保留某個畫面時，用 <code>📷</code> 或快速鍵（預設為 <code>F12</code>）擷圖。</li><li>結束時，用 <code>⊞</code> 結束版面模式，必要時再按 <code>中斷連線</code>。</li></ol>
+<p>版面模式的顯示大小、面板形式、翻譯面板、擷圖資料夾等，都可以在「設定」對話方塊中調整。若要朗讀翻譯內容，也請在「設定」對話方塊的「語音朗讀」分頁中啟用。</p>
+
+</body>
+</html>

@@ -57,6 +57,7 @@ a { color: #7ec8e3; }
 <ul>
 <li><a href="#translate-tab-panel-behavior">Translate Tab / Panel Behavior</a></li>
 <li><a href="#translate-tab-advanced">Translate Tab — Advanced</a></li>
+<li><a href="#user-translations">Your translations</a></li>
 </ul>
 <li><a href="#combat-information-tab">Combat information tab</a></li>
 <ul>
@@ -219,6 +220,38 @@ a { color: #7ec8e3; }
 <tr><th>Label</th><th>Default</th><th>Description</th></tr>
 <tr><td><code>Emulate panel-hidden behavior in Translate tab:</code></td><td>OFF</td><td>When ON, translation results and dialog messages are shown in the Translate tab, just as when the translation panel is hidden. An advanced setting for verification</td></tr>
 </table>
+<h3 id="user-translations"><a name="user-translations"></a>Your translations</h3>
+<p>You can replace parts of a bundled translation with your own, or add a new language.</p>
+<ol>
+<li>Choose a language under <code>Export a template</code> (to create a new language, choose <code>(blank template for a new language)</code>), then press <code>Export...</code> and save the JSON file. If you turn on <code>Include the English source</code>, the English source is added (the source of the game text is added only on a machine where the game folder is set and the dictionary has been built). Save it outside the translations folder (see below).</li>
+<li>Open the saved JSON in a text editor (UTF-8) and edit the <code>text</code> of the entries you want to change. Entries whose <code>text</code> is empty keep the bundled translation (for a new language, the language in <code>meta.fallback</code>). Do not change the keys or placeholders such as <code>%xx</code> and <code>{name}</code> (entries with placeholders that the reference translation does not have, or with <code>&lt;</code> or <code>&gt;</code>, are not loaded). <code>source</code> (the English source) and <code>ref</code> (a translation to refer to) are not used when loading.<br>For a new language, always fill in <code>lang</code> at the top (a language code, for example <code>tr</code>) and <code>meta.display_name</code> (the name shown in the language list). <code>meta.fallback</code> is the bundled language used for untranslated entries (<code>en</code> by default); set <code>meta.direction</code> to <code>rtl</code> for right-to-left display.</li>
+<li>Under <code>Import a translation file</code>, press <code>Import...</code> and choose the edited file. It is imported if it passes the checks. A new language is added to the display languages on the General tab. Changes take effect after you restart the app.</li>
+</ol>
+<p>A template for a bundled language contains the current translation of every entry. Delete the entries you do not change, or leave their <code>text</code> empty. Entries you keep are fixed to your wording and do not pick up later improvements to the bundled translation.</p>
+<p>Example 1: change only one entry of the bundled German translation (only the entries you write are replaced).</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "de",
+  "texts": {
+    "ui_app": {
+      "settings.title": "Meine Einstellungen"
+    }
+  }
+}</pre></td></tr></table>
+<p>Example 2: a new language (Turkish). <code>ref</code> is for reference only and is not used when loading.</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "tr",
+  "meta": { "display_name": "Türkçe", "fallback": "en", "direction": "ltr" },
+  "texts": {
+    "ui_app": {
+      "settings.title": { "ref": "Settings", "text": "Ayarlar" }
+    }
+  }
+}</pre></td></tr></table>
+<p>Imported files appear in the <code>Loaded</code> list. Select one and press <code>Delete</code> to go back to the bundled translation (a new language is removed). <code>Open folder</code> opens the <code>translations</code> folder next to the settings file. JSON files placed there are loaded automatically at startup. For a language you added, documents such as the manual are shown in English.</p>
 <h2 id="combat-information-tab"><a name="combat-information-tab"></a>Combat information tab</h2>
 <p>You set where combat and ongoing spells are displayed, separately. The new display, reading aloud and saving features are OFF by default. Setting values saved by earlier development versions are carried over as they are. The displayed text is available in Japanese, English, Spanish, German, French, Italian and Russian.</p>
 <p><img src="img/settings_dark_tab_05.png" alt="Combat information tab"></p>

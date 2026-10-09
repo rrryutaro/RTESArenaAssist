@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Guia detalhado da janela de configurações</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — Guia detalhado da janela de configurações</h1>
+<p>Esta página mostra uma captura de cada aba da janela de configurações do RTESArenaAssist, com uma explicação de cada elemento da interface.</p>
+<p>As imagens foram feitas da janela de configurações com as configurações padrão, no seu idioma de exibição e com o tema padrão "Escuro".</p>
+<p>Os valores da aba DOSBox refletem não só o arquivo de configurações do próprio Assist, mas também o que foi lido de <code>arena.conf</code> no caminho padrão. Se o <code>arena.conf</code> do seu ambiente for diferente, os valores exibidos também serão diferentes.</p>
+<h2 id="contents"><a name="contents"></a>Conteúdo</h2>
+<ul>
+<li><a href="#general-tab">Aba Geral</a></li>
+<ul>
+<li><a href="#paths">Caminhos</a></li>
+<li><a href="#behavior">Comportamento</a></li>
+<li><a href="#shutter-sound">Som do obturador</a></li>
+<li><a href="#capture-hotkey">Tecla de atalho da captura</a></li>
+<li><a href="#updates">Atualizações</a></li>
+</ul>
+<li><a href="#display-tab">Aba Exibição</a></li>
+<ul>
+<li><a href="#connection-bar">Barra de conexão</a></li>
+<li><a href="#item-list-marks">Marcas na lista de itens</a></li>
+<li><a href="#translation-panel-font">Fonte do painel de tradução</a></li>
+<li><a href="#layout">Layout</a></li>
+</ul>
+<li><a href="#map-tab">Aba Mapa</a></li>
+<ul>
+<li><a href="#map-display-settings">Configurações de exibição do mapa</a></li>
+<li><a href="#field-extended-display">Exibição estendida do campo</a></li>
+<li><a href="#map-expression-and-colours">Expressão e cores do mapa</a></li>
+</ul>
+<li><a href="#translation-tab">Aba Tradução</a></li>
+<ul>
+<li><a href="#translate-tab-panel-behavior">Comportamento da aba e do painel de tradução</a></li>
+<li><a href="#translate-tab-advanced">Aba de tradução — Avançado</a></li>
+<li><a href="#user-translations">Suas traduções</a></li>
+</ul>
+<li><a href="#combat-information-tab">Aba Informações de combate</a></li>
+<ul>
+<li><a href="#arena-screen">Tela do Arena</a></li>
+<li><a href="#arena-screen-ongoing-spells">Tela do Arena · Magias em andamento</a></li>
+<li><a href="#combat-info-translation-tab">Informações de combate na aba Tradução</a></li>
+<li><a href="#combat-info-translation-panel">Informações de combate no painel de tradução</a></li>
+<li><a href="#common-settings-and-messages">Configurações comuns e mensagens</a></li>
+</ul>
+<li><a href="#read-aloud-tab">Aba Leitura em voz alta</a></li>
+<ul>
+<li><a href="#read-aloud">Leitura em voz alta</a></li>
+<li><a href="#read-targets">Itens a ler</a></li>
+<li><a href="#other-log">Outros / Registro</a></li>
+<li><a href="#character-name-reading">Leitura do nome do personagem</a></li>
+</ul>
+<li><a href="#cheat-tab">Aba Trapaça</a></li>
+<li><a href="#dosbox-tab">Aba DOSBox</a></li>
+<ul>
+<li><a href="#config-file-window-behavior">Arquivo de configuração / Comportamento da janela</a></li>
+<li><a href="#window-display">Janela e exibição</a></li>
+<li><a href="#video">Vídeo</a></li>
+<li><a href="#performance">Desempenho</a></li>
+<li><a href="#sound">Som</a></li>
+</ul>
+</ul>
+<h2 id="general-tab"><a name="general-tab"></a>Aba Geral</h2>
+<p>Esta aba define os caminhos, o comportamento básico, o som do obturador e a tecla de atalho da captura, e permite conferir a sua versão.</p>
+<p><img src="img/settings_dark_tab_01.png" alt="Aba Geral"></p>
+<h3 id="paths"><a name="paths"></a>Caminhos</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Pasta do jogo:</code></td><td>Vazio</td><td>A pasta que contém o <code>ARENA.EXE</code> do Arena e os arquivos de jogos salvos. Enquanto não for definida, o gerenciamento de jogos salvos e a leitura dos dados do jogo ficam indisponíveis</td></tr>
+<tr><td><code>Pasta de backup:</code></td><td>Vazio</td><td>Onde os backups dos jogos salvos são guardados. Quando vazia, é usada a pasta <code>saves_backup/</code> junto ao arquivo de configurações da ferramenta</td></tr>
+<tr><td><code>Pasta de capturas:</code></td><td>Vazio</td><td>Onde as capturas de tela são salvas. Quando vazia, é usada a mesma pasta do backup</td></tr>
+<tr><td><code>Abrir…</code></td><td>-</td><td>Seleciona cada pasta</td></tr>
+</table>
+<h3 id="behavior"><a name="behavior"></a>Comportamento</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Intervalo de consulta:</code></td><td><code>100 ms</code></td><td>Com que frequência a tela do DOSBox e o estado da memória são verificados. O padrão é curto para que mensagens breves sejam captadas com mais facilidade</td></tr>
+<tr><td><code>Confirmar antes de excluir:</code></td><td>ATIVADO</td><td>Mostra uma janela de confirmação ao excluir capturas ou backups</td></tr>
+<tr><td><code>Sempre no topo:</code></td><td>DESATIVADO</td><td>Mostra a janela principal do Assist à frente das outras janelas</td></tr>
+<tr><td><code>Tema:</code></td><td>Escuro</td><td>Escolhe o tema de cores da interface</td></tr>
+<tr><td><code>Idioma:</code></td><td>Automático (sistema)</td><td>O idioma da interface. Quando vazio, ele é detectado automaticamente a partir do idioma do sistema, e uma mudança passa a valer depois que o aplicativo é reiniciado</td></tr>
+</table>
+<h3 id="shutter-sound"><a name="shutter-sound"></a>Som do obturador</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Ativado</code></td><td>ATIVADO</td><td>Toca um efeito sonoro quando uma captura de tela é salva</td></tr>
+<tr><td><code>Tipo:</code></td><td>Câmera de celular, padrão (os nomes dos tipos são exibidos em japonês)</td><td>O som do obturador a tocar. Você pode escolher entre padrão, versão curta, duplo, agudos realçados e suave</td></tr>
+<tr><td><code>Volume:</code></td><td><code>30 %</code></td><td>O volume de reprodução do som do obturador</td></tr>
+<tr><td><code>▶</code></td><td>-</td><td>Ouve uma prévia do som do obturador selecionado</td></tr>
+</table>
+<h3 id="capture-hotkey"><a name="capture-hotkey"></a>Tecla de atalho da captura</h3>
+<p>Você pode salvar uma captura apenas pressionando uma tecla, com o foco mantido na tela do jogo (DOSBox). Use-a para capturar mensagens que desaparecem após alguns segundos.</p>
+<table>
+<tr><th>Item</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Ativada</code></td><td>ATIVADO</td><td>Usa a tecla de atalho para capturar</td></tr>
+<tr><td><code>Ctrl</code> / <code>Alt</code> / <code>Shift</code></td><td>DESATIVADO</td><td>Ative para combinar teclas modificadoras</td></tr>
+<tr><td><code>Tecla:</code></td><td><code>F12</code></td><td>A tecla a usar. Você pode escolher entre F5 a F12, PrintScreen, Pause, ScrollLock, Insert, Home, End, PageUp e PageDown</td></tr>
+</table>
+<ul>
+<li>A tecla pressionada não é repassada ao jogo. Teclas que o jogo ou o DOSBox usam (F1 / F3 / F4 / F8, Ctrl+F5 a F12, Alt+F12, Alt+Pause) não podem ser escolhidas</li>
+<li>Se outro aplicativo usa a mesma tecla como atalho, o atalho desse aplicativo não funciona enquanto este aplicativo estiver em execução. Escolher outra tecla permite que ambos funcionem</li>
+<li>Se não foi possível registrar a tecla, uma mensagem é exibida na barra de status. Mesmo assim, você ainda pode capturar com o botão da câmera na barra de ferramentas</li>
+</ul>
+<h3 id="updates"><a name="updates"></a>Atualizações</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Versão atual:</code></td><td>-</td><td>A versão do Assist que você está usando</td></tr>
+<tr><td><code>Abrir a página de lançamentos</code></td><td>-</td><td>Abre no navegador a página de lançamentos do Assist (a lista de Releases). Consulte-a para saber se existe uma versão mais nova</td></tr>
+</table>
+<p>O Assist não se conecta à internet, portanto não verifica atualizações nem se atualiza sozinho.</p>
+<h2 id="display-tab"><a name="display-tab"></a>Aba Exibição</h2>
+<p>Esta aba define a barra de conexão, as marcas de equipamento nas listas de itens, a fonte do painel de tradução e o layout.</p>
+<p><img src="img/settings_dark_tab_02.png" alt="Aba Exibição"></p>
+<h3 id="connection-bar"><a name="connection-bar"></a>Barra de conexão</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Mostrar o nome da tela reconhecida:</code></td><td>ATIVADO</td><td>Mostra na barra de conexão o nome da tela reconhecida no momento</td></tr>
+<tr><td><code>Mostrar informações de IMG:</code></td><td>ATIVADO</td><td>Mostra na barra de conexão as informações da IMG que está sendo detectada</td></tr>
+<tr><td><code>Mostrar a versão:</code></td><td>ATIVADO</td><td>Mostra a versão do aplicativo na barra de conexão e na barra de status</td></tr>
+</table>
+<h3 id="item-list-marks"><a name="item-list-marks"></a>Marcas na lista de itens</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Equipado:</code></td><td><code>E</code></td><td>Uma marca de um caractere, exibida na extremidade esquerda dos itens equipados</td></tr>
+<tr><td><code>Equipável:</code></td><td>Vazio</td><td>A marca dos itens equipáveis. O padrão é vazio, portanto nada é exibido</td></tr>
+<tr><td><code>Não equipável:</code></td><td><code>✕</code></td><td>Uma marca de um caractere, exibida na extremidade esquerda dos itens que não podem ser equipados</td></tr>
+</table>
+<h3 id="translation-panel-font"><a name="translation-panel-font"></a>Fonte do painel de tradução</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Copiar o lado direito do esquerdo</code></td><td>DESATIVADO</td><td>Quando ativado, a fonte e o tamanho do lado do texto original ficam iguais aos do lado da tradução</td></tr>
+<tr><td><code>Esquerda (tradução):</code></td><td>Padrão do aplicativo / <code>14 pt</code></td><td>A fonte e o tamanho usados para o texto traduzido. Se nenhum nome de fonte foi salvo, é escolhida a fonte padrão do aplicativo para o seu ambiente</td></tr>
+<tr><td><code>Direita (original):</code></td><td>Padrão do aplicativo / <code>12 pt</code></td><td>A fonte e o tamanho usados para o texto original em inglês. Como a cópia está DESATIVADA, ele pode ser definido separadamente do lado da tradução</td></tr>
+</table>
+<h3 id="layout"><a name="layout"></a>Layout</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Modo de acompanhamento:</code></td><td>Sem acompanhamento</td><td>Escolhe se, quando o DOSBox ou o Assist é movido, o outro o acompanha</td></tr>
+<tr><td><code>Canto do DOSBox:</code></td><td>Superior esquerdo</td><td>O canto de referência da tela onde o DOSBox é posicionado pela organização única e pelo modo de layout</td></tr>
+<tr><td><code>Forma de disposição:</code></td><td>Forma 2: inferior em largura total + superior direito (padrão)</td><td>Como a área é dividida entre o DOSBox e os painéis do Assist. A Forma 2 é a disposição padrão, que usa o canto superior direito e a parte inferior em largura total</td></tr>
+<tr><td><code>Tamanho do layout:</code></td><td><code>1920 x 1080</code></td><td>O tamanho de toda a área de trabalho no modo de layout</td></tr>
+</table>
+<h2 id="map-tab"><a name="map-tab"></a>Aba Mapa</h2>
+<p>Esta aba define o mapa de exploração e a exibição estendida do campo.</p>
+<p><img src="img/settings_dark_tab_03.png" alt="Aba Mapa"></p>
+<h3 id="map-display-settings"><a name="map-display-settings"></a>Configurações de exibição do mapa</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Linha de visão das paredes no mapa:</code></td><td>DESATIVADO</td><td>Quando DESATIVADO, as áreas inexploradas atrás das paredes não são registradas no mapa. Quando ATIVADO, fica mais próximo do Arena original, e as áreas vistas através das paredes também são registradas</td></tr>
+<tr><td><code>Mostrar plataformas elevadas de altura total como paredes:</code></td><td>ATIVADO</td><td>Mostra na cor das paredes as plataformas elevadas que ocupam o espaço do chão ao teto. Só muda a forma de classificar as coisas na exibição; o bloqueio da visão não é afetado. As plataformas elevadas que não têm altura total continuam sendo mostradas como plataformas elevadas</td></tr>
+<tr><td><code>Altura a partir da qual plataformas elevadas bloqueiam a visão:</code></td><td><code>0 %</code></td><td>Com a altura do teto como 100%, as plataformas elevadas cujo topo alcança essa altura ou mais bloqueiam a visão no mapa. Em 0%, todas as plataformas elevadas bloqueiam a visão</td></tr>
+<tr><td><code>Mostrar o piso da área inexplorada:</code></td><td>DESATIVADO</td><td>Quando DESATIVADO, apenas as células exploradas mostram a cor do piso, o que oculta a forma da área inexplorada. Quando ATIVADO, o mapa inteiro é mostrado na cor de pergaminho</td></tr>
+<tr><td><code>Centralizar no personagem:</code></td><td>ATIVADO</td><td>Faz o mapa acompanhar o personagem automaticamente quando ele se move. Enquanto o personagem está parado, você pode mover o mapa manualmente</td></tr>
+<tr><td><code>Mostrar linhas de grade:</code></td><td>ATIVADO</td><td>Mostra linhas de grade nos limites das células</td></tr>
+<tr><td><code>Mostrar limites dos blocos:</code></td><td>ATIVADO</td><td>Destaca os limites dos blocos (unidades de 64 casas) no mapa do campo</td></tr>
+<tr><td><code>Mostrar coordenadas dos blocos:</code></td><td>ATIVADO</td><td>Mostra as coordenadas de cada bloco no mapa do campo, para ajudar você a perceber a sua posição</td></tr>
+<tr><td><code>Mostrar limites de recentralização:</code></td><td>DESATIVADO</td><td>Mostra como linhas tracejadas os limites de recentralização do mapa do campo. Uma exibição complementar para investigar ou conferir posições</td></tr>
+<tr><td><code>Tamanho da fonte das coordenadas dos blocos:</code></td><td><code>10 pt</code></td><td>O tamanho do texto dos rótulos de coordenadas dos blocos</td></tr>
+</table>
+<h3 id="field-extended-display"><a name="field-extended-display"></a>Exibição estendida do campo</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Ativar a exibição estendida:</code></td><td>ATIVADO</td><td>A chave geral da exibição estendida do mapa do campo. Quando DESATIVADA, a exibição fica próxima do automapa do jogo</td></tr>
+<tr><td><code>Distinguir estrada de parede:</code></td><td>ATIVADO</td><td>Desenha em cores diferentes as estradas transitáveis e as partes intransitáveis, como edifícios e paredes</td></tr>
+<tr><td><code>Mostrar bordas das paredes:</code></td><td>ATIVADO</td><td>Mostra os contornos das paredes e do terreno de borda</td></tr>
+<tr><td><code>Distinguir cercas, sebes e jardins:</code></td><td>ATIVADO</td><td>Diferencia por linhas de ligação o terreno de borda, como cercas, sebes e jardins</td></tr>
+<tr><td><code>Mostrar plantações:</code></td><td>ATIVADO</td><td>Mostra plantações, como milho e campos, com uma cor ou marca própria</td></tr>
+<tr><td><code>Mostrar todas as entradas de edifícios:</code></td><td>ATIVADO</td><td>Mostra também em vermelho as entradas de casas, tavernas, templos, portões da cidade e assim por diante. As entradas de cripta, torre e masmorra são mostradas em vermelho independentemente desta configuração</td></tr>
+<tr><td><code>Mostrar pontos de referência (árvores, arbustos etc.):</code></td><td>DESATIVADO</td><td>Sobrepõe marcas simples para árvores, arbustos, rochas, túmulos, ruínas e assim por diante. Elas são numerosas e dificultam a leitura do mapa, por isso o padrão é DESATIVADO</td></tr>
+</table>
+<h3 id="map-expression-and-colours"><a name="map-expression-and-colours"></a>Expressão e cores do mapa</h3>
+<p>O mapa do jogo desenha itens como passagens sob paredes sem diferenciá-los. Aqui você define se quer desenhá-los de forma distinta e a cor de cada elemento. Se você DESATIVAR "Exibir" em uma linha, esse elemento volta à mesma exibição do mapa do jogo (ao DESATIVAR Tesouro, nada é mostrado).</p>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Portas ocultas:</code></td><td>ATIVADO</td><td>Mostra em uma cor própria as portas ocultas descobertas. Até serem descobertas, continuam sendo paredes</td></tr>
+<tr><td><code>Água sob as paredes:</code></td><td>ATIVADO</td><td>Mostra em uma cor própria os canais de água que passam sob as paredes. Eles não são mostrados até que você realmente passe por lá e os revele</td></tr>
+<tr><td><code>Passagens sob as paredes:</code></td><td>ATIVADO</td><td>Mostra as passagens que correm sob as paredes. Elas não são mostradas até que você realmente passe por lá e as revele</td></tr>
+<tr><td><code>Lava sob as paredes:</code></td><td>ATIVADO</td><td>Mostra em uma cor própria a lava que corre sob as paredes. Ela não é mostrada até que você realmente passe por lá e a revele</td></tr>
+<tr><td><code>Tesouro:</code></td><td>ATIVADO</td><td>Sobrepõe uma marca onde você obteve um tesouro. Você pode mudar o caractere da marca no campo à direita. Enquanto "Revelar o mapa" na aba Trapaça estiver ATIVADO, todos os lugares com tesouro são mostrados, tenha você obtido o tesouro ou não</td></tr>
+<tr><td><code>Chaves e itens de missão:</code></td><td>ATIVADO</td><td>Entre os tesouros, mostra em outra cor as marcas de chaves e itens de missão. Quando DESATIVADO, eles são mostrados na mesma cor do tesouro. Não são mostrados quando Tesouro está DESATIVADO</td></tr>
+<tr><td><code>Cores das entradas de estabelecimentos:</code></td><td>ATIVADO</td><td>Nos mapas de cidades, substitui por uma cor para cada estabelecimento as células na cor de edifício que tocam a entrada de uma taverna, loja de equipamentos, templo ou Guilda dos Magos. A cor da entrada vermelha não muda. A cor de cada estabelecimento pode ser alterada nos campos abaixo</td></tr>
+<tr><td><code>Passagens por baixo:</code></td><td><code>Mostrar como tubos</code> / Intensidade <code>100 %</code></td><td>Mostra as passagens que correm sob paredes e plataformas elevadas como tubos pelo centro da célula. Quando DESATIVADO, a célula inteira é preenchida com cor, como antes. A cor dos tubos é a mesma dos poços e se liga a eles sem interrupção. Reduzir a <code>Intensidade</code> deixa os tubos mais discretos</td></tr>
+</table>
+<p>Clique na amostra de cor à direita de cada item para escolher qualquer cor. Os botõezinhos ao lado são cores sugeridas, fáceis de escolher, e <code>Padrão</code> é o botão que a devolve à cor original. Você pode mudar da mesma forma as cores dos elementos do próprio jogo: parede, plataforma elevada, porta e entradas, escada para cima e para baixo, água, abismo seco e lava (os padrões são as mesmas cores do jogo).</p>
+<h2 id="translation-tab"><a name="translation-tab"></a>Aba Tradução</h2>
+<p>Esta aba define a exibição complementar do painel de tradução e da aba Tradução.</p>
+<p><img src="img/settings_dark_tab_04.png" alt="Aba Tradução"></p>
+<h3 id="translate-tab-panel-behavior"><a name="translate-tab-panel-behavior"></a>Comportamento da aba e do painel de tradução</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Manter a mensagem até a próxima:</code></td><td>DESATIVADO</td><td>Define se as mensagens de gatilhos e de interação com objetos permanecem no painel de tradução até a chegada da próxima mensagem</td></tr>
+<tr><td><code>Exibição alternativa em repouso:</code></td><td>Tela de mapa</td><td>Escolhe o que mostrar em toda a aba Tradução durante a exploração quando não há texto traduzido. Por padrão, a tela de mapa tem prioridade</td></tr>
+</table>
+<h3 id="translate-tab-advanced"><a name="translate-tab-advanced"></a>Aba de tradução — Avançado</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Reproduzir na aba de tradução o comportamento do painel oculto:</code></td><td>DESATIVADO</td><td>Quando ATIVADO, os resultados da tradução e as mensagens de diálogo são mostrados na aba Tradução, como quando o painel de tradução está oculto. Uma configuração avançada para verificação</td></tr>
+</table>
+<h3 id="user-translations"><a name="user-translations"></a>Suas traduções</h3>
+<p>Você pode substituir partes de uma tradução incluída pela sua ou adicionar um novo idioma.</p>
+<ol>
+<li>Escolha um idioma em <code>Exportar um modelo</code> (para criar um novo idioma, escolha <code>(modelo em branco para um novo idioma)</code>), clique em <code>Exportar...</code> e salve o arquivo JSON. Se ativar <code>Incluir o original em inglês</code>, o original em inglês é incluído (o original do texto do jogo só é incluído em um computador em que a pasta do jogo esteja configurada e o dicionário tenha sido criado). Salve-o fora da pasta de traduções (veja abaixo).</li>
+<li>Abra o JSON salvo em um editor de texto (UTF-8) e altere o <code>text</code> das entradas que quiser mudar. Entradas com <code>text</code> vazio mantêm a tradução incluída (em um novo idioma, a do idioma em <code>meta.fallback</code>). Não altere as chaves nem os marcadores como <code>%xx</code> e <code>{name}</code> (entradas com marcadores que a tradução de referência não tem, ou com <code>&lt;</code> ou <code>&gt;</code>, não são carregadas). <code>source</code> (o original em inglês) e <code>ref</code> (uma tradução para consulta) não são usados ao carregar.<br>Em um novo idioma, preencha sempre <code>lang</code> no início (um código de idioma, por exemplo <code>tr</code>) e <code>meta.display_name</code> (o nome exibido na lista de idiomas). <code>meta.fallback</code> é o idioma incluído usado para entradas não traduzidas (<code>en</code> por padrão); com <code>meta.direction</code> igual a <code>rtl</code>, o texto é exibido da direita para a esquerda.</li>
+<li>Em <code>Importar um arquivo de tradução</code>, clique em <code>Importar...</code> e escolha o arquivo editado. Ele é importado se passar nas verificações. Um novo idioma é adicionado aos idiomas de exibição da guia Geral. As alterações entram em vigor após reiniciar o aplicativo.</li>
+</ol>
+<p>O modelo de um idioma incluído traz a tradução atual de todas as entradas. Apague as entradas que não for alterar ou deixe o <code>text</code> delas vazio. As entradas mantidas ficam fixas na sua redação e não recebem melhorias posteriores da tradução incluída.</p>
+<p>Exemplo 1: alterar só uma entrada da tradução alemã incluída (apenas as entradas que você escrever são substituídas).</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "de",
+  "texts": {
+    "ui_app": {
+      "settings.title": "Meine Einstellungen"
+    }
+  }
+}</pre></td></tr></table>
+<p>Exemplo 2: um novo idioma (turco). <code>ref</code> é só para consulta e não é usado ao carregar.</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "tr",
+  "meta": { "display_name": "Türkçe", "fallback": "en", "direction": "ltr" },
+  "texts": {
+    "ui_app": {
+      "settings.title": { "ref": "Settings", "text": "Ayarlar" }
+    }
+  }
+}</pre></td></tr></table>
+<p>Os arquivos importados aparecem na lista <code>Carregados</code>. Selecione um e clique em <code>Excluir</code> para voltar à tradução incluída (um novo idioma é removido). <code>Abrir pasta</code> abre a pasta <code>translations</code>, ao lado do arquivo de configurações. Os JSON colocados ali são carregados automaticamente ao iniciar. Em um idioma adicionado, documentos como o manual são exibidos em inglês.</p>
+<h2 id="combat-information-tab"><a name="combat-information-tab"></a>Aba Informações de combate</h2>
+<p>Aqui você define separadamente onde o combate e as magias em andamento são exibidos. Os novos recursos de exibição, leitura em voz alta e salvamento vêm DESATIVADOS por padrão. Os valores de configuração salvos por versões de desenvolvimento anteriores são mantidos como estão. O texto exibido está disponível em japonês, inglês, espanhol, alemão, francês, italiano, russo, chinês simplificado e português do Brasil.</p>
+<p><img src="img/settings_dark_tab_05.png" alt="Aba Informações de combate"></p>
+<h3 id="arena-screen"><a name="arena-screen"></a>Tela do Arena</h3>
+<table>
+<tr><th>Item</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Usar janelas de captura separadas para o OBS (combate e efeitos de magia)</code></td><td>DESATIVADO</td><td>Reúne as informações de combate e as magias em andamento em uma só janela que você pode selecionar na captura de janela do OBS</td></tr>
+<tr><td><code>Mostrar informações de combate</code></td><td>DESATIVADO</td><td>Mostra no topo da tela o inimigo com quem você trocou golpes mais recentemente, que foi encontrado e está à vista, e à direita os outros inimigos vivos encontrados, mesmo fora da vista. Você pode conferir saúde, fadiga, pontos de magia, o dano causado e as derrotas. O dano que você recebe é mostrado na borda inferior da área de exploração</td></tr>
+<tr><td><code>Duração da exibição de experiência:</code></td><td>5 s</td><td>Mostra a experiência no canto inferior direito no momento em que você a ganha e remove cada quadro após o número de segundos indicado. Quando você ganha mais em sequência, os quadros mais antigos são movidos para a esquerda (1 a 60 segundos)</td></tr>
+<tr><td><code>Mostrar uma borda discreta quando a saúde estiver baixa</code></td><td>DESATIVADO</td><td>Quando a saúde cai até a porcentagem indicada ou menos, faz a borda da tela de exploração piscar de leve. Pode ser ativado mesmo que você não use a exibição de inimigos das informações de combate</td></tr>
+<tr><td><code>Limite de saúde:</code></td><td>25%</td><td>A porcentagem em que a borda de saúde baixa começa a aparecer (1 a 99% da saúde máxima)</td></tr>
+</table>
+<p>A exibição do dano recebido desaparece automaticamente cerca de 5 segundos depois de ocorrer. A mesma regra vale para a visão de inimigos em qualquer lugar. Quando o mapa ou as coordenadas não estão determinados, os inimigos não são mostrados por suposição.</p>
+<p>Para gravar com o OBS, ATIVE esta configuração, depois escolha o overlay do RTESArenaAssist em "Captura de janela" (o título da janela é exibido em japonês em todos os idiomas), permita a transparência e sobreponha-o ao vídeo do jogo. As informações de combate e as magias em andamento aparecem na mesma fonte.</p>
+<h3 id="arena-screen-ongoing-spells"><a name="arena-screen-ongoing-spells"></a>Tela do Arena · Magias em andamento</h3>
+<table>
+<tr><th>Item</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Mostrar magias em andamento no canto superior esquerdo</code></td><td>DESATIVADO</td><td>Mostra o estado de Luz, Escudo, Força, Resistência ao Fogo e Levitar</td></tr>
+<tr><td><code>Estilo de exibição:</code></td><td><code>E | Ícone + nome + valor + medidor fino (recomendado)</code></td><td>Escolha entre A "Nome + valor restante", B "Nome + medidor horizontal", C "Ícone + medidor horizontal", D "Ícone + sombreado horário", E "Ícone + nome + valor + medidor fino" e F "Etiqueta compacta"</td></tr>
+<tr><td><code>Atualização de efeitos temporizados:</code></td><td>Rodadas (clássico)</td><td>Escolhe se Luz, Resistência ao Fogo e Levitar são atualizados em rodadas ou em segundos estimados, uma vez por segundo. Os segundos são corrigidos a partir do intervalo de progresso no jogo, portanto não são necessariamente um múltiplo fixo quando a velocidade de progresso muda, por exemplo com DETAIL</td></tr>
+</table>
+<p>Escudo mostra a proteção restante, e Força mostra o valor do aumento. Quando o valor máximo não pode ser confirmado, como ao conectar no meio do jogo, o medidor pode ser omitido. A exibição em segundos é uma estimativa, e o momento em que um efeito termina segue o estado no jogo.</p>
+<h3 id="combat-info-translation-tab"><a name="combat-info-translation-tab"></a>Informações de combate na aba Tradução</h3>
+<table>
+<tr><th>Item</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Modo de exibição:</code></td><td>Desligado (manter a visão normal)</td><td>Escolha entre manter a visão normal, usar a visão normal junto com as informações de combate e mostrar as informações de combate em tela cheia</td></tr>
+<tr><td><code>Formato de combate:</code></td><td>Medidores de inimigos</td><td>Quando as informações de combate são mostradas, escolhe entre texto e a exibição com medidores de inimigos</td></tr>
+</table>
+<h3 id="combat-info-translation-panel"><a name="combat-info-translation-panel"></a>Informações de combate no painel de tradução</h3>
+<table>
+<tr><th>Item</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Mostrar mensagens de combate</code></td><td>DESATIVADO</td><td>Mostra o texto de combate no painel de tradução. Quando aparece uma mensagem, conversa ou lista já existente, ela tem prioridade</td></tr>
+<tr><td><code>Mensagens recentes:</code></td><td>10 entradas</td><td>Mostra as 1 a 50 linhas de combate mais recentes. Quando o número é excedido, as linhas mais antigas são removidas e as novas são acrescentadas</td></tr>
+</table>
+<h3 id="common-settings-and-messages"><a name="common-settings-and-messages"></a>Configurações comuns e mensagens</h3>
+<table>
+<tr><th>Item</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Ler novas mensagens de combate em voz alta</code></td><td>DESATIVADO</td><td>Quando a leitura em voz alta está ativada de forma geral, lê as novas linhas de combate na ordem em que ocorrem. Não exclui linhas recentes idênticas, e o próximo dano não interrompe a leitura anterior</td></tr>
+<tr><td><code>Ao derrotar um inimigo, pular o dano não lido dele</code></td><td>ATIVADO</td><td>Ao derrotar um inimigo, interrompe o dano causado a esse inimigo e recebido dele que está sendo reproduzido, bem como a parte não lida. A leitura dos outros inimigos continua</td></tr>
+<tr><td><code>Salvar registro de combate</code></td><td>DESATIVADO</td><td>Salva o histórico de combate separadamente do registro normal. Somente quando há registros é exibida uma opção de alternância na aba Registro</td></tr>
+<tr><td><code>Distinguir inimigos do mesmo tipo</code></td><td>DESATIVADO</td><td>Somente quando há vários inimigos com o mesmo nome, acrescenta um símbolo distintivo após o nome</td></tr>
+<tr><td><code>Estilo do identificador:</code></td><td>Letras (A, B…)</td><td>Escolha A, B… ou 1, 2…</td></tr>
+<tr><td><code>Modelos de mensagens de combate</code></td><td>O texto padrão de cada idioma</td><td>Edita o texto de Encontro, Dano ao inimigo, Dano recebido, Derrota e Experiência. Campos vazios e espaços reservados que não podem ser usados voltam ao texto padrão</td></tr>
+</table>
+<h2 id="read-aloud-tab"><a name="read-aloud-tab"></a>Aba Leitura em voz alta</h2>
+<p>Esta aba define a leitura em voz alta do texto traduzido, os itens a ler, a exibição do registro e a leitura do nome do personagem.</p>
+<p><img src="img/settings_dark_tab_06.png" alt="Aba Leitura em voz alta"></p>
+<h3 id="read-aloud"><a name="read-aloud"></a>Leitura em voz alta</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Ativar leitura em voz alta:</code></td><td>DESATIVADO</td><td>Ativa todo o recurso de ler em voz alta o texto traduzido</td></tr>
+<tr><td><code>Mecanismo:</code></td><td>Windows (SAPI5)</td><td>Escolhe o mecanismo de leitura. O VOICEVOX pode ser escolhido quando um mecanismo VOICEVOX local está em execução</td></tr>
+<tr><td><code>Voz alternativa:</code></td><td>ATIVADO</td><td>Quando o VOICEVOX está escolhido mas indisponível, lê com a voz do Windows as frases que não puderam ser lidas. Quando DESATIVADO, elas não são lidas</td></tr>
+<tr><td><code>Voz:</code></td><td>(padrão)</td><td>Exibida quando o mecanismo é Windows (SAPI5). A voz SAPI a usar. Com (padrão), é usada a voz padrão do sistema operacional</td></tr>
+<tr><td><code>Personagem:</code></td><td>O personagem do ID de estilo 0</td><td>Exibido quando o mecanismo é VOICEVOX. O personagem do VOICEVOX usado na leitura</td></tr>
+<tr><td><code>Estilo:</code></td><td>ID de estilo 0</td><td>Exibido quando o mecanismo é VOICEVOX. O estilo de voz do personagem escolhido</td></tr>
+<tr><td><code>🔊 Testar</code></td><td>-</td><td>Exibido quando o mecanismo é VOICEVOX. Lê uma frase curta como teste com o personagem e o estilo escolhidos</td></tr>
+<tr><td><code>Velocidade:</code></td><td>Padrão</td><td>A velocidade da leitura</td></tr>
+<tr><td><code>Volume:</code></td><td><code>100</code></td><td>O volume da leitura. Defina na faixa de 0 a 100</td></tr>
+<tr><td><code>Interrupção:</code></td><td>ATIVADO</td><td>Quando a exibição muda, interrompe a leitura anterior e lê o novo conteúdo. Também interrompe quando você volta de uma resposta de NPC para o menu</td></tr>
+<tr><td><code>Cancelar ao fechar:</code></td><td>DESATIVADO</td><td>Interrompe a leitura em andamento quando um diálogo ou uma conversa é fechado</td></tr>
+<tr><td><code>Suprimir repetições:</code></td><td>DESATIVADO</td><td>Não lê o mesmo conteúdo repetidamente (como mensagens recorrentes de masmorra). Ele continua no registro</td></tr>
+<tr><td><code>Destacar leitura:</code></td><td>DESATIVADO</td><td>Colore a frase que está sendo lida (painel de tradução, aba Tradução, registro)</td></tr>
+</table>
+<p>Quando o VOICEVOX não é encontrado, é exibido "Inicie o VOICEVOX para poder selecioná-lo (127.0.0.1:50021).". Depois de iniciar o VOICEVOX e reabrir a janela de configurações, você pode escolher o personagem e o estilo.</p>
+<h3 id="read-targets"><a name="read-targets"></a>Itens a ler</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Situação (gatilhos, entrada em edifícios, eventos, diversos diálogos)</code></td><td>ATIVADO</td><td>Torna item de leitura os textos que explicam a situação, como gatilhos, entrada em edifícios, eventos e diversos diálogos</td></tr>
+<tr><td><code>Conversa (respostas de NPCs, falas de lojistas, palácio, respostas de negociação de preço)</code></td><td>ATIVADO</td><td>Torna item de leitura os textos de conversa, como respostas de NPCs, falas de lojistas, o palácio e respostas de negociação de preço</td></tr>
+</table>
+<p>Exibições do sistema, como menus, listas e entrada numérica, não são lidas em voz alta.</p>
+<h3 id="other-log"><a name="other-log"></a>Outros / Registro</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Mostrar um ícone de alto-falante ao lado do texto (clique para ler em voz alta)</code></td><td>DESATIVADO</td><td>Mostra um ícone de alto-falante ao lado do texto exibido, para ler em voz alta ao clicar</td></tr>
+<tr><td><code>Mostrar também o texto original no registro (desativado = somente tradução)</code></td><td>DESATIVADO</td><td>Mostra o texto original em inglês junto com a tradução no registro de tradução. Quando DESATIVADO, apenas a tradução é exibida</td></tr>
+<tr><td><code>Máximo de entradas no registro:</code></td><td><code>2000</code></td><td>O limite superior do número de entradas de registro salvas. Os registros mais antigos além dele são excluídos automaticamente</td></tr>
+<tr><td><code>Mostrar a data e a hora do registro</code></td><td>ATIVADO</td><td>Mostra a data e a hora do registro nas entradas do registro</td></tr>
+<tr><td><code>Exibição de data/hora:</code></td><td><code>yyyy/MM/dd(aaa) HH:mm:ss</code></td><td>O formato de exibição da data e da hora do registro. Você pode escolher uma predefinição ou um formato personalizado</td></tr>
+</table>
+<h3 id="character-name-reading"><a name="character-name-reading"></a>Leitura do nome do personagem</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Leitura do nome:</code></td><td>Vazio</td><td>Substitui o nome do personagem obtido automaticamente do jogo pela leitura que você indicar, somente na leitura em voz alta. O nome original permanece na exibição e no registro</td></tr>
+</table>
+<h2 id="cheat-tab"><a name="cheat-tab"></a>Aba Trapaça</h2>
+<p>Esta aba define recursos auxiliares, como reescrever valores do jogo e funções de sempre no MÁX.</p>
+<p><img src="img/settings_dark_tab_07.png" alt="Aba Trapaça"></p>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Ativar o modo de trapaça:</code></td><td>DESATIVADO</td><td>A chave geral dos recursos de trapaça. Mesmo que apenas esta seja ATIVADA, nada muda se você não ATIVAR as subconfigurações</td></tr>
+<tr><td><code>Alterar atributos:</code></td><td>DESATIVADO</td><td>Permite alterações de status, como editar atributos</td></tr>
+<tr><td><code>Revelar o mapa:</code></td><td>DESATIVADO</td><td>Enquanto a trapaça estiver ativada, mostra o mapa inteiro</td></tr>
+<tr><td><code>Saúde sempre no MÁX.:</code></td><td>DESATIVADO</td><td>Enquanto a trapaça estiver ativada, devolve a saúde atual ao máximo se estiver menor</td></tr>
+<tr><td><code>Fadiga sempre no MÁX.:</code></td><td>DESATIVADO</td><td>Enquanto a trapaça estiver ativada, devolve a fadiga atual ao máximo</td></tr>
+<tr><td><code>Pontos de Magia sempre no MÁX.:</code></td><td>DESATIVADO</td><td>Enquanto a trapaça estiver ativada, devolve os pontos de magia atuais ao máximo</td></tr>
+</table>
+<h2 id="dosbox-tab"><a name="dosbox-tab"></a>Aba DOSBox</h2>
+<p>Esta aba lê o <code>arena.conf</code> do DOSBox e define a exibição da janela, o vídeo, o desempenho e o som.</p>
+<p><img src="img/settings_dark_tab_08.png" alt="Aba DOSBox"></p>
+<h3 id="config-file-window-behavior"><a name="config-file-window-behavior"></a>Arquivo de configuração / Comportamento da janela</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Arquivo de configuração</code></td><td><code>arena.conf</code> no caminho padrão</td><td>O arquivo de configuração do DOSBox. Quando a configuração do próprio Assist está vazia, o local padrão da versão Steam do Arena é lido como caminho padrão</td></tr>
+<tr><td><code>Abrir…</code></td><td>-</td><td>Seleciona qualquer <code>arena.conf</code></td></tr>
+<tr><td><code>Sempre no topo:</code></td><td>DESATIVADO</td><td>Mostra a janela do DOSBox à frente das outras janelas</td></tr>
+</table>
+<h3 id="window-display"><a name="window-display"></a>Janela e exibição</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Tamanho da janela:</code></td><td><code>1024×768</code></td><td><code>windowresolution</code>. Escolha entre as predefinições; quando personalizado é escolhido, edite os campos numéricos L/A</td></tr>
+<tr><td><code>Resolução em tela cheia:</code></td><td><code>desktop</code></td><td><code>fullresolution</code>. Indica a resolução usada em tela cheia</td></tr>
+<tr><td><code>Iniciar em tela cheia:</code></td><td>DESATIVADO</td><td><code>fullscreen</code>. Indica se o DOSBox inicia em tela cheia</td></tr>
+<tr><td><code>Modo de saída:</code></td><td><code>ddraw</code></td><td><code>output</code>. O método de saída de renderização do DOSBox</td></tr>
+<tr><td><code>Bloqueio automático do mouse:</code></td><td>ATIVADO</td><td><code>autolock</code>. Bloqueia automaticamente o mouse dentro da tela do DOSBox</td></tr>
+<tr><td><code>Sensibilidade do mouse:</code></td><td><code>100</code></td><td><code>sensitivity</code>. A sensibilidade do mouse dentro do DOSBox</td></tr>
+</table>
+<h3 id="video"><a name="video"></a>Vídeo</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Correção de proporção:</code></td><td>ATIVADO</td><td><code>aspect</code>. Corrige a proporção da imagem</td></tr>
+<tr><td><code>Escalonador:</code></td><td><code>normal2x</code></td><td><code>scaler</code>. O filtro de ampliação da tela do DOSBox</td></tr>
+</table>
+<h3 id="performance"><a name="performance"></a>Desempenho</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Ciclos da CPU:</code></td><td><code>fixed 25000</code></td><td><code>cycles</code>. Indica a velocidade de emulação da CPU. Com <code>fixed</code>, o campo numérico à direita fica ativo</td></tr>
+</table>
+<h3 id="sound"><a name="sound"></a>Som</h3>
+<table>
+<tr><th>Rótulo</th><th>Padrão</th><th>Descrição</th></tr>
+<tr><td><code>Modo silencioso:</code></td><td>DESATIVADO</td><td><code>nosound</code>. Desativa o som do DOSBox</td></tr>
+<tr><td><code>Taxa de amostragem:</code></td><td><code>44100</code></td><td><code>rate</code>. A taxa de amostragem do mixer</td></tr>
+<tr><td><code>Dispositivo MIDI:</code></td><td><code>default</code></td><td><code>mididevice</code>. O dispositivo usado para a reprodução de MIDI</td></tr>
+</table>
+
+</body>
+</html>

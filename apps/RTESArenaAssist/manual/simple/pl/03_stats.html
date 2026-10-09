@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Statystyki postaci</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #c9d1e0; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 5px 8px; text-align: left; font-size: 12px; border: 1px solid #1e3a4a; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.stat-label { color: #7ec8e3; font-weight: bold; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Statystyki postaci</h1>
+
+<div class="note">Wszystkie statystyki mieszczą się w zakresie 1–100. <strong>50 to średnia</strong> — połowa mieszkańców Cesarstwa jest w tej statystyce lepsza od ciebie, a połowa nie.</div>
+
+<h2>8 głównych statystyk</h2>
+
+<h3><span class="stat-label">STR — Siła</span></h3>
+<p>Decyduje o tym, ile obrażeń zadajesz w walce. Wpływa na maksymalny udźwig (Maks. udźwig), zmęczenie i długość skoku. <strong>Niezbędna dla klas wojowników.</strong></p>
+
+<h3><span class="stat-label">INT — Inteligencja</span></h3>
+<p>Określa łączną liczbę punktów zaklęć u rzucających czary. Wpływa na negocjacje, targowanie się o ceny i skuteczność otwierania zamków. <strong>Niezbędna dla klas magów i złodziei.</strong></p>
+
+<h3><span class="stat-label">WIL — Siła woli</span></h3>
+<p>Decyduje o odporności na zaklęcia (Obrona magiczna). Pomaga też w negocjacjach. <strong>Kluczowa dla każdej postaci, która chce być chroniona przed magią.</strong></p>
+
+<h3><span class="stat-label">AGI — Zwinność</span></h3>
+<p>Bezpośrednio wpływa na szansę trafienia w walce wręcz (Premia do trafienia), szansę bycia trafionym (Premia do obrony) i szansę uniknięcia zaklęć wymierzonych w ciebie. Decyduje też o kradzieży i otwieraniu zamków. <strong>Niezbędna dla klas złodziei.</strong></p>
+
+<h3><span class="stat-label">SPD — Szybkość</span></h3>
+<p>Kontroluje tempo ruchu, szybkość obracania się i szybkostrzelność broni miotanej. Może przesądzić o życiu i śmierci. <strong>Ważna dla wszystkich klas.</strong></p>
+
+<h3><span class="stat-label">END — Wytrzymałość</span></h3>
+<p>Decyduje o liczbie punktów zdrowia, tempie leczenia i zmęczeniu. Wpływa też na odporność na trucizny i narkotyki. <strong>Niezbędna dla klas wojowników.</strong></p>
+
+<h3><span class="stat-label">PER — Osobowość</span></h3>
+<p>Określa modyfikator Charyzmy. Bezpośrednio wpływa na zdolność negocjowania, uzyskiwania lepszych cen i zbierania informacji. <strong>Ważna w kontaktach z ludźmi.</strong></p>
+
+<h3><span class="stat-label">LUC — Szczęście</span></h3>
+<p>Silny modyfikator każdego działania — ataku, obrony, kradzieży, czegokolwiek. Średnia to 50; im wyższa wartość, tym lepiej. <strong>Dotyczy wszystkich postaci.</strong></p>
+
+<h2>Zestawienie modyfikatorów statystyk</h2>
+<table>
+  <tr><th>Statystyka</th><th>Modyfikator</th><th>Opis</th></tr>
+  <tr><td>STR</td><td>Obrażenia</td><td>Premia przy STR 55 i więcej; kara przy 45 i mniej</td></tr>
+  <tr><td>STR</td><td>Maks. udźwig (kg)</td><td>Przekroczenie tej wartości powoduje kary zmęczenia, aż do całkowitego unieruchomienia</td></tr>
+  <tr><td>INT</td><td>Punkty zaklęć</td><td>Bez zdolności rzucania zaklęć: 0. Czarodzieje: do INT×3</td></tr>
+  <tr><td>WIL</td><td>Obrona magiczna</td><td>Im wyższa WIL, tym trudniej wrogom trafić cię zaklęciami</td></tr>
+  <tr><td>AGI</td><td>Premia do trafienia</td><td>Premia lub kara do rzutów ataku w walce wręcz</td></tr>
+  <tr><td>AGI</td><td>Premia do obrony</td><td>Odejmuje się od twojej wartości pancerza (niższy AR = lepsza ochrona)</td></tr>
+  <tr><td>END</td><td>Zdrowie</td><td>Dodawane do rzutu kością zdrowia klasy przy awansie na kolejny poziom lub od niego odejmowane (zob. Doświadczenie i awans)</td></tr>
+  <tr><td>END</td><td>Modyfikator leczenia</td><td>Procentowa zmiana podstawowego tempa leczenia podczas odpoczynku</td></tr>
+  <tr><td>PER</td><td>Charyzma</td><td>Modyfikator szansy powodzenia negocjacji z postaciami niezależnymi</td></tr>
+  <tr><td>LUC</td><td>Ogólny</td><td>Ukryty wpływ na wszystkie podejmowane działania</td></tr>
+</table>
+
+<h2>Klasa pancerza (AR)</h2>
+<p>AR jest widoczny na portrecie postaci na stronie 2 karty postaci. <strong>Niższy AR = lepsza ochrona</strong> (+10 oznacza brak ochrony; wartości ujemne to ciężki pancerz).</p>
+<table>
+  <tr><th>Część ciała</th><th>Element pancerza</th></tr>
+  <tr><td>Głowa</td><td>Hełm</td></tr>
+  <tr><td>Tors</td><td>Kirys</td></tr>
+  <tr><td>Dłonie</td><td>Rękawice</td></tr>
+  <tr><td>Pas i nogi</td><td>Nagolenniki</td></tr>
+  <tr><td>Podudzia i stopy</td><td>Buty</td></tr>
+  <tr><td>Barki (L i P)</td><td>Naramienniki</td></tr>
+</table>
+
+</body>
+</html>

@@ -57,6 +57,7 @@ a { color: #7ec8e3; }
 <ul>
 <li><a href="#verhalten-von-uebersetzungstab-und-panel">Verhalten von Übersetzungstab/-panel</a></li>
 <li><a href="#uebersetzungstab-erweitert">Übersetzungstab — Erweitert</a></li>
+<li><a href="#user-translations">Eigene Übersetzungen</a></li>
 </ul>
 <li><a href="#tab-kampfinformationen">Tab „Kampfinformationen“</a></li>
 <ul>
@@ -219,6 +220,38 @@ a { color: #7ec8e3; }
 <tr><th>Beschriftung</th><th>Standardwert</th><th>Beschreibung</th></tr>
 <tr><td><code>Verhalten bei ausgeblendetem Panel im Übersetzungstab nachbilden:</code></td><td>AUS</td><td>Bei AN werden Übersetzungsergebnisse und Dialogmeldungen im Übersetzungstab angezeigt, genau wie bei ausgeblendetem Übersetzungspanel. Eine erweiterte Einstellung zur Überprüfung</td></tr>
 </table>
+<h3 id="user-translations"><a name="user-translations"></a>Eigene Übersetzungen</h3>
+<p>Du kannst Teile einer mitgelieferten Übersetzung durch deine eigene ersetzen oder eine neue Sprache hinzufügen.</p>
+<ol>
+<li>Wähle unter <code>Vorlage exportieren</code> eine Sprache (für eine neue Sprache wähle <code>(leere Vorlage für eine neue Sprache)</code>), klicke auf <code>Exportieren...</code> und speichere die JSON-Datei. Wenn du <code>Englischen Originaltext beifügen</code> aktivierst, wird der englische Originaltext beigefügt (der Originaltext des Spieltexts nur auf einem Rechner, auf dem der Spielordner eingestellt und das Wörterbuch erstellt ist). Speichere die Datei außerhalb des Übersetzungsordners (siehe unten).</li>
+<li>Öffne die gespeicherte JSON-Datei in einem Texteditor (UTF-8) und ändere den <code>text</code> der Einträge, die du ändern möchtest. Einträge mit leerem <code>text</code> behalten die mitgelieferte Übersetzung (bei einer neuen Sprache die Sprache aus <code>meta.fallback</code>). Ändere weder die Schlüssel noch Platzhalter wie <code>%xx</code> und <code>{name}</code> (Einträge mit Platzhaltern, die die Referenzübersetzung nicht hat, oder mit <code>&lt;</code> bzw. <code>&gt;</code> werden nicht geladen). <code>source</code> (der englische Originaltext) und <code>ref</code> (eine Übersetzung als Vorlage) werden beim Laden nicht verwendet.<br>Bei einer neuen Sprache musst du oben <code>lang</code> (ein Sprachcode, zum Beispiel <code>tr</code>) und <code>meta.display_name</code> (der in der Sprachliste angezeigte Name) ausfüllen. <code>meta.fallback</code> ist die mitgelieferte Sprache für unübersetzte Einträge (standardmäßig <code>en</code>); mit <code>meta.direction</code> auf <code>rtl</code> wird von rechts nach links angezeigt.</li>
+<li>Klicke unter <code>Übersetzungsdatei importieren</code> auf <code>Importieren...</code> und wähle die bearbeitete Datei. Sie wird importiert, wenn sie die Prüfungen besteht. Eine neue Sprache erscheint unter den Anzeigesprachen im Tab „Allgemein“. Änderungen werden nach einem Neustart der App wirksam.</li>
+</ol>
+<p>Die Vorlage einer mitgelieferten Sprache enthält die aktuelle Übersetzung aller Einträge. Lösche die Einträge, die du nicht änderst, oder lasse ihren <code>text</code> leer. Beibehaltene Einträge bleiben bei deinem Wortlaut und übernehmen spätere Verbesserungen der mitgelieferten Übersetzung nicht.</p>
+<p>Beispiel 1: nur einen Eintrag der mitgelieferten deutschen Übersetzung ändern (ersetzt werden nur die Einträge, die du angibst).</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "de",
+  "texts": {
+    "ui_app": {
+      "settings.title": "Meine Einstellungen"
+    }
+  }
+}</pre></td></tr></table>
+<p>Beispiel 2: eine neue Sprache (Türkisch). <code>ref</code> dient nur als Vorlage und wird beim Laden nicht verwendet.</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "tr",
+  "meta": { "display_name": "Türkçe", "fallback": "en", "direction": "ltr" },
+  "texts": {
+    "ui_app": {
+      "settings.title": { "ref": "Settings", "text": "Ayarlar" }
+    }
+  }
+}</pre></td></tr></table>
+<p>Importierte Dateien erscheinen in der Liste <code>Geladen</code>. Wähle eine aus und klicke auf <code>Löschen</code>, um zur mitgelieferten Übersetzung zurückzukehren (eine neue Sprache wird entfernt). <code>Ordner öffnen</code> öffnet den Ordner <code>translations</code> neben der Einstellungsdatei. JSON-Dateien dort werden beim Start automatisch geladen. Bei einer hinzugefügten Sprache werden Dokumente wie das Handbuch auf Englisch angezeigt.</p>
 <h2 id="tab-kampfinformationen"><a name="tab-kampfinformationen"></a>Tab „Kampfinformationen“</h2>
 <p>Hier legst du getrennt fest, wo Kämpfe und anhaltende Zauber angezeigt werden. Die neuen Funktionen für Anzeige, Vorlesen und Speichern sind standardmäßig AUS. In einer früheren Entwicklungsversion gespeicherte Einstellungswerte werden unverändert übernommen. Die Anzeigetexte gibt es auf Japanisch, Englisch, Spanisch, Deutsch, Französisch, Italienisch und Russisch.</p>
 <p><img src="img/settings_dark_tab_05.png" alt="Tab Kampfinformationen"></p>

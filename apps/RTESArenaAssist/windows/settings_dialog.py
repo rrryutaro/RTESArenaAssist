@@ -1,7 +1,8 @@
 from __future__ import annotations
 import os
-from PySide6.QtCore import Qt, QByteArray
-from PySide6.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QGroupBox, QMessageBox, QScrollArea, QTabWidget, QVBoxLayout, QWidget
+from PySide6.QtCore import Qt, QByteArray, QUrl
+from PySide6.QtGui import QDesktopServices
+from PySide6.QtWidgets import QDialog, QDialogButtonBox, QFileDialog, QFormLayout, QGroupBox, QListWidgetItem, QMessageBox, QScrollArea, QTabWidget, QVBoxLayout, QWidget
 import i18n_helper as i18n
 import assist_settings as settings
 import dosbox_conf as dc
@@ -137,6 +138,118 @@ class _SettingsDialog(QDialog):
         form.setSpacing(4)
         form.setContentsMargins(8, 6, 8, 6)
         return (grp, form)
+
+    @staticmethod
+    def _ut(key: str, **kw) -> str:
+        return i18n.tr('settings.user_translation.' + key, **kw)
+
+    def _refresh_user_translation_list(self) -> None:
+        self._ut_list.clear()
+        rows = i18n.user_translation_status()
+        if not rows:
+            item = QListWidgetItem(self._ut('none'))
+            item.setFlags(Qt.ItemFlag.NoItemFlags)
+            self._ut_list.addItem(item)
+        for row in rows:
+            if row['status'] == 'ok':
+                key = 'row_ok_skipped' if row['skipped'] else 'row_ok'
+                text = self._ut(key, name=row['display_name'], file=row['filename'], entries=row['entries'], skipped=row['skipped'])
+            else:
+                text = self._ut('row_ng', file=row['filename'], reason=self._ut_reason(row.get('code', ''), row.get('reason', '')))
+            item = QListWidgetItem(text)
+            item.setData(Qt.ItemDataRole.UserRole, row['filename'])
+            self._ut_list.addItem(item)
+        self._ut_remove_btn.setEnabled(bool(rows))
+
+    @staticmethod
+    def _ut_reason(code: str, fallback: str='') -> str:
+        text = i18n.text_opt('settings.user_translation.reason_' + code) if code else None
+        return text or fallback or code
+
+    @staticmethod
+    def _user_translation_start_dir() -> str:
+        base = i18n.user_translations_dir() or ''
+        return os.path.dirname(base) if base else os.path.expanduser('~')
+    _UT_NEW_LANGUAGE = ''
+
+    def _export_user_translation(self) -> None:
+        lang = self._ut_lang_combo.currentData()
+        if lang is None:
+            return
+        default = os.path.join(self._user_translation_start_dir(), f"{lang or 'new_language'}.json")
+        path, _ = QFileDialog.getSaveFileName(self, self._ut('export_title'), default, 'JSON (*.json)')
+        if not path:
+            return
+        folder = os.path.normcase(os.path.abspath(i18n.user_translations_dir() or ''))
+        if os.path.normcase(os.path.abspath(os.path.dirname(path))) == folder:
+            QMessageBox.warning(self, self._ut('group'), self._ut('export_inside'))
+            return
+        try:
+            import version as _ver
+            version = getattr(_ver, '__version__', '')
+            with_source = self._ut_source_cb.isChecked()
+            if lang == self._UT_NEW_LANGUAGE:
+                count = i18n.export_new_language_template(path, with_source=with_source, app_version=version)
+            else:
+                count = i18n.export_user_template(lang, path, with_source=with_source, app_version=version)
+        except OSError as exc:
+            QMessageBox.warning(self, self._ut('group'), self._ut('import_failed', reason=str(exc)))
+            return
+        QMessageBox.information(self, self._ut('group'), self._ut('export_done', count=count, path=path))
+
+    def _import_user_translation(self) -> None:
+        path, _ = QFileDialog.getOpenFileName(self, self._ut('import_title'), self._user_translation_start_dir(), 'JSON (*.json)')
+        if not path:
+            return
+        result = i18n.install_user_translation(path)
+        if result.status == 'exists':
+            ans = QMessageBox.question(self, self._ut('group'), self._ut('import_exists'), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+            if ans != QMessageBox.StandardButton.Yes:
+                return
+            result = i18n.install_user_translation(path, overwrite=True)
+        if result.status == 'invalid':
+            QMessageBox.warning(self, self._ut('group'), self._ut('import_failed', reason=self._ut_reason(result.code, result.reason)))
+            return
+        self._refresh_user_translation_list()
+        self._refresh_language_combo()
+        text = self._ut('import_done', lang=result.lang, entries=result.entries, skipped=result.skipped)
+        if result.skipped:
+            text += '\n' + self._ut('skipped_log')
+        QMessageBox.information(self, self._ut('group'), text)
+
+    def _refresh_language_combo(self) -> None:
+        combo = self._language_combo
+        idx = combo.currentIndex()
+        cur = self._language_items[idx] if 0 <= idx < len(self._language_items) else ''
+        combo.clear()
+        self._language_items = ['']
+        combo.addItem(i18n.tr('settings.language_auto'))
+        for entry in i18n.available_languages():
+            self._language_items.append(entry['code'])
+            combo.addItem(entry['display_name'])
+        combo.setCurrentIndex(self._language_items.index(cur) if cur in self._language_items else 0)
+
+    def _open_user_translation_folder(self) -> None:
+        folder = i18n.user_translations_dir()
+        if not folder:
+            return
+        try:
+            os.makedirs(folder, exist_ok=True)
+        except OSError:
+            return
+        QDesktopServices.openUrl(QUrl.fromLocalFile(folder))
+
+    def _remove_user_translation(self) -> None:
+        item = self._ut_list.currentItem()
+        filename = item.data(Qt.ItemDataRole.UserRole) if item is not None else None
+        if not filename:
+            return
+        ans = QMessageBox.question(self, self._ut('group'), self._ut('remove_confirm', file=filename), QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No, QMessageBox.StandardButton.No)
+        if ans != QMessageBox.StandardButton.Yes:
+            return
+        i18n.remove_user_translation(filename)
+        self._refresh_user_translation_list()
+        self._refresh_language_combo()
 
     def _browse_game(self):
         start = self._game_edit.text() or os.path.expanduser('~')

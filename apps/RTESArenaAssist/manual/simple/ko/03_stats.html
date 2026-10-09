@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>캐릭터 능력치</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #c9d1e0; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 5px 8px; text-align: left; font-size: 12px; border: 1px solid #1e3a4a; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.stat-label { color: #7ec8e3; font-weight: bold; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>캐릭터 능력치</h1>
+
+<div class="note">모든 능력치는 1~100 사이예요. <strong>50이 평균</strong>이에요. 제국 인구의 50%는 그 능력치가 당신보다 높고, 나머지 50%는 그렇지 않다는 뜻이에요.</div>
+
+<h2>8가지 주요 능력치</h2>
+
+<h3><span class="stat-label">STR — 힘</span></h3>
+<p>전투에서 주는 대미지를 좌우해요. 최대 소지 무게(최대 무게), 피로, 점프 거리에도 영향을 줘요. <strong>전사 계열 직업에 필수예요.</strong></p>
+
+<h3><span class="stat-label">INT — 지능</span></h3>
+<p>주문 시전자의 주문 포인트 총량을 정해요. 협상, 가격 흥정, 자물쇠 따기 성공률에도 영향을 줘요. <strong>마법사 계열과 도적 계열 직업에 필수예요.</strong></p>
+
+<h3><span class="stat-label">WIL — 의지력</span></h3>
+<p>주문에 대한 저항력(마법 방어)을 좌우해요. 협상에도 도움이 돼요. <strong>주문으로부터 보호받고 싶은 모든 캐릭터에게 중요해요.</strong></p>
+
+<h3><span class="stat-label">AGI — 민첩</span></h3>
+<p>근접 공격의 명중률(명중 보정), 공격받을 확률(방어 보정), 지정 주문을 피할 확률에 직접 영향을 줘요. 훔치기와 자물쇠 따기도 좌우해요. <strong>도적 계열 직업에 필수예요.</strong></p>
+
+<h3><span class="stat-label">SPD — 속도</span></h3>
+<p>이동 속도, 회전 속도, 발사 무기의 발사 속도를 결정해요. 삶과 죽음을 가를 수도 있어요. <strong>모든 직업에 중요해요.</strong></p>
+
+<h3><span class="stat-label">END — 지구력</span></h3>
+<p>체력 총량, 회복 속도, 피로를 좌우해요. 독과 약물에 대한 저항력에도 영향을 줘요. <strong>전사 계열 직업에 필수예요.</strong></p>
+
+<h3><span class="stat-label">PER — 매력</span></h3>
+<p>카리스마 보정을 정해요. 협상하고, 더 좋은 가격을 받고, 정보를 모으는 능력에 직접 영향을 줘요. <strong>사람들과 어울릴 때 중요해요.</strong></p>
+
+<h3><span class="stat-label">LUC — 행운</span></h3>
+<p>공격, 방어, 훔치기 등 모든 행동에 큰 영향을 주는 보정이에요. 평균은 50이고, 높을수록 좋아요. <strong>모든 캐릭터에 영향을 줘요.</strong></p>
+
+<h2>능력치 보정 참고표</h2>
+<table>
+  <tr><th>능력치</th><th>보정</th><th>설명</th></tr>
+  <tr><td>STR</td><td>대미지</td><td>STR 55 이상이면 보너스, 45 이하이면 페널티</td></tr>
+  <tr><td>STR</td><td>최대 무게</td><td>이를 넘으면 피로 페널티가 생기고, 심하면 움직일 수 없어요</td></tr>
+  <tr><td>INT</td><td>주문 포인트</td><td>비시전 직업: 0. 소서러: 최대 INT×3</td></tr>
+  <tr><td>WIL</td><td>마법 방어</td><td>WIL이 높을수록 적의 주문이 당신에게 잘 맞지 않아요</td></tr>
+  <tr><td>AGI</td><td>명중 보정</td><td>근접 공격 판정에 대한 보너스 또는 페널티</td></tr>
+  <tr><td>AGI</td><td>방어 보정</td><td>방어 등급에서 빼요 (AR이 낮을수록 방어가 좋아요)</td></tr>
+  <tr><td>END</td><td>체력</td><td>레벨 업 때 직업의 체력 주사위 굴림에 더하거나 빼요 (경험치와 레벨 업 참고)</td></tr>
+  <tr><td>END</td><td>치유 보정</td><td>기본 휴식 회복 속도에 대한 백분율 보정</td></tr>
+  <tr><td>PER</td><td>카리스마</td><td>NPC와의 협상 성공 확률에 대한 보정</td></tr>
+  <tr><td>LUC</td><td>일반</td><td>모든 행동에 미치는 잠재적인 영향</td></tr>
+</table>
+
+<h2>방어 등급 (AR)</h2>
+<p>AR은 시트 2쪽의 캐릭터 초상화에 표시돼요. <strong>AR이 낮을수록 방어가 좋아요</strong> (+10은 방어 없음, 음수는 중무장 상태예요).</p>
+<table>
+  <tr><th>신체 부위</th><th>방어구</th></tr>
+  <tr><td>머리</td><td>투구</td></tr>
+  <tr><td>가슴</td><td>흉갑</td></tr>
+  <tr><td>손</td><td>건틀릿</td></tr>
+  <tr><td>허리와 다리</td><td>정강이받이</td></tr>
+  <tr><td>종아리와 발</td><td>부츠</td></tr>
+  <tr><td>어깨 (좌우)</td><td>어깨갑옷</td></tr>
+</table>
+
+</body>
+</html>

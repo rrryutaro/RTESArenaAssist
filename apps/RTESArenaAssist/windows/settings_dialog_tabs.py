@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from PySide6.QtCore import Qt, QSize, QUrl
 from PySide6.QtGui import QColor, QDesktopServices, QIcon, QPixmap
-from PySide6.QtWidgets import QCheckBox, QComboBox, QFormLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QMessageBox, QPushButton, QSlider, QSpinBox, QVBoxLayout, QWidget, QFontComboBox
+from PySide6.QtWidgets import QCheckBox, QComboBox, QFormLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit, QListWidget, QMessageBox, QPushButton, QSlider, QSpinBox, QVBoxLayout, QWidget, QFontComboBox
 import i18n_helper as i18n
 import assist_settings as settings
 from combat_text_ja import COMBAT_MESSAGE_TEMPLATE_SETTINGS, DEFAULT_COMBAT_MESSAGE_TEMPLATES, default_combat_template, is_builtin_combat_template, text as combat_ja
@@ -825,8 +825,62 @@ def build_translate_tab(dlg: '_SettingsDialog') -> QWidget:
     dlg._emulate_panel_hidden_cb.setToolTip(i18n.tr('settings.translate_tab_emulate_panel_hidden_tip'))
     ext_form.addRow(i18n.tr('settings.translate_tab_emulate_panel_hidden') + ':', dlg._emulate_panel_hidden_cb)
     outer.addWidget(ext_grp)
+    if i18n.user_translations_dir():
+        outer.addWidget(_build_user_translation_group(dlg))
     outer.addStretch()
     return page
+
+def _build_user_translation_group(dlg: '_SettingsDialog') -> QGroupBox:
+    p = 'settings.user_translation.'
+    grp = QGroupBox(i18n.tr(p + 'group'))
+    form = QFormLayout(grp)
+    form.setLabelAlignment(Qt.AlignmentFlag.AlignRight)
+    form.setSpacing(6)
+    tip = QLabel(i18n.tr(p + 'tip'))
+    tip.setWordWrap(True)
+    form.addRow(tip)
+    dlg._ut_lang_combo = QComboBox()
+    bundled = set(i18n.bundled_language_codes().values())
+    for entry in i18n.available_languages():
+        if entry['code'] in bundled:
+            dlg._ut_lang_combo.addItem(entry['display_name'], entry['code'])
+    dlg._ut_lang_combo.addItem(i18n.tr(p + 'new_language_item'), '')
+    idx = dlg._ut_lang_combo.findData(i18n.current_lang())
+    if idx >= 0:
+        dlg._ut_lang_combo.setCurrentIndex(idx)
+    export_btn = QPushButton(i18n.tr(p + 'export_btn'))
+    export_btn.clicked.connect(dlg._export_user_translation)
+    row = QHBoxLayout()
+    row.addWidget(dlg._ut_lang_combo, 1)
+    row.addWidget(export_btn)
+    form.addRow(i18n.tr(p + 'export_label') + ':', row)
+    dlg._ut_source_cb = QCheckBox(i18n.tr(p + 'with_source'))
+    form.addRow('', dlg._ut_source_cb)
+    import_btn = QPushButton(i18n.tr(p + 'import_btn'))
+    import_btn.clicked.connect(dlg._import_user_translation)
+    row2 = QHBoxLayout()
+    row2.addWidget(import_btn)
+    row2.addStretch()
+    form.addRow(i18n.tr(p + 'import_label') + ':', row2)
+    dlg._ut_list = QListWidget()
+    dlg._ut_list.setMaximumHeight(96)
+    dlg._ut_list.setWordWrap(True)
+    dlg._ut_list.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+    form.addRow(i18n.tr(p + 'loaded_label') + ':', dlg._ut_list)
+    open_btn = QPushButton(i18n.tr(p + 'open_folder'))
+    open_btn.clicked.connect(dlg._open_user_translation_folder)
+    dlg._ut_remove_btn = QPushButton(i18n.tr(p + 'remove'))
+    dlg._ut_remove_btn.clicked.connect(dlg._remove_user_translation)
+    row3 = QHBoxLayout()
+    row3.addWidget(open_btn)
+    row3.addWidget(dlg._ut_remove_btn)
+    row3.addStretch()
+    form.addRow(row3)
+    note = QLabel(i18n.tr(p + 'restart_note'))
+    note.setWordWrap(True)
+    form.addRow(note)
+    dlg._refresh_user_translation_list()
+    return grp
 
 def build_combat_tab(dlg: '_SettingsDialog') -> QWidget:
     page = QWidget()

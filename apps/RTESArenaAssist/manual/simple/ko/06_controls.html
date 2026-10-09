@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>조작 및 화면</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>조작 및 화면</h1>
+
+<h2>캐릭터 시트 — 1쪽</h2>
+<table>
+  <tr><th>항목</th><th>설명</th></tr>
+  <tr><td>이름 / 종족 / 클래스</td><td>캐릭터의 기본 정보</td></tr>
+  <tr><td>경험치</td><td>현재까지 쌓인 경험치</td></tr>
+  <tr><td>레벨</td><td>캐릭터의 현재 레벨</td></tr>
+  <tr><td>체력</td><td>현재 체력</td></tr>
+  <tr><td>피로</td><td>2에서 200까지의 값이에요</td></tr>
+  <tr><td>골드</td><td>현재 가진 골드</td></tr>
+  <tr><td>다음 쪽</td><td>2쪽(장비 목록)으로 이동해요</td></tr>
+  <tr><td>완료</td><td>캐릭터 시트를 닫아요</td></tr>
+</table>
+
+<h2>캐릭터 시트 — 2쪽(장비)</h2>
+<table>
+  <tr><th>색</th><th>의미</th></tr>
+  <tr><td style="color:#ffd700">노란색</td><td>현재 장착 중인 아이템</td></tr>
+  <tr><td style="color:#d2b48c">황갈색</td><td>장착할 수 있는 아이템</td></tr>
+  <tr><td style="color:#ff6b6b">빨간색</td><td>장착할 수 없는 아이템</td></tr>
+  <tr><td style="color:#00ffff">청록색</td><td>감정되지 않은 마법 아이템</td></tr>
+  <tr><td style="color:#88ffff">밝은 청록색</td><td>감정되지 않은 마법 아이템(장착 중)</td></tr>
+</table>
+<p><strong>왼쪽 클릭</strong>으로 아이템을 장착해요. <strong>오른쪽 클릭</strong>으로 아이템 정보를 봐요. 스크롤 화살표로 최대 40개의 아이템을 넘겨볼 수 있어요.</p>
+<p><strong>버리기</strong>: 선택한 아이템을 버려요. <strong>주문서</strong>: 주문을 보여줘요. <strong>종료</strong>: 1쪽으로 돌아가요.</p>
+
+<h2>마우스 조작</h2>
+<table>
+  <tr><th>동작</th><th>효과</th></tr>
+  <tr><td>왼쪽 클릭(게임 화면)</td><td>앞으로 이동 / 상호작용 / 장착</td></tr>
+  <tr><td>오른쪽 클릭(게임 화면)</td><td>뒤로 이동</td></tr>
+  <tr><td>왼쪽 클릭(메뉴 화면)</td><td>선택 / 확인</td></tr>
+  <tr><td>오른쪽 클릭(아이템)</td><td>아이템 정보 보기</td></tr>
+  <tr><td>마우스를 좌우로 이동</td><td>좌우로 회전</td></tr>
+  <tr><td>마우스를 상하로 이동</td><td>위아래를 봄</td></tr>
+</table>
+
+<h2>키보드 조작</h2>
+<table>
+  <tr><th>키</th><th>동작</th></tr>
+  <tr><td><span class="key">↑</span> / <span class="key">W</span></td><td>앞으로 이동</td></tr>
+  <tr><td><span class="key">↓</span> / <span class="key">S</span></td><td>뒤로 이동</td></tr>
+  <tr><td><span class="key">←</span> / <span class="key">A</span></td><td>왼쪽으로 회전</td></tr>
+  <tr><td><span class="key">→</span> / <span class="key">D</span></td><td>오른쪽으로 회전</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>자동 지도 켜기/끄기</td></tr>
+  <tr><td><span class="key">C</span></td><td>캐릭터 시트</td></tr>
+  <tr><td><span class="key">L</span></td><td>일지</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>메뉴 / 뒤로 가기</td></tr>
+  <tr><td><span class="key">F1</span></td><td>도움말</td></tr>
+  <tr><td><span class="key">Alt+F4</span></td><td>게임 종료</td></tr>
+</table>
+
+<div class="note">
+<strong>DOSBox 팁:</strong> <span class="key">Ctrl+F10</span>은 마우스 가두기를 켜고 꺼요. <span class="key">Alt+Enter</span>는 전체 화면과 창 모드를 전환해요.
+</div>
+
+<h2>게임 내 동작</h2>
+<table>
+  <tr><th>동작</th><th>설명</th></tr>
+  <tr><td>대화</td><td>NPC와 이야기해 정보와 퀘스트를 얻어요</td></tr>
+  <tr><td>훔치기</td><td>대상에게서 아이템을 훔쳐요(성공 확률은 AGI에 따라 달라요)</td></tr>
+  <tr><td>줍기</td><td>바닥의 아이템을 주워요</td></tr>
+  <tr><td>휴식 / 야영</td><td>체력과 피로를 회복해요. 꿈에 리아가 나타날 수 있어요</td></tr>
+  <tr><td>시전</td><td>주문서의 주문을 사용해요</td></tr>
+  <tr><td>사용</td><td>가진 아이템을 사용해요</td></tr>
+</table>
+
+</body>
+</html>

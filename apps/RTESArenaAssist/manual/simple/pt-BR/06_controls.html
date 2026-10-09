@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Controles e Interface</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Controles e Interface</h1>
+
+<h2>Ficha do Personagem — Página 1</h2>
+<table>
+  <tr><th>Campo</th><th>Descrição</th></tr>
+  <tr><td>Nome / Raça / Classe</td><td>Identidade básica do personagem</td></tr>
+  <tr><td>Experiência</td><td>Pontos de experiência acumulados até o momento</td></tr>
+  <tr><td>Nível</td><td>Nível atual do personagem</td></tr>
+  <tr><td>Vida</td><td>Pontos de vida atuais</td></tr>
+  <tr><td>Fadiga</td><td>Varia de 2 a 200</td></tr>
+  <tr><td>Ouro</td><td>Ouro que você carrega no momento</td></tr>
+  <tr><td>Próxima Página</td><td>Vai para a Página 2 (lista de equipamentos)</td></tr>
+  <tr><td>Concluído</td><td>Fecha a ficha do personagem</td></tr>
+</table>
+
+<h2>Ficha do Personagem — Página 2 (Equipamento)</h2>
+<table>
+  <tr><th>Cor</th><th>Significado</th></tr>
+  <tr><td style="color:#ffd700">Amarelo</td><td>Item equipado no momento</td></tr>
+  <tr><td style="color:#d2b48c">Bege</td><td>Item que pode ser equipado</td></tr>
+  <tr><td style="color:#ff6b6b">Vermelho</td><td>Não pode ser equipado</td></tr>
+  <tr><td style="color:#00ffff">Ciano</td><td>Item mágico não identificado</td></tr>
+  <tr><td style="color:#88ffff">Ciano claro</td><td>Item mágico não identificado (equipado)</td></tr>
+</table>
+<p><strong>Clique com o botão esquerdo</strong> para equipar um item. <strong>Clique com o botão direito</strong> para ver as informações do item. As setas de rolagem permitem navegar por até 40 itens.</p>
+<p><strong>Largar</strong>: Larga o item selecionado. <strong>Grimório</strong>: Mostra os feitiços. <strong>Sair</strong>: Volta à Página 1.</p>
+
+<h2>Controles do Mouse</h2>
+<table>
+  <tr><th>Ação</th><th>Efeito</th></tr>
+  <tr><td>Clique esquerdo (no mundo)</td><td>Avançar / interagir / equipar</td></tr>
+  <tr><td>Clique direito (no mundo)</td><td>Recuar</td></tr>
+  <tr><td>Clique esquerdo (interface)</td><td>Selecionar / confirmar</td></tr>
+  <tr><td>Clique direito (item)</td><td>Mostrar as informações do item</td></tr>
+  <tr><td>Mover o mouse para a esquerda/direita</td><td>Virar para a esquerda/direita</td></tr>
+  <tr><td>Mover o mouse para cima/para baixo</td><td>Olhar para cima/para baixo</td></tr>
+</table>
+
+<h2>Controles do Teclado</h2>
+<table>
+  <tr><th>Tecla</th><th>Ação</th></tr>
+  <tr><td><span class="key">↑</span> / <span class="key">W</span></td><td>Avançar</td></tr>
+  <tr><td><span class="key">↓</span> / <span class="key">S</span></td><td>Recuar</td></tr>
+  <tr><td><span class="key">←</span> / <span class="key">A</span></td><td>Virar para a esquerda</td></tr>
+  <tr><td><span class="key">→</span> / <span class="key">D</span></td><td>Virar para a direita</td></tr>
+  <tr><td><span class="key">Tab</span></td><td>Abrir/fechar o automapa</td></tr>
+  <tr><td><span class="key">C</span></td><td>Ficha do personagem</td></tr>
+  <tr><td><span class="key">L</span></td><td>Diário de Bordo</td></tr>
+  <tr><td><span class="key">Esc</span></td><td>Menu / voltar</td></tr>
+  <tr><td><span class="key">F1</span></td><td>Ajuda</td></tr>
+  <tr><td><span class="key">Alt+F4</span></td><td>Sair do jogo</td></tr>
+</table>
+
+<div class="note">
+<strong>Dicas do DOSBox:</strong> <span class="key">Ctrl+F10</span> ativa ou desativa a captura do mouse. <span class="key">Alt+Enter</span> alterna entre tela cheia e modo janela.
+</div>
+
+<h2>Ações no Jogo</h2>
+<table>
+  <tr><th>Ação</th><th>Descrição</th></tr>
+  <tr><td>Falar</td><td>Conversar com NPCs para obter informações e missões</td></tr>
+  <tr><td>Furtar</td><td>Furtar um item de um alvo (sucesso baseado na AGI)</td></tr>
+  <tr><td>Pegar</td><td>Pegar um item do chão</td></tr>
+  <tr><td>Descansar / Acampar</td><td>Recupera vida e fadiga; Ria pode aparecer nos sonhos</td></tr>
+  <tr><td>Conjurar</td><td>Usar um feitiço do seu grimório</td></tr>
+  <tr><td>Usar</td><td>Usar um item que você está segurando</td></tr>
+</table>
+
+</body>
+</html>

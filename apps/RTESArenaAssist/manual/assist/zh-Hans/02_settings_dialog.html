@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<title>设置对话框详细指南</title>
+<style>
+body { font-family: "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — 设置对话框详细指南</h1>
+<p>本页展示了RTESArenaAssist设置对话框各标签页的截图，并对每个界面元素加以说明。</p>
+<p>文中的图片是在使用你的显示语言、默认设置和默认“深色”主题的设置对话框中截取的。</p>
+<p>“DOSBox”标签页中的数值，不仅反映Assist自己的设置文件，也反映从默认路径下的 <code>arena.conf</code> 读取到的内容。如果你的环境中的 <code>arena.conf</code> 不同，显示的数值也会不同。</p>
+<h2 id="contents"><a name="contents"></a>目录</h2>
+<ul>
+<li><a href="#general-tab">常规标签页</a></li>
+<ul>
+<li><a href="#paths">路径</a></li>
+<li><a href="#behavior">行为</a></li>
+<li><a href="#shutter-sound">快门音</a></li>
+<li><a href="#capture-hotkey">截图快捷键</a></li>
+<li><a href="#updates">更新</a></li>
+</ul>
+<li><a href="#display-tab">显示标签页</a></li>
+<ul>
+<li><a href="#connection-bar">连接栏</a></li>
+<li><a href="#item-list-marks">物品列表标记</a></li>
+<li><a href="#translation-panel-font">翻译面板字体</a></li>
+<li><a href="#layout">布局</a></li>
+</ul>
+<li><a href="#map-tab">地图标签页</a></li>
+<ul>
+<li><a href="#map-display-settings">地图显示设置</a></li>
+<li><a href="#field-extended-display">野外扩展显示</a></li>
+<li><a href="#map-expression-and-colours">地图表现与颜色</a></li>
+</ul>
+<li><a href="#translation-tab">翻译标签页</a></li>
+<ul>
+<li><a href="#translate-tab-panel-behavior">翻译标签页与面板的行为</a></li>
+<li><a href="#translate-tab-advanced">翻译标签页——高级</a></li>
+<li><a href="#user-translations">我的翻译</a></li>
+</ul>
+<li><a href="#combat-information-tab">战斗信息标签页</a></li>
+<ul>
+<li><a href="#arena-screen">Arena 画面</a></li>
+<li><a href="#arena-screen-ongoing-spells">Arena 画面 · 持续中的法术</a></li>
+<li><a href="#combat-info-translation-tab">翻译标签页中的战斗信息</a></li>
+<li><a href="#combat-info-translation-panel">翻译面板中的战斗信息</a></li>
+<li><a href="#common-settings-and-messages">通用设置与消息</a></li>
+</ul>
+<li><a href="#read-aloud-tab">朗读标签页</a></li>
+<ul>
+<li><a href="#read-aloud">朗读</a></li>
+<li><a href="#read-targets">朗读对象</a></li>
+<li><a href="#other-log">其他 / 日志</a></li>
+<li><a href="#character-name-reading">角色名读法替换</a></li>
+</ul>
+<li><a href="#cheat-tab">作弊标签页</a></li>
+<li><a href="#dosbox-tab">DOSBox 标签页</a></li>
+<ul>
+<li><a href="#config-file-window-behavior">配置文件 / 窗口行为</a></li>
+<li><a href="#window-display">窗口与显示</a></li>
+<li><a href="#video">视频</a></li>
+<li><a href="#performance">性能</a></li>
+<li><a href="#sound">声音</a></li>
+</ul>
+</ul>
+<h2 id="general-tab"><a name="general-tab"></a>常规标签页</h2>
+<p>此标签页用于设置路径、基本行为、快门音和截图快捷键，并可查看你的版本。</p>
+<p><img src="img/settings_dark_tab_01.png" alt="常规标签页"></p>
+<h3 id="paths"><a name="paths"></a>路径</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>游戏文件夹：</code></td><td>空</td><td>包含竞技场的 <code>ARENA.EXE</code> 和存档文件的文件夹。未设置时，无法使用存档管理和读取游戏数据</td></tr>
+<tr><td><code>备份文件夹：</code></td><td>空</td><td>存放存档备份的位置。为空时，使用工具设置文件旁的 <code>saves_backup/</code></td></tr>
+<tr><td><code>截图文件夹：</code></td><td>空</td><td>保存截图的位置。为空时，使用与备份文件夹相同的文件夹</td></tr>
+<tr><td><code>浏览...</code></td><td>-</td><td>选择各个文件夹</td></tr>
+</table>
+<h3 id="behavior"><a name="behavior"></a>行为</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>轮询间隔：</code></td><td><code>100 ms</code></td><td>检查DOSBox画面和内存状态的频率。默认值较短，以便更容易捕捉到简短的消息</td></tr>
+<tr><td><code>删除前确认：</code></td><td>开启</td><td>删除截图或备份时显示确认对话框</td></tr>
+<tr><td><code>置顶显示：</code></td><td>关闭</td><td>将Assist主窗口显示在其他窗口的前面</td></tr>
+<tr><td><code>主题：</code></td><td>深色</td><td>选择界面的配色主题</td></tr>
+<tr><td><code>显示语言：</code></td><td>自动（系统语言）</td><td>界面语言。为空时，会根据系统语言自动检测，更改后在重新启动应用后生效</td></tr>
+</table>
+<h3 id="shutter-sound"><a name="shutter-sound"></a>快门音</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>启用</code></td><td>开启</td><td>保存截图时播放音效</td></tr>
+<tr><td><code>类型：</code></td><td><code>携帯電話カメラ（標準）</code>（手机相机，标准）</td><td>播放的快门音。可以从标准、短版、双响、高音增强和柔和中选择</td></tr>
+<tr><td><code>音量：</code></td><td><code>30 %</code></td><td>快门音的播放音量</td></tr>
+<tr><td><code>▶</code></td><td>-</td><td>试听所选的快门音</td></tr>
+</table>
+<h3 id="capture-hotkey"><a name="capture-hotkey"></a>截图快捷键</h3>
+<p>在游戏画面（DOSBox）保持焦点的状态下，只需按一个键就能保存截图。可用它来截取几秒钟后就会消失的消息。</p>
+<table>
+<tr><th>项目</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>启用</code></td><td>开启</td><td>使用截图快捷键</td></tr>
+<tr><td><code>Ctrl</code> / <code>Alt</code> / <code>Shift</code></td><td>关闭</td><td>开启后可组合修饰键</td></tr>
+<tr><td><code>按键：</code></td><td><code>F12</code></td><td>使用的按键。可以从F5到F12、PrintScreen、Pause、ScrollLock、Insert、Home、End、PageUp和PageDown中选择</td></tr>
+</table>
+<ul>
+<li>你按下的键不会传给游戏。游戏或DOSBox使用的按键（F1 / F3 / F4 / F8、Ctrl+F5到F12、Alt+F12、Alt+Pause）无法选择</li>
+<li>如果其他应用把同一个键用作快捷键，那么在本应用运行期间，那个应用的快捷键将失效。选择其他按键即可让两者都能使用</li>
+<li>如果按键无法注册，状态栏中会显示消息。即使这样，你仍然可以使用工具栏上的相机按钮截图</li>
+</ul>
+<h3 id="updates"><a name="updates"></a>更新</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>当前版本：</code></td><td>-</td><td>你正在使用的Assist版本</td></tr>
+<tr><td><code>打开发布页面</code></td><td>-</td><td>在浏览器中打开Assist的发布页面（Releases列表）。在这里可以确认是否有更新的版本</td></tr>
+</table>
+<p>Assist不会连接互联网，因此不会检查更新，也不会自动更新。</p>
+<h2 id="display-tab"><a name="display-tab"></a>显示标签页</h2>
+<p>此标签页用于设置连接栏、物品列表中的装备标记、翻译面板字体和布局。</p>
+<p><img src="img/settings_dark_tab_02.png" alt="显示标签页"></p>
+<h3 id="connection-bar"><a name="connection-bar"></a>连接栏</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>显示识别到的画面名称：</code></td><td>开启</td><td>在连接栏中显示当前识别到的画面名称</td></tr>
+<tr><td><code>显示 IMG 信息：</code></td><td>开启</td><td>在连接栏中显示正在检测到的IMG信息</td></tr>
+<tr><td><code>显示版本：</code></td><td>开启</td><td>在连接栏和状态栏中显示应用版本</td></tr>
+</table>
+<h3 id="item-list-marks"><a name="item-list-marks"></a>物品列表标记</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>已装备：</code></td><td><code>E</code></td><td>显示在已装备物品最左端的单字符标记</td></tr>
+<tr><td><code>可装备：</code></td><td>空</td><td>可装备物品的标记。默认为空，因此不显示任何内容</td></tr>
+<tr><td><code>不可装备：</code></td><td><code>✕</code></td><td>显示在无法装备的物品最左端的单字符标记</td></tr>
+</table>
+<h3 id="translation-panel-font"><a name="translation-panel-font"></a>翻译面板字体</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>右侧与左侧设置相同</code></td><td>关闭</td><td>开启后，原文一侧的字体和大小会与译文一侧保持一致</td></tr>
+<tr><td><code>左侧（译文）：</code></td><td>应用默认 / <code>14 pt</code></td><td>用于译文的字体和大小。如果没有保存过字体名称，则会选择应用在你的环境下的默认字体</td></tr>
+<tr><td><code>右侧（原文）：</code></td><td>应用默认 / <code>12 pt</code></td><td>用于英文原文的字体和大小。由于“与左侧设置相同”处于关闭状态，因此可以与译文一侧分别设置</td></tr>
+</table>
+<h3 id="layout"><a name="layout"></a>布局</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>跟随模式：</code></td><td>不跟随</td><td>选择移动DOSBox或Assist其中之一时，另一个是否随之移动</td></tr>
+<tr><td><code>DOSBox 角落：</code></td><td>左上</td><td>一键布局和布局模式下放置DOSBox的屏幕基准角落</td></tr>
+<tr><td><code>布局形式：</code></td><td>形式2：下方全宽 + 右上（默认）</td><td>DOSBox与Assist各面板之间的区域划分方式。形式2是使用右上区域和下方全宽区域的标准布局</td></tr>
+<tr><td><code>布局大小：</code></td><td><code>1920 x 1080</code></td><td>布局模式下整个画布的大小</td></tr>
+</table>
+<h2 id="map-tab"><a name="map-tab"></a>地图标签页</h2>
+<p>此标签页用于设置探索地图和野外扩展显示。</p>
+<p><img src="img/settings_dark_tab_03.png" alt="地图标签页"></p>
+<h3 id="map-display-settings"><a name="map-display-settings"></a>地图显示设置</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>地图上的墙壁视线：</code></td><td>关闭</td><td>关闭时，墙后未探索的区域不会记录到地图上。开启后更接近Arena原版，透过墙壁看到的区域也会被记录</td></tr>
+<tr><td><code>将全高高台显示为墙壁：</code></td><td>开启</td><td>将从地面到天花板填满的高台以墙壁颜色显示。只改变显示时的分类，不影响视线的遮挡方式。未达全高的高台仍显示为高台</td></tr>
+<tr><td><code>高台遮挡视线的高度：</code></td><td><code>0 %</code></td><td>以天花板高度为100%，顶端达到或超过此高度的高台会在地图上遮挡视线。为0% 时，所有高台都会遮挡视线</td></tr>
+<tr><td><code>为未探索区域显示地面：</code></td><td>关闭</td><td>关闭时，只有已探索的单元格显示地面颜色，从而隐藏未探索区域的形状。开启时，整张地图都以羊皮纸色显示</td></tr>
+<tr><td><code>以角色为中心：</code></td><td>开启</td><td>角色移动时，地图会自动跟随角色。角色停止时，你可以手动平移</td></tr>
+<tr><td><code>显示网格线：</code></td><td>开启</td><td>在单元格边界显示网格线</td></tr>
+<tr><td><code>显示区块边界：</code></td><td>开启</td><td>在野外地图上突出显示区块边界（以64格为单位）</td></tr>
+<tr><td><code>显示区块坐标：</code></td><td>开启</td><td>在野外地图上显示每个区块的坐标，帮助你掌握所在位置</td></tr>
+<tr><td><code>显示重新居中边界：</code></td><td>关闭</td><td>以虚线显示野外地图的重新居中边界。这是用于调查或确认位置的辅助显示</td></tr>
+<tr><td><code>区块坐标字体大小：</code></td><td><code>10 pt</code></td><td>区块坐标标签的文字大小</td></tr>
+</table>
+<h3 id="field-extended-display"><a name="field-extended-display"></a>野外扩展显示</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>启用扩展显示：</code></td><td>开启</td><td>野外地图扩展显示的总开关。关闭时，显示接近游戏内的自动地图</td></tr>
+<tr><td><code>用颜色区分道路与墙壁：</code></td><td>开启</td><td>用不同颜色绘制可以行走的道路和建筑、墙壁等无法通行的部分</td></tr>
+<tr><td><code>显示墙壁轮廓：</code></td><td>开启</td><td>显示墙壁和边缘地形的轮廓</td></tr>
+<tr><td><code>区分栅栏/树篱/花园：</code></td><td>开启</td><td>用连线区分栅栏、树篱、花园等边缘地形</td></tr>
+<tr><td><code>显示农作物：</code></td><td>开启</td><td>用专用的颜色或标记显示玉米和农田等农作物</td></tr>
+<tr><td><code>显示所有建筑入口：</code></td><td>开启</td><td>同时用红色显示住宅、酒馆、神殿、城门等的入口。地穴、塔和地下城的入口无论此设置如何都以红色显示</td></tr>
+<tr><td><code>显示地物（树木、灌木等）：</code></td><td>关闭</td><td>叠加显示树木、灌木、岩石、坟墓、废墟等的简易标记。它们数量众多，会让地图难以阅读，所以默认关闭</td></tr>
+</table>
+<h3 id="map-expression-and-colours"><a name="map-expression-and-colours"></a>地图表现与颜色</h3>
+<p>游戏自身的地图会把墙下的通道等内容不加区分地绘制。在这里你可以设置是否区分绘制，以及各元素的颜色。如果在某一行关闭“显示”，该元素就会恢复为与游戏地图相同的显示（关闭“宝藏”则什么都不显示）。</p>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>隐藏门：</code></td><td>开启</td><td>用专用颜色显示已发现的隐藏门。在发现之前仍然是墙壁</td></tr>
+<tr><td><code>墙下的水道：</code></td><td>开启</td><td>用专用颜色显示穿过墙下的水道。在你实际从那里经过并将其揭示之前不会显示</td></tr>
+<tr><td><code>墙下的通道：</code></td><td>开启</td><td>显示穿过墙下的通道。在你实际从那里经过并将其揭示之前不会显示</td></tr>
+<tr><td><code>墙下的熔岩：</code></td><td>开启</td><td>用专用颜色显示穿过墙下的熔岩。在你实际从那里经过并将其揭示之前不会显示</td></tr>
+<tr><td><code>宝藏：</code></td><td>开启</td><td>在你获得宝藏的位置叠加显示标记。标记的字符可以在右侧的输入框中更改。当作弊标签页中的“揭示地图”开启时，无论你是否获得过，所有有宝藏的地方都会显示</td></tr>
+<tr><td><code>钥匙与任务物品：</code></td><td>开启</td><td>在宝藏中，用不同颜色显示钥匙和任务物品的标记。关闭时，它们与宝藏使用相同的颜色。“宝藏”关闭时不会显示</td></tr>
+<tr><td><code>设施入口颜色：</code></td><td>开启</td><td>在城市地图上，把与酒馆、装备店、神殿或法师公会入口相邻的、带有建筑颜色的单元格，替换为各设施专用的颜色。红色入口的颜色不变。各设施的颜色可以在下方的输入项中更改</td></tr>
+<tr><td><code>下方通道的绘制方式：</code></td><td><code>以管道显示</code> / 浓度 <code>100 %</code></td><td>将穿过墙壁和高台下方的通道，以穿过单元格中心的管道显示。关闭时，仍像以前一样用颜色填满整个单元格。管道的颜色与坑洞相同，并与坑洞连成一体。调低<code>浓度</code>可以让管道更不显眼</td></tr>
+</table>
+<p>点击各项右侧的色块，可以选择任意颜色。旁边的小按钮是便于选择的推荐颜色，<code>默认</code>按钮则用于恢复为原来的颜色。游戏自身元素的颜色也可以用同样的方式更改：墙壁、高台、门与出入口、楼梯（上行和下行）、水、干裂谷和熔岩（默认值与游戏中的颜色相同）。</p>
+<h2 id="translation-tab"><a name="translation-tab"></a>翻译标签页</h2>
+<p>此标签页用于设置翻译面板和翻译标签页的辅助显示。</p>
+<p><img src="img/settings_dark_tab_04.png" alt="翻译标签页"></p>
+<h3 id="translate-tab-panel-behavior"><a name="translate-tab-panel-behavior"></a>翻译标签页与面板的行为</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>保留消息直到下一条：</code></td><td>关闭</td><td>指定触发事件和物体交互的消息是否一直保留在翻译面板中，直到下一条消息到来</td></tr>
+<tr><td><code>空闲时的备用显示：</code></td><td>地图画面</td><td>选择在探索中没有译文时，翻译标签页整体显示什么。默认优先显示地图画面</td></tr>
+</table>
+<h3 id="translate-tab-advanced"><a name="translate-tab-advanced"></a>翻译标签页——高级</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>在翻译标签页中重现面板隐藏时的行为：</code></td><td>关闭</td><td>开启后，翻译结果和对话消息会显示在翻译标签页中，与翻译面板隐藏时相同。这是用于验证的高级设置</td></tr>
+</table>
+<h3 id="user-translations"><a name="user-translations"></a>我的翻译</h3>
+<p>可以把内置译文的一部分替换成你自己的译文，也可以新增语言。</p>
+<ol>
+<li>在 <code>导出模板</code> 中选择语言（要创建新语言时，选择 <code>（新语言的空白模板）</code>），按 <code>导出...</code> 保存 JSON 文件。开启 <code>附上英文原文</code> 后会附上英文原文（游戏正文的原文，只在已设置游戏文件夹并已建立词典的环境中附上）。请保存在翻译文件夹（见下）之外。</li>
+<li>用文本编辑器（UTF-8）打开保存的 JSON，修改想改的条目的 <code>text</code>。<code>text</code> 为空的条目沿用内置译文（新语言则沿用 <code>meta.fallback</code> 指定语言的译文）。请不要改动键，以及 <code>%xx</code>、<code>{name}</code> 这样的替换项（含有基准译文没有的替换项，或含有 <code>&lt;</code>、<code>&gt;</code> 的条目不会被载入）。<code>source</code>（英文原文）和 <code>ref</code>（供参考的译文）在载入时不会被使用。<br>新语言必须填写开头的 <code>lang</code>（语言代码，例如 <code>tr</code>）和 <code>meta.display_name</code>（显示在语言列表中的名称）。<code>meta.fallback</code> 是未翻译条目所用的内置语言（默认为 <code>en</code>）；把 <code>meta.direction</code> 设为 <code>rtl</code> 即从右向左显示。</li>
+<li>在 <code>导入翻译文件</code> 中按 <code>导入...</code>，选择编辑好的文件。通过检查后即导入。新语言会出现在“全般”标签的显示语言中。重新启动应用程序后生效。</li>
+</ol>
+<p>内置语言的模板中，每个条目都带有当前译文。不修改的条目请整条删除，或让 <code>text</code> 留空。保留下来的条目会固定为你的译文，应用更新后内置译文的改进不会反映到这些条目。</p>
+<p>示例 1：只修改内置德语译文中的一个条目（只有你写出的条目会被替换）。</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "de",
+  "texts": {
+    "ui_app": {
+      "settings.title": "Meine Einstellungen"
+    }
+  }
+}</pre></td></tr></table>
+<p>示例 2：新语言（土耳其语）。<code>ref</code> 仅供参考，载入时不会被使用。</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "tr",
+  "meta": { "display_name": "Türkçe", "fallback": "en", "direction": "ltr" },
+  "texts": {
+    "ui_app": {
+      "settings.title": { "ref": "Settings", "text": "Ayarlar" }
+    }
+  }
+}</pre></td></tr></table>
+<p>导入的文件会出现在 <code>已导入</code> 列表中。选中后按 <code>删除</code> 即可恢复为内置译文（新语言会被移除）。<code>打开文件夹</code> 会打开与设置文件同一位置的 <code>translations</code> 文件夹。放在这里的 JSON 会在启动时自动载入。对于新增的语言，手册等文档以英文显示。</p>
+<h2 id="combat-information-tab"><a name="combat-information-tab"></a>战斗信息标签页</h2>
+<p>你可以分别设置战斗和持续中的法术的显示位置。新增的显示、朗读和保存功能默认关闭。早期开发版本保存的设置值会原样沿用。显示的文字提供日语、英语、西班牙语、德语、法语、意大利语和俄语版本。</p>
+<p><img src="img/settings_dark_tab_05.png" alt="战斗信息标签页"></p>
+<h3 id="arena-screen"><a name="arena-screen"></a>Arena 画面</h3>
+<table>
+<tr><th>项目</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>使用独立的 OBS 捕获窗口（战斗与法术效果）</code></td><td>关闭</td><td>把战斗信息和持续中的法术汇集到一个窗口中，你可以用OBS的窗口捕获来选取它</td></tr>
+<tr><td><code>显示战斗信息</code></td><td>关闭</td><td>在画面上方显示你最近交手过的、已遭遇且目前在视野内的敌人，并在右侧显示其他已遭遇的存活敌人（即使不在视野内）。你可以查看生命、疲劳、法术点、造成的伤害和击败情况。你受到的伤害显示在探索区域的下边缘</td></tr>
+<tr><td><code>经验值显示时长：</code></td><td>5秒</td><td>在获得经验值的瞬间，于右下角显示经验值，并在指定的秒数后移除每个框。连续获得更多时，较早的框会向左移动（1到60秒）</td></tr>
+<tr><td><code>生命值较低时显示淡淡的边框</code></td><td>关闭</td><td>当生命值降到指定的百分比或以下时，让探索画面的边缘微微闪烁。即使你不使用战斗信息的敌人显示，也可以启用</td></tr>
+<tr><td><code>生命值阈值：</code></td><td>25%</td><td>开始显示低生命值边框的百分比（最大生命值的1到99%）</td></tr>
+</table>
+<p>受到伤害的显示会在发生后约5秒自动消失。任何地点的敌人视野都采用相同的规则。当地图或坐标无法确定时，不会凭猜测显示敌人。</p>
+<p>若要用OBS录制，请开启此设置，然后在“窗口捕获”中选择 <code>RTESArenaAssist オーバーレイ</code>（窗口标题在所有语言中都以日语显示），允许透明，并叠加在游戏视频之上。战斗信息和持续中的法术会出现在同一个来源中。</p>
+<h3 id="arena-screen-ongoing-spells"><a name="arena-screen-ongoing-spells"></a>Arena 画面 · 持续中的法术</h3>
+<table>
+<tr><th>项目</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>在左上角显示持续中的法术</code></td><td>关闭</td><td>显示光亮、护盾、强化力量、火焰抗性和漂浮的状态</td></tr>
+<tr><td><code>显示样式：</code></td><td><code>E | 图标 + 名称 + 数值 + 细计量条（推荐）</code></td><td>可从A“名称 + 剩余数值”、B“名称 + 横向计量条”、C“图标 + 横向计量条”、D“图标 + 顺时针遮罩”、E“图标 + 名称 + 数值 + 细计量条”和F“紧凑标签”中选择</td></tr>
+<tr><td><code>限时效果的更新方式：</code></td><td>回合（经典）</td><td>选择光亮、火焰抗性和漂浮以回合更新，还是以估算的秒数每秒更新一次。秒数会根据游戏内的进度间隔进行修正，因此当进度速度改变时（例如使用DETAIL），并不一定是固定的倍数</td></tr>
+</table>
+<p>护盾显示剩余的防护量，强化力量显示增加的数值。当无法确认最大值时（例如中途连接），可能不显示计量条。秒数显示是估算值，效果何时结束以游戏中的状态为准。</p>
+<h3 id="combat-info-translation-tab"><a name="combat-info-translation-tab"></a>翻译标签页中的战斗信息</h3>
+<table>
+<tr><th>项目</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>显示模式：</code></td><td>关闭（保持常规显示）</td><td>可选择保持常规显示、将常规显示与战斗信息一起使用，或全屏显示战斗信息</td></tr>
+<tr><td><code>战斗显示形式：</code></td><td>敌人计量条</td><td>显示战斗信息时，选择文本或敌人计量条显示</td></tr>
+</table>
+<h3 id="combat-info-translation-panel"><a name="combat-info-translation-panel"></a>翻译面板中的战斗信息</h3>
+<table>
+<tr><th>项目</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>显示战斗消息</code></td><td>关闭</td><td>在翻译面板中显示战斗文本。当出现已有的消息、对话或列表时，以它们优先</td></tr>
+<tr><td><code>最近消息：</code></td><td>10条</td><td>显示最近的1到50行战斗内容。超过数量时，会删除最旧的行并添加新的行</td></tr>
+</table>
+<h3 id="common-settings-and-messages"><a name="common-settings-and-messages"></a>通用设置与消息</h3>
+<table>
+<tr><th>项目</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>朗读新的战斗消息</code></td><td>关闭</td><td>在整体启用朗读时，按发生顺序朗读新的战斗内容。不会排除最近出现过的相同内容，下一次伤害也不会打断上一条朗读</td></tr>
+<tr><td><code>击败敌人时，跳过该敌人尚未朗读的伤害</code></td><td>开启</td><td>击败敌人时，中断正在播放的、对该敌人造成和受到的伤害以及尚未朗读的部分。其他敌人的朗读会继续</td></tr>
+<tr><td><code>保存战斗日志</code></td><td>关闭</td><td>将战斗历史与常规日志分开保存。只有在有记录时，记录标签页中才会显示切换项</td></tr>
+<tr><td><code>区分同类敌人</code></td><td>关闭</td><td>仅当有多个同名敌人时，在名称后添加用于区分的符号</td></tr>
+<tr><td><code>标识样式：</code></td><td>字母（A、B……）</td><td>可选择A、B…… 或1、2……</td></tr>
+<tr><td><code>战斗消息模板</code></td><td>各语言的默认文本</td><td>编辑遭遇、对敌人的伤害、受到的伤害、击败和经验值的文本。空白项以及无法使用的占位符会恢复为默认文本</td></tr>
+</table>
+<h2 id="read-aloud-tab"><a name="read-aloud-tab"></a>朗读标签页</h2>
+<p>此标签页用于设置译文的朗读、朗读对象、日志显示和角色名的读法。</p>
+<p><img src="img/settings_dark_tab_06.png" alt="朗读标签页"></p>
+<h3 id="read-aloud"><a name="read-aloud"></a>朗读</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>启用文本朗读：</code></td><td>关闭</td><td>启用朗读译文的整体功能</td></tr>
+<tr><td><code>引擎：</code></td><td>Windows（SAPI5）</td><td>选择朗读引擎。当本地的VOICEVOX引擎正在运行时，可以选择VOICEVOX</td></tr>
+<tr><td><code>备用语音：</code></td><td>开启</td><td>选择了VOICEVOX但无法使用时，用Windows语音朗读未能朗读的句子。关闭时，这些句子不会被朗读</td></tr>
+<tr><td><code>语音：</code></td><td>（默认）</td><td>引擎为Windows（SAPI5）时显示。要使用的SAPI语音。选择“（默认）”时，使用系统的默认语音</td></tr>
+<tr><td><code>角色：</code></td><td>风格ID 0的角色</td><td>引擎为VOICEVOX时显示。用于朗读的VOICEVOX角色</td></tr>
+<tr><td><code>风格：</code></td><td>风格ID 0</td><td>引擎为VOICEVOX时显示。所选角色的语音风格</td></tr>
+<tr><td><code>🔊 试听</code></td><td>-</td><td>引擎为VOICEVOX时显示。用所选的角色和风格试读一句短句</td></tr>
+<tr><td><code>语速：</code></td><td><code>標準</code>（标准）</td><td>朗读速度</td></tr>
+<tr><td><code>音量：</code></td><td><code>100</code></td><td>朗读音量。请在0到100的范围内设置</td></tr>
+<tr><td><code>打断：</code></td><td>开启</td><td>显示内容切换时，停止之前的朗读并朗读新内容。从NPC的回应返回菜单时也会停止</td></tr>
+<tr><td><code>关闭时中断：</code></td><td>关闭</td><td>关闭对话框或对话时，停止正在进行的朗读</td></tr>
+<tr><td><code>抑制重复：</code></td><td>关闭</td><td>不重复朗读相同的内容（例如反复出现的地下城消息）。这些内容仍会保留在日志中</td></tr>
+<tr><td><code>高亮朗读位置：</code></td><td>关闭</td><td>为正在朗读的句子着色（翻译面板、翻译标签页、记录）</td></tr>
+</table>
+<p>找不到VOICEVOX时，会显示“启动 VOICEVOX 后即可选择（127.0.0.1:50021）。”。启动VOICEVOX并重新打开设置对话框后，你就可以选择角色和风格。</p>
+<h3 id="read-targets"><a name="read-targets"></a>朗读对象</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>情境说明（触发事件、进入建筑、事件、各类对话框）</code></td><td>开启</td><td>将触发事件、进入建筑、事件和各类对话框等说明情境的文本作为朗读对象</td></tr>
+<tr><td><code>对话（NPC 的回应、店主台词、宫殿、讨价还价的回应）</code></td><td>开启</td><td>将NPC的回应、店主台词、宫殿和讨价还价的回应等对话文本作为朗读对象</td></tr>
+</table>
+<p>菜单、列表和数值输入等系统显示内容不会被朗读。</p>
+<h3 id="other-log"><a name="other-log"></a>其他 / 日志</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>在文本旁显示扬声器图标（点击即可朗读）</code></td><td>关闭</td><td>在显示的文本旁显示扬声器图标，点击即可朗读</td></tr>
+<tr><td><code>在日志中同时显示原文（关闭=仅显示译文）</code></td><td>关闭</td><td>在翻译记录中，把英文原文与译文并排显示。关闭时只显示译文</td></tr>
+<tr><td><code>日志保存上限（条）：</code></td><td><code>2000</code></td><td>保存的日志条数上限。超出的较旧日志会被自动删除</td></tr>
+<tr><td><code>在日志中显示记录日期和时间</code></td><td>开启</td><td>在日志条目上显示记录的日期和时间</td></tr>
+<tr><td><code>日期时间显示格式：</code></td><td><code>yyyy/MM/dd(aaa) HH:mm:ss</code></td><td>日志日期和时间的显示格式。你可以选择预设或自定义格式</td></tr>
+</table>
+<h3 id="character-name-reading"><a name="character-name-reading"></a>角色名读法替换</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>名字读法：</code></td><td>空</td><td>仅在朗读时，把从游戏中自动获取的角色名替换为你指定的读法。显示和日志中仍保留原名</td></tr>
+</table>
+<h2 id="cheat-tab"><a name="cheat-tab"></a>作弊标签页</h2>
+<p>此标签页用于设置改写游戏内数值、始终保持最大值等辅助功能。</p>
+<p><img src="img/settings_dark_tab_07.png" alt="作弊标签页"></p>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>启用作弊模式：</code></td><td>关闭</td><td>整个作弊功能的总开关。即使只开启它，如果不开启子设置，也不会有任何变化</td></tr>
+<tr><td><code>修改状态：</code></td><td>关闭</td><td>允许编辑属性等状态修改</td></tr>
+<tr><td><code>揭示地图：</code></td><td>关闭</td><td>作弊启用期间，显示整张地图</td></tr>
+<tr><td><code>生命始终为最大值：</code></td><td>关闭</td><td>作弊启用期间，如果当前生命值低于最大值，就将其恢复为最大值</td></tr>
+<tr><td><code>疲劳始终为最大值：</code></td><td>关闭</td><td>作弊启用期间，将当前疲劳恢复为最大值</td></tr>
+<tr><td><code>法术点始终为最大值：</code></td><td>关闭</td><td>作弊启用期间，将当前法术点恢复为最大值</td></tr>
+</table>
+<h2 id="dosbox-tab"><a name="dosbox-tab"></a>DOSBox 标签页</h2>
+<p>此标签页读取DOSBox的 <code>arena.conf</code>，并设置窗口显示、视频、性能和声音。</p>
+<p><img src="img/settings_dark_tab_08.png" alt="DOSBox 标签页"></p>
+<h3 id="config-file-window-behavior"><a name="config-file-window-behavior"></a>配置文件 / 窗口行为</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>配置文件</code></td><td>默认路径下的 <code>arena.conf</code></td><td>DOSBox的配置文件。当Assist自己的设置为空时，会把竞技场Steam版的标准位置作为默认路径来读取</td></tr>
+<tr><td><code>浏览...</code></td><td>-</td><td>选择任意的 <code>arena.conf</code></td></tr>
+<tr><td><code>始终置顶：</code></td><td>关闭</td><td>将DOSBox窗口显示在其他窗口的前面</td></tr>
+</table>
+<h3 id="window-display"><a name="window-display"></a>窗口与显示</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>窗口大小：</code></td><td><code>1024×768</code></td><td><code>windowresolution</code>。从预设中选择；选择自定义时，编辑宽/高数值输入框</td></tr>
+<tr><td><code>全屏分辨率：</code></td><td><code>desktop</code></td><td><code>fullresolution</code>。指定全屏时使用的分辨率</td></tr>
+<tr><td><code>以全屏启动：</code></td><td>关闭</td><td><code>fullscreen</code>。指定DOSBox是否以全屏启动</td></tr>
+<tr><td><code>输出方式：</code></td><td><code>ddraw</code></td><td><code>output</code>。DOSBox的渲染输出方式</td></tr>
+<tr><td><code>鼠标自动锁定：</code></td><td>开启</td><td><code>autolock</code>。自动把鼠标锁定在DOSBox画面内</td></tr>
+<tr><td><code>鼠标灵敏度：</code></td><td><code>100</code></td><td><code>sensitivity</code>。DOSBox内的鼠标灵敏度</td></tr>
+</table>
+<h3 id="video"><a name="video"></a>视频</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>宽高比校正：</code></td><td>开启</td><td><code>aspect</code>。校正视频的宽高比</td></tr>
+<tr><td><code>缩放器：</code></td><td><code>normal2x</code></td><td><code>scaler</code>。DOSBox的画面放大滤镜</td></tr>
+</table>
+<h3 id="performance"><a name="performance"></a>性能</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>CPU 周期：</code></td><td><code>fixed 25000</code></td><td><code>cycles</code>。指定CPU模拟速度。选择 <code>fixed</code> 时，右侧的数值输入框会变为可用</td></tr>
+</table>
+<h3 id="sound"><a name="sound"></a>声音</h3>
+<table>
+<tr><th>名称</th><th>默认值</th><th>说明</th></tr>
+<tr><td><code>静音模式：</code></td><td>关闭</td><td><code>nosound</code>。禁用DOSBox的声音</td></tr>
+<tr><td><code>采样率：</code></td><td><code>44100</code></td><td><code>rate</code>。混音器的采样率</td></tr>
+<tr><td><code>MIDI 设备：</code></td><td><code>default</code></td><td><code>mididevice</code>。用于MIDI播放的设备</td></tr>
+</table>
+
+</body>
+</html>

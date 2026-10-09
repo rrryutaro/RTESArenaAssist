@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Miejsca i budynki</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Miejsca i budynki</h1>
+
+<h2>Budynki w mieście — przegląd</h2>
+<table>
+  <tr><th>Budynek</th><th>Usługi</th></tr>
+  <tr><td>Karczma / Gospoda</td><td>Odpoczynek, zbieranie informacji, przyjmowanie zadań</td></tr>
+  <tr><td>Świątynia</td><td>Lecz chorobę, Lecz zatrucie, Zdejmij klątwę, Błogosław, leczenie</td></tr>
+  <tr><td>Gildia Magów</td><td>Kupno zaklęć, Kreator zaklęć, Teleportacja, identyfikacja przedmiotów</td></tr>
+  <tr><td>Gildia Wojowników</td><td>Przyjmowanie zadań, naprawa ekwipunku, trening</td></tr>
+  <tr><td>Sklep z ekwipunkiem</td><td>Kupno i sprzedaż broni i zbroi, naprawa, identyfikacja, zaczarowanie</td></tr>
+  <tr><td>Pałac</td><td>Zadania szlachty, informacje</td></tr>
+  <tr><td>Biblioteka</td><td>Informacje, mapy, wskazówki</td></tr>
+</table>
+
+<h2>Karczma / Gospoda</h2>
+<p>Najważniejsze źródło informacji w każdym mieście. Rozmawiaj z postaciami niezależnymi, by słuchać plotek i przyjmować zadania. Wynajmij pokój, aby odpocząć — odnawia to Zdrowie i Zmęczenie i jest jedynym sposobem, by Ria Silmane pojawiła się w twoich snach.</p>
+<div class="note">Sny są kluczem do postępów w głównym wątku. Ria wskaże położenie części Kostura Chaosu dopiero po zdobyciu wystarczającego doświadczenia — i tylko we śnie.</div>
+
+<h2>Świątynia</h2>
+<p>Usuwa dolegliwości za złoto.</p>
+<table>
+  <tr><th>Usługa</th><th>Efekt</th></tr>
+  <tr><td>Lecz chorobę</td><td>Usuwa stan: Chory</td></tr>
+  <tr><td>Lecz zatrucie</td><td>Usuwa stan: Zatruty</td></tr>
+  <tr><td>Zdejmij klątwę</td><td>Usuwa stan: Przeklęty</td></tr>
+  <tr><td>Błogosław</td><td>Daje tymczasową premię do statystyk</td></tr>
+</table>
+
+<h2>Gildia Magów</h2>
+<p>Niezbędna dla klas rzucających zaklęcia. Kupuj zaklęcia do księgi zaklęć albo twórz własne w Kreatorze zaklęć. Oferuje płatną teleportację między miastami oraz identyfikację przedmiotów.</p>
+
+<h2>Gildia Wojowników</h2>
+<p>Oferuje stały dopływ krótkich zadań (zlecenia zabójstw, eskorty, odzyskiwanie przedmiotów). Ich wykonanie daje złoto i doświadczenie — to jeden z najszybszych sposobów na zdobycie poziomów na początku gry.</p>
+
+<h2>Sklep z ekwipunkiem</h2>
+<p>Kupno i sprzedaż broni i zbroi. Dostępne są też naprawa, identyfikacja i zaczarowanie. Asortyment zależy od miejsca.</p>
+
+<h2>Rodzaje zbroi</h2>
+<table>
+  <tr><th>Rodzaj</th><th>Ochrona</th><th>Kto może nosić</th></tr>
+  <tr><td>Skórzany</td><td>Niska</td><td>Wszystkie klasy (bez ograniczeń)</td></tr>
+  <tr><td>Kolczugowy</td><td>Średnia</td><td>Większość klas</td></tr>
+  <tr><td>Płytowy</td><td>Wysoka — można zaczarować</td><td>Tylko Wojownik, Rycerz, Zwiadowca</td></tr>
+</table>
+<div class="note"><strong>Ważne:</strong> Magicznie zaczarować można tylko zbroję płytową. Nosić ją mogą wyłącznie Wojownik, Rycerz i Zwiadowca.</div>
+
+<h2>Rodzaje lochów</h2>
+<p>Tereny poza miastami są pełne lochów różnego rodzaju — niezbędnych do zdobywania doświadczenia i znajdowania ekwipunku.</p>
+<table>
+  <tr><th>Rodzaj</th><th>Uwagi</th></tr>
+  <tr><td>Krypta</td><td>Wielu nieumarłych; mnóstwo pułapek</td></tr>
+  <tr><td>Ruiny</td><td>Mieszanka bestii i humanoidalnych wrogów; skrzynie ze skarbami</td></tr>
+  <tr><td>Legowisko</td><td>Jeden dominujący typ wrogów; możliwa sala bossa</td></tr>
+  <tr><td>Jaskinia</td><td>Naturalny teren; skomplikowane, rozgałęzione układy</td></tr>
+</table>
+
+<h2>Automapa</h2>
+<p>Naciśnij <strong>Tab</strong>, aby otworzyć automapę w lochach i miastach. Zapisuje odwiedzone obszary oraz pokazuje twoją pozycję i kierunek patrzenia. Dzięki niej nie zgubisz się w głębokich lochach.</p>
+
+</body>
+</html>

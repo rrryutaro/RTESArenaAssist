@@ -1,0 +1,46 @@
+{
+  "_comment": "言語別処理ルール(翻訳でない)。翻訳ローダは _ 接頭辞ファイルを無視する。",
+  "dynamic_places": {
+    "dungeon": {
+      "combination_rule": "{name} {type}",
+      "types": [
+        {
+          "en": "Dungeon",
+          "value": "던전"
+        },
+        {
+          "en": "Cavern",
+          "value": "동굴"
+        },
+        {
+          "en": "Labyrinth",
+          "value": "미궁"
+        },
+        {
+          "en": "Catacombs",
+          "value": "카타콤"
+        },
+        {
+          "en": "Hole",
+          "value": "구덩이"
+        },
+        {
+          "en": "Crypt",
+          "value": "지하 묘지"
+        },
+        {
+          "en": "Fortress",
+          "value": "요새"
+        },
+        {
+          "en": "Mines",
+          "value": "광산"
+        },
+        {
+          "en": "Cellar",
+          "value": "지하실"
+        }
+      ]
+    }
+  }
+}

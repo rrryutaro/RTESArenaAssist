@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<title>基本操作指南</title>
+<style>
+body { font-family: "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+
+<h1>RTESArenaAssist — 基本操作指南</h1>
+<p>RTESArenaAssist是一款在你游玩《上古卷轴：竞技场》时提供辅助的应用。它会在游戏旁边显示翻译、地图、日志、记录、存档管理、截图、词典和手册。</p>
+<p>文中的图片是在使用Assist的显示语言、“深色”主题、默认设置且未连接的状态下截取的。连接之后，显示内容会随当前的竞技场画面和游戏状态而变化。</p>
+<p>Assist的基本用法是：启动竞技场，用Assist连接，再点击 <code>⊞</code> 按钮进入布局模式开始游玩。在布局模式下，可以把DOSBox游戏画面与Assist的翻译、地图等标签页排列在同一个屏幕上，无需用Alt+Tab切换即可随时查看。</p>
+<p>设置的详细说明，请参阅本手册的“设置对话框”一页。</p>
+<h2 id="contents"><a name="contents"></a>目录</h2>
+<ul>
+<li><a href="#first-run">首次运行</a></li>
+<ul>
+<li><a href="#choose-a-language">选择语言</a></li>
+<li><a href="#specify-the-arena-folder">指定竞技场文件夹</a></li>
+<li><a href="#generate-the-translation-files">生成翻译文件</a></li>
+</ul>
+<li><a href="#main-window">主窗口</a></li>
+<ul>
+<li><a href="#disconnected">未连接</a></li>
+<li><a href="#connected">已连接</a></li>
+</ul>
+<li><a href="#use-layout-mode-as-the-default">默认使用布局模式</a></li>
+<li><a href="#tabs">标签页</a></li>
+<ul>
+<li><a href="#translate-tab">翻译标签页</a></li>
+<li><a href="#status-tab">状态标签页</a></li>
+<li><a href="#map-tab">地图标签页</a></li>
+<li><a href="#journal-tab">日志标签页</a></li>
+<li><a href="#log-tab">记录标签页</a></li>
+<li><a href="#save-tab">存档标签页</a></li>
+<li><a href="#capture-tab">截图标签页</a></li>
+<li><a href="#dictionary-tab">词典标签页</a></li>
+<li><a href="#manual-tab">手册标签页</a></li>
+</ul>
+<li><a href="#basic-steps">基本步骤</a></li>
+</ul>
+<h2 id="first-run"><a name="first-run"></a>首次运行</h2>
+<p>公开版不包含竞技场的原始文本数据。首次运行时，Assist会根据你电脑上的竞技场文件夹生成翻译文件。</p>
+<h3 id="choose-a-language"><a name="choose-a-language"></a>选择语言</h3>
+<p>首先选择Assist的显示语言。你选择的语言会立即在此画面生效。</p>
+<p><img src="img/assist_first_run_language.png" alt="首次运行：选择语言"></p>
+<table>
+<tr><th>控件</th><th>说明</th></tr>
+<tr><td>语言下拉框</td><td>选择Assist界面的语言。此画面只提供日语、English和Español。若要使用其他语言，请在启动后到设置对话框“常规”标签页的“显示语言”中选择。</td></tr>
+<tr><td>下一步</td><td>继续指定竞技场文件夹。</td></tr>
+</table>
+<h3 id="specify-the-arena-folder"><a name="specify-the-arena-folder"></a>指定竞技场文件夹</h3>
+<p>如果在竞技场运行的状态下继续，Assist会从正在运行的竞技场自动检测安装位置。如果无法检测到，请用 <code>浏览…</code> 指定竞技场的数据文件夹。</p>
+<p><img src="img/assist_first_run_arena.png" alt="首次运行：指定竞技场文件夹"></p>
+<table>
+<tr><th>项目</th><th>说明</th></tr>
+<tr><td>游戏安装文件夹</td><td>指定竞技场的 <code>ARENA</code> 文件夹。</td></tr>
+<tr><td>浏览…</td><td>通过文件夹选择对话框指定竞技场文件夹。</td></tr>
+<tr><td>重新检测</td><td>重新检测正在运行的竞技场。</td></tr>
+<tr><td>生成翻译文件</td><td>找到有效的竞技场文件夹后，继续生成翻译文件。</td></tr>
+</table>
+<h3 id="generate-the-translation-files"><a name="generate-the-translation-files"></a>生成翻译文件</h3>
+<p>Assist会根据竞技场文件夹中的数据生成翻译文件。完成后会打开主窗口。</p>
+<p><img src="img/assist_first_run_generate.png" alt="首次运行：生成翻译文件"></p>
+<p>生成过程中会显示进度条和当前步骤。数据也会从正在运行的竞技场中读取，因此在完成之前请不要关闭竞技场。</p>
+<h2 id="main-window"><a name="main-window"></a>主窗口</h2>
+<p>Assist的顶部是连接栏，中间是标签页区域，底部是状态栏。</p>
+<h3 id="disconnected"><a name="disconnected"></a>未连接</h3>
+<p>Assist在刚启动时处于未连接状态。在竞技场 / DOSBox运行的情况下，点击右上角的 <code>连接</code> 按钮。</p>
+<p><img src="img/assist_main_window.png" alt="主窗口：未连接"></p>
+<table>
+<tr><th>区域</th><th>说明</th></tr>
+<tr><td>连接状态</td><td>显示“未连接”；连接后则显示识别到的画面名称、IMG名称等。</td></tr>
+<tr><td>连接 / 断开</td><td>连接到DOSBox中的竞技场，或断开连接。</td></tr>
+<tr><td><code>⏸</code> / <code>▶</code> / <code>■</code></td><td>暂停 / 继续 / 停止朗读。在设置对话框的“朗读”标签页中启用朗读后才可使用（默认关闭）。</td></tr>
+<tr><td><code>⊞</code></td><td>切换布局模式。右键点击可打开布局菜单。</td></tr>
+<tr><td><code>📷</code></td><td>保存截图。在布局模式下，整个布局会保存为一张图片。游戏画面（DOSBox）处于焦点时，也可以用快捷键（默认为 <code>F12</code>）以同样的方式保存。</td></tr>
+<tr><td><code>⚙</code></td><td>打开设置对话框。</td></tr>
+</table>
+<p>启动后状态栏中显示的“已注册快捷键 F12”表示截图快捷键已可使用。你可以在设置对话框的“常规”标签页中更改该按键。</p>
+<h3 id="connected"><a name="connected"></a>已连接</h3>
+<p>连接后，连接栏的最左端会显示识别到的画面名称。下面的示例是连接到竞技场标题画面时的情形。</p>
+<p><img src="img/assist_connection_bar.png" alt="连接栏：已连接"></p>
+<p>该画面使用的IMG名称也会显示在画面名称的右侧（标题画面等不使用IMG的画面不会显示）。在设置对话框的“显示”标签页中，可以选择是否显示画面名称和IMG名称。</p>
+<h2 id="use-layout-mode-as-the-default"><a name="use-layout-mode-as-the-default"></a>默认使用布局模式</h2>
+<p>Assist是按照在布局模式下使用来设计的。在普通窗口中标签页同样可以使用，但在布局模式下，你可以把游戏画面、翻译、地图、记录等固定在同一个屏幕上，一起查看。</p>
+<p>在默认布局中，DOSBox游戏画面位于左侧，Assist的主标签页位于右侧，辅助面板位于底部。游玩时，你可以在右侧查看地图或日志，并在底部面板或翻译标签页中查看当前画面的翻译。</p>
+<table>
+<tr><th>操作</th><th>说明</th></tr>
+<tr><td>左键点击 <code>⊞</code></td><td>开始 / 结束布局模式。</td></tr>
+<tr><td>右键点击 <code>⊞</code></td><td>可以选择布局形式、放置的角落、跟随模式、重新排列、始终置顶等。</td></tr>
+<tr><td><code>📷</code></td><td>在布局模式下，将包含DOSBox和Assist的整个布局保存为一张图片。</td></tr>
+<tr><td><code>断开</code></td><td>断开与竞技场的连接。先结束布局模式再断开，更便于整理屏幕。</td></tr>
+</table>
+<h2 id="tabs"><a name="tabs"></a>标签页</h2>
+<p>各标签页的截图用于展示画面的组成。连接后，显示内容会根据当前的竞技场画面和游戏状态更新。</p>
+<h3 id="translate-tab"><a name="translate-tab"></a>翻译标签页</h3>
+<p>这是显示当前画面翻译的核心标签页。显示内容会随情境切换：标题画面、角色创建、对话、设施、物品、法术等。</p>
+<p><img src="img/assist_tab_translate.png" alt="翻译标签页"></p>
+<table>
+<tr><th>显示</th><th>说明</th></tr>
+<tr><td>译文</td><td>显示当前画面或事件的翻译。</td></tr>
+<tr><td>原文</td><td>根据设置，也会同时显示对应的英文原文。</td></tr>
+<tr><td>专用视图</td><td>职业列表、种族列表、装备、设施列表、购买列表等会切换为专用的易读视图。</td></tr>
+</table>
+<p>通过设置中的“战斗信息”标签页，也可以在翻译标签页中显示战斗信息。选择“战斗与常规显示”或“完整战斗显示”，再选择“文本”或“敌人计量条”。默认为“关闭”，保持通常的翻译标签页显示。</p>
+<h3 id="status-tab"><a name="status-tab"></a>状态标签页</h3>
+<p>此标签页显示角色的属性和状态。角色创建之后，或在游玩中保持连接时，会显示状态信息。</p>
+<p><img src="img/assist_tab_status.png" alt="状态标签页"></p>
+<table>
+<tr><th>显示</th><th>说明</th></tr>
+<tr><td>视图</td><td>选择“标准”（此前使用的显示）或某一种样式（角色表）。状态界面以及翻译标签页中的属性分配也会使用这里选择的视图。</td></tr>
+<tr><td>属性</td><td>显示力量、智力等主要属性。</td></tr>
+<tr><td>状态数值</td><td>显示HP、疲劳、法术点数等。</td></tr>
+<tr><td>修改数值</td><td>修改属性等操作，仅在你明确启用作弊设置时才可使用（在“标准”视图中）。</td></tr>
+</table>
+<h3 id="character-sheet"><a name="character-sheet"></a>角色表</h3>
+<p>此功能以你选择的样式显示状态。如果在“视图”中选择了“标准”以外的项目，状态就会以所选样式显示。样式是一个HTML文件（模板），内置了8种样式，你也可以自己制作。部分样式会显示面孔和全身像（包括装备）、角色的状态（疾病、中毒、麻痹等），以及各身体部位的护甲等级（根据装备计算出的数值，越低防护越好）。面孔和全身像是根据你的竞技场文件制作的。</p>
+<table>
+<tr><th>控件</th><th>说明</th></tr>
+<tr><td>打开文件夹</td><td>打开存放你自己的角色表（HTML文件）的文件夹，即与 <code>RTESArenaAssist.exe</code> 位于同一位置的 <code>character_sheets</code>。首次打开时，会在其中放入内置样式的副本。放入其中的文件会出现在“视图”列表中，并带有“（文件夹）”标记。</td></tr>
+<tr><td>重新加载</td><td>重新加载文件夹中的角色表。修改文件后请点击此按钮。</td></tr>
+</table>
+<p>内置样式一览、角色表的工作方式，以及可插入的数值和写法，请参阅本手册的“状态界面样式（角色表）”一页。</p>
+<h3 id="map-tab"><a name="map-tab"></a>地图标签页</h3>
+<p>此标签页显示地下城、城市、野外、室内等的自动地图。显示内容会随你在游戏中的当前位置更新。</p>
+<p><img src="img/assist_tab_map.png" alt="地图标签页"></p>
+<table>
+<tr><th>显示</th><th>说明</th></tr>
+<tr><td>当前位置</td><td>根据已连接游戏的状态，显示当前地图和位置。</td></tr>
+<tr><td>自动地图</td><td>绘制已探索的区域、墙壁、入口、野外地形等。</td></tr>
+<tr><td>显示设置</td><td>网格、区块坐标、野外扩展显示等可以在设置对话框中调整。</td></tr>
+</table>
+<h3 id="journal-tab"><a name="journal-tab"></a>日志标签页</h3>
+<p>在此标签页中，你可以用自己的显示语言阅读游戏日志（Logbook / Journal）中记录的内容。</p>
+<p><img src="img/assist_tab_journal.png" alt="日志标签页"></p>
+<table>
+<tr><th>显示</th><th>说明</th></tr>
+<tr><td>日期与标题</td><td>显示每条日志的日期和概要。</td></tr>
+<tr><td>正文</td><td>用你的显示语言显示日志正文。</td></tr>
+<tr><td>更新</td><td>游戏中的日志更新时，Assist的显示也会随之更新。</td></tr>
+</table>
+<h3 id="log-tab"><a name="log-tab"></a>记录标签页</h3>
+<p>在此标签页中，你可以把Assist显示过的翻译作为历史记录回顾。想重读错过的内容时很有用。</p>
+<p><img src="img/assist_tab_log.png" alt="记录标签页"></p>
+<table>
+<tr><th>控件</th><th>说明</th></tr>
+<tr><td>排序</td><td>在“最新在前”和“最早在前”之间切换。</td></tr>
+<tr><td>筛选</td><td>按分类或地点缩小记录范围。</td></tr>
+<tr><td>清除</td><td>清除正在显示的记录。</td></tr>
+</table>
+<p>如果你启用了保存战斗日志且已有记录，就可以在记录标签页中切换“常规日志”和“战斗日志”。如果没有战斗日志，则和以前一样只显示常规日志。</p>
+<h3 id="save-tab"><a name="save-tab"></a>存档标签页</h3>
+<p>此标签页管理竞技场的存档位和备份。它为还原前的自动备份等存档数据操作提供辅助。</p>
+<p><img src="img/assist_tab_save.png" alt="存档标签页"></p>
+<table>
+<tr><th>控件</th><th>说明</th></tr>
+<tr><td>存档位列表</td><td>列出竞技场的存档位。</td></tr>
+<tr><td>备份</td><td>备份所选的存档。</td></tr>
+<tr><td>还原</td><td>从备份还原存档数据。</td></tr>
+<tr><td>删除</td><td>删除不再需要的备份或存档。</td></tr>
+</table>
+<h3 id="capture-tab"><a name="capture-tab"></a>截图标签页</h3>
+<p>在此标签页中，你可以查看用 <code>📷</code> 按钮保存的截图。在布局模式下截取的图片也可以在这里打开。</p>
+<p><img src="img/assist_tab_capture.png" alt="截图标签页"></p>
+<table>
+<tr><th>控件</th><th>说明</th></tr>
+<tr><td>列表</td><td>显示已保存的截图。</td></tr>
+<tr><td>预览</td><td>可以查看所选的图片。</td></tr>
+<tr><td>锁定</td><td>保护想要保留的图片，避免被删除。</td></tr>
+<tr><td>删除</td><td>删除所选的图片或不再需要的图片。</td></tr>
+</table>
+<h3 id="dictionary-tab"><a name="dictionary-tab"></a>词典标签页</h3>
+<p>此标签页用于搜索Assist的翻译词典和地下城文本。你可以用它查找游戏中出现的词语和句子。</p>
+<p><img src="img/assist_tab_dict.png" alt="词典标签页"></p>
+<table>
+<tr><th>显示模式</th><th>说明</th></tr>
+<tr><td>词典</td><td>按英文关键词、译文和分类搜索。</td></tr>
+<tr><td>地下城文本</td><td>搜索并显示来自INF的地下城文本。</td></tr>
+</table>
+<h3 id="manual-tab"><a name="manual-tab"></a>手册标签页</h3>
+<p>在此标签页中，你可以用自己的显示语言阅读竞技场基本操作和系统的说明，以及Assist功能的说明。游玩时想确认操作或术语，可以在这里查看。</p>
+<p><img src="img/assist_tab_manual.png" alt="手册标签页"></p>
+<table>
+<tr><th>控件</th><th>说明</th></tr>
+<tr><td>简易 / 完整 / Assist</td><td>切换显示的内容（见下表）。</td></tr>
+<tr><td>关键词搜索</td><td>搜索手册。</td></tr>
+<tr><td>左侧列表</td><td>在故事、角色创建、操作、战斗与魔法等章节之间切换。</td></tr>
+</table>
+<table>
+<tr><th>切换项</th><th>内容</th><th>语言</th></tr>
+<tr><td>简易</td><td>游戏说明（9章）</td><td>12种语言</td></tr>
+<tr><td>完整</td><td>官方手册的译本（导入翻译包后显示）</td><td>目前仅有日语</td></tr>
+<tr><td>Assist</td><td>Assist功能的说明（基本操作、设置对话框、状态界面样式（角色表））</td><td>12种语言</td></tr>
+</table>
+<p><b>完整版（官方手册的译本）</b></p>
+<p>在“完整”中，你可以阅读官方手册（玩家指南及其附录）的译本。译本与应用本体分开发布，以每种显示语言一个翻译包（<code>RTESArenaAssist-manual-&lt;language&gt;.zip</code>）的形式，提供在手册下载页面上（目前仅有日语）。首次使用时，请按以下步骤导入翻译包。</p>
+<p><img src="img/assist_tab_manual_full.png" alt="手册标签页（导入完整版）"></p>
+<ol><li>点击“打开手册下载页面”。下载页面会在浏览器中打开，请下载与你的显示语言对应的翻译包。</li><li>点击“导入”，选择下载好的文件。</li><li>出现章节列表即表示完成。列表上方会显示已导入翻译包的日期，以及下载页面和导入的入口。以同样的方式导入更新的翻译包，即可替换旧的翻译包。</li></ol>
+<p>手册中的图片是根据你的竞技场（Steam版）<code>Docs</code> 文件夹中的 <code>Player Guide.pdf</code> 制作的。如果找不到该PDF或版本不同，则只显示文字。请检查设置中的“游戏文件夹”并点击“重新制作图片”，图片就会一并显示。导入之后，你可以删除下载的文件。Assist本身不会连接互联网（下载是在你自己的浏览器中进行的）。</p>
+<p>“完整”中还会显示一个链接，用于打开 <code>Docs</code> 文件夹中的官方手册（英文PDF）。当显示语言为英语时，不显示翻译包，只显示此链接。</p>
+<h2 id="basic-steps"><a name="basic-steps"></a>基本步骤</h2>
+<ol><li>启动竞技场。</li><li>启动RTESArenaAssist。</li><li>首次运行时，指定语言和竞技场文件夹，并生成翻译文件。</li><li>点击Assist右上角的 <code>连接</code>，连接到竞技场 / DOSBox。</li><li>点击 <code>⊞</code> 进入布局模式。</li><li>通常保持在布局模式下，根据需要在翻译、地图、日志和记录标签页之间切换。</li><li>想保留某个画面时，用 <code>📷</code> 或快捷键（默认为 <code>F12</code>）截图。</li><li>结束时，用 <code>⊞</code> 结束布局模式，必要时再点击 <code>断开</code>。</li></ol>
+<p>布局模式的显示大小、布局形式、翻译面板、截图文件夹等，都可以在设置对话框中调整。若要朗读翻译，还需要在设置对话框的“朗读”标签页中启用。</p>
+
+</body>
+</html>

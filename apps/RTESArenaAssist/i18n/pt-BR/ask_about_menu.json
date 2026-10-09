@@ -1,0 +1,22 @@
+{
+  "ask_about_menu.title_ask_about.0": "PERGUNTAR SOBRE ?",
+  "ask_about_menu.opt_who_are_you.0": "Quem é você?",
+  "ask_about_menu.opt_where_is.0": "Onde fica...",
+  "ask_about_menu.opt_rumors.0": "Rumores",
+  "ask_about_menu.opt_exit.0": "Sair",
+  "ask_about_menu.title_rumor_type.0": "Tipo de rumor",
+  "ask_about_menu.opt_general.0": "Geral",
+  "ask_about_menu.opt_work.0": "Trabalho",
+  "ask_about_menu.place_inn.0": "Estalagem",
+  "ask_about_menu.place_temple.0": "Templo",
+  "ask_about_menu.place_equipment_store.0": "Loja de Equipamentos",
+  "ask_about_menu.place_mages_guild.0": "Guilda dos Magos",
+  "ask_about_menu.place_palace.0": "Palácio",
+  "ask_about_menu.place_city_gates.0": "Portões da cidade",
+  "ask_about_menu.place_nearest_inn.0": "Estalagem mais próxima",
+  "ask_about_menu.place_nearest_temple.0": "Templo mais próximo",
+  "ask_about_menu.place_nearest_store.0": "Loja mais próxima",
+  "ask_about_menu.place_nearest_dungeon.0": "Masmorra mais próxima",
+  "ask_about_menu.fallback_no_rumor.0": "Não lido com rumores...",
+  "ask_about_menu.fallback_not_sure.0": "Não tenho certeza. Tente perguntar a alguém lá fora."
+}

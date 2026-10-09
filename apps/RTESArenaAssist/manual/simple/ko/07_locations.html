@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>장소 및 시설</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>장소 및 시설</h1>
+
+<h2>도시 시설 개요</h2>
+<table>
+  <tr><th>시설</th><th>서비스</th></tr>
+  <tr><td>선술집 / 여관</td><td>휴식, 정보 수집, 퀘스트 받기</td></tr>
+  <tr><td>사원</td><td>질병 치료, 해독, 저주 해제, 축복, 치유</td></tr>
+  <tr><td>마법사 길드</td><td>주문 구매, 주문 제작, 순간이동 서비스, 아이템 감정</td></tr>
+  <tr><td>전사 길드</td><td>퀘스트 수락, 장비 수리, 훈련</td></tr>
+  <tr><td>장비점</td><td>무기와 방어구 구매/판매, 수리, 감정, 마법 부여</td></tr>
+  <tr><td>궁전</td><td>귀족 퀘스트, 정보</td></tr>
+  <tr><td>도서관</td><td>정보, 지도, 힌트</td></tr>
+</table>
+
+<h2>선술집 / 여관</h2>
+<p>어느 도시에서든 가장 중요한 정보원이에요. NPC와 대화해 소문을 듣고 퀘스트를 받을 수 있어요. 방을 빌려 휴식하면 체력과 피로가 회복되고, 리아 실마네가 꿈에 나타날 수 있는 유일한 방법이기도 해요.</p>
+<div class="note">꿈은 메인 퀘스트를 진행하는 열쇠예요. 리아는 충분한 경험치를 쌓았을 때만, 그리고 꿈을 통해서만 혼돈의 지팡이 조각이 있는 곳을 알려줘요.</div>
+
+<h2>사원</h2>
+<p>골드를 내면 상태 이상을 없애줘요.</p>
+<table>
+  <tr><th>서비스</th><th>효과</th></tr>
+  <tr><td>질병 치료</td><td>질병 상태를 없애요</td></tr>
+  <tr><td>해독</td><td>중독 상태를 없애요</td></tr>
+  <tr><td>저주 해제</td><td>저주 상태를 없애요</td></tr>
+  <tr><td>축복</td><td>일시적인 능력치 보너스를 줘요</td></tr>
+</table>
+
+<h2>마법사 길드</h2>
+<p>주문을 쓰는 클래스에 꼭 필요한 곳이에요. 주문을 구매해 주문서에 추가하거나 주문 제작에서 나만의 주문을 만들 수 있어요. 유료로 도시 간 순간이동과 아이템 감정도 해줘요.</p>
+
+<h2>전사 길드</h2>
+<p>단기 퀘스트(토벌 의뢰, 호위, 회수 임무)가 꾸준히 나와요. 완료하면 골드와 경험치를 얻을 수 있어서, 게임 초반에 레벨을 올리는 가장 빠른 방법 중 하나예요.</p>
+
+<h2>장비점</h2>
+<p>무기와 방어구를 사고팔 수 있어요. 수리, 감정, 마법 부여 서비스도 있어요. 재고는 장소마다 달라요.</p>
+
+<h2>방어구 종류</h2>
+<table>
+  <tr><th>종류</th><th>방어력</th><th>착용 가능</th></tr>
+  <tr><td>가죽</td><td>낮음</td><td>모든 클래스(제한 없음)</td></tr>
+  <tr><td>사슬</td><td>보통</td><td>대부분의 클래스</td></tr>
+  <tr><td>판금</td><td>높음 — 마법 부여 가능</td><td>전사, 기사, 레인저만</td></tr>
+</table>
+<div class="note"><strong>중요:</strong> 판금 방어구에만 마법을 부여할 수 있어요. 판금 방어구는 전사, 기사, 레인저만 착용할 수 있어요.</div>
+
+<h2>던전 종류</h2>
+<p>도시 밖 들판에는 다양한 던전이 있어요. 경험치를 얻고 장비를 찾으려면 꼭 필요한 곳이에요.</p>
+<table>
+  <tr><th>종류</th><th>특징</th></tr>
+  <tr><td>지하 묘지</td><td>언데드가 매우 많고 함정도 많아요</td></tr>
+  <tr><td>폐허</td><td>짐승과 인간형 적이 섞여 있고 보물 상자가 있어요</td></tr>
+  <tr><td>소굴</td><td>한 종류의 적이 몰려 있고 보스 방이 있을 수 있어요</td></tr>
+  <tr><td>동굴</td><td>자연 지형이며 갈래가 복잡해요</td></tr>
+</table>
+
+<h2>자동 지도</h2>
+<p>던전과 도시에서 <strong>Tab</strong> 키를 누르면 자동 지도가 열려요. 탐험한 곳을 기록하고 현재 위치와 바라보는 방향을 보여줘요. 깊은 던전에서 길을 잃지 않도록 활용하세요.</p>
+
+</body>
+</html>

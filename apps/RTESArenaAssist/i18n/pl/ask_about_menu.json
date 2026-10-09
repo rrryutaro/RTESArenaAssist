@@ -1,0 +1,22 @@
+{
+  "ask_about_menu.title_ask_about.0": "ZAPYTAJ O ?",
+  "ask_about_menu.opt_who_are_you.0": "Kim jesteś?",
+  "ask_about_menu.opt_where_is.0": "Gdzie jest...",
+  "ask_about_menu.opt_rumors.0": "Plotki",
+  "ask_about_menu.opt_exit.0": "Wyjdź",
+  "ask_about_menu.title_rumor_type.0": "Rodzaj plotek",
+  "ask_about_menu.opt_general.0": "Ogólne",
+  "ask_about_menu.opt_work.0": "Praca",
+  "ask_about_menu.place_inn.0": "Gospoda",
+  "ask_about_menu.place_temple.0": "Świątynia",
+  "ask_about_menu.place_equipment_store.0": "Sklep z ekwipunkiem",
+  "ask_about_menu.place_mages_guild.0": "Gildia Magów",
+  "ask_about_menu.place_palace.0": "Pałac",
+  "ask_about_menu.place_city_gates.0": "Bramy miasta",
+  "ask_about_menu.place_nearest_inn.0": "Najbliższa gospoda",
+  "ask_about_menu.place_nearest_temple.0": "Najbliższa świątynia",
+  "ask_about_menu.place_nearest_store.0": "Najbliższy sklep",
+  "ask_about_menu.place_nearest_dungeon.0": "Najbliższy loch",
+  "ask_about_menu.fallback_no_rumor.0": "Nie zajmuję się plotkami...",
+  "ask_about_menu.fallback_not_sure.0": "Nie mam pewności. Spróbuj zapytać kogoś na zewnątrz."
+}

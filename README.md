@@ -6,9 +6,9 @@
 **ゲームの実行ファイルやデータファイルを書き換えません。**インストール先へ手を入れない外部
 ツールで、DOSBox のメモリを読み取って表示します。
 
-- バージョン: **v0.2.11（ベータ版）**
+- バージョン: **v0.2.12（ベータ版）**
 - 動作環境: Windows
-- 対応言語: 日本語 / English / Español / Deutsch / Français / Italiano / Русский
+- 対応言語: 日本語 / English / Español / Deutsch / Français / Italiano / Русский / 简体中文 / Português (Brasil) / Polski / 한국어 / 繁體中文
 
 ## 主な機能
 

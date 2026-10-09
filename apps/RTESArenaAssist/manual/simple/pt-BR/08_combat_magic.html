@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Combate e Magia</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.danger { background: #2e1a1a; border-left: 3px solid #a03030; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Combate e Magia</h1>
+
+<h2>Noções Básicas de Combate</h2>
+<p>Arena usa combate em tempo real. Clique para atacar. Acertar ou não, e quanto dano você causa, depende dos seus atributos, do seu equipamento e da Classe de Armadura (CA) do inimigo.</p>
+
+<h2>Fatores da Chance de Acerto</h2>
+<table>
+  <tr><th>Fator</th><th>Efeito</th></tr>
+  <tr><td>AGI (Agilidade)</td><td>Bônus de Acerto para o atacante; bônus de Defesa para o defensor</td></tr>
+  <tr><td>LUC (Sorte)</td><td>Modificador aleatório aplicado a todas as ações</td></tr>
+  <tr><td>Raça Redguard</td><td>+nível÷3 de acerto e dano (somente corpo a corpo)</td></tr>
+  <tr><td>Raça Elfo da Floresta</td><td>+nível÷3 de acerto e dano (somente arcos)</td></tr>
+  <tr><td>Raça Elfo Negro</td><td>+nível÷4 de acerto e dano (corpo a corpo e à distância)</td></tr>
+</table>
+
+<h2>Dano</h2>
+<p>Dano = valor base da arma + modificador de STR + bônus de raça. A Classe de Armadura (CA) do alvo reduz o dano recebido — quanto menor a CA, melhor a proteção.</p>
+
+<h2>Golpe Crítico</h2>
+<div class="note">
+<strong>Golpe Crítico = 3× o dano normal da arma.</strong><br>
+Os personagens das classes de ladrão ganham, a cada nível, uma chance de aplicar um. Os Assassinos têm a maior chance. Ladinos, Arrombadores, Bardos, Acrobatas, Monges, Arqueiros (com arcos) e Lâminas da Noite também têm essa habilidade.
+</div>
+
+<h2>Teste de Resistência</h2>
+<p>Quando você é alvo de um feitiço ou efeito especial, um teste de resistência bem-sucedido reduz ou anula o efeito. A WIL (Força de Vontade) determina a chance de sucesso.</p>
+<table>
+  <tr><th>Classe / Raça</th><th>Resultado do Teste</th></tr>
+  <tr><td>Padrão</td><td>Sucesso = metade do dano</td></tr>
+  <tr><td>Monge</td><td>Sucesso = nenhum dano</td></tr>
+  <tr><td>Nord</td><td>Teste bem-sucedido contra Frio = nenhum dano</td></tr>
+  <tr><td>Breton</td><td>Teste bem-sucedido contra Magia = nenhum dano</td></tr>
+</table>
+
+<h2>Condições de Status</h2>
+<table>
+  <tr><th>Condição</th><th>Efeito</th><th>Como Remover</th></tr>
+  <tr><td>Doente</td><td>Penalidades de atributos, cura prejudicada</td><td>Templo, feitiço de cura</td></tr>
+  <tr><td>Envenenado</td><td>Dano contínuo ao longo do tempo</td><td>Templo, poção antídoto</td></tr>
+  <tr><td>Amaldiçoado</td><td>Penalidades de atributos</td><td>Templo</td></tr>
+  <tr><td>Abençoado</td><td>Bônus temporários de atributos (benéfico)</td><td>Passa com o tempo</td></tr>
+  <tr><td>Paralisado</td><td>Incapaz de agir</td><td>Passa com o tempo, feitiço de dissipar</td></tr>
+  <tr><td>Silenciado</td><td>Não pode conjurar feitiços</td><td>Passa com o tempo, feitiço de dissipar</td></tr>
+  <tr><td>Sobrecarregado</td><td>Penalidades de movimento e de ação</td><td>Largar itens / Fortalecer</td></tr>
+</table>
+<div class="danger">
+<strong>Imunes à paralisia:</strong> Cavaleiro e Alto Elfo são totalmente imunes à paralisia.<br>
+<strong>Imune a veneno:</strong> Bárbaro é totalmente imune a veneno.
+</div>
+
+<h2>Sistema de Magia</h2>
+<p>Os feitiços são escolhidos no seu Grimório (Página 2 da ficha do personagem). Cada feitiço custa Pontos de Magia (SP). Quando os SP chegam a 0, não é possível conjurar feitiços. Os SP são determinados pela INT × um multiplicador específico de cada classe.</p>
+
+<h2>Multiplicadores de Pontos de Magia</h2>
+<table>
+  <tr><th>Classe</th><th>SP = INT ×</th></tr>
+  <tr><td>Mago</td><td>× 2</td></tr>
+  <tr><td>Feiticeiro</td><td>Até × 3 (absorvidos de feitiços, não gerados por conta própria)</td></tr>
+  <tr><td>Curandeiro</td><td>× 1,75</td></tr>
+  <tr><td>Mago de Batalha</td><td>× 1,75</td></tr>
+  <tr><td>Espadachim Mágico</td><td>× 1,5</td></tr>
+  <tr><td>Lâmina da Noite</td><td>× 1,5</td></tr>
+  <tr><td>Bardo</td><td>= INT (× 1)</td></tr>
+</table>
+
+<h2>Categorias de Feitiços</h2>
+<table>
+  <tr><th>Categoria</th><th>Exemplos</th><th>Finalidade</th></tr>
+  <tr><td>Dano</td><td>Dano de Fogo, Gelo, Choque</td><td>Causar dano aos inimigos</td></tr>
+  <tr><td>Cura</td><td>Curar, Curar Outro</td><td>Restaurar pontos de vida</td></tr>
+  <tr><td>Defesa</td><td>Escudo, Fortalecer, Queda Lenta</td><td>Aumentar a proteção</td></tr>
+  <tr><td>Movimento</td><td>Levitar, Teleportar, Retornar</td><td>Viajar e escapar</td></tr>
+  <tr><td>Furtividade</td><td>Invisibilidade, Camaleão</td><td>Esconder-se</td></tr>
+  <tr><td>Detecção</td><td>Detectar Vida, Visão Noturna, Luz</td><td>Ver inimigos e arredores</td></tr>
+  <tr><td>Enfraquecimento</td><td>Paralisar, Silêncio, Enfeitiçar</td><td>Incapacitar inimigos</td></tr>
+  <tr><td>Utilidade</td><td>Abrir, Identificar, Atravessar Muralha</td><td>Destrancar, avaliar, atravessar paredes</td></tr>
+</table>
+
+<h2>Criador de Feitiços</h2>
+<p>Disponível na Guilda dos Magos. Crie feitiços personalizados combinando efeitos, alcance, duração e magnitude. Os Curandeiros têm desconto em efeitos defensivos; os Magos de Batalha têm desconto em efeitos ofensivos.</p>
+
+<h2>Experiência e Evolução de Nível</h2>
+<p>Ganhe experiência derrotando inimigos e concluindo missões. Subir de nível aumenta os atributos e a vida (e os SP dos conjuradores).</p>
+<div class="note">
+<strong>Vida ganha ao subir de nível:</strong> Role o dado de vida da classe uma vez e depois some ou subtraia o modificador de Vida da END. Por exemplo, um d18 resulta em 1 a 18; com um modificador de Vida de +4, a vida aumenta de 5 a 22. O dado de vida da classe é o “dN” em “25 + dN” na linha de Vida Inicial em Classes de Personagem.
+</div>
+<div class="note">
+<strong>Velocidade de evolução de nível (da mais rápida para a mais lenta):</strong> Ladrão → Guerreiro → Subclasses de guerreiro → Subclasses de ladrão → Mago → Subclasses de mago
+</div>
+
+</body>
+</html>

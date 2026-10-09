@@ -69,7 +69,7 @@ else:
         _arena_classification = arena_local_data.classify_arena_dir(_arena_dir)
     except Exception:
         logging.getLogger('RTESArenaAssist').warning('Arena 版判定に失敗（起動は継続）', exc_info=True)
-i18n.init(_RESOURCE_DIR, settings.get('ui_language') or None, public_runtime=_PUBLIC_RUNTIME_I18N)
+i18n.init(_RESOURCE_DIR, settings.get('ui_language') or None, public_runtime=_PUBLIC_RUNTIME_I18N, user_dir=_USER_DIR)
 try:
     import arena_local_data as _ald
     _cfg_cats = settings.get('i18n_v2_categories')
@@ -85,7 +85,7 @@ from assist_window import AssistWindow
 def _reinit_translation_after_wizard(arena_dir: str) -> None:
     try:
         import arena_local_data as _ald
-        i18n.init(_RESOURCE_DIR, settings.get('ui_language') or None, public_runtime=_PUBLIC_RUNTIME_I18N)
+        i18n.init(_RESOURCE_DIR, settings.get('ui_language') or None, public_runtime=_PUBLIC_RUNTIME_I18N, user_dir=_USER_DIR)
         _cfg = settings.get('i18n_v2_categories')
         _cats = set(_cfg) if _cfg else set(i18n.PHASE5_ENABLE_SET)
         _owned_i18n_path('i18n/degraded_accepted.json')

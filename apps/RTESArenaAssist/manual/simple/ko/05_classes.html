@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>직업</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 13px; color: #5bc0de; margin-top: 4px; margin-bottom: 2px; }
+h3 { font-size: 12px; color: #7a8899; margin: 14px 0 2px 0; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+p { margin: 0 0 6px 0; font-size: 12px; }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 10px 0; font-size: 11px; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 3px 6px; text-align: left; border: 1px solid #1e3a4a; }
+td { padding: 3px 6px; border: 1px solid #1e3a4a; }
+tr:nth-child(even) { background: #111e2c; }
+.ability { color: #a8d8a8; font-size: 11px; margin: 2px 0 6px 0; }
+.note { background: #14283a; border-left: 3px solid #5bc0de; padding: 7px 10px; margin: 8px 0 12px 0; color: #b8cfe0; font-size: 12px; }
+.section-header { background: #1c2e3f; color: #a0c4d8; font-size: 13px; font-weight: bold; padding: 5px 8px; margin: 18px 0 6px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>직업 (전체 18종)</h1>
+
+<div class="note"><strong>체력 주사위:</strong> 각 직업의 시작 체력 항목에 있는 “dN”이 그 직업의 체력 주사위예요. 같은 dN을 레벨이 오를 때마다 한 번씩 굴려요.</div>
+
+<div class="section-header">도적 계열 — 주요 능력치: 민첩 (AGI), 지능 (INT)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">도적 계열은 모두 자물쇠를 따고, 소매치기를 하고, 물건을 훔칠 수 있어요. 속도도 높으면 좋아요.</p>
+
+<h2>도둑</h2>
+<p>재빠르고 민첩해요. 기습, 정찰, 치명타로 전투에 도움이 돼요. 레벨이 가장 빨리 오르는 직업이에요.</p>
+<div class="ability">★ 레벨마다 치명타(피해 3배) 확률이 올라요</div>
+<table><tr><th>무기</th><td>단검, 쇼트소드, 브로드소드, 세이버, 전투 도끼, 단궁</td></tr>
+<tr><th>방어구</th><td>가죽만</td></tr><tr><th>방패</th><td>버클러만</td></tr>
+<tr><th>시작 체력</th><td>25 + d10</td></tr></table>
+
+<h2>빈집털이</h2>
+<p>자물쇠 따기와 출입 금지 구역 잠입에 능해요. 방패는 쓸 수 없어요.</p>
+<div class="ability">★ 레벨마다 치명타 확률이 올라요 (도둑보다 낮아요)</div>
+<table><tr><th>무기</th><td>단검, 쇼트소드, 탄토, 단궁</td></tr>
+<tr><th>방어구</th><td>가죽만</td></tr><tr><th>방패</th><td>없음</td></tr>
+<tr><th>시작 체력</th><td>25 + d8</td></tr></table>
+
+<h2>암살자</h2>
+<p>오직 죽이는 데 힘써요. 모든 직업 중 치명타 확률이 가장 높아요. 어떤 무기든 쓸 수 있지만 가죽 갑옷만 입을 수 있고 방패는 쓸 수 없어요.</p>
+<div class="ability">★ 레벨당 치명타 확률이 모든 직업 중 가장 높아요</div>
+<table><tr><th>무기</th><td>전부</td></tr>
+<tr><th>방어구</th><td>가죽만</td></tr><tr><th>방패</th><td>없음</td></tr>
+<tr><th>시작 체력</th><td>25 + d12</td></tr></table>
+
+<h2>불한당</h2>
+<p>무기와 방어구 훈련을 받은 도적이에요. 자물쇠 따기와 소매치기 능력을 지키면서 전투에서는 전사에 견줄 만해요.</p>
+<div class="ability">★ 레벨마다 치명타 확률이 조금 올라요</div>
+<table><tr><th>무기</th><td>전부</td></tr>
+<tr><th>방어구</th><td>가죽 또는 사슬만</td></tr><tr><th>방패</th><td>타워 방패 제외 전부</td></tr>
+<tr><th>시작 체력</th><td>25 + d14</td></tr></table>
+
+<h2>곡예사</h2>
+<p>초자연적으로 민첩해서 걸음이 가장 빨라요. 적의 기본 명중 확률을 자동으로 낮춰요.</p>
+<div class="ability">★ 상대의 기본 명중 확률 감소 / 레벨마다 치명타 확률 상승</div>
+<table><tr><th>무기</th><td>단검, 쇼트소드, 브로드소드, 탄토, 단궁</td></tr>
+<tr><th>방어구</th><td>가죽만</td></tr><tr><th>방패</th><td>없음</td></tr>
+<tr><th>시작 체력</th><td>25 + d8</td></tr></table>
+
+<h2>음유시인</h2>
+<p>“만능 재주꾼”이에요. 치명타, 무기, 도둑질, 마법을 두루 다뤄요. 주문 포인트 = INT.</p>
+<table><tr><th>무기</th><td>단검, 쇼트소드, 브로드소드, 세이버, 철퇴, 전투 도끼, 단궁</td></tr>
+<tr><th>방어구</th><td>가죽 또는 사슬만</td></tr><tr><th>방패</th><td>타워 방패 제외 전부</td></tr>
+<tr><th>시작 체력</th><td>25 + d10</td></tr></table>
+
+<div class="section-header">전사 계열 — 주요 능력치: 힘 (STR), 지구력 (END)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">따로 적힌 경우를 제외하면 주문을 쓸 수 없어요. 민첩은 방어 등급에도 중요해요.</p>
+
+<h2>전사</h2>
+<p>탐리엘의 근간이에요. 어떤 무기, 방어구, 방패든 쓸 수 있어요. 레벨이 두 번째로 빨리 올라요. 마법이 부여된 판금 갑옷은 전사, 기사, 레인저만 입을 수 있어요.</p>
+<table><tr><th>무기</th><td>전부</td></tr><tr><th>방어구</th><td>전부</td></tr><tr><th>방패</th><td>전부</td></tr>
+<tr><th>시작 체력</th><td>25 + d20</td></tr></table>
+
+<h2>기사</h2>
+<p>고귀한 전사예요. 소지품 속 모든 무기와 방어구를 자동으로 수리해요.</p>
+<div class="ability">★ 마비(주문과 독)에 면역 / 무기와 방어구 자동 수리</div>
+<table><tr><th>무기</th><td>전부</td></tr><tr><th>방어구</th><td>가죽 제외</td></tr><tr><th>방패</th><td>전부</td></tr>
+<tr><th>시작 체력</th><td>25 + d18</td></tr></table>
+
+<h2>레인저</h2>
+<p>추적자이자 생존 전문가예요. 도시 사이의 이동 시간이 자동으로 줄어요. 레벨만큼 추가 피해를 줘요.</p>
+<div class="ability">★ 도시 사이 이동 시간 감소 / 추가 피해 = 레벨</div>
+<table><tr><th>무기</th><td>전부</td></tr><tr><th>방어구</th><td>전부</td></tr><tr><th>방패</th><td>타워 방패 제외 전부</td></tr>
+<tr><th>시작 체력</th><td>25 + d18</td></tr></table>
+
+<h2>궁수</h2>
+<p>사격 무기에 특화된 명사수예요. 레벨마다 활 치명타 확률이 올라요. 방패는 쓸 수 없어요.</p>
+<div class="ability">★ 레벨마다 사격 무기 치명타 확률 상승</div>
+<table><tr><th>무기</th><td>전부</td></tr><tr><th>방어구</th><td>가죽 또는 사슬만</td></tr><tr><th>방패</th><td>없음</td></tr>
+<tr><th>시작 체력</th><td>25 + d16</td></tr></table>
+
+<h2>수도사</h2>
+<p>몸과 마음을 갈고닦아 살상 기계가 되었어요. 방어구와 방패는 쓸 수 없어요. 레벨마다 적의 명중 확률이 줄어요. 주문 저항에 성공하면 피해를 받지 않아요.</p>
+<div class="ability">★ 레벨마다 적의 명중 확률 감소 / 주문 저항 성공 시 피해 없음 / 치명타 (근접 전용)</div>
+<table><tr><th>무기</th><td>전부</td></tr><tr><th>방어구</th><td>없음</td></tr><tr><th>방패</th><td>없음</td></tr>
+<tr><th>시작 체력</th><td>25 + d14</td></tr></table>
+
+<h2>야만전사</h2>
+<p>가혹한 땅에서 살아남은 자예요. 모든 직업 중 시작 체력이 가장 높아요. 지구력에 따라 추가 체력을 회복해요.</p>
+<div class="ability">★ 독에 면역 / 휴식할 때마다 END에 따라 추가 체력 회복</div>
+<table><tr><th>무기</th><td>전부</td></tr><tr><th>방어구</th><td>사슬까지</td></tr><tr><th>방패</th><td>전부</td></tr>
+<tr><th>시작 체력</th><td>25 + d30 (모든 직업 중 최고)</td></tr></table>
+
+<div class="section-header">마법사 계열 — 주요 능력치: 지능 (INT), 의지력 (WIL)</div>
+
+<h2>마법사</h2>
+<p>마법을 위해 태어났어요. 주문 포인트 = INT×2. 공격과 방어를 전적으로 주문에 의존해요. 방어구와 방패는 쓸 수 없어요.</p>
+<table><tr><th>무기</th><td>단검, 지팡이</td></tr><tr><th>방어구</th><td>없음</td></tr><tr><th>방패</th><td>버클러만</td></tr>
+<tr><th>시작 체력</th><td>25 + d6</td></tr></table>
+
+<h2>소서러</h2>
+<p>마법의 “배터리”예요. 스스로 주문 포인트를 만들 수 없는 대신, 자신을 겨냥한 주문에서 포인트를 흡수해요 (최대 INT×3). 가득 충전되면 모든 마법사 계열 중 가장 강력해질 수 있어요.</p>
+<div class="ability">★ 겨냥한 주문을 흡수 → 피해 없음 + 주문 포인트 획득 / 자신이 건 주문은 흡수 불가 / SP 자연 회복 없음</div>
+<table><tr><th>무기</th><td>전부</td></tr><tr><th>방어구</th><td>사슬까지</td></tr><tr><th>방패</th><td>없음</td></tr>
+<tr><th>시작 체력</th><td>25 + d6</td></tr></table>
+
+<h2>치유사</h2>
+<p>방어 마법 전문가예요. 주문 포인트 = INT×1.75. 주문 제작에서 방어 주문의 비용이 낮아요. 기본 치유 속도가 빨라요.</p>
+<table><tr><th>무기</th><td>단검, 지팡이, 철퇴, 도리깨철퇴</td></tr><tr><th>방어구</th><td>가죽 또는 사슬만</td></tr><tr><th>방패</th><td>원형 방패까지</td></tr>
+<tr><th>시작 체력</th><td>25 + d8</td></tr></table>
+
+<h2>전투 마법사</h2>
+<p>공격 주문 전문가예요. 주문 포인트 = INT×1.75. 주문 제작에서 공격 주문의 비용이 낮아요.</p>
+<table><tr><th>무기</th><td>전부</td></tr><tr><th>방어구</th><td>가죽만</td></tr><tr><th>방패</th><td>원형 방패까지</td></tr>
+<tr><th>시작 체력</th><td>25 + d10</td></tr></table>
+
+<h2>마검사</h2>
+<p>방어구를 입은 채로 주문을 쓸 수 있어요. 다재다능한 전사 겸 마법사예요. 주문 포인트 = INT×1.5.</p>
+<table><tr><th>무기</th><td>전부</td></tr><tr><th>방어구</th><td>가죽 또는 사슬만</td></tr><tr><th>방패</th><td>타워 방패 제외 전부</td></tr>
+<tr><th>시작 체력</th><td>25 + d12</td></tr></table>
+
+<h2>나이트블레이드</h2>
+<p>은신과 잠입의 마법사예요. 자물쇠 따기는 불한당에 견줄 만해요. 레벨마다 치명타 확률이 올라요. 주문 포인트 = INT×1.5.</p>
+<div class="ability">★ 레벨마다 치명타 확률 상승</div>
+<table><tr><th>무기</th><td>단검, 지팡이, 단궁, 쇼트소드, 세이버</td></tr><tr><th>방어구</th><td>가죽만</td></tr><tr><th>방패</th><td>버클러만</td></tr>
+<tr><th>시작 체력</th><td>25 + d8</td></tr></table>
+
+</body>
+</html>

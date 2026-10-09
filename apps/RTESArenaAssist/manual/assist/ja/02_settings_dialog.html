@@ -57,6 +57,7 @@ a { color: #7ec8e3; }
 <ul>
 <li><a href="#翻訳タブ・パネルの挙動">翻訳タブ・パネルの挙動</a></li>
 <li><a href="#翻訳タブ-拡張設定">翻訳タブ 拡張設定</a></li>
+<li><a href="#user-translations">利用者の翻訳</a></li>
 </ul>
 <li><a href="#戦闘情報タブ">戦闘情報タブ</a></li>
 <ul>
@@ -219,6 +220,38 @@ a { color: #7ec8e3; }
 <tr><th>表示ラベル</th><th>初期値</th><th>説明</th></tr>
 <tr><td><code>翻訳パネル非表示時挙動を翻訳タブで再現:</code></td><td>OFF</td><td>ON にすると、翻訳パネルを隠したときと同じように、翻訳結果やダイアログメッセージを翻訳タブ側へ表示する。検証用の拡張設定</td></tr>
 </table>
+<h3 id="user-translations"><a name="user-translations"></a>利用者の翻訳</h3>
+<p>同梱の訳の一部を自分の訳に差し替えたり、新しい言語を足したりできます。</p>
+<ol>
+<li><code>ひな形を書き出す</code> で言語を選び（新しい言語を作るときは <code>（新しい言語の空のひな形）</code> を選び）、<code>書き出し...</code> を押して JSON ファイルを保存します。<code>英語の原文を併記する</code> を ON にすると、英語の原文が付きます（ゲーム本文の原文は、ゲームフォルダを設定して辞書を作成済みの環境でだけ付きます）。保存先は、翻訳ファイルの置き場所（下記）の外にしてください。</li>
+<li>保存した JSON をテキストエディタ（UTF-8）で開き、変えたい項目の <code>text</code> を書き換えます。<code>text</code> が空の項目は、同梱の訳（新しい言語では <code>meta.fallback</code> の言語）のままです。キーや、<code>%xx</code>・<code>{name}</code> のような置換項目は変えないでください（置換項目が基準の訳に無い項目や <code>&lt;</code> <code>&gt;</code> を含む項目は読み込まれません）。<code>source</code>（英語の原文）と <code>ref</code>（参考にする言語の訳）は読み込みに使われません。<br>新しい言語では、先頭の <code>lang</code>（言語コード。例: <code>tr</code>）と <code>meta.display_name</code>（言語一覧に出す名前）を必ず書きます。<code>meta.fallback</code> は未訳の項目を引く同梱の言語（既定は <code>en</code>）、<code>meta.direction</code> を <code>rtl</code> にすると右から左の表示になります。</li>
+<li><code>翻訳ファイルを読み込む</code> の <code>読み込み...</code> で、編集したファイルを選びます。検査に合格すると取り込まれます。新しい言語は、全般タブの表示言語に並びます。反映はアプリの再起動後です。</li>
+</ol>
+<p>同梱言語のひな形には、現在の訳が全項目に入っています。変えない項目は、行ごと消すか <code>text</code> を空にしてください。残した項目は自分の訳で固定され、アプリの更新で同梱の訳が直っても反映されません。</p>
+<p>記入例 1: 同梱のドイツ語の 1 項目だけを書き換える（書いた項目だけが差し替わります）。</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "de",
+  "texts": {
+    "ui_app": {
+      "settings.title": "Meine Einstellungen"
+    }
+  }
+}</pre></td></tr></table>
+<p>記入例 2: 新しい言語（トルコ語）。<code>ref</code> は参考用で、読み込みでは使われません。</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "tr",
+  "meta": { "display_name": "Türkçe", "fallback": "en", "direction": "ltr" },
+  "texts": {
+    "ui_app": {
+      "settings.title": { "ref": "Settings", "text": "Ayarlar" }
+    }
+  }
+}</pre></td></tr></table>
+<p>取り込んだファイルは <code>読み込み済み</code> の一覧に出ます。選んで <code>削除</code> を押すと、同梱の訳に戻ります（新しい言語は消えます）。<code>フォルダを開く</code> は、設定ファイルと同じ場所の <code>translations</code> フォルダを開きます。ここに置いた JSON は起動時に自動で読み込まれます。足した言語では、マニュアルなどの文書は英語で表示されます。</p>
 <h2 id="戦闘情報タブ"><a name="戦闘情報タブ"></a>戦闘情報タブ</h2>
 <p>戦闘と持続魔法の表示先を個別に設定します。新しい表示・読み上げ・保存機能は既定でOFFです。以前の開発版で保存した設定値は、そのまま引き継がれます。表示文は日本語・英語・スペイン語・ドイツ語・フランス語・イタリア語・ロシア語に対応します。</p>
 <p><img src="img/settings_dark_tab_05.png" alt="戦闘情報タブ"></p>

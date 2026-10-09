@@ -57,6 +57,7 @@ a { color: #7ec8e3; }
 <ul>
 <li><a href="#comportamento-traduzione">Comportamento scheda/pannello Traduzione</a></li>
 <li><a href="#traduzione-avanzate">Scheda Traduzione — Avanzate</a></li>
+<li><a href="#user-translations">Le tue traduzioni</a></li>
 </ul>
 <li><a href="#scheda-combattimento">Scheda Informazioni di combattimento</a></li>
 <ul>
@@ -219,6 +220,38 @@ a { color: #7ec8e3; }
 <tr><th>Etichetta mostrata</th><th>Valore iniziale</th><th>Descrizione</th></tr>
 <tr><td><code>Emula il comportamento a pannello nascosto nella scheda Traduzione:</code></td><td>OFF</td><td>Se ON, mostra nella scheda Traduci i risultati della traduzione e i messaggi di dialogo, come quando il pannello di traduzione è nascosto. È un'impostazione avanzata per la verifica</td></tr>
 </table>
+<h3 id="user-translations"><a name="user-translations"></a>Le tue traduzioni</h3>
+<p>Puoi sostituire parti di una traduzione inclusa con la tua oppure aggiungere una nuova lingua.</p>
+<ol>
+<li>Scegli una lingua in <code>Esporta un modello</code> (per creare una nuova lingua scegli <code>(modello vuoto per una nuova lingua)</code>), premi <code>Esporta...</code> e salva il file JSON. Se attivi <code>Includi l'originale inglese</code>, viene aggiunto l'originale inglese (quello del testo del gioco solo su un computer in cui la cartella del gioco è impostata e il dizionario è stato creato). Salvalo fuori dalla cartella delle traduzioni (vedi sotto).</li>
+<li>Apri il JSON salvato in un editor di testo (UTF-8) e modifica il <code>text</code> delle voci che vuoi cambiare. Le voci con <code>text</code> vuoto mantengono la traduzione inclusa (per una nuova lingua, quella della lingua in <code>meta.fallback</code>). Non modificare le chiavi né i segnaposto come <code>%xx</code> e <code>{name}</code> (le voci con segnaposto assenti dalla traduzione di riferimento, o che contengono <code>&lt;</code> o <code>&gt;</code>, non vengono caricate). <code>source</code> (l'originale inglese) e <code>ref</code> (una traduzione di riferimento) non vengono usati al caricamento.<br>Per una nuova lingua compila sempre <code>lang</code> in alto (un codice lingua, per esempio <code>tr</code>) e <code>meta.display_name</code> (il nome mostrato nell'elenco delle lingue). <code>meta.fallback</code> è la lingua inclusa usata per le voci non tradotte (<code>en</code> per impostazione predefinita); con <code>meta.direction</code> impostato su <code>rtl</code> il testo è mostrato da destra a sinistra.</li>
+<li>In <code>Importa un file di traduzione</code>, premi <code>Importa...</code> e scegli il file modificato. Viene importato se supera i controlli. Una nuova lingua viene aggiunta alle lingue di visualizzazione della scheda Generale. Le modifiche hanno effetto dopo il riavvio dell'app.</li>
+</ol>
+<p>Il modello di una lingua inclusa contiene la traduzione attuale di tutte le voci. Elimina le voci che non modifichi oppure lascia vuoto il loro <code>text</code>. Le voci che mantieni restano fissate alla tua formulazione e non ricevono i miglioramenti successivi della traduzione inclusa.</p>
+<p>Esempio 1: modificare una sola voce della traduzione tedesca inclusa (vengono sostituite solo le voci che scrivi).</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "de",
+  "texts": {
+    "ui_app": {
+      "settings.title": "Meine Einstellungen"
+    }
+  }
+}</pre></td></tr></table>
+<p>Esempio 2: una nuova lingua (turco). <code>ref</code> è solo di riferimento e non viene usato al caricamento.</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "tr",
+  "meta": { "display_name": "Türkçe", "fallback": "en", "direction": "ltr" },
+  "texts": {
+    "ui_app": {
+      "settings.title": { "ref": "Settings", "text": "Ayarlar" }
+    }
+  }
+}</pre></td></tr></table>
+<p>I file importati compaiono nell'elenco <code>Caricati</code>. Selezionane uno e premi <code>Elimina</code> per tornare alla traduzione inclusa (una nuova lingua viene rimossa). <code>Apri la cartella</code> apre la cartella <code>translations</code> accanto al file delle impostazioni. I JSON messi lì vengono caricati automaticamente all'avvio. Per una lingua aggiunta, i documenti come il manuale sono mostrati in inglese.</p>
 <h2 id="scheda-combattimento"><a name="scheda-combattimento"></a>Scheda Informazioni di combattimento</h2>
 <p>Imposta separatamente dove mostrare il combattimento e gli incantesimi attivi. Le nuove funzioni di visualizzazione, lettura ad alta voce e salvataggio sono OFF per impostazione predefinita. I valori salvati dalle precedenti versioni di sviluppo vengono mantenuti così come sono. I testi mostrati sono disponibili in giapponese, inglese, spagnolo, tedesco, francese, italiano e russo.</p>
 <p><img src="img/settings_dark_tab_05.png" alt="Scheda Informazioni di combattimento"></p>

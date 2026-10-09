@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>戰鬥與魔法</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.danger { background: #2e1a1a; border-left: 3px solid #a03030; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>戰鬥與魔法</h1>
+
+<h2>戰鬥基礎</h2>
+<p>Arena 採用即時戰鬥。按一下滑鼠即可攻擊。能否命中以及造成多少傷害，取決於你的能力值、裝備以及敵人的護甲值（AR）。</p>
+
+<h2>命中率影響因素</h2>
+<table>
+  <tr><th>因素</th><th>效果</th></tr>
+  <tr><td>AGI（敏捷）</td><td>攻擊方獲得命中加成；防禦方獲得防禦加成</td></tr>
+  <tr><td>LUC（幸運）</td><td>對所有行動施加的隨機修正</td></tr>
+  <tr><td>紅衛人種族</td><td>命中與傷害 +等級÷3（僅限近戰）</td></tr>
+  <tr><td>木精靈種族</td><td>命中與傷害 +等級÷3（僅限弓）</td></tr>
+  <tr><td>黑暗精靈種族</td><td>命中與傷害 +等級÷4（近戰與遠程）</td></tr>
+</table>
+
+<h2>傷害</h2>
+<p>傷害 = 武器基礎值 + STR 修正 + 種族加成。目標的護甲值（AR）會減少所受的傷害——AR 越低，防護越好。</p>
+
+<h2>致命一擊</h2>
+<div class="note">
+<strong>致命一擊 = 3 倍的一般武器傷害。</strong><br>
+小偷系職業的角色每升一級就會增加致命一擊的機率，其中刺客的機率最高。盜賊、竊賊、吟游詩人、雜技師、武僧、弓箭手（使用弓時）與夜刃也具備這項能力。
+</div>
+
+<h2>豁免檢定</h2>
+<p>成為法術或特殊效果的目標時，豁免檢定成功可以減輕或抵銷該效果。成功機率取決於 WIL（意志力）。</p>
+<table>
+  <tr><th>職業 / 種族</th><th>豁免結果</th></tr>
+  <tr><td>預設</td><td>成功 = 傷害減半</td></tr>
+  <tr><td>武僧</td><td>成功 = 零傷害</td></tr>
+  <tr><td>諾德人</td><td>對寒冷豁免成功 = 零傷害</td></tr>
+  <tr><td>布列頓人</td><td>對魔法豁免成功 = 零傷害</td></tr>
+</table>
+
+<h2>狀態</h2>
+<table>
+  <tr><th>狀態</th><th>效果</th><th>解除方式</th></tr>
+  <tr><td>疾病</td><td>能力值降低，恢復受阻</td><td>神殿、治療法術</td></tr>
+  <tr><td>中毒</td><td>持續受到傷害</td><td>神殿、解毒藥水</td></tr>
+  <tr><td>詛咒</td><td>能力值降低</td><td>神殿</td></tr>
+  <tr><td>祝福</td><td>暫時的能力值加成（有益）</td><td>隨時間消退</td></tr>
+  <tr><td>麻痺</td><td>無法行動</td><td>自行消退、驅散法術</td></tr>
+  <tr><td>沉默</td><td>無法施放法術</td><td>自行消退、驅散法術</td></tr>
+  <tr><td>超載</td><td>移動與行動受到減益</td><td>丟棄物品 / 強化</td></tr>
+</table>
+<div class="danger">
+<strong>免疫麻痺：</strong>騎士與高等精靈完全免疫麻痺。<br>
+<strong>免疫毒藥：</strong>野蠻人完全免疫毒藥。
+</div>
+
+<h2>魔法系統</h2>
+<p>法術從你的法術書（角色表第 2 頁）中選擇。每個法術都會消耗法術點數（SP）。SP 降到 0 時，就無法施放法術。SP 由 INT 乘以各職業專屬的倍率決定。</p>
+
+<h2>法術點數倍率</h2>
+<table>
+  <tr><th>職業</th><th>SP = INT ×</th></tr>
+  <tr><td>法師</td><td>× 2</td></tr>
+  <tr><td>巫術師</td><td>最高 × 3（從法術中吸收，無法自行產生）</td></tr>
+  <tr><td>治療師</td><td>× 1.75</td></tr>
+  <tr><td>戰鬥法師</td><td>× 1.75</td></tr>
+  <tr><td>魔劍士</td><td>× 1.5</td></tr>
+  <tr><td>夜刃</td><td>× 1.5</td></tr>
+  <tr><td>吟游詩人</td><td>= INT（× 1）</td></tr>
+</table>
+
+<h2>法術類別</h2>
+<table>
+  <tr><th>類別</th><th>範例</th><th>用途</th></tr>
+  <tr><td>傷害</td><td>火焰傷害、冰霜、電擊</td><td>對敵人造成傷害</td></tr>
+  <tr><td>治療</td><td>治療、治療他人</td><td>恢復生命</td></tr>
+  <tr><td>防禦</td><td>盾牌、強化、緩降</td><td>增強防護</td></tr>
+  <tr><td>移動</td><td>漂浮、傳送、回歸</td><td>旅行與脫身</td></tr>
+  <tr><td>潛行</td><td>隱形、變色</td><td>隱藏自己</td></tr>
+  <tr><td>偵測</td><td>偵測生命、夜視、光明</td><td>察覺敵人與周遭環境</td></tr>
+  <tr><td>減益</td><td>麻痺、沉默、魅惑</td><td>使敵人無法行動</td></tr>
+  <tr><td>輔助</td><td>開鎖、鑑定、穿牆</td><td>開鎖、估價、穿越牆壁</td></tr>
+</table>
+
+<h2>法術製作</h2>
+<p>可在法師公會使用。透過組合效果、範圍、持續時間與強度來創造自訂法術。治療師在防禦類效果上享有折扣；戰鬥法師在攻擊類效果上享有折扣。</p>
+
+<h2>經驗與升級</h2>
+<p>透過擊敗敵人與完成任務來獲得經驗。升級會提升能力值與生命（施法者還會提升 SP）。</p>
+<div class="note">
+<strong>升級時獲得的生命：</strong>擲一次職業生命骰，再加上或減去 END 的生命修正值。例如，d18 會擲出 1–18；若生命修正值為 +4，則生命增加 5–22。職業生命骰就是「角色職業」中「初始生命」底下「25 + dN」裡的「dN」。
+</div>
+<div class="note">
+<strong>升級速度（由快到慢）：</strong>小偷 → 戰士 → 戰士系分支職業 → 小偷系分支職業 → 法師 → 法師系分支職業
+</div>
+
+</body>
+</html>

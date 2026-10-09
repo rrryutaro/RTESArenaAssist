@@ -1,0 +1,23 @@
+{
+  "dungeon.imperial_city.0": "Cesarskie Miasto",
+  "dungeon.dungeon.0": "loch",
+  "dungeon.wilderness.0": "pustkowie",
+  "dungeon.city.0": "miasto",
+  "dungeon.town.0": "miasteczko",
+  "dungeon.north.0": "północ",
+  "dungeon.northeast.0": "północny wschód",
+  "dungeon.east.0": "wschód",
+  "dungeon.southeast.0": "południowy wschód",
+  "dungeon.south.0": "południe",
+  "dungeon.southwest.0": "południowy zachód",
+  "dungeon.west.0": "zachód",
+  "dungeon.northwest.0": "północny zachód",
+  "dungeon.iron.0": "Żelazny",
+  "dungeon.steel.0": "Stalowy",
+  "dungeon.silver.0": "Srebrny",
+  "dungeon.elven.0": "Elfi",
+  "dungeon.dwarven.0": "Krasnoludzki",
+  "dungeon.mithril.0": "Mithrilowy",
+  "dungeon.adamantium.0": "Adamantowy",
+  "dungeon.ebony.0": "Hebanowy"
+}

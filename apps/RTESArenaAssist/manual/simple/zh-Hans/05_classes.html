@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<title>角色职业</title>
+<style>
+body { font-family: "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 13px; color: #5bc0de; margin-top: 4px; margin-bottom: 2px; }
+h3 { font-size: 12px; color: #7a8899; margin: 14px 0 2px 0; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+p { margin: 0 0 6px 0; font-size: 12px; }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 10px 0; font-size: 11px; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 3px 6px; text-align: left; border: 1px solid #1e3a4a; }
+td { padding: 3px 6px; border: 1px solid #1e3a4a; }
+tr:nth-child(even) { background: #111e2c; }
+.ability { color: #a8d8a8; font-size: 11px; margin: 2px 0 6px 0; }
+.note { background: #14283a; border-left: 3px solid #5bc0de; padding: 7px 10px; margin: 8px 0 12px 0; color: #b8cfe0; font-size: 12px; }
+.section-header { background: #1c2e3f; color: #a0c4d8; font-size: 13px; font-weight: bold; padding: 5px 8px; margin: 18px 0 6px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+<h1>角色职业（共18种）</h1>
+
+<div class="note"><strong>生命骰：</strong>每个职业“初始生命”一栏中的“dN”就是该职业的生命骰。每次升级时都会掷一次同样的dN。</div>
+
+<div class="section-header">盗贼类职业 — 主要属性：敏捷（AGI）与智力（INT）</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">所有盗贼类职业都能开锁、扒窃和偷东西。较高的速度同样有益。</p>
+
+<h2>小偷</h2>
+<p>迅捷而敏捷。在战斗中适合发动突袭、侦察和暴击。是获得经验等级最快的职业。</p>
+<div class="ability">★ 每级获得暴击几率（3倍伤害）</div>
+<table><tr><th>武器</th><td>匕首、短剑、阔剑、军刀、战斧、短弓</td></tr>
+<tr><th>护甲</th><td>仅限皮甲</td></tr><tr><th>盾牌</th><td>仅限小圆盾</td></tr>
+<tr><th>初始生命</th><td>25 + d10</td></tr></table>
+
+<h2>窃贼</h2>
+<p>擅长开锁和潜入禁区。不能使用盾牌。</p>
+<div class="ability">★ 每级获得暴击几率（低于小偷）</div>
+<table><tr><th>武器</th><td>匕首、短剑、短刀、短弓</td></tr>
+<tr><th>护甲</th><td>仅限皮甲</td></tr><tr><th>盾牌</th><td>无</td></tr>
+<tr><th>初始生命</th><td>25 + d8</td></tr></table>
+
+<h2>刺客</h2>
+<p>专为杀戮而生。暴击几率为所有职业中最高。可以使用任何武器，但只能穿皮甲，且不能使用盾牌。</p>
+<div class="ability">★ 每级暴击几率为所有职业中最高</div>
+<table><tr><th>武器</th><td>任意</td></tr>
+<tr><th>护甲</th><td>仅限皮甲</td></tr><tr><th>盾牌</th><td>无</td></tr>
+<tr><th>初始生命</th><td>25 + d12</td></tr></table>
+
+<h2>盗贼</h2>
+<p>受过武器和护甲训练的小偷。战斗力可与战士相比，同时保留开锁和扒窃的能力。</p>
+<div class="ability">★ 每级获得少量暴击几率</div>
+<table><tr><th>武器</th><td>任意</td></tr>
+<tr><th>护甲</th><td>仅限皮甲或锁甲</td></tr><tr><th>盾牌</th><td>除塔盾外的任意盾牌</td></tr>
+<tr><th>初始生命</th><td>25 + d14</td></tr></table>
+
+<h2>杂技师</h2>
+<p>敏捷得超乎常人——是步行速度最快的角色。被动降低敌人的基础命中率。</p>
+<div class="ability">★ 降低对手的基础命中率 / 每级获得暴击几率</div>
+<table><tr><th>武器</th><td>匕首、短剑、阔剑、短刀、短弓</td></tr>
+<tr><th>护甲</th><td>仅限皮甲</td></tr><tr><th>盾牌</th><td>无</td></tr>
+<tr><th>初始生命</th><td>25 + d8</td></tr></table>
+
+<h2>吟游诗人</h2>
+<p>“万事通”。精通暴击、武器、偷窃和魔法。法术点 = INT。</p>
+<table><tr><th>武器</th><td>匕首、短剑、阔剑、军刀、钉头锤、战斧、短弓</td></tr>
+<tr><th>护甲</th><td>仅限皮甲或锁甲</td></tr><tr><th>盾牌</th><td>除塔盾外的任意盾牌</td></tr>
+<tr><th>初始生命</th><td>25 + d10</td></tr></table>
+
+<div class="section-header">战士类职业 — 主要属性：力量（STR）与耐力（END）</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">除非另有说明，否则不能施法。敏捷对护甲值也很重要。</p>
+
+<h2>战士</h2>
+<p>泰姆瑞尔的中流砥柱。可以使用任何武器、护甲和盾牌。升级速度第二快。只有战士、骑士和游侠可以穿戴附魔板甲。</p>
+<table><tr><th>武器</th><td>任意</td></tr><tr><th>护甲</th><td>任意</td></tr><tr><th>盾牌</th><td>任意</td></tr>
+<tr><th>初始生命</th><td>25 + d20</td></tr></table>
+
+<h2>骑士</h2>
+<p>高贵的战士。自动修复物品栏中的所有武器和护甲。</p>
+<div class="ability">★ 免疫麻痹（法术和毒药）/ 自动修复武器和护甲</div>
+<table><tr><th>武器</th><td>任意</td></tr><tr><th>护甲</th><td>不能穿皮甲</td></tr><tr><th>盾牌</th><td>任意</td></tr>
+<tr><th>初始生命</th><td>25 + d18</td></tr></table>
+
+<h2>游侠</h2>
+<p>追踪者和生存专家。自动缩短城市之间的旅行时间。造成的额外伤害等于等级。</p>
+<div class="ability">★ 缩短城市之间的旅行时间 / 额外伤害 = 等级</div>
+<table><tr><th>武器</th><td>任意</td></tr><tr><th>护甲</th><td>任意</td></tr><tr><th>盾牌</th><td>除塔盾外的任意盾牌</td></tr>
+<tr><th>初始生命</th><td>25 + d18</td></tr></table>
+
+<h2>弓箭手</h2>
+<p>专精远程武器的神射手。每级获得使用弓时的暴击几率。不能使用盾牌。</p>
+<div class="ability">★ 每级获得使用远程武器时的暴击几率</div>
+<table><tr><th>武器</th><td>任意</td></tr><tr><th>护甲</th><td>仅限皮甲或锁甲</td></tr><tr><th>盾牌</th><td>无</td></tr>
+<tr><th>初始生命</th><td>25 + d16</td></tr></table>
+
+<h2>武僧</h2>
+<p>身心被磨炼成杀戮机器。不能穿护甲，也不能使用盾牌。敌人的命中率随等级提升而降低。法术豁免成功则不受伤害。</p>
+<div class="ability">★ 每级降低敌人命中率 / 法术豁免成功 = 零伤害 / 暴击（仅限近战）</div>
+<table><tr><th>武器</th><td>任意</td></tr><tr><th>护甲</th><td>无</td></tr><tr><th>盾牌</th><td>无</td></tr>
+<tr><th>初始生命</th><td>25 + d14</td></tr></table>
+
+<h2>野蛮人</h2>
+<p>严酷土地上的幸存者。初始生命为所有职业中最高。根据耐力获得额外的生命恢复。</p>
+<div class="ability">★ 免疫毒药 / 每次休息根据END额外恢复生命</div>
+<table><tr><th>武器</th><td>任意</td></tr><tr><th>护甲</th><td>至多锁甲</td></tr><tr><th>盾牌</th><td>任意</td></tr>
+<tr><th>初始生命</th><td>25 + d30（所有职业中最高）</td></tr></table>
+
+<div class="section-header">法师类职业 — 主要属性：智力（INT）与意志（WIL）</div>
+
+<h2>法师</h2>
+<p>为魔法而生。法术点 = INT×2。攻防完全依赖法术。不能穿护甲，也不能使用盾牌。</p>
+<table><tr><th>武器</th><td>匕首、法杖</td></tr><tr><th>护甲</th><td>无</td></tr><tr><th>盾牌</th><td>仅限小圆盾</td></tr>
+<tr><th>初始生命</th><td>25 + d6</td></tr></table>
+
+<h2>巫师</h2>
+<p>一块魔法“电池”。无法自行产生法术点，而是吸收以自己为目标的法术所带的法术点（最高INT×3）。充满之后，可能是所有法师类职业中最强大的。</p>
+<div class="ability">★ 吸收以自己为目标的法术 → 不受伤害并获得法术点 / 不能吸收自己的法术 / 没有自然的SP恢复</div>
+<table><tr><th>武器</th><td>任意</td></tr><tr><th>护甲</th><td>至多锁甲</td></tr><tr><th>盾牌</th><td>无</td></tr>
+<tr><th>初始生命</th><td>25 + d6</td></tr></table>
+
+<h2>治疗师</h2>
+<p>防御魔法专家。法术点 = INT×1.75。在法术制造中，防御类法术消耗更低。基础恢复速度更高。</p>
+<table><tr><th>武器</th><td>匕首、法杖、钉头锤、链枷</td></tr><tr><th>护甲</th><td>仅限皮甲或锁甲</td></tr><tr><th>盾牌</th><td>至多圆盾</td></tr>
+<tr><th>初始生命</th><td>25 + d8</td></tr></table>
+
+<h2>战斗法师</h2>
+<p>攻击法术专家。法术点 = INT×1.75。在法术制造中，攻击类法术消耗更低。</p>
+<table><tr><th>武器</th><td>任意</td></tr><tr><th>护甲</th><td>仅限皮甲</td></tr><tr><th>盾牌</th><td>至多圆盾</td></tr>
+<tr><th>初始生命</th><td>25 + d10</td></tr></table>
+
+<h2>魔剑士</h2>
+<p>穿着护甲也能施法。全能的战士兼法师。法术点 = INT×1.5。</p>
+<table><tr><th>武器</th><td>任意</td></tr><tr><th>护甲</th><td>仅限皮甲或锁甲</td></tr><tr><th>盾牌</th><td>除塔盾外的任意盾牌</td></tr>
+<tr><th>初始生命</th><td>25 + d12</td></tr></table>
+
+<h2>夜刃</h2>
+<p>擅长潜行和渗透的法师。开锁能力可与盗贼相比。每级获得暴击几率。法术点 = INT×1.5。</p>
+<div class="ability">★ 每级获得暴击几率</div>
+<table><tr><th>武器</th><td>匕首、法杖、短弓、短剑、军刀</td></tr><tr><th>护甲</th><td>仅限皮甲</td></tr><tr><th>盾牌</th><td>仅限小圆盾</td></tr>
+<tr><th>初始生命</th><td>25 + d8</td></tr></table>
+
+</body>
+</html>

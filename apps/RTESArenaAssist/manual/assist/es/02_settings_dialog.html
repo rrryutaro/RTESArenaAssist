@@ -57,6 +57,7 @@ a { color: #7ec8e3; }
 <ul>
 <li><a href="#traduccion-comportamiento">Pestaña de traducción / comportamiento del panel</a></li>
 <li><a href="#traduccion-avanzado">Pestaña traducir — Avanzado</a></li>
+<li><a href="#user-translations">Tus traducciones</a></li>
 </ul>
 <li><a href="#tab-combate">Pestaña Información de combate</a></li>
 <ul>
@@ -219,6 +220,38 @@ a { color: #7ec8e3; }
 <tr><th>Etiqueta</th><th>Valor inicial</th><th>Descripción</th></tr>
 <tr><td><code>Emular el comportamiento de panel oculto en la pestaña Traducir:</code></td><td>Desactivado</td><td>Si se activa, los resultados de traducción y los mensajes de diálogo se muestran en la pestaña Traducir, igual que cuando se oculta el panel de traducción. Es un ajuste avanzado para comprobaciones</td></tr>
 </table>
+<h3 id="user-translations"><a name="user-translations"></a>Tus traducciones</h3>
+<p>Puedes sustituir partes de una traducción incluida por la tuya o añadir un idioma nuevo.</p>
+<ol>
+<li>Elige un idioma en <code>Exportar una plantilla</code> (para crear un idioma nuevo, elige <code>(plantilla vacía para un idioma nuevo)</code>), pulsa <code>Exportar...</code> y guarda el archivo JSON. Si activas <code>Incluir el original en inglés</code>, se añade el original en inglés (el original del texto del juego solo se añade en un equipo con la carpeta del juego configurada y el diccionario ya creado). Guárdalo fuera de la carpeta de traducciones (véase más abajo).</li>
+<li>Abre el JSON guardado en un editor de texto (UTF-8) y modifica el <code>text</code> de las entradas que quieras cambiar. Las entradas con <code>text</code> vacío conservan la traducción incluida (en un idioma nuevo, la del idioma de <code>meta.fallback</code>). No cambies las claves ni los marcadores como <code>%xx</code> y <code>{name}</code> (no se cargan las entradas con marcadores que la traducción de referencia no tiene, ni las que contienen <code>&lt;</code> o <code>&gt;</code>). <code>source</code> (el original en inglés) y <code>ref</code> (una traducción de referencia) no se usan al cargar.<br>En un idioma nuevo, rellena siempre <code>lang</code> al principio (un código de idioma, por ejemplo <code>tr</code>) y <code>meta.display_name</code> (el nombre que aparece en la lista de idiomas). <code>meta.fallback</code> es el idioma incluido que se usa para las entradas sin traducir (<code>en</code> por defecto); con <code>meta.direction</code> en <code>rtl</code> el texto se muestra de derecha a izquierda.</li>
+<li>En <code>Importar un archivo de traducción</code>, pulsa <code>Importar...</code> y elige el archivo editado. Se importa si supera las comprobaciones. Un idioma nuevo se añade a los idiomas de la pestaña General. Los cambios se aplican al reiniciar la aplicación.</li>
+</ol>
+<p>La plantilla de un idioma incluido contiene la traducción actual de todas las entradas. Borra las entradas que no cambies o deja su <code>text</code> vacío. Las entradas que conserves quedan fijadas a tu redacción y no reciben las mejoras posteriores de la traducción incluida.</p>
+<p>Ejemplo 1: cambiar solo una entrada de la traducción alemana incluida (solo se sustituyen las entradas que escribas).</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "de",
+  "texts": {
+    "ui_app": {
+      "settings.title": "Meine Einstellungen"
+    }
+  }
+}</pre></td></tr></table>
+<p>Ejemplo 2: un idioma nuevo (turco). <code>ref</code> es solo de consulta y no se usa al cargar.</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "tr",
+  "meta": { "display_name": "Türkçe", "fallback": "en", "direction": "ltr" },
+  "texts": {
+    "ui_app": {
+      "settings.title": { "ref": "Settings", "text": "Ayarlar" }
+    }
+  }
+}</pre></td></tr></table>
+<p>Los archivos importados aparecen en la lista <code>Cargados</code>. Selecciona uno y pulsa <code>Eliminar</code> para volver a la traducción incluida (un idioma nuevo se elimina). <code>Abrir carpeta</code> abre la carpeta <code>translations</code>, situada junto al archivo de ajustes. Los JSON que pongas allí se cargan automáticamente al iniciar. En un idioma añadido, los documentos como el manual se muestran en inglés.</p>
 <h2 id="tab-combate"><a name="tab-combate"></a>Pestaña Información de combate</h2>
 <p>Configura por separado dónde se muestran el combate y los hechizos activos. Las nuevas funciones de visualización, lectura en voz alta y guardado están desactivadas por defecto. Los valores guardados en versiones de desarrollo anteriores se conservan tal cual. Los textos mostrados están disponibles en japonés, inglés, español, alemán, francés, italiano y ruso.</p>
 <p><img src="img/settings_dark_tab_05.png" alt="Pestaña Información de combate"></p>

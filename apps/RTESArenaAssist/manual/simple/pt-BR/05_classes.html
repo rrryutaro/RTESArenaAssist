@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Classes de Personagem</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 13px; color: #5bc0de; margin-top: 4px; margin-bottom: 2px; }
+h3 { font-size: 12px; color: #7a8899; margin: 14px 0 2px 0; font-weight: normal; text-transform: uppercase; letter-spacing: 1px; }
+p { margin: 0 0 6px 0; font-size: 12px; }
+table { border-collapse: collapse; width: 100%; margin: 4px 0 10px 0; font-size: 11px; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 3px 6px; text-align: left; border: 1px solid #1e3a4a; }
+td { padding: 3px 6px; border: 1px solid #1e3a4a; }
+tr:nth-child(even) { background: #111e2c; }
+.ability { color: #a8d8a8; font-size: 11px; margin: 2px 0 6px 0; }
+.note { background: #14283a; border-left: 3px solid #5bc0de; padding: 7px 10px; margin: 8px 0 12px 0; color: #b8cfe0; font-size: 12px; }
+.section-header { background: #1c2e3f; color: #a0c4d8; font-size: 13px; font-weight: bold; padding: 5px 8px; margin: 18px 0 6px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<h1>Classes de Personagem (Todas as 18)</h1>
+
+<div class="note"><strong>Dado de vida:</strong> O “dN” na linha de Vida Inicial de cada classe é o dado de vida dessa classe. O mesmo dN é rolado uma vez a cada vez que você sobe de nível.</div>
+
+<div class="section-header">Classes de Ladrão — Atributos Primários: Agilidade (AGI) e Inteligência (INT)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">Todas as classes de ladrão podem arrombar fechaduras, bater carteiras e furtar. Uma Velocidade alta também é desejável.</p>
+
+<h2>Ladrão</h2>
+<p>Rápido e ágil. Útil em combate para ataques-surpresa, reconhecimento e golpes críticos. A classe que sobe de nível mais depressa.</p>
+<div class="ability">★ Ganha chance de golpe crítico (3× de dano) a cada nível</div>
+<table><tr><th>Armas</th><td>Adaga, Espada Curta, Espada Larga, Sabre, Machado de Guerra, Arco Curto</td></tr>
+<tr><th>Armadura</th><td>Somente couro</td></tr><tr><th>Escudo</th><td>Somente broquel</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d10</td></tr></table>
+
+<h2>Arrombador</h2>
+<p>Especialista em arrombar fechaduras e se infiltrar em áreas restritas. Não pode usar escudos.</p>
+<div class="ability">★ Chance de golpe crítico por nível (menor do que a do Ladrão)</div>
+<table><tr><th>Armas</th><td>Adaga, Espada Curta, Tanto, Arco Curto</td></tr>
+<tr><th>Armadura</th><td>Somente couro</td></tr><tr><th>Escudo</th><td>Nenhum</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d8</td></tr></table>
+
+<h2>Assassino</h2>
+<p>Dedicado a matar. Tem a maior chance de golpe crítico de todas as classes. Pode usar qualquer arma, mas só armadura de couro e nenhum escudo.</p>
+<div class="ability">★ Maior chance de golpe crítico por nível entre todas as classes</div>
+<table><tr><th>Armas</th><td>Qualquer</td></tr>
+<tr><th>Armadura</th><td>Somente couro</td></tr><tr><th>Escudo</th><td>Nenhum</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d12</td></tr></table>
+
+<h2>Ladino</h2>
+<p>Um ladrão treinado em armas e armaduras. Comparável aos guerreiros em combate, mas mantendo as habilidades de arrombar fechaduras e bater carteiras.</p>
+<div class="ability">★ Pequena chance de golpe crítico por nível</div>
+<table><tr><th>Armas</th><td>Qualquer</td></tr>
+<tr><th>Armadura</th><td>Somente couro ou malha</td></tr><tr><th>Escudo</th><td>Qualquer, exceto de torre</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d14</td></tr></table>
+
+<h2>Acrobata</h2>
+<p>Sobrenaturalmente ágil — o personagem mais rápido a pé. Reduz passivamente a chance base de acerto dos inimigos.</p>
+<div class="ability">★ Reduz a chance base de acerto do oponente / Chance de golpe crítico por nível</div>
+<table><tr><th>Armas</th><td>Adaga, Espada Curta, Espada Larga, Tanto, Arco Curto</td></tr>
+<tr><th>Armadura</th><td>Somente couro</td></tr><tr><th>Escudo</th><td>Nenhum</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d8</td></tr></table>
+
+<h2>Bardo</h2>
+<p>“Pau para toda obra.” Lida com golpes críticos, armas, furtos e magia. Pontos de Magia = INT.</p>
+<table><tr><th>Armas</th><td>Adaga, Espada Curta, Espada Larga, Sabre, Maça, Machado de Guerra, Arco Curto</td></tr>
+<tr><th>Armadura</th><td>Somente couro ou malha</td></tr><tr><th>Escudo</th><td>Qualquer, exceto escudo de torre</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d10</td></tr></table>
+
+<div class="section-header">Classes de Guerreiro — Atributos Primários: Força (STR) e Resistência (END)</div>
+<p style="font-size:11px;color:#7a8899;margin-bottom:10px">Não conjuram feitiços, salvo indicação em contrário. A Agilidade também é importante para a Classe de Armadura.</p>
+
+<h2>Guerreiro</h2>
+<p>A espinha dorsal de Tamriel. Pode usar qualquer arma, armadura ou escudo. É a segunda que sobe de nível mais depressa. Somente Guerreiros, Cavaleiros e Patrulheiros podem vestir armadura de placas encantada.</p>
+<table><tr><th>Armas</th><td>Qualquer</td></tr><tr><th>Armadura</th><td>Qualquer</td></tr><tr><th>Escudo</th><td>Qualquer</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d20</td></tr></table>
+
+<h2>Cavaleiro</h2>
+<p>Combatente nobre. Repara automaticamente todas as armas e armaduras do inventário.</p>
+<div class="ability">★ Imune à paralisia (feitiços e veneno) / Repara armas e armaduras automaticamente</div>
+<table><tr><th>Armas</th><td>Qualquer</td></tr><tr><th>Armadura</th><td>Exceto couro</td></tr><tr><th>Escudo</th><td>Qualquer</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d18</td></tr></table>
+
+<h2>Patrulheiro</h2>
+<p>Rastreador e sobrevivente. Reduz automaticamente o tempo de viagem entre cidades. Causa dano extra igual ao nível.</p>
+<div class="ability">★ Menor tempo de viagem entre cidades / Dano extra = nível</div>
+<table><tr><th>Armas</th><td>Qualquer</td></tr><tr><th>Armadura</th><td>Qualquer</td></tr><tr><th>Escudo</th><td>Qualquer, exceto de torre</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d18</td></tr></table>
+
+<h2>Arqueiro</h2>
+<p>Atirador especializado em armas de projétil. Chance de golpe crítico com arcos por nível. Não pode usar escudos.</p>
+<div class="ability">★ Chance de golpe crítico com armas de projétil por nível</div>
+<table><tr><th>Armas</th><td>Qualquer</td></tr><tr><th>Armadura</th><td>Somente couro ou malha</td></tr><tr><th>Escudo</th><td>Nenhum</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d16</td></tr></table>
+
+<h2>Monge</h2>
+<p>Mente e corpo aprimorados até virarem uma máquina de matar. Sem armadura nem escudo. A chance de acerto dos inimigos diminui a cada nível. Testes de resistência a feitiços não causam dano.</p>
+<div class="ability">★ Reduz a chance de acerto dos inimigos por nível / Teste de resistência a feitiço bem-sucedido = nenhum dano / Golpe crítico (somente corpo a corpo)</div>
+<table><tr><th>Armas</th><td>Qualquer</td></tr><tr><th>Armadura</th><td>Nenhuma</td></tr><tr><th>Escudo</th><td>Nenhum</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d14</td></tr></table>
+
+<h2>Bárbaro</h2>
+<p>Sobrevivente de terras hostis. Tem a maior vida inicial de todas as classes. Recupera vida extra com base na Resistência.</p>
+<div class="ability">★ Imune a veneno / Vida extra recuperada a cada descanso com base na END</div>
+<table><tr><th>Armas</th><td>Qualquer</td></tr><tr><th>Armadura</th><td>Até malha</td></tr><tr><th>Escudo</th><td>Qualquer</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d30 (a maior de todas as classes)</td></tr></table>
+
+<div class="section-header">Classes de Mago — Atributos Primários: Inteligência (INT) e Força de Vontade (WIL)</div>
+
+<h2>Mago</h2>
+<p>Nascido para a magia. Pontos de Magia = INT×2. Depende inteiramente de feitiços para atacar e se defender. Sem armadura nem escudo.</p>
+<table><tr><th>Armas</th><td>Adaga, Cajado</td></tr><tr><th>Armadura</th><td>Nenhuma</td></tr><tr><th>Escudo</th><td>Somente broquel</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d6</td></tr></table>
+
+<h2>Feiticeiro</h2>
+<p>Uma “bateria” mágica. Não gera pontos de magia por conta própria; em vez disso, absorve-os de feitiços lançados contra ele (até INT×3). Totalmente carregado, é potencialmente a classe de mago mais poderosa.</p>
+<div class="ability">★ Absorve feitiços direcionados → nenhum dano + ganha pontos de magia / Não absorve os próprios feitiços / Sem regeneração natural de SP</div>
+<table><tr><th>Armas</th><td>Qualquer</td></tr><tr><th>Armadura</th><td>Até malha</td></tr><tr><th>Escudo</th><td>Nenhum</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d6</td></tr></table>
+
+<h2>Curandeiro</h2>
+<p>Especialista em magia defensiva. Pontos de Magia = INT×1,75. Feitiços defensivos custam menos no Criador de Feitiços. Taxa base de cura aumentada.</p>
+<table><tr><th>Armas</th><td>Adaga, Cajado, Maça, Mangual</td></tr><tr><th>Armadura</th><td>Somente couro ou malha</td></tr><tr><th>Escudo</th><td>Até redondo</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d8</td></tr></table>
+
+<h2>Mago de Batalha</h2>
+<p>Especialista em feitiços ofensivos. Pontos de Magia = INT×1,75. Feitiços ofensivos custam menos no Criador de Feitiços.</p>
+<table><tr><th>Armas</th><td>Qualquer</td></tr><tr><th>Armadura</th><td>Somente couro</td></tr><tr><th>Escudo</th><td>Até redondo</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d10</td></tr></table>
+
+<h2>Espadachim Mágico</h2>
+<p>Pode conjurar feitiços usando armadura. Guerreiro-mago versátil. Pontos de Magia = INT×1,5.</p>
+<table><tr><th>Armas</th><td>Qualquer</td></tr><tr><th>Armadura</th><td>Somente couro ou malha</td></tr><tr><th>Escudo</th><td>Qualquer, exceto escudo de torre</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d12</td></tr></table>
+
+<h2>Lâmina da Noite</h2>
+<p>Mago de furtividade e infiltração. Arromba fechaduras tão bem quanto os Ladinos. Chance de golpe crítico por nível. Pontos de Magia = INT×1,5.</p>
+<div class="ability">★ Chance de golpe crítico por nível</div>
+<table><tr><th>Armas</th><td>Adaga, Cajado, Arco Curto, Espada Curta, Sabre</td></tr><tr><th>Armadura</th><td>Somente couro</td></tr><tr><th>Escudo</th><td>Somente broquel</td></tr>
+<tr><th>Vida Inicial</th><td>25 + d8</td></tr></table>
+
+</body>
+</html>

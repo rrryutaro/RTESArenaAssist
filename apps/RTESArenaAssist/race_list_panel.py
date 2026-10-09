@@ -277,7 +277,9 @@ class RaceListPanel(QWidget):
         if row and row.is_disabled():
             title = i18n.tr(_IMPERIAL_TITLE_KEY)
             body = i18n.tr(_IMPERIAL_BODY_KEY)
-            html = f'<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{{font-family:"メイリオ",sans-serif;font-size:13px;background:#0d1b2a;color:#c9d1e0;margin:0;padding:16px;line-height:1.7;}}h1{{font-size:15px;color:#7ec8e3;}}</style></head><body><h1>{title}</h1><p>{body}</p></body></html>'
+            families = i18n.ui_font_families()
+            font_css = ', '.join((f'"{f}"' for f in families)) if families else '"メイリオ"'
+            html = f'<!DOCTYPE html><html><head><meta charset="UTF-8"><style>body{{font-family:{font_css},sans-serif;font-size:13px;background:#0d1b2a;color:#c9d1e0;margin:0;padding:16px;line-height:1.7;}}h1{{font-size:15px;color:#7ec8e3;}}</style></head><body><h1>{title}</h1><p>{body}</p></body></html>'
             self._desc.setHtml(html)
             return
         fragment = self._sections.get(race_id, '')

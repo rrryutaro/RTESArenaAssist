@@ -897,7 +897,7 @@ class AssistWindow(QMainWindow):
             self._sb.showMessage(f"{i18n.tr('capture.error')}: {exc}", 5000)
 
     def _apply_theme(self):
-        self.setStyleSheet(theme_mod.get_stylesheet(self._theme_mode))
+        self.setStyleSheet(theme_mod.get_stylesheet(self._theme_mode, i18n.ui_font_families()))
 
     def _set_theme(self, mode: str):
         self._theme_mode = mode

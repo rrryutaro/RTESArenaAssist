@@ -1,11 +1,13 @@
 from __future__ import annotations
 import logging
+import re
 from pathlib import Path
 from typing import Callable, Optional
 from PySide6.QtCore import QTimer, QUrl, Qt
 from PySide6.QtGui import QImage, QTextDocument
 from PySide6.QtWidgets import QFrame, QTextBrowser
 import armor_rating
+import i18n_helper as i18n
 from charsheet import magic_items, potions
 from charsheet import template_engine
 from charsheet import values as sheet_values
@@ -13,6 +15,14 @@ from charsheet.images import SheetImages, equipment_key
 _log = logging.getLogger('RTESArenaAssist')
 RENDER_INTERVAL_MS = 250
 EQUIPMENT_CHECK_MS = 1000
+_FONT_FAMILY_RE = re.compile('(font-family:\\s*"Segoe UI",\\s*)')
+
+def with_language_fonts(html: str, families=None) -> str:
+    names = [f for f in families or [] if f and f != 'Segoe UI']
+    if not names:
+        return html
+    insert = ', '.join((f'"{n}"' for n in names)) + ', '
+    return _FONT_FAMILY_RE.sub(lambda m: m.group(1) + insert, html, count=1)
 
 class CharacterSheetView(QTextBrowser):
 
@@ -106,6 +116,7 @@ class CharacterSheetView(QTextBrowser):
         values.update(potions.sheet_values(equipped))
         values.update(magic_items.sheet_values(equipped))
         html = template_engine.render(self._template, values, sheet_values.labels(), self._images.urls())
+        html = with_language_fonts(html, i18n.ui_font_families())
         bar = self.verticalScrollBar()
         position = bar.value()
         self.setHtml(html)

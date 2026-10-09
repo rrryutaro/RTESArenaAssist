@@ -2,6 +2,7 @@ from __future__ import annotations
 from PySide6.QtCore import Qt, QRectF
 from PySide6.QtGui import QColor, QFont, QPainter, QPen
 from PySide6.QtWidgets import QWidget
+import i18n_helper as i18n
 from obs_overlay import ObsOverlayWindow
 from spell_effects import SpellEffectRow
 STYLES = ('A', 'B', 'C', 'D', 'E', 'F')
@@ -64,6 +65,9 @@ class SpellEffectOverlay(ObsOverlayWindow, QWidget):
 
     def _text(self, painter: QPainter, rect: QRectF, text: str, *, size: int=12, bold: bool=False, color: str='#f3f8f9', align=Qt.AlignmentFlag.AlignVCenter | Qt.AlignmentFlag.AlignLeft) -> None:
         font = QFont('Yu Gothic UI')
+        families = i18n.ui_font_families()
+        if families:
+            font.setFamilies(families)
         font.setPixelSize(size)
         font.setBold(bold)
         painter.setFont(font)

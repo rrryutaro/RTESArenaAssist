@@ -140,6 +140,120 @@
       "quote_close": "»",
       "secondary_quote_open": "„",
       "secondary_quote_close": "“"
+    },
+    "zh-Hans": {
+      "lang_code": "zh-Hans",
+      "display_name": "简体中文",
+      "locale": "zh-CN",
+      "status": "public_enabled",
+      "public_enabled": true,
+      "direction": "ltr",
+      "fallback_chain": [
+        "zh-Hans",
+        "en"
+      ],
+      "font_hint": "Microsoft YaHei UI, Microsoft YaHei, Noto Sans CJK SC, sans-serif",
+      "ui_font_families": [
+        "Microsoft YaHei UI",
+        "Microsoft YaHei",
+        "Segoe UI"
+      ],
+      "plural_form": "no_plural",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "quote_open": "“",
+      "quote_close": "”",
+      "secondary_quote_open": "‘",
+      "secondary_quote_close": "’"
+    },
+    "pt-BR": {
+      "lang_code": "pt-BR",
+      "display_name": "Português (Brasil)",
+      "locale": "pt-BR",
+      "status": "public_enabled",
+      "public_enabled": true,
+      "direction": "ltr",
+      "fallback_chain": [
+        "pt-BR",
+        "en"
+      ],
+      "font_hint": "Segoe UI, Arial, sans-serif",
+      "plural_form": "en_like_2",
+      "decimal_separator": ",",
+      "thousands_separator": ".",
+      "quote_open": "“",
+      "quote_close": "”",
+      "secondary_quote_open": "‘",
+      "secondary_quote_close": "’"
+    },
+    "pl": {
+      "lang_code": "pl",
+      "display_name": "Polski",
+      "locale": "pl-PL",
+      "status": "public_enabled",
+      "public_enabled": true,
+      "direction": "ltr",
+      "fallback_chain": [
+        "pl",
+        "en"
+      ],
+      "font_hint": "Segoe UI, Arial, sans-serif",
+      "plural_form": "en_like_2",
+      "decimal_separator": ",",
+      "thousands_separator": " ",
+      "quote_open": "„",
+      "quote_close": "”",
+      "secondary_quote_open": "‚",
+      "secondary_quote_close": "’"
+    },
+    "ko": {
+      "lang_code": "ko",
+      "display_name": "한국어",
+      "locale": "ko-KR",
+      "status": "public_enabled",
+      "public_enabled": true,
+      "direction": "ltr",
+      "fallback_chain": [
+        "ko",
+        "en"
+      ],
+      "font_hint": "Malgun Gothic, Segoe UI, sans-serif",
+      "ui_font_families": [
+        "Malgun Gothic",
+        "Segoe UI"
+      ],
+      "plural_form": "no_plural",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "quote_open": "“",
+      "quote_close": "”",
+      "secondary_quote_open": "‘",
+      "secondary_quote_close": "’"
+    },
+    "zh-Hant": {
+      "lang_code": "zh-Hant",
+      "display_name": "繁體中文",
+      "locale": "zh-TW",
+      "status": "public_enabled",
+      "public_enabled": true,
+      "direction": "ltr",
+      "fallback_chain": [
+        "zh-Hant",
+        "en"
+      ],
+      "font_hint": "Microsoft JhengHei UI, Microsoft JhengHei, Noto Sans CJK TC, sans-serif",
+      "ui_font_families": [
+        "Microsoft JhengHei UI",
+        "Microsoft JhengHei",
+        "Segoe UI"
+      ],
+      "plural_form": "no_plural",
+      "decimal_separator": ".",
+      "thousands_separator": ",",
+      "quote_open": "「",
+      "quote_close": "」",
+      "secondary_quote_open": "『",
+      "secondary_quote_close": "』"
     }
   }
 }

@@ -1,0 +1,22 @@
+{
+  "ask_about_menu.title_ask_about.0": "무엇을 물어볼까요?",
+  "ask_about_menu.opt_who_are_you.0": "당신은 누구예요?",
+  "ask_about_menu.opt_where_is.0": "어디에 있나요…",
+  "ask_about_menu.opt_rumors.0": "소문",
+  "ask_about_menu.opt_exit.0": "나가기",
+  "ask_about_menu.title_rumor_type.0": "소문 종류",
+  "ask_about_menu.opt_general.0": "일반",
+  "ask_about_menu.opt_work.0": "일자리",
+  "ask_about_menu.place_inn.0": "여관",
+  "ask_about_menu.place_temple.0": "사원",
+  "ask_about_menu.place_equipment_store.0": "장비점",
+  "ask_about_menu.place_mages_guild.0": "마법사 길드",
+  "ask_about_menu.place_palace.0": "궁전",
+  "ask_about_menu.place_city_gates.0": "성문",
+  "ask_about_menu.place_nearest_inn.0": "가장 가까운 여관",
+  "ask_about_menu.place_nearest_temple.0": "가장 가까운 사원",
+  "ask_about_menu.place_nearest_store.0": "가장 가까운 상점",
+  "ask_about_menu.place_nearest_dungeon.0": "가장 가까운 던전",
+  "ask_about_menu.fallback_no_rumor.0": "소문은 다루지 않아요…",
+  "ask_about_menu.fallback_not_sure.0": "잘 모르겠어요. 밖에 있는 다른 사람에게 물어보세요."
+}

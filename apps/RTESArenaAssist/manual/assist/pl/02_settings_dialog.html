@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Szczegółowy przewodnik po oknie Ustawienia</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 6px; }
+h3 { font-size: 13px; color: #a0c4d8; margin-top: 14px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul { margin: 0 0 8px 0; }
+li { margin: 0 0 2px 0; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; }
+tr:nth-child(even) { background: #111e2c; }
+.key { display: inline-block; background: #1c2e3f; border: 1px solid #2e5068; border-radius: 3px; padding: 0 5px; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+code { background: #1c2e3f; font-family: monospace; font-size: 11px; color: #7ec8e3; }
+pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; white-space: pre-wrap; }
+.code td { background: #111e2c; border: 1px solid #1e3a4a; }
+a { color: #7ec8e3; }
+.note { background: #1c2e3f; border-left: 3px solid #2e5068; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+</style>
+</head>
+<body>
+<body>
+
+
+<h1>RTESArenaAssist — szczegółowy przewodnik po oknie Ustawienia</h1>
+<p>Ta strona przedstawia zrzut każdej karty okna Ustawienia programu RTESArenaAssist wraz z objaśnieniem poszczególnych elementów.</p>
+<p>Zrzuty wykonano w oknie Ustawienia z ustawieniami domyślnymi, w języku wyświetlania i z domyślnym motywem „Ciemny”.</p>
+<p>Wartości na karcie DOSBox odzwierciedlają nie tylko własny plik ustawień Assist, ale też to, co odczytano z pliku <code>arena.conf</code> w ścieżce domyślnej. Jeśli <code>arena.conf</code> w Twoim środowisku jest inny, wyświetlane wartości też będą inne.</p>
+<h2 id="contents"><a name="contents"></a>Spis treści</h2>
+<ul>
+<li><a href="#general-tab">Karta Ogólne</a></li>
+<ul>
+<li><a href="#paths">Ścieżki</a></li>
+<li><a href="#behavior">Zachowanie</a></li>
+<li><a href="#shutter-sound">Dźwięk migawki</a></li>
+<li><a href="#capture-hotkey">Skrót klawiszowy zrzutu</a></li>
+<li><a href="#updates">Aktualizacje</a></li>
+</ul>
+<li><a href="#display-tab">Karta Wyświetlanie</a></li>
+<ul>
+<li><a href="#connection-bar">Pasek połączenia</a></li>
+<li><a href="#item-list-marks">Znaczniki na liście przedmiotów</a></li>
+<li><a href="#translation-panel-font">Czcionka panelu tłumaczenia</a></li>
+<li><a href="#layout">Układ</a></li>
+</ul>
+<li><a href="#map-tab">Karta Mapa</a></li>
+<ul>
+<li><a href="#map-display-settings">Ustawienia wyświetlania mapy</a></li>
+<li><a href="#field-extended-display">Rozszerzone wyświetlanie pola</a></li>
+<li><a href="#map-expression-and-colours">Wygląd mapy i kolory</a></li>
+</ul>
+<li><a href="#translation-tab">Karta Tłumaczenie</a></li>
+<ul>
+<li><a href="#translate-tab-panel-behavior">Zachowanie karty i panelu tłumaczenia</a></li>
+<li><a href="#translate-tab-advanced">Karta tłumaczenia — zaawansowane</a></li>
+<li><a href="#user-translations">Twoje tłumaczenia</a></li>
+</ul>
+<li><a href="#combat-information-tab">Karta Informacje o walce</a></li>
+<ul>
+<li><a href="#arena-screen">Ekran Areny</a></li>
+<li><a href="#arena-screen-ongoing-spells">Ekran Areny · Trwające zaklęcia</a></li>
+<li><a href="#combat-info-translation-tab">Informacje o walce na karcie Tłumaczenie</a></li>
+<li><a href="#combat-info-translation-panel">Informacje o walce w panelu tłumaczenia</a></li>
+<li><a href="#common-settings-and-messages">Ustawienia wspólne i komunikaty</a></li>
+</ul>
+<li><a href="#read-aloud-tab">Karta Czytanie na głos</a></li>
+<ul>
+<li><a href="#read-aloud">Czytanie na głos</a></li>
+<li><a href="#read-targets">Co czytać</a></li>
+<li><a href="#other-log">Inne / Dziennik</a></li>
+<li><a href="#character-name-reading">Czytanie imienia postaci</a></li>
+</ul>
+<li><a href="#cheat-tab">Karta Cheaty</a></li>
+<li><a href="#dosbox-tab">Karta DOSBox</a></li>
+<ul>
+<li><a href="#config-file-window-behavior">Plik konfiguracji / Zachowanie okna</a></li>
+<li><a href="#window-display">Okno / wyświetlanie</a></li>
+<li><a href="#video">Obraz</a></li>
+<li><a href="#performance">Wydajność</a></li>
+<li><a href="#sound">Dźwięk</a></li>
+</ul>
+</ul>
+<h2 id="general-tab"><a name="general-tab"></a>Karta Ogólne</h2>
+<p>Na tej karcie ustawiasz ścieżki, podstawowe zachowanie, dźwięk migawki i skrót klawiszowy zrzutu, a także sprawdzasz swoją wersję.</p>
+<p><img src="img/settings_dark_tab_01.png" alt="Karta Ogólne"></p>
+<h3 id="paths"><a name="paths"></a>Ścieżki</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Folder gry:</code></td><td>Pusto</td><td>Folder zawierający plik <code>ARENA.EXE</code> Areny i pliki zapisów. Dopóki nie jest ustawiony, zarządzanie zapisami i odczyt danych gry są niedostępne</td></tr>
+<tr><td><code>Folder kopii zapasowych:</code></td><td>Pusto</td><td>Miejsce przechowywania kopii zapasowych zapisów. Gdy pole jest puste, używany jest folder <code>saves_backup/</code> obok pliku ustawień programu</td></tr>
+<tr><td><code>Folder zrzutów:</code></td><td>Pusto</td><td>Miejsce zapisywania zrzutów ekranu. Gdy pole jest puste, używany jest ten sam folder co folder kopii zapasowych</td></tr>
+<tr><td><code>Wskaż…</code></td><td>-</td><td>Wybiera odpowiedni folder</td></tr>
+</table>
+<h3 id="behavior"><a name="behavior"></a>Zachowanie</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Interwał odpytywania:</code></td><td><code>100 ms</code></td><td>Jak często sprawdzany jest ekran i stan pamięci DOSBox. Wartość domyślna jest krótka, aby łatwiej wychwytywać krótkie komunikaty</td></tr>
+<tr><td><code>Potwierdzaj przed usunięciem:</code></td><td>WŁ.</td><td>Pokazuje okno potwierdzenia przy usuwaniu zrzutów lub kopii zapasowych</td></tr>
+<tr><td><code>Zawsze na wierzchu:</code></td><td>WYŁ.</td><td>Pokazuje główne okno Assist przed innymi oknami</td></tr>
+<tr><td><code>Motyw:</code></td><td>Ciemny</td><td>Wybiera motyw kolorystyczny interfejsu</td></tr>
+<tr><td><code>Język:</code></td><td>Automatycznie (język systemu)</td><td>Język interfejsu. Gdy pole jest puste, język jest wykrywany automatycznie na podstawie języka systemu, a zmiana zaczyna działać po ponownym uruchomieniu aplikacji</td></tr>
+</table>
+<h3 id="shutter-sound"><a name="shutter-sound"></a>Dźwięk migawki</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Włączone</code></td><td>WŁ.</td><td>Odtwarza efekt dźwiękowy po zapisaniu zrzutu ekranu</td></tr>
+<tr><td><code>Rodzaj:</code></td><td>Aparat w telefonie (standardowy)</td><td>Odtwarzany dźwięk migawki. Możesz wybrać: standardowy, krótki, podwójny, z podbitymi wysokimi tonami i łagodny</td></tr>
+<tr><td><code>Głośność:</code></td><td><code>30 %</code></td><td>Głośność odtwarzania dźwięku migawki</td></tr>
+<tr><td><code>▶</code></td><td>-</td><td>Odsłuchuje wybrany dźwięk migawki</td></tr>
+</table>
+<h3 id="capture-hotkey"><a name="capture-hotkey"></a>Skrót klawiszowy zrzutu</h3>
+<p>Zrzut możesz zapisać samym naciśnięciem klawisza, gdy fokus ma ekran gry (DOSBox). Użyj go do przechwytywania komunikatów, które znikają po kilku sekundach.</p>
+<table>
+<tr><th>Element</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Włączone</code></td><td>WŁ.</td><td>Używa skrótu klawiszowego do zrzutów</td></tr>
+<tr><td><code>Ctrl</code> / <code>Alt</code> / <code>Shift</code></td><td>WYŁ.</td><td>Włącz, aby łączyć z klawiszami modyfikującymi</td></tr>
+<tr><td><code>Klawisz:</code></td><td><code>F12</code></td><td>Używany klawisz. Możesz wybrać od F5 do F12, PrintScreen, Pause, ScrollLock, Insert, Home, End, PageUp i PageDown</td></tr>
+</table>
+<ul>
+<li>Naciśnięty klawisz nie jest przekazywany do gry. Klawiszy używanych przez grę lub DOSBox (F1 / F3 / F4 / F8, Ctrl+F5 do F12, Alt+F12, Alt+Pause) nie można wybrać</li>
+<li>Jeśli inna aplikacja używa tego samego klawisza jako skrótu, jej skrót nie działa, gdy ta aplikacja jest uruchomiona. Wybór innego klawisza pozwala działać obu</li>
+<li>Jeśli nie udało się zarejestrować klawisza, na pasku stanu pojawia się komunikat. Nawet wtedy możesz zrobić zrzut przyciskiem aparatu na pasku narzędzi</li>
+</ul>
+<h3 id="updates"><a name="updates"></a>Aktualizacje</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Bieżąca wersja:</code></td><td>-</td><td>Używana przez Ciebie wersja Assist</td></tr>
+<tr><td><code>Otwórz stronę wydań</code></td><td>-</td><td>Otwiera w przeglądarce stronę wydań Assist (listę wydań). Sprawdź tam, czy istnieje nowsza wersja</td></tr>
+</table>
+<p>Assist nie łączy się z internetem, więc nie sprawdza aktualizacji ani nie aktualizuje się sam.</p>
+<h2 id="display-tab"><a name="display-tab"></a>Karta Wyświetlanie</h2>
+<p>Na tej karcie ustawiasz pasek połączenia, znaczniki wyposażenia na listach przedmiotów, czcionkę panelu tłumaczenia i układ.</p>
+<p><img src="img/settings_dark_tab_02.png" alt="Karta Wyświetlanie"></p>
+<h3 id="connection-bar"><a name="connection-bar"></a>Pasek połączenia</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Pokazuj nazwę rozpoznanego ekranu:</code></td><td>WŁ.</td><td>Pokazuje na pasku połączenia nazwę aktualnie rozpoznanego ekranu</td></tr>
+<tr><td><code>Pokazuj informacje IMG:</code></td><td>WŁ.</td><td>Pokazuje na pasku połączenia wykrywane informacje IMG</td></tr>
+<tr><td><code>Pokazuj wersję:</code></td><td>WŁ.</td><td>Pokazuje wersję aplikacji na pasku połączenia i na pasku stanu</td></tr>
+</table>
+<h3 id="item-list-marks"><a name="item-list-marks"></a>Znaczniki na liście przedmiotów</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Założone:</code></td><td><code>E</code></td><td>Jednoznakowy znacznik pokazywany po lewej stronie założonych przedmiotów</td></tr>
+<tr><td><code>Można założyć:</code></td><td>Pusto</td><td>Znacznik przedmiotów, które można założyć. Domyślnie pole jest puste, więc nic się nie pokazuje</td></tr>
+<tr><td><code>Nie można założyć:</code></td><td><code>✕</code></td><td>Jednoznakowy znacznik pokazywany po lewej stronie przedmiotów, których nie można założyć</td></tr>
+</table>
+<h3 id="translation-panel-font"><a name="translation-panel-font"></a>Czcionka panelu tłumaczenia</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Prawa strona jak lewa</code></td><td>WYŁ.</td><td>Po włączeniu czcionka i rozmiar po stronie tekstu oryginalnego są takie same jak po stronie tłumaczenia</td></tr>
+<tr><td><code>Lewa (tłumaczenie):</code></td><td>Domyślna aplikacji / <code>14 pt</code></td><td>Czcionka i rozmiar używane dla tekstu przetłumaczonego. Jeśli nie zapisano nazwy czcionki, wybierana jest domyślna czcionka aplikacji dla Twojego środowiska</td></tr>
+<tr><td><code>Prawa (oryginał):</code></td><td>Domyślna aplikacji / <code>12 pt</code></td><td>Czcionka i rozmiar używane dla oryginalnego tekstu angielskiego. Ponieważ odbicie jest wyłączone, można je ustawić osobno niż po stronie tłumaczenia</td></tr>
+</table>
+<h3 id="layout"><a name="layout"></a>Układ</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Tryb śledzenia:</code></td><td>Bez śledzenia</td><td>Określa, czy po przesunięciu DOSBox lub Assist drugie okno podąża za nim</td></tr>
+<tr><td><code>Róg DOSBox:</code></td><td>Lewy górny</td><td>Narożnik ekranu odniesienia, w którym DOSBox jest umieszczany przez jednorazowe ułożenie i przez tryb układu</td></tr>
+<tr><td><code>Forma układu:</code></td><td>Forma 2: dolny pełnej szerokości + prawy górny (domyślna)</td><td>Sposób podziału obszaru między DOSBox i panele Assist. Forma 2 to standardowy układ, który wykorzystuje prawy górny róg i dolny pas na całą szerokość</td></tr>
+<tr><td><code>Rozmiar układu:</code></td><td><code>1920 x 1080</code></td><td>Rozmiar całego płótna w trybie układu</td></tr>
+</table>
+<h2 id="map-tab"><a name="map-tab"></a>Karta Mapa</h2>
+<p>Na tej karcie ustawiasz mapę eksploracji i rozszerzone wyświetlanie pola.</p>
+<p><img src="img/settings_dark_tab_03.png" alt="Karta Mapa"></p>
+<h3 id="map-display-settings"><a name="map-display-settings"></a>Ustawienia wyświetlania mapy</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Widoczność za ścianami na mapie:</code></td><td>WYŁ.</td><td>Po wyłączeniu nieodkryte obszary za ścianami nie są zapisywane na mapie. Po włączeniu jest bliżej oryginalnej Areny i zapisywane są także obszary widziane przez ściany</td></tr>
+<tr><td><code>Pokazuj podwyższenia na pełną wysokość jako ściany:</code></td><td>WŁ.</td><td>Pokazuje podwyższenia wypełniające przestrzeń od podłogi do sufitu kolorem ściany. Zmienia się tylko klasyfikacja wyświetlania; blokowanie widoczności pozostaje bez zmian. Podwyższenia niższe niż pełna wysokość nadal są pokazywane jako podwyższenia</td></tr>
+<tr><td><code>Wysokość podwyższenia blokująca widoczność:</code></td><td><code>0 %</code></td><td>Przy wysokości sufitu równej 100% podwyższenia, których górna krawędź sięga tej wysokości lub wyżej, blokują widoczność na mapie. Przy 0% każde podwyższenie blokuje widoczność</td></tr>
+<tr><td><code>Pokazuj podłogę na nieodkrytym obszarze:</code></td><td>WYŁ.</td><td>Po wyłączeniu kolor podłogi mają tylko odkryte pola, co ukrywa kształt nieodkrytego obszaru. Po włączeniu cała mapa jest pokazana w kolorze pergaminu</td></tr>
+<tr><td><code>Centruj na postaci:</code></td><td>WŁ.</td><td>Sprawia, że mapa automatycznie podąża za postacią podczas ruchu. Gdy postać stoi, możesz przesuwać mapę ręcznie</td></tr>
+<tr><td><code>Pokazuj linie siatki:</code></td><td>WŁ.</td><td>Pokazuje linie siatki na granicach pól</td></tr>
+<tr><td><code>Pokazuj granice chunków:</code></td><td>WŁ.</td><td>Wyróżnia granice chunków (jednostki po 64 kafelki) na mapie pola</td></tr>
+<tr><td><code>Pokazuj współrzędne chunków:</code></td><td>WŁ.</td><td>Pokazuje współrzędne każdego chunku na mapie pola, aby łatwiej orientować się w położeniu</td></tr>
+<tr><td><code>Pokazuj granice ponownego centrowania:</code></td><td>WYŁ.</td><td>Pokazuje granice ponownego centrowania mapy pola jako linie przerywane. Dodatkowy widok do badania lub sprawdzania położenia</td></tr>
+<tr><td><code>Rozmiar czcionki współrzędnych chunków:</code></td><td><code>10 pt</code></td><td>Rozmiar tekstu etykiet współrzędnych chunków</td></tr>
+</table>
+<h3 id="field-extended-display"><a name="field-extended-display"></a>Rozszerzone wyświetlanie pola</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Włącz rozszerzone wyświetlanie:</code></td><td>WŁ.</td><td>Główny przełącznik rozszerzonego wyświetlania mapy pola. Po wyłączeniu widok jest zbliżony do automapy w grze</td></tr>
+<tr><td><code>Odróżniaj drogi od ścian:</code></td><td>WŁ.</td><td>Rysuje drogi, po których można chodzić, i nieprzechodnie elementy, takie jak budynki i ściany, w różnych kolorach</td></tr>
+<tr><td><code>Pokazuj krawędzie ścian:</code></td><td>WŁ.</td><td>Pokazuje obrysy ścian i terenu krawędziowego</td></tr>
+<tr><td><code>Odróżniaj płoty, żywopłoty i ogrody:</code></td><td>WŁ.</td><td>Rozróżnia teren krawędziowy, taki jak płoty, żywopłoty i ogrody, za pomocą łączących linii</td></tr>
+<tr><td><code>Pokazuj uprawy:</code></td><td>WŁ.</td><td>Pokazuje uprawy, takie jak kukurydza i pola, własnym kolorem lub znakiem</td></tr>
+<tr><td><code>Pokazuj wszystkie wejścia do budynków:</code></td><td>WŁ.</td><td>Pokazuje na czerwono także wejścia do domów, karczm, świątyń, bram miejskich i tak dalej. Wejścia do krypt, wież i lochów są czerwone niezależnie od tego ustawienia</td></tr>
+<tr><td><code>Pokazuj punkty orientacyjne (drzewa, krzewy itp.):</code></td><td>WYŁ.</td><td>Nakłada uproszczone znaczniki drzew, krzewów, skał, grobów, ruin i tak dalej. Jest ich dużo i utrudniają czytanie mapy, więc domyślnie jest wyłączone</td></tr>
+</table>
+<h3 id="map-expression-and-colours"><a name="map-expression-and-colours"></a>Wygląd mapy i kolory</h3>
+<p>Mapa gry rysuje takie rzeczy jak przejścia pod ścianami bez ich rozróżniania. Tutaj ustawiasz, czy rysować je z rozróżnieniem, oraz kolor każdego elementu. Jeśli wyłączysz „Pokazuj” w wierszu, ten element wraca do takiego samego wyglądu jak na mapie gry (wyłączenie opcji Skarby nie pokazuje ich wcale).</p>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Ukryte drzwi:</code></td><td>WŁ.</td><td>Pokazuje odkryte ukryte drzwi własnym kolorem. Do czasu odkrycia pozostają ścianami</td></tr>
+<tr><td><code>Woda pod ścianami:</code></td><td>WŁ.</td><td>Pokazuje kanały wodne biegnące pod ścianami własnym kolorem. Nie są pokazywane, dopóki faktycznie nie przejdziesz tamtędy i ich nie odkryjesz</td></tr>
+<tr><td><code>Przejścia pod ścianami:</code></td><td>WŁ.</td><td>Pokazuje przejścia biegnące pod ścianami. Nie są pokazywane, dopóki faktycznie nie przejdziesz tamtędy i ich nie odkryjesz</td></tr>
+<tr><td><code>Lawa pod ścianami:</code></td><td>WŁ.</td><td>Pokazuje lawę płynącą pod ścianami własnym kolorem. Nie jest pokazywana, dopóki faktycznie nie przejdziesz tamtędy i jej nie odkryjesz</td></tr>
+<tr><td><code>Skarby:</code></td><td>WŁ.</td><td>Nakłada znacznik w miejscu, gdzie zdobyto skarb. Znak znacznika możesz zmienić w polu po prawej. Gdy opcja „Odkryj mapę” na karcie Cheaty jest włączona, pokazywane są wszystkie miejsca ze skarbami, niezależnie od tego, czy je zdobyto</td></tr>
+<tr><td><code>Klucze i przedmioty zadań:</code></td><td>WŁ.</td><td>Wśród skarbów pokazuje znaczniki kluczy i przedmiotów zadań innym kolorem. Po wyłączeniu są pokazywane tym samym kolorem co skarby. Nie są pokazywane, gdy opcja Skarby jest wyłączona</td></tr>
+<tr><td><code>Kolory wejść do budynków:</code></td><td>WŁ.</td><td>Na mapach miast zastępuje pola w kolorze budynku, przylegające do wejścia do karczmy, sklepu z wyposażeniem, świątyni lub Gildii Magów, kolorem dla każdego rodzaju budynku. Kolor czerwonego wejścia się nie zmienia. Kolor każdego rodzaju można zmienić w polach poniżej</td></tr>
+<tr><td><code>Przejścia poniżej:</code></td><td><code>Pokazuj jako rury</code> / Intensywność <code>100 %</code></td><td>Pokazuje przejścia biegnące pod ścianami i podwyższeniami jako rury przechodzące przez środek pola. Po wyłączeniu całe pole jest wypełnione kolorem, jak dawniej. Kolor rur jest taki sam jak kolor dołów i łączy się z nimi bez przerwy. Zmniejszenie wartości <code>Intensywność</code> sprawia, że rury są mniej rzucające się w oczy</td></tr>
+</table>
+<p>Kliknij próbnik koloru po prawej stronie każdego elementu, aby wybrać dowolny kolor. Małe przyciski obok to proponowane kolory, które łatwo wybrać, a <code>Domyślny</code> to przycisk przywracający pierwotny kolor. W ten sam sposób możesz zmienić kolory elementów samej gry: ścian, podwyższeń, drzwi i wejść, schodów (w górę i w dół), wody, suchych przepaści i lawy (wartości domyślne są takie same jak w grze).</p>
+<h2 id="translation-tab"><a name="translation-tab"></a>Karta Tłumaczenie</h2>
+<p>Na tej karcie ustawiasz dodatkowe wyświetlanie panelu tłumaczenia i karty Tłumaczenie.</p>
+<p><img src="img/settings_dark_tab_04.png" alt="Karta Tłumaczenie"></p>
+<h3 id="translate-tab-panel-behavior"><a name="translate-tab-panel-behavior"></a>Zachowanie karty i panelu tłumaczenia</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Zachowaj komunikat do następnego:</code></td><td>WYŁ.</td><td>Określa, czy komunikaty wyzwalaczy i interakcji z obiektami pozostają w panelu tłumaczenia do czasu nadejścia następnego komunikatu</td></tr>
+<tr><td><code>Widok zastępczy przy bezczynności:</code></td><td>Ekran mapy</td><td>Wybiera, co pokazywać na całej karcie Tłumaczenie podczas eksploracji, gdy nie ma przetłumaczonego tekstu. Domyślnie pierwszeństwo ma ekran mapy</td></tr>
+</table>
+<h3 id="translate-tab-advanced"><a name="translate-tab-advanced"></a>Karta tłumaczenia — zaawansowane</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Odtwarzaj w karcie tłumaczenia zachowanie ukrytego panelu:</code></td><td>WYŁ.</td><td>Po włączeniu wyniki tłumaczenia i komunikaty dialogowe są pokazywane na karcie Tłumaczenie, tak jak przy ukrytym panelu tłumaczenia. Ustawienie zaawansowane, służące do weryfikacji</td></tr>
+</table>
+<h3 id="user-translations"><a name="user-translations"></a>Twoje tłumaczenia</h3>
+<p>Możesz zastąpić część wbudowanego tłumaczenia własnym albo dodać nowy język.</p>
+<ol>
+<li>Wybierz język w sekcji <code>Eksportuj szablon</code> (aby utworzyć nowy język, wybierz <code>(pusty szablon nowego języka)</code>), kliknij <code>Eksportuj...</code> i zapisz plik JSON. Jeśli włączysz <code>Dołącz angielski oryginał</code>, zostanie dołączony angielski oryginał (oryginał tekstu gry tylko na komputerze, na którym ustawiono folder gry i utworzono słownik). Zapisz plik poza folderem tłumaczeń (patrz niżej).</li>
+<li>Otwórz zapisany plik JSON w edytorze tekstu (UTF-8) i zmień <code>text</code> wpisów, które chcesz zmienić. Wpisy z pustym <code>text</code> zachowują tłumaczenie wbudowane (w nowym języku — tłumaczenie języka z <code>meta.fallback</code>). Nie zmieniaj kluczy ani symboli zastępczych, takich jak <code>%xx</code> i <code>{name}</code> (wpisy z symbolami, których nie ma w tłumaczeniu bazowym, lub ze znakami <code>&lt;</code> i <code>&gt;</code> nie są wczytywane). <code>source</code> (angielski oryginał) i <code>ref</code> (tłumaczenie pomocnicze) nie są używane przy wczytywaniu.<br>W nowym języku zawsze wypełnij <code>lang</code> na początku (kod języka, na przykład <code>tr</code>) i <code>meta.display_name</code> (nazwa widoczna na liście języków). <code>meta.fallback</code> to wbudowany język używany dla nieprzetłumaczonych wpisów (domyślnie <code>en</code>); po ustawieniu <code>meta.direction</code> na <code>rtl</code> tekst jest wyświetlany od prawej do lewej.</li>
+<li>W sekcji <code>Importuj plik tłumaczenia</code> kliknij <code>Importuj...</code> i wybierz zmieniony plik. Zostanie zaimportowany, jeśli przejdzie kontrole. Nowy język pojawi się wśród języków wyświetlania na karcie Ogólne. Zmiany zaczną obowiązywać po ponownym uruchomieniu aplikacji.</li>
+</ol>
+<p>Szablon wbudowanego języka zawiera bieżące tłumaczenie wszystkich wpisów. Usuń wpisy, których nie zmieniasz, albo zostaw ich <code>text</code> pusty. Zachowane wpisy są utrwalone w Twoim brzmieniu i nie otrzymują późniejszych poprawek wbudowanego tłumaczenia.</p>
+<p>Przykład 1: zmiana tylko jednego wpisu wbudowanego tłumaczenia niemieckiego (zastępowane są tylko wpisy, które zapiszesz).</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "de",
+  "texts": {
+    "ui_app": {
+      "settings.title": "Meine Einstellungen"
+    }
+  }
+}</pre></td></tr></table>
+<p>Przykład 2: nowy język (turecki). <code>ref</code> służy tylko pomocniczo i nie jest używany przy wczytywaniu.</p>
+<table class="code" cellpadding="8"><tr><td><pre>{
+  "schema": "rtesaa.user_translation",
+  "schema_version": 1,
+  "lang": "tr",
+  "meta": { "display_name": "Türkçe", "fallback": "en", "direction": "ltr" },
+  "texts": {
+    "ui_app": {
+      "settings.title": { "ref": "Settings", "text": "Ayarlar" }
+    }
+  }
+}</pre></td></tr></table>
+<p>Zaimportowane pliki pojawiają się na liście <code>Wczytane</code>. Zaznacz plik i kliknij <code>Usuń</code>, aby wrócić do tłumaczenia wbudowanego (nowy język zostanie usunięty). <code>Otwórz folder</code> otwiera folder <code>translations</code> obok pliku ustawień. Pliki JSON umieszczone w tym folderze są wczytywane automatycznie przy uruchomieniu. W dodanym języku dokumenty, takie jak podręcznik, są wyświetlane po angielsku.</p>
+<h2 id="combat-information-tab"><a name="combat-information-tab"></a>Karta Informacje o walce</h2>
+<p>Osobno ustawiasz, gdzie wyświetlane są informacje o walce i trwających zaklęciach. Nowe funkcje wyświetlania, czytania na głos i zapisu są domyślnie wyłączone. Wartości ustawień zapisane przez wcześniejsze wersje deweloperskie są przenoszone bez zmian. Wyświetlany tekst jest dostępny po japońsku, angielsku, hiszpańsku, niemiecku, francusku, włosku i rosyjsku.</p>
+<p><img src="img/settings_dark_tab_05.png" alt="Karta Informacje o walce"></p>
+<h3 id="arena-screen"><a name="arena-screen"></a>Ekran Areny</h3>
+<table>
+<tr><th>Element</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Użyj osobnych okien dla przechwytywania w OBS (walka i efekty zaklęć)</code></td><td>WYŁ.</td><td>Zbiera informacje o walce i trwające zaklęcia w jednym oknie, które możesz wybrać w przechwytywaniu okna w OBS</td></tr>
+<tr><td><code>Pokazuj informacje o walce</code></td><td>WYŁ.</td><td>Pokazuje u góry ekranu ostatniego wroga, z którym doszło do wymiany ciosów, napotkanego i będącego aktualnie w zasięgu wzroku, oraz po prawej pozostałych napotkanych żywych wrogów, nawet poza zasięgiem wzroku. Możesz sprawdzić zdrowie, zmęczenie, punkty magii oraz zadane obrażenia i pokonania. Obrażenia, które otrzymujesz, są pokazywane przy dolnej krawędzi obszaru eksploracji</td></tr>
+<tr><td><code>Czas wyświetlania doświadczenia:</code></td><td>5 s</td><td>Pokazuje doświadczenie w prawym dolnym rogu w chwili jego zdobycia i usuwa każdą ramkę po podanej liczbie sekund. Gdy zdobywasz więcej kolejno, starsze ramki są przesuwane w lewo (od 1 do 60 sekund)</td></tr>
+<tr><td><code>Pokazuj delikatną ramkę przy niskim zdrowiu</code></td><td>WYŁ.</td><td>Gdy zdrowie spadnie do podanego procentu lub niżej, sprawia, że krawędź ekranu eksploracji słabo błyska. Można ją włączyć, nawet jeśli nie używasz wyświetlania wrogów w informacjach o walce</td></tr>
+<tr><td><code>Próg zdrowia:</code></td><td>25%</td><td>Procent, przy którym zaczyna się pokazywać ramka niskiego zdrowia (od 1 do 99% maksymalnego zdrowia)</td></tr>
+</table>
+<p>Wyświetlanie otrzymanych obrażeń znika samoczynnie po około 5 sekundach od ich otrzymania. Ta sama zasada obowiązuje dla zasięgu wzroku wrogów w każdym miejscu. Gdy mapa lub współrzędne nie są ustalone, wrogowie nie są pokazywani na podstawie domysłów.</p>
+<p>Aby nagrywać w OBS, włącz to ustawienie, a następnie wybierz w opcji „Przechwytywanie okna” okno nakładki RTESArenaAssist (tytuł okna jest wyświetlany po japońsku w każdym języku), zezwól na przezroczystość i nałóż je nad obrazem gry. Informacje o walce i trwające zaklęcia pojawiają się w tym samym źródle.</p>
+<h3 id="arena-screen-ongoing-spells"><a name="arena-screen-ongoing-spells"></a>Ekran Areny · Trwające zaklęcia</h3>
+<table>
+<tr><th>Element</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Pokazuj trwające zaklęcia w lewym górnym rogu</code></td><td>WYŁ.</td><td>Pokazuje stan zaklęć: Światło, Tarcza, Wzmocnienie siły, Odporność na ogień i Lewitacja</td></tr>
+<tr><td><code>Styl wyświetlania:</code></td><td><code>E | Ikona + nazwa + wartość + wąski pasek (zalecane)</code></td><td>Wybierz spośród: A „Nazwa + pozostała wartość”, B „Nazwa + pasek poziomy”, C „Ikona + pasek poziomy”, D „Ikona + zaciemnianie zgodnie z ruchem wskazówek zegara”, E „Ikona + nazwa + wartość + wąski pasek” i F „Mała etykieta”</td></tr>
+<tr><td><code>Aktualizacja efektów czasowych:</code></td><td>Rundy (klasycznie)</td><td>Wybiera, czy Światło, Odporność na ogień i Lewitacja są aktualizowane w rundach, czy w szacunkowych sekundach, raz na sekundę. Sekundy są korygowane na podstawie odstępu postępu w grze, więc nie zawsze są stałą wielokrotnością, gdy tempo postępu się zmienia, na przykład przy DETAIL</td></tr>
+</table>
+<p>Tarcza pokazuje pozostałą ochronę, a Wzmocnienie siły pokazuje wielkość wzrostu. Gdy nie można potwierdzić wartości maksymalnej, na przykład po połączeniu w trakcie gry, pasek może zostać pominięty. Wyświetlanie sekund jest szacunkowe, a moment zakończenia efektu zależy od stanu w grze.</p>
+<h3 id="combat-info-translation-tab"><a name="combat-info-translation-tab"></a>Informacje o walce na karcie Tłumaczenie</h3>
+<table>
+<tr><th>Element</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Tryb wyświetlania:</code></td><td>Wyłączone (zachowaj zwykły widok)</td><td>Wybierz: zachowanie zwykłego widoku, użycie zwykłego widoku razem z informacjami o walce albo pokazywanie informacji o walce na pełnym ekranie</td></tr>
+<tr><td><code>Format informacji o walce:</code></td><td>Paski wrogów</td><td>Gdy informacje o walce są pokazywane, wybiera tekst lub wyświetlanie pasków wrogów</td></tr>
+</table>
+<h3 id="combat-info-translation-panel"><a name="combat-info-translation-panel"></a>Informacje o walce w panelu tłumaczenia</h3>
+<table>
+<tr><th>Element</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Pokazuj komunikaty o walce</code></td><td>WYŁ.</td><td>Pokazuje tekst walki w panelu tłumaczenia. Gdy pojawia się istniejący komunikat, rozmowa lub lista, one mają pierwszeństwo</td></tr>
+<tr><td><code>Ostatnie komunikaty:</code></td><td>10 poz.</td><td>Pokazuje ostatnie od 1 do 50 wierszy walki. Po przekroczeniu liczby najstarsze wiersze są usuwane, a nowe dodawane</td></tr>
+</table>
+<h3 id="common-settings-and-messages"><a name="common-settings-and-messages"></a>Ustawienia wspólne i komunikaty</h3>
+<table>
+<tr><th>Element</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Czytaj na głos nowe komunikaty o walce</code></td><td>WYŁ.</td><td>Gdy czytanie na głos jest włączone ogólnie, czyta nowe wiersze walki w kolejności ich wystąpienia. Nie pomija identycznych ostatnich wierszy, a kolejne obrażenia nie przerywają poprzedniego czytania</td></tr>
+<tr><td><code>Po pokonaniu wroga pomiń nieprzeczytane obrażenia dla niego</code></td><td>WŁ.</td><td>Po pokonaniu wroga przerywa odtwarzane obrażenia zadane temu wrogowi i otrzymane od niego oraz nieprzeczytaną część. Czytanie dla innych wrogów trwa dalej</td></tr>
+<tr><td><code>Zapisuj dziennik walki</code></td><td>WYŁ.</td><td>Zapisuje historię walki osobno od zwykłego dziennika. Przełącznik na karcie Log jest pokazywany tylko wtedy, gdy są zapisy</td></tr>
+<tr><td><code>Rozróżniaj wrogów tego samego rodzaju</code></td><td>WYŁ.</td><td>Tylko gdy jest kilku wrogów o tej samej nazwie, dodaje po nazwie symbol rozróżniający</td></tr>
+<tr><td><code>Rodzaj oznaczenia:</code></td><td>Litery (A, B…)</td><td>Wybierz A, B… lub 1, 2…</td></tr>
+<tr><td><code>Szablony komunikatów o walce</code></td><td>Domyślny tekst dla każdego języka</td><td>Edytuje tekst dla pozycji: Spotkanie z wrogiem, Obrażenia zadane wrogowi, Obrażenia otrzymane, Pokonanie i Doświadczenie. Puste pola i niedozwolone symbole zastępcze wracają do tekstu domyślnego</td></tr>
+</table>
+<h2 id="read-aloud-tab"><a name="read-aloud-tab"></a>Karta Czytanie na głos</h2>
+<p>Na tej karcie ustawiasz czytanie przetłumaczonego tekstu na głos, czytane elementy, wyświetlanie dziennika i odczyt imienia postaci.</p>
+<p><img src="img/settings_dark_tab_06.png" alt="Karta Czytanie na głos"></p>
+<h3 id="read-aloud"><a name="read-aloud"></a>Czytanie na głos</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Włącz syntezę mowy:</code></td><td>WYŁ.</td><td>Włącza całą funkcję czytania przetłumaczonego tekstu na głos</td></tr>
+<tr><td><code>Silnik:</code></td><td>Windows (SAPI5)</td><td>Wybiera silnik czytania. VOICEVOX można wybrać, gdy działa lokalny silnik VOICEVOX</td></tr>
+<tr><td><code>Głos zastępczy:</code></td><td>WŁ.</td><td>Gdy wybrano VOICEVOX, ale jest niedostępny, czyta zdania, których nie udało się odczytać, głosem Windows. Po wyłączeniu nie są czytane</td></tr>
+<tr><td><code>Głos:</code></td><td>(domyślny)</td><td>Pokazywane, gdy silnikiem jest Windows (SAPI5). Używany głos SAPI. Przy opcji (domyślny) używany jest domyślny głos systemu</td></tr>
+<tr><td><code>Postać:</code></td><td>Postać o identyfikatorze stylu 0</td><td>Pokazywane, gdy silnikiem jest VOICEVOX. Postać VOICEVOX używana do czytania</td></tr>
+<tr><td><code>Styl:</code></td><td>Identyfikator stylu 0</td><td>Pokazywane, gdy silnikiem jest VOICEVOX. Styl głosu wybranej postaci</td></tr>
+<tr><td><code>🔊 Test</code></td><td>-</td><td>Pokazywane, gdy silnikiem jest VOICEVOX. Czyta próbnie krótkie zdanie wybraną postacią i stylem</td></tr>
+<tr><td><code>Szybkość:</code></td><td>Standardowa</td><td>Szybkość czytania</td></tr>
+<tr><td><code>Głośność:</code></td><td><code>100</code></td><td>Głośność czytania. Ustaw w zakresie od 0 do 100</td></tr>
+<tr><td><code>Przerywanie:</code></td><td>WŁ.</td><td>Gdy zmienia się wyświetlana treść, przerywa poprzednie czytanie i czyta nową treść. Przerywa się także przy powrocie z odpowiedzi NPC do menu</td></tr>
+<tr><td><code>Przerwij po zamknięciu:</code></td><td>WYŁ.</td><td>Przerywa trwające czytanie po zamknięciu okna dialogowego lub rozmowy</td></tr>
+<tr><td><code>Pomijanie powtórzeń:</code></td><td>WYŁ.</td><td>Nie czyta wielokrotnie tej samej treści (na przykład powtarzających się komunikatów w lochu). Pozostaje ona w dzienniku</td></tr>
+<tr><td><code>Podświetlanie czytania:</code></td><td>WYŁ.</td><td>Koloruje czytane zdanie (panel tłumaczenia, karta Tłumaczenie, dziennik)</td></tr>
+</table>
+<p>Gdy nie można znaleźć VOICEVOX, pokazywany jest komunikat „Uruchom VOICEVOX, aby go wybrać (127.0.0.1:50021).”. Po uruchomieniu VOICEVOX i ponownym otwarciu okna Ustawienia możesz wybrać postać i styl.</p>
+<h3 id="read-targets"><a name="read-targets"></a>Co czytać</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Opis sytuacji (wyzwalacze, wejście do budynku, zdarzenia, różne okna dialogowe)</code></td><td>WŁ.</td><td>Włącza do czytania tekst objaśniający sytuację, taki jak wyzwalacze, wejście do budynku, zdarzenia i różne okna dialogowe</td></tr>
+<tr><td><code>Rozmowa (odpowiedzi NPC, kwestie sprzedawców, pałac, odpowiedzi w targach o cenę)</code></td><td>WŁ.</td><td>Włącza do czytania tekst rozmów, taki jak odpowiedzi NPC, kwestie sprzedawców, pałac i odpowiedzi w targach o cenę</td></tr>
+</table>
+<p>Elementy systemowe, takie jak menu, listy i pola liczbowe, nie są czytane na głos.</p>
+<h3 id="other-log"><a name="other-log"></a>Inne / Dziennik</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Pokaż ikonę głośnika obok tekstu (kliknięcie czyta na głos)</code></td><td>WYŁ.</td><td>Pokazuje obok wyświetlanego tekstu ikonę głośnika, aby czytać go na głos po kliknięciu</td></tr>
+<tr><td><code>Pokazuj w dzienniku także oryginał (wyłączone = tylko tłumaczenie)</code></td><td>WYŁ.</td><td>Pokazuje w dzienniku tłumaczeń oryginalny tekst angielski obok tłumaczenia. Po wyłączeniu pokazywane jest tylko tłumaczenie</td></tr>
+<tr><td><code>Maks. liczba wpisów dziennika:</code></td><td><code>2000</code></td><td>Górny limit liczby zapisywanych wpisów dziennika. Starsze wpisy ponad limit są usuwane automatycznie</td></tr>
+<tr><td><code>Pokazuj w dzienniku datę i godzinę zapisu</code></td><td>WŁ.</td><td>Pokazuje przy wpisach dziennika datę i godzinę zapisu</td></tr>
+<tr><td><code>Format daty i godziny:</code></td><td><code>yyyy/MM/dd(aaa) HH:mm:ss</code></td><td>Format wyświetlania daty i godziny w dzienniku. Możesz wybrać gotowy wzór lub własny format</td></tr>
+</table>
+<h3 id="character-name-reading"><a name="character-name-reading"></a>Czytanie imienia postaci</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Odczyt imienia:</code></td><td>Pusto</td><td>Zastępuje imię postaci pobrane automatycznie z gry podanym odczytem, tylko podczas czytania na głos. Oryginalne imię pozostaje na ekranie i w dzienniku</td></tr>
+</table>
+<h2 id="cheat-tab"><a name="cheat-tab"></a>Karta Cheaty</h2>
+<p>Na tej karcie ustawiasz funkcje pomocnicze, takie jak zmiana wartości w grze i funkcje stałego MAX.</p>
+<p><img src="img/settings_dark_tab_07.png" alt="Karta Cheaty"></p>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Włącz tryb cheatów:</code></td><td>WYŁ.</td><td>Główny przełącznik wszystkich funkcji cheatów. Samo jego włączenie nic nie zmienia, dopóki nie włączysz podustawień</td></tr>
+<tr><td><code>Zmiana statusu:</code></td><td>WYŁ.</td><td>Zezwala na zmiany statusu, takie jak edycja atrybutów</td></tr>
+<tr><td><code>Odkryj mapę:</code></td><td>WYŁ.</td><td>Gdy cheaty są włączone, pokazuje całą mapę</td></tr>
+<tr><td><code>Zdrowie zawsze MAX:</code></td><td>WYŁ.</td><td>Gdy cheaty są włączone, przywraca bieżące zdrowie do maksimum, jeśli jest niższe</td></tr>
+<tr><td><code>Zmęczenie zawsze MAX:</code></td><td>WYŁ.</td><td>Gdy cheaty są włączone, przywraca bieżące zmęczenie do maksimum</td></tr>
+<tr><td><code>Punkty Magii zawsze MAX:</code></td><td>WYŁ.</td><td>Gdy cheaty są włączone, przywraca bieżące punkty magii do maksimum</td></tr>
+</table>
+<h2 id="dosbox-tab"><a name="dosbox-tab"></a>Karta DOSBox</h2>
+<p>Na tej karcie odczytujesz plik <code>arena.conf</code> programu DOSBox i ustawiasz wyświetlanie okna, obraz, wydajność i dźwięk.</p>
+<p><img src="img/settings_dark_tab_08.png" alt="Karta DOSBox"></p>
+<h3 id="config-file-window-behavior"><a name="config-file-window-behavior"></a>Plik konfiguracji / Zachowanie okna</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Plik konfiguracji</code></td><td><code>arena.conf</code> w ścieżce domyślnej</td><td>Plik konfiguracji DOSBox. Gdy własne ustawienie Assist jest puste, jako ścieżka domyślna odczytywane jest standardowe położenie wersji Areny ze Steam</td></tr>
+<tr><td><code>Wskaż…</code></td><td>-</td><td>Wybiera dowolny plik <code>arena.conf</code></td></tr>
+<tr><td><code>Zawsze na wierzchu:</code></td><td>WYŁ.</td><td>Pokazuje okno DOSBox przed innymi oknami</td></tr>
+</table>
+<h3 id="window-display"><a name="window-display"></a>Okno / wyświetlanie</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Rozmiar okna:</code></td><td><code>1024×768</code></td><td><code>windowresolution</code>. Wybierz z gotowych wartości; po wybraniu własnego rozmiaru edytuj pola liczbowe W/H</td></tr>
+<tr><td><code>Rozdzielczość pełnoekranowa:</code></td><td><code>desktop</code></td><td><code>fullresolution</code>. Określa rozdzielczość używaną na pełnym ekranie</td></tr>
+<tr><td><code>Uruchom na pełnym ekranie:</code></td><td>WYŁ.</td><td><code>fullscreen</code>. Określa, czy DOSBox uruchamia się na pełnym ekranie</td></tr>
+<tr><td><code>Tryb wyjścia:</code></td><td><code>ddraw</code></td><td><code>output</code>. Metoda wyjścia renderowania DOSBox</td></tr>
+<tr><td><code>Automatyczna blokada myszy:</code></td><td>WŁ.</td><td><code>autolock</code>. Automatycznie blokuje mysz wewnątrz ekranu DOSBox</td></tr>
+<tr><td><code>Czułość myszy:</code></td><td><code>100</code></td><td><code>sensitivity</code>. Czułość myszy wewnątrz DOSBox</td></tr>
+</table>
+<h3 id="video"><a name="video"></a>Obraz</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Korekcja proporcji:</code></td><td>WŁ.</td><td><code>aspect</code>. Koryguje proporcje obrazu</td></tr>
+<tr><td><code>Skaler:</code></td><td><code>normal2x</code></td><td><code>scaler</code>. Filtr powiększania ekranu DOSBox</td></tr>
+</table>
+<h3 id="performance"><a name="performance"></a>Wydajność</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Cykle CPU:</code></td><td><code>fixed 25000</code></td><td><code>cycles</code>. Określa szybkość emulacji procesora. Przy <code>fixed</code> pole liczbowe po prawej staje się aktywne</td></tr>
+</table>
+<h3 id="sound"><a name="sound"></a>Dźwięk</h3>
+<table>
+<tr><th>Etykieta</th><th>Domyślnie</th><th>Opis</th></tr>
+<tr><td><code>Tryb cichy:</code></td><td>WYŁ.</td><td><code>nosound</code>. Wyłącza dźwięk DOSBox</td></tr>
+<tr><td><code>Częstotliwość próbkowania:</code></td><td><code>44100</code></td><td><code>rate</code>. Częstotliwość próbkowania miksera</td></tr>
+<tr><td><code>Urządzenie MIDI:</code></td><td><code>default</code></td><td><code>mididevice</code>. Urządzenie używane do odtwarzania MIDI</td></tr>
+</table>
+
+</body>
+</html>

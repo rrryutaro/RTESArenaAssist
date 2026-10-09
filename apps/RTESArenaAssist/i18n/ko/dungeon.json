@@ -1,0 +1,23 @@
+{
+  "dungeon.imperial_city.0": "제국도시",
+  "dungeon.dungeon.0": "던전",
+  "dungeon.wilderness.0": "황야",
+  "dungeon.city.0": "도시",
+  "dungeon.town.0": "읍",
+  "dungeon.north.0": "북쪽",
+  "dungeon.northeast.0": "북동쪽",
+  "dungeon.east.0": "동쪽",
+  "dungeon.southeast.0": "남동쪽",
+  "dungeon.south.0": "남쪽",
+  "dungeon.southwest.0": "남서쪽",
+  "dungeon.west.0": "서쪽",
+  "dungeon.northwest.0": "북서쪽",
+  "dungeon.iron.0": "철",
+  "dungeon.steel.0": "강철",
+  "dungeon.silver.0": "은",
+  "dungeon.elven.0": "엘프제",
+  "dungeon.dwarven.0": "드워프제",
+  "dungeon.mithril.0": "미스릴",
+  "dungeon.adamantium.0": "아다만티움",
+  "dungeon.ebony.0": "흑단"
+}

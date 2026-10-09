@@ -77,19 +77,37 @@ class FirstRunWizard(QDialog):
         self._build_ui()
         self._retranslate()
         self._refresh_arena()
-    _LANGS = ('ja', 'en', 'es')
+    _FALLBACK_LANGS = (('ja', '日本語'), ('en', 'English'), ('es', 'Español'))
+
+    @classmethod
+    def _language_choices(cls) -> list[tuple[str, str]]:
+        try:
+            langs = [(d['code'], d['display_name']) for d in i18n.available_languages() if not d.get('user_defined')]
+        except Exception:
+            langs = []
+        return langs or list(cls._FALLBACK_LANGS)
 
     def _initial_lang(self) -> str:
+        by_lower = {c.lower(): c for c, _ in self._language_choices()}
         saved = (settings.get('ui_language') or '').lower()
-        if saved in self._LANGS:
-            return saved
+        if saved in by_lower:
+            return by_lower[saved]
         import locale
         try:
-            loc = locale.getdefaultlocale()[0] or ''
+            loc = (locale.getdefaultlocale()[0] or '').replace('_', '-').lower()
         except Exception:
             loc = ''
-        code = (loc.split('_')[0].split('-')[0] or '').lower()
-        return code if code in self._LANGS else 'en'
+        parts = loc.split('-')
+        if parts[0] == 'zh':
+            want = 'zh-hant' if any((p in ('tw', 'hk', 'mo') for p in parts[1:])) else 'zh-hans'
+            if want in by_lower:
+                return by_lower[want]
+        for cand in ('-'.join(parts[:2]), parts[0]):
+            if cand in by_lower:
+                return by_lower[cand]
+        if parts[0] == 'pt' and 'pt-br' in by_lower:
+            return by_lower['pt-br']
+        return 'en'
 
     def _load_setup(self, lang: str) -> dict:
         import json
@@ -141,9 +159,8 @@ class FirstRunWizard(QDialog):
         self._lang_prompt = QLabel()
         self._lang_prompt.setWordWrap(True)
         self._lang_combo = QComboBox()
-        self._lang_combo.addItem('日本語', 'ja')
-        self._lang_combo.addItem('English', 'en')
-        self._lang_combo.addItem('Español', 'es')
+        for code, name in self._language_choices():
+            self._lang_combo.addItem(name, code)
         idx = max(0, self._lang_combo.findData(self._lang))
         self._lang_combo.setCurrentIndex(idx)
         self._lang_combo.currentIndexChanged.connect(self._on_lang_changed)
