@@ -25,6 +25,7 @@ class BonusScreenSignals:
     bonus_pts: int | None
 BONUS_SCREEN_FLAG_OFFSET = 4794
 BONUS_PTS_OFFSET = 4764
+PRIMARY_ATTRS_OFFSET = 461
 
 def read_bonus_screen_signals(analyzer, anchor: int) -> BonusScreenSignals:
 
@@ -35,6 +36,17 @@ def read_bonus_screen_signals(analyzer, anchor: int) -> BonusScreenSignals:
             return None
     flag = _read(BONUS_SCREEN_FLAG_OFFSET)
     return BonusScreenSignals(flag_status=0 if flag is None else int(flag), bonus_pts=_read(BONUS_PTS_OFFSET))
+
+def infer_bonus_window_from_memory(*, flag_status: int, bonus_pts: int | None, primary_raw: bytes | None, hold_active: bool) -> bool:
+    if int(flag_status) != 1:
+        return False
+    if hold_active:
+        return True
+    if not bonus_pts_is_plausible(bonus_pts) or int(bonus_pts) < 1:
+        return False
+    if primary_raw is None or len(primary_raw) != 8:
+        return False
+    return all((1 <= int(b) <= 100 for b in primary_raw))
 
 def resolve_bonus_screen(screen_id_stable: str, in_levelup: bool, flag_status: int, hold_active: bool, bonus_pts: int | None=None, bonus_max: int=BONUS_PTS_MAX) -> BonusScreenResolve:
     log_start = False

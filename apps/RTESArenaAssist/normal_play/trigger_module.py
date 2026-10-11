@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+import re
 from display_intent import PASSIVE_PANEL_OWNERS
 from arena_bridge import TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, get_trigger_text_by_index
 import inf_text_lookup as itl
@@ -285,6 +286,10 @@ def compute_b30_state(w, *, in_gameplay: bool, c_area: str | None=None, c1_axis=
     w._b30_dialog_active_prev = _dialog_text_fg
     return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay, 'fg_ptr': _fg_ptr, 'dialog_text_fg': bool(_dialog_text_fg), 'dialog_text_fg_prev': _dialog_text_fg_prev}
 _RED_TEXT_REPLACEABLE_OWNERS = frozenset({'', 'red_text', 'red_text_dialog', 'trigger', 'gold_drop', 'c1_runtime_dialog'}) | PASSIVE_PANEL_OWNERS
+_CORPSE_LOOK_RE = re.compile('^You see an? .+\\.\\.\\.\\s*$')
+
+def is_corpse_look_text(text: str) -> bool:
+    return bool(_CORPSE_LOOK_RE.match(text or ''))
 
 def _red_text_is_framed(b30: dict) -> bool:
     from normal_play.c1_dialog_axis import AREA_RUNTIME_MSG, area_of
@@ -313,7 +318,9 @@ def poll_red_text(w, *, b30: dict, message_taken: bool=False) -> None:
     if not b30['in_gameplay']:
         _block_reasons.append('not-in-gameplay')
     _dialog_reopened = bool(b30.get('dialog_active') and (not b30.get('dialog_active_prev')) and _red_text_is_framed(b30))
-    if not _block_reasons and (b30['red_changed'] or _death_red_new or _dialog_reopened) and b30['red_str']:
+    if b30['red_changed'] and b30['red_str'] and is_corpse_look_text(b30['red_str']):
+        _recog(_log, 'red text withheld (corpse-click): %r', b30['red_str'])
+    elif not _block_reasons and (b30['red_changed'] or _death_red_new or _dialog_reopened) and b30['red_str']:
         import dungeon_msg_lookup as _dml
         _b30_red_jpn = _dml.lookup(b30['red_str'])
         if not _b30_red_jpn:

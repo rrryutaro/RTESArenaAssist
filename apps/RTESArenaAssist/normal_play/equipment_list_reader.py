@@ -30,6 +30,21 @@ def _read_list_items(w, img: str) -> list[dict]:
             return []
     return []
 
+def read_inventory_table_rows(w, title_ja: str) -> tuple[str, list[dict]]:
+    try:
+        from class_equip_reader import can_equip_item, read_class_equip_rules
+        from inventory_reader import INV_SLOTS, read_equipment_items_with_status
+        import dungeon_msg_lookup as dml
+        rules = read_class_equip_rules(w._analyzer, w._anchor)
+        ok, raw = read_equipment_items_with_status(w._analyzer, w._anchor)
+        if not ok or not raw:
+            return (title_ja, [])
+        rows = [{'en': it['en'], 'ja': dml.lookup_item(it['en']), 'equipped': it['equipped'], 'is_unidentified': it['is_unidentified'], 'can_equip': can_equip_item(it, rules), 'slot_label': it['slot_label'], 'weight': it['weight'], 'condition': it['condition'], 'uses': it.get('uses'), 'item_type': it.get('item_type'), 'effect': f"{it['count']} 個" if it.get('count') is not None else it['effect']} for it in raw]
+        return ('%s  %d / %d' % (title_ja, len(rows), INV_SLOTS), rows)
+    except Exception:
+        _log.exception('equipment inventory table read failed')
+        return (title_ja, [])
+
 def _stabilize_list_items(w, img: str, items: list[dict]) -> list[dict]:
     if img not in ('POPUP3.IMG', 'POPUP4.IMG'):
         return items

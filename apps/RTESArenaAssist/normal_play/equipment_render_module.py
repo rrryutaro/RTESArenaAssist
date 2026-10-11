@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from types import SimpleNamespace
 from session.facility_node import FacilityView
 from normal_play.equipment_l4_state import EquipmentL4State, REPLY_STATES, get_equipment_l4_state, has_equipment_negotiation_foreground
-from normal_play.equipment_list_reader import _read_list_items, _stabilize_list_items, _load_static_weapon_items, _LIST_STABLE_ATTR, _LIST_PENDING_ATTR
+from normal_play.equipment_list_reader import _read_list_items, _stabilize_list_items, _load_static_weapon_items, read_inventory_table_rows, _LIST_STABLE_ATTR, _LIST_PENDING_ATTR
 _log = logging.getLogger('RTESArenaAssist')
 MENU_OWNER = 'equipment_menu'
 LIST_OWNER = 'equipment_list'
@@ -188,6 +188,15 @@ def render_no_session_menu(w, *, shop_state, shop_img_name: str) -> bool:
 
 def _render_list(w, img: str) -> bool:
     title_en, title_ja = _LIST_TITLES.get(img, ('Items', 'アイテム'))
+    if img == 'NEWPOP.IMG':
+        table_title, rows = read_inventory_table_rows(w, title_ja)
+        if rows:
+            key_now = ('inventory', img, table_title, tuple(((r['en'], r['equipped'], r['condition'], r['effect'], r['is_unidentified'], r['can_equip']) for r in rows)))
+            if key_now != getattr(w, _LIST_KEY, None):
+                setattr(w, _LIST_KEY, key_now)
+                w._ui_router.update_equipment_list(LIST_OWNER, table_title, rows)
+                _log.info('equipment_list update (img=%r items=%d source=inventory_table)', img, len(rows))
+            return True
     items = _stabilize_list_items(w, img, _read_list_items(w, img))
     try:
         tr = []
@@ -255,7 +264,7 @@ def _cleanup(w, menu_visible: bool, list_visible: bool, negot_visible: bool=Fals
         setattr(w, _LIST_STABLE_ATTR, {})
         setattr(w, _LIST_PENDING_ATTR, {})
         try:
-            if w._tab_translate.panel_mode() == 'facility_list':
+            if w._tab_translate.panel_mode() in ('facility_list', 'equipment'):
                 w._ui_router.set_panel_mode('translate')
         except AttributeError:
             pass

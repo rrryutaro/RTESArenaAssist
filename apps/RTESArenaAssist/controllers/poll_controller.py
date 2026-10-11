@@ -1207,6 +1207,13 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
         _b126_bonus_pts = _b126.bonus_pts
         from normal_play.level_up_module import bonus_window_pending as _bonus_window_pending, bonus_window_points_max as _bonus_window_points_max
         _in_levelup = _bonus_window_pending(w)
+        if not _in_levelup:
+            try:
+                from controllers.screen_finalize import PRIMARY_ATTRS_OFFSET as _OFF_P1, infer_bonus_window_from_memory as _infer_bonus
+                _p1 = w._analyzer.read_bytes(w._anchor + _OFF_P1, 8) if _b126_flag_status == 1 else None
+                _in_levelup = _infer_bonus(flag_status=_b126_flag_status, bonus_pts=_b126_bonus_pts, primary_raw=_p1, hold_active=getattr(w, '_bonus_screen_hold', False))
+            except (OSError, AttributeError, ImportError):
+                _in_levelup = False
         from controllers.screen_finalize import resolve_bonus_screen
         _bonus_pre_screen = _screen_id_stable
         _bonus_res = resolve_bonus_screen(_screen_id_stable, _in_levelup, _b126_flag_status, getattr(w, '_bonus_screen_hold', False), bonus_pts=_b126_bonus_pts, bonus_max=_bonus_window_points_max(w))
