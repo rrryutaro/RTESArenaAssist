@@ -5,8 +5,12 @@ import time
 from player_condition import ConditionFields, read_fields
 from combat_text_ja import text as combat_text
 _TIMER_BASE = -3904
-_TIMER_BYTES = 36
-_TIMER_BIT_INDEX = {'fire': 2, 'levitate': 7, 'light': 8}
+_TIMER_ENTRIES = 13
+_TIMER_BYTES = _TIMER_ENTRIES * 4
+_TIMER_MIN_BYTES = 36
+_TIMER_BIT_INDEX = {'invisible': 0, 'fire': 2, 'cold': 3, 'shock': 4, 'magic': 5, 'poison': 6, 'levitate': 7, 'light': 8, 'silence': 9, 'absorb': 10, 'reflect': 11, 'spell_resist': 12}
+_EFFECT_SPEC = {'light': (17, 0, 0), 'shield': (2, 0, 0), 'strength': (11, 0, 0), 'fire': (10, 0, 0), 'cold': (10, 1, 0), 'shock': (10, 2, 0), 'magic': (10, 3, 0), 'poison': (10, 4, 0), 'levitate': (16, 0, 0), 'invisible': (15, 0, 0), 'silence': (21, 0, 0), 'absorb': (22, 0, 0), 'reflect': (23, 0, 0), 'spell_resist': (24, 0, 0)}
+_EFFECT_BIT = {'invisible': 1, 'fire': 4, 'cold': 8, 'shock': 16, 'magic': 32, 'poison': 64, 'levitate': 128, 'light': 256, 'silence': 512, 'absorb': 1024, 'reflect': 2048, 'spell_resist': 4096}
 _MAX_TIMER = 10000
 _GAME_TIME_OFFSET = 1484
 
@@ -26,7 +30,16 @@ class SpellEffectRow:
     color: str
     value: str
     ratio: float | None
-_META = {'light': ('☀', '#f4ce78'), 'shield': ('◆', '#8dcbeb'), 'strength': ('↑', '#eaa09a'), 'fire': ('♨', '#ef9c67'), 'levitate': ('✧', '#bfa7eb')}
+_META = {'light': ('☀', '#f4ce78'), 'shield': ('◆', '#8dcbeb'), 'strength': ('↑', '#eaa09a'), 'fire': ('♨', '#ef9c67'), 'cold': ('❄', '#9bd0f0'), 'shock': ('ϟ', '#f2e07a'), 'magic': ('✦', '#c7a6f0'), 'poison': ('☣', '#9fd88a'), 'levitate': ('✧', '#bfa7eb'), 'invisible': ('◌', '#b8c4d6'), 'silence': ('∅', '#d8a0a0'), 'absorb': ('◈', '#7fd1c4'), 'reflect': ('◇', '#a0c8f0'), 'spell_resist': ('◉', '#8fb8e8')}
+
+def effect_label(key: str) -> str:
+    spec = _EFFECT_SPEC.get(key)
+    if spec is not None:
+        from spell_effect_compose import effect_display_names
+        names = effect_display_names([spec[0]], [spec[1]], [spec[2]])
+        if names:
+            return names[0]
+    return combat_text(f'spell_effect.name.{key}')
 
 def read_sample(analyzer, anchor: int) -> SpellEffectSample | None:
     fields = read_fields(analyzer, anchor)
@@ -37,8 +50,10 @@ def read_sample(analyzer, anchor: int) -> SpellEffectSample | None:
         raw_timers = analyzer.read_bytes(anchor + _TIMER_BASE, _TIMER_BYTES)
     except (OSError, AttributeError):
         return None
-    if not attributes or len(attributes) < 16 or (not raw_timers) or (len(raw_timers) < _TIMER_BYTES):
+    if not attributes or len(attributes) < 16 or (not raw_timers) or (len(raw_timers) < _TIMER_MIN_BYTES):
         return None
+    if len(raw_timers) < _TIMER_BYTES:
+        raw_timers = bytes(raw_timers) + bytes(_TIMER_BYTES - len(raw_timers))
     timers: dict[str, int | None] = {}
     for key, index in _TIMER_BIT_INDEX.items():
         at = index * 4
@@ -132,8 +147,12 @@ class SpellEffectTracker:
             self._strength_decay = baseline is not None
         elif baseline is None or sample.strength_current <= baseline:
             self._strength_decay = False
-        active = {'light': bool(fields.effects & 256), 'shield': fields.shield > 0, 'strength': fortified or (self._strength_decay and bool(strength_delta)), 'fire': bool(fields.effects & 4), 'levitate': bool(fields.effects & 128)}
-        amount = {'light': sample.timers.get('light'), 'shield': fields.shield, 'strength': strength_delta, 'fire': sample.timers.get('fire'), 'levitate': sample.timers.get('levitate')}
+        active = {key: bool(fields.effects & bit) for key, bit in _EFFECT_BIT.items()}
+        active['shield'] = fields.shield > 0
+        active['strength'] = fortified or (self._strength_decay and bool(strength_delta))
+        amount = {key: sample.timers.get(key) for key in _EFFECT_BIT}
+        amount['shield'] = fields.shield
+        amount['strength'] = strength_delta
         for key in _META:
             now = amount[key] if active[key] else None
             before = self._previous.get(key)
@@ -150,7 +169,7 @@ class SpellEffectTracker:
         rows = []
         for key in self._order:
             glyph, color = _META[key]
-            name = combat_text(f'spell_effect.name.{key}')
+            name = effect_label(key)
             value = amount[key]
             seconds = None
             if key == 'shield':

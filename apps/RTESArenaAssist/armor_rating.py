@@ -47,7 +47,8 @@ def compute(items: Optional[Iterable[dict]], to_defend: Optional[int]) -> Option
         item_type = item.get('item_type')
         slot = _number(item.get('slot_id'), -1)
         if item_type == 'armor':
-            location = _ARMOR_SLOT_LOCATION.get(slot)
+            piece_slot = _number(item.get('armor_slot'), slot)
+            location = _ARMOR_SLOT_LOCATION.get(piece_slot)
             if location is None:
                 unknown.append(f'armor slot {slot}')
                 continue

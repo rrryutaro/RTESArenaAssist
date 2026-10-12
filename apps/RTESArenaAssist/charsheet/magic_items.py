@@ -61,6 +61,15 @@ def effect_name(item_name: str) -> str:
         return translated.removesuffix('の').strip() or translated
     return effect
 
+def item_effect_name(item: Mapping) -> str:
+    spell = item.get('artifact_spell')
+    if isinstance(spell, int):
+        from spell_reader import master_spell_effect_names
+        names = master_spell_effect_names(spell)
+        if names:
+            return ' / '.join(names)
+    return effect_name(str(item.get('en') or '').strip())
+
 def _selected_items(inventory: Iterable[Mapping]) -> list[Mapping]:
     selected = set(selected_names())
     return [item for item in inventory if str(item.get('en') or '').strip() in selected and is_selectable(item)]
@@ -74,7 +83,7 @@ def sheet_values(inventory: Optional[Iterable[Mapping]]) -> dict[str, str]:
             break
         name = str(item.get('en') or '').strip()
         out[f'magic_item_{index}_name'] = dml.lookup_item(name) or name
-        out[f'magic_item_{index}_effect'] = effect_name(name)
+        out[f'magic_item_{index}_effect'] = item_effect_name(item)
         out[f'magic_item_{index}_uses'] = str(int(item.get('uses')))
     return out
 
@@ -83,4 +92,4 @@ def state(inventory: Optional[Iterable[Mapping]]) -> tuple:
     if inventory is None:
         return (names, None)
     return (names, tuple(((str(item.get('en') or ''), int(item.get('uses'))) for item in _selected_items(inventory))))
-__all__ = ['SETTING_KEY', 'MAGIC_ITEM_SLOT_COUNT', 'DEFAULT_SELECTED', 'MAGIC_ITEM_VALUE_KEYS', 'selected_names', 'set_selected', 'is_selectable', 'effect_name', 'sheet_values', 'state']
+__all__ = ['SETTING_KEY', 'MAGIC_ITEM_SLOT_COUNT', 'DEFAULT_SELECTED', 'MAGIC_ITEM_VALUE_KEYS', 'selected_names', 'set_selected', 'is_selectable', 'effect_name', 'item_effect_name', 'sheet_values', 'state']

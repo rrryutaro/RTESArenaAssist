@@ -1525,6 +1525,9 @@ class PollController:
                     _end_npc_conversation_on_modal(w)
                 elif w._travel_l4_active:
                     _close_facility_story_units(w)
+                    if _runtime_dialog_context:
+                        from normal_play.c1_runtime_dialog_module import pause_c1_runtime_dialog as _pause_c1_runtime_dialog
+                        _pause_c1_runtime_dialog(w)
                 else:
                     _entry_handled, _instore_resp_handled = _poll_dialog_unit_dispatch(w, in_interior=in_interior, _b30=_b30, msg_buf=msg_buf, npc_dialog=npc_dialog, _npc_dialog_changed=_npc_dialog_changed, _npc_phase_raw=_npc_phase_raw, _img_name_now=_img_name_now, _building_entry_active=_building_entry_active, _entry_phase_prev=_entry_phase_prev, _shop_state=_shop_state, _shop_img_name=_shop_img_name, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active, _facility_active_now=_facility_active_now, _poll_hierarchy_area=_poll_hierarchy_area, _temple_active_now=_temple_active_now, _temple_just_started=_temple_just_started, _equipment_active_now=_equipment_active_now, _equipment_just_started=_equipment_just_started, _mages_active_now=_mages_active_now, _mages_just_started=_mages_just_started, _negot_handled=_negot_handled, _active_tmpl_handled=_active_tmpl_handled, _inventory_screen=_inventory_screen_now, _runtime_dialog_context=_runtime_dialog_context)
             else:

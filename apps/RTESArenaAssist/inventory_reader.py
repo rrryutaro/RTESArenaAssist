@@ -35,6 +35,24 @@ def _artifact_name_index(item: dict) -> int | None:
     if not (item['slot_id'] & 128 and item['flags'] & FLAG_MAGIC):
         return None
     return _ARTIFACT_SPELL_TO_NAME_INDEX.get(item['y'])
+_ARTIFACT_BODY_ARMOR_SPELLS = frozenset({49, 56})
+_ARTIFACT_JEWELRY_LABEL_IDS = {52: 'items.spellcasting_items.3.0', 54: 'items.spellcasting_items.3.0', 55: 'items.spellcasting_items.3.0', 58: 'item.slot.amulet'}
+
+def artifact_spell_index(item: dict) -> int | None:
+    try:
+        if _artifact_name_index(item) is None:
+            return None
+        return item['y']
+    except KeyError:
+        return None
+
+def armor_slot(item: dict) -> int | None:
+    sid = item['slot_id']
+    if 0 <= sid <= ARMOR_PIECE_SLOT_MAX:
+        return sid
+    if artifact_spell_index(item) in _ARTIFACT_BODY_ARMOR_SPELLS:
+        return 0
+    return None
 ACCESSORY_MATERIAL_BASE = 3
 SHIELD_SLOT_MIN = 7
 SHIELD_SLOT_MAX = 11
@@ -83,7 +101,7 @@ def _uses_left(item: dict, item_type: str='') -> int | None:
         return None
     if hands > 2:
         return hands
-    if item_type not in _SPELL_ENCHANTABLE:
+    if item_type not in _SPELL_ENCHANTABLE and artifact_spell_index(item) is None:
         return None
     if item.get('attr') != SPELL_ENCHANT_ATTR:
         return None
@@ -158,9 +176,12 @@ def _slot_label(item: dict, classification: tuple[str, int] | None=None) -> str:
     if kind == 'spellcasting':
         return _label_text(_SPELLCASTING_SLOT_LABEL_IDS.get(sid, 'item.slot.spellcasting'))
     if kind == 'accessory':
+        artifact_label = _ARTIFACT_JEWELRY_LABEL_IDS.get(artifact_spell_index(item))
+        if artifact_label:
+            return _label_text(artifact_label)
         return _label_text(_ACCESSORY_SLOT_LABEL_IDS.get(sid, 'item.slot.accessory'))
     if kind == 'armor':
-        return _label_text(_ARMOR_SLOT_LABEL_IDS.get(sid, 'item.slot.armor'))
+        return _label_text(_ARMOR_SLOT_LABEL_IDS.get(armor_slot(item), 'item.slot.armor'))
     if kind == 'shield':
         return _label_text('item.slot.shield')
     return ''
@@ -187,6 +208,8 @@ def _classify_item(item: dict) -> tuple[str, int]:
         return ('weapon', -1)
     if hands > 2:
         return ('spellcasting', -1)
+    if artifact_spell_index(item) in _ARTIFACT_JEWELRY_LABEL_IDS:
+        return ('accessory', -1)
     if item['x'] == 255 and 0 <= sid <= 3 and (not _has_body(item)):
         return ('accessory', -1)
     if SHIELD_SLOT_MIN <= sid <= SHIELD_SLOT_MAX:
@@ -204,6 +227,8 @@ def _classify_item(item: dict) -> tuple[str, int]:
             return ('armor', _BASE_ARMOR_MATERIAL_TO_ID[item['material']])
         if p1 == LEATHER_ARMOR_PARAM1:
             return ('armor', 0)
+        if p1 > 50:
+            return ('armor', 2)
     return ('accessory', -1)
 
 def _is_empty(item: dict) -> bool:
@@ -351,7 +376,7 @@ def read_equipment_items_with_status(analyzer, anchor: int) -> tuple[bool, list[
         classification = _classify_item(item)
         item_type, armor_material_id = classification
         en = _get_item_name(item, classification=classification, **tables)
-        items.append({'en': en, 'slot_id': item['slot_id'], 'hands': item['hands'], 'health': item['health'], 'max_hp': item['max_hp'], 'price': item['price'], 'equipped': bool(item['flags'] & 128), 'is_unidentified': _display_unidentified(item), 'item_type': item_type, 'armor_material_id': armor_material_id, 'armor_value': _armor_value(item, item_type), 'metal': _metal_index(item, item_type), 'slot_label': _slot_label(item, classification=classification), 'weight': '' if item_type == 'potion' else _weight_str(item['weight']), 'condition': '' if item_type == 'potion' else _condition_str(item), 'uses': None if item_type == 'potion' else _uses_left(item, item_type), 'effect': '' if item_type == 'potion' else _effect_str(item), 'count': _potion_count(item) if item_type == 'potion' else None})
+        items.append({'en': en, 'slot_id': item['slot_id'], 'hands': item['hands'], 'health': item['health'], 'max_hp': item['max_hp'], 'price': item['price'], 'equipped': bool(item['flags'] & 128), 'is_unidentified': _display_unidentified(item), 'item_type': item_type, 'armor_material_id': armor_material_id, 'armor_value': _armor_value(item, item_type), 'armor_slot': armor_slot(item) if item_type == 'armor' else None, 'artifact_spell': artifact_spell_index(item), 'metal': _metal_index(item, item_type), 'slot_label': _slot_label(item, classification=classification), 'weight': '' if item_type == 'potion' else _weight_str(item['weight']), 'condition': '' if item_type == 'potion' else _condition_str(item), 'uses': None if item_type == 'potion' else _uses_left(item, item_type), 'effect': '' if item_type == 'potion' else _effect_str(item), 'count': _potion_count(item) if item_type == 'potion' else None})
     return (True, items)
 
 def read_equipment_items(analyzer, anchor: int) -> list[dict]:

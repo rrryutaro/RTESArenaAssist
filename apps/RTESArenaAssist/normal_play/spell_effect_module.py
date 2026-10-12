@@ -13,11 +13,13 @@ class SpellEffectController:
         self._tracker = SpellEffectTracker()
         self._overlay = SpellEffectOverlay(window)
         self._last_key = None
+        self._last_effects = None
 
     def reset(self) -> None:
         self._tracker.reset()
         self._overlay.reset()
         self._last_key = None
+        self._last_effects = None
 
     def poll(self, *, gameplay: bool) -> None:
         window = self._window
@@ -38,6 +40,10 @@ class SpellEffectController:
             self._tracker.pause()
             self._overlay.clear()
             return
+        effects_key = (sample.fields.effects, sample.fields.shield > 0)
+        if effects_key != self._last_effects:
+            self._last_effects = effects_key
+            assist_log.recog(_log, 'spell_effect counters: effects=0x%04X shield=%d timers=%s', sample.fields.effects, sample.fields.shield, {k: v for k, v in sample.timers.items() if v is not None})
         unit = settings.get('spell_effect_time_unit', 'rounds')
         rows = self._tracker.update(sample, time_unit=unit if unit in ('rounds', 'seconds') else 'rounds')
         key = tuple(((row.key, row.value, row.ratio) for row in rows))

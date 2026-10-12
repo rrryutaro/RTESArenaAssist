@@ -93,6 +93,22 @@ def _effect_details_from_arrays(effects: list[int], sub_effects: list[int], affe
         details.append({'slot': slot, 'effect_id': effect_id, 'sub_effect_id': sub_id, 'affected_attr_id': attr_id, 'effect_display_ids': display_ids, 'effect_anchor_id': display_ids[0] if len(display_ids) == 1 else None, 'effect_en': effect_en, 'effect_ja': effect_ja, 'text_en': '', 'text_ja': ''})
     return details
 
+def effect_display_names(effects, sub_effects=(), affected_attrs=()) -> list[str]:
+    import i18n_helper as i18n
+    names: list[str] = []
+    for slot, effect_id in enumerate(list(effects)[:3]):
+        if effect_id == 255:
+            continue
+        sub_id = sub_effects[slot] if slot < len(sub_effects) else 0
+        attr_id = affected_attrs[slot] if slot < len(affected_attrs) else 0
+        parts = []
+        for id_str in _effect_display_ids(effect_id, sub_id, attr_id):
+            anchor = _id_anchor(id_str)
+            parts.append(i18n.value('mages', anchor) or anchor)
+        if parts:
+            names.append(' '.join(parts))
+    return names
+
 def _decode_spell_effect_segments(raw: bytes) -> list[str]:
     if not raw:
         return []

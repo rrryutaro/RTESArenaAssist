@@ -248,7 +248,10 @@ def poll_building_entry(w, *, building_entry_active: bool, entry_phase_prev: boo
             if _entry_original_allowed(pending=getattr(w, '_building_entry_pending', False), msg_buf_written=getattr(w, '_building_entry_msg_buf_written', False)):
                 entry_handled = _push_entry_original(w, msg_buf)
     elif entry_phase_prev or getattr(w, '_building_entry_pending', False):
+        _pushed = getattr(w, '_building_entry_push_key', None) is not None
         end_entry_episode(w)
+        if _pushed:
+            w._ui_router.notify_display_unit_closed(OWNER)
         if w._ui_router.is_owner(OWNER):
             w._ui_router.release_if_owner(OWNER)
             _log.info("panel_owner -> '' (entry phase exited)")

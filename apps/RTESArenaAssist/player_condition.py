@@ -61,12 +61,24 @@ def sheet_values(fields: ConditionFields, separator: str) -> dict[str, str]:
     bad = [w for w in (date_translator.effect_word(i) for i in indices if i in _BAD_WORDS) if w]
     good = [w for w in (date_translator.effect_word(i) for i in indices if i not in _BAD_WORDS) if w]
     words = [w for w in (date_translator.effect_word(i) for i in indices) if w]
-    out = {'condition': separator.join(words) if words else date_translator.effect_word(_HEALTHY_WORD) or ''}
+    shield = _shield_word(fields)
+    shown = list(words) if words else [date_translator.effect_word(_HEALTHY_WORD) or '']
+    if shield:
+        good.append(shield)
+        shown.append(shield)
+    out = {'condition': separator.join((w for w in shown if w))}
     if bad:
         out['condition_bad'] = separator.join(bad)
     if good:
         out['condition_good'] = separator.join(good)
     return out
+
+def _shield_word(fields: ConditionFields) -> str:
+    if fields.shield <= 0:
+        return ''
+    from spell_effect_compose import effect_display_names
+    names = effect_display_names([2], [0], [0])
+    return '%s %d' % (names[0] if names else 'Shield', fields.shield)
 
 def _bit_names(value: int, names: dict[int, str]) -> str:
     parts = []

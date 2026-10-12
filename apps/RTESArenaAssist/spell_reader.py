@@ -1,7 +1,7 @@
 from __future__ import annotations
 import os
-from spell_effect_compose import _lookup_pair, _active_effect_slot, _resolve_effect_name, _effect_details_from_arrays, _decode_spell_effect_segments, _normalize_spell_effect_text, _attach_effect_texts, _fill_missing_spellmaker_effect_texts, translate_effect_text
-__all__ = ['load_spellsg', 'read_custom_spells', 'read_spell_choice_index', 'read_spell_detail', 'read_spellbook_items', 'translate_effect_text']
+from spell_effect_compose import _lookup_pair, _active_effect_slot, _resolve_effect_name, _effect_details_from_arrays, _decode_spell_effect_segments, _normalize_spell_effect_text, _attach_effect_texts, _fill_missing_spellmaker_effect_texts, translate_effect_text, effect_display_names
+__all__ = ['load_spellsg', 'read_custom_spells', 'read_spell_choice_index', 'read_spell_detail', 'read_spellbook_items', 'translate_effect_text', 'master_spell_effect_slots', 'master_spell_effect_names']
 NPCDATA_BASE = 420
 SPELL_COUNT_OFFSET = NPCDATA_BASE + 870
 SPELL_IDS_OFFSET = NPCDATA_BASE + 871
@@ -36,6 +36,34 @@ def load_spellsg(game_dir: str) -> dict[int, str]:
         except OSError:
             continue
     return {}
+_MASTER_CACHE: dict[str, bytes | None] = {}
+
+def _master_spells_raw() -> bytes | None:
+    from runtime_paths import resolve_arena_install_dir
+    install = resolve_arena_install_dir()
+    if install is None:
+        return None
+    key = str(install)
+    if key not in _MASTER_CACHE:
+        try:
+            from arena_local_data import _read_spellsg65
+            _MASTER_CACHE[key] = _read_spellsg65(key)
+        except Exception:
+            _MASTER_CACHE[key] = None
+    return _MASTER_CACHE[key]
+
+def master_spell_effect_slots(spell_index: int) -> tuple[list[int], list[int], list[int]] | None:
+    raw = _master_spells_raw()
+    if not raw or not 0 <= spell_index < len(raw) // SPELL_DATA_SIZE:
+        return None
+    base = spell_index * SPELL_DATA_SIZE
+    return (list(raw[base + 41:base + 44]), list(raw[base + 44:base + 47]), list(raw[base + 47:base + 50]))
+
+def master_spell_effect_names(spell_index: int) -> list[str]:
+    slots = master_spell_effect_slots(spell_index)
+    if slots is None:
+        return []
+    return effect_display_names(*slots)
 CUSTOM_SPELLS_OFFSET = -26656
 
 def read_custom_spells(analyzer, anchor: int) -> dict[int, str]:
