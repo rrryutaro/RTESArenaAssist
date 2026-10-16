@@ -24,6 +24,7 @@ from top_level.normal_play_state import poll_sessions as _poll_normal_play_sessi
 from top_level.top_level_dispatcher import build_session_context as _build_session_context, current_state as _current_top_level
 from controllers.poll_diag import _checkpoint, _phase_record, _phase_start
 from controllers.screen_bar_label import build_connection_bar_label as _build_connection_bar_label, tavern_sub_state_label as _tavern_sub_state_label, temple_sub_state_label as _temple_sub_state_label
+from screen_img_signals import LOADSAVE_IMG, NEWPOP_IMG, SYSTEM_MENU_IMG, YESNO_IMG
 _log = logging.getLogger('poll_controller')
 _wild_diag_log = logging.getLogger('wild_diag')
 
@@ -123,7 +124,7 @@ def _release_completed_load_screen_owner(w, *, img_name: str, save_detected: boo
         w._loadscreen_confirmed_seen = True
         return
     back_in_idle_gameplay = screen_id == 'game_screen' and npc_idle and bool(getattr(w, '_loadscreen_confirmed_seen', False))
-    if (img_name or '').upper() == 'LOADSAVE.IMG' and (not (save_detected or pending)) and (not back_in_idle_gameplay):
+    if (img_name or '').upper() == LOADSAVE_IMG and (not (save_detected or pending)) and (not back_in_idle_gameplay):
         return
     if loading_active or loading_post_settle:
         return
@@ -330,7 +331,7 @@ def _poll_track_facility_latch(w):
 
 def _poll_resolve_yesno_menu_recovery(w, *, _shop_img_name, _temple_active_now):
     _allow_yesno_menu_recovery = False
-    if _shop_img_name == 'YESNO.IMG':
+    if _shop_img_name == YESNO_IMG:
         _popup_surface_active = False
         try:
             from active_template_reader import read_active_template_candidates as _ratc_rec, template_surface_kind as _tsk_rec, input_prompt_facility as _ipf_rec
@@ -379,26 +380,21 @@ def _poll_classify_tavern_view_and_log(w, *, _shop_state, _shop_img_name, in_int
     _shop_img_prev = getattr(w, '_shop_img_prev', None)
     _kind_changed = _shop_kind != _shop_kind_prev
     _img_changed = _shop_img_name != _shop_img_prev
-    _newpop_unexpected = _shop_img_name == 'NEWPOP.IMG' and _shop_kind in ('none', 'shop_menu')
-    _shop_owner_now = getattr(_shop_state, 'owner_kind', '') if _shop_state is not None else ''
+    _newpop_unexpected = _shop_img_name == NEWPOP_IMG and _shop_kind in ('none', 'shop_menu')
+    _shop_facility_now = getattr(_shop_state, 'owner_kind', '') if _shop_state is not None else ''
     _interior_mif_u = (getattr(w, '_interior_mif_name', '') or '').upper()
     _facility_tavern = bool(_tavern_active_now)
     try:
         from session.tavern_node import TAVERN_NODE as _TAVERN_NODE
-        _tview = _TAVERN_NODE.classify_view(w, shop_kind=_shop_kind, shop_owner=_shop_owner_now, img=_shop_img_name, in_interior=in_interior, facility_tavern=_facility_tavern, npc_phase=getattr(w, '_npc_phase', None))
+        _tview = _TAVERN_NODE.classify_view(w, shop_kind=_shop_kind, shop_facility=_shop_facility_now, img=_shop_img_name, in_interior=in_interior, facility_tavern=_facility_tavern, npc_phase=getattr(w, '_npc_phase', None))
     except Exception:
         _log.exception('tavern view classify failed')
         from session.tavern_view import TavernView as _TVErr
         _tview = _TVErr(l4_kind='none', render_owner='', bar_key='', l4_visible=False, l4_start=False, reason='error')
     w._tavern_view = _tview
-    w._tavern_view_l4_visible = _tview.l4_visible
     _tavern_l4_kind = _tview.l4_kind
-    _tview_log_key = (_tview.l4_kind, _tview.render_owner, _shop_kind, _shop_owner_now, _shop_img_name, _facility_tavern)
-    if _tview.l4_kind != 'none' and _tview_log_key != getattr(w, '_tview_log_key', None):
-        w._tview_log_key = _tview_log_key
-        _log.info('tavern view l4=%s owner=%s reason=%s (shop_kind=%s shop_owner=%r img=%r fac_tav=%s)', _tview.l4_kind, _tview.render_owner, _tview.reason, _shop_kind, _shop_owner_now, _shop_img_name, _facility_tavern)
     if _shop_state is not None and (_kind_changed or _img_changed or _newpop_unexpected):
-        _log.info('shop_state kind=%s img=%r screen=%r interior=%s ptr=%s ptr_hi=%s b7c4=%s ff2=%s menu_span=%s buy_span=%s menu_items=%r buy_count=%d panel_owner=%r prev_kind=%r reason=%r', _shop_state.kind, _shop_state.img_name, _shop_state.screen_id, _shop_state.in_interior, f'0x{_shop_state.ptr:04X}' if _shop_state.ptr is not None else '?', f'0x{_shop_state.ptr_hi:02X}' if _shop_state.ptr_hi is not None else '?', f'0x{_shop_state.b7c4:02X}' if _shop_state.b7c4 is not None else '?', f'0x{_shop_state.ff2:02X}' if _shop_state.ff2 is not None else '?', f'[0x{_shop_state.menu_span[0]:X},0x{_shop_state.menu_span[1]:X})' if _shop_state.menu_span else 'None', f'[0x{_shop_state.buy_span[0]:X},0x{_shop_state.buy_span[1]:X})' if _shop_state.buy_span else 'None', _shop_state.menu_items[:8], len(_shop_state.buy_items), w._panel_owner, _shop_kind_prev, _shop_state.reason)
+        _log.info('shop_state kind=%s img=%r screen=%r interior=%s ptr=%s ptr_hi=%s b7c4=%s ff2=%s menu_span=%s buy_span=%s menu_items=%r buy_count=%d prev_kind=%r reason=%r', _shop_state.kind, _shop_state.img_name, _shop_state.screen_id, _shop_state.in_interior, f'0x{_shop_state.ptr:04X}' if _shop_state.ptr is not None else '?', f'0x{_shop_state.ptr_hi:02X}' if _shop_state.ptr_hi is not None else '?', f'0x{_shop_state.b7c4:02X}' if _shop_state.b7c4 is not None else '?', f'0x{_shop_state.ff2:02X}' if _shop_state.ff2 is not None else '?', f'[0x{_shop_state.menu_span[0]:X},0x{_shop_state.menu_span[1]:X})' if _shop_state.menu_span else 'None', f'[0x{_shop_state.buy_span[0]:X},0x{_shop_state.buy_span[1]:X})' if _shop_state.buy_span else 'None', _shop_state.menu_items[:8], len(_shop_state.buy_items), _shop_kind_prev, _shop_state.reason)
         w._shop_kind_prev = _shop_kind
         w._shop_img_prev = _shop_img_name
     return (_tview, _tavern_l4_kind, _facility_tavern)
@@ -426,7 +422,7 @@ def _poll_compute_newpop_gate(w, *, npc_dialog):
     try:
         _newpop_img_now = w._analyzer.read_bytes(w._anchor + 37238, 12).split(b'\x00', 1)[0].decode('ascii', errors='replace').upper()
         _newpop_gate_byte = w._analyzer.read_bytes(w._anchor + 47044, 1)[0]
-        _newpop_gate = _newpop_img_now == 'NEWPOP.IMG' and _newpop_gate_byte == 0
+        _newpop_gate = _newpop_img_now == NEWPOP_IMG and _newpop_gate_byte == 0
     except (OSError, AttributeError):
         _newpop_gate = False
     from normal_play.item_pickup_module import corpse_item_message
@@ -827,25 +823,27 @@ def _poll_chargen_normal_play_transition(w, *, mif_name, _img_name_early):
 
 def _poll_resolve_loading_state(w, *, _img_name_early):
     _img_name_early_upper = (_img_name_early or '').upper()
-    _loadsave_now = _img_name_early_upper == 'LOADSAVE.IMG'
+    _loadsave_now = _img_name_early_upper == LOADSAVE_IMG
     _loadsave_prev = w._loading_loadsave_seen_prev
     if _loadsave_now:
-        w._loading_state_active = False
+        _loading_active = False
         w._loading_state_post_remaining = 0
     elif _loadsave_prev:
-        if _img_name_early_upper == 'OP.IMG':
-            w._loading_state_active = False
+        if _img_name_early_upper == SYSTEM_MENU_IMG:
+            _loading_active = False
             w._loading_state_post_remaining = 0
         else:
-            w._loading_state_active = True
+            _loading_active = True
             w._loading_state_post_remaining = 8
     elif w._loading_state_post_remaining > 0:
         w._loading_state_post_remaining -= 1
-        w._loading_state_active = w._loading_state_post_remaining > 0
+        _loading_active = w._loading_state_post_remaining > 0
     else:
-        w._loading_state_active = False
+        _loading_active = False
+    w._loading_state_active = _loading_active
     w._loading_loadsave_seen_prev = _loadsave_now
-    _load_edge_start = w._loading_state_active and (not getattr(w, '_loading_state_active_prev', False))
+    _overlay_loading = bool(_loading_active or _loadsave_now)
+    _load_edge_start = _loading_active and (not getattr(w, '_loading_state_active_prev', False))
     _loading_post_settle_remaining = getattr(w, '_loading_post_settle_remaining', 0)
     if _load_edge_start:
         _loading_post_settle_remaining = 4
@@ -859,9 +857,9 @@ def _poll_resolve_loading_state(w, *, _img_name_early):
         _a845_for_release = w._analyzer.read_bytes(w._anchor + 43077, 1)[0]
     except (OSError, AttributeError, IndexError):
         _a845_for_release = 0
-    _release_completed_load_screen_owner(w, img_name=_img_name_early_upper, save_detected=_detect_save_file_write(w), loading_active=w._loading_state_active, loading_post_settle=_loading_post_settle, screen_id=getattr(w, '_screen_id_prev', '') or '', npc_idle=_a845_for_release == 0)
-    w._loading_state_active_prev = w._loading_state_active
-    return (_img_name_early_upper, _load_edge_start, _loading_post_settle)
+    _release_completed_load_screen_owner(w, img_name=_img_name_early_upper, save_detected=_detect_save_file_write(w), loading_active=_loading_active, loading_post_settle=_loading_post_settle, screen_id=getattr(w, '_screen_id_prev', '') or '', npc_idle=_a845_for_release == 0)
+    w._loading_state_active_prev = _loading_active
+    return (_img_name_early_upper, _load_edge_start, _loading_post_settle, _overlay_loading, _loading_active)
 
 def _poll_resolve_area_and_frame(w, *, mif_name, in_interior, ui_router, field_facility_active=False):
     _resolved_area = ''
@@ -981,7 +979,7 @@ def _poll_file_lifecycle(w) -> None:
     except Exception:
         _log.exception('map_ext lifecycle poll failed')
 
-def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _loading_post_settle):
+def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _loading_post_settle, _loading_active=False):
     from arena_bridge import RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_NORTH_RAW, RT_ANGLE_RANGE
     combat_map_result = None
     interior_floor_hyp: int | None = None
@@ -1053,7 +1051,7 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
         except OSError:
             _angle_raw = None
             _angle_deg = None
-        _is_loading_for_map = bool(w._loading_state_active or _loading_post_settle)
+        _is_loading_for_map = bool(_loading_active or _loading_post_settle)
         _show_player_x = rt_x
         _show_player_y = rt_z
         _show_angle = _angle_deg
@@ -1197,9 +1195,9 @@ def _log_automap_edge(w, confirmed, img_name, foreground_ptr) -> None:
         _mode_word = None
     _recog(_log, 'screen confirm: id=%s img=%r popup_open=%s fg_ptr=%s fg_word2=%s mode_word=%s', confirmed, img_name, _popup_open, 'None' if foreground_ptr is None else f'0x{foreground_ptr:04X}', 'None' if _fg_word2 is None else f'0x{_fg_word2:04X}', 'None' if _mode_word is None else f'0x{_mode_word:04X}')
 
-def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_name, _resolved_area, player_floor, in_interior, _shop_state, _shop_img_name, _level_up_continue, _b30_dialog_active, _b30_dialog_active_prev, _b30_red_changed, _npc_dialog_changed):
+def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_name, _resolved_area, player_floor, in_interior, _shop_state, _shop_img_name, _level_up_continue, _b30_dialog_active, _b30_dialog_active_prev, _b30_red_changed, _npc_dialog_changed, _loading_active=False):
     try:
-        _screen_id, _screen_name, _indicator, _facility_label, _conv_label = _build_connection_bar_label(w, _screen_id, _screen_name, _img_name, _resolved_area, _shop_img_name, _shop_state, in_interior)
+        _screen_id, _screen_name, _indicator, _facility_label, _conv_label = _build_connection_bar_label(w, _screen_id, _screen_name, _img_name, _resolved_area, _shop_img_name, _shop_state, in_interior, loading_active=_loading_active)
         _screen_id_stable = _screen_id
         from controllers.screen_finalize import read_bonus_screen_signals
         _b126 = read_bonus_screen_signals(w._analyzer, w._anchor)
@@ -1207,7 +1205,7 @@ def _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_na
         _b126_bonus_pts = _b126.bonus_pts
         from normal_play.level_up_module import bonus_window_pending as _bonus_window_pending, bonus_window_points_max as _bonus_window_points_max
         _in_levelup = _bonus_window_pending(w)
-        if not _in_levelup:
+        if not _in_levelup and _current_top_level(w) != 'chargen':
             try:
                 from controllers.screen_finalize import PRIMARY_ATTRS_OFFSET as _OFF_P1, infer_bonus_window_from_memory as _infer_bonus
                 _p1 = w._analyzer.read_bytes(w._anchor + _OFF_P1, 8) if _b126_flag_status == 1 else None
@@ -1332,10 +1330,10 @@ def _poll_band_c1_and_lock_units(w, *, _b30, _top_is_normal_play, _screen_displa
     _poll_static_action_text_dispatch(w, band=_band, in_play=_lock_in_play)
     _poll_lock_message_dispatch(w, _b30, near=_lock_near, band=_band, in_play=_lock_in_play)
 
-def _poll_level_up_and_item_pickup(w, *, _top_is_normal_play, _loading_post_settle, _newpop_gate, _b30_img_name, npc_dialog, _shop_buy_active, _shop_menu_visible, _active_facility_name, _inventory_screen_now):
+def _poll_level_up_and_item_pickup(w, *, _top_is_normal_play, _loading_post_settle, _newpop_gate, _b30_img_name, npc_dialog, _shop_buy_active, _shop_menu_visible, _active_facility_name, _inventory_screen_now, _loading_active=False):
     from normal_play.level_up_module import produce_level_up_state as _produce_level_up_state, suspend_level_up_state as _suspend_level_up_state
     if _top_is_normal_play:
-        _level_up_continue = _produce_level_up_state(w, loading_active=w._loading_state_active, loading_post_settle=_loading_post_settle)
+        _level_up_continue = _produce_level_up_state(w, loading_active=_loading_active, loading_post_settle=_loading_post_settle)
     else:
         _suspend_level_up_state(w)
         _level_up_continue = False
@@ -1373,7 +1371,7 @@ def _poll_facility_latch_phase(w, *, _img_name_early, _npc_phase_early, _resolve
     _poll_log_hierarchy_recognition_post_session(w, _resolved_area=_resolved_area, in_interior=in_interior, _npc_phase_early=_npc_phase_early, mif_name=mif_name, _img_name_early=_img_name_early, interior_mif_name=interior_mif_name, interior_raw=interior_raw)
     return (_active_facility_name, _equipment_active_now, _equipment_just_started, _facility_active_now, _field_temple_active_now, _mages_active_now, _mages_just_started, _tavern_active_now, _temple_active_now, _temple_just_started)
 
-def _poll_display_phase(w, *, _active_facility_name, _b30, _combat_map_result, _b30_dialog_active, _b30_dialog_active_prev, _b30_img_name, _b30_red_changed, _instore_resp_handled, _inventory_screen_now, _loading_post_settle, _newpop_gate, _npc_dialog_changed, _npc_phase_early, _poll_hierarchy_area, _runtime_dialog_context, _resolved_area, _screen_display_active, _screen_id, _screen_name, _shop_buy_active, _shop_img_name, _shop_menu_visible, _shop_state, _top_is_normal_play, _travel_view, in_interior, inf_name, mif_name, npc_dialog, player_floor, rt_x, rt_z, ui_router):
+def _poll_display_phase(w, *, _active_facility_name, _b30, _combat_map_result, _b30_dialog_active, _b30_dialog_active_prev, _b30_img_name, _b30_red_changed, _instore_resp_handled, _inventory_screen_now, _loading_post_settle, _loading_active, _newpop_gate, _npc_dialog_changed, _npc_phase_early, _overlay_loading, _poll_hierarchy_area, _runtime_dialog_context, _resolved_area, _screen_display_active, _screen_id, _screen_name, _shop_buy_active, _shop_img_name, _shop_menu_visible, _shop_state, _top_is_normal_play, _travel_view, in_interior, inf_name, mif_name, npc_dialog, player_floor, rt_x, rt_z, ui_router):
     _poll_display_copy(w, gameplay=bool(_top_is_normal_play and _b30.get('in_gameplay')))
     if _top_is_normal_play:
         _poll_cinematic_dispatch(w, _b30)
@@ -1381,7 +1379,7 @@ def _poll_display_phase(w, *, _active_facility_name, _b30, _combat_map_result, _
         from normal_play.cinematic_module import forget_scene
         forget_scene(w)
     _poll_band_c1_and_lock_units(w, _b30=_b30, _top_is_normal_play=_top_is_normal_play, _screen_display_active=_screen_display_active, rt_x=rt_x, rt_z=rt_z, inf_name=inf_name, mif_name=mif_name, _poll_hierarchy_area=_poll_hierarchy_area, _instore_resp_handled=_instore_resp_handled, _runtime_dialog_context=_runtime_dialog_context)
-    _level_up_continue = _poll_level_up_and_item_pickup(w, _top_is_normal_play=_top_is_normal_play, _loading_post_settle=_loading_post_settle, _newpop_gate=_newpop_gate, _b30_img_name=_b30_img_name, npc_dialog=npc_dialog, _shop_buy_active=_shop_buy_active, _shop_menu_visible=_shop_menu_visible, _active_facility_name=_active_facility_name, _inventory_screen_now=_inventory_screen_now)
+    _level_up_continue = _poll_level_up_and_item_pickup(w, _top_is_normal_play=_top_is_normal_play, _loading_post_settle=_loading_post_settle, _newpop_gate=_newpop_gate, _b30_img_name=_b30_img_name, npc_dialog=npc_dialog, _shop_buy_active=_shop_buy_active, _shop_menu_visible=_shop_menu_visible, _active_facility_name=_active_facility_name, _inventory_screen_now=_inventory_screen_now, _loading_active=_loading_active)
     _img_name = _poll_detect_img_name(w)
     pass
     _npc_phase = _npc_phase_early
@@ -1389,7 +1387,7 @@ def _poll_display_phase(w, *, _active_facility_name, _b30, _combat_map_result, _
     _render_travel_l4(w, _travel_view)
     from top_level.pregame_state import check_load_save_transition
     check_load_save_transition(w, mif_name=mif_name, img_name=_img_name)
-    _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_name, _resolved_area, player_floor, in_interior, _shop_state, _shop_img_name, _level_up_continue, _b30_dialog_active, _b30_dialog_active_prev, _b30_red_changed, _npc_dialog_changed)
+    _poll_screen_detect_and_label(w, _screen_id, _screen_name, _img_name, mif_name, _resolved_area, player_floor, in_interior, _shop_state, _shop_img_name, _level_up_continue, _b30_dialog_active, _b30_dialog_active_prev, _b30_red_changed, _npc_dialog_changed, _loading_active=_loading_active)
     _feed = getattr(w, '_translation_feed', None)
     if _feed is not None:
         try:
@@ -1435,7 +1433,7 @@ class PollController:
             _npc_phase_early, _img_name_early, _foreground_ptr_early = _poll_read_npc_phase_and_img(w)
             _resolved_area, _poll_hierarchy_area = _poll_resolve_area_and_frame(w, mif_name=mif_name, in_interior=in_interior, ui_router=ui_router, field_facility_active=_field_facility_active)
             _poll_chargen_normal_play_transition(w, mif_name=mif_name, _img_name_early=_img_name_early)
-            _img_name_early_upper, _load_edge_start, _loading_post_settle = _poll_resolve_loading_state(w, _img_name_early=_img_name_early)
+            _img_name_early_upper, _load_edge_start, _loading_post_settle, _overlay_loading, _loading_active = _poll_resolve_loading_state(w, _img_name_early=_img_name_early)
             _shop_img_name = _img_name_early_upper
             _active_at_start = w._session_manager.active_session()
             _active_facility_at_start = _active_at_start.name if _active_at_start is not None else ''
@@ -1445,9 +1443,9 @@ class PollController:
             else:
                 _allow_yesno_menu_recovery = False
             _shop_state = _poll_detect_shop_state(w, _shop_img_name=_shop_img_name, in_interior=in_interior, _active_facility_name=_active_facility_at_start, _allow_yesno_menu_recovery=_allow_yesno_menu_recovery, area=_poll_hierarchy_area)
-            _poll_run_session_manager(w, _img_name_early=_img_name_early, _npc_phase_early=_npc_phase_early, in_interior=in_interior, _resolved_area=_resolved_area, mif_name=mif_name, interior_mif_name=interior_mif_name, shop_state=_shop_state, yesno_menu_recovery=_allow_yesno_menu_recovery, loading=bool(w._loading_state_active))
+            _poll_run_session_manager(w, _img_name_early=_img_name_early, _npc_phase_early=_npc_phase_early, in_interior=in_interior, _resolved_area=_resolved_area, mif_name=mif_name, interior_mif_name=interior_mif_name, shop_state=_shop_state, yesno_menu_recovery=_allow_yesno_menu_recovery, loading=bool(_loading_active))
             _active_facility_name, _equipment_active_now, _equipment_just_started, _facility_active_now, _field_temple_active_now, _mages_active_now, _mages_just_started, _tavern_active_now, _temple_active_now, _temple_just_started = _poll_facility_latch_phase(w, _img_name_early=_img_name_early, _npc_phase_early=_npc_phase_early, _resolved_area=_resolved_area, _top_is_normal_play=_top_is_normal_play, in_interior=in_interior, interior_mif_name=interior_mif_name, interior_raw=interior_raw, mif_name=mif_name)
-            _combat_map_result = _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _loading_post_settle)
+            _combat_map_result = _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_name, _resolved_area, interior_mif_name, interior_facility_name, state, gs, rt_x, rt_z, _loading_post_settle, _loading_active)
             _shop_menu_visible = False
             _shop_buy_active = False
             _tavern_l4_kind = ''
@@ -1498,8 +1496,8 @@ class PollController:
             w._entry_phase_prev = _entry_phase
             _building_entry_pending = bool(getattr(w, '_building_entry_pending', False))
             _img_name_now = _img_name_early_upper
-            from normal_play.building_entry_module import should_poll_building_entry as _should_poll_building_entry
-            _building_entry_active = _should_poll_building_entry(entry_phase=_entry_phase, panel_owner=w._panel_owner, pending=_building_entry_pending, img_name=_img_name_now)
+            from normal_play.building_entry_module import building_entry_active_for_poll as _building_entry_active_for_poll
+            _building_entry_active = _building_entry_active_for_poll(w, entry_phase=_entry_phase, pending=_building_entry_pending, img_name=_img_name_now)
             try:
                 _screen_id, _screen_name = _poll_confirm_screen_id(w, img_name=_img_name_now, mif_name=mif_name, area=_resolved_area, foreground_ptr=_foreground_ptr_early)
             except (OSError, AttributeError, ImportError):
@@ -1538,7 +1536,7 @@ class PollController:
                 w._npc_dialog_prev = npc_dialog
             if _top_is_normal_play:
                 _poll_status_popup(w, entry_handled=_entry_handled)
-            _poll_display_phase(w, _active_facility_name=_active_facility_name, _b30=_b30, _combat_map_result=_combat_map_result, _b30_dialog_active=_b30_dialog_active, _b30_dialog_active_prev=_b30_dialog_active_prev, _b30_img_name=_b30_img_name, _b30_red_changed=_b30_red_changed, _instore_resp_handled=_instore_resp_handled, _inventory_screen_now=_inventory_screen_now, _loading_post_settle=_loading_post_settle, _newpop_gate=_newpop_gate, _npc_dialog_changed=_npc_dialog_changed, _npc_phase_early=_npc_phase_early, _poll_hierarchy_area=_poll_hierarchy_area, _runtime_dialog_context=_runtime_dialog_context, _resolved_area=_resolved_area, _screen_display_active=_screen_display_active, _screen_id=_screen_id, _screen_name=_screen_name, _shop_buy_active=_shop_buy_active, _shop_img_name=_shop_img_name, _shop_menu_visible=_shop_menu_visible, _shop_state=_shop_state, _top_is_normal_play=_top_is_normal_play, _travel_view=_travel_view, in_interior=in_interior, inf_name=inf_name, mif_name=mif_name, npc_dialog=npc_dialog, player_floor=player_floor, rt_x=rt_x, rt_z=rt_z, ui_router=ui_router)
+            _poll_display_phase(w, _active_facility_name=_active_facility_name, _b30=_b30, _combat_map_result=_combat_map_result, _b30_dialog_active=_b30_dialog_active, _b30_dialog_active_prev=_b30_dialog_active_prev, _b30_img_name=_b30_img_name, _b30_red_changed=_b30_red_changed, _instore_resp_handled=_instore_resp_handled, _inventory_screen_now=_inventory_screen_now, _loading_post_settle=_loading_post_settle, _loading_active=_loading_active, _newpop_gate=_newpop_gate, _npc_dialog_changed=_npc_dialog_changed, _npc_phase_early=_npc_phase_early, _overlay_loading=_overlay_loading, _poll_hierarchy_area=_poll_hierarchy_area, _runtime_dialog_context=_runtime_dialog_context, _resolved_area=_resolved_area, _screen_display_active=_screen_display_active, _screen_id=_screen_id, _screen_name=_screen_name, _shop_buy_active=_shop_buy_active, _shop_img_name=_shop_img_name, _shop_menu_visible=_shop_menu_visible, _shop_state=_shop_state, _top_is_normal_play=_top_is_normal_play, _travel_view=_travel_view, in_interior=in_interior, inf_name=inf_name, mif_name=mif_name, npc_dialog=npc_dialog, player_floor=player_floor, rt_x=rt_x, rt_z=rt_z, ui_router=ui_router)
         except OSError:
             w._disconnect()
         except Exception as exc:

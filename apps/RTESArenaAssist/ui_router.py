@@ -7,7 +7,7 @@ import i18n_helper as i18n
 from assist_log import recog as _recog
 from display_intent import DisplayIntent, PollFrame
 from hierarchy_state import active_facility_session_name, facility_owners_for_session, CONVERSATION_PANEL_OWNERS
-from panel_mode_resolver import panel_is_effective, required_owner_for_mode, resolve_flush_mode
+from panel_mode_resolver import closing_panel_mode as _closing_panel_mode, panel_is_effective, required_owner_for_mode, resolve_flush_mode, restore_translate_target
 _log = logging.getLogger('RTESArenaAssist')
 SCREEN_CHANGE_CLEAR_PRIORITY = -1
 _CONVERSATION_TAB_OWNERS = CONVERSATION_PANEL_OWNERS
@@ -64,14 +64,23 @@ class UiRouter:
         self._pending_order = 0
         self._pending_display_order = 0
 
-    def propose_display(self, intent: DisplayIntent) -> None:
-        if self._poll_frame is None:
-            self.apply_display(intent)
-            self._apply_flush_panel_mode(intent)
-            return
+    def _owner_gate_passes(self, intent: DisplayIntent) -> bool:
+        current = self.current_owner()
+        if intent.allowed_current_owners is not None and current not in intent.allowed_current_owners:
+            return False
+        if intent.kind in ('clear_if_owner', 'release_if_owner') and current != intent.panel_owner:
+            return False
+        return True
+
+    def propose_display(self, intent: DisplayIntent) -> bool:
         resolved = self._resolve_proposed_intent(intent)
+        if self._poll_frame is None:
+            if resolved is not None:
+                self.apply_display(resolved)
+            self._apply_flush_panel_mode(intent)
+            return resolved is not None
         if resolved is None:
-            return
+            return False
         self._pending_order += 1
         current = self._pending_display
         merged = self._merge_compatible_intents(current, resolved)
@@ -79,11 +88,12 @@ class UiRouter:
             self._pending_display = merged
             self._pending_display_order = self._pending_order
             self._apply_logical_display(merged)
-            return
+            return True
         if current is None or (resolved.priority, self._pending_order) >= (current.priority, self._pending_display_order):
             self._pending_display = resolved
             self._pending_display_order = self._pending_order
             self._apply_logical_display(resolved)
+        return True
 
     def _merge_compatible_intents(self, current: Optional[DisplayIntent], resolved: DisplayIntent) -> Optional[DisplayIntent]:
         if current is None or current.priority != resolved.priority:
@@ -189,221 +199,86 @@ class UiRouter:
     def _resolve_proposed_intent(self, intent: DisplayIntent) -> Optional[DisplayIntent]:
         current = self.current_owner()
         applied_owner = self._poll_frame.panel_owner if self._poll_frame is not None else current
-        if intent.allowed_current_owners is not None and current not in intent.allowed_current_owners:
-            _log.debug('ui_router.propose_display skipped (kind=%s owner=%r current=%r allowed=%r)', intent.kind, intent.panel_owner, current, intent.allowed_current_owners)
+        if not self._owner_gate_passes(intent):
+            if intent.kind == 'translation':
+                _recog(_log, 'display proposal gated: owner=%s current=%s reason=%s', intent.panel_owner or '-', current or '-', intent.reason or '-')
+            elif intent.allowed_current_owners is not None:
+                _log.debug('ui_router.propose_display skipped (kind=%s owner=%r current=%r allowed=%r)', intent.kind, intent.panel_owner, current, intent.allowed_current_owners)
             return None
         if intent.allowed_current_owners is not None:
             intent = replace(intent, allowed_current_owners=None)
         if intent.kind == 'clear':
             return intent if intent.closed_owner else replace(intent, closed_owner=applied_owner)
         if intent.kind == 'clear_if_owner':
-            if current != intent.panel_owner:
-                return None
             return DisplayIntent.clear('', mode=intent.mode, clear_place_list=intent.clear_place_list, clear_travel_table=intent.clear_travel_table, priority=intent.priority, reason=intent.reason, closed_owner=applied_owner, notify_close=intent.notify_close)
         if intent.kind == 'release_if_owner':
-            if current != intent.panel_owner:
-                return None
             return DisplayIntent.claim_owner('', mode=intent.mode, priority=intent.priority, reason=intent.reason, closed_owner=applied_owner)
         return intent
 
     def _apply_logical_display(self, intent: DisplayIntent) -> None:
+        self._write_owner(intent)
+    _OWNER_WRITING_KINDS = frozenset({'clear', 'claim_owner', 'combat_info', 'shop_buy_list', 'facility_list', 'spellbook', 'item_pickup_list', 'load_screen_slots', 'equipment_list', 'spell_detail', 'place_list', 'travel_table', 'journal_entries'})
+
+    def _write_owner(self, intent: DisplayIntent) -> None:
         if intent.kind == 'translation':
             if not intent.keep_owner:
                 self._window._panel_owner = intent.panel_owner
             return
-        if intent.kind in ('clear', 'claim_owner', 'combat_info', 'shop_buy_list', 'facility_list', 'item_pickup_list', 'load_screen_slots', 'equipment_list', 'spell_detail', 'place_list', 'travel_table', 'journal_entries'):
+        if intent.kind in self._OWNER_WRITING_KINDS:
             self._window._panel_owner = intent.panel_owner
 
-    def update_translation(self, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace') -> None:
-        self.propose_display(DisplayIntent.translation(panel_owner, en, ja, mode=mode, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action))
+    def update_translation(self, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', allowed_current_owners: Optional[tuple[str, ...]]=None, skip_if_displaying: bool=False) -> bool:
+        if skip_if_displaying and self.is_displaying(panel_owner, en, ja):
+            return False
+        return self.propose_display(DisplayIntent.translation(panel_owner, en, ja, mode=mode, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, allowed_current_owners=allowed_current_owners, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action))
 
     def propose_translation(self, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace') -> None:
         self.propose_display(DisplayIntent.translation(panel_owner, en, ja, mode=mode, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action))
+    _RENDERERS = {'translation': '_render_translation', 'combat_info': '_render_combat_info', 'clear': '_render_clear', 'claim_owner': '_render_claim_owner', 'panel_mode': '_render_panel_mode', 'shop_buy_list': '_render_shop_buy_list', 'facility_list': '_render_facility_list', 'spellbook': '_render_spellbook', 'item_pickup_list': '_render_item_pickup_list', 'load_screen_slots': '_render_load_screen_slots', 'equipment_list': '_render_equipment_list', 'spell_detail': '_render_spell_detail', 'place_list': '_render_place_list', 'travel_table': '_render_travel_table', 'journal_entries': '_render_journal_entries'}
 
     def apply_display(self, intent: DisplayIntent) -> None:
-        if intent.allowed_current_owners is not None:
-            current = self.current_owner()
-            if current not in intent.allowed_current_owners:
-                _log.debug('ui_router.apply_display skipped (kind=%s owner=%r current=%r allowed=%r)', intent.kind, intent.panel_owner, current, intent.allowed_current_owners)
-                return
-        w = self._window
-        if intent.kind == 'translation':
-            self._apply_translation(intent)
-            return
-        if intent.kind == 'combat_info':
-            data = intent.items or {}
-            w._tab_translate.update_combat_view(data)
-            if data.get('panel_enabled'):
-                _en = intent.panel_en or ''
-                _ja = intent.panel_ja or ''
-                if w._layout_translate_panel is not None:
-                    w._layout_translate_panel.update_translation(_en, _ja)
-                self._displayed_translation = (intent.panel_owner, _en, _ja)
-            elif self._displayed_translation is not None and self._displayed_translation[0] == 'combat_info':
-                if w._layout_translate_panel is not None:
-                    w._layout_translate_panel.update_translation('', '')
-                self._displayed_translation = None
-            w._panel_owner = intent.panel_owner
-            if self._translation_observer is not None and intent.speech_role:
-                _obs_key = (intent.panel_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled, intent.speech_event_id, intent.speech_cues)
-                if self._obs_last_key != _obs_key:
-                    self._obs_last_key = _obs_key
-                    try:
-                        self._translation_observer(intent.panel_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.log_enabled, intent.speech_action, intent.speech_cues)
-                    except Exception:
-                        _log.exception('translation_observer failed')
-            return
-        if intent.kind == 'clear':
-            closed_owner = intent.closed_owner or self.current_owner()
-            w._tab_translate.update_translation('', '', suppress_fallback=True)
-            if intent.clear_place_list:
-                try:
-                    w._tab_translate.update_place_list([])
-                except AttributeError:
-                    pass
-            if intent.clear_travel_table:
-                try:
-                    w._tab_translate.update_travel_table([])
-                except AttributeError:
-                    pass
-            if w._layout_translate_panel is not None:
-                w._layout_translate_panel.update_translation('', '')
-            w._panel_owner = intent.panel_owner
-            self._displayed_translation = None
-            if intent.notify_close:
-                self._notify_clear(closed_owner)
-            return
-        if intent.kind == 'clear_if_owner':
-            current = self.current_owner()
-            if current != intent.panel_owner:
-                return
-            if current == 'combat_info':
-                try:
-                    w._tab_translate.clear_combat_view()
-                except AttributeError:
-                    pass
-            else:
-                w._tab_translate.update_translation('', '', suppress_fallback=True)
-            if intent.clear_place_list:
-                try:
-                    w._tab_translate.update_place_list([])
-                except AttributeError:
-                    pass
-            if intent.clear_travel_table:
-                try:
-                    w._tab_translate.update_travel_table([])
-                except AttributeError:
-                    pass
-            if w._layout_translate_panel is not None:
-                w._layout_translate_panel.update_translation('', '')
-            w._panel_owner = ''
-            self._displayed_translation = None
-            if intent.notify_close:
-                self._notify_clear(current)
-            return
-        if intent.kind == 'release_if_owner':
-            current = self.current_owner()
-            if current == intent.panel_owner:
-                w._panel_owner = ''
-                self._notify_clear(current)
-            return
-        if intent.kind == 'claim_owner':
-            w._panel_owner = intent.panel_owner
-            self._notify_clear(intent.closed_owner)
-            return
-        if intent.kind == 'panel_mode':
-            return
-        if intent.kind == 'shop_buy_list':
-            w._tab_translate.update_shop_buy_list(intent.items)
-            if w._layout_translate_panel is not None:
-                w._layout_translate_panel.update_translation(intent.panel_en or '', intent.panel_ja or '')
-            w._panel_owner = intent.panel_owner
-            return
-        if intent.kind == 'facility_list':
-            try:
-                w._tab_translate.set_facility_list_title(intent.list_title_ja or intent.panel_ja or intent.panel_en or '')
-            except AttributeError:
-                pass
-            w._tab_translate.update_facility_list(intent.items)
-            if w._layout_translate_panel is not None:
-                w._layout_translate_panel.update_translation(intent.panel_en or '', intent.panel_ja or '')
-            w._panel_owner = intent.panel_owner
-            return
-        if intent.kind == 'spellbook':
-            try:
-                w._tab_translate.set_spellbook_title(intent.list_title_ja or intent.panel_ja or intent.panel_en or '')
-            except AttributeError:
-                pass
-            w._tab_translate.update_spellbook_list(intent.items)
-            if w._layout_translate_panel is not None:
-                w._layout_translate_panel.update_translation(intent.panel_en or '', intent.panel_ja or '')
-            w._panel_owner = intent.panel_owner
-            return
-        if intent.kind == 'item_pickup_list':
-            w._tab_translate.update_item_pickup_list(intent.items, intent.remaining or 0)
-            w._panel_owner = intent.panel_owner
-            return
-        if intent.kind == 'load_screen_slots':
-            w._tab_translate.update_load_screen_slots(intent.items)
-            if w._layout_translate_panel is not None:
-                w._layout_translate_panel.update_translation('', '')
-            w._panel_owner = intent.panel_owner
-            return
-        if intent.kind == 'equipment_list':
-            w._tab_translate.set_equipment_panel_title(intent.title)
-            w._tab_translate.update_equipment_list(intent.items)
-            w._panel_owner = intent.panel_owner
-            return
-        if intent.kind == 'spell_detail':
-            w._tab_translate.update_spell_detail(intent.items)
-            if w._layout_translate_panel is not None and (intent.panel_en or intent.panel_ja):
-                w._layout_translate_panel.update_translation(intent.panel_en or '', intent.panel_ja or '')
-            w._panel_owner = intent.panel_owner
-            return
-        if intent.kind == 'place_list':
-            w._tab_translate.set_place_list_title(intent.title)
-            w._tab_translate.update_place_list(intent.items)
-            if w._layout_translate_panel is not None:
-                w._layout_translate_panel.update_translation(intent.panel_en or '', intent.panel_ja or '')
-            w._panel_owner = intent.panel_owner
-            return
-        if intent.kind == 'travel_table':
-            w._tab_translate.set_travel_table_title(intent.title)
-            w._tab_translate.update_travel_table(intent.items)
-            if w._layout_translate_panel is not None:
-                w._layout_translate_panel.update_translation(intent.panel_en or '', intent.panel_ja or '')
-            w._panel_owner = intent.panel_owner
-            if self._translation_observer is not None and intent.speech_role:
-                _obs_owner = intent.panel_owner or self.current_owner()
-                _obs_key = (_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled)
-                if self._obs_last_key != _obs_key:
-                    self._obs_last_key = _obs_key
-                    try:
-                        self._translation_observer(_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.log_enabled, intent.speech_action)
-                    except Exception:
-                        _log.exception('translation_observer failed')
-            return
-        if intent.kind == 'journal_entries':
-            try:
-                w._tab_translate.update_journal_entries(intent.items or [])
-            except AttributeError:
-                pass
-            if w._layout_translate_panel is not None:
-                w._layout_translate_panel.update_translation(intent.panel_en or '', intent.panel_ja or '')
-            w._panel_owner = intent.panel_owner
-            if self._translation_observer is not None and intent.speech_role:
-                _obs_owner = intent.panel_owner or self.current_owner()
-                _obs_key = (_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled)
-                if self._obs_last_key != _obs_key:
-                    self._obs_last_key = _obs_key
-                    try:
-                        self._translation_observer(_obs_owner, intent.panel_en or '', intent.panel_ja or '', intent.speech_role, intent.speech_text, intent.log_enabled, intent.speech_action)
-                    except Exception:
-                        _log.exception('translation_observer failed')
-            return
-        raise ValueError(f'unknown display intent kind: {intent.kind!r}')
+        render = self._RENDERERS.get(intent.kind)
+        if render is None:
+            raise ValueError(f'unknown or unresolved display intent kind: {intent.kind!r}')
+        after = getattr(self, render)(intent)
+        self._write_owner(intent)
+        if after is not None:
+            after()
 
-    def _apply_translation(self, intent: DisplayIntent) -> None:
+    def _notify_translation(self, intent: DisplayIntent, owner: str, en: str, ja: str) -> None:
+        if self._translation_observer is None:
+            return
+        key = (owner, en, ja, intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled, intent.speech_event_id, intent.speech_cues, intent.kind)
+        if self._obs_last_key == key:
+            return
+        self._obs_last_key = key
+        args = (owner, en, ja, intent.speech_role, intent.speech_text, intent.log_enabled, intent.speech_action)
+        if intent.kind == 'combat_info':
+            args += (intent.speech_cues,)
+        try:
+            self._translation_observer(*args)
+        except Exception:
+            _log.exception('translation_observer failed')
+
+    def _update_layout_panel(self, en: str, ja: str) -> None:
+        panel = self._window._layout_translate_panel
+        if panel is not None:
+            panel.update_translation(en, ja)
+
+    def _clear_list_payloads(self, intent: DisplayIntent) -> None:
+        w = self._window
+        if intent.clear_place_list:
+            try:
+                w._tab_translate.update_place_list([])
+            except AttributeError:
+                pass
+        if intent.clear_travel_table:
+            try:
+                w._tab_translate.update_travel_table([])
+            except AttributeError:
+                pass
+
+    def _render_translation(self, intent: DisplayIntent):
         w = self._window
         _prev_key = getattr(self, '_applied_prev_key', None)
         _mode = intent.mode
@@ -424,24 +299,120 @@ class UiRouter:
                 w._tab_translate.update_place_list([])
             except AttributeError:
                 pass
-        if intent.update_panel and w._layout_translate_panel is not None:
+        if intent.update_panel:
             _pen = intent.panel_en if intent.panel_en is not None else intent.en
             _pja = intent.panel_ja if intent.panel_ja is not None else intent.ja
-            w._layout_translate_panel.update_translation(_pen, _pja)
-        if not intent.keep_owner:
-            w._panel_owner = intent.panel_owner
-        self._displayed_translation = (self.current_owner(), intent.en, intent.ja)
-        if self._translation_observer is not None:
-            _obs_en = intent.en or (intent.panel_en or '')
-            _obs_ja = intent.ja or (intent.panel_ja or '')
-            _obs_owner = intent.panel_owner or self.current_owner()
-            _obs_key = (_obs_owner, _obs_en, _obs_ja, intent.speech_role, intent.speech_text, intent.speech_action, intent.log_enabled, intent.speech_event_id)
-            if self._obs_last_key != _obs_key:
-                self._obs_last_key = _obs_key
-                try:
-                    self._translation_observer(_obs_owner, _obs_en, _obs_ja, intent.speech_role, intent.speech_text, intent.log_enabled, intent.speech_action)
-                except Exception:
-                    _log.exception('translation_observer failed')
+            self._update_layout_panel(_pen, _pja)
+
+        def _after() -> None:
+            self._displayed_translation = (self.current_owner(), intent.en, intent.ja)
+            self._notify_translation(intent, intent.panel_owner or self.current_owner(), intent.en or (intent.panel_en or ''), intent.ja or (intent.panel_ja or ''))
+        return _after
+
+    def _render_combat_info(self, intent: DisplayIntent):
+        w = self._window
+        data = intent.items or {}
+        w._tab_translate.update_combat_view(data)
+        if data.get('panel_enabled'):
+            _en = intent.panel_en or ''
+            _ja = intent.panel_ja or ''
+            self._update_layout_panel(_en, _ja)
+            self._displayed_translation = (intent.panel_owner, _en, _ja)
+        elif self._displayed_translation is not None and self._displayed_translation[0] == 'combat_info':
+            self._update_layout_panel('', '')
+            self._displayed_translation = None
+        if not intent.speech_role:
+            return None
+        return lambda: self._notify_translation(intent, intent.panel_owner, intent.panel_en or '', intent.panel_ja or '')
+
+    def _render_clear(self, intent: DisplayIntent):
+        w = self._window
+        closed_owner = intent.closed_owner or self.current_owner()
+        w._tab_translate.update_translation('', '', suppress_fallback=True)
+        self._clear_list_payloads(intent)
+        self._update_layout_panel('', '')
+        self._displayed_translation = None
+        if not intent.notify_close:
+            return None
+        return lambda: self._notify_clear(closed_owner)
+
+    def _render_claim_owner(self, intent: DisplayIntent):
+        return lambda: self._notify_clear(intent.closed_owner)
+
+    def _render_panel_mode(self, intent: DisplayIntent):
+        return None
+
+    def _render_shop_buy_list(self, intent: DisplayIntent):
+        self._window._tab_translate.update_shop_buy_list(intent.items)
+        self._update_layout_panel(intent.panel_en or '', intent.panel_ja or '')
+        return None
+
+    def _render_facility_list(self, intent: DisplayIntent):
+        tab = self._window._tab_translate
+        try:
+            tab.set_facility_list_title(intent.list_title_ja or intent.panel_ja or intent.panel_en or '')
+        except AttributeError:
+            pass
+        tab.update_facility_list(intent.items)
+        self._update_layout_panel(intent.panel_en or '', intent.panel_ja or '')
+        return None
+
+    def _render_spellbook(self, intent: DisplayIntent):
+        tab = self._window._tab_translate
+        try:
+            tab.set_spellbook_title(intent.list_title_ja or intent.panel_ja or intent.panel_en or '')
+        except AttributeError:
+            pass
+        tab.update_spellbook_list(intent.items)
+        self._update_layout_panel(intent.panel_en or '', intent.panel_ja or '')
+        return None
+
+    def _render_item_pickup_list(self, intent: DisplayIntent):
+        self._window._tab_translate.update_item_pickup_list(intent.items, intent.remaining or 0)
+        return None
+
+    def _render_load_screen_slots(self, intent: DisplayIntent):
+        self._window._tab_translate.update_load_screen_slots(intent.items)
+        self._update_layout_panel('', '')
+        return None
+
+    def _render_equipment_list(self, intent: DisplayIntent):
+        tab = self._window._tab_translate
+        tab.set_equipment_panel_title(intent.title)
+        tab.update_equipment_list(intent.items)
+        return None
+
+    def _render_spell_detail(self, intent: DisplayIntent):
+        self._window._tab_translate.update_spell_detail(intent.items)
+        if intent.panel_en or intent.panel_ja:
+            self._update_layout_panel(intent.panel_en or '', intent.panel_ja or '')
+        return None
+
+    def _render_place_list(self, intent: DisplayIntent):
+        tab = self._window._tab_translate
+        tab.set_place_list_title(intent.title)
+        tab.update_place_list(intent.items)
+        self._update_layout_panel(intent.panel_en or '', intent.panel_ja or '')
+        return None
+
+    def _render_travel_table(self, intent: DisplayIntent):
+        tab = self._window._tab_translate
+        tab.set_travel_table_title(intent.title)
+        tab.update_travel_table(intent.items)
+        self._update_layout_panel(intent.panel_en or '', intent.panel_ja or '')
+        if not intent.speech_role:
+            return None
+        return lambda: self._notify_translation(intent, intent.panel_owner or self.current_owner(), intent.panel_en or '', intent.panel_ja or '')
+
+    def _render_journal_entries(self, intent: DisplayIntent):
+        try:
+            self._window._tab_translate.update_journal_entries(intent.items or [])
+        except AttributeError:
+            pass
+        self._update_layout_panel(intent.panel_en or '', intent.panel_ja or '')
+        if not intent.speech_role:
+            return None
+        return lambda: self._notify_translation(intent, intent.panel_owner or self.current_owner(), intent.panel_en or '', intent.panel_ja or '')
 
     def _log_facility_display_invariant(self, frame: Optional[PollFrame]) -> None:
         w = self._window
@@ -477,23 +448,77 @@ class UiRouter:
             return False
         return self._displayed_translation == (panel_owner, en, ja)
 
-    def clear_if_owner(self, panel_owner: str, *, mode: Optional[str]=None, clear_place_list: bool=False, clear_travel_table: bool=False, notify_close: bool=True) -> None:
-        self.propose_display(DisplayIntent.clear_if_owner(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, notify_close=notify_close))
+    def clear_if_owner(self, panel_owner: str, *, mode: Optional[str]=None, clear_place_list: bool=False, clear_travel_table: bool=False, notify_close: bool=True) -> bool:
+        return self.propose_display(DisplayIntent.clear_if_owner(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, notify_close=notify_close))
 
-    def clear_display(self, panel_owner: str='', *, mode: Optional[str]='translate', clear_place_list: bool=False, clear_travel_table: bool=False, allowed_current_owners: Optional[tuple]=None, priority: int=0, notify_close: bool=True) -> None:
-        self.propose_display(DisplayIntent.clear(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, priority=priority, allowed_current_owners=allowed_current_owners, notify_close=notify_close))
+    def clear_if_owner_in(self, owners, *, mode: Optional[str]=None, place_list_owners=frozenset(), notify_close: bool=True) -> str:
+        current = self.current_owner()
+        if not current or current not in owners:
+            return ''
+        ok = self.clear_if_owner(current, mode=mode, clear_place_list=current in place_list_owners, notify_close=notify_close)
+        return current if ok else ''
+
+    def notify_display_unit_replaced_in(self, owners) -> str:
+        current = self.current_owner()
+        if not current or current not in owners:
+            return ''
+        self.notify_display_unit_replaced(current)
+        return current
+
+    def clear_display(self, panel_owner: str='', *, mode: Optional[str]='translate', clear_place_list: bool=False, clear_travel_table: bool=False, allowed_current_owners: Optional[tuple]=None, priority: int=0, notify_close: bool=True) -> bool:
+        return self.propose_display(DisplayIntent.clear(panel_owner, mode=mode, clear_place_list=clear_place_list, clear_travel_table=clear_travel_table, priority=priority, allowed_current_owners=allowed_current_owners, notify_close=notify_close))
 
     def update_panel_translation(self, panel_en: str, panel_ja: str, *, speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True, priority: int=0) -> None:
         self.propose_display(DisplayIntent.panel_translation(panel_en, panel_ja, priority=priority, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled))
 
-    def release_if_owner(self, panel_owner: str, *, mode: Optional[str]=None, priority: int=0, reason: str='') -> None:
-        self.propose_display(DisplayIntent.release_if_owner(panel_owner, mode=mode, priority=priority, reason=reason))
+    def release_if_owner(self, panel_owner: str, *, mode: Optional[str]=None, priority: int=0, reason: str='') -> bool:
+        return self.propose_display(DisplayIntent.release_if_owner(panel_owner, mode=mode, priority=priority, reason=reason))
 
     def claim_owner(self, panel_owner: str, *, mode: Optional[str]=None, priority: int=0, reason: str='') -> None:
         self.propose_display(DisplayIntent.claim_owner(panel_owner, mode=mode, priority=priority, reason=reason))
 
     def set_panel_mode(self, mode: str, *, priority: int=0, reason: str='') -> None:
         self.propose_display(DisplayIntent.panel_mode(mode, priority=priority, reason=reason))
+
+    def _tab_panel_mode(self) -> Optional[str]:
+        tab = getattr(self._window, '_tab_translate', None)
+        if tab is None:
+            return None
+        try:
+            return tab.panel_mode()
+        except (AttributeError, RuntimeError):
+            return None
+
+    def ensure_panel_mode(self, mode: str, *, priority: int=0, reason: str='', propose: bool=True) -> str:
+        cur = self._tab_panel_mode()
+        if cur is None or cur == mode:
+            return ''
+        if propose:
+            self.set_panel_mode(mode, priority=priority, reason=reason)
+        return cur
+
+    def reset_panel_mode_if(self, modes, *, to: str='translate', priority: int=0, reason: str='') -> str:
+        cur = self._tab_panel_mode()
+        if not cur or cur not in modes:
+            return ''
+        self.set_panel_mode(to, priority=priority, reason=reason)
+        return cur
+
+    def closing_panel_mode(self, *, img_name: str, screen_id: str, top_level: str, fallback_setting: str) -> Optional[str]:
+        cur = self._tab_panel_mode()
+        if cur is None:
+            return 'translate'
+        return _closing_panel_mode(current_mode=cur, img_name=img_name, screen_id=screen_id, top_level=top_level, fallback_setting=fallback_setting)
+
+    def restore_translate_mode(self, *, img_name: str, screen_id: str) -> bool:
+        cur = self._tab_panel_mode()
+        if cur is None:
+            return False
+        target = restore_translate_target(current_mode=cur, img_name=img_name, screen_id=screen_id)
+        if target is None:
+            return False
+        self.set_panel_mode(target)
+        return True
 
     def update_shop_buy_list(self, panel_owner: str, items: list, panel_en: str, panel_ja: str) -> None:
         self.propose_display(DisplayIntent.shop_buy_list(panel_owner, items, panel_en, panel_ja))

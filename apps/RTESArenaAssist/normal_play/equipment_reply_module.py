@@ -127,6 +127,10 @@ def _find_rendered_estimate(w) -> str:
 
 def _render_repair_estimate(w, snapshot) -> bool:
     en = _find_rendered_estimate(w)
+    if en:
+        w._equipment_last_estimate_en = en
+    elif getattr(snapshot, 'reason', '') == 'estimate_restored':
+        en = getattr(w, '_equipment_last_estimate_en', '') or ''
     if not en:
         return True
     ja = _lookup_ja(en) or en

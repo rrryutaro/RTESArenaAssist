@@ -2,6 +2,7 @@ from __future__ import annotations
 import logging
 from display_intent import PASSIVE_PANEL_OWNERS
 from hierarchy_state import FACILITY_OWNER_SETS_BY_SESSION
+from screen_img_signals import YESNO_IMG
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 _RESPONSE_PTR_RANGES = ((4164, 512), (31097, 68), (37534, 512), (39582, 512))
@@ -28,7 +29,7 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
         _response_active = any((start <= _ptr_val < start + length for start, length in _RESPONSE_PTR_RANGES))
     try:
         from negotiation_reader import NEGOTIATION_PROFILES as _NPF
-        _in_negot = shop_img_name in _NPF and (shop_img_name or '').upper() != 'YESNO.IMG'
+        _in_negot = shop_img_name in _NPF and (shop_img_name or '').upper() != YESNO_IMG
     except Exception:
         _in_negot = False
     _top_level = _current_top_level(w)

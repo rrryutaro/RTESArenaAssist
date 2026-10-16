@@ -1,27 +1,28 @@
 from __future__ import annotations
 import logging
 import i18n_helper as i18n
+from equipment_signals import ARMOR_LIST_IMG, BUY_LIST_IMGS, INVENTORY_LIST_IMG, WEAPON_LIST_IMG
 _log = logging.getLogger('RTESArenaAssist')
 _LIST_STABLE_ATTR = '_equipment_list_stable_by_img'
 _LIST_PENDING_ATTR = '_equipment_list_pending_by_img'
 _STATIC_WEAPON_ITEMS: list[dict] | None = None
 
 def _read_list_items(w, img: str) -> list[dict]:
-    if img == 'POPUP3.IMG':
+    if img == WEAPON_LIST_IMG:
         try:
             from equipment_shop_list_reader import read_buy_weapon_list
             return read_buy_weapon_list(w._analyzer, w._anchor)
         except Exception:
             _log.exception('equipment weapon buy list read failed')
             return []
-    if img == 'POPUP4.IMG':
+    if img == ARMOR_LIST_IMG:
         try:
             from equipment_shop_list_reader import read_buy_armor_list
             return read_buy_armor_list(w._analyzer, w._anchor)
         except Exception:
             _log.exception('equipment armor buy list read failed')
             return []
-    if img == 'NEWPOP.IMG':
+    if img == INVENTORY_LIST_IMG:
         try:
             from equipment_shop_list_reader import read_sell_repair_item_list
             return read_sell_repair_item_list(w._analyzer, w._anchor)
@@ -46,7 +47,7 @@ def read_inventory_table_rows(w, title_ja: str) -> tuple[str, list[dict]]:
         return (title_ja, [])
 
 def _stabilize_list_items(w, img: str, items: list[dict]) -> list[dict]:
-    if img not in ('POPUP3.IMG', 'POPUP4.IMG'):
+    if img not in BUY_LIST_IMGS:
         return items
     stable_by_img = getattr(w, _LIST_STABLE_ATTR, {})
     pending_by_img = getattr(w, _LIST_PENDING_ATTR, {})

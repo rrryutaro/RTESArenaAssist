@@ -278,6 +278,10 @@ def _decide(w, img: str) -> EquipmentL4Snapshot:
         chosen = _update_and_select_reply(w, img)
         if chosen is not None:
             return EquipmentL4Snapshot(state=S.REPLY, img=img, reason='response_evidence', reply_text=chosen.text, reply_source_offset=chosen.source_offset)
+    if img == 'YESNO.IMG':
+        prev_snap = getattr(w, '_equipment_l4_prev_snapshot', None)
+        if prev_snap is not None and prev_snap.state in (S.REPAIR_JOBS, S.REPAIR_ESTIMATE) and (prev_snap.reason in ('repair_struct', 'estimate_restored')):
+            return EquipmentL4Snapshot(state=S.REPAIR_ESTIMATE, img=img, reason='estimate_restored')
     if img in ('POPUP3.IMG', 'POPUP4.IMG') and _list_is_foreground(w):
         return EquipmentL4Snapshot(state=S.BUY_LIST, img=img, reason='list_img')
     return EquipmentL4Snapshot(state=S.NONE, img=img, reason='none')

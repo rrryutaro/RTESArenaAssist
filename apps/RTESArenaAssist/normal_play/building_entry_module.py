@@ -1,11 +1,12 @@
 from __future__ import annotations
 import logging
 from display_intent import PASSIVE_PANEL_OWNERS
+from screen_img_signals import ENTRY_CIF_IMGS, ENTRY_DIALOG_MENU_IMGS, ENTRY_NON_XMI_IMGS
 _log = logging.getLogger('RTESArenaAssist')
 _MAX_DIAG_DUMPS = 6
-_DIALOG_MENU_IMGS = frozenset({'MENU_RT.IMG', 'POPUP11.IMG', 'NEGOTBUT.IMG', 'YESNO.IMG', 'NEWPOP.IMG'})
-_NON_ENTRY_XMI_IMGS = frozenset({'VISION.XMI'})
-_ENTRY_CIF_IMGS = frozenset({'FACES00.CIF'})
+_DIALOG_MENU_IMGS = ENTRY_DIALOG_MENU_IMGS
+_NON_ENTRY_XMI_IMGS = ENTRY_NON_XMI_IMGS
+_ENTRY_CIF_IMGS = ENTRY_CIF_IMGS
 OWNER = 'building_entry'
 
 def begin_entry_episode(w) -> None:
@@ -54,7 +55,7 @@ def _push_entry(w, key: tuple, en: str, ja: str, *, speech_role: str | None) -> 
         return True
     return False
 
-def should_poll_building_entry(*, entry_phase: bool, panel_owner: str, pending: bool, img_name: str) -> bool:
+def should_poll_building_entry(*, entry_phase: bool, displaying: bool, pending: bool, img_name: str) -> bool:
     img_upper = (img_name or '').upper()
     if img_upper in _NON_ENTRY_XMI_IMGS:
         return False
@@ -62,11 +63,18 @@ def should_poll_building_entry(*, entry_phase: bool, panel_owner: str, pending: 
     entry_surface = entry_xmi_surface or img_upper in _ENTRY_CIF_IMGS
     if not entry_phase:
         return bool(pending and entry_surface)
-    if panel_owner == 'building_entry' or pending:
+    if displaying or pending:
         return True
     if img_upper in _DIALOG_MENU_IMGS:
         return False
     return entry_surface
+
+def building_entry_active_for_poll(w, *, entry_phase: bool, pending: bool, img_name: str) -> bool:
+    try:
+        displaying = bool(w._ui_router.is_owner(OWNER))
+    except AttributeError:
+        displaying = False
+    return should_poll_building_entry(entry_phase=entry_phase, displaying=displaying, pending=pending, img_name=img_name)
 
 def _diag_dump_memory(w, msg_buf: str, npc_dialog: str) -> None:
     _dump_count = getattr(w, '_b288_entry_diag_count', 0)
@@ -256,4 +264,4 @@ def poll_building_entry(w, *, building_entry_active: bool, entry_phase_prev: boo
             w._ui_router.release_if_owner(OWNER)
             _log.info("panel_owner -> '' (entry phase exited)")
     return entry_handled
-__all__ = ['OWNER', 'begin_entry_episode', 'end_entry_episode', 'note_msg_buf_written', 'poll_building_entry', 'should_poll_building_entry']
+__all__ = ['OWNER', 'begin_entry_episode', 'end_entry_episode', 'note_msg_buf_written', 'building_entry_active_for_poll', 'poll_building_entry', 'should_poll_building_entry']

@@ -1,18 +1,17 @@
 from __future__ import annotations
 import logging
 from assist_log import recog as _recog
-from display_intent import PASSIVE_PANEL_OWNERS
+from display_intent import TRANSIENT_MESSAGE_OWNERS
 from normal_play.c1_dialog_axis import close_confirmed as _close_confirmed
 _log = logging.getLogger('RTESArenaAssist')
 C1_RUNTIME_DIALOG_OWNER = 'c1_runtime_dialog'
-_C1_RUNTIME_DIALOG_REPLACEABLE_OWNERS = frozenset({'', C1_RUNTIME_DIALOG_OWNER, 'gold_drop', 'trigger', 'red_text', 'red_text_dialog'}) | PASSIVE_PANEL_OWNERS
-_SCENE_TEXT_REPLACEABLE_OWNERS = frozenset({'vision_cinematic'})
+_SCENE_TEXT_REPLACEABLE_OWNERS = ('vision_cinematic',)
 
-def _replaceable_owners(w) -> frozenset:
+def _replaceable_owners(w) -> tuple[str, ...]:
     from normal_play.cinematic_module import scene_text_is_replaceable
     if scene_text_is_replaceable(w):
-        return _C1_RUNTIME_DIALOG_REPLACEABLE_OWNERS | _SCENE_TEXT_REPLACEABLE_OWNERS
-    return _C1_RUNTIME_DIALOG_REPLACEABLE_OWNERS
+        return TRANSIENT_MESSAGE_OWNERS + _SCENE_TEXT_REPLACEABLE_OWNERS
+    return TRANSIENT_MESSAGE_OWNERS
 _NPC_DIALOG_RANGE = (4164, 512)
 _MSG_BUF_RANGE = (39582, 512)
 
@@ -71,15 +70,9 @@ def poll_c1_runtime_dialog(w, *, npc_dialog: str, facility_active_now: bool, msg
     _changed = _prev is not None and _body != _prev
     if not (_changed and _body):
         return False
-    try:
-        _owner_now = w._ui_router.current_owner() or ''
-    except (AttributeError, RuntimeError):
-        _owner_now = getattr(w, '_panel_owner', '') or ''
     _block_reasons = []
     if facility_active_now:
         _block_reasons.append('facility-active')
-    if _owner_now not in _replaceable_owners(w):
-        _block_reasons.append('panel-owner=%s' % (_owner_now or '-'))
     if _block_reasons:
         _recog(_log, 'c1 runtime dialog skipped (%s): %r', ','.join(_block_reasons), _body[:64])
         return False
@@ -98,7 +91,9 @@ def poll_c1_runtime_dialog(w, *, npc_dialog: str, facility_active_now: bool, msg
             _log.debug('npc_dialog fallback failed: %s', exc)
     if not _npc_ja:
         return False
-    w._ui_router.update_translation(C1_RUNTIME_DIALOG_OWNER, _body, _npc_ja, speech_role='situation')
+    if not w._ui_router.update_translation(C1_RUNTIME_DIALOG_OWNER, _body, _npc_ja, speech_role='situation', allowed_current_owners=_replaceable_owners(w), reason=C1_RUNTIME_DIALOG_OWNER):
+        _recog(_log, 'c1 runtime dialog skipped (panel-owner): %r', _body[:64])
+        return False
     w._c1_runtime_dialog_accepted_body = _body
     _open_c1_runtime_dialog_display(w, area=axis.area)
     _recog(_log, 'c1 runtime dialog accepted (ptr=%s area=%s): %r → %r', '0x%04X' % axis.current_ptr if axis.current_ptr is not None else 'n/a', axis.area or '-', _body[:64], _npc_ja[:64])
@@ -124,12 +119,7 @@ def accepted_dialog_body(w) -> str:
     return str(getattr(w, '_c1_runtime_dialog_accepted_body', '') or '')
 
 def release_c1_runtime_dialog(w) -> None:
-    try:
-        owns_display = w._ui_router.current_owner() == C1_RUNTIME_DIALOG_OWNER
-    except (AttributeError, RuntimeError):
-        owns_display = getattr(w, '_panel_owner', '') == C1_RUNTIME_DIALOG_OWNER
-    if owns_display:
-        w._ui_router.clear_if_owner(C1_RUNTIME_DIALOG_OWNER)
+    w._ui_router.clear_if_owner(C1_RUNTIME_DIALOG_OWNER)
     _close_c1_runtime_dialog_display(w)
     w._c1_runtime_dialog_body_prev = None
 
@@ -140,10 +130,6 @@ def poll_c1_runtime_dialog_lifetime(w, *, axis=None) -> None:
     if not getattr(w, '_c1_runtime_dialog_open', False):
         return
     from normal_play.trigger_module import restore_last_trigger_display
-    try:
-        owner = w._ui_router.current_owner() or ''
-    except (AttributeError, RuntimeError):
-        return
     area_open = getattr(w, '_c1_runtime_dialog_area', '') or ''
     if axis is not None and axis.area != area_open:
         ptr_text = '0x%04X' % axis.current_ptr if axis.current_ptr is not None else 'n/a'
@@ -154,8 +140,6 @@ def poll_c1_runtime_dialog_lifetime(w, *, axis=None) -> None:
         elif not getattr(w, '_c1_runtime_dialog_left_noted', False):
             w._c1_runtime_dialog_left_noted = True
             _recog(_log, 'c1 runtime dialog: pointer left %s (ptr=%s area=%s) but the close signal for this kind is not confirmed; display end deferred to replacement', area_open or '-', ptr_text, axis.area or '-')
-    if owner not in ('', C1_RUNTIME_DIALOG_OWNER):
-        return
     if not getattr(w, '_c1_runtime_dialog_closed', False):
         return
     feed = getattr(w, '_translation_feed', None)
@@ -169,12 +153,12 @@ def poll_c1_runtime_dialog_lifetime(w, *, axis=None) -> None:
                 return
         except AttributeError:
             pass
-    _recog(_log, 'c1 runtime dialog display end (表示終了・読み上げ終了)')
-    _close_c1_runtime_dialog_display(w)
-    if owner == C1_RUNTIME_DIALOG_OWNER:
+    if w._ui_router.clear_if_owner(C1_RUNTIME_DIALOG_OWNER, notify_close=False):
         w._ui_router.notify_display_unit_closed(C1_RUNTIME_DIALOG_OWNER)
-        w._ui_router.clear_if_owner(C1_RUNTIME_DIALOG_OWNER, notify_close=False)
+        _recog(_log, 'c1 runtime dialog display end (表示終了・読み上げ終了)')
+        _close_c1_runtime_dialog_display(w)
         restore_last_trigger_display(w)
-    else:
-        w._ui_router.clear_display('', allowed_current_owners=('',))
+    elif w._ui_router.clear_display('', allowed_current_owners=('',)):
+        _recog(_log, 'c1 runtime dialog display end (表示終了・読み上げ終了)')
+        _close_c1_runtime_dialog_display(w)
 __all__ = ['C1_RUNTIME_DIALOG_OWNER', 'poll_c1_runtime_dialog', 'poll_c1_runtime_dialog_lifetime', 'runtime_dialog_accept_seq', 'accepted_dialog_body', 'release_c1_runtime_dialog', 'pause_c1_runtime_dialog']

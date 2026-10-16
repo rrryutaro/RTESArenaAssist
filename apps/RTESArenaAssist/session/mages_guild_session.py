@@ -5,8 +5,7 @@ def _norm_facility_kind(fk: str) -> str:
     return (fk or '').upper().replace('_', '').replace(' ', '')
 _MAGES_MIF_PREFIXES = ('MAGE',)
 _OTHER_FACILITY_MIF_PREFIXES = ('TAVERN', 'TEMPLE', 'EQUIP', 'ARMOR', 'PALACE')
-_MAGES_OWNER_KINDS = frozenset({'shop_menu'})
-_MAGES_UI_IMGS = frozenset({'MENU_RT.IMG', 'SPELLMKR.IMG', 'BUYSPELL.IMG', 'YESNO.IMG', 'NEGOTBUT.IMG', 'POPUP.IMG', 'POPUP7.IMG', 'NEWPOP.IMG'})
+_MAGES_FACILITY_KINDS = frozenset({'shop_menu'})
 _MAGES_NPC_PHASES = frozenset({111, 112})
 _MAGES_NONE_HYSTERESIS_POLLS = 3
 
@@ -39,11 +38,11 @@ class MagesGuildSession(SessionBase):
 
     def _shop_state_of(self, ctx: SessionContext) -> tuple[str, str]:
         extras_kind = ctx.extras.get('shop_kind') if ctx.extras else None
-        extras_owner = ctx.extras.get('owner_kind') if ctx.extras else None
-        if extras_kind is not None or extras_owner is not None:
+        extras_facility = ctx.extras.get('owner_kind') if ctx.extras else None
+        if extras_kind is not None or extras_facility is not None:
             kind = extras_kind if extras_kind is not None else 'none'
-            owner = extras_owner if extras_owner is not None else ''
-            return (kind or 'none', owner or '')
+            facility = extras_facility if extras_facility is not None else ''
+            return (kind or 'none', facility or '')
         if ctx.top_level_state != 'normal-play':
             return ('none', '')
         if not ctx.in_interior:
@@ -52,24 +51,19 @@ class MagesGuildSession(SessionBase):
         if state is None:
             return ('none', '')
         kind = getattr(state, 'kind', '') or 'none'
-        owner = getattr(state, 'owner_kind', '') or ''
-        return (kind, owner)
+        facility = getattr(state, 'owner_kind', '') or ''
+        return (kind, facility)
 
     @staticmethod
     def _is_guild_modal_img(ctx: SessionContext) -> bool:
-        img = (ctx.img_name or '').upper()
-        return img in _MAGES_UI_IMGS or (img.startswith('FORM') and img.endswith('.IMG'))
+        from mages_signals import is_guild_modal_img
+        return is_guild_modal_img(ctx.img_name or '')
 
     @staticmethod
     def _is_negotiation_active(ctx: SessionContext) -> bool:
+        from mages_signals import NEGOTIATION_IMGS
         img = (ctx.img_name or '').upper()
-        if not img:
-            return False
-        try:
-            from negotiation_reader import get_negotiation_profile
-        except ImportError:
-            return False
-        return get_negotiation_profile(img) is not None
+        return bool(img) and img in NEGOTIATION_IMGS
 
     @staticmethod
     def _is_mages_conversation_phase(ctx: SessionContext) -> bool:
@@ -90,8 +84,8 @@ class MagesGuildSession(SessionBase):
             return False
         if ctx.top_level_state != 'normal-play' or not ctx.in_interior:
             return False
-        kind, owner = self._shop_state_of(ctx)
-        if owner == 'mages_guild' and kind in _MAGES_OWNER_KINDS:
+        kind, facility = self._shop_state_of(ctx)
+        if facility == 'mages_guild' and kind in _MAGES_FACILITY_KINDS:
             self._none_shop_polls = 0
             self._last_img = ctx.img_name or ''
             self._set_active(True)
@@ -105,8 +99,8 @@ class MagesGuildSession(SessionBase):
             return self._stop()
         if self._known_non_mages_context(ctx):
             return self._stop()
-        kind, owner = self._shop_state_of(ctx)
-        if owner == 'mages_guild' and kind in _MAGES_OWNER_KINDS:
+        kind, facility = self._shop_state_of(ctx)
+        if facility == 'mages_guild' and kind in _MAGES_FACILITY_KINDS:
             self._none_shop_polls = 0
             self._last_img = ctx.img_name or ''
             return False

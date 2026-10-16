@@ -3,7 +3,7 @@ import hashlib
 import logging
 from normal_play.npc_message_module import NPC_MESSAGE_OWNER
 _log = logging.getLogger('RTESArenaAssist')
-SPLASH_IMG_TO_SLUG = {'FANGLAIR.IMG': 'fang_lair', 'LABRINTH.IMG': 'labyrinthian', 'GROVE.IMG': 'elden_grove', 'COLOSSUS.IMG': 'halls_of_colossus', 'TOWER.IMG': 'crystal_tower', 'CRYPT.IMG': 'crypt_of_hearts', 'MIRKWOOD.IMG': 'murkwood', 'DAGOTHUR.IMG': 'dagoth_ur'}
+from screen_img_signals import DUNGEON_SPLASH_IMG_TO_SLUG as SPLASH_IMG_TO_SLUG
 _SLUG_BODY_HASH = {'halls_of_colossus': 'bc7dccd6', 'crypt_of_hearts': 'e0711598', 'crystal_tower': '628fdaa3', 'dagoth_ur': '7b7763e0', 'elden_grove': '227a3839', 'fang_lair': '9ec0606f', 'labyrinthian': '16d80867', 'murkwood': 'ff46bcfb'}
 _SLUG_ENTRY_INDEX = {'halls_of_colossus': 0, 'crypt_of_hearts': 1, 'crystal_tower': 2, 'dagoth_ur': 3, 'elden_grove': 4, 'fang_lair': 5, 'labyrinthian': 6, 'murkwood': 7}
 _BLOCK_OFFSET = 37534

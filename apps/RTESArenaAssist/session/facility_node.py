@@ -11,6 +11,7 @@ class FacilityView:
     message_source_owned: bool = False
     signals_snapshot: Any = None
     reason: str = 'seam'
+    reply_kind: str = ''
 
 class FacilityNode:
     name: str = '<facility>'

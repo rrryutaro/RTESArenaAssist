@@ -1,6 +1,7 @@
 from __future__ import annotations
 import logging
 import inf_text_lookup as itl
+from screen_img_signals import LOADSAVE_IMG
 _log = logging.getLogger('assist_window')
 
 def update_translate_tab(win, entry: dict) -> None:
@@ -96,14 +97,15 @@ def push_translation(win, original: str, translated: str, panel_original: str | 
         _log.debug('push_translation: chargen cache hit (skip empty push, sub=%s)', chargen_sub)
         return
     try:
-        mode = win._tab_translate.panel_mode()
-        if win._chargen_class_list_active or mode == 'class_list':
+        if win._chargen_class_list_active:
             win._set_class_list_panel_mode(False)
-            mode = 'translate'
-        if mode == 'load_screen':
+            left_class_list = True
+        else:
+            left_class_list = bool(win._ui_router.reset_panel_mode_if(('class_list',)))
+        if not left_class_list:
             img_name_now = (getattr(win, '_img_name_prev', '') or '').upper()
-            if img_name_now != 'LOADSAVE.IMG':
-                win._ui_router.set_panel_mode('translate')
+            if img_name_now != LOADSAVE_IMG:
+                win._ui_router.reset_panel_mode_if(('load_screen',))
     except AttributeError:
         pass
     p_orig = panel_original if panel_original is not None else original

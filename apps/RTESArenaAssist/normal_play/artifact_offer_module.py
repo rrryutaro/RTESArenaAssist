@@ -3,7 +3,7 @@ import logging
 import sys
 _log = logging.getLogger('RTESArenaAssist')
 ARTIFACT_OFFER_OWNER = 'artifact_offer'
-_NEGOTIATION_IMG = 'NEGOTBUT.IMG'
+from screen_img_signals import NEGOTBUT_IMG as _NEGOTIATION_IMG
 _TEXT_OFFSET = 37534
 _TEXT_MAXLEN = 39034 - 37534
 _COUNTER_SURFACE = 'negotiation_counter'

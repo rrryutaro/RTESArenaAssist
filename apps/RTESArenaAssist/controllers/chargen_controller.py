@@ -1,6 +1,7 @@
 import logging
 import inf_text_lookup as itl
 from controllers.chargen_helpers import _CHARGEN_OPENING_HINT_ADDR, _CHARGEN_OPENING_MAXLEN, _CHARGEN_OPENING_FULLREAD, _CHARGEN_OPENING_SCAN_START, _CHARGEN_OPENING_SCAN_END, _CHARGEN_OPENING_PREFIXES, _CHARGEN_OPENING_TEMPLATE_KEYS, _is_garbage_npc_buffer, _looks_like_cinematic, _CHARGEN_NAME_RE, _CHARGEN_CLASS_JA, _CHARGEN_DYNAMIC_PATTERNS
+from screen_img_signals import PAPERDOLL_IMGS, is_faces_cif
 _log = logging.getLogger('chargen_controller')
 
 class ChargenController:
@@ -253,12 +254,12 @@ class ChargenController:
                         _img_now = _img_raw.split(b'\x00', 1)[0].decode('ascii', errors='replace').upper()
                     except (OSError, AttributeError, ImportError):
                         _img_now = ''
-                    if _img_now in ('MRSHIRT.IMG', 'FRSHIRT.IMG'):
+                    if _img_now in PAPERDOLL_IMGS:
                         w._chargen_choose_attrs_displayed = True
                         w._chargen_attrs_modal_active = False
                         w._chargen_attrs_modal_kind = None
                         _log.info('chargen: reconnect Appearance fire suppressed (img=%s) — choose_attrs phase activated', _img_now)
-                    elif _img_now.startswith('FACES') and _img_now.endswith('.CIF'):
+                    elif is_faces_cif(_img_now):
                         app_entry = itl.lookup('_CHARGEN_APPEARANCE_', 0)
                         if app_entry is not None:
                             w._update_translate_tab(app_entry)

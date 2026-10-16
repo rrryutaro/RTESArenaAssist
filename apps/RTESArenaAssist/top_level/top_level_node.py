@@ -1,7 +1,7 @@
 from __future__ import annotations
 from typing import Tuple
 from top_level.top_level_dispatcher import current_state as _current_state
-_TITLE_IMGS = ('MENU.IMG', 'PERCNTRO.XMI')
+from screen_img_signals import TITLE_RETURN_IMGS as _TITLE_IMGS
 
 def classify_top_level(current_state: str, img: str) -> Tuple[str, str]:
     iu = (img or '').upper()

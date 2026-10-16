@@ -1,7 +1,7 @@
 from __future__ import annotations
 import logging
 import re
-from display_intent import PASSIVE_PANEL_OWNERS
+from display_intent import TRANSIENT_MESSAGE_OWNERS
 from arena_bridge import TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, get_trigger_text_by_index
 import inf_text_lookup as itl
 import mif_trigger
@@ -83,10 +83,9 @@ def _render_trigger_entry(w, entry: dict, *, begin_riddle: bool=True) -> None:
             pass
     en, ja, panel_en, panel_ja = _entry_to_payload(entry)
     tab_off = _riddle_tab_suppressed(w, entry)
-    if _is_same_trigger_displaying(w, en, ja, panel_en, panel_ja, tab_off=tab_off):
-        return
+    same = _is_same_trigger_payload(w, en, ja, panel_en, panel_ja, tab_off=tab_off)
     _store_last_trigger_display(w, en, ja, panel_en, panel_ja, tab_off=tab_off)
-    w._ui_router.update_translation('trigger', en, ja, panel_en=panel_en, panel_ja=panel_ja, update_tab=not tab_off, speech_role='situation')
+    w._ui_router.update_translation('trigger', en, ja, panel_en=panel_en, panel_ja=panel_ja, update_tab=not tab_off, speech_role='situation', skip_if_displaying=same)
 
 def _riddle_tab_suppressed(w, entry: dict) -> bool:
     return entry.get('type') == 'riddle' and bool(getattr(w, '_is_layout_active', False))
@@ -101,17 +100,16 @@ def _store_last_trigger_display(w, en: str, ja: str, panel_en: str | None=None, 
     w._last_trigger_active = True
     w._last_trigger_tab_off = tab_off
 
-def _is_same_trigger_displaying(w, en: str, ja: str, panel_en: str | None=None, panel_ja: str | None=None, *, tab_off: bool=False) -> bool:
-    return bool(getattr(w, '_last_trigger_active', False) and getattr(w, '_last_trigger_display', None) == (en, ja, panel_en, panel_ja) and (bool(getattr(w, '_last_trigger_tab_off', False)) == tab_off) and w._ui_router.is_displaying('trigger', en, ja))
+def _is_same_trigger_payload(w, en: str, ja: str, panel_en: str | None=None, panel_ja: str | None=None, *, tab_off: bool=False) -> bool:
+    return bool(getattr(w, '_last_trigger_active', False) and getattr(w, '_last_trigger_display', None) == (en, ja, panel_en, panel_ja) and (bool(getattr(w, '_last_trigger_tab_off', False)) == tab_off))
 
 def _push_raw_trigger_body(w, body: str) -> None:
     if not (body or '').strip():
         _reset_trigger_display(w)
         return
-    if _is_same_trigger_displaying(w, body, ''):
-        return
+    same = _is_same_trigger_payload(w, body, '')
     _store_last_trigger_display(w, body, '')
-    w._ui_router.update_translation('trigger', body, '', speech_role='situation')
+    w._ui_router.update_translation('trigger', body, '', speech_role='situation', skip_if_displaying=same)
 
 def _static_text_index_state(inf_name: str, text_index: int) -> str:
     entries = itl.all_entries_for_inf(inf_name)
@@ -285,7 +283,6 @@ def compute_b30_state(w, *, in_gameplay: bool, c_area: str | None=None, c1_axis=
     w._b30_in_gameplay_prev = _in_gameplay
     w._b30_dialog_active_prev = _dialog_text_fg
     return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay, 'fg_ptr': _fg_ptr, 'dialog_text_fg': bool(_dialog_text_fg), 'dialog_text_fg_prev': _dialog_text_fg_prev}
-_RED_TEXT_REPLACEABLE_OWNERS = frozenset({'', 'red_text', 'red_text_dialog', 'trigger', 'gold_drop', 'c1_runtime_dialog'}) | PASSIVE_PANEL_OWNERS
 _CORPSE_LOOK_RE = re.compile('^You see an? .+\\.\\.\\.\\s*$')
 
 def is_corpse_look_text(text: str) -> bool:
@@ -303,14 +300,7 @@ def poll_red_text(w, *, b30: dict, message_taken: bool=False) -> None:
     if not _death_red_allowed:
         w._death_red_text_prev = ''
     _death_red_new = _death_red_allowed and b30['red_str'] != getattr(w, '_death_red_text_prev', '')
-    try:
-        _owner_now = w._ui_router.current_owner() or ''
-    except (AttributeError, RuntimeError):
-        _owner_now = getattr(w, '_panel_owner', '') or ''
-    _panel_free = _owner_now in _RED_TEXT_REPLACEABLE_OWNERS
     _block_reasons = []
-    if not _panel_free:
-        _block_reasons.append('panel-owner=%s' % (_owner_now or '-'))
     if message_taken:
         _block_reasons.append('message-taken')
     if _current_top_level(w) != 'normal-play':
@@ -333,11 +323,13 @@ def poll_red_text(w, *, b30: dict, message_taken: bool=False) -> None:
             except Exception as exc:
                 _log.debug('npc_dialog fallback failed: %s', exc)
         _red_owner = 'red_text_dialog' if _red_text_is_framed(b30) else 'red_text'
-        w._ui_router.update_translation(_red_owner, b30['red_str'], _b30_red_jpn or '', speech_role='situation')
-        _open_red_text_display(w, _red_owner, b30['red_str'])
-        _recog(_log, 'red text accepted: %r → %r', b30['red_str'], _b30_red_jpn)
-        if _death_red_allowed:
-            w._death_red_text_prev = b30['red_str']
+        if not w._ui_router.update_translation(_red_owner, b30['red_str'], _b30_red_jpn or '', speech_role='situation', allowed_current_owners=TRANSIENT_MESSAGE_OWNERS, reason=_red_owner):
+            _recog(_log, 'red text skipped (panel-owner): %r', b30['red_str'])
+        else:
+            _open_red_text_display(w, _red_owner, b30['red_str'])
+            _recog(_log, 'red text accepted: %r → %r', b30['red_str'], _b30_red_jpn)
+            if _death_red_allowed:
+                w._death_red_text_prev = b30['red_str']
     elif b30['red_changed'] and b30['red_str']:
         _recog(_log, 'red text skipped (%s): %r', ','.join(_block_reasons) or 'no-trigger', b30['red_str'])
 _RED_ABSENT_POLLS_TO_END = 10
@@ -361,19 +353,10 @@ def red_text_display_open(w) -> bool:
     return bool(getattr(w, '_red_text_open', ''))
 
 def release_red_text(w) -> None:
-    try:
-        owns_dialog = w._ui_router.current_owner() == 'red_text_dialog'
-    except (AttributeError, RuntimeError):
-        owns_dialog = getattr(w, '_panel_owner', '') == 'red_text_dialog'
-    if owns_dialog:
-        w._ui_router.clear_if_owner('red_text_dialog')
+    w._ui_router.clear_if_owner('red_text_dialog')
     _close_red_text_display(w)
 
 def poll_red_text_lifetime(w, *, b30: dict, band=None) -> None:
-    try:
-        owner = w._ui_router.current_owner() or ''
-    except (AttributeError, RuntimeError):
-        return
     open_owner = getattr(w, '_red_text_open', '') or ''
     if not open_owner:
         w._red_text_close_seen = False
@@ -394,8 +377,6 @@ def poll_red_text_lifetime(w, *, b30: dict, band=None) -> None:
         game_end = close_seen
     else:
         game_end = close_seen or band_gone
-    if owner not in ('', 'red_text', 'red_text_dialog'):
-        return
     if not game_end:
         return
     feed = getattr(w, '_translation_feed', None)
@@ -409,12 +390,17 @@ def poll_red_text_lifetime(w, *, b30: dict, band=None) -> None:
                 return
         except AttributeError:
             pass
-    _recog(_log, 'red text display end: owner=%s (表示終了・読み上げ終了)', open_owner)
-    _close_red_text_display(w)
-    if owner in ('red_text', 'red_text_dialog'):
-        w._ui_router.notify_display_unit_closed(owner)
-        w._ui_router.clear_if_owner(owner, notify_close=False)
+    closed_owner = ''
+    for red_owner in (open_owner, *(o for o in ('red_text', 'red_text_dialog') if o != open_owner)):
+        if w._ui_router.clear_if_owner(red_owner, notify_close=False):
+            closed_owner = red_owner
+            break
+    if closed_owner:
+        w._ui_router.notify_display_unit_closed(closed_owner)
+        _recog(_log, 'red text display end: owner=%s (表示終了・読み上げ終了)', open_owner)
+        _close_red_text_display(w)
         restore_last_trigger_display(w)
-    else:
-        w._ui_router.clear_display('', allowed_current_owners=('',))
+    elif w._ui_router.clear_display('', allowed_current_owners=('',)):
+        _recog(_log, 'red text display end: owner=%s (表示終了・読み上げ終了)', open_owner)
+        _close_red_text_display(w)
 __all__ = ['poll_trigger', 'riddle_group_holds_ptr', 'GAMEPLAY_SCREEN_IDS', 'gameplay_screen', 'compute_b30_state', 'poll_red_text', 'poll_red_text_lifetime', 'band_wanted', 'red_text_display_open', 'release_red_text', 'restore_last_trigger_display']

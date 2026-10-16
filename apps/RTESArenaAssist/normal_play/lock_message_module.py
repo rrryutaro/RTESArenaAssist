@@ -13,12 +13,7 @@ _ARM_RANGE_D2_OUT = 8
 _FIELD_JUDGE_RANGE = 1
 _DISARM_POLLS = 30
 _PENDING_POLLS = 15
-
-def _panel_owner(w) -> str:
-    try:
-        return w._ui_router.current_owner() or ''
-    except (AttributeError, RuntimeError):
-        return getattr(w, '_panel_owner', '') or ''
+_ALLOWED_OWNERS = ('', OWNER) + tuple(sorted(PASSIVE_PANEL_OWNERS))
 
 def resolve_current_mif(w):
     cur = getattr(w, '_current_map_level', None)
@@ -236,9 +231,6 @@ def _sentence_on_band(w, band) -> int | None:
     return shown
 
 def _decide(w, b30, near, index: int):
-    owner_now = _panel_owner(w)
-    if owner_now not in {'', OWNER} | PASSIVE_PANEL_OWNERS:
-        return (None, None, f'他の表示が持ち主 owner={owner_now!r}', True)
     if not b30.get('in_gameplay'):
         return (None, None, 'in_gameplay=False', True)
     if getattr(w, '_npc_conversation_active', False):
@@ -303,14 +295,17 @@ def poll_lock_message(w, *, b30: dict, near, band) -> None:
         elif w._lock_msg_pending <= 0:
             _recog(_log, '錠前メッセージ: 出せないまま持ち越しが切れた（%s）', why)
         return
+    if not w._ui_router.update_translation(OWNER, original, translated, speech_role='situation', speech_action='reannounce', allowed_current_owners=_ALLOWED_OWNERS, reason=OWNER):
+        if w._lock_msg_pending <= 0:
+            _recog(_log, '錠前メッセージ: 出せないまま持ち越しが切れた（他の表示が持ち主）')
+        return
     w._lock_msg_pending = 0
     w._lock_msg_spoken_seen = False
-    w._ui_router.update_translation(OWNER, original, translated, speech_role='situation', speech_action='reannounce')
+    w._lock_msg_open = True
     _recog(_log, '錠前メッセージ: 出す %s → %r', why, translated or original)
 
 def poll_lock_message_lifetime(w, *, b30: dict, band) -> None:
-    if _panel_owner(w) != OWNER:
-        w._lock_msg_spoken_seen = False
+    if not getattr(w, '_lock_msg_open', False):
         return
     feed = getattr(w, '_translation_feed', None)
     try:
@@ -325,13 +320,15 @@ def poll_lock_message_lifetime(w, *, b30: dict, band) -> None:
         w._lock_msg_spoken_seen = True
         return
     if getattr(w, '_lock_msg_spoken_seen', False):
-        _recog(_log, '錠前メッセージ: 表示終了（読み上げ終了）')
         w._lock_msg_spoken_seen = False
-        w._ui_router.clear_if_owner(OWNER)
+        w._lock_msg_open = False
+        if w._ui_router.clear_if_owner(OWNER):
+            _recog(_log, '錠前メッセージ: 表示終了（読み上げ終了）')
         return
     if band.seen is True and getattr(w, '_lock_msg_shown', None) is None:
-        _recog(_log, '錠前メッセージ: 表示終了（ゲーム側の表示が消えた・読み上げなし）')
-        w._ui_router.clear_if_owner(OWNER)
+        w._lock_msg_open = False
+        if w._ui_router.clear_if_owner(OWNER):
+            _recog(_log, '錠前メッセージ: 表示終了（ゲーム側の表示が消えた・読み上げなし）')
 
 def release_watch(w) -> None:
     w._lock_msg_armed = False
@@ -346,6 +343,6 @@ def release_lock_message(w) -> None:
     w._lock_msg_spoken_seen = False
     w._lock_msg_level_key = None
     w._lock_msg_locks = ()
-    if _panel_owner(w) == OWNER:
-        w._ui_router.clear_if_owner(OWNER)
+    w._lock_msg_open = False
+    w._ui_router.clear_if_owner(OWNER)
 __all__ = ['OWNER', 'resolve_nearby_lock', 'update_watch', 'release_watch', 'resolve_current_mif', 'poll_lock_message', 'poll_lock_message_lifetime', 'release_lock_message']

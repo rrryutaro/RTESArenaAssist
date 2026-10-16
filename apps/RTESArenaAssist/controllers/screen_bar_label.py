@@ -125,7 +125,7 @@ def tavern_sub_state_label(w, _conv_label, _is_tavern_ctx, _active_session_name_
 _temple_sub_state_label = temple_sub_state_label
 _tavern_sub_state_label = tavern_sub_state_label
 
-def build_connection_bar_label(w, _screen_id, _screen_name, _img_name, _resolved_area, _shop_img_name, _shop_state, in_interior):
+def build_connection_bar_label(w, _screen_id, _screen_name, _img_name, _resolved_area, _shop_img_name, _shop_state, in_interior, *, loading_active: bool=False):
     if getattr(w, '_travel_l4_active', False):
         _screen_id = 'game_screen'
         _screen_name = i18n.tr('screen.game_screen')
@@ -138,7 +138,7 @@ def build_connection_bar_label(w, _screen_id, _screen_name, _img_name, _resolved
     w._loading_data_select_active = _screen_id == 'loadsave_in_play'
     if w._loading_data_select_active:
         _screen_name = i18n.tr('screen.loadsave_in_play')
-    elif w._loading_state_active:
+    elif loading_active:
         _screen_name = i18n.tr('screen.loading_in_play')
     _top_state = _current_top_level(w)
     _area = _resolved_area
@@ -205,8 +205,7 @@ def build_connection_bar_label(w, _screen_id, _screen_name, _img_name, _resolved
     if _facility_key == 'recognition.facility_mages' and _active_session_name_for_label == 'mages_guild':
         try:
             from controllers.recognition_label import mages_sub_state_key
-            _mg_owner = getattr(w, '_panel_owner', '') or ''
-            _mg_sub_key = mages_sub_state_key(_mg_owner, _shop_img_name, getattr(w, '_mages_list_title_en', '') or '')
+            _mg_sub_key = mages_sub_state_key(getattr(w, '_mages_view_now', None), getattr(w, '_mages_list_title_en', '') or '')
             if _mg_sub_key:
                 _conv_label = _conv_label + i18n.tr(_mg_sub_key)
         except (AttributeError, ImportError):

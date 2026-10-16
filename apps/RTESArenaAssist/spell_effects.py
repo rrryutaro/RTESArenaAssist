@@ -34,12 +34,11 @@ _META = {'light': ('☀', '#f4ce78'), 'shield': ('◆', '#8dcbeb'), 'strength': 
 
 def effect_label(key: str) -> str:
     spec = _EFFECT_SPEC.get(key)
-    if spec is not None:
-        from spell_effect_compose import effect_display_names
-        names = effect_display_names([spec[0]], [spec[1]], [spec[2]])
-        if names:
-            return names[0]
-    return combat_text(f'spell_effect.name.{key}')
+    if spec is None:
+        return ''
+    from spell_effect_compose import effect_display_names
+    names = effect_display_names([spec[0]], [spec[1]], [spec[2]])
+    return names[0] if names else ''
 
 def read_sample(analyzer, anchor: int) -> SpellEffectSample | None:
     fields = read_fields(analyzer, anchor)

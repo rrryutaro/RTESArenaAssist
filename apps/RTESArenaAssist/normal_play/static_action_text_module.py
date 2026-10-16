@@ -8,12 +8,7 @@ _log = logging.getLogger('RTESArenaAssist')
 OWNER = 'static_action_text'
 _AKEYS = ('A425.0', 'A426.0', 'A427.0')
 _IDS = tuple((f'npc_dialog.{key}' for key in _AKEYS))
-
-def _panel_owner(w) -> str:
-    try:
-        return w._ui_router.current_owner() or ''
-    except (AttributeError, RuntimeError):
-        return getattr(w, '_panel_owner', '') or ''
+_ALLOWED_OWNERS = ('', OWNER) + tuple(sorted(PASSIVE_PANEL_OWNERS))
 
 def _read_records(w) -> tuple[str, str, str]:
     anchor = getattr(w, '_anchor', None)
@@ -66,18 +61,16 @@ def poll_static_action_text(w, *, band, in_play: bool) -> None:
     kind = _drawn_kind(w, band)
     event = (band.episode, kind) if kind is not None else None
     if event is not None and event != getattr(w, '_static_action_event', None):
-        owner = _panel_owner(w)
-        if owner in {'', OWNER} | PASSIVE_PANEL_OWNERS:
-            original, translated = _payload(w, kind)
+        original, translated = _payload(w, kind)
+        if w._ui_router.update_translation(OWNER, original, translated, speech_role='situation', speech_action='reannounce', allowed_current_owners=_ALLOWED_OWNERS, reason=OWNER):
             w._static_action_event = event
             w._static_action_spoken_seen = False
-            w._ui_router.update_translation(OWNER, original, translated, speech_role='situation', speech_action='reannounce')
+            w._static_action_open = True
             _recog(_log, '静的赤文字: 出す kind=%d episode=%d', kind, band.episode)
     _poll_lifetime(w, band)
 
 def _poll_lifetime(w, band) -> None:
-    if _panel_owner(w) != OWNER:
-        w._static_action_spoken_seen = False
+    if not getattr(w, '_static_action_open', False):
         return
     try:
         speaking_owner = w._translation_feed.speaking_owner()
@@ -92,15 +85,17 @@ def _poll_lifetime(w, band) -> None:
         return
     if getattr(w, '_static_action_spoken_seen', False):
         w._static_action_spoken_seen = False
+        w._static_action_open = False
         w._ui_router.clear_if_owner(OWNER)
         return
     if band.seen is True and getattr(w, '_static_action_shown_kind', None) is None:
+        w._static_action_open = False
         w._ui_router.clear_if_owner(OWNER)
 
 def release_static_action_text(w) -> None:
     w._static_action_shown_kind = None
     w._static_action_event = None
     w._static_action_spoken_seen = False
-    if _panel_owner(w) == OWNER:
-        w._ui_router.clear_if_owner(OWNER)
+    w._static_action_open = False
+    w._ui_router.clear_if_owner(OWNER)
 __all__ = ['OWNER', 'poll_static_action_text', 'release_static_action_text']

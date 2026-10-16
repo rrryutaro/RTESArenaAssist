@@ -52,8 +52,7 @@ def _render_shop_drinks(w, shop_state) -> None:
                 _added.append(it['en'])
         w._shop_buy_seen_items = _seen
         try:
-            if w._tab_translate.panel_mode() != 'shop_buy':
-                w._ui_router.set_panel_mode('shop_buy')
+            if w._ui_router.ensure_panel_mode('shop_buy'):
                 _log.info('panel_mode -> shop_buy (initial)')
         except AttributeError:
             pass
@@ -73,8 +72,7 @@ def _render_shop_rooms(w, shop_state) -> None:
         _room_tr = translate_room_list(shop_state.room_items, section='rooms')
         w._shop_buy_seen_items = _room_tr
         try:
-            if w._tab_translate.panel_mode() != 'shop_buy':
-                w._ui_router.set_panel_mode('shop_buy')
+            if w._ui_router.ensure_panel_mode('shop_buy'):
                 _log.info('panel_mode -> shop_buy (rooms initial)')
         except AttributeError:
             pass
@@ -111,46 +109,43 @@ def _render_shop_menu(w, shop_state, shop_img_name: str) -> None:
 def _cleanup_shop_buy(w, shop_buy_active: bool, shop_menu_visible: bool, shop_img_name: str) -> None:
     if shop_buy_active:
         return
-    _was_shop_buy_owner = w._panel_owner == 'shop_buy'
-    _had_shop_buy = bool(getattr(w, '_shop_buy_seen_items', None) or getattr(w, '_shop_buy_key_prev', None) is not None or _was_shop_buy_owner)
+    _had_shop_buy = bool(getattr(w, '_shop_buy_seen_items', None) or getattr(w, '_shop_buy_key_prev', None) is not None)
     if not _had_shop_buy:
         return
     w._shop_buy_seen_items = []
     w._shop_buy_key_prev = None
     try:
-        if w._tab_translate.panel_mode() == 'shop_buy':
-            w._ui_router.set_panel_mode('translate')
+        w._ui_router.reset_panel_mode_if(('shop_buy',))
     except AttributeError:
         pass
-    if _was_shop_buy_owner:
-        if not shop_menu_visible:
-            w._ui_router.clear_if_owner('shop_buy', mode='translate')
-        else:
-            w._ui_router.release_if_owner('shop_buy')
-    _log.info('shop_buy exit (img=%r next=%s was_owner=%s)', shop_img_name, 'shop_menu' if shop_menu_visible else 'none', _was_shop_buy_owner)
+    if not shop_menu_visible:
+        w._ui_router.clear_if_owner('shop_buy', mode='translate')
+    else:
+        w._ui_router.release_if_owner('shop_buy')
+    _log.info('shop_buy exit (img=%r next=%s)', shop_img_name, 'shop_menu' if shop_menu_visible else 'none')
 
 def _cleanup_shop_menu(w, shop_menu_visible: bool, shop_buy_active: bool, shop_img_name: str) -> None:
     if shop_menu_visible:
         return
-    _had_shop_menu = bool(getattr(w, '_shop_menu_key_prev', None) is not None or w._panel_owner in ('shop_menu', 'shop_rumor_type'))
-    if not _had_shop_menu:
+    _menu_key = getattr(w, '_shop_menu_key_prev', None)
+    if _menu_key is None:
         return
     w._shop_menu_key_prev = None
-    if w._panel_owner in ('shop_menu', 'shop_rumor_type'):
-        _was_owner = w._panel_owner
-        if not shop_buy_active:
-            w._ui_router.clear_if_owner(_was_owner)
-        else:
-            w._ui_router.release_if_owner(_was_owner)
-        _log.info('%s exit (img=%r next=%s)', _was_owner, shop_img_name, 'shop_buy' if shop_buy_active else 'none')
+    _was_owner = _menu_key[0] if isinstance(_menu_key, tuple) and _menu_key else 'shop_menu'
+    if _was_owner not in ('shop_menu', 'shop_rumor_type'):
+        _was_owner = 'shop_menu'
+    if not shop_buy_active:
+        w._ui_router.clear_if_owner(_was_owner)
+    else:
+        w._ui_router.release_if_owner(_was_owner)
+    _log.info('%s exit (img=%r next=%s)', _was_owner, shop_img_name, 'shop_buy' if shop_buy_active else 'none')
 
 def reset_tavern_render_state(w) -> None:
     w._shop_menu_key_prev = None
     w._shop_buy_seen_items = []
     w._shop_buy_key_prev = None
     try:
-        if w._tab_translate.panel_mode() == 'shop_buy':
-            w._ui_router.set_panel_mode('translate')
+        w._ui_router.reset_panel_mode_if(('shop_buy',))
     except AttributeError:
         pass
 

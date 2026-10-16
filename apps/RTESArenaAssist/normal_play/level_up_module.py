@@ -85,7 +85,7 @@ def reset_level_up_on_load(w) -> None:
     w._level_up_pushed_key = None
     _clear_bonus_artifact_state(w)
     try:
-        if getattr(w, '_ui_router', None) is not None and w._ui_router.is_owner('level_up'):
+        if getattr(w, '_ui_router', None) is not None:
             w._ui_router.clear_if_owner('level_up')
     except (AttributeError, RuntimeError):
         pass
@@ -102,7 +102,7 @@ def suspend_level_up_state(w) -> None:
         w._level_up_waiting_for_bonus = False
         w._level_up_pushed_key = None
         try:
-            if getattr(w, '_ui_router', None) is not None and w._ui_router.is_owner('level_up'):
+            if getattr(w, '_ui_router', None) is not None:
                 w._ui_router.clear_if_owner('level_up')
         except (AttributeError, RuntimeError):
             pass

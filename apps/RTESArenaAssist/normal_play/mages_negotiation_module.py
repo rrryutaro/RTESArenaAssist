@@ -1,7 +1,7 @@
 from __future__ import annotations
 import logging
 _log = logging.getLogger('RTESArenaAssist')
-NEGOTIATION_OWNER = 'mages_negotiation'
+from normal_play.mages_owner_names import NEGOTIATION_OWNER
 _EMPTY_POLLS_THRESHOLD = 2
 _KEY_PREV = '_mages_negot_key_prev'
 _DIAG_KEY_PREV = '_mages_negot_diag_key_prev'

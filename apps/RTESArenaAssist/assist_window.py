@@ -606,7 +606,7 @@ class AssistWindow(QMainWindow):
 
     def _update_status_display_placement(self) -> None:
         try:
-            want_translate = self._tabs.currentWidget() is self._tab_translate and self._tab_translate.panel_mode() in ('choose_attributes', 'fallback_status')
+            want_translate = self._tabs.currentWidget() is self._tab_translate and self._tab_translate.hosts_status_display()
             if want_translate:
                 self._tab_translate.mount_status_display()
             else:
@@ -616,7 +616,7 @@ class AssistWindow(QMainWindow):
 
     def _update_save_tab_placement(self) -> None:
         try:
-            want_translate = self._tabs.currentWidget() is self._tab_translate and self._tab_translate.panel_mode() == 'load_screen'
+            want_translate = self._tabs.currentWidget() is self._tab_translate and self._tab_translate.hosts_save_tab()
             if want_translate:
                 self._tab_translate.mount_save_tab(self._tab_save)
                 self._tab_save.public_refresh()

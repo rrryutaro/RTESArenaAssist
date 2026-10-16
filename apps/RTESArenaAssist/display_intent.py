@@ -4,6 +4,7 @@ from typing import Any, Optional
 from hierarchy_state import SeparationHierarchy
 COMBAT_INFO_OWNER = 'combat_info'
 PASSIVE_PANEL_OWNERS = frozenset({COMBAT_INFO_OWNER})
+TRANSIENT_MESSAGE_OWNERS: tuple[str, ...] = ('', 'trigger', 'red_text', 'red_text_dialog', 'gold_drop', 'c1_runtime_dialog') + tuple(sorted(PASSIVE_PANEL_OWNERS))
 
 @dataclass(frozen=True)
 class SpeechCue:

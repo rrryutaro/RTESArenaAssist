@@ -5,6 +5,7 @@ from top_level import pregame_render as _pregame_render
 from normal_play import char_screen_module as _char_screen
 from normal_play import npc_conversation_module as _npc_conversation
 from ui_router import SCREEN_CHANGE_CLEAR_PRIORITY
+from screen_img_signals import EQUIP_TOGGLE_IMGS, LOADSAVE_IMG, MAIN_MENU_IMG, MRSHIRT_IMG, NPC_POPUP_IMG, PARCHMENT_IMG, TITLE_INTRO_IMGS, is_newgame_intro_img, is_spell_detail_img
 _log = logging.getLogger('img_screen_controller')
 
 class ImgScreenController:
@@ -35,7 +36,7 @@ class ImgScreenController:
                 self._w._pregame_loadsave_seen = False
             except AttributeError:
                 pass
-        if img_upper == 'LOADSAVE.IMG' and _current_top_level(self._w) == 'pregame':
+        if img_upper == LOADSAVE_IMG and _current_top_level(self._w) == 'pregame':
             try:
                 self._w._pregame_loadsave_seen = True
             except AttributeError:
@@ -48,30 +49,29 @@ class ImgScreenController:
             except AttributeError:
                 pass
             return
-        if img_name == 'MENU.IMG':
+        if img_name == MAIN_MENU_IMG:
             self._show_menu_screen()
-        elif img_name == 'LOADSAVE.IMG':
+        elif img_name == LOADSAVE_IMG:
             self._show_load_screen()
-        elif img_name.startswith('INTRO') and img_name.endswith('.IMG'):
+        elif is_newgame_intro_img(img_name):
             self._show_newgame_slide(img_name)
-        elif img_name == 'PARCH.CIF':
+        elif img_name == PARCHMENT_IMG:
             self._w._set_chargen_ui_state(True)
-        elif img_name in ('QUOTE.IMG', 'SCROLL01.IMG', 'SCROLL02.IMG'):
+        elif img_name in TITLE_INTRO_IMGS:
             self._show_startup_intro(img_name)
-        elif img_name == 'MRSHIRT.IMG':
+        elif img_name == MRSHIRT_IMG:
             return
-        elif img_name in ('EQUIP.IMG', 'MPANTS.IMG'):
+        elif img_name in EQUIP_TOGGLE_IMGS:
             return
-        elif img_name == 'POPUP11.IMG':
+        elif img_name == NPC_POPUP_IMG:
             return
-        elif img_name.startswith('CHARBK') and img_name.endswith('.IMG'):
+        elif is_spell_detail_img(img_name):
             return
         else:
             self._w._newgame_layout_pushed = False
             self._w._startup_layout_pushed = False
             try:
-                if self._w._tab_translate.panel_mode() == 'load_screen':
-                    self._set_panel_mode('translate')
+                self._w._ui_router.reset_panel_mode_if(('load_screen',))
             except AttributeError:
                 pass
             self._w._set_chargen_ui_state(False)

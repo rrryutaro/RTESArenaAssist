@@ -474,6 +474,12 @@ class TabTranslate(QWidget):
     def panel_mode(self) -> str:
         return self._panel_mode
 
+    def hosts_status_display(self) -> bool:
+        return self._panel_mode in (_MODE_CHOOSE_ATTRIBUTES, _MODE_FALLBACK_STATUS)
+
+    def hosts_save_tab(self) -> bool:
+        return self._panel_mode == _MODE_LOAD_SCREEN
+
     def select_class_in_list(self, en_name: str) -> None:
         self._class_list_panel.select_class(en_name)
 

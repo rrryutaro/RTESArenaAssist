@@ -1,33 +1,14 @@
 from __future__ import annotations
 import logging
-import re
 import i18n_helper as i18n
-from normal_play.mages_render_common import _SPELLDETAIL_KEY, _NPC_DIALOG_OFFSET, _PROMPT_EXTRA_SCAN_OFFSETS, _read_cost_string, _casting_cost_from_spell_cost, _buy_price_for, _translate_ui
-from normal_play.mages_spellmaker_render import _SPELL_KEY, _SPELLMAKER_LIST_TITLES, _SPELLMAKER_PROMPT_LITERALS, _SPELLMAKER_PROMPT_FRAGMENT_LITERALS, _SPELLMAKER_REFRESH_DETAIL_PROMPTS, _read_spellmaker_live_spell_cost, _resolve_spellmaker_spell_cost, _resolve_spellmaker_prompt
+from mages_signals import INVENTORY_LIST_IMG, LIST_IMGS, MAGIC_ITEM_LIST_IMG, SPELLMAKER_IMG, BUYSPELL_IMG, is_form_img
+from normal_play.mages_owner_names import MENU_OWNER, LIST_OWNER, SPELLMAKER_OWNER, EFFECT_MENU_OWNER, MENU_OWNER_CONFIRM, MENU_OWNER_SPELLDETAIL, MENU_OWNER_PROMPT, NEGOTIATION_OWNER, STORY_OWNER
+from normal_play.mages_render_common import _SPELLDETAIL_KEY, _read_cost_string, _casting_cost_from_spell_cost, _buy_price_for, _translate_ui
+from normal_play.mages_spellmaker_render import _SPELL_KEY, _SPELLMAKER_REFRESH_DETAIL_PROMPTS, _read_spellmaker_live_spell_cost, _resolve_spellmaker_spell_cost, _resolve_spellmaker_prompt
 _log = logging.getLogger('RTESArenaAssist')
-MENU_OWNER = 'mages_menu'
-LIST_OWNER = 'mages_list'
-SPELLMAKER_OWNER = 'mages_spellmaker'
-EFFECT_MENU_OWNER = 'mages_effect_menu'
-LIST_IMGS = ('POPUP7.IMG', 'POPUP.IMG', 'NEWPOP.IMG')
-SPELLMAKER_IMG = 'SPELLMKR.IMG'
-BUYSPELL_IMG = 'BUYSPELL.IMG'
-MENU_OWNER_CONFIRM = 'mages_confirm'
-MENU_OWNER_SPELLDETAIL = 'mages_spelldetail'
-from normal_play.mages_negotiation_module import NEGOTIATION_OWNER
-_CONFIRM_FAMILY = 75
 _CONFIRM_DIALOG_OFFSET = 19280
 _CONFIRM_TR = {'Are you sure ?': '本当によろしいですか？', 'Are you sure': '本当によろしいですか？', 'Yes': 'はい', 'No': 'いいえ'}
-MENU_OWNER_PROMPT = 'mages_prompt'
-STORY_OWNER = 'mages_story'
 _PROMPT_KEY = '_mages_prompt_key_prev'
-_MAGES_MENU_TEXT_OFFSET = 28508
-_MAGES_MENU_PTR_START = 28416
-_MAGES_MENU_PTR_END = 28736
-_PROMPT_CACHE_ATTR = '_mages_prompt_resolve_cache'
-_RESPONSE_END_RE = re.compile('[?!.]')
-_DETECT_MAGIC_QUOTE_PREFIX = 'I can tell you if that is magical'
-_DETECT_MAGIC_ALREADY_KNOWN = 'You already know what that is!'
 _LIST_STABLE_ATTR = '_mages_list_stable_by_key'
 _LIST_PENDING_ATTR = '_mages_list_pending_by_key'
 _LIST_STABLE_CONFIRM = 3
@@ -49,10 +30,9 @@ def poll_mages_render(w, *, view=None, shop_state=None, shop_img_name: str='', t
     confirm_visible = False
     detail_visible = False
     sig = getattr(view, 'signals_snapshot', None)
-    if sig is None:
-        sig = _read_signals(w)
-    state = _classify(sig)
-    is_form_img = img.startswith('FORM') and img.endswith('.IMG')
+    if not isinstance(sig, dict):
+        sig = {}
+    form_img = is_form_img(img)
     view_kind = getattr(view, 'l4_kind', '') or ''
     if view_kind == 'confirm':
         confirm_visible = _render_confirm(w)
@@ -65,7 +45,7 @@ def poll_mages_render(w, *, view=None, shop_state=None, shop_img_name: str='', t
         negot_visible = _render_negotiation(w, img, top_level_state)
     elif view_kind == 'spelldetail':
         detail_visible = _render_buyspell_detail(w)
-    elif view_kind == 'spellmaker' and is_form_img:
+    elif view_kind == 'spellmaker' and form_img:
         spell_visible = _render_spellmaker(w, sig, form_img=img)
     elif view_kind == 'spellmaker':
         if _render_spellmaker_prompt_overlay(w, sig):
@@ -76,29 +56,12 @@ def poll_mages_render(w, *, view=None, shop_state=None, shop_img_name: str='', t
     elif view_kind == 'prompt':
         prompt_visible = _render_buy_prompt(w, foreground_ptr=sig.get('foreground_ptr', _PROMPT_PTR_UNSET))
     elif view_kind == 'reply':
-        reply_visible = _render_reply(w, img, sig=sig)
+        reply_visible = _render_reply(w, img, view=view)
     elif view_kind == 'list':
-        if _is_spellmaker_return_from_residual_list(w, sig, img, state):
-            spell_visible = _render_spellmaker(w, sig)
-        else:
-            list_visible = _render_list(w, sig, img)
+        list_visible = _render_list(w, sig, img)
     if menu_visible or list_visible or spell_visible or confirm_visible or prompt_visible or detail_visible or negot_visible or effect_menu_visible or reply_visible:
         _cleanup(w, menu_visible, list_visible, spell_visible, confirm_visible, prompt_visible, detail_visible, negot_visible, effect_menu_visible, reply_visible)
     return (negot_visible, False, menu_visible, list_visible or spell_visible or confirm_visible or prompt_visible or detail_visible or effect_menu_visible or reply_visible)
-
-def _read_signals(w) -> dict:
-    try:
-        from mages_signals import read_signals
-        return read_signals(w._analyzer, w._anchor)
-    except Exception:
-        return {}
-
-def _classify(sig: dict) -> str:
-    try:
-        from mages_signals import classify
-        return classify(sig)
-    except Exception:
-        return 'unknown'
 
 def _read_current_ptr(w):
     try:
@@ -131,8 +94,7 @@ def render_no_session_menu(w, *, shop_state, shop_img_name: str) -> bool:
     if not _is_own:
         if getattr(w, _MENU_KEY, None) is not None:
             setattr(w, _MENU_KEY, None)
-            if w._panel_owner == MENU_OWNER:
-                w._ui_router.clear_if_owner(MENU_OWNER)
+            w._ui_router.clear_if_owner(MENU_OWNER)
         return False
     return _render_menu(w, shop_state, shop_img_name)
 
@@ -175,7 +137,7 @@ def _select_list_source(w, sig: dict, img: str):
                 return classified
         return ('Effects', '効果一覧', [])
     if family in (112, 113):
-        if img == 'POPUP7.IMG':
+        if img == MAGIC_ITEM_LIST_IMG:
             return ('Magic Items', '魔法アイテム一覧', read_magic_item_list(w._analyzer, w._anchor))
         items = read_active_priced_list(w._analyzer, w._anchor)
         if items:
@@ -192,7 +154,7 @@ def _select_list_source(w, sig: dict, img: str):
             return ('Potions', 'ポーション一覧', [])
         return ('', '', [])
     if family in (111, 90):
-        if family == 111 and img == 'NEWPOP.IMG':
+        if family == 111 and img == INVENTORY_LIST_IMG:
             off = read_active_list_offset(w._analyzer, w._anchor)
             inv_items = read_name_list(w._analyzer, w._anchor, off if off else INVENTORY_LIST_OFFSET)
             inv_items = enrich_unidentified_by_index(w._analyzer, w._anchor, inv_items)
@@ -430,14 +392,11 @@ def _render_negotiation(w, img: str, top_level_state: str) -> bool:
         _log.exception('mages_negotiation update failed')
         return False
 
-def _render_reply(w, img: str, *, sig: dict | None=None) -> bool:
+def _render_reply(w, img: str, *, view) -> bool:
     setattr(w, '_mages_reply_polled_in_render', True)
     try:
         from normal_play.mages_reply_module import poll_mages_reply
-        snapshot_kwargs = {'signals_snapshot': sig}
-        if sig is not None and 'foreground_ptr' in sig:
-            snapshot_kwargs['foreground_ptr'] = sig['foreground_ptr']
-        handled = poll_mages_reply(w, mages_active=True, mages_just_started=False, img_name=img, shop_menu_visible=False, **snapshot_kwargs)
+        handled = poll_mages_reply(w, mages_active=True, mages_just_started=False, img_name=img, view=view)
     except Exception:
         _log.exception('mages_reply render failed')
         handled = False
@@ -511,93 +470,10 @@ def _render_confirm(w) -> bool:
 _PROMPT_PTR_UNSET = object()
 
 def _resolve_response_prompt(w, *, foreground_ptr=_PROMPT_PTR_UNSET):
-    try:
-        raw = w._analyzer.read_bytes(w._anchor + _NPC_DIALOG_OFFSET, 512)
-    except (OSError, AttributeError):
-        raw = b''
-    extra_chunks: list[bytes] = []
-    for off in _PROMPT_EXTRA_SCAN_OFFSETS:
-        try:
-            extra_chunks.append(w._analyzer.read_bytes(w._anchor + off, 160))
-        except (OSError, AttributeError):
-            extra_chunks.append(b'')
-    current_ptr = foreground_ptr
-    if current_ptr is _PROMPT_PTR_UNSET:
-        try:
-            from popup11_response_reader import read_current_text_pointer
-            current_ptr = read_current_text_pointer(w._analyzer, w._anchor)
-        except Exception:
-            current_ptr = None
-    cache_key = (raw, tuple(extra_chunks), current_ptr)
-    cache = getattr(w, _PROMPT_CACHE_ATTR, None)
-    if cache is not None and cache[0] == cache_key:
-        return cache[1]
-    text = ''.join((c if 32 <= ord(c) <= 126 else ' ' for c in raw.decode('ascii', errors='replace')))
-    literal_text = text + ' ' + ' '.join((''.join((c if 32 <= ord(c) <= 126 else ' ' for c in chunk.decode('ascii', errors='replace'))) for chunk in extra_chunks))
-    try:
-        from npc_dialog_lookup import lookup as _nd_lookup
-        from npc_dialog_lookup import format_japanese as _nd_format
-    except Exception:
-        return None
-    normalized_text = ' '.join(literal_text.split())
-    result = None
-    if _DETECT_MAGIC_QUOTE_PREFIX in normalized_text:
-        if isinstance(current_ptr, int) and _MAGES_MENU_PTR_START <= current_ptr < _MAGES_MENU_PTR_END:
-            try:
-                raw_known = w._analyzer.read_bytes(w._anchor + _MAGES_MENU_TEXT_OFFSET, 80)
-            except (OSError, AttributeError):
-                raw_known = b''
-            known = raw_known.split(b'\x00', 1)[0].decode('ascii', errors='replace').strip()
-            if known == _DETECT_MAGIC_ALREADY_KNOWN:
-                res = _nd_lookup(_DETECT_MAGIC_ALREADY_KNOWN)
-                if res:
-                    try:
-                        result = (_DETECT_MAGIC_ALREADY_KNOWN, _nd_format(res[0], res[1]))
-                    except Exception:
-                        result = (_DETECT_MAGIC_ALREADY_KNOWN, _DETECT_MAGIC_ALREADY_KNOWN)
-    for literal in _SPELLMAKER_PROMPT_LITERALS:
-        if literal not in normalized_text:
-            continue
-        res = _nd_lookup(literal)
-        if res:
-            try:
-                result = (literal, _nd_format(res[0], res[1]))
-            except Exception:
-                result = (literal, literal)
-            break
-    if result is None:
-        lowered_text = normalized_text.lower()
-        for needles, literal in _SPELLMAKER_PROMPT_FRAGMENT_LITERALS:
-            if not all((needle in lowered_text for needle in needles)):
-                continue
-            res = _nd_lookup(literal)
-            if res:
-                try:
-                    result = (literal, _nd_format(res[0], res[1]))
-                except Exception:
-                    result = (literal, literal)
-                break
-    seen: set[str] = set()
-    for i, ch in enumerate(text):
-        if result is not None or not ch.isupper():
-            continue
-        seg = text[i:i + 160]
-        end = _RESPONSE_END_RE.search(seg)
-        if not end:
-            continue
-        cand = ' '.join(seg[:end.end()].split())
-        if len(cand) < 10 or cand in seen:
-            continue
-        seen.add(cand)
-        res = _nd_lookup(cand)
-        if res:
-            try:
-                result = (cand, _nd_format(res[0], res[1]))
-            except Exception:
-                result = (cand, cand)
-            break
-    setattr(w, _PROMPT_CACHE_ATTR, (cache_key, result))
-    return result
+    from mages_prompt_reader import resolve_response_prompt
+    if foreground_ptr is _PROMPT_PTR_UNSET:
+        return resolve_response_prompt(w._analyzer, w._anchor, cache_on=w)
+    return resolve_response_prompt(w._analyzer, w._anchor, foreground_ptr=foreground_ptr, cache_on=w)
 
 def _render_buy_prompt(w, *, foreground_ptr=_PROMPT_PTR_UNSET) -> bool:
     info = _resolve_response_prompt(w, foreground_ptr=foreground_ptr)
@@ -613,13 +489,6 @@ def _render_buy_prompt(w, *, foreground_ptr=_PROMPT_PTR_UNSET) -> bool:
     except Exception:
         _log.exception('mages_prompt update failed')
     return True
-
-def _last_spellmaker_list_title(w) -> str:
-    title = (getattr(w, _LIST_TITLE_ATTR, '') or '').strip()
-    return title if title in _SPELLMAKER_LIST_TITLES else ''
-
-def _is_spellmaker_return_from_residual_list(w, sig: dict, img: str, state: str) -> bool:
-    return img in LIST_IMGS and bool(_last_spellmaker_list_title(w)) and (state == 'reply') and (sig.get('list') != 0)
 _STORY_BUF_OFFSET = 38434
 _STORY_BUF_READ = 4096
 _STORY_KEY_ATTR = '_mages_story_key_prev'
@@ -873,21 +742,20 @@ def reset_mages_render_keys(w) -> None:
     setattr(w, _LIST_STABLE_ATTR, {})
     setattr(w, _LIST_PENDING_ATTR, {})
     try:
-        if w._tab_translate.panel_mode() == 'facility_list':
-            w._ui_router.set_panel_mode('translate')
+        w._ui_router.reset_panel_mode_if(('facility_list',))
     except AttributeError:
         pass
 
 def _cleanup(w, menu_visible: bool, list_visible: bool, spell_visible: bool, confirm_visible: bool=False, prompt_visible: bool=False, detail_visible: bool=False, negot_visible: bool=False, effect_menu_visible: bool=False, reply_visible: bool=False) -> None:
+    to_clear: list[tuple[str, dict]] = []
     if not reply_visible:
         try:
             from normal_play.mages_reply_module import REPLY_OWNER, reset_mages_reply_state
             reset_mages_reply_state(w)
-            if w._panel_owner == REPLY_OWNER:
-                w._ui_router.clear_if_owner(REPLY_OWNER)
+            to_clear.append((REPLY_OWNER, {}))
         except Exception:
             pass
-    if not negot_visible and w._panel_owner == NEGOTIATION_OWNER:
+    if not negot_visible:
         try:
             from normal_play.mages_negotiation_module import cleanup_mages_negotiation_if_owner
             cleanup_mages_negotiation_if_owner(w)
@@ -895,38 +763,32 @@ def _cleanup(w, menu_visible: bool, list_visible: bool, spell_visible: bool, con
             pass
     if not detail_visible and getattr(w, _SPELLDETAIL_KEY, None) is not None:
         setattr(w, _SPELLDETAIL_KEY, None)
-        if w._panel_owner == MENU_OWNER_SPELLDETAIL:
-            w._ui_router.clear_if_owner(MENU_OWNER_SPELLDETAIL)
+        to_clear.append((MENU_OWNER_SPELLDETAIL, {}))
     if not prompt_visible and getattr(w, _PROMPT_KEY, None) is not None:
         setattr(w, _PROMPT_KEY, None)
-        if w._panel_owner == MENU_OWNER_PROMPT:
-            w._ui_router.clear_if_owner(MENU_OWNER_PROMPT)
+        to_clear.append((MENU_OWNER_PROMPT, {}))
     if not confirm_visible and getattr(w, _CONFIRM_KEY, None) is not None:
         setattr(w, _CONFIRM_KEY, None)
-        if w._panel_owner == MENU_OWNER_CONFIRM:
-            w._ui_router.clear_if_owner(MENU_OWNER_CONFIRM)
+        to_clear.append((MENU_OWNER_CONFIRM, {}))
     if not effect_menu_visible and getattr(w, _EFFECT_MENU_KEY, None) is not None:
         setattr(w, _EFFECT_MENU_KEY, None)
-        if w._panel_owner == EFFECT_MENU_OWNER:
-            w._ui_router.clear_if_owner(EFFECT_MENU_OWNER)
+        to_clear.append((EFFECT_MENU_OWNER, {}))
     if not menu_visible and getattr(w, _MENU_KEY, None) is not None:
         setattr(w, _MENU_KEY, None)
-        if w._panel_owner == MENU_OWNER:
-            w._ui_router.clear_if_owner(MENU_OWNER)
+        to_clear.append((MENU_OWNER, {}))
     if not list_visible and getattr(w, _LIST_KEY, None) is not None:
         setattr(w, _LIST_KEY, None)
         setattr(w, _LIST_TITLE_ATTR, '')
         setattr(w, _LIST_STABLE_ATTR, {})
         setattr(w, _LIST_PENDING_ATTR, {})
         try:
-            if w._tab_translate.panel_mode() == 'facility_list':
-                w._ui_router.set_panel_mode('translate')
+            w._ui_router.reset_panel_mode_if(('facility_list',))
         except AttributeError:
             pass
-        if w._panel_owner == LIST_OWNER:
-            w._ui_router.clear_if_owner(LIST_OWNER, mode='translate')
+        to_clear.append((LIST_OWNER, {'mode': 'translate'}))
     if not spell_visible and getattr(w, _SPELL_KEY, None) is not None:
         setattr(w, _SPELL_KEY, None)
-        if w._panel_owner == SPELLMAKER_OWNER:
-            w._ui_router.clear_if_owner(SPELLMAKER_OWNER)
-__all__ = ['poll_mages_render', 'reset_mages_render_keys', 'MENU_OWNER', 'LIST_OWNER', 'SPELLMAKER_OWNER', 'EFFECT_MENU_OWNER', 'LIST_IMGS', 'SPELLMAKER_IMG', '_read_cost_string', '_casting_cost_from_spell_cost', '_buy_price_for', '_read_spellmaker_live_spell_cost', '_resolve_spellmaker_spell_cost', '_read_effect_title']
+        to_clear.append((SPELLMAKER_OWNER, {}))
+    for owner, kwargs in to_clear:
+        w._ui_router.clear_if_owner(owner, **kwargs)
+__all__ = ['poll_mages_render', 'reset_mages_render_keys', 'MENU_OWNER', 'LIST_OWNER', 'SPELLMAKER_OWNER', 'EFFECT_MENU_OWNER', 'MENU_OWNER_CONFIRM', 'MENU_OWNER_SPELLDETAIL', 'MENU_OWNER_PROMPT', 'NEGOTIATION_OWNER', 'STORY_OWNER', 'LIST_IMGS', 'SPELLMAKER_IMG', 'BUYSPELL_IMG', '_read_cost_string', '_casting_cost_from_spell_cost', '_buy_price_for', '_read_spellmaker_live_spell_cost', '_resolve_spellmaker_spell_cost', '_read_effect_title']

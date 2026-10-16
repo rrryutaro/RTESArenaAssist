@@ -158,7 +158,7 @@ def _finalize_remaining_taken(w) -> None:
             pass
 
 def _close_confirmed(w, *, reason: str, img_name: str, count: int, names_present: bool, corpse_item: bool, gate_open: bool, pending: int, screen_id) -> None:
-    _log.info('NEWPOP popup CLOSE (img=%r count=%d names_present=%s corpse_item=%s gate_open=%s pending=%d panel_mode=%s panel_owner=%s reason=%s)', (img_name or '').upper(), count, names_present, corpse_item, gate_open, pending, getattr(w._tab_translate, 'panel_mode', lambda: '?')(), w._panel_owner, reason)
+    _log.info('NEWPOP popup CLOSE (img=%r count=%d names_present=%s corpse_item=%s gate_open=%s pending=%d panel_mode=%s reason=%s)', (img_name or '').upper(), count, names_present, corpse_item, gate_open, pending, getattr(w._tab_translate, 'panel_mode', lambda: '?')(), reason)
     if getattr(w, '_b32_was_corpse', False):
         w._b32_seen_items = []
     w._b32_newpop_open = False

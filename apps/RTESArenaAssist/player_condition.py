@@ -16,7 +16,9 @@ OFF_HP_MAX = 511
 _FLAG_WORDS: tuple[tuple[int, int], ...] = ((1, 1), (2, 2), (32, 4), (128, 19), (64, 20), (4, 21), (512, 22))
 _EFFECT_WORDS: tuple[tuple[int, int], ...] = ((1, 5), (2, 6), (4, 7), (8, 8), (16, 9), (32, 10), (64, 11), (128, 12), (512, 14), (1024, 15), (2048, 16), (4096, 17))
 _BAD_WORDS = frozenset({1, 2, 4, 14, 20, 21, 22})
+_EFFECT_SPEC_BY_WORD = {5: (15, 0, 0), 7: (10, 0, 0), 8: (10, 1, 0), 9: (10, 2, 0), 10: (10, 3, 0), 11: (10, 4, 0), 12: (16, 0, 0), 14: (21, 0, 0), 15: (22, 0, 0), 16: (23, 0, 0), 17: (24, 0, 0)}
 _HEALTHY_WORD = 0
+_SHIELD_SPEC = (2, 0, 0)
 _FLAG_NAMES = {1: 'diseased', 2: 'poisoned', 4: 'cursed', 8: 'blessed', 16: 'fortified', 32: 'drunk', 64: 'paralyzed', 128: 'regenerating', 256: 'dead', 512: 'being drained', 4096: 'creature', 16384: 'player?'}
 _EFFECT_NAMES = {1: 'invisible', 2: 'non-target', 4: 'resist fire', 8: 'resist cold', 16: 'resist shock', 32: 'resist acid', 64: 'resist poison', 128: 'levitating', 256: 'light?', 512: 'silenced', 1024: 'absorb spells', 2048: 'reflect spells', 4096: 'resist spells'}
 
@@ -58,11 +60,11 @@ def word_indices(fields: ConditionFields) -> list[int]:
 
 def sheet_values(fields: ConditionFields, separator: str) -> dict[str, str]:
     indices = word_indices(fields)
-    bad = [w for w in (date_translator.effect_word(i) for i in indices if i in _BAD_WORDS) if w]
-    good = [w for w in (date_translator.effect_word(i) for i in indices if i not in _BAD_WORDS) if w]
-    words = [w for w in (date_translator.effect_word(i) for i in indices) if w]
+    bad = [w for w in (_word(i) for i in indices if i in _BAD_WORDS) if w]
+    good = [w for w in (_word(i) for i in indices if i not in _BAD_WORDS) if w]
+    words = [w for w in (_word(i) for i in indices) if w]
     shield = _shield_word(fields)
-    shown = list(words) if words else [date_translator.effect_word(_HEALTHY_WORD) or '']
+    shown = list(words) if words else [_word(_HEALTHY_WORD)]
     if shield:
         good.append(shield)
         shown.append(shield)
@@ -73,12 +75,24 @@ def sheet_values(fields: ConditionFields, separator: str) -> dict[str, str]:
         out['condition_good'] = separator.join(good)
     return out
 
+def _effect_name(spec: tuple[int, int, int]) -> str:
+    from spell_effect_compose import effect_display_names
+    names = effect_display_names([spec[0]], [spec[1]], [spec[2]])
+    return names[0] if names else ''
+
+def _word(index: int) -> str:
+    spec = _EFFECT_SPEC_BY_WORD.get(index)
+    if spec is not None:
+        return _effect_name(spec)
+    return date_translator.condition_word(index) or ''
+
 def _shield_word(fields: ConditionFields) -> str:
     if fields.shield <= 0:
         return ''
-    from spell_effect_compose import effect_display_names
-    names = effect_display_names([2], [0], [0])
-    return '%s %d' % (names[0] if names else 'Shield', fields.shield)
+    name = _effect_name(_SHIELD_SPEC)
+    if not name:
+        return ''
+    return '%s %d' % (name, fields.shield)
 
 def _bit_names(value: int, names: dict[int, str]) -> str:
     parts = []

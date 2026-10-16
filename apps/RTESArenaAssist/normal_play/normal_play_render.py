@@ -4,6 +4,7 @@ from types import SimpleNamespace
 from controllers.poll_diag import _checkpoint, _phase_record, _phase_start
 from normal_play import npc_conversation_module as _npc_conversation
 from top_level.top_level_dispatcher import current_state as _current_top_level
+from screen_img_signals import INTERIOR_MENU_IMG, NPC_POPUP_IMG
 _log = logging.getLogger('normal_play_render')
 
 def exploration_runtime_dialog_context(*, area: str, in_interior: bool) -> bool:
@@ -57,7 +58,7 @@ def blocks_ask_about_main(list_state: str) -> bool:
 def ask_about_main_display_allowed(list_state: str, img_name: str, current_ptr: int) -> bool:
     if not blocks_ask_about_main(list_state):
         return True
-    if (img_name or '').upper() == 'POPUP11.IMG':
+    if (img_name or '').upper() == NPC_POPUP_IMG:
         return False
     try:
         ptr = int(current_ptr)
@@ -104,7 +105,7 @@ def _render_popup11_substate(w, _img_name, sub):
         _npc_conversation.show_where_is_list(w)
     elif _list_state == 'dynamic_place_list':
         _npc_conversation.show_dynamic_place_list(w)
-    elif sub.fresh_response_text and (sub.response_lookup_hit or sub.response_pointer_hit or _img_name == 'POPUP11.IMG'):
+    elif sub.fresh_response_text and (sub.response_lookup_hit or sub.response_pointer_hit or _img_name == NPC_POPUP_IMG):
         _npc_conversation.show_npc_dialog(w, text_override=sub.fresh_response_text)
     elif sub.diag_changed and sub.fresh_response_text:
         _log.debug('NPC response not identified (img=%r) - skip display: %r', _img_name, sub.fresh_response_text[:48])
@@ -161,7 +162,7 @@ def _poll_npc_popup_display(w, _img_name, _shop_menu_visible, _shop_buy_active):
     _prev_sid = getattr(w, '_screen_id_prev', None)
     _npc_detection_allowed = _current_top_level(w) == 'normal-play' and _prev_sid not in _NPC_DIALOG_INCOMPATIBLE_SCREENS and w._npc_conversation_active
     _cif_continuation = _npc_response_continuation_active(w, _img_name, _current_top_level(w))
-    _npc_popup_active = _npc_detection_allowed and (_img_name == 'POPUP11.IMG' or _cif_continuation)
+    _npc_popup_active = _npc_detection_allowed and (_img_name == NPC_POPUP_IMG or _cif_continuation)
     try:
         if w._npc_conversation_active and (not _npc_popup_active):
             _diag_popup_active_key = (_img_name, _npc_detection_allowed, _cif_continuation)
@@ -171,7 +172,7 @@ def _poll_npc_popup_display(w, _img_name, _shop_menu_visible, _shop_buy_active):
                 _log.info('npc_popup_active=False during npc_conv (img=%r detect_allowed=%s cif_cont=%s)', _img_name, _npc_detection_allowed, _cif_continuation)
     except (AttributeError, OSError):
         pass
-    _list_state_eligible = _npc_popup_active and _img_name == 'POPUP11.IMG'
+    _list_state_eligible = _npc_popup_active and _img_name == NPC_POPUP_IMG
     if not _npc_popup_active and w._npc_conversation_active and (_current_top_level(w) == 'normal-play'):
         try:
             from popup11_response_reader import read_response_candidate as _read_resp_cand_diag
@@ -345,7 +346,7 @@ def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_
     if _unified_node is not None:
         _uview = _unified_node.classify_view(w, shop_state=_shop_state, shop_img_name=_shop_img_name, foreground_ptr=_story_ptr)
         if getattr(_unified_node, 'name', '') == 'mages_guild':
-            w._mages_view_signals_snapshot = getattr(_uview, 'signals_snapshot', None)
+            w._mages_view_now = _uview
     _story_kind, _story_ptr = _classify_facility_story_axis(w, facility_view_active=bool(_uview is not None and _uview.message_source_owned), foreground_ptr=_story_ptr, temple_view_visible=bool(_uview is not None and getattr(_unified_node, 'name', '') == 'temple' and getattr(_uview, 'l4_visible', False)))
     w._facility_story_kind_now = _story_kind
     w._facility_story_ptr_now = _story_ptr
@@ -394,7 +395,7 @@ def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dial
     _travel_event_active = _poll_travel_event_lifecycle(w, npc_dialog=npc_dialog, screen_img=_img_name_now, facility_active_now=_facility_active_now)
     _dungeon_splash_active = _poll_dungeon_splash_lifecycle(w, screen_img=_img_name_now, facility_active_now=_facility_active_now)
     _phase_overlay = _npc_phase_raw in (NPC_PHASE_BUILDING_ENTRY, NPC_PHASE_RESPONDING)
-    _menu_overlay = in_interior and _img_name_now == 'MENU_RT.IMG' and (_npc_phase_raw not in (NPC_PHASE_IDLE, NPC_PHASE_ASKING))
+    _menu_overlay = in_interior and _img_name_now == INTERIOR_MENU_IMG and (_npc_phase_raw not in (NPC_PHASE_IDLE, NPC_PHASE_ASKING))
     _npc_overlay_active = (_phase_overlay or _menu_overlay) and (not _building_entry_active) and (not _shop_buy_active) and (not _shop_menu_visible)
     _npc_overlay_active_prev = getattr(w, '_npc_overlay_active_prev', False)
     w._npc_overlay_active_prev = _npc_overlay_active
@@ -411,15 +412,15 @@ def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dial
     from normal_play.temple_dialog_module import poll_temple_dialog as _poll_temple_dialog, reset_temple_reply_on_stop as _reset_temple_reply_on_stop
     from normal_play.equipment_reply_module import poll_equipment_reply as _poll_equipment_reply
     from normal_play.mages_reply_module import poll_mages_reply as _poll_mages_reply
-    _temple_shop_owner_now = _shop_state is not None and getattr(_shop_state, 'owner_kind', '') == 'temple'
-    _temple_dialog_context = _temple_active_now or _temple_shop_owner_now
+    _temple_shop_facility_now = _shop_state is not None and getattr(_shop_state, 'owner_kind', '') == 'temple'
+    _temple_dialog_context = _temple_active_now or _temple_shop_facility_now
     _temple_context_prev = getattr(w, '_temple_dialog_context_prev', False)
     if _temple_context_prev and (not _temple_dialog_context):
         _reset_temple_reply_on_stop(w)
     _facility_reply_handled = False
     if not _entry_handled and _temple_dialog_context:
         _t_temple_dialog = _phase_start()
-        _facility_reply_handled = _poll_temple_dialog(w, temple_active=True, temple_just_started=_temple_just_started or (_temple_shop_owner_now and (not _temple_context_prev)), img_name=_shop_img_name, shop_menu_visible=_shop_menu_visible, menu_foreground=bool(getattr(w, '_temple_menu_fg', False)), popup_foreground=bool(getattr(w, '_temple_popup_fg', False)))
+        _facility_reply_handled = _poll_temple_dialog(w, temple_active=True, temple_just_started=_temple_just_started or (_temple_shop_facility_now and (not _temple_context_prev)), img_name=_shop_img_name, shop_menu_visible=_shop_menu_visible, menu_foreground=bool(getattr(w, '_temple_menu_fg', False)), popup_foreground=bool(getattr(w, '_temple_popup_fg', False)))
         _phase_record(w, 'temple_dialog', _t_temple_dialog)
     elif not _entry_handled and _equipment_active_now:
         if getattr(w, '_equipment_reply_polled_in_render', False):
@@ -430,12 +431,7 @@ def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dial
         if getattr(w, '_mages_reply_polled_in_render', False):
             _facility_reply_handled = bool(getattr(w, '_mages_reply_handled_in_render', False))
         else:
-            _mages_snapshot_kwargs = {}
-            if hasattr(w, '_mages_view_signals_snapshot'):
-                _mages_snapshot_kwargs['signals_snapshot'] = getattr(w, '_mages_view_signals_snapshot')
-            if hasattr(w, '_facility_story_ptr_now'):
-                _mages_snapshot_kwargs['foreground_ptr'] = getattr(w, '_facility_story_ptr_now')
-            _facility_reply_handled = _poll_mages_reply(w, mages_active=True, mages_just_started=_mages_just_started, img_name=_shop_img_name, shop_menu_visible=_shop_menu_visible, **_mages_snapshot_kwargs)
+            _facility_reply_handled = _poll_mages_reply(w, mages_active=True, mages_just_started=_mages_just_started, img_name=_shop_img_name, view=getattr(w, '_mages_view_now', None))
     w._temple_dialog_context_prev = _temple_dialog_context
     if _facility_reply_handled:
         _entry_handled = True

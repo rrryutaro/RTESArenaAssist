@@ -3,7 +3,7 @@ import logging
 import re
 import assist_settings as settings
 import i18n_helper as i18n
-from panel_mode_resolver import SCREEN_PANEL_PRIORITY, closing_panel_mode, screen_panel_mode
+from panel_mode_resolver import SCREEN_PANEL_PRIORITY, screen_panel_mode
 from top_level.top_level_dispatcher import current_state as _current_top_level
 from normal_play import equipment_detail_module as _equipment_detail
 _log = logging.getLogger('char_screen_module')
@@ -126,7 +126,7 @@ def show_spellbook_page(w) -> None:
 
 def _closing_panel_mode(w) -> str | None:
     try:
-        return closing_panel_mode(current_mode=w._tab_translate.panel_mode(), img_name=getattr(w, '_img_name_prev', '') or '', screen_id=getattr(w, '_screen_id_prev', '') or '', top_level=_current_top_level(w), fallback_setting=settings.get('translate_fallback_screen', 'map'))
+        return w._ui_router.closing_panel_mode(img_name=getattr(w, '_img_name_prev', '') or '', screen_id=getattr(w, '_screen_id_prev', '') or '', top_level=_current_top_level(w), fallback_setting=settings.get('translate_fallback_screen', 'map'))
     except AttributeError:
         return 'translate'
 
@@ -161,7 +161,9 @@ _CHAR_SCREENS = frozenset({'spell_detail', 'equipment', 'spellbook', 'race_selec
 
 def poll_char_screen_pages(w, screen_id_stable) -> None:
     try:
-        panel = w._tab_translate.panel_mode()
+
+        def _panel_differs(mode: str) -> bool:
+            return bool(w._ui_router.ensure_panel_mode(mode, propose=False))
         if screen_id_stable == 'spell_detail':
             try:
                 marker = w._analyzer.read_bytes(w._anchor + 22554, 16)
@@ -174,7 +176,7 @@ def poll_char_screen_pages(w, screen_id_stable) -> None:
             marker_prev = getattr(w, '_spell_detail_marker', None)
             text_marker_prev = getattr(w, '_spell_detail_text_marker', None)
             text_ready = getattr(w, '_spell_detail_text_ready', True)
-            if panel != 'spell_detail' or marker != marker_prev or text_marker != text_marker_prev or (not text_ready):
+            if _panel_differs('spell_detail') or marker != marker_prev or text_marker != text_marker_prev or (not text_ready):
                 w._spell_detail_marker = marker
                 w._spell_detail_text_marker = text_marker
                 show_spell_detail_page(w)
@@ -190,21 +192,21 @@ def poll_char_screen_pages(w, screen_id_stable) -> None:
                     _staff_marker = w._analyzer.read_bytes(w._anchor + 4164, 64)
                 except (OSError, AttributeError):
                     _staff_marker = None
-                if panel != 'equipment' or _inv_marker != w._equipment_marker or _staff_marker != getattr(w, '_equipment_staff_marker', None):
+                if _panel_differs('equipment') or _inv_marker != w._equipment_marker or _staff_marker != getattr(w, '_equipment_staff_marker', None):
                     w._equipment_marker = _inv_marker
                     w._equipment_staff_marker = _staff_marker
                     show_equipment_page(w)
             reset_spell_detail_markers(w)
         elif screen_id_stable == 'spellbook':
-            if panel != 'equipment':
+            if _panel_differs('equipment'):
                 show_spellbook_page(w)
             reset_spell_detail_markers(w)
         elif screen_id_stable == 'race_select':
             reset_spell_detail_markers(w)
         else:
             _equipment_detail.reset_equipment_detail(w)
-            if getattr(w, '_char_screen_stable_prev', None) in _CHAR_SCREENS and panel in ('race_list', 'equipment', 'spell_detail'):
-                w._ui_router.set_panel_mode('translate', reason='screen:exit')
+            if getattr(w, '_char_screen_stable_prev', None) in _CHAR_SCREENS:
+                w._ui_router.reset_panel_mode_if(('race_list', 'equipment', 'spell_detail'), reason='screen:exit')
             reset_spell_detail_markers(w)
         w._char_screen_stable_prev = screen_id_stable
     except (AttributeError, RuntimeError):

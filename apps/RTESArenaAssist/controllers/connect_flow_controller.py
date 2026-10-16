@@ -6,6 +6,7 @@ import assist_settings as settings
 import inf_text_lookup as itl
 from controllers.chargen_helpers import _CHARGEN_CLASS_JA
 from ui_router import UiRouter
+from screen_img_signals import CHARGEN_CONNECT_IMGS, LOADSAVE_IMG, NORMAL_PLAY_CONNECT_IMGS, PREGAME_CONNECT_IMGS, is_newgame_intro_img
 _log = logging.getLogger('assist_window')
 
 def _app_dir() -> str:
@@ -208,9 +209,9 @@ def detect_top_level_at_connect(win) -> None:
             return
     except ImportError:
         pass
-    if img_upper in ('QUOTE.IMG', 'SCROLL01.IMG', 'SCROLL02.IMG', 'MENU.IMG', 'LOADSAVE.IMG', 'PERCNTRO.XMI'):
+    if img_upper in PREGAME_CONNECT_IMGS:
         state = 'pregame'
-        if img_upper == 'LOADSAVE.IMG':
+        if img_upper == LOADSAVE_IMG:
             win._pregame_loadsave_seen = True
     elif img_upper == 'VISION.XMI':
         try:
@@ -227,9 +228,9 @@ def detect_top_level_at_connect(win) -> None:
                 state = 'chargen' if exp == 0 else 'normal-play'
             except (OSError, AttributeError, IndexError):
                 state = 'normal-play'
-    elif img_upper.startswith('INTRO') and img_upper.endswith('.IMG') or img_upper in ('EVLINTRO.XMI', 'NOEXIT.IMG', 'BONUS.IMG', 'PARCH.CIF'):
+    elif is_newgame_intro_img(img_upper) or img_upper in CHARGEN_CONNECT_IMGS:
         state = 'chargen'
-    elif img_upper in ('PAGE2.IMG', 'OP.IMG', 'LOGBOOK.IMG', 'AUTOMAP.IMG', 'POINTER.IMG', 'NEWPOP.IMG'):
+    elif img_upper in NORMAL_PLAY_CONNECT_IMGS:
         state = 'normal-play'
     else:
         try:

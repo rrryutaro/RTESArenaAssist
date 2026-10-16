@@ -1,4 +1,5 @@
 from __future__ import annotations
+from screen_img_signals import YESNO_IMG
 from typing import Callable
 _FACILITY_PREFIX_KEYS: tuple[tuple[str, str], ...] = (('TAVERN', 'recognition.facility_tavern'), ('TEMPLE', 'recognition.facility_temple'), ('EQUIPMENT', 'recognition.facility_equipment'), ('ARMORS', 'recognition.facility_equipment'), ('EQUIP', 'recognition.facility_equipment'), ('MAGES', 'recognition.facility_mages'), ('MAGE', 'recognition.facility_mages'), ('WCRYPT', 'recognition.facility_crypt'), ('TOWER', 'recognition.facility_tower'), ('BS', 'recognition.facility_house'), ('PALACE', 'recognition.facility_palace'), ('TOWNPAL', 'recognition.facility_palace'), ('VILPAL', 'recognition.facility_palace'))
 _SESSION_FACILITY_KEYS = {'tavern': 'recognition.facility_tavern', 'temple': 'recognition.facility_temple', 'equipment': 'recognition.facility_equipment', 'mages_guild': 'recognition.facility_mages', 'palace': 'recognition.facility_palace'}
@@ -18,31 +19,6 @@ def format_recognition_label(screen_name: str, indicator: str, facility_label: s
             return f'{base} {screen_name}'
         return base
     return f'{indicator} {screen_name}{conv_label}' if indicator else f'{screen_name}{conv_label}'
-_TAVERN_SURFACE_SUB_KEYS = {'tavern_stay_days': 'recognition.tavern_sub_stay_days', 'tavern_sneak_confirm': 'recognition.tavern_sub_sneak_confirm', 'tavern_sneak_result': 'recognition.tavern_sub_sneak_result', 'tavern_room_contract': 'recognition.tavern_sub_room_contract', 'tavern_cost_show': 'recognition.tavern_sub_cost_show', 'tavern_cost_confirm': 'recognition.tavern_sub_cost_confirm'}
-
-def tavern_sub_state_key(shop_kind: str, active_template_surface: str, panel_owner: str, img_name: str='', negot_counter_active: bool=False) -> str:
-    owner = panel_owner or ''
-    img = (img_name or '').upper()
-    surface = active_template_surface or ''
-    if negot_counter_active or surface == 'negotiation_counter':
-        return 'recognition.tavern_sub_amount_counter'
-    if owner == 'active_template':
-        return _TAVERN_SURFACE_SUB_KEYS.get(surface, '')
-    if owner == 'shop_buy':
-        if shop_kind == 'shop_rooms':
-            return 'recognition.tavern_sub_rooms'
-        return 'recognition.tavern_sub_drinks'
-    if owner == 'shop_menu':
-        return 'recognition.tavern_sub_menu'
-    if owner in ('shop_rumor_type', 'tavern_rumor_type'):
-        return 'recognition.tavern_sub_rumor_type'
-    if owner == 'negotiation':
-        if img == 'YESNO.IMG':
-            return 'recognition.tavern_sub_final_confirm'
-        return 'recognition.tavern_sub_amount_present'
-    if owner == 'npc_dialog':
-        return 'recognition.tavern_sub_response'
-    return ''
 _TEMPLE_SURFACE_SUB_KEYS = {'temple_donate_amount': 'recognition.temple_sub_donate_amount', 'tavern_cost_show': 'recognition.temple_sub_cost_show', 'tavern_cost_confirm': 'recognition.temple_sub_cost_confirm'}
 
 def temple_sub_state_key(active_template_surface: str, panel_owner: str, img_name: str='', current_text: str='') -> str:
@@ -82,47 +58,18 @@ def equipment_sub_state_key(l4_state, *, active_template_surface: str='', img_na
     if negot_counter_active or surface == 'negotiation_counter':
         return 'recognition.equipment_sub_amount_counter'
     if state == 'negotiation':
-        if img == 'YESNO.IMG':
+        if img == YESNO_IMG:
             return 'recognition.equipment_sub_final_confirm'
         return 'recognition.equipment_sub_amount_present'
     return _EQUIPMENT_STATE_SUB_KEYS.get(state, '')
+_MAGES_KIND_SUB_KEYS = {'menu': 'recognition.mages_sub_menu', 'spellmaker': 'recognition.mages_sub_spellmaker', 'effect_menu': 'recognition.mages_sub_spellmaker_edit_effects', 'spelldetail': 'recognition.mages_sub_spelldetail', 'prompt': 'recognition.mages_sub_prompt', 'confirm': 'recognition.mages_sub_confirm', 'negotiation': 'recognition.mages_sub_negotiation', 'reply': 'recognition.mages_sub_response'}
+_MAGES_LIST_TITLE_SUB_KEYS = {'Targets': 'recognition.mages_sub_spellmaker_targets', 'Effects': 'recognition.mages_sub_spellmaker_effects', 'Effect Options': 'recognition.mages_sub_spellmaker_effect_options', 'Spells': 'recognition.mages_sub_buy_spells', 'Potions': 'recognition.mages_sub_buy_potions', 'Magic Items': 'recognition.mages_sub_magic_items', 'Inventory': 'recognition.mages_sub_inventory'}
 
-def mages_sub_state_key(panel_owner: str, img_name: str='', list_title: str='') -> str:
-    owner = panel_owner or ''
-    if owner == 'mages_menu':
-        return 'recognition.mages_sub_menu'
-    if owner == 'mages_list':
-        title = (list_title or '').strip()
-        if title == 'Targets':
-            return 'recognition.mages_sub_spellmaker_targets'
-        if title == 'Effects':
-            return 'recognition.mages_sub_spellmaker_effects'
-        if title == 'Effect Options':
-            return 'recognition.mages_sub_spellmaker_effect_options'
-        if title == 'Spells':
-            return 'recognition.mages_sub_buy_spells'
-        if title == 'Potions':
-            return 'recognition.mages_sub_buy_potions'
-        if title == 'Magic Items':
-            return 'recognition.mages_sub_magic_items'
-        if title == 'Inventory':
-            return 'recognition.mages_sub_inventory'
-        return 'recognition.mages_sub_list'
-    if owner == 'mages_spellmaker':
-        return 'recognition.mages_sub_spellmaker'
-    if owner == 'mages_effect_menu':
-        return 'recognition.mages_sub_spellmaker_edit_effects'
-    if owner == 'mages_spelldetail':
-        return 'recognition.mages_sub_spelldetail'
-    if owner == 'mages_prompt':
-        return 'recognition.mages_sub_prompt'
-    if owner == 'mages_confirm':
-        return 'recognition.mages_sub_confirm'
-    if owner == 'mages_negotiation':
-        return 'recognition.mages_sub_negotiation'
-    if owner == 'mages_reply':
-        return 'recognition.mages_sub_response'
-    return ''
+def mages_sub_state_key(view, list_title: str='') -> str:
+    kind = str(getattr(view, 'l4_kind', '') or '')
+    if kind == 'list':
+        return _MAGES_LIST_TITLE_SUB_KEYS.get((list_title or '').strip(), 'recognition.mages_sub_list')
+    return _MAGES_KIND_SUB_KEYS.get(kind, '')
 
 def known_facility_kind(*hints: str) -> str:
     for h in hints:
@@ -144,4 +91,4 @@ def facility_recognition_key(interior_mif_name: str, in_interior: bool, *, activ
         if key:
             return key
     return 'recognition.facility_other'
-__all__ = ['OVERLAY_SCREEN_IDS', 'resolve_stable_screen_name', 'format_recognition_label', 'equipment_sub_state_key', 'mages_sub_state_key', 'facility_recognition_key', 'known_facility_kind', 'temple_sub_state_key', 'tavern_sub_state_key']
+__all__ = ['OVERLAY_SCREEN_IDS', 'resolve_stable_screen_name', 'format_recognition_label', 'equipment_sub_state_key', 'mages_sub_state_key', 'facility_recognition_key', 'known_facility_kind', 'temple_sub_state_key']

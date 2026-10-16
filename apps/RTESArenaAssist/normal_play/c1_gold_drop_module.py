@@ -2,7 +2,7 @@ from __future__ import annotations
 import logging
 import re as _re
 from typing import NamedTuple
-from display_intent import PASSIVE_PANEL_OWNERS
+from display_intent import TRANSIENT_MESSAGE_OWNERS
 import inf_text_lookup as itl
 from top_level.top_level_dispatcher import current_state as _current_top_level
 from normal_play.c1_dialog_axis import close_confirmed as _close_confirmed
@@ -27,7 +27,6 @@ def observe_gold_drop(w) -> GoldDropObservation:
     previous = getattr(w, '_b131_str_prev', '')
     w._b131_str_prev = body
     return GoldDropObservation(body, body != previous, bool(body and _GOLD_DROP_RE.match(body)))
-_GOLD_DROP_REPLACEABLE_OWNERS = frozenset({'', GOLD_DROP_OWNER, 'trigger', 'red_text', 'red_text_dialog', 'c1_runtime_dialog'}) | PASSIVE_PANEL_OWNERS
 
 def _poll_gold_inf_fragment(w, b131_str: str, inf_name: str, mif_name: str) -> None:
     _log.debug('b131 0x929E changed but not gold-drop format: %r', b131_str[:64])
@@ -81,13 +80,7 @@ def poll_gold_drop(w, *, b30: dict, inf_name: str, mif_name: str, observation: G
     _b131_changed = observation.changed
     _b131_match = observation.is_gold
     if _b131_changed and _b131_match:
-        try:
-            _owner_now = w._ui_router.current_owner() or ''
-        except (AttributeError, RuntimeError):
-            _owner_now = getattr(w, '_panel_owner', '') or ''
         _block_reasons = []
-        if _owner_now not in _GOLD_DROP_REPLACEABLE_OWNERS:
-            _block_reasons.append('panel-owner=%s' % (_owner_now or '-'))
         if not b30['in_gameplay']:
             _block_reasons.append('not-in-gameplay')
         if _block_reasons:
@@ -98,7 +91,9 @@ def poll_gold_drop(w, *, b30: dict, inf_name: str, mif_name: str, observation: G
         _log.info('b131 gold drop msg: %r -> %r', _b131_str, _b131_ja)
         if not _b131_ja:
             return
-        w._ui_router.update_translation(GOLD_DROP_OWNER, _b131_str, _b131_ja, speech_role='situation')
+        if not w._ui_router.update_translation(GOLD_DROP_OWNER, _b131_str, _b131_ja, speech_role='situation', allowed_current_owners=TRANSIENT_MESSAGE_OWNERS, reason=GOLD_DROP_OWNER):
+            _recog(_log, 'gold drop skipped (panel-owner): %r', _b131_str[:64])
+            return
         _axis = b30.get('c1_dialog_axis')
         _ptr = getattr(_axis, 'current_ptr', None)
         _open_gold_drop_display(w, body=_b131_str, area=getattr(_axis, 'area', '') or '')
@@ -132,20 +127,11 @@ def accepted_gold_drop_body(w) -> str:
     return str(getattr(w, '_gold_drop_accepted_body', '') or '')
 
 def release_gold_drop(w) -> None:
-    try:
-        owns_display = w._ui_router.current_owner() == GOLD_DROP_OWNER
-    except (AttributeError, RuntimeError):
-        owns_display = getattr(w, '_panel_owner', '') == GOLD_DROP_OWNER
-    if owns_display:
-        w._ui_router.clear_if_owner(GOLD_DROP_OWNER)
+    w._ui_router.clear_if_owner(GOLD_DROP_OWNER)
     _close_gold_drop_display(w)
 
 def poll_gold_drop_lifetime(w, *, axis=None) -> None:
     if not getattr(w, '_gold_drop_open', False):
-        return
-    try:
-        owner = w._ui_router.current_owner() or ''
-    except (AttributeError, RuntimeError):
         return
     area_open = getattr(w, '_gold_drop_area', '') or ''
     if axis is not None and axis.area != area_open:
@@ -157,8 +143,6 @@ def poll_gold_drop_lifetime(w, *, axis=None) -> None:
         elif not getattr(w, '_gold_drop_left_noted', False):
             w._gold_drop_left_noted = True
             _recog(_log, 'gold drop: pointer left %s (ptr=%s area=%s) but the close signal for this kind is not confirmed; display end deferred to replacement', area_open or '-', ptr_text, axis.area or '-')
-    if owner not in ('', GOLD_DROP_OWNER):
-        return
     if not getattr(w, '_gold_drop_closed', False):
         return
     feed = getattr(w, '_translation_feed', None)
@@ -172,12 +156,12 @@ def poll_gold_drop_lifetime(w, *, axis=None) -> None:
                 return
         except AttributeError:
             pass
-    _recog(_log, 'gold drop display end (表示終了・読み上げ終了)')
-    _close_gold_drop_display(w)
-    if owner == GOLD_DROP_OWNER:
+    if w._ui_router.clear_if_owner(GOLD_DROP_OWNER, notify_close=False):
         w._ui_router.notify_display_unit_closed(GOLD_DROP_OWNER)
-        w._ui_router.clear_if_owner(GOLD_DROP_OWNER, notify_close=False)
+        _recog(_log, 'gold drop display end (表示終了・読み上げ終了)')
+        _close_gold_drop_display(w)
         restore_last_trigger_display(w)
-    else:
-        w._ui_router.clear_display('', allowed_current_owners=('',))
+    elif w._ui_router.clear_display('', allowed_current_owners=('',)):
+        _recog(_log, 'gold drop display end (表示終了・読み上げ終了)')
+        _close_gold_drop_display(w)
 __all__ = ['GOLD_DROP_OWNER', 'GoldDropObservation', 'accepted_gold_drop_body', 'observe_gold_drop', 'poll_gold_drop', 'poll_gold_drop_lifetime', 'release_gold_drop']

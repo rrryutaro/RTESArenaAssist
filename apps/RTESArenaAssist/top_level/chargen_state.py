@@ -6,6 +6,7 @@ import inf_text_lookup as itl
 from arena_bridge import CHARGEN_STATE_OFFSET, CHARGEN_Q_SEQ_OFFSET, CHARGEN_Q_ARRAY_OFFSET, CHARGEN_DONE_OFFSET, SCREEN_IMG_OFFSET, SCREEN_IMG_MAXLEN
 from controllers.chargen_helpers import _CHARGEN_GOYENOW_HINT_ADDR, _CHARGEN_GOYENOW_HINT_CHECKLEN, _CHARGEN_GOYENOW_PREFIX, _CHARGEN_GOYENOW_SCAN_START, _CHARGEN_GOYENOW_SCAN_END, _is_garbage_npc_buffer
 from top_level.top_level_dispatcher import current_state as _current_top_level
+from screen_img_signals import MRSHIRT_IMG, is_faces_cif, is_newgame_intro_img
 _log = logging.getLogger('poll_controller')
 OFF_DIALOG_FLAG = 47044
 OFF_NPC_PHASE = 43077
@@ -118,7 +119,7 @@ def handle_npc_dialog(w, *, npc_dialog: str, entry_handled: bool, is_corpse_loot
     if _current_top_level(w) != 'chargen':
         return
     img = (getattr(w, '_img_name_prev', '') or '').upper()
-    if img.startswith('INTRO') and img.endswith('.IMG'):
+    if is_newgame_intro_img(img):
         return
     if getattr(w, '_chargen_opening_displayed', False):
         return
@@ -216,7 +217,7 @@ def _poll_detect_appearance(w) -> None:
             _img_check = _img_raw2.split(b'\x00', 1)[0].decode('ascii', errors='replace').upper()
         except (OSError, AttributeError):
             _img_check = ''
-        if _img_check.startswith('FACES') and _img_check.endswith('.CIF'):
+        if is_faces_cif(_img_check):
             entry = itl.lookup('_CHARGEN_APPEARANCE_', 0)
             if entry is not None:
                 w._update_translate_tab(entry)
@@ -511,9 +512,9 @@ def classify_chargen_view(w) -> ChargenView:
 def render_chargen_view(w, view: ChargenView) -> None:
     try:
         if view.is_chargen:
-            current_mode = w._tab_translate.panel_mode()
             target_mode = view.target_panel_mode
-            if target_mode is not None and current_mode != target_mode:
+            current_mode = w._ui_router.ensure_panel_mode(target_mode, propose=False) if target_mode is not None else ''
+            if current_mode:
                 _log.info('chargen_panel: target_mode=%s reason=%s prev=%s substate=%s', target_mode, view.reason, current_mode, view.substate)
                 if target_mode == 'choose_attributes':
                     w._activate_choose_attributes_panel(priority=_CHARGEN_PANEL_PRIORITY)
@@ -539,10 +540,9 @@ def render_chargen_view(w, view: ChargenView) -> None:
                 else:
                     _set_panel_mode(w, target_mode, priority=0 if target_mode == 'translate' else _CHARGEN_PANEL_PRIORITY)
         else:
-            current_mode = w._tab_translate.panel_mode()
-            if current_mode == 'appearance_faces':
+            current_mode = w._ui_router.reset_panel_mode_if(('appearance_faces',))
+            if current_mode:
                 _log.info('chargen_panel: target_mode=translate reason=non_chargen_reset prev=%s', current_mode)
-                _set_panel_mode(w, 'translate')
     except (AttributeError, RuntimeError):
         pass
     if view.freeze_ok:
@@ -563,7 +563,7 @@ def _poll_revert_appearance_flag(w) -> None:
             _img_now = _img_raw.split(b'\x00', 1)[0].decode('ascii', errors='replace').upper()
         except (OSError, AttributeError):
             _img_now = ''
-        if 1 <= _bonus_pts <= 30 and _img_now == 'MRSHIRT.IMG':
+        if 1 <= _bonus_pts <= 30 and _img_now == MRSHIRT_IMG:
             w._chargen_appearance_displayed = False
             entry = itl.lookup('_CHARGEN_BONUS_REMAINING_', 0)
             if entry is not None:

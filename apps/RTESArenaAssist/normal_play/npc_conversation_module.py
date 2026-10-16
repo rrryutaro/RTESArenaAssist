@@ -2,7 +2,6 @@ from __future__ import annotations
 import logging
 import sys
 import assist_settings as settings
-from panel_mode_resolver import closing_panel_mode, screen_panel_mode
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 NPC_CONVERSATION_OWNER = 'npc_conversation'
@@ -80,22 +79,13 @@ def poll_npc_conversation(w, ctx, *, npc_dialog: str, npc_dialog_changed: bool, 
 
 def npc_clear_panel_mode(w) -> str | None:
     try:
-        return closing_panel_mode(current_mode=w._tab_translate.panel_mode(), img_name=getattr(w, '_img_name_prev', '') or '', screen_id=getattr(w, '_screen_id_prev', '') or '', top_level=_current_top_level(w), fallback_setting=settings.get('translate_fallback_screen', 'map'))
+        return w._ui_router.closing_panel_mode(img_name=getattr(w, '_img_name_prev', '') or '', screen_id=getattr(w, '_screen_id_prev', '') or '', top_level=_current_top_level(w), fallback_setting=settings.get('translate_fallback_screen', 'map'))
     except AttributeError:
         return 'translate'
 
 def restore_translate_mode(w) -> None:
     try:
-        mode = w._tab_translate.panel_mode()
-        if mode == 'translate':
-            return
-        img_name_now = (getattr(w, '_img_name_prev', '') or '').upper()
-        if mode == 'load_screen' and img_name_now == 'LOADSAVE.IMG':
-            return
-        screen_id_now = getattr(w, '_screen_id_prev', '') or ''
-        if mode == 'choose_attributes' and screen_panel_mode(screen_id_now) == 'choose_attributes':
-            return
-        w._ui_router.set_panel_mode('translate')
+        w._ui_router.restore_translate_mode(img_name=getattr(w, '_img_name_prev', '') or '', screen_id=getattr(w, '_screen_id_prev', '') or '')
     except AttributeError:
         pass
 

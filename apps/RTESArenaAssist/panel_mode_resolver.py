@@ -1,5 +1,6 @@
 from __future__ import annotations
 from typing import Optional
+from screen_img_signals import LOADSAVE_IMG
 MODE_TRANSLATE = 'translate'
 MODE_FALLBACK_MAP = 'fallback_map'
 MODE_FALLBACK_STATUS = 'fallback_status'
@@ -11,7 +12,7 @@ def screen_panel_mode(screen_id: Optional[str]) -> Optional[str]:
 
 def closing_panel_mode(*, current_mode: str, img_name: str, screen_id: str, top_level: str, fallback_setting: str) -> Optional[str]:
     img_upper = (img_name or '').upper()
-    if current_mode == 'load_screen' and img_upper == 'LOADSAVE.IMG':
+    if current_mode == 'load_screen' and img_upper == LOADSAVE_IMG:
         return None
     if current_mode == 'choose_attributes' and screen_panel_mode(screen_id) == 'choose_attributes':
         return 'choose_attributes'
@@ -19,6 +20,15 @@ def closing_panel_mode(*, current_mode: str, img_name: str, screen_id: str, top_
         mapped = _FALLBACK_SETTING_TO_MODE.get(fallback_setting or '')
         if mapped is not None:
             return mapped
+    return MODE_TRANSLATE
+
+def restore_translate_target(*, current_mode: str, img_name: str, screen_id: str) -> Optional[str]:
+    if current_mode == MODE_TRANSLATE:
+        return None
+    if current_mode == 'load_screen' and (img_name or '').upper() == LOADSAVE_IMG:
+        return None
+    if current_mode == 'choose_attributes' and screen_panel_mode(screen_id) == 'choose_attributes':
+        return None
     return MODE_TRANSLATE
 FOREGROUND_MODES = frozenset({'item_pickup', 'shop_buy', 'facility_list', 'equipment', 'spellbook', 'spell_detail', 'place_list', 'travel_table', 'journal', 'load_screen', 'choose_attributes', 'class_list', 'race_list', 'appearance_faces', 'map_screen', 'combat_full', 'combat_map'})
 _TRANSLATE_FAMILY = frozenset({MODE_TRANSLATE, MODE_FALLBACK_MAP, MODE_FALLBACK_STATUS})
@@ -48,4 +58,4 @@ def resolve_flush_mode(*, winner_mode: Optional[str], top_level: str, emulate: b
     if emulate and winner_has_content:
         return MODE_TRANSLATE
     return _FALLBACK_SETTING_TO_MODE.get(fallback_setting, MODE_TRANSLATE)
-__all__ = ['resolve_flush_mode', 'required_owner_for_mode', 'is_screen_state_owner', 'FOREGROUND_MODES', 'OWNER_BOUND_MODES', 'SCREEN_PANEL_MODES', 'SCREEN_PANEL_PRIORITY', 'screen_panel_mode', 'closing_panel_mode', 'SCREEN_STATE_OWNERS', 'MODE_TRANSLATE', 'MODE_FALLBACK_MAP', 'MODE_FALLBACK_STATUS']
+__all__ = ['resolve_flush_mode', 'required_owner_for_mode', 'is_screen_state_owner', 'FOREGROUND_MODES', 'OWNER_BOUND_MODES', 'SCREEN_PANEL_MODES', 'SCREEN_PANEL_PRIORITY', 'screen_panel_mode', 'closing_panel_mode', 'restore_translate_target', 'SCREEN_STATE_OWNERS', 'MODE_TRANSLATE', 'MODE_FALLBACK_MAP', 'MODE_FALLBACK_STATUS']
