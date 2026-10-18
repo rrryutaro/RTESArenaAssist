@@ -75,9 +75,9 @@
   .achange { color: #8fb6ff; font-size: 14px; font-weight: bold; }
   .abase  { color: #9aa4b2; font-size: 12px; }
   .modcell { border-left-width: 1px; border-left-style: solid;
-             border-left-color: #2a3a4a; padding-left: 7px; }
-  .mlab   { color: #9aa4b2; font-size: 7px; }
-  .mval   { color: #ffffff; font-size: 15px; font-weight: bold; }
+             border-left-color: #2a3a4a; padding-left: 5px; }
+  .mlab   { color: #9aa4b2; font-size: 10px; }
+  .mval   { color: #ffffff; font-size: 15px; font-weight: bold; white-space: nowrap; }
   .cardleft { padding-right: 3px; }
   .cardright { padding-left: 3px; }
   .cardnext { padding-top: 2px; }
@@ -204,10 +204,7 @@
     <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
         <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{str}}</span></td><td width="34" valign="middle">{{#if str_change}}<span class="achange">{{str_change}}</span><br><span class="abase">({{str_base}})</span>{{/if}}</td></tr></table></td>
-        <td class="modcell" valign="middle">
-          <span class="mlab">{{label.damage}}</span> <span class="mval">{{damage}}</span><br>
-          <span class="mlab">{{label.max_kilos}}</span> <span class="mval">{{max_kilos}}</span>
-        </td>
+        <td class="modcell" valign="middle"><table width="100%" cellspacing="0" cellpadding="1"><tr><td class="mlab" valign="middle">{{label.damage}}</td><td class="mval" align="right" valign="middle">{{damage}}</td></tr><tr><td class="mlab" valign="middle">{{label.max_kilos}}</td><td class="mval" align="right" valign="middle">{{max_kilos}}</td></tr></table></td>
       </tr></table>
     </td></tr>
     </table>
@@ -218,9 +215,7 @@
     <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
         <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{int}}</span></td><td width="34" valign="middle">{{#if int_change}}<span class="achange">{{int_change}}</span><br><span class="abase">({{int_base}})</span>{{/if}}</td></tr></table></td>
-        <td class="modcell" valign="middle">
-          <span class="mlab">{{label.spell_pts}}</span> <span class="mval">{{spell_pts_max}}</span><br><span class="mlab">&nbsp;</span>
-        </td>
+        <td class="modcell" valign="middle"><table width="100%" cellspacing="0" cellpadding="1"><tr><td class="mlab" valign="middle">{{label.spell_pts}}</td><td class="mval" align="right" valign="middle">{{spell_pts_max}}</td></tr></table></td>
       </tr></table>
     </td></tr>
     </table>
@@ -233,9 +228,7 @@
     <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
         <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{wil}}</span></td><td width="34" valign="middle">{{#if wil_change}}<span class="achange">{{wil_change}}</span><br><span class="abase">({{wil_base}})</span>{{/if}}</td></tr></table></td>
-        <td class="modcell" valign="middle">
-          <span class="mlab">{{label.magic_def}}</span> <span class="mval">{{magic_def}}</span><br><span class="mlab">&nbsp;</span>
-        </td>
+        <td class="modcell" valign="middle"><table width="100%" cellspacing="0" cellpadding="1"><tr><td class="mlab" valign="middle">{{label.magic_def}}</td><td class="mval" align="right" valign="middle">{{magic_def}}</td></tr></table></td>
       </tr></table>
     </td></tr>
     </table>
@@ -246,10 +239,7 @@
     <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
         <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{agi}}</span></td><td width="34" valign="middle">{{#if agi_change}}<span class="achange">{{agi_change}}</span><br><span class="abase">({{agi_base}})</span>{{/if}}</td></tr></table></td>
-        <td class="modcell" valign="middle">
-          <span class="mlab">{{label.to_hit}}</span> <span class="mval">{{to_hit}}</span><br>
-          <span class="mlab">{{label.to_defend}}</span> <span class="mval">{{to_defend}}</span>
-        </td>
+        <td class="modcell" valign="middle"><table width="100%" cellspacing="0" cellpadding="1"><tr><td class="mlab" valign="middle">{{label.to_hit}}</td><td class="mval" align="right" valign="middle">{{to_hit}}</td></tr><tr><td class="mlab" valign="middle">{{label.to_defend}}</td><td class="mval" align="right" valign="middle">{{to_defend}}</td></tr></table></td>
       </tr></table>
     </td></tr>
     </table>
@@ -262,7 +252,7 @@
     <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
         <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{spd}}</span></td><td width="34" valign="middle">{{#if spd_change}}<span class="achange">{{spd_change}}</span><br><span class="abase">({{spd_base}})</span>{{/if}}</td></tr></table></td>
-        <td class="modcell" valign="middle">&nbsp;<br>&nbsp;</td>
+        <td class="modcell" valign="middle"><table width="100%" cellspacing="0" cellpadding="1"></table></td>
       </tr></table>
     </td></tr>
     </table>
@@ -273,10 +263,7 @@
     <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
         <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{end}}</span></td><td width="34" valign="middle">{{#if end_change}}<span class="achange">{{end_change}}</span><br><span class="abase">({{end_base}})</span>{{/if}}</td></tr></table></td>
-        <td class="modcell" valign="middle">
-          <span class="mlab">{{label.health}}</span> <span class="mval">{{health}}</span><br>
-          <span class="mlab">{{label.heal_mod}}</span> <span class="mval">{{heal_mod}}</span>
-        </td>
+        <td class="modcell" valign="middle"><table width="100%" cellspacing="0" cellpadding="1"><tr><td class="mlab" valign="middle">{{label.health}}</td><td class="mval" align="right" valign="middle">{{health}}</td></tr><tr><td class="mlab" valign="middle">{{label.heal_mod}}</td><td class="mval" align="right" valign="middle">{{heal_mod}}</td></tr></table></td>
       </tr></table>
     </td></tr>
     </table>
@@ -289,9 +276,7 @@
     <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
         <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{per}}</span></td><td width="34" valign="middle">{{#if per_change}}<span class="achange">{{per_change}}</span><br><span class="abase">({{per_base}})</span>{{/if}}</td></tr></table></td>
-        <td class="modcell" valign="middle">
-          <span class="mlab">{{label.charisma}}</span> <span class="mval">{{charisma}}</span><br><span class="mlab">&nbsp;</span>
-        </td>
+        <td class="modcell" valign="middle"><table width="100%" cellspacing="0" cellpadding="1"><tr><td class="mlab" valign="middle">{{label.charisma}}</td><td class="mval" align="right" valign="middle">{{charisma}}</td></tr></table></td>
       </tr></table>
     </td></tr>
     </table>
@@ -302,7 +287,7 @@
     <tr><td height="64">
       <table width="100%" cellspacing="0" cellpadding="0"><tr>
         <td class="avcell" width="92" valign="middle"><table width="92" cellspacing="0" cellpadding="0"><tr><td width="58" valign="middle"><span class="aval">{{luc}}</span></td><td width="34" valign="middle">{{#if luc_change}}<span class="achange">{{luc_change}}</span><br><span class="abase">({{luc_base}})</span>{{/if}}</td></tr></table></td>
-        <td class="modcell" valign="middle">&nbsp;<br>&nbsp;</td>
+        <td class="modcell" valign="middle"><table width="100%" cellspacing="0" cellpadding="1"></table></td>
       </tr></table>
     </td></tr>
     </table>

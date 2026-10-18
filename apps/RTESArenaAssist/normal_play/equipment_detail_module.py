@@ -69,6 +69,10 @@ def reset_equipment_detail(w) -> None:
     previous = getattr(w, '_equipment_detail_name', None)
     if previous is not None:
         _recog(_log, 'artifact detail closed: name=%r', previous)
+        router = getattr(w, '_ui_router', None)
+        if router is not None:
+            router.notify_display_unit_closed(OWNER)
+            router.clear_if_owner(OWNER)
     w._equipment_detail_name = None
     w._equipment_detail_missing_key = None
 __all__ = ['OWNER', 'poll_equipment_detail', 'read_visible_artifact', 'reset_equipment_detail']

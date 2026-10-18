@@ -8,6 +8,10 @@ import save_manager
 import save_reader
 from tabs.tab_save_ui import build_ui
 
+def _resync_ext_lifecycle(game_dir: str) -> None:
+    from controllers.map_ext_lifecycle import get_lifecycle
+    get_lifecycle().resync_after_restore(game_dir)
+
 def _effective_backup_dir() -> str:
     d = cfg.get('backup_dir', '').strip()
     return d if d else save_manager.default_backup_dir()
@@ -508,6 +512,7 @@ class TabSave(QWidget):
         backup_dir = _effective_backup_dir()
         try:
             save_manager.restore_backup_to_slot(game_dir, backup_dir, meta['id'], source_slot, target_slot)
+            _resync_ext_lifecycle(game_dir)
             self.status_message.emit(i18n.tr('save.status_restored').format(name=meta.get('name', '')))
             self._check_save_name_changes()
             self._refresh()
@@ -541,6 +546,7 @@ class TabSave(QWidget):
             return
         try:
             save_manager.restore_backup(game_dir, backup_dir, meta['id'], slots=slots)
+            _resync_ext_lifecycle(game_dir)
             self.status_message.emit(i18n.tr('save.status_restored').format(name=meta.get('name', '')))
             self._check_save_name_changes()
             self._refresh()

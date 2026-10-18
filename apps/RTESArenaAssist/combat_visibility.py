@@ -22,15 +22,18 @@ def visible_enemy_slots(snapshot, map_result: MapPollResult | None) -> frozenset
     px, py = player
     if canvas_data.player_x != px or canvas_data.player_y != py or (not (0 <= px < width and 0 <= py < height)):
         return None
-    positions: list[tuple[int, int, int]] = []
+    positions: list[tuple[int, int, int, tuple[float, float]]] = []
     for enemy in snapshot.enemies:
-        point = map_result.projection.project(enemy.x // _ARENA_UNITS_PER_TILE, enemy.y // _ARENA_UNITS_PER_TILE)
+        cx = enemy.x // _ARENA_UNITS_PER_TILE
+        cy = enemy.y // _ARENA_UNITS_PER_TILE
+        point = map_result.projection.project(cx, cy)
         if point is None:
             return None
         ex, ey = point
         if not (0 <= ex < width and 0 <= ey < height):
             return None
-        positions.append((enemy.slot, ex, ey))
+        exact = (ex + (enemy.x - cx * _ARENA_UNITS_PER_TILE) / _ARENA_UNITS_PER_TILE, ey + (enemy.y - cy * _ARENA_UNITS_PER_TILE) / _ARENA_UNITS_PER_TILE)
+        positions.append((enemy.slot, ex, ey, exact))
     facing_x, facing_y = facing_delta(snapshot.player_angle_deg)
-    return frozenset((slot for slot, ex, ey in positions if cell_visible_in_cone(map1, px, py, facing_x, facing_y, ex, ey)))
+    return frozenset((slot for slot, ex, ey, exact in positions if cell_visible_in_cone(map1, px, py, facing_x, facing_y, ex, ey, target_point=exact)))
 __all__ = ['visible_enemy_slots']

@@ -201,6 +201,32 @@ class MapExtLifecycle:
         self._bound_slot = slot
         self._bound_save_id = save_id
 
+    def resync_after_restore(self, save_dir: str | None) -> None:
+        if not save_dir or not os.path.isdir(save_dir) or (not self._initialized):
+            return
+        self._slot_mtimes = self._scan_slot_mtimes(save_dir)
+        self._slot_sigs = {s: self._slot_content_sig(save_dir, s) for s in self._slot_mtimes}
+        live64 = _find(save_dir, 'SAVEGAME.64')
+        try:
+            self._live64_mtime = os.stat(live64).st_mtime_ns if live64 else None
+        except OSError:
+            self._live64_mtime = None
+        self._live64_gate_open = False
+        self._live64_gate_hash = None
+        self._live64_gate_commits = set()
+        _log.warning('restore resync: slots=%s bound=#%s', sorted(self._slot_mtimes), self._bound_slot)
+        if self._bound_slot is None:
+            return
+        slot = self._bound_slot
+        save_id = save_reader.read_save_name(save_dir, slot)
+        for st in self._all_stores():
+            try:
+                st.bind_slot(None, None)
+                st.bind_slot(slot, save_id)
+            except Exception:
+                _log.warning('restore rebind failed: slot=#%d store=%r', slot, st, exc_info=True)
+        self._bound_save_id = save_id
+
     def on_load(self) -> None:
         return
 

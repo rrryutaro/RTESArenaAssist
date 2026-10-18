@@ -243,6 +243,9 @@ class DungeonMapSession(MapSessionBase):
             cells = dict(self._item_point_cells)
             cells[ITEM_POINT_QUEST_ITEM] = cells.get(ITEM_POINT_QUEST_ITEM, frozenset()) | {marked}
             self._item_point_cells = cells
+            history = dict(self._item_point_history)
+            history[ITEM_POINT_QUEST_ITEM] = history.get(ITEM_POINT_QUEST_ITEM, frozenset()) | {marked}
+            self._item_point_history = history
         mark = (self._mif_name, mif.level_index, role, cell, marked)
         if mark != self._artifact_chest_logged:
             self._artifact_chest_logged = mark

@@ -9,7 +9,7 @@ _TIMER_ENTRIES = 13
 _TIMER_BYTES = _TIMER_ENTRIES * 4
 _TIMER_MIN_BYTES = 36
 _TIMER_BIT_INDEX = {'invisible': 0, 'fire': 2, 'cold': 3, 'shock': 4, 'magic': 5, 'poison': 6, 'levitate': 7, 'light': 8, 'silence': 9, 'absorb': 10, 'reflect': 11, 'spell_resist': 12}
-_EFFECT_SPEC = {'light': (17, 0, 0), 'shield': (2, 0, 0), 'strength': (11, 0, 0), 'fire': (10, 0, 0), 'cold': (10, 1, 0), 'shock': (10, 2, 0), 'magic': (10, 3, 0), 'poison': (10, 4, 0), 'levitate': (16, 0, 0), 'invisible': (15, 0, 0), 'silence': (21, 0, 0), 'absorb': (22, 0, 0), 'reflect': (23, 0, 0), 'spell_resist': (24, 0, 0)}
+_EFFECT_SPEC = {'light': (17, 0, 0), 'shield': (2, 0, 0), 'strength': (11, 255, 255), 'fire': (10, 0, 0), 'cold': (10, 1, 0), 'shock': (10, 2, 0), 'magic': (10, 3, 0), 'poison': (10, 4, 0), 'levitate': (16, 0, 0), 'invisible': (15, 0, 0), 'silence': (21, 0, 0), 'absorb': (22, 0, 0), 'reflect': (23, 0, 0), 'spell_resist': (24, 0, 0)}
 _EFFECT_BIT = {'invisible': 1, 'fire': 4, 'cold': 8, 'shock': 16, 'magic': 32, 'poison': 64, 'levitate': 128, 'light': 256, 'silence': 512, 'absorb': 1024, 'reflect': 2048, 'spell_resist': 4096}
 _MAX_TIMER = 10000
 _GAME_TIME_OFFSET = 1484
@@ -21,6 +21,7 @@ class SpellEffectSample:
     strength_base: int
     timers: dict[str, int | None]
     game_time: int | None = None
+    attributes: tuple[int, ...] = ()
 
 @dataclass(frozen=True)
 class SpellEffectRow:
@@ -32,10 +33,12 @@ class SpellEffectRow:
     ratio: float | None
 _META = {'light': ('☀', '#f4ce78'), 'shield': ('◆', '#8dcbeb'), 'strength': ('↑', '#eaa09a'), 'fire': ('♨', '#ef9c67'), 'cold': ('❄', '#9bd0f0'), 'shock': ('ϟ', '#f2e07a'), 'magic': ('✦', '#c7a6f0'), 'poison': ('☣', '#9fd88a'), 'levitate': ('✧', '#bfa7eb'), 'invisible': ('◌', '#b8c4d6'), 'silence': ('∅', '#d8a0a0'), 'absorb': ('◈', '#7fd1c4'), 'reflect': ('◇', '#a0c8f0'), 'spell_resist': ('◉', '#8fb8e8')}
 
-def effect_label(key: str) -> str:
+def effect_label(key: str, attribute: int | None=None) -> str:
     spec = _EFFECT_SPEC.get(key)
     if spec is None:
         return ''
+    if key == 'strength' and attribute is not None:
+        spec = (spec[0], attribute, attribute)
     from spell_effect_compose import effect_display_names
     names = effect_display_names([spec[0]], [spec[1]], [spec[2]])
     return names[0] if names else ''
@@ -63,7 +66,7 @@ def read_sample(analyzer, anchor: int) -> SpellEffectSample | None:
         game_time = int.from_bytes(raw_time, 'little') if len(raw_time) == 4 else None
     except (OSError, AttributeError):
         game_time = None
-    return SpellEffectSample(fields=fields, strength_current=attributes[0], strength_base=attributes[8], timers=timers, game_time=game_time)
+    return SpellEffectSample(fields=fields, strength_current=attributes[0], strength_base=attributes[8], timers=timers, game_time=game_time, attributes=tuple(attributes[0:8]))
 
 class _ObservedRoundClock:
 
@@ -128,7 +131,8 @@ class SpellEffectTracker:
         self._maximum: dict[str, int] = {}
         self._order: list[str] = []
         self._strength_decay = False
-        self._strength_baseline: int | None = None
+        self._strength_baseline: tuple[int, ...] | None = None
+        self._fortified_attribute: int | None = None
 
     def pause(self) -> None:
         self._clock.pause()
@@ -138,13 +142,21 @@ class SpellEffectTracker:
         self._clock.observe(sample.game_time, observed_at)
         fields = sample.fields
         fortified = bool(fields.flags & 16 and fields.counters[4])
-        if not fortified and (not self._strength_decay):
-            self._strength_baseline = sample.strength_current
+        current = sample.attributes or (sample.strength_current,)
+        if not fortified and (not self._strength_decay) or (self._strength_baseline is not None and len(self._strength_baseline) != len(current)):
+            self._strength_baseline = current
+            if not fortified:
+                self._fortified_attribute = None
         baseline = self._strength_baseline
-        strength_delta = max(0, sample.strength_current - baseline) if baseline is not None else None
+        if baseline is not None:
+            deltas = [max(0, c - b) for c, b in zip(current, baseline)]
+            if max(deltas) > 0:
+                self._fortified_attribute = deltas.index(max(deltas))
+        attr = self._fortified_attribute
+        strength_delta = deltas[attr] if baseline is not None and attr is not None else 0 if baseline is not None else None
         if fortified:
             self._strength_decay = baseline is not None
-        elif baseline is None or sample.strength_current <= baseline:
+        elif baseline is None or all((c <= b for c, b in zip(current, baseline))):
             self._strength_decay = False
         active = {key: bool(fields.effects & bit) for key, bit in _EFFECT_BIT.items()}
         active['shield'] = fields.shield > 0
@@ -168,7 +180,7 @@ class SpellEffectTracker:
         rows = []
         for key in self._order:
             glyph, color = _META[key]
-            name = effect_label(key)
+            name = effect_label(key, self._fortified_attribute) if key == 'strength' else effect_label(key)
             value = amount[key]
             seconds = None
             if key == 'shield':
@@ -177,8 +189,9 @@ class SpellEffectTracker:
                 if baseline is None:
                     label = combat_text('spell_effect.active')
                 else:
-                    display_current = round(sample.strength_current * 100 / 256)
-                    display_base = round(baseline * 100 / 256)
+                    at = attr if attr is not None else 0
+                    display_current = round(current[at] * 100 / 256)
+                    display_base = round(baseline[at] * 100 / 256)
                     label = f'+{display_current - display_base}'
             else:
                 seconds = self._clock.remaining(value) if time_unit == 'seconds' and value is not None else None

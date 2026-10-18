@@ -249,9 +249,15 @@ VIEW_REVEAL_RADIUS = 6.0
 VIEW_REVEAL_HALF_ANGLE_DEG = 45.0
 _VIEW_COS_HALF_ANGLE = math.cos(math.radians(VIEW_REVEAL_HALF_ANGLE_DEG))
 
-def cell_visible_in_cone(map1: np.ndarray | None, px: int, py: int, facing_dx: float, facing_dy: float, tx: int, ty: int, *, ignore_walls: bool=False) -> bool:
-    ddx = tx - px
-    ddy = ty - py
+def cell_visible_in_cone(map1: np.ndarray | None, px: int, py: int, facing_dx: float, facing_dy: float, tx: int, ty: int, *, ignore_walls: bool=False, target_point: tuple[float, float] | None=None) -> bool:
+    if target_point is None:
+        ddx = tx - px
+        ddy = ty - py
+    else:
+        ddx = target_point[0] - (px + 0.5)
+        ddy = target_point[1] - (py + 0.5)
+        if (tx, ty) == (px, py):
+            ddx = ddy = 0.0
     dist = math.hypot(ddx, ddy)
     if dist > VIEW_REVEAL_RADIUS:
         return False

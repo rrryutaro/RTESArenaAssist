@@ -136,6 +136,8 @@ class AssistWindow(QMainWindow):
             get_lifecycle().add_on_load(lambda: reset_level_up_on_load(self))
             from normal_play.spell_effect_module import reset_spell_effects
             get_lifecycle().add_on_load(lambda: reset_spell_effects(self))
+            from normal_play.combat_info_module import reset_combat_info
+            get_lifecycle().add_on_load(lambda: reset_combat_info(self))
         except Exception:
             pass
         try:
