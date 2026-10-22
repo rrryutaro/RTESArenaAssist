@@ -92,8 +92,21 @@ def _effect_details_from_arrays(effects: list[int], sub_effects: list[int], affe
         display_ids = _effect_display_ids(effect_id, sub_id, attr_id)
         details.append({'slot': slot, 'effect_id': effect_id, 'sub_effect_id': sub_id, 'affected_attr_id': attr_id, 'effect_display_ids': display_ids, 'effect_anchor_id': display_ids[0] if len(display_ids) == 1 else None, 'effect_en': effect_en, 'effect_ja': effect_ja, 'text_en': '', 'text_ja': ''})
     return details
+_SHORT_SIMPLE_KEYS = {15: 'invisible', 16: 'levitate', 17: 'light', 21: 'silence', 22: 'absorb', 23: 'reflect', 24: 'spell_resist'}
+_SHORT_ELEMENT_KEYS = {0: 'fire', 1: 'cold', 2: 'shock', 3: 'magic', 4: 'poison'}
+_SHORT_ATTRIBUTE_KEYS = {0: 'strength', 1: 'intelligence', 2: 'willpower', 3: 'agility', 4: 'speed', 5: 'endurance', 6: 'personality', 7: 'luck'}
 
-def effect_display_names(effects, sub_effects=(), affected_attrs=()) -> list[str]:
+def _short_name_key(effect_id: int, sub_id: int, attr_id: int) -> str | None:
+    if effect_id == 2 and sub_id == 0:
+        return 'shield'
+    if effect_id == 10:
+        return _SHORT_ELEMENT_KEYS.get(sub_id)
+    if effect_id == 11:
+        attr = _SHORT_ATTRIBUTE_KEYS.get(sub_id) or _SHORT_ATTRIBUTE_KEYS.get(attr_id)
+        return f'fortify_{attr}' if attr else None
+    return _SHORT_SIMPLE_KEYS.get(effect_id)
+
+def effect_display_names(effects, sub_effects=(), affected_attrs=(), *, short: bool=False) -> list[str]:
     import i18n_helper as i18n
     names: list[str] = []
     for slot, effect_id in enumerate(list(effects)[:3]):
@@ -101,6 +114,12 @@ def effect_display_names(effects, sub_effects=(), affected_attrs=()) -> list[str
             continue
         sub_id = sub_effects[slot] if slot < len(sub_effects) else 0
         attr_id = affected_attrs[slot] if slot < len(affected_attrs) else 0
+        if short:
+            key = _short_name_key(effect_id, sub_id, attr_id)
+            shown = i18n.text_opt(f'spell_effect.name.{key}') if key else None
+            if shown:
+                names.append(shown)
+                continue
         parts = []
         for id_str in _effect_display_ids(effect_id, sub_id, attr_id):
             anchor = _id_anchor(id_str)

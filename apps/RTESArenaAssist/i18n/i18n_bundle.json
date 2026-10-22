@@ -4926,6 +4926,91 @@
           "id": 900982,
           "kind": "label",
           "debug_name": "settings.user_translation.reason_display_name"
+        },
+        {
+          "id": 900983,
+          "kind": "label",
+          "debug_name": "spell_effect.name.absorb"
+        },
+        {
+          "id": 900984,
+          "kind": "label",
+          "debug_name": "spell_effect.name.cold"
+        },
+        {
+          "id": 900985,
+          "kind": "label",
+          "debug_name": "spell_effect.name.fortify_agility"
+        },
+        {
+          "id": 900986,
+          "kind": "label",
+          "debug_name": "spell_effect.name.fortify_endurance"
+        },
+        {
+          "id": 900987,
+          "kind": "label",
+          "debug_name": "spell_effect.name.fortify_intelligence"
+        },
+        {
+          "id": 900988,
+          "kind": "label",
+          "debug_name": "spell_effect.name.fortify_luck"
+        },
+        {
+          "id": 900989,
+          "kind": "label",
+          "debug_name": "spell_effect.name.fortify_personality"
+        },
+        {
+          "id": 900990,
+          "kind": "label",
+          "debug_name": "spell_effect.name.fortify_speed"
+        },
+        {
+          "id": 900991,
+          "kind": "label",
+          "debug_name": "spell_effect.name.fortify_strength"
+        },
+        {
+          "id": 900992,
+          "kind": "label",
+          "debug_name": "spell_effect.name.fortify_willpower"
+        },
+        {
+          "id": 900993,
+          "kind": "label",
+          "debug_name": "spell_effect.name.invisible"
+        },
+        {
+          "id": 900994,
+          "kind": "label",
+          "debug_name": "spell_effect.name.magic"
+        },
+        {
+          "id": 900995,
+          "kind": "label",
+          "debug_name": "spell_effect.name.poison"
+        },
+        {
+          "id": 900996,
+          "kind": "label",
+          "debug_name": "spell_effect.name.reflect"
+        },
+        {
+          "id": 900997,
+          "kind": "label",
+          "debug_name": "spell_effect.name.shock"
+        },
+        {
+          "id": 900998,
+          "kind": "label",
+          "debug_name": "spell_effect.name.silence"
+        },
+        {
+          "id": 900999,
+          "kind": "label",
+          "debug_name": "spell_effect.name.spell_resist"
         }
       ]
     },
@@ -53104,10 +53189,6 @@
           "text": "Shield"
         },
         {
-          "id": 900938,
-          "text": "Fortify Strength"
-        },
-        {
           "id": 900939,
           "text": "{value} points left"
         },
@@ -53278,6 +53359,74 @@
         {
           "id": 900982,
           "text": "The name shown in the language list (meta.display_name) is missing"
+        },
+        {
+          "id": 900983,
+          "text": "Spell absorption"
+        },
+        {
+          "id": 900984,
+          "text": "Cold resistance"
+        },
+        {
+          "id": 900985,
+          "text": "Fortify Agility"
+        },
+        {
+          "id": 900986,
+          "text": "Fortify Endurance"
+        },
+        {
+          "id": 900987,
+          "text": "Fortify Intelligence"
+        },
+        {
+          "id": 900988,
+          "text": "Fortify Luck"
+        },
+        {
+          "id": 900989,
+          "text": "Fortify Personality"
+        },
+        {
+          "id": 900990,
+          "text": "Fortify Speed"
+        },
+        {
+          "id": 900991,
+          "text": "Fortify Strength"
+        },
+        {
+          "id": 900992,
+          "text": "Fortify Willpower"
+        },
+        {
+          "id": 900993,
+          "text": "Invisibility"
+        },
+        {
+          "id": 900994,
+          "text": "Magic resistance"
+        },
+        {
+          "id": 900995,
+          "text": "Poison resistance"
+        },
+        {
+          "id": 900996,
+          "text": "Spell reflection"
+        },
+        {
+          "id": 900997,
+          "text": "Shock resistance"
+        },
+        {
+          "id": 900998,
+          "text": "Silence"
+        },
+        {
+          "id": 900999,
+          "text": "Spell resistance"
         },
         {
           "id": 902000,
@@ -82514,7 +82663,7 @@
         },
         {
           "id": 900935,
-          "text": "レビテート"
+          "text": "浮遊"
         },
         {
           "id": 900936,
@@ -82523,10 +82672,6 @@
         {
           "id": 900937,
           "text": "シールド"
-        },
-        {
-          "id": 900938,
-          "text": "筋力強化"
         },
         {
           "id": 900939,
@@ -82699,6 +82844,74 @@
         {
           "id": 900982,
           "text": "言語一覧に出す名前（meta.display_name）がありません"
+        },
+        {
+          "id": 900983,
+          "text": "呪文吸収"
+        },
+        {
+          "id": 900984,
+          "text": "冷気耐性"
+        },
+        {
+          "id": 900985,
+          "text": "敏捷強化"
+        },
+        {
+          "id": 900986,
+          "text": "持久力強化"
+        },
+        {
+          "id": 900987,
+          "text": "知性強化"
+        },
+        {
+          "id": 900988,
+          "text": "幸運強化"
+        },
+        {
+          "id": 900989,
+          "text": "個性強化"
+        },
+        {
+          "id": 900990,
+          "text": "速度強化"
+        },
+        {
+          "id": 900991,
+          "text": "筋力強化"
+        },
+        {
+          "id": 900992,
+          "text": "意志力強化"
+        },
+        {
+          "id": 900993,
+          "text": "透明"
+        },
+        {
+          "id": 900994,
+          "text": "魔法耐性"
+        },
+        {
+          "id": 900995,
+          "text": "毒耐性"
+        },
+        {
+          "id": 900996,
+          "text": "呪文反射"
+        },
+        {
+          "id": 900997,
+          "text": "電撃耐性"
+        },
+        {
+          "id": 900998,
+          "text": "沈黙"
+        },
+        {
+          "id": 900999,
+          "text": "呪文耐性"
         },
         {
           "id": 902000,
@@ -112754,10 +112967,6 @@
           "text": "Escudo"
         },
         {
-          "id": 900938,
-          "text": "Fortalecer fuerza"
-        },
-        {
           "id": 900939,
           "text": "Quedan {value} puntos"
         },
@@ -112928,6 +113137,74 @@
         {
           "id": 900982,
           "text": "Falta el nombre que se muestra en la lista de idiomas (meta.display_name)"
+        },
+        {
+          "id": 900983,
+          "text": "Absorción de hechizos"
+        },
+        {
+          "id": 900984,
+          "text": "Resistencia al frío"
+        },
+        {
+          "id": 900985,
+          "text": "Fortalecer agilidad"
+        },
+        {
+          "id": 900986,
+          "text": "Fortalecer resistencia"
+        },
+        {
+          "id": 900987,
+          "text": "Fortalecer inteligencia"
+        },
+        {
+          "id": 900988,
+          "text": "Fortalecer suerte"
+        },
+        {
+          "id": 900989,
+          "text": "Fortalecer personalidad"
+        },
+        {
+          "id": 900990,
+          "text": "Fortalecer velocidad"
+        },
+        {
+          "id": 900991,
+          "text": "Fortalecer fuerza"
+        },
+        {
+          "id": 900992,
+          "text": "Fortalecer voluntad"
+        },
+        {
+          "id": 900993,
+          "text": "Invisibilidad"
+        },
+        {
+          "id": 900994,
+          "text": "Resistencia mágica"
+        },
+        {
+          "id": 900995,
+          "text": "Resistencia al veneno"
+        },
+        {
+          "id": 900996,
+          "text": "Reflexión de hechizos"
+        },
+        {
+          "id": 900997,
+          "text": "Resistencia al rayo"
+        },
+        {
+          "id": 900998,
+          "text": "Silencio"
+        },
+        {
+          "id": 900999,
+          "text": "Resistencia a hechizos"
         },
         {
           "id": 902000,
@@ -142175,10 +142452,6 @@
           "text": "Schild"
         },
         {
-          "id": 900938,
-          "text": "Stärke erhöhen"
-        },
-        {
           "id": 900939,
           "text": "Noch {value} Punkte"
         },
@@ -142349,6 +142622,74 @@
         {
           "id": 900982,
           "text": "Der in der Sprachliste angezeigte Name (meta.display_name) fehlt"
+        },
+        {
+          "id": 900983,
+          "text": "Zauberabsorption"
+        },
+        {
+          "id": 900984,
+          "text": "Kälteresistenz"
+        },
+        {
+          "id": 900985,
+          "text": "Beweglichkeit erhöhen"
+        },
+        {
+          "id": 900986,
+          "text": "Ausdauer erhöhen"
+        },
+        {
+          "id": 900987,
+          "text": "Intelligenz erhöhen"
+        },
+        {
+          "id": 900988,
+          "text": "Glück erhöhen"
+        },
+        {
+          "id": 900989,
+          "text": "Persönlichkeit erhöhen"
+        },
+        {
+          "id": 900990,
+          "text": "Geschwindigkeit erhöhen"
+        },
+        {
+          "id": 900991,
+          "text": "Stärke erhöhen"
+        },
+        {
+          "id": 900992,
+          "text": "Willenskraft erhöhen"
+        },
+        {
+          "id": 900993,
+          "text": "Unsichtbarkeit"
+        },
+        {
+          "id": 900994,
+          "text": "Magieresistenz"
+        },
+        {
+          "id": 900995,
+          "text": "Giftresistenz"
+        },
+        {
+          "id": 900996,
+          "text": "Zauberreflexion"
+        },
+        {
+          "id": 900997,
+          "text": "Blitzresistenz"
+        },
+        {
+          "id": 900998,
+          "text": "Stille"
+        },
+        {
+          "id": 900999,
+          "text": "Zauberresistenz"
         },
         {
           "id": 902000,
@@ -171596,10 +171937,6 @@
           "text": "Bouclier"
         },
         {
-          "id": 900938,
-          "text": "Renforcement de force"
-        },
-        {
           "id": 900939,
           "text": "{value} points restants"
         },
@@ -171770,6 +172107,74 @@
         {
           "id": 900982,
           "text": "Le nom affiché dans la liste des langues (meta.display_name) est absent"
+        },
+        {
+          "id": 900983,
+          "text": "Absorption des sorts"
+        },
+        {
+          "id": 900984,
+          "text": "Résistance au froid"
+        },
+        {
+          "id": 900985,
+          "text": "Renforcement d'agilité"
+        },
+        {
+          "id": 900986,
+          "text": "Renforcement d'endurance"
+        },
+        {
+          "id": 900987,
+          "text": "Renforcement d'intelligence"
+        },
+        {
+          "id": 900988,
+          "text": "Renforcement de chance"
+        },
+        {
+          "id": 900989,
+          "text": "Renforcement de personnalité"
+        },
+        {
+          "id": 900990,
+          "text": "Renforcement de vitesse"
+        },
+        {
+          "id": 900991,
+          "text": "Renforcement de force"
+        },
+        {
+          "id": 900992,
+          "text": "Renforcement de volonté"
+        },
+        {
+          "id": 900993,
+          "text": "Invisibilité"
+        },
+        {
+          "id": 900994,
+          "text": "Résistance à la magie"
+        },
+        {
+          "id": 900995,
+          "text": "Résistance au poison"
+        },
+        {
+          "id": 900996,
+          "text": "Réflexion des sorts"
+        },
+        {
+          "id": 900997,
+          "text": "Résistance à la foudre"
+        },
+        {
+          "id": 900998,
+          "text": "Silence"
+        },
+        {
+          "id": 900999,
+          "text": "Résistance aux sorts"
         },
         {
           "id": 902000,
@@ -201017,10 +201422,6 @@
           "text": "Scudo"
         },
         {
-          "id": 900938,
-          "text": "Potenzia forza"
-        },
-        {
           "id": 900939,
           "text": "{value} punti rimasti"
         },
@@ -201191,6 +201592,74 @@
         {
           "id": 900982,
           "text": "Manca il nome mostrato nell'elenco delle lingue (meta.display_name)"
+        },
+        {
+          "id": 900983,
+          "text": "Assorbimento incantesimi"
+        },
+        {
+          "id": 900984,
+          "text": "Resistenza al freddo"
+        },
+        {
+          "id": 900985,
+          "text": "Potenzia agilità"
+        },
+        {
+          "id": 900986,
+          "text": "Potenzia resistenza"
+        },
+        {
+          "id": 900987,
+          "text": "Potenzia intelligenza"
+        },
+        {
+          "id": 900988,
+          "text": "Potenzia fortuna"
+        },
+        {
+          "id": 900989,
+          "text": "Potenzia personalità"
+        },
+        {
+          "id": 900990,
+          "text": "Potenzia velocità"
+        },
+        {
+          "id": 900991,
+          "text": "Potenzia forza"
+        },
+        {
+          "id": 900992,
+          "text": "Potenzia volontà"
+        },
+        {
+          "id": 900993,
+          "text": "Invisibilità"
+        },
+        {
+          "id": 900994,
+          "text": "Resistenza alla magia"
+        },
+        {
+          "id": 900995,
+          "text": "Resistenza al veleno"
+        },
+        {
+          "id": 900996,
+          "text": "Riflesso incantesimi"
+        },
+        {
+          "id": 900997,
+          "text": "Resistenza allo shock"
+        },
+        {
+          "id": 900998,
+          "text": "Silenzio"
+        },
+        {
+          "id": 900999,
+          "text": "Resistenza agli incantesimi"
         },
         {
           "id": 902000,
@@ -230438,10 +230907,6 @@
           "text": "Щит"
         },
         {
-          "id": 900938,
-          "text": "Усиление силы"
-        },
-        {
           "id": 900939,
           "text": "Осталось {value} ед."
         },
@@ -230612,6 +231077,74 @@
         {
           "id": 900982,
           "text": "Отсутствует название для списка языков (meta.display_name)"
+        },
+        {
+          "id": 900983,
+          "text": "Поглощение заклинаний"
+        },
+        {
+          "id": 900984,
+          "text": "Сопротивление холоду"
+        },
+        {
+          "id": 900985,
+          "text": "Усиление ловкости"
+        },
+        {
+          "id": 900986,
+          "text": "Усиление выносливости"
+        },
+        {
+          "id": 900987,
+          "text": "Усиление интеллекта"
+        },
+        {
+          "id": 900988,
+          "text": "Усиление удачи"
+        },
+        {
+          "id": 900989,
+          "text": "Усиление личности"
+        },
+        {
+          "id": 900990,
+          "text": "Усиление скорости"
+        },
+        {
+          "id": 900991,
+          "text": "Усиление силы"
+        },
+        {
+          "id": 900992,
+          "text": "Усиление силы воли"
+        },
+        {
+          "id": 900993,
+          "text": "Невидимость"
+        },
+        {
+          "id": 900994,
+          "text": "Сопротивление магии"
+        },
+        {
+          "id": 900995,
+          "text": "Сопротивление яду"
+        },
+        {
+          "id": 900996,
+          "text": "Отражение заклинаний"
+        },
+        {
+          "id": 900997,
+          "text": "Сопротивление электричеству"
+        },
+        {
+          "id": 900998,
+          "text": "Немота"
+        },
+        {
+          "id": 900999,
+          "text": "Сопротивление заклинаниям"
         },
         {
           "id": 902000,
@@ -259859,10 +260392,6 @@
           "text": "护盾"
         },
         {
-          "id": 900938,
-          "text": "强化力量"
-        },
-        {
           "id": 900939,
           "text": "剩余 {value} 点"
         },
@@ -260033,6 +260562,74 @@
         {
           "id": 900982,
           "text": "缺少显示在语言列表中的名称（meta.display_name）"
+        },
+        {
+          "id": 900983,
+          "text": "法术吸收"
+        },
+        {
+          "id": 900984,
+          "text": "寒冷抗性"
+        },
+        {
+          "id": 900985,
+          "text": "强化敏捷"
+        },
+        {
+          "id": 900986,
+          "text": "强化耐力"
+        },
+        {
+          "id": 900987,
+          "text": "强化智力"
+        },
+        {
+          "id": 900988,
+          "text": "强化幸运"
+        },
+        {
+          "id": 900989,
+          "text": "强化魅力"
+        },
+        {
+          "id": 900990,
+          "text": "强化速度"
+        },
+        {
+          "id": 900991,
+          "text": "强化力量"
+        },
+        {
+          "id": 900992,
+          "text": "强化意志"
+        },
+        {
+          "id": 900993,
+          "text": "隐形"
+        },
+        {
+          "id": 900994,
+          "text": "魔法抗性"
+        },
+        {
+          "id": 900995,
+          "text": "毒素抗性"
+        },
+        {
+          "id": 900996,
+          "text": "法术反射"
+        },
+        {
+          "id": 900997,
+          "text": "闪电抗性"
+        },
+        {
+          "id": 900998,
+          "text": "沉默"
+        },
+        {
+          "id": 900999,
+          "text": "法术抗性"
         },
         {
           "id": 902000,
@@ -289280,10 +289877,6 @@
           "text": "Escudo"
         },
         {
-          "id": 900938,
-          "text": "Fortalecer Força"
-        },
-        {
           "id": 900939,
           "text": "{value} pontos restantes"
         },
@@ -289454,6 +290047,74 @@
         {
           "id": 900982,
           "text": "Falta o nome exibido na lista de idiomas (meta.display_name)"
+        },
+        {
+          "id": 900983,
+          "text": "Absorção de feitiço"
+        },
+        {
+          "id": 900984,
+          "text": "Resistência ao frio"
+        },
+        {
+          "id": 900985,
+          "text": "Fortalecer Agilidade"
+        },
+        {
+          "id": 900986,
+          "text": "Fortalecer Resistência"
+        },
+        {
+          "id": 900987,
+          "text": "Fortalecer Inteligência"
+        },
+        {
+          "id": 900988,
+          "text": "Fortalecer Sorte"
+        },
+        {
+          "id": 900989,
+          "text": "Fortalecer Personalidade"
+        },
+        {
+          "id": 900990,
+          "text": "Fortalecer Velocidade"
+        },
+        {
+          "id": 900991,
+          "text": "Fortalecer Força"
+        },
+        {
+          "id": 900992,
+          "text": "Fortalecer Força de Vontade"
+        },
+        {
+          "id": 900993,
+          "text": "Invisibilidade"
+        },
+        {
+          "id": 900994,
+          "text": "Resistência à magia"
+        },
+        {
+          "id": 900995,
+          "text": "Resistência a veneno"
+        },
+        {
+          "id": 900996,
+          "text": "Reflexão de feitiço"
+        },
+        {
+          "id": 900997,
+          "text": "Resistência a choque"
+        },
+        {
+          "id": 900998,
+          "text": "Silêncio"
+        },
+        {
+          "id": 900999,
+          "text": "Resistência a feitiços"
         },
         {
           "id": 902000,
@@ -318701,10 +319362,6 @@
           "text": "Tarcza"
         },
         {
-          "id": 900938,
-          "text": "Wzmocnienie siły"
-        },
-        {
           "id": 900939,
           "text": "Pozostało pkt: {value}"
         },
@@ -318875,6 +319532,74 @@
         {
           "id": 900982,
           "text": "Brak nazwy wyświetlanej na liście języków (meta.display_name)"
+        },
+        {
+          "id": 900983,
+          "text": "Pochłanianie zaklęć"
+        },
+        {
+          "id": 900984,
+          "text": "Odporność na zimno"
+        },
+        {
+          "id": 900985,
+          "text": "Wzmocnienie zręczności"
+        },
+        {
+          "id": 900986,
+          "text": "Wzmocnienie wytrzymałości"
+        },
+        {
+          "id": 900987,
+          "text": "Wzmocnienie inteligencji"
+        },
+        {
+          "id": 900988,
+          "text": "Wzmocnienie szczęścia"
+        },
+        {
+          "id": 900989,
+          "text": "Wzmocnienie osobowości"
+        },
+        {
+          "id": 900990,
+          "text": "Wzmocnienie szybkości"
+        },
+        {
+          "id": 900991,
+          "text": "Wzmocnienie siły"
+        },
+        {
+          "id": 900992,
+          "text": "Wzmocnienie siły woli"
+        },
+        {
+          "id": 900993,
+          "text": "Niewidzialność"
+        },
+        {
+          "id": 900994,
+          "text": "Odporność na magię"
+        },
+        {
+          "id": 900995,
+          "text": "Odporność na truciznę"
+        },
+        {
+          "id": 900996,
+          "text": "Odbijanie zaklęć"
+        },
+        {
+          "id": 900997,
+          "text": "Odporność na prąd"
+        },
+        {
+          "id": 900998,
+          "text": "Cisza"
+        },
+        {
+          "id": 900999,
+          "text": "Odporność na zaklęcia"
         },
         {
           "id": 902000,
@@ -348122,10 +348847,6 @@
           "text": "방패"
         },
         {
-          "id": 900938,
-          "text": "근력 강화"
-        },
-        {
           "id": 900939,
           "text": "남은 {value}점"
         },
@@ -348296,6 +349017,74 @@
         {
           "id": 900982,
           "text": "언어 목록에 표시할 이름(meta.display_name)이 없습니다"
+        },
+        {
+          "id": 900983,
+          "text": "주문 흡수"
+        },
+        {
+          "id": 900984,
+          "text": "냉기 저항"
+        },
+        {
+          "id": 900985,
+          "text": "민첩 강화"
+        },
+        {
+          "id": 900986,
+          "text": "지구력 강화"
+        },
+        {
+          "id": 900987,
+          "text": "지능 강화"
+        },
+        {
+          "id": 900988,
+          "text": "행운 강화"
+        },
+        {
+          "id": 900989,
+          "text": "매력 강화"
+        },
+        {
+          "id": 900990,
+          "text": "속도 강화"
+        },
+        {
+          "id": 900991,
+          "text": "힘 강화"
+        },
+        {
+          "id": 900992,
+          "text": "의지력 강화"
+        },
+        {
+          "id": 900993,
+          "text": "투명"
+        },
+        {
+          "id": 900994,
+          "text": "마법 저항"
+        },
+        {
+          "id": 900995,
+          "text": "독 저항"
+        },
+        {
+          "id": 900996,
+          "text": "주문 반사"
+        },
+        {
+          "id": 900997,
+          "text": "전격 저항"
+        },
+        {
+          "id": 900998,
+          "text": "침묵"
+        },
+        {
+          "id": 900999,
+          "text": "주문 저항"
         },
         {
           "id": 902000,
@@ -377532,19 +378321,15 @@
         },
         {
           "id": 900935,
-          "text": "漂浮術"
+          "text": "漂浮"
         },
         {
           "id": 900936,
-          "text": "光亮術"
+          "text": "光亮"
         },
         {
           "id": 900937,
           "text": "護盾"
-        },
-        {
-          "id": 900938,
-          "text": "強化力量"
         },
         {
           "id": 900939,
@@ -377717,6 +378502,74 @@
         {
           "id": 900982,
           "text": "缺少顯示在語言清單中的名稱（meta.display_name）"
+        },
+        {
+          "id": 900983,
+          "text": "法術吸收"
+        },
+        {
+          "id": 900984,
+          "text": "寒冰抗性"
+        },
+        {
+          "id": 900985,
+          "text": "強化敏捷"
+        },
+        {
+          "id": 900986,
+          "text": "強化耐力"
+        },
+        {
+          "id": 900987,
+          "text": "強化智力"
+        },
+        {
+          "id": 900988,
+          "text": "強化幸運"
+        },
+        {
+          "id": 900989,
+          "text": "強化個性"
+        },
+        {
+          "id": 900990,
+          "text": "強化速度"
+        },
+        {
+          "id": 900991,
+          "text": "強化力量"
+        },
+        {
+          "id": 900992,
+          "text": "強化意志力"
+        },
+        {
+          "id": 900993,
+          "text": "隱形"
+        },
+        {
+          "id": 900994,
+          "text": "魔法抗性"
+        },
+        {
+          "id": 900995,
+          "text": "毒素抗性"
+        },
+        {
+          "id": 900996,
+          "text": "法術反射"
+        },
+        {
+          "id": 900997,
+          "text": "電擊抗性"
+        },
+        {
+          "id": 900998,
+          "text": "沉默"
+        },
+        {
+          "id": 900999,
+          "text": "法術抗性"
         },
         {
           "id": 902000,

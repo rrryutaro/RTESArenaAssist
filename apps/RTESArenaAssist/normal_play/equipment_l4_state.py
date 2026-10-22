@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+import time
 from dataclasses import dataclass
 from enum import Enum
 from assist_log import recog as _recog
@@ -153,15 +154,19 @@ def _read_repair_jobs(w) -> list:
         return []
 
 def has_equipment_negotiation_foreground(w) -> bool:
+    w._equipment_l4_negot_diag = 'unread'
     try:
         from negotiation_reader import NEGOT_RENDERED_OFFSET, read_negotiation_diagnostic
         _raw, _canon, _rendered, matched = read_negotiation_diagnostic(w._analyzer, w._anchor)
+        w._equipment_l4_negot_diag = 'unmatched'
         if not matched:
             return False
+        w._equipment_l4_negot_diag = 'no_slot'
         from active_template_reader import read_active_template_candidates
         for c in read_active_template_candidates(w._analyzer, w._anchor):
             if getattr(c, 'ptr', None) != NEGOT_RENDERED_OFFSET:
                 continue
+            w._equipment_l4_negot_diag = 'slot_text_differs'
             text = (getattr(c, 'text', '') or '').strip()
             if not text:
                 return True
@@ -207,6 +212,26 @@ def _read_active_reply_candidates(w):
         return []
     return out
 
+def _record_reply_history(w, candidates, prev_by_offset) -> None:
+    now = time.monotonic()
+    last = getattr(w, '_equipment_l4_resp_hist_at', None)
+    w._equipment_l4_reply_hist_age = None if last is None else now - last
+    w._equipment_l4_resp_hist_at = now
+    now_by_offset = dict(prev_by_offset)
+    for c in candidates:
+        if c.text:
+            now_by_offset[c.source_offset] = c.text
+    w._equipment_l4_resp_prev_by_offset = now_by_offset
+    w._equipment_l4_resp_baselined = True
+
+def _record_reply_history_while_negotiating(w) -> None:
+    try:
+        from popup11_response_reader import read_response_candidates_all
+        candidates = read_response_candidates_all(w._analyzer, w._anchor)
+    except Exception:
+        return
+    _record_reply_history(w, candidates, dict(getattr(w, '_equipment_l4_resp_prev_by_offset', {}) or {}))
+
 def _update_and_select_reply(w, img: str):
     try:
         from popup11_response_reader import candidate_contains_pointer, read_current_text_pointer, read_response_candidates_all
@@ -224,30 +249,22 @@ def _update_and_select_reply(w, img: str):
     if img in ('NEWPOP.IMG', 'NEWOLD.IMG', 'YESNO.IMG'):
         presence_hits = [c for c in hits if c.text.startswith(_PRESENCE_REPLY_PREFIXES) or _is_no_repair_reply_text(c.text) or _is_composite_reply_text(c.text)]
     changed_hits = [c for c in hits if baselined and prev_by_offset.get(c.source_offset) != c.text]
-    now_by_offset = dict(prev_by_offset)
-    for c in candidates:
-        if c.text:
-            now_by_offset[c.source_offset] = c.text
-    w._equipment_l4_resp_prev_by_offset = now_by_offset
-    w._equipment_l4_resp_baselined = True
+    _record_reply_history(w, candidates, prev_by_offset)
     prev_reply_text = getattr(w, '_equipment_l4_prev_reply_text', '') or ''
     prev_was_reply = getattr(w, '_equipment_l4_prev_state', None) is EquipmentL4State.REPLY
     continuation_hits = [c for c in hits if prev_was_reply and prev_reply_text and (c.text == prev_reply_text)]
-    if ptr_hits:
-        return ptr_hits[0]
-    if active_candidates:
-        return active_candidates[0]
-    if presence_hits:
-        return presence_hits[0]
-    if changed_hits:
-        return changed_hits[0]
-    if continuation_hits:
-        return continuation_hits[0]
+    w._equipment_l4_reply_evidence = None
+    w._equipment_l4_reply_ptr = current_ptr
+    for kind, pool in (('ptr', ptr_hits), ('active', active_candidates), ('presence', presence_hits), ('changed', changed_hits), ('continuation', continuation_hits)):
+        if pool:
+            w._equipment_l4_reply_evidence = kind
+            return pool[0]
     return None
 
 def _decide(w, img: str) -> EquipmentL4Snapshot:
     S = EquipmentL4State
     w._equipment_l4_list_flag_value = None
+    w._equipment_l4_negot_diag = '-'
     flag_value, menu_stable = _track_menu_flag(w)
     if menu_stable:
         return EquipmentL4Snapshot(state=S.MENU, img=img, reason='view_flag')
@@ -286,10 +303,18 @@ def _decide(w, img: str) -> EquipmentL4Snapshot:
         return EquipmentL4Snapshot(state=S.BUY_LIST, img=img, reason='list_img')
     return EquipmentL4Snapshot(state=S.NONE, img=img, reason='none')
 
+def _fmt_age(age) -> str:
+    return 'None' if age is None else f'{float(age):.1f}s'
+
 def _log_state_edge(w, prev_state, snap: EquipmentL4Snapshot) -> None:
     flag = getattr(w, '_equipment_l4_flag_value', None)
     list_flag = getattr(w, '_equipment_l4_list_flag_value', None)
-    _recog(_log, 'equipment L4 state: %s -> %s reason=%s img=%r flag=%s menu_flag_polls=%s none_streak=%s list_flag=%s', getattr(prev_state, 'value', None), snap.state.value, snap.reason, snap.img, 'None' if flag is None else f'0x{int(flag):02X}', getattr(w, '_equipment_l4_menu_flag_polls', 0), getattr(w, '_equipment_l4_none_streak', 0), '-' if list_flag is None else f'0x{int(list_flag):02X}')
+    reply_diag = ''
+    if snap.state is EquipmentL4State.REPLY:
+        ptr = getattr(w, '_equipment_l4_reply_ptr', None)
+        src = snap.reply_source_offset
+        reply_diag = f" evidence={getattr(w, '_equipment_l4_reply_evidence', None)} ptr={('None' if ptr is None else f'0x{int(ptr):04X}')} src={('None' if src is None else f'0x{int(src):04X}')} negot={getattr(w, '_equipment_l4_negot_diag', '-')} hist_age={_fmt_age(getattr(w, '_equipment_l4_reply_hist_age', None))}"
+    _recog(_log, 'equipment L4 state: %s -> %s reason=%s img=%r flag=%s menu_flag_polls=%s none_streak=%s list_flag=%s%s', getattr(prev_state, 'value', None), snap.state.value, snap.reason, snap.img, 'None' if flag is None else f'0x{int(flag):02X}', getattr(w, '_equipment_l4_menu_flag_polls', 0), getattr(w, '_equipment_l4_none_streak', 0), '-' if list_flag is None else f'0x{int(list_flag):02X}', reply_diag)
 
 def _compute(w, img: str) -> EquipmentL4Snapshot:
     snap = _decide(w, img)
@@ -302,6 +327,8 @@ def _compute(w, img: str) -> EquipmentL4Snapshot:
             snap = prev_snap
     else:
         w._equipment_l4_none_streak = 0
+    if snap.state is EquipmentL4State.NEGOTIATION:
+        _record_reply_history_while_negotiating(w)
     if snap.state is not prev_state:
         _log_state_edge(w, prev_state, snap)
     w._equipment_l4_prev_state = snap.state

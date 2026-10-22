@@ -10,6 +10,7 @@ _RESULT_SURFACE_PTR_OFFSET = 43268
 _RESULT_INTENT_HINT_OFFSET = 44470
 _RESULT_INTENT_HEAL_VALUE = 133
 _RESULT_INTENT_CURE_VALUE = 243
+_RESULT_INTENT_MENU_VALUE = 170
 
 def _result_episode_signature(edge_sig, p8f6e):
     if edge_sig is None and p8f6e is None:
@@ -176,6 +177,8 @@ def _release_reply(w) -> None:
     try:
         if w._ui_router.current_owner() == owner:
             w._ui_router.clear_if_owner(owner)
+            from normal_play.temple_render_module import forget_menu_key
+            forget_menu_key(w)
     except Exception:
         pass
 
@@ -296,7 +299,9 @@ def poll_temple_dialog(w, *, temple_active: bool, temple_just_started: bool, img
     chosen = None
     reason = ''
     new_episode = False
-    if phase == 'select_input':
+    if phase == 'result' and _intent_hint_value == _RESULT_INTENT_MENU_VALUE:
+        pass
+    elif phase == 'select_input':
         blessing_results = [c for c in results if _is_blessing_result(c)]
         new_blessing_results = [c for c in new_results if _is_blessing_result(c)]
         if current_text and any((c.text == current_text for c in blessing_results)):

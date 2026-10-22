@@ -96,13 +96,3 @@ def generate_wild_temple_name_opentes(we: int, sn: int) -> TempleName:
     model = random.next() % 3
     suffix_index = random.next() % TEMPLE_MODEL_SUFFIX_COUNTS[model]
     return TempleName(model, suffix_index)
-
-def make_wild_temple_name_seed_calibrated(we: int, sn: int, wild_seed: int) -> int:
-    return wild_seed + make_wild_chunk_name_seed(we, sn) & 4294967295
-
-def generate_wild_temple_name_calibrated(we: int, sn: int, wild_seed: int) -> TempleName:
-    seed = make_wild_temple_name_seed_calibrated(we, sn, wild_seed)
-    random = ArenaRandom(seed)
-    model = random.next() % 3
-    suffix_index = random.next() % TEMPLE_MODEL_SUFFIX_COUNTS[model]
-    return TempleName(model, suffix_index)

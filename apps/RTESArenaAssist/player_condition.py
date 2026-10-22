@@ -77,7 +77,7 @@ def sheet_values(fields: ConditionFields, separator: str) -> dict[str, str]:
 
 def _effect_name(spec: tuple[int, int, int]) -> str:
     from spell_effect_compose import effect_display_names
-    names = effect_display_names([spec[0]], [spec[1]], [spec[2]])
+    names = effect_display_names([spec[0]], [spec[1]], [spec[2]], short=True)
     return names[0] if names else ''
 
 def _word(index: int) -> str:

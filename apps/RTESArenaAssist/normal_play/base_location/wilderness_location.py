@@ -428,14 +428,13 @@ class WildernessMapSession(MapSessionBase):
                     _log.warning('FIELD_TAVERN_NAME[OpenTES] block(WE=%d,SN=%d) seed=0x%08X prefix=%d suf=%d en=%r ja=%r', we, sn, make_wild_chunk_name_seed(we, sn), tav.prefix_index, tav.suffix_index, tr.en, tr.ja)
                 return (tr.en or '', tr.ja)
             if menu_id == 4:
-                wild_seed = self._wild_seed or 0
-                from services.building_name_generator import generate_wild_temple_name_calibrated, make_wild_temple_name_seed_calibrated
+                from services.building_name_generator import generate_wild_temple_name_opentes, make_wild_chunk_name_seed
                 from services.dynamic_translation import translate_temple
-                tname = generate_wild_temple_name_calibrated(we, sn, wild_seed)
+                tname = generate_wild_temple_name_opentes(we, sn)
                 tr = translate_temple(tname)
                 if emit_log and (tr.en or '') != getattr(self, '_logged_temple_name', None):
                     self._logged_temple_name = tr.en or ''
-                    _log.warning('FIELD_TEMPLE_NAME[calibrated] block(WE=%d,SN=%d) wildSeed=0x%08X seed=0x%08X model=%d suf=%d en=%r ja=%r', we, sn, wild_seed, make_wild_temple_name_seed_calibrated(we, sn, wild_seed), tname.model, tname.suffix_index, tr.en, tr.ja)
+                    _log.warning('FIELD_TEMPLE_NAME[OpenTES] block(WE=%d,SN=%d) seed=0x%08X model=%d suf=%d en=%r ja=%r', we, sn, make_wild_chunk_name_seed(we, sn), tname.model, tname.suffix_index, tr.en, tr.ja)
                 return (tr.en or '', tr.ja)
             return ('', None)
         except Exception:

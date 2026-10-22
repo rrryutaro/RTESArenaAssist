@@ -71,6 +71,9 @@ def _render_menu(w, shop_state, img: str) -> bool:
         _log.exception('temple_menu update failed')
     return True
 
+def forget_menu_key(w) -> None:
+    setattr(w, MENU_KEY, None)
+
 def reset_keys_on_img_transition(w, *, img_name: str, temple_active_now: bool) -> None:
     img_now = (img_name or '').upper()
     img_prev = (getattr(w, '_temple_last_img_prev', '') or '').upper()

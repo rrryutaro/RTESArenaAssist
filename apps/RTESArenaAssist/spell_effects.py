@@ -40,7 +40,7 @@ def effect_label(key: str, attribute: int | None=None) -> str:
     if key == 'strength' and attribute is not None:
         spec = (spec[0], attribute, attribute)
     from spell_effect_compose import effect_display_names
-    names = effect_display_names([spec[0]], [spec[1]], [spec[2]])
+    names = effect_display_names([spec[0]], [spec[1]], [spec[2]], short=True)
     return names[0] if names else ''
 
 def read_sample(analyzer, anchor: int) -> SpellEffectSample | None:

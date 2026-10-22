@@ -59,11 +59,11 @@ def master_spell_effect_slots(spell_index: int) -> tuple[list[int], list[int], l
     base = spell_index * SPELL_DATA_SIZE
     return (list(raw[base + 41:base + 44]), list(raw[base + 44:base + 47]), list(raw[base + 47:base + 50]))
 
-def master_spell_effect_names(spell_index: int) -> list[str]:
+def master_spell_effect_names(spell_index: int, *, short: bool=False) -> list[str]:
     slots = master_spell_effect_slots(spell_index)
     if slots is None:
         return []
-    return effect_display_names(*slots)
+    return effect_display_names(*slots, short=short)
 CUSTOM_SPELLS_OFFSET = -26656
 
 def read_custom_spells(analyzer, anchor: int) -> dict[int, str]:

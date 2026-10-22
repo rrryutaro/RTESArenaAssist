@@ -65,7 +65,7 @@ def item_effect_name(item: Mapping) -> str:
     spell = item.get('artifact_spell')
     if isinstance(spell, int):
         from spell_reader import master_spell_effect_names
-        names = master_spell_effect_names(spell)
+        names = master_spell_effect_names(spell, short=True)
         if names:
             return ' / '.join(names)
     return effect_name(str(item.get('en') or '').strip())
