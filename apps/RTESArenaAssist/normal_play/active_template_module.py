@@ -16,6 +16,25 @@ def should_poll_active_template(*, shop_menu_visible: bool, shop_buy_active: boo
         return False
     return not shop_buy_active and (not shop_menu_visible or allow_during_shop_menu) and (not response_active) and (not in_negotiation) and (top_level_state == 'normal-play')
 
+def note_unclaimed_dialog_template(w, *, reason: str) -> None:
+    _key = None
+    if reason:
+        try:
+            from active_template_reader import _read_template_from_ptr, is_response_buffer_pointer, read_current_text_pointer
+            import npc_dialog_lookup as _ndl
+            _ptr = read_current_text_pointer(w._analyzer, w._anchor)
+            _text = _read_template_from_ptr(w._analyzer, w._anchor, _ptr) if _ptr is not None and (not is_response_buffer_pointer(_ptr)) else None
+            if _text and _ndl.lookup(_text) is not None:
+                _key = (_ptr, reason, _text)
+        except Exception:
+            _key = None
+    if _key == getattr(w, '_active_tmpl_unclaimed_prev', None):
+        return
+    w._active_tmpl_unclaimed_prev = _key
+    if _key is not None:
+        from assist_log import recog as _recog
+        _recog(_log, 'active_template not evaluated: ptr=0x%04X reason=%s text=%r', _key[0], _key[1], _key[2][:60])
+
 def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop_buy_active: bool, active_facility: str, allow_during_shop_menu: bool, tavern_l4_kind: str='', c_area: str='') -> bool:
     try:
         _ptr_raw = w._analyzer.read_bytes(w._anchor + 43076, 2)
@@ -35,6 +54,8 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
     _top_level = _current_top_level(w)
     _gate_ok = should_poll_active_template(shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, active_facility=active_facility, allow_during_shop_menu=allow_during_shop_menu, response_active=_response_active, in_negotiation=_in_negot, top_level_state=_top_level, tavern_l4_kind=tavern_l4_kind, c_area=c_area)
     if not _gate_ok:
+        if c_area != 'dungeon' and (not active_facility):
+            note_unclaimed_dialog_template(w, reason=f'gate(menu={shop_menu_visible} buy={shop_buy_active} response={_response_active} negot={_in_negot} top={_top_level} img={shop_img_name!r})')
         if active_facility == 'tavern' and (tavern_l4_kind or '') in _TAVERN_SHOP_L4_KINDS:
             _block_key = (shop_img_name, tavern_l4_kind)
             if _block_key != getattr(w, '_active_tmpl_tavern_l4_block_key', None):
@@ -48,6 +69,7 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
     except Exception:
         _log.exception('active_template_reader failed')
         return False
+    note_unclaimed_dialog_template(w, reason='')
     try:
         import npc_dialog_lookup as _ndl
     except Exception:
@@ -127,4 +149,4 @@ def cleanup_if_owner(w) -> None:
     if w._ui_router.is_owner('active_template'):
         w._ui_router.clear_if_owner('active_template', notify_close=False)
         _log.info('active_template exit')
-__all__ = ['poll_active_template', 'cleanup_if_owner', 'should_poll_active_template']
+__all__ = ['poll_active_template', 'cleanup_if_owner', 'should_poll_active_template', 'note_unclaimed_dialog_template']

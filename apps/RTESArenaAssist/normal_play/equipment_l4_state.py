@@ -44,7 +44,8 @@ _REPAIR_ENTRY_PROMPT = 'Which job do you wish to inspect?'
 _STATUS_SLOT_WINDOW_BEFORE = 16
 _STATUS_SLOT_WINDOW_AFTER = 96
 _REPLY_ALLOWED_IMGS = frozenset({'MENU_RT.IMG', 'YESNO.IMG', 'NEWPOP.IMG', 'NEWOLD.IMG'})
-_ACTIVE_REPLY_PREFIXES = ("Can't you afford it?", "Can't you wait that long?", "Maybe you're not interested?", 'Which job do you wish to inspect?', 'Sorry, I already have my hands full.')
+_REPAIR_ENTRY_PROMPT = 'Which job do you wish to inspect?'
+_ACTIVE_REPLY_PREFIXES = ("Can't you afford it?", "Can't you wait that long?", "Maybe you're not interested?", _REPAIR_ENTRY_PROMPT, 'Sorry, I already have my hands full.')
 _PRESENCE_REPLY_PREFIXES = ('I can cut down the time', 'I can cut the cost', "Then I'll get started", "Good, I'll get to it", 'I understand. You might consider', 'Well, if you change your mind', 'Sorry, I already have my hands full.')
 
 def _is_no_repair_reply_text(text: str) -> bool:
@@ -184,6 +185,9 @@ def _is_negotiation_img(img: str) -> bool:
         return False
     return get_negotiation_profile(img) is not None
 
+def _popup_reply_foreground(w) -> bool:
+    return any((not c.text.startswith(_REPAIR_ENTRY_PROMPT) for c in _read_active_reply_candidates(w)))
+
 def _read_active_reply_candidates(w):
     out = []
     try:
@@ -289,7 +293,7 @@ def _decide(w, img: str) -> EquipmentL4Snapshot:
         return EquipmentL4Snapshot(state=S.ITEM_SELECT, img=img, reason='item_list_slot')
     if img == 'NEWPOP.IMG':
         jobs = _read_repair_jobs(w)
-        if jobs:
+        if jobs and (not _popup_reply_foreground(w)):
             return EquipmentL4Snapshot(state=S.REPAIR_JOBS, img=img, reason='repair_struct', repair_job_names=tuple((j['en'] for j in jobs)))
     if img in _REPLY_ALLOWED_IMGS:
         chosen = _update_and_select_reply(w, img)

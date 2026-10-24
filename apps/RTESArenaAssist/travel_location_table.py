@@ -86,6 +86,7 @@ def hovered_icon(analyzer, anchor: int):
         return 'execute'
     return 'exit'
 _PROVINCE_NAME_TABLE = 12038
+_SELECTABLE_PROVINCES = 8
 _PROVINCE_INDEX = 6430
 _PROVINCE_COUNT = 9
 
@@ -111,7 +112,16 @@ def read_displayed_province(analyzer, anchor: int):
         idx = analyzer.read_bytes(anchor + _PROVINCE_INDEX, 1)[0]
     except (OSError, AttributeError):
         return None
-    names = read_province_names(analyzer, anchor)
+    try:
+        from services.city_data import is_world_map_available, load_world_map_data
+        if is_world_map_available():
+            provinces = load_world_map_data().provinces
+            if 0 <= idx < len(provinces):
+                return (idx, provinces[idx].name)
+            return None
+    except Exception:
+        pass
+    names = read_province_names(analyzer, anchor, count=_SELECTABLE_PROVINCES)
     if 0 <= idx < len(names):
         return (idx, names[idx])
     return None

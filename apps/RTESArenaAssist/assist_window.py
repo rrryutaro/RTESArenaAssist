@@ -169,6 +169,15 @@ class AssistWindow(QMainWindow):
         except Exception:
             _log.exception('reading highlighter setup failed')
         self._apply_tts_settings()
+        self._vv_status_seq = 0
+        self._vv_problem_code = None
+        self._vv_problem_shown: set[str] = set()
+        self._vv_problem_notice = None
+        self._vv_status_timer = QTimer(self)
+        self._vv_status_timer.setInterval(1000)
+        self._vv_status_timer.timeout.connect(self._poll_voicevox_status)
+        self._vv_status_timer.start()
+        self._start_voicevox_check()
         if _SCREEN_JUDGE_AVAILABLE and ScreenJudgeController is not None:
             self._screen_judge = ScreenJudgeController(self)
             _log.info('screen_judge: enabled')
@@ -466,6 +475,7 @@ class AssistWindow(QMainWindow):
         except Exception:
             pass
         self._apply_tts_settings()
+        self._start_voicevox_check()
         settings.set_val('translate_tab_emulate_panel_hidden', dlg.translate_tab_emulate_panel_hidden)
         self._tab_save.on_settings_changed()
         self._tab_capture.set_cap_dir(self._get_cap_dir())
@@ -838,6 +848,49 @@ class AssistWindow(QMainWindow):
             self._sb.showMessage(text, 10000)
             self._notify_capture_hotkey(text)
 
+    def _voicevox_in_use(self) -> bool:
+        return bool(settings.get('tts_enabled', False)) and (settings.get('tts_engine', 'sapi5') or 'sapi5') == 'voicevox'
+
+    def _start_voicevox_check(self) -> None:
+        if not self._voicevox_in_use():
+            return
+        import threading
+        import voicevox_client as vv
+        speaker = int(settings.get('tts_vv_speaker', 0) or 0)
+        threading.Thread(target=vv.check, args=(speaker, 3.0), name='voicevox-check', daemon=True).start()
+
+    def _poll_voicevox_status(self) -> None:
+        import voicevox_client as vv
+        from services import voicevox_notice
+        code, detail, seq = vv.last_status()
+        if seq == self._vv_status_seq:
+            return
+        self._vv_status_seq = seq
+        if code is None or not self._voicevox_in_use():
+            return
+        if code == vv.STATUS_OK:
+            if self._vv_problem_code is not None:
+                self._sb.showMessage(voicevox_notice.recovered_text(), 8000)
+            self._vv_problem_code = None
+            return
+        self._vv_problem_code = code
+        text = voicevox_notice.problem_text(code, detail, speaker=int(settings.get('tts_vv_speaker', 0) or 0), fallback_sapi=bool(settings.get('tts_fallback_sapi', True)))
+        self._sb.showMessage(text.splitlines()[0])
+        if code not in self._vv_problem_shown:
+            self._vv_problem_shown.add(code)
+            self._notify_voicevox_problem(text)
+
+    def _notify_voicevox_problem(self, text: str) -> None:
+        if not self.isVisible():
+            self._vv_problem_notice = text
+            return
+        self._vv_problem_notice = None
+        from services import voicevox_notice
+        box = QMessageBox(QMessageBox.Icon.Warning, voicevox_notice.title(), text, QMessageBox.StandardButton.Ok, self)
+        box.setModal(False)
+        box.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
+        box.show()
+
     def _notify_capture_hotkey(self, text: str) -> None:
         if not self.isVisible():
             self._capture_hotkey_notice = text
@@ -854,6 +907,10 @@ class AssistWindow(QMainWindow):
         if notice:
             self._capture_hotkey_notice = None
             QTimer.singleShot(0, lambda: self._notify_capture_hotkey(notice))
+        vv_notice = getattr(self, '_vv_problem_notice', None)
+        if vv_notice:
+            self._vv_problem_notice = None
+            QTimer.singleShot(0, lambda: self._notify_voicevox_problem(vv_notice))
 
     def _capture(self):
         if settings.get('capture_se_enabled', True):

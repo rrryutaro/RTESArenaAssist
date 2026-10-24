@@ -567,9 +567,11 @@ def build_tts_tab(dlg: '_SettingsDialog') -> QWidget:
     dlg._tts_enabled_cb.setChecked(bool(settings.get('tts_enabled', False)))
     form.addRow(i18n.tr('settings.tts_enabled', default='読み上げを有効にする') + ':', dlg._tts_enabled_cb)
     _vv_ok = False
+    _vv_code, _vv_detail = ('error', '')
     try:
         import voicevox_client as _vv
-        _vv_ok = _vv.is_available()
+        _vv_code, _vv_detail = _vv.check(timeout=0.3)
+        _vv_ok = _vv_code == _vv.STATUS_OK
     except Exception:
         _vv_ok = False
     dlg._tts_vv_available = _vv_ok
@@ -589,6 +591,12 @@ def build_tts_tab(dlg: '_SettingsDialog') -> QWidget:
     _ei = dlg._tts_engine_combo.findData(dlg._tts_engine_saved)
     dlg._tts_engine_combo.setCurrentIndex(_ei if _ei >= 0 else 0)
     form.addRow(i18n.tr('settings.tts_engine', default='エンジン') + ':', dlg._tts_engine_combo)
+    if not _vv_ok and (settings.get('tts_engine', 'sapi5') or 'sapi5') == 'voicevox':
+        from services import voicevox_notice
+        _vv_reason = QLabel(voicevox_notice.problem_text(_vv_code, _vv_detail, speaker=int(settings.get('tts_vv_speaker', 0) or 0), fallback_sapi=bool(settings.get('tts_fallback_sapi', True))).splitlines()[0])
+        _vv_reason.setWordWrap(True)
+        _vv_reason.setStyleSheet('color: #e57373;')
+        form.addRow('', _vv_reason)
     dlg._tts_fallback_sapi_cb = QCheckBox(i18n.tr('settings.tts_fallback_sapi', default='VOICEVOX が使えない場合は Windows の音声で読み上げる'))
     dlg._tts_fallback_sapi_cb.setChecked(bool(settings.get('tts_fallback_sapi', True)))
     form.addRow(i18n.tr('settings.tts_fallback_sapi_label', default='代替の読み上げ') + ':', dlg._tts_fallback_sapi_cb)

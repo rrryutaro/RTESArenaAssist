@@ -23,6 +23,10 @@ def poll_status_popup(w, *, entry_handled: bool) -> None:
         if _parsed is not None:
             _vkey = (_parsed.get('location', ''), _parsed.get('time', ''), _parsed.get('date', ''), _parsed.get('weight', ''), _parsed.get('weight_max', ''), _parsed.get('states', ()))
             _full_en, _full_ja, _ = render_status(_parsed)
+            if _status_fg and entry_handled and (_vkey != getattr(w, '_last_status_vkey', None)) and (_vkey != getattr(w, '_status_withheld_vkey', None)):
+                w._status_withheld_vkey = _vkey
+                from assist_log import recog as _recog
+                _recog(_log, 'status popup withheld (entry_handled): %r', _vkey[:3])
             if _status_fg and (not entry_handled) and (_vkey != getattr(w, '_last_status_vkey', None)):
                 w._last_status_vkey = _vkey
                 w._ui_router.update_translation(STATUS_OWNER, _full_en, _full_ja)

@@ -5011,6 +5011,51 @@
           "id": 900999,
           "kind": "label",
           "debug_name": "spell_effect.name.spell_resist"
+        },
+        {
+          "id": 901000,
+          "kind": "label",
+          "debug_name": "tts.vv_problem.error"
+        },
+        {
+          "id": 901001,
+          "kind": "label",
+          "debug_name": "tts.vv_problem.fallback_off"
+        },
+        {
+          "id": 901002,
+          "kind": "label",
+          "debug_name": "tts.vv_problem.fallback_on"
+        },
+        {
+          "id": 901003,
+          "kind": "label",
+          "debug_name": "tts.vv_problem.port_exhausted"
+        },
+        {
+          "id": 901004,
+          "kind": "label",
+          "debug_name": "tts.vv_problem.speaker_missing"
+        },
+        {
+          "id": 901005,
+          "kind": "label",
+          "debug_name": "tts.vv_problem.title"
+        },
+        {
+          "id": 901006,
+          "kind": "label",
+          "debug_name": "tts.vv_problem.unreachable"
+        },
+        {
+          "id": 901007,
+          "kind": "label",
+          "debug_name": "tts.vv_recovered"
+        },
+        {
+          "id": 901008,
+          "kind": "label",
+          "debug_name": "npc_desc.name_with_race"
         }
       ]
     },
@@ -53429,6 +53474,42 @@
           "text": "Spell resistance"
         },
         {
+          "id": 901000,
+          "text": "Cannot connect to VOICEVOX ({detail}). Restart VOICEVOX, and if that does not help, restart your PC."
+        },
+        {
+          "id": 901001,
+          "text": "Until this is fixed, nothing is read aloud. VOICEVOX is used again automatically once it works."
+        },
+        {
+          "id": 901002,
+          "text": "Until this is fixed, text is read with the standard Windows voice. VOICEVOX is used again automatically once it works."
+        },
+        {
+          "id": 901003,
+          "text": "Windows has run out of free network ports, so Assist cannot connect to VOICEVOX. Close apps that use many connections (such as web browsers) or restart your PC."
+        },
+        {
+          "id": 901004,
+          "text": "The speaker set in Settings (ID {speaker}) is not in VOICEVOX. Choose the speaker again on the Read Aloud tab in Settings."
+        },
+        {
+          "id": 901005,
+          "text": "Cannot connect to VOICEVOX"
+        },
+        {
+          "id": 901006,
+          "text": "VOICEVOX is not running or not responding. Start VOICEVOX (restart it if it has stopped)."
+        },
+        {
+          "id": 901007,
+          "text": "Connected to VOICEVOX."
+        },
+        {
+          "id": 901008,
+          "text": "{name} the {race}"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -82912,6 +82993,42 @@
         {
           "id": 900999,
           "text": "呪文耐性"
+        },
+        {
+          "id": 901000,
+          "text": "VOICEVOX へ接続できません（{detail}）。VOICEVOX を再起動し、直らない時は PC を再起動してください。"
+        },
+        {
+          "id": 901001,
+          "text": "直るまでは読み上げません。直ると自動で VOICEVOX で読み上げます。"
+        },
+        {
+          "id": 901002,
+          "text": "直るまでは Windows 標準の音声で読み上げます。直ると自動で VOICEVOX に戻ります。"
+        },
+        {
+          "id": 901003,
+          "text": "Windows の通信用の空きポートが足りず、VOICEVOX へ接続できません。ブラウザなど通信の多いアプリを閉じるか、PC を再起動してください。"
+        },
+        {
+          "id": 901004,
+          "text": "設定の話者（ID {speaker}）が VOICEVOX にありません。設定の「読み上げ」で話者を選び直してください。"
+        },
+        {
+          "id": 901005,
+          "text": "VOICEVOX に接続できません"
+        },
+        {
+          "id": 901006,
+          "text": "VOICEVOX が起動していないか、応答がありません。VOICEVOX を起動（止まっている時は再起動）してください。"
+        },
+        {
+          "id": 901007,
+          "text": "VOICEVOX に接続できました。"
+        },
+        {
+          "id": 901008,
+          "text": "{name}（{race}）"
         },
         {
           "id": 902000,
@@ -113207,6 +113324,42 @@
           "text": "Resistencia a hechizos"
         },
         {
+          "id": 901000,
+          "text": "No se puede conectar con VOICEVOX ({detail}). Reinicia VOICEVOX y, si no se soluciona, reinicia el PC."
+        },
+        {
+          "id": 901001,
+          "text": "Hasta que se solucione, no se leerá nada en voz alta. Se volverá a VOICEVOX automáticamente cuando funcione."
+        },
+        {
+          "id": 901002,
+          "text": "Hasta que se solucione, se leerá con la voz estándar de Windows. Se volverá a VOICEVOX automáticamente cuando funcione."
+        },
+        {
+          "id": 901003,
+          "text": "Windows se ha quedado sin puertos de red libres y no puede conectarse con VOICEVOX. Cierra las aplicaciones que usan muchas conexiones (como los navegadores) o reinicia el PC."
+        },
+        {
+          "id": 901004,
+          "text": "El hablante elegido en la configuración (ID {speaker}) no existe en VOICEVOX. Vuelve a elegirlo en Lectura en voz alta de la configuración."
+        },
+        {
+          "id": 901005,
+          "text": "No se puede conectar con VOICEVOX"
+        },
+        {
+          "id": 901006,
+          "text": "VOICEVOX no se está ejecutando o no responde. Inicia VOICEVOX (reinícialo si se ha detenido)."
+        },
+        {
+          "id": 901007,
+          "text": "Conectado con VOICEVOX."
+        },
+        {
+          "id": 901008,
+          "text": "{name} ({race})"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -142690,6 +142843,42 @@
         {
           "id": 900999,
           "text": "Zauberresistenz"
+        },
+        {
+          "id": 901000,
+          "text": "Keine Verbindung zu VOICEVOX ({detail}). Starte VOICEVOX neu und, falls das nicht hilft, den PC."
+        },
+        {
+          "id": 901001,
+          "text": "Bis dahin wird nichts vorgelesen. Sobald es wieder geht, wird automatisch VOICEVOX verwendet."
+        },
+        {
+          "id": 901002,
+          "text": "Bis dahin wird mit der Standardstimme von Windows vorgelesen. Sobald es wieder geht, wird automatisch VOICEVOX verwendet."
+        },
+        {
+          "id": 901003,
+          "text": "Windows hat keine freien Netzwerkports mehr, daher kann keine Verbindung zu VOICEVOX hergestellt werden. Schließe Programme mit vielen Verbindungen (etwa Webbrowser) oder starte den PC neu."
+        },
+        {
+          "id": 901004,
+          "text": "Der in den Einstellungen gewählte Sprecher (ID {speaker}) ist in VOICEVOX nicht vorhanden. Wähle den Sprecher unter „Vorlesen“ in den Einstellungen neu."
+        },
+        {
+          "id": 901005,
+          "text": "Keine Verbindung zu VOICEVOX"
+        },
+        {
+          "id": 901006,
+          "text": "VOICEVOX läuft nicht oder antwortet nicht. Starte VOICEVOX (bzw. starte es neu, falls es angehalten ist)."
+        },
+        {
+          "id": 901007,
+          "text": "Mit VOICEVOX verbunden."
+        },
+        {
+          "id": 901008,
+          "text": "{name} ({race})"
         },
         {
           "id": 902000,
@@ -172177,6 +172366,42 @@
           "text": "Résistance aux sorts"
         },
         {
+          "id": 901000,
+          "text": "Impossible de se connecter à VOICEVOX ({detail}). Redémarrez VOICEVOX et, si cela ne suffit pas, redémarrez le PC."
+        },
+        {
+          "id": 901001,
+          "text": "En attendant, rien n'est lu à voix haute. VOICEVOX sera de nouveau utilisé automatiquement dès qu'il fonctionnera."
+        },
+        {
+          "id": 901002,
+          "text": "En attendant, la lecture se fait avec la voix standard de Windows. VOICEVOX sera de nouveau utilisé automatiquement dès qu'il fonctionnera."
+        },
+        {
+          "id": 901003,
+          "text": "Windows n'a plus de ports réseau libres : impossible de se connecter à VOICEVOX. Fermez les applications qui ouvrent beaucoup de connexions (comme les navigateurs) ou redémarrez le PC."
+        },
+        {
+          "id": 901004,
+          "text": "Le locuteur choisi dans les paramètres (ID {speaker}) n'existe pas dans VOICEVOX. Choisissez-le de nouveau dans Lecture à voix haute des paramètres."
+        },
+        {
+          "id": 901005,
+          "text": "Impossible de se connecter à VOICEVOX"
+        },
+        {
+          "id": 901006,
+          "text": "VOICEVOX n'est pas lancé ou ne répond pas. Lancez VOICEVOX (redémarrez-le s'il s'est arrêté)."
+        },
+        {
+          "id": 901007,
+          "text": "Connecté à VOICEVOX."
+        },
+        {
+          "id": 901008,
+          "text": "{name} ({race})"
+        },
+        {
           "id": 902000,
           "text": "Mage"
         },
@@ -201660,6 +201885,42 @@
         {
           "id": 900999,
           "text": "Resistenza agli incantesimi"
+        },
+        {
+          "id": 901000,
+          "text": "Impossibile connettersi a VOICEVOX ({detail}). Riavvia VOICEVOX e, se non basta, riavvia il PC."
+        },
+        {
+          "id": 901001,
+          "text": "Nel frattempo non viene letto nulla ad alta voce. VOICEVOX verrà usato di nuovo automaticamente appena funziona."
+        },
+        {
+          "id": 901002,
+          "text": "Nel frattempo la lettura usa la voce standard di Windows. VOICEVOX verrà usato di nuovo automaticamente appena funziona."
+        },
+        {
+          "id": 901003,
+          "text": "Windows ha esaurito le porte di rete libere, quindi non è possibile connettersi a VOICEVOX. Chiudi le applicazioni che usano molte connessioni (come i browser) o riavvia il PC."
+        },
+        {
+          "id": 901004,
+          "text": "Il parlante scelto nelle impostazioni (ID {speaker}) non esiste in VOICEVOX. Sceglilo di nuovo in Lettura ad Alta Voce nelle impostazioni."
+        },
+        {
+          "id": 901005,
+          "text": "Impossibile connettersi a VOICEVOX"
+        },
+        {
+          "id": 901006,
+          "text": "VOICEVOX non è in esecuzione o non risponde. Avvia VOICEVOX (riavvialo se si è fermato)."
+        },
+        {
+          "id": 901007,
+          "text": "Connesso a VOICEVOX."
+        },
+        {
+          "id": 901008,
+          "text": "{name} ({race})"
         },
         {
           "id": 902000,
@@ -231147,6 +231408,42 @@
           "text": "Сопротивление заклинаниям"
         },
         {
+          "id": 901000,
+          "text": "Не удаётся подключиться к VOICEVOX ({detail}). Перезапустите VOICEVOX, а если не поможет — перезагрузите ПК."
+        },
+        {
+          "id": 901001,
+          "text": "Пока проблема не устранена, текст не читается вслух. Когда VOICEVOX заработает, он будет снова использоваться автоматически."
+        },
+        {
+          "id": 901002,
+          "text": "Пока проблема не устранена, текст читается стандартным голосом Windows. Когда VOICEVOX заработает, он будет снова использоваться автоматически."
+        },
+        {
+          "id": 901003,
+          "text": "В Windows закончились свободные сетевые порты, поэтому подключиться к VOICEVOX нельзя. Закройте программы с большим числом соединений (например, браузеры) или перезагрузите ПК."
+        },
+        {
+          "id": 901004,
+          "text": "Голос, выбранный в настройках (ID {speaker}), отсутствует в VOICEVOX. Выберите голос заново в разделе «Чтение вслух» настроек."
+        },
+        {
+          "id": 901005,
+          "text": "Не удаётся подключиться к VOICEVOX"
+        },
+        {
+          "id": 901006,
+          "text": "VOICEVOX не запущен или не отвечает. Запустите VOICEVOX (перезапустите, если он остановился)."
+        },
+        {
+          "id": 901007,
+          "text": "Подключение к VOICEVOX установлено."
+        },
+        {
+          "id": 901008,
+          "text": "{name} ({race})"
+        },
+        {
           "id": 902000,
           "text": "Маг"
         },
@@ -260630,6 +260927,42 @@
         {
           "id": 900999,
           "text": "法术抗性"
+        },
+        {
+          "id": 901000,
+          "text": "无法连接 VOICEVOX（{detail}）。请重新启动 VOICEVOX；如果仍不行，请重新启动电脑。"
+        },
+        {
+          "id": 901001,
+          "text": "恢复之前不进行朗读。恢复后会自动使用 VOICEVOX 朗读。"
+        },
+        {
+          "id": 901002,
+          "text": "恢复之前将使用 Windows 标准语音朗读。恢复后会自动改回 VOICEVOX。"
+        },
+        {
+          "id": 901003,
+          "text": "Windows 的可用网络端口已用尽，无法连接 VOICEVOX。请关闭连接较多的应用（如浏览器），或重新启动电脑。"
+        },
+        {
+          "id": 901004,
+          "text": "设置中的说话人（ID {speaker}）在 VOICEVOX 中不存在。请在设置的“朗读”中重新选择说话人。"
+        },
+        {
+          "id": 901005,
+          "text": "无法连接 VOICEVOX"
+        },
+        {
+          "id": 901006,
+          "text": "VOICEVOX 未启动或没有响应。请启动 VOICEVOX（已停止时请重新启动）。"
+        },
+        {
+          "id": 901007,
+          "text": "已连接 VOICEVOX。"
+        },
+        {
+          "id": 901008,
+          "text": "{name}（{race}）"
         },
         {
           "id": 902000,
@@ -290117,6 +290450,42 @@
           "text": "Resistência a feitiços"
         },
         {
+          "id": 901000,
+          "text": "Não foi possível conectar ao VOICEVOX ({detail}). Reinicie o VOICEVOX e, se não resolver, reinicie o PC."
+        },
+        {
+          "id": 901001,
+          "text": "Até que seja resolvido, nada é lido em voz alta. O VOICEVOX volta a ser usado automaticamente quando funcionar."
+        },
+        {
+          "id": 901002,
+          "text": "Até que seja resolvido, a leitura usa a voz padrão do Windows. O VOICEVOX volta a ser usado automaticamente quando funcionar."
+        },
+        {
+          "id": 901003,
+          "text": "O Windows ficou sem portas de rede livres, então não é possível conectar ao VOICEVOX. Feche aplicativos que usam muitas conexões (como navegadores) ou reinicie o PC."
+        },
+        {
+          "id": 901004,
+          "text": "O locutor definido nas configurações (ID {speaker}) não existe no VOICEVOX. Escolha o locutor novamente em Leitura em voz alta nas configurações."
+        },
+        {
+          "id": 901005,
+          "text": "Não foi possível conectar ao VOICEVOX"
+        },
+        {
+          "id": 901006,
+          "text": "O VOICEVOX não está em execução ou não responde. Inicie o VOICEVOX (reinicie-o se ele tiver parado)."
+        },
+        {
+          "id": 901007,
+          "text": "Conectado ao VOICEVOX."
+        },
+        {
+          "id": 901008,
+          "text": "{name} ({race})"
+        },
+        {
           "id": 902000,
           "text": "Mago"
         },
@@ -319600,6 +319969,42 @@
         {
           "id": 900999,
           "text": "Odporność na zaklęcia"
+        },
+        {
+          "id": 901000,
+          "text": "Nie można połączyć się z VOICEVOX ({detail}). Uruchom ponownie VOICEVOX, a jeśli to nie pomoże, uruchom ponownie komputer."
+        },
+        {
+          "id": 901001,
+          "text": "Do czasu naprawy nic nie jest czytane na głos. Gdy VOICEVOX zacznie działać, zostanie użyty automatycznie."
+        },
+        {
+          "id": 901002,
+          "text": "Do czasu naprawy tekst jest czytany standardowym głosem Windows. Gdy VOICEVOX zacznie działać, zostanie użyty automatycznie."
+        },
+        {
+          "id": 901003,
+          "text": "W systemie Windows zabrakło wolnych portów sieciowych, więc nie można połączyć się z VOICEVOX. Zamknij programy używające wielu połączeń (np. przeglądarki) lub uruchom ponownie komputer."
+        },
+        {
+          "id": 901004,
+          "text": "Głosu wybranego w ustawieniach (ID {speaker}) nie ma w VOICEVOX. Wybierz głos ponownie w sekcji Czytanie na głos w ustawieniach."
+        },
+        {
+          "id": 901005,
+          "text": "Nie można połączyć się z VOICEVOX"
+        },
+        {
+          "id": 901006,
+          "text": "VOICEVOX nie jest uruchomiony lub nie odpowiada. Uruchom VOICEVOX (uruchom ponownie, jeśli się zatrzymał)."
+        },
+        {
+          "id": 901007,
+          "text": "Połączono z VOICEVOX."
+        },
+        {
+          "id": 901008,
+          "text": "{name} ({race})"
         },
         {
           "id": 902000,
@@ -349087,6 +349492,42 @@
           "text": "주문 저항"
         },
         {
+          "id": 901000,
+          "text": "VOICEVOX에 연결할 수 없습니다({detail}). VOICEVOX를 다시 실행하고, 그래도 안 되면 PC를 다시 시작해 주세요."
+        },
+        {
+          "id": 901001,
+          "text": "해결될 때까지는 읽지 않습니다. 해결되면 자동으로 VOICEVOX로 읽습니다."
+        },
+        {
+          "id": 901002,
+          "text": "해결될 때까지는 Windows 기본 음성으로 읽습니다. 해결되면 자동으로 VOICEVOX로 돌아갑니다."
+        },
+        {
+          "id": 901003,
+          "text": "Windows의 사용 가능한 네트워크 포트가 부족하여 VOICEVOX에 연결할 수 없습니다. 브라우저처럼 연결을 많이 쓰는 앱을 닫거나 PC를 다시 시작해 주세요."
+        },
+        {
+          "id": 901004,
+          "text": "설정의 화자(ID {speaker})가 VOICEVOX에 없습니다. 설정의 '음성 읽기'에서 화자를 다시 선택해 주세요."
+        },
+        {
+          "id": 901005,
+          "text": "VOICEVOX에 연결할 수 없습니다"
+        },
+        {
+          "id": 901006,
+          "text": "VOICEVOX가 실행되지 않았거나 응답하지 않습니다. VOICEVOX를 실행해 주세요(멈춘 경우에는 다시 실행)."
+        },
+        {
+          "id": 901007,
+          "text": "VOICEVOX에 연결되었습니다."
+        },
+        {
+          "id": 901008,
+          "text": "{name}({race})"
+        },
+        {
           "id": 902000,
           "text": "마법사"
         },
@@ -378570,6 +379011,42 @@
         {
           "id": 900999,
           "text": "法術抗性"
+        },
+        {
+          "id": 901000,
+          "text": "無法連線到 VOICEVOX（{detail}）。請重新啟動 VOICEVOX；若仍無法解決，請重新啟動電腦。"
+        },
+        {
+          "id": 901001,
+          "text": "恢復之前不進行朗讀。恢復後會自動使用 VOICEVOX 朗讀。"
+        },
+        {
+          "id": 901002,
+          "text": "恢復之前將以 Windows 標準語音朗讀。恢復後會自動改回 VOICEVOX。"
+        },
+        {
+          "id": 901003,
+          "text": "Windows 的可用網路連接埠已用盡，無法連線到 VOICEVOX。請關閉連線較多的應用程式（如瀏覽器），或重新啟動電腦。"
+        },
+        {
+          "id": 901004,
+          "text": "設定中的說話者（ID {speaker}）不在 VOICEVOX 中。請在設定的「語音朗讀」中重新選擇說話者。"
+        },
+        {
+          "id": 901005,
+          "text": "無法連線到 VOICEVOX"
+        },
+        {
+          "id": 901006,
+          "text": "VOICEVOX 未啟動或沒有回應。請啟動 VOICEVOX（已停止時請重新啟動）。"
+        },
+        {
+          "id": 901007,
+          "text": "已連線到 VOICEVOX。"
+        },
+        {
+          "id": 901008,
+          "text": "{name}（{race}）"
         },
         {
           "id": 902000,

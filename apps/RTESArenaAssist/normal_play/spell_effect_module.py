@@ -14,14 +14,22 @@ class SpellEffectController:
         self._overlay = SpellEffectOverlay(window)
         self._last_key = None
         self._last_effects = None
+        self._last_state = None
 
     def reset(self) -> None:
         self._tracker.reset()
         self._overlay.reset()
         self._last_key = None
         self._last_effects = None
+        self._last_state = None
 
-    def _pause(self) -> None:
+    def _note_state(self, state: str) -> None:
+        if state != self._last_state:
+            self._last_state = state
+            assist_log.recog(_log, 'spell_effect overlay: %s', state)
+
+    def _pause(self, reason: str) -> None:
+        self._note_state(f'paused reason={reason}')
         self._tracker.pause()
         self._overlay.clear()
 
@@ -65,25 +73,27 @@ class SpellEffectController:
         obs_mode = bool(settings.get('overlay_obs', False))
         capture_host = self._capture_host(obs_mode)
         if not gameplay or getattr(window, '_loading_state_active', False) or getattr(window, '_loading_loadsave_seen_prev', False) or (not settings.get('spell_effect_arena_enabled', False)):
-            self._pause()
+            self._pause(f'inactive gameplay={gameplay}')
             return
         sample = read_sample(window._analyzer, window._anchor)
         if sample is None:
-            self._pause()
+            self._pause('unreadable')
             return
         rows = self._rows(sample)
         if not rows:
+            self._note_state('no_effects')
             self._overlay.clear()
             return
         layout = getattr(window, '_layout_mgr', None)
         foreground = bool(layout and layout.is_dosbox_foreground())
         if layout is None or (not foreground and (not obs_mode)):
-            self._pause()
+            self._pause(f'dosbox_not_foreground layout={layout is not None}')
             return
         rect = self._placement(layout, capture_host, foreground)
         if rect is None:
-            self._pause()
+            self._pause('no_rect')
             return
+        self._note_state(f'drawn rows={len(rows)} obs={obs_mode}')
         style = str(settings.get('spell_effect_arena_style', 'E')).upper()
         self._overlay.render(rows, style=style if style in STYLES else 'E', rect=rect, foreground=foreground)
 

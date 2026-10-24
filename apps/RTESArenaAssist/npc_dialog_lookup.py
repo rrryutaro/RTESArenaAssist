@@ -752,6 +752,19 @@ def _translate_trait_words(en: str, lang: str) -> Optional[str]:
             return None
         out.append(t)
     return ''.join(out) if out else None
+_DS_NAME_RACE_PATTERN = re.compile('^(.+?)\\s+the\\s+(.+)$')
+
+def _translate_ds_name(name_en: str, lang: str) -> str:
+    m = _DS_NAME_RACE_PATTERN.match(name_en)
+    if m:
+        race_en = m.group(2).strip()
+        race_ja = translate_placeholder('ra', race_en, lang)
+        if race_ja and race_ja != race_en:
+            import i18n_helper as i18n
+            fmt = i18n.text_opt('npc_desc.name_with_race')
+            if fmt:
+                return fmt.replace('{race}', race_ja).replace('{name}', translate_generated_name(m.group(1).strip(), lang))
+    return translate_generated_name(name_en, lang)
 
 def _translate_ds(value: str, lang: str) -> str:
     if lang == 'en':
@@ -807,7 +820,7 @@ def _translate_ds(value: str, lang: str) -> str:
             maybe_title_ja = _known_title_ja(parts[0], lang)
             if maybe_title_ja is not None:
                 title_ja, name_en = (maybe_title_ja, parts[1])
-        name_ja = translate_generated_name(name_en, lang)
+        name_ja = _translate_ds_name(name_en, lang)
         if title_ja is None:
             fmt = i18n.text_opt('status_buffer_text.ds_format_ask_about_untitled')
             if not fmt:
@@ -818,7 +831,8 @@ def _translate_ds(value: str, lang: str) -> str:
 
 def _ph_n_fn_rf_an_nc(name: str, value: str, lang: str) -> str:
     if lang != 'en':
-        return translate_generated_name(value, lang)
+        import i18n_helper as i18n
+        return i18n.text_opt(f'character.{_ph_slug(value)}.0') or translate_generated_name(value, lang)
     return value
 
 def _ph_doc(name: str, value: str, lang: str) -> str:

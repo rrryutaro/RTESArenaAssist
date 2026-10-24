@@ -597,7 +597,9 @@ class TTSService:
                     _log_tts(f'VOICEVOX synthesize error: speaker={result.speaker} chars={result.chars}\n{result.error}')
                     return list(segments[result.index:])
                 if not result.data:
-                    _log_tts(f'VOICEVOX synthesize returned no audio: speaker={result.speaker} chars={result.chars}')
+                    import voicevox_client as vv
+                    code, detail, _seq = vv.last_status()
+                    _log_tts(f'VOICEVOX synthesize returned no audio: speaker={result.speaker} chars={result.chars} reason={code} {detail}'.rstrip())
                     return list(segments[result.index:])
                 if not self._wait_if_paused(generation):
                     return []

@@ -7,9 +7,6 @@ from top_level.top_level_dispatcher import current_state as _current_top_level
 from screen_img_signals import INTERIOR_MENU_IMG, NPC_POPUP_IMG
 _log = logging.getLogger('normal_play_render')
 
-def exploration_runtime_dialog_context(*, area: str, in_interior: bool) -> bool:
-    return area == 'dungeon' or bool(in_interior)
-
 def poll_cinematic_dispatch(w, b30):
     from normal_play.cinematic_module import poll_cinematic as _poll_cinematic
     _poll_cinematic(w, b30=b30)
@@ -26,25 +23,20 @@ def poll_static_action_text_dispatch(w, *, band, in_play: bool):
     from normal_play.static_action_text_module import poll_static_action_text
     poll_static_action_text(w, band=band, in_play=in_play)
 
-def poll_c1_surface_dispatch(w, b30, *, inf_name, mif_name, c_area: str='', band=None, message_taken: bool=False, runtime_dialog_context: bool | None=None):
+def poll_c1_surface_dispatch(w, b30, *, inf_name, mif_name, c_area: str='', band=None, message_taken: bool=False):
     from normal_play.trigger_module import poll_red_text as _poll_red_text, poll_red_text_lifetime as _poll_red_text_lifetime, release_red_text as _release_red_text
     from normal_play.c1_gold_drop_module import poll_gold_drop as _poll_gold_drop, poll_gold_drop_lifetime as _poll_gold_drop_lifetime, release_gold_drop as _release_gold_drop
     from normal_play.c1_runtime_dialog_module import poll_c1_runtime_dialog_lifetime as _poll_c1_runtime_dialog_lifetime, release_c1_runtime_dialog as _release_c1_runtime_dialog
-    if runtime_dialog_context is None:
-        runtime_dialog_context = c_area == 'dungeon'
     if c_area != 'dungeon':
         _release_gold_drop(w)
+        _release_c1_runtime_dialog(w)
         _release_red_text(w)
-        if not runtime_dialog_context:
-            _release_c1_runtime_dialog(w)
-            return
-    else:
-        _poll_red_text(w, b30=b30, message_taken=message_taken)
-        _poll_gold_drop(w, b30=b30, inf_name=inf_name, mif_name=mif_name, observation=b30.get('gold_observation'))
+        return
+    _poll_red_text(w, b30=b30, message_taken=message_taken)
+    _poll_gold_drop(w, b30=b30, inf_name=inf_name, mif_name=mif_name, observation=b30.get('gold_observation'))
     _c1_axis = b30.get('c1_dialog_axis')
-    if c_area == 'dungeon':
-        _poll_red_text_lifetime(w, b30=b30, band=band)
-        _poll_gold_drop_lifetime(w, axis=_c1_axis)
+    _poll_red_text_lifetime(w, b30=b30, band=band)
+    _poll_gold_drop_lifetime(w, axis=_c1_axis)
     _poll_c1_runtime_dialog_lifetime(w, axis=_c1_axis)
 _ASK_ABOUT_MAIN_STATE = 'ask_about_main'
 _UNDECIDED_STATE = 'undecided'
@@ -251,6 +243,9 @@ def _poll_shared_negotiation_and_template(w, *, _shop_menu_visible, _shop_buy_ac
     _at_active_facility = 'temple' if _temple_active_now else 'tavern' if _tavern_active_now else ''
     if _negot_handled or _artifact_handled:
         _active_tmpl_handled = False
+        if _poll_hierarchy_area != 'dungeon':
+            from normal_play.active_template_module import note_unclaimed_dialog_template as _note_unclaimed
+            _note_unclaimed(w, reason='negotiation img=%r' % _shop_img_name if _negot_handled else 'artifact_offer')
     else:
         _t_active_tmpl = _phase_start()
         _active_tmpl_handled = _poll_active_template(w, shop_img_name=_shop_img_name, shop_menu_visible=_shop_menu_visible, shop_buy_active=_shop_buy_active, active_facility=_at_active_facility, allow_during_shop_menu=_temple_active_now or _tavern_active_now, tavern_l4_kind=_tavern_l4_kind, c_area=_poll_hierarchy_area)
@@ -376,7 +371,7 @@ def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_
         _release_artifact_offer(w)
     return (_negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active)
 
-def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog_changed, _npc_phase_raw, _img_name_now, _building_entry_active, _entry_phase_prev, _shop_state, _shop_img_name, _shop_menu_visible, _shop_buy_active, _facility_active_now, _poll_hierarchy_area, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _negot_handled, _active_tmpl_handled, _inventory_screen=False, _b30=None, _runtime_dialog_context=None):
+def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog_changed, _npc_phase_raw, _img_name_now, _building_entry_active, _entry_phase_prev, _shop_state, _shop_img_name, _shop_menu_visible, _shop_buy_active, _facility_active_now, _poll_hierarchy_area, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _negot_handled, _active_tmpl_handled, _inventory_screen=False, _b30=None):
     from arena_bridge import NPC_PHASE_BUILDING_ENTRY, NPC_PHASE_RESPONDING, NPC_PHASE_IDLE, NPC_PHASE_ASKING
     from normal_play.building_entry_module import poll_building_entry as _poll_building_entry
     from normal_play.npc_message_module import poll_npc_message_popup_lifetime as _poll_npc_message_popup_lifetime, poll_travel_event_lifecycle as _poll_travel_event_lifecycle
@@ -445,22 +440,18 @@ def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dial
         _instore_resp_handled = _poll_npc_dialog(w, b30=_b30, entry_handled=False, npc_overlay_active=_npc_overlay_active, in_interior=in_interior, npc_phase_raw=_npc_phase_raw, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible, facility_active_now=_facility_active_now, npc_dialog=npc_dialog, npc_dialog_changed=_npc_dialog_changed, c_area=_poll_hierarchy_area, internalized_facility_active=_temple_active_now or _equipment_active_now or _mages_active_now, shop_state_kind=_shop_state.kind if _shop_state is not None else 'none', negot_handled=_negot_handled, active_tmpl_handled=_active_tmpl_handled, popup_observation=(_popup_frame, _popup_frame_drawn, True, _npc_message_popup_closed, _img_name_now))
         if _instore_resp_handled:
             _entry_handled = True
-    if _runtime_dialog_context is None:
-        _runtime_dialog_context = exploration_runtime_dialog_context(area=_poll_hierarchy_area, in_interior=in_interior)
-    if _runtime_dialog_context and _inventory_screen:
+    if _poll_hierarchy_area == 'dungeon' and _inventory_screen:
         from normal_play.c1_runtime_dialog_module import pause_c1_runtime_dialog as _pause_c1_runtime_dialog
         _pause_c1_runtime_dialog(w)
-    elif _runtime_dialog_context and (not _entry_handled):
+    elif _poll_hierarchy_area == 'dungeon' and (not _entry_handled):
         from normal_play.c1_runtime_dialog_module import poll_c1_runtime_dialog as _poll_c1_runtime_dialog
-        _gold_surface_body = ''
-        if _poll_hierarchy_area == 'dungeon':
-            from normal_play.c1_gold_drop_module import accepted_gold_drop_body
-            _gold_surface_body = accepted_gold_drop_body(w)
-            _gold_observation = _b30.get('gold_observation') if _b30 else None
-            if _gold_observation is not None and _gold_observation.changed and _gold_observation.is_gold and _b30.get('in_gameplay', False):
-                _gold_surface_body = _gold_observation.text
+        from normal_play.c1_gold_drop_module import accepted_gold_drop_body
+        _gold_surface_body = accepted_gold_drop_body(w)
+        _gold_observation = _b30.get('gold_observation') if _b30 else None
+        if _gold_observation is not None and _gold_observation.changed and _gold_observation.is_gold and _b30.get('in_gameplay', False):
+            _gold_surface_body = _gold_observation.text
         if _poll_c1_runtime_dialog(w, npc_dialog=npc_dialog, facility_active_now=_facility_active_now, msg_buf=msg_buf, axis=_b30.get('c1_dialog_axis') if _b30 else None, gold_surface_body=_gold_surface_body):
             _instore_resp_handled = True
             _entry_handled = True
     return (_entry_handled, _instore_resp_handled)
-__all__ = ['poll_c1_surface_dispatch', 'exploration_runtime_dialog_context', 'blocks_ask_about_main', 'ask_about_main_display_allowed']
+__all__ = ['poll_c1_surface_dispatch', 'blocks_ask_about_main', 'ask_about_main_display_allowed']

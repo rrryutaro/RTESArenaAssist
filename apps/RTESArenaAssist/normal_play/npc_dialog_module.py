@@ -57,16 +57,19 @@ def _prepare_dialog_context(w, *, b30, in_interior, facility_active_now, popup_o
 def poll_npc_dialog(w, *, b30, entry_handled: bool, npc_overlay_active: bool, in_interior: bool, npc_phase_raw, shop_buy_active: bool, shop_menu_visible: bool, facility_active_now: bool, npc_dialog: str, npc_dialog_changed: bool=True, c_area: str='', internalized_facility_active: bool=False, shop_state_kind: str='none', negot_handled: bool=False, active_tmpl_handled: bool=False, popup_observation=_POPUP_FRAME_UNSET) -> bool:
     ctx = _prepare_dialog_context(w, b30=b30, in_interior=in_interior, facility_active_now=facility_active_now, popup_observation=popup_observation)
     instore_resp_handled = False
-    if c_area != 'dungeon':
-        instore_resp_handled, entry_handled = _poll_route1_instore_response(w, ctx, entry_handled=entry_handled, npc_overlay_active=npc_overlay_active, in_interior=in_interior, npc_phase_raw=npc_phase_raw, facility_active_now=facility_active_now, instore_resp_handled=instore_resp_handled, internalized_facility_active=internalized_facility_active, shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, shop_state_kind=shop_state_kind, negot_handled=negot_handled, active_tmpl_handled=active_tmpl_handled, c_area=c_area)
-    if not entry_handled and _current_top_level(w) == 'normal-play' and (not shop_buy_active) and (not shop_menu_visible):
-        if _poll_route_msg_foreground(w, ctx, in_interior=in_interior, facility_active_now=facility_active_now, c_area=c_area):
-            pass
-        elif _poll_route3_dungeon_msg(w, ctx, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, facility_active_now=facility_active_now, c_area=c_area):
-            instore_resp_handled = True
-        elif _poll_route4a_arrival(w, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, dialog_just_opened=ctx.dialog_just_opened, facility_active_now=facility_active_now, screen_img=ctx.screen_img, popup_frame=ctx.popup_frame, popup_frame_drawn=ctx.popup_frame_drawn):
-            pass
-        else:
-            poll_npc_conversation(w, ctx, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, dialog_just_opened=ctx.dialog_just_opened, in_interior=in_interior, facility_active_now=facility_active_now, npc_translated=False, c_area=c_area)
+    if entry_handled:
+        pass
+    elif c_area != 'dungeon' and _poll_route1_instore_response(w, ctx, entry_handled=False, npc_overlay_active=npc_overlay_active, in_interior=in_interior, npc_phase_raw=npc_phase_raw, facility_active_now=facility_active_now, instore_resp_handled=False, internalized_facility_active=internalized_facility_active, shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, shop_state_kind=shop_state_kind, negot_handled=negot_handled, active_tmpl_handled=active_tmpl_handled, c_area=c_area)[0]:
+        instore_resp_handled = True
+    elif _current_top_level(w) != 'normal-play' or shop_buy_active or shop_menu_visible:
+        pass
+    elif _poll_route_msg_foreground(w, ctx, in_interior=in_interior, facility_active_now=facility_active_now, c_area=c_area):
+        pass
+    elif _poll_route3_dungeon_msg(w, ctx, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, facility_active_now=facility_active_now, c_area=c_area):
+        instore_resp_handled = True
+    elif _poll_route4a_arrival(w, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, dialog_just_opened=ctx.dialog_just_opened, facility_active_now=facility_active_now, screen_img=ctx.screen_img, popup_frame=ctx.popup_frame, popup_frame_drawn=ctx.popup_frame_drawn):
+        pass
+    else:
+        poll_npc_conversation(w, ctx, npc_dialog=npc_dialog, npc_dialog_changed=npc_dialog_changed, dialog_just_opened=ctx.dialog_just_opened, in_interior=in_interior, facility_active_now=facility_active_now, npc_translated=False, c_area=c_area)
     return instore_resp_handled
 __all__ = ['poll_npc_dialog', 'NPC_MESSAGE_OWNER']
