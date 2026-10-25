@@ -66,7 +66,7 @@
   "status_buffer_text.health.15": "呪文吸収",
   "status_buffer_text.health.16": "呪文反射",
   "status_buffer_text.health.17": "呪文耐性",
-  "status_buffer_text.health.18": "防護",
+  "status_buffer_text.health.18": "シールド",
   "status_buffer_text.health.19": "再生",
   "status_buffer_text.health.20": "麻痺",
   "status_buffer_text.health.21": "呪い",
@@ -97,5 +97,5 @@
   "status_buffer_text.attribute.6": "個性",
   "status_buffer_text.attribute.7": "幸運",
   "status_buffer_text.line_disease": "疾患: {disease}",
-  "status_buffer_text.line_fortify": "強化: {attribute}"
+  "status_buffer_text.line_fortify": "状態: {attribute}強化"
 }

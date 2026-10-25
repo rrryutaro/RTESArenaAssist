@@ -21,7 +21,8 @@ def piece_value(item: dict) -> int:
             base += _METAL_BONUS.get(_number(item.get('metal'), -1), 0)
         return base
     if item_type == 'shield':
-        return _SHIELDS.get(_number(item.get('slot_id'), -1), ((), 0))[1]
+        slot = _number(item.get('base_slot'), _number(item.get('slot_id'), -1))
+        return _SHIELDS.get(slot, ((), 0))[1]
     return 0
 
 @dataclass
@@ -54,6 +55,7 @@ def compute(items: Optional[Iterable[dict]], to_defend: Optional[int]) -> Option
                 continue
             pieces[location] = piece_value(item)
         elif item_type == 'shield':
+            slot = _number(item.get('base_slot'), slot)
             known = _SHIELDS.get(slot)
             if known is None:
                 unknown.append(f'shield slot {slot}')

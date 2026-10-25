@@ -3,6 +3,7 @@ import re
 from typing import Iterable, Mapping, Optional
 import armor_rating
 import i18n_helper as i18n
+from charsheet import text_fit
 from charsheet.magic_items import MAGIC_ITEM_VALUE_KEYS
 from charsheet.potions import POTION_VALUE_KEYS
 from attributes_panel import ATTR_KEYS as _ATTR_CODES, DERIVED_LABEL_KEYS, STAT_LABEL_KEYS, UNKNOWN, attr_label
@@ -14,7 +15,7 @@ ARMOR_KEYS: tuple[str, ...] = tuple((f'ar_{location}' for location in armor_rati
 VALUE_KEYS: tuple[str, ...] = ('name', 'race', 'race_en', 'class', 'class_en', *ATTR_KEYS, *(f'{key}_base' for key in ATTR_KEYS), *(f'{key}_change' for key in ATTR_KEYS), 'damage', 'max_kilos', 'magic_def', 'to_hit', 'to_defend', 'health', 'heal_mod', 'charisma', 'spell_pts', 'spell_pts_curr', 'spell_pts_max', 'bonus_pts', 'hp', 'hp_curr', 'hp_max', 'fatigue', 'fatigue_curr', 'fatigue_max', 'gold', 'level', 'experience', 'experience_next', *DERIVED_KEYS, *CONDITION_KEYS, *ARMOR_KEYS, *POTION_VALUE_KEYS, *MAGIC_ITEM_VALUE_KEYS)
 IMAGE_KEYS: tuple[str, ...] = ('face', 'body')
 _LABEL_IDS: dict[str, str] = {'name': 'status.name', 'race': 'status.race', 'class': 'status.class', **DERIVED_LABEL_KEYS, **STAT_LABEL_KEYS, 'experience_next': 'charsheet.label.next_level', 'experience_to_next': 'charsheet.label.to_next_level', 'title': 'charsheet.title', 'section_attributes': 'charsheet.section.attributes', 'section_combat': 'charsheet.section.combat', 'section_vitals': 'charsheet.section.vitals', 'section_record': 'charsheet.section.record', 'col_value': 'charsheet.col.value', 'col_modifier': 'charsheet.col.modifier', 'col_base': 'charsheet.col.base', 'condition': 'charsheet.label.condition', 'section_armor': 'charsheet.section.armor', 'section_potions': 'charsheet.section.potions', 'section_magic_items': 'charsheet.section.magic_items', 'armor_note': 'charsheet.armor.note', **{f'ar_{location}': f'charsheet.armor.{location}' for location in armor_rating.LOCATIONS}}
-LABEL_KEYS: tuple[str, ...] = (*_LABEL_IDS, *ATTR_KEYS, *(f'{key}_code' for key in ATTR_KEYS))
+LABEL_KEYS: tuple[str, ...] = (*_LABEL_IDS, *ATTR_KEYS, *(f'{key}_code' for key in ATTR_KEYS), 'mod_label_class')
 _ATTR_LABEL_RE = re.compile('^(.*?)\\s*\\(([A-Z]{3})\\)\\s*$')
 
 def split_attr_label(text: str, code: str) -> tuple[str, str]:
@@ -56,6 +57,18 @@ def with_armor(values: Mapping[str, str], equipped: Optional[Iterable[dict]]) ->
     out = dict(values)
     out.update(armor_rating.sheet_values(armor_rating.compute(equipped, armor_rating.parse_signed(values.get('to_defend')))))
     return out
+_MOD_LABEL_KEYS = ('damage', 'max_kilos', 'spell_pts', 'magic_def', 'to_hit', 'to_defend', 'health', 'heal_mod', 'charisma')
+_MOD_LABEL_WIDTH = 54
+_MOD_LABEL_PX = 12
+
+def _mod_label_class(out: Mapping[str, str]) -> str:
+    if not text_fit.can_measure():
+        return 'mlabs'
+    try:
+        fits = all((text_fit.text_width(out.get(key, ''), _MOD_LABEL_PX) <= _MOD_LABEL_WIDTH for key in _MOD_LABEL_KEYS))
+    except Exception:
+        return 'mlabs'
+    return 'mlab' if fits else 'mlabs'
 
 def labels() -> dict[str, str]:
     out = {key: i18n.text(label_id) for key, label_id in _LABEL_IDS.items()}
@@ -63,5 +76,6 @@ def labels() -> dict[str, str]:
         name, short = split_attr_label(attr_label(code), code)
         out[key] = name
         out[f'{key}_code'] = short
+    out['mod_label_class'] = _mod_label_class(out)
     return out
 __all__ = ['ATTR_KEYS', 'DERIVED_KEYS', 'CONDITION_KEYS', 'ARMOR_KEYS', 'POTION_VALUE_KEYS', 'MAGIC_ITEM_VALUE_KEYS', 'VALUE_KEYS', 'IMAGE_KEYS', 'LABEL_KEYS', 'UNKNOWN', 'labels', 'split_attr_label', 'with_derived', 'with_armor']

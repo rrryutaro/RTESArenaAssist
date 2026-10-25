@@ -200,7 +200,10 @@ pre { font-family: monospace; font-size: 11px; line-height: 1.4; margin: 0; whit
 <table>
   <tr><th>Ключ</th><th>Содержимое</th><th>Пример</th></tr>
   <tr><td><code>magic_item_1_name</code> … <code>magic_item_40_name</code></td><td>Название магического снаряжения</td><td>Название предмета</td></tr>
+  <tr><td><code>magic_item_1_label</code> … <code>magic_item_40_label</code></td><td>Название предмета, подогнанное под колонку (сокращается знаком …, если не помещается)</td><td>Necromancer’s A…</td></tr>
   <tr><td><code>magic_item_1_effect</code> … <code>magic_item_40_effect</code></td><td>Название магического эффекта</td><td>Магический эффект</td></tr>
+  <tr><td><code>magic_item_1_more</code> … <code>magic_item_40_more</code></td><td>Число не показанных эффектов (только у предметов с несколькими эффектами)</td><td>+2</td></tr>
+  <tr><td><code>magic_item_1_small</code> … <code>magic_item_40_small</code></td><td>1 только когда название эффекта показано мельче, чтобы поместиться</td><td>1</td></tr>
   <tr><td><code>magic_item_1_uses</code> … <code>magic_item_40_uses</code></td><td>Оставшиеся использования</td><td>12</td></tr>
 </table>
 <p>40 ключей соответствуют 40 ячейкам инвентаря Arena и не являются произвольным ограничением числа выбираемых типов.</p>

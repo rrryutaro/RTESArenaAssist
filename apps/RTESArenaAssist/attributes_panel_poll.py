@@ -5,6 +5,7 @@ import i18n_helper as i18n
 from attributes_panel import OFF_BONUS_PTS_U8, OFF_DAMAGE_I16, OFF_EXP_U32, OFF_FATIGUE_U16, OFF_GOLD_U32, OFF_HEALTH_CURR_U16, OFF_FACE_INDEX, OFF_HEALTH_MAX_U16, OFF_IS_FEMALE, OFF_LEVEL_U8, OFF_NAME, OFF_PRIMARY_1, OFF_PRIMARY_2, OFF_RACE_INDEX, OFF_SPELL_PTS_CURR, OFF_SPELL_PTS_MAX, PRIMARY_LEN, UNKNOWN, _signed, class_names
 from player_condition import read_fields as read_condition_fields
 from player_condition import sheet_values as condition_sheet_values
+from spell_effects import fortified_attribute
 from attribute_formulas import calc_bonus_to_health, calc_bonus_to_health_256, calc_bonus_to_hit, calc_damage_bonus, calc_magic_defense, calc_max_kilos, calc_max_stamina, calc_max_stamina_256
 _SHEET_ATTR_KEYS = ('str', 'int', 'wil', 'agi', 'spd', 'end', 'per', 'luc')
 
@@ -249,7 +250,7 @@ def poll_attributes(panel) -> None:
     if not panel._chargen_mode:
         fields = read_condition_fields(panel._analyzer, panel._anchor)
         if fields is not None:
-            sheet.update(condition_sheet_values(fields, i18n.text('charsheet.list_separator')))
+            sheet.update(condition_sheet_values(fields, i18n.text('charsheet.list_separator'), fortified_attribute(), keep_words_together=True))
             panel._condition_log.observe(fields, hp=sheet.get('hp_curr'), hp_max=sheet.get('hp_max'))
     panel._publish_sheet_values(sheet)
 __all__ = ['poll_attributes']

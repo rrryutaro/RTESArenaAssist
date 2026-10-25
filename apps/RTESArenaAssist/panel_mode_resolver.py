@@ -45,7 +45,7 @@ def panel_is_effective(*, panel_present: bool, emulate_panel_hidden: bool) -> bo
     return bool(panel_present) and (not bool(emulate_panel_hidden))
 _FALLBACK_SETTING_TO_MODE = {'map': MODE_FALLBACK_MAP, 'status': MODE_FALLBACK_STATUS}
 
-def resolve_flush_mode(*, winner_mode: Optional[str], top_level: str, emulate: bool, winner_has_content: bool, winner_is_tab_owner: bool, fallback_setting: str, current_owner: str, panel_active: Optional[bool]=None) -> str:
+def resolve_flush_mode(*, winner_mode: Optional[str], top_level: str, emulate: bool, winner_has_content: bool, winner_is_tab_owner: bool, fallback_setting: str, current_owner: str, panel_active: Optional[bool]=None, winner_floor_mode: Optional[str]=None) -> str:
     _required_owner = required_owner_for_mode(winner_mode)
     if _required_owner is not None and _required_owner != (current_owner or ''):
         winner_mode = None
@@ -55,6 +55,8 @@ def resolve_flush_mode(*, winner_mode: Optional[str], top_level: str, emulate: b
         return MODE_TRANSLATE
     if winner_is_tab_owner and (not bool(panel_active)):
         return MODE_TRANSLATE
+    if winner_floor_mode in FOREGROUND_MODES:
+        return winner_floor_mode
     if emulate and winner_has_content:
         return MODE_TRANSLATE
     return _FALLBACK_SETTING_TO_MODE.get(fallback_setting, MODE_TRANSLATE)

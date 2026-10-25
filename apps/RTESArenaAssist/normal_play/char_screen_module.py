@@ -51,7 +51,7 @@ def show_equipment_page(w) -> None:
             _log_armor_rating(w, items_raw)
     except Exception:
         _log.exception('equipment read failed')
-    w._ui_router.propose_equipment_list('equipment', title, item_data, priority=SCREEN_PANEL_PRIORITY, reason='screen:equipment')
+    w._ui_router.propose_equipment_list('equipment', title, item_data, panel_en='', panel_ja='', priority=SCREEN_PANEL_PRIORITY, reason='screen:equipment')
 
 def _log_armor_rating(w, items_raw: list) -> None:
     import armor_rating

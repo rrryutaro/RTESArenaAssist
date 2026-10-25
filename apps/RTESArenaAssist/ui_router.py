@@ -174,7 +174,7 @@ class UiRouter:
             if required_owner_for_mode(cur) is None:
                 return None
             return resolve_flush_mode(winner_mode=cur, top_level=top_level, emulate=emulate, winner_has_content=False, winner_is_tab_owner=False, fallback_setting=fb, current_owner=owner_now, panel_active=panel_active)
-        return resolve_flush_mode(winner_mode=intent.mode if intent.mode is not None else cur, top_level=top_level, emulate=emulate, winner_has_content=self._winner_has_content(intent), winner_is_tab_owner=bool(intent.kind == 'translation' and (intent.panel_owner or '') in _CONVERSATION_TAB_OWNERS), fallback_setting=fb, current_owner=owner_now, panel_active=panel_active)
+        return resolve_flush_mode(winner_mode=intent.mode if intent.mode is not None else cur, winner_floor_mode=intent.floor_mode, top_level=top_level, emulate=emulate, winner_has_content=self._winner_has_content(intent), winner_is_tab_owner=bool(intent.kind == 'translation' and (intent.panel_owner or '') in _CONVERSATION_TAB_OWNERS), fallback_setting=fb, current_owner=owner_now, panel_active=panel_active)
 
     def _log_flush_winner(self, intent: Optional[DisplayIntent], frame: Optional[PollFrame]) -> None:
         if intent is None:
@@ -232,8 +232,8 @@ class UiRouter:
             return False
         return self.propose_display(DisplayIntent.translation(panel_owner, en, ja, mode=mode, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, allowed_current_owners=allowed_current_owners, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action))
 
-    def propose_translation(self, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace') -> None:
-        self.propose_display(DisplayIntent.translation(panel_owner, en, ja, mode=mode, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action))
+    def propose_translation(self, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', floor_mode: Optional[str]=None) -> None:
+        self.propose_display(DisplayIntent.translation(panel_owner, en, ja, mode=mode, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, floor_mode=floor_mode))
     _RENDERERS = {'translation': '_render_translation', 'combat_info': '_render_combat_info', 'clear': '_render_clear', 'claim_owner': '_render_claim_owner', 'panel_mode': '_render_panel_mode', 'shop_buy_list': '_render_shop_buy_list', 'facility_list': '_render_facility_list', 'spellbook': '_render_spellbook', 'item_pickup_list': '_render_item_pickup_list', 'load_screen_slots': '_render_load_screen_slots', 'equipment_list': '_render_equipment_list', 'spell_detail': '_render_spell_detail', 'place_list': '_render_place_list', 'travel_table': '_render_travel_table', 'journal_entries': '_render_journal_entries'}
 
     def apply_display(self, intent: DisplayIntent) -> None:
@@ -380,6 +380,8 @@ class UiRouter:
         tab = self._window._tab_translate
         tab.set_equipment_panel_title(intent.title)
         tab.update_equipment_list(intent.items)
+        if intent.panel_en is not None or intent.panel_ja is not None:
+            self._update_layout_panel(intent.panel_en or '', intent.panel_ja or '')
         return None
 
     def _render_spell_detail(self, intent: DisplayIntent):
@@ -541,8 +543,8 @@ class UiRouter:
     def propose_spellbook_list(self, panel_owner: str, items: list, panel_en: str, panel_ja: str, *, list_title_ja: str=None, priority: int=0, reason: str='') -> None:
         self.propose_display(DisplayIntent.spellbook_list(panel_owner, items, panel_en, panel_ja, list_title_ja=list_title_ja, priority=priority, reason=reason))
 
-    def propose_equipment_list(self, panel_owner: str, title: str, items: list, *, priority: int=0, reason: str='') -> None:
-        self.propose_display(DisplayIntent.equipment_list(panel_owner, title, items, priority=priority, reason=reason))
+    def propose_equipment_list(self, panel_owner: str, title: str, items: list, *, panel_en: Optional[str]=None, panel_ja: Optional[str]=None, priority: int=0, reason: str='') -> None:
+        self.propose_display(DisplayIntent.equipment_list(panel_owner, title, items, panel_en=panel_en, panel_ja=panel_ja, priority=priority, reason=reason))
 
     def update_spell_detail(self, panel_owner: str, data: dict, *, panel_en: str='', panel_ja: str='') -> None:
         self.propose_display(DisplayIntent.spell_detail(panel_owner, data, panel_en=panel_en, panel_ja=panel_ja))

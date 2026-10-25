@@ -72,7 +72,7 @@ class SpellEffectController:
         window = self._window
         obs_mode = bool(settings.get('overlay_obs', False))
         capture_host = self._capture_host(obs_mode)
-        if not gameplay or getattr(window, '_loading_state_active', False) or getattr(window, '_loading_loadsave_seen_prev', False) or (not settings.get('spell_effect_arena_enabled', False)):
+        if not gameplay or getattr(window, '_loading_state_active', False) or getattr(window, '_loading_loadsave_seen_prev', False):
             self._pause(f'inactive gameplay={gameplay}')
             return
         sample = read_sample(window._analyzer, window._anchor)
@@ -80,6 +80,10 @@ class SpellEffectController:
             self._pause('unreadable')
             return
         rows = self._rows(sample)
+        if not settings.get('spell_effect_arena_enabled', False):
+            self._note_state('disabled')
+            self._overlay.clear()
+            return
         if not rows:
             self._note_state('no_effects')
             self._overlay.clear()

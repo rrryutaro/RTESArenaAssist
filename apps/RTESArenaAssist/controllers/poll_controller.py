@@ -110,16 +110,21 @@ def _detect_save_file_write(w) -> bool:
         return False
     return sig != prev
 
-def _release_completed_load_screen_owner(w, *, img_name: str, save_detected: bool, loading_active: bool, loading_post_settle: bool, screen_id: str='', npc_idle: bool=True) -> None:
+def _release_completed_load_screen_owner(w, *, img_name: str, save_detected: bool, loading_active: bool, loading_post_settle: bool, screen_id: str='', npc_idle: bool=True, a845: int | None=None) -> None:
     if _current_top_level(w) != 'normal-play':
         return
     if (getattr(w, '_panel_owner', '') or '') != 'load_screen':
         w._loadscreen_release_pending = False
         w._loadscreen_confirmed_seen = False
+        w._loadscreen_release_diag = None
         return
     if save_detected:
         w._loadscreen_release_pending = True
     pending = bool(getattr(w, '_loadscreen_release_pending', False))
+    diag = (screen_id, img_name, a845, getattr(w, '_menu_active_prev', None), bool(getattr(w, '_loadscreen_confirmed_seen', False)), pending, bool(loading_active), bool(loading_post_settle))
+    if diag != getattr(w, '_loadscreen_release_diag', None):
+        w._loadscreen_release_diag = diag
+        _recog(_log, 'load_screen release inputs: screen=%s img=%s a845=%s menu_active=%s seen_list=%s save_pending=%s loading=%s settle=%s', *diag)
     if screen_id == 'loadsave_in_play':
         w._loadscreen_confirmed_seen = True
         return
@@ -857,7 +862,7 @@ def _poll_resolve_loading_state(w, *, _img_name_early):
         _a845_for_release = w._analyzer.read_bytes(w._anchor + 43077, 1)[0]
     except (OSError, AttributeError, IndexError):
         _a845_for_release = 0
-    _release_completed_load_screen_owner(w, img_name=_img_name_early_upper, save_detected=_detect_save_file_write(w), loading_active=_loading_active, loading_post_settle=_loading_post_settle, screen_id=getattr(w, '_screen_id_prev', '') or '', npc_idle=_a845_for_release == 0)
+    _release_completed_load_screen_owner(w, img_name=_img_name_early_upper, save_detected=_detect_save_file_write(w), loading_active=_loading_active, loading_post_settle=_loading_post_settle, screen_id=getattr(w, '_screen_id_prev', '') or '', npc_idle=_a845_for_release == 0, a845=_a845_for_release)
     w._loading_state_active_prev = _loading_active
     return (_img_name_early_upper, _load_edge_start, _loading_post_settle, _overlay_loading, _loading_active)
 

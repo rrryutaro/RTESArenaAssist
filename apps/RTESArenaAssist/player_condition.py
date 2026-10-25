@@ -15,10 +15,22 @@ OFF_HP_CURR = 509
 OFF_HP_MAX = 511
 _FLAG_WORDS: tuple[tuple[int, int], ...] = ((1, 1), (2, 2), (32, 4), (128, 19), (64, 20), (4, 21), (512, 22))
 _EFFECT_WORDS: tuple[tuple[int, int], ...] = ((1, 5), (2, 6), (4, 7), (8, 8), (16, 9), (32, 10), (64, 11), (128, 12), (512, 14), (1024, 15), (2048, 16), (4096, 17))
+
+def effect_window_position(effect_bit: int) -> int:
+    return 5 + effect_bit.bit_length() - 1
+
+def flag_window_position(flag_bit: int) -> Optional[int]:
+    return dict(_FLAG_WORDS).get(flag_bit)
+SHIELD_WINDOW_POSITION = 18
+FORTIFY_WINDOW_POSITION = 1000
 _BAD_WORDS = frozenset({1, 2, 4, 14, 20, 21, 22})
 _EFFECT_SPEC_BY_WORD = {5: (15, 0, 0), 7: (10, 0, 0), 8: (10, 1, 0), 9: (10, 2, 0), 10: (10, 3, 0), 11: (10, 4, 0), 12: (16, 0, 0), 14: (21, 0, 0), 15: (22, 0, 0), 16: (23, 0, 0), 17: (24, 0, 0)}
 _HEALTHY_WORD = 0
+_SHIELDED_WORD = SHIELD_WINDOW_POSITION
 _SHIELD_SPEC = (2, 0, 0)
+_FORTIFIED_FLAG = 16
+_WORD_JOINER = '\u2060'
+_FORTIFY_EFFECT_ID = 11
 _FLAG_NAMES = {1: 'diseased', 2: 'poisoned', 4: 'cursed', 8: 'blessed', 16: 'fortified', 32: 'drunk', 64: 'paralyzed', 128: 'regenerating', 256: 'dead', 512: 'being drained', 4096: 'creature', 16384: 'player?'}
 _EFFECT_NAMES = {1: 'invisible', 2: 'non-target', 4: 'resist fire', 8: 'resist cold', 16: 'resist shock', 32: 'resist acid', 64: 'resist poison', 128: 'levitating', 256: 'light?', 512: 'silenced', 1024: 'absorb spells', 2048: 'reflect spells', 4096: 'resist spells'}
 
@@ -58,16 +70,22 @@ def word_indices(fields: ConditionFields) -> list[int]:
     found += [index for bit, index in _EFFECT_WORDS if fields.effects & bit]
     return sorted(found)
 
-def sheet_values(fields: ConditionFields, separator: str) -> dict[str, str]:
+def sheet_values(fields: ConditionFields, separator: str, fortified_attribute: Optional[int]=None, *, keep_words_together: bool=False) -> dict[str, str]:
     indices = word_indices(fields)
-    bad = [w for w in (_word(i) for i in indices if i in _BAD_WORDS) if w]
-    good = [w for w in (_word(i) for i in indices if i not in _BAD_WORDS) if w]
-    words = [w for w in (_word(i) for i in indices) if w]
     shield = _shield_word(fields)
-    shown = list(words) if words else [_word(_HEALTHY_WORD)]
     if shield:
-        good.append(shield)
-        shown.append(shield)
+        indices = sorted(indices + [_SHIELDED_WORD])
+    bad = [w for w in (_word(i) for i in indices if i in _BAD_WORDS) if w]
+    good = [w for w in (shield if i == _SHIELDED_WORD else _word(i) for i in indices if i not in _BAD_WORDS) if w]
+    shown = [w for w in (shield if i == _SHIELDED_WORD else _word(i) for i in indices) if w]
+    if not bad:
+        shown.append(_word(_HEALTHY_WORD))
+    fortify = _fortify_word(fields, fortified_attribute)
+    if fortify:
+        good.append(fortify)
+        shown.append(fortify)
+    if keep_words_together:
+        bad, good, shown = ([_WORD_JOINER.join(w) for w in words] for words in (bad, good, shown))
     out = {'condition': separator.join((w for w in shown if w))}
     if bad:
         out['condition_bad'] = separator.join(bad)
@@ -89,10 +107,12 @@ def _word(index: int) -> str:
 def _shield_word(fields: ConditionFields) -> str:
     if fields.shield <= 0:
         return ''
-    name = _effect_name(_SHIELD_SPEC)
-    if not name:
+    return _effect_name(_SHIELD_SPEC)
+
+def _fortify_word(fields: ConditionFields, attribute: Optional[int]) -> str:
+    if attribute is None or not (fields.flags & _FORTIFIED_FLAG and fields.counters[4]):
         return ''
-    return '%s %d' % (name, fields.shield)
+    return _effect_name((_FORTIFY_EFFECT_ID, attribute, attribute))
 
 def _bit_names(value: int, names: dict[int, str]) -> str:
     parts = []

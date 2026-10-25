@@ -62,7 +62,7 @@ def poll_equipment_detail(w) -> bool:
     local_name = lookup_item(name) or name
     w._equipment_detail_name = name
     _recog(_log, 'artifact detail open: name=%r key=%s', name, key)
-    w._ui_router.propose_translation(OWNER, f'{name}\n\n{en_body}' if en_body else name, f'{local_name}\n\n{ja_body}', mode='translate', priority=SCREEN_PANEL_PRIORITY + 1, reason='equipment:artifact_detail', speech_role='situation', speech_text=ja_body)
+    w._ui_router.propose_translation(OWNER, f'{name}\n\n{en_body}' if en_body else name, f'{local_name}\n\n{ja_body}', mode='translate', floor_mode='equipment', priority=SCREEN_PANEL_PRIORITY + 1, reason='equipment:artifact_detail', speech_role='situation', speech_text=ja_body)
     return True
 
 def reset_equipment_detail(w) -> None:

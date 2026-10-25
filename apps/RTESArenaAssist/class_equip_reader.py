@@ -53,7 +53,7 @@ def can_equip_item(item_summary: dict, rules: dict | None) -> bool | None:
     if item_type == 'weapon':
         if rules is None:
             return None
-        return item_summary['slot_id'] in rules['weapon_ids']
+        return _base_slot(item_summary) in rules['weapon_ids']
     if item_type == 'armor':
         if rules is None:
             return None
@@ -61,5 +61,9 @@ def can_equip_item(item_summary: dict, rules: dict | None) -> bool | None:
     if item_type == 'shield':
         if rules is None:
             return None
-        return item_summary['slot_id'] in rules['shield_slots']
+        return _base_slot(item_summary) in rules['shield_slots']
     return True
+
+def _base_slot(item_summary: dict) -> int:
+    base = item_summary.get('base_slot')
+    return item_summary['slot_id'] if base is None else base

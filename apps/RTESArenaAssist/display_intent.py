@@ -29,6 +29,7 @@ class DisplayIntent:
     kind: str
     panel_owner: str = ''
     mode: Optional[str] = None
+    floor_mode: Optional[str] = None
     en: str = ''
     ja: str = ''
     panel_en: Optional[str] = None
@@ -55,8 +56,8 @@ class DisplayIntent:
     log_enabled: bool = True
 
     @classmethod
-    def translation(cls, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', allowed_current_owners: Optional[tuple[str, ...]]=None, speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True) -> 'DisplayIntent':
-        return cls(kind='translation', panel_owner=panel_owner, mode=mode, en=en, ja=ja, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, allowed_current_owners=allowed_current_owners, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled)
+    def translation(cls, panel_owner: str, en: str, ja: str, *, mode: Optional[str]='translate', panel_en: Optional[str]=None, panel_ja: Optional[str]=None, update_panel: bool=True, update_tab: bool=True, keep_owner: bool=False, clear_place_list: bool=False, priority: int=0, reason: str='', allowed_current_owners: Optional[tuple[str, ...]]=None, speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True, floor_mode: Optional[str]=None) -> 'DisplayIntent':
+        return cls(kind='translation', panel_owner=panel_owner, mode=mode, floor_mode=floor_mode, en=en, ja=ja, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, allowed_current_owners=allowed_current_owners, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, log_enabled=log_enabled)
 
     @classmethod
     def panel_translation(cls, panel_en: str, panel_ja: str, *, priority: int=0, reason: str='', speech_role: Optional[str]=None, speech_text: Optional[str]=None, speech_action: str='replace', log_enabled: bool=True) -> 'DisplayIntent':
@@ -103,8 +104,8 @@ class DisplayIntent:
         return cls(kind='load_screen_slots', panel_owner=panel_owner, mode='load_screen', items=slot_data, priority=priority, reason=reason)
 
     @classmethod
-    def equipment_list(cls, panel_owner: str, title: str, items: list, *, priority: int=0, reason: str='') -> 'DisplayIntent':
-        return cls(kind='equipment_list', panel_owner=panel_owner, mode='equipment', title=title, items=items, priority=priority, reason=reason)
+    def equipment_list(cls, panel_owner: str, title: str, items: list, *, panel_en: Optional[str]=None, panel_ja: Optional[str]=None, priority: int=0, reason: str='') -> 'DisplayIntent':
+        return cls(kind='equipment_list', panel_owner=panel_owner, mode='equipment', title=title, items=items, panel_en=panel_en, panel_ja=panel_ja, priority=priority, reason=reason)
 
     @classmethod
     def spell_detail(cls, panel_owner: str, data: dict, *, panel_en: str='', panel_ja: str='', priority: int=0, reason: str='') -> 'DisplayIntent':
