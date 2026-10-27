@@ -6,9 +6,10 @@ import i18n_helper as i18n
 from panel_mode_resolver import SCREEN_PANEL_PRIORITY, screen_panel_mode
 from top_level.top_level_dispatcher import current_state as _current_top_level
 from normal_play import equipment_detail_module as _equipment_detail
+from normal_play import equipment_drop_confirm_module as _equipment_confirm
 _log = logging.getLogger('char_screen_module')
 SCREEN_PANEL_OWNERS: dict[str, str] = {'equipment': 'equipment', 'spellbook': 'spellbook', 'spell_detail': 'spell_detail'}
-SCREEN_PANEL_OWNER_SET = frozenset(SCREEN_PANEL_OWNERS.values()) | {_equipment_detail.OWNER}
+SCREEN_PANEL_OWNER_SET = frozenset(SCREEN_PANEL_OWNERS.values()) | {_equipment_detail.OWNER, _equipment_confirm.OWNER}
 _STAFF_PIECES_RE = re.compile('^\\s*Staff\\s+Pieces\\s*\\((\\d+)\\)', re.I)
 
 def read_staff_pieces_row(w) -> dict | None:
@@ -147,6 +148,7 @@ def on_screen_id_changed(w, screen_id: str) -> None:
     release_screen_panel_owner(w, screen_id)
     if screen_id != 'equipment':
         _equipment_detail.reset_equipment_detail(w)
+        _equipment_confirm.reset_equipment_drop_confirm(w)
     if screen_id == 'spellbook':
         show_spellbook_page(w)
     elif screen_id == 'spell_detail':
@@ -182,6 +184,10 @@ def poll_char_screen_pages(w, screen_id_stable) -> None:
                 show_spell_detail_page(w)
         elif screen_id_stable == 'equipment':
             detail_visible = _equipment_detail.poll_equipment_detail(w)
+            if detail_visible:
+                _equipment_confirm.reset_equipment_drop_confirm(w)
+            else:
+                detail_visible = _equipment_confirm.poll_equipment_drop_confirm(w)
             if not detail_visible:
                 _equipment_detail.reset_equipment_detail(w)
                 try:
@@ -205,6 +211,7 @@ def poll_char_screen_pages(w, screen_id_stable) -> None:
             reset_spell_detail_markers(w)
         else:
             _equipment_detail.reset_equipment_detail(w)
+            _equipment_confirm.reset_equipment_drop_confirm(w)
             if getattr(w, '_char_screen_stable_prev', None) in _CHAR_SCREENS:
                 w._ui_router.reset_panel_mode_if(('race_list', 'equipment', 'spell_detail'), reason='screen:exit')
             reset_spell_detail_markers(w)

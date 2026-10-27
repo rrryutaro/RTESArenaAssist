@@ -1560,7 +1560,7 @@
       "version": "npcd-1",
       "generator": "arena_regen/npcd-1",
       "arena_fingerprint": "dae070edf25b137d",
-      "digest": "943452f887c697917886118355ce7f746a67558ba6da06f7ea42e20358f90dd3",
+      "digest": "95a4b7974bd087347f25f1a3ebedc6766a5b7d8b4ab1902153b5d63703c31026",
       "category": "npc_dialog",
       "entries": {
         "template:0015:0": "e11eb574f8d0cc80",
@@ -3770,6 +3770,7 @@
         "aexe:akey:A198.0": "64df03c581788490",
         "aexe:akey:A199.0": "725a0fa9673047a0",
         "aexe:akey:A200.0": "cb913af41bc9094e",
+        "aexe:akey:A201.0": "5ae0d7f957fbd351",
         "aexe:akey:A210.0": "f7db79c8d814c86d",
         "aexe:akey:A211.0": "0fa8bad53a845111",
         "aexe:akey:A212.0": "afa45f84b75d30d7",

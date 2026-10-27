@@ -107,7 +107,7 @@ def _uses_left(item: dict, item_type: str='') -> int | None:
     except (TypeError, ValueError):
         return None
     artifact = artifact_spell_index(item)
-    if hands > 2 and artifact is None:
+    if artifact is None and _is_charged_caster(item):
         return hands
     if item_type not in _SPELL_ENCHANTABLE and artifact is None:
         return None
@@ -130,7 +130,7 @@ def _condition_str(item: dict) -> str:
     return _label_text(f'items.conditions.{idx}.0')
 
 def _effect_str(item: dict) -> str:
-    if item['hands'] in (1, 2):
+    if item['hands'] in (1, 2) and (not _is_charged_caster(item)):
         return i18n.text('item.effect.damage').replace('{min}', str(item['param1'])).replace('{max}', str(item['param2']))
     ar = item['param1'] // 5
     if ar <= 0:
@@ -206,6 +206,19 @@ def _has_body(item: dict) -> bool:
     except (TypeError, ValueError):
         return False
 
+def _is_charged_caster(item: dict) -> bool:
+    try:
+        hands = int(item.get('hands') or 0)
+    except (TypeError, ValueError):
+        return False
+    if hands > 2:
+        return True
+    try:
+        max_hp = int(item.get('max_hp') or 0)
+    except (TypeError, ValueError):
+        return False
+    return hands in (1, 2) and max_hp <= 1 and (not item.get('param1')) and (not item.get('param2'))
+
 def _classify_item(item: dict) -> tuple[str, int]:
     if _is_potion(item):
         return ('potion', -1)
@@ -218,10 +231,10 @@ def _classify_item(item: dict) -> tuple[str, int]:
     if artifact in _ARTIFACT_BASE_ITEMS:
         kind, number = _ARTIFACT_BASE_ITEMS[artifact]
         return (kind, number if kind == 'armor' else -1)
+    if _is_charged_caster(item):
+        return ('spellcasting', -1)
     if hands in (1, 2):
         return ('weapon', -1)
-    if hands > 2:
-        return ('spellcasting', -1)
     if item['x'] == 255 and 0 <= sid <= 3 and (not _has_body(item)):
         return ('accessory', -1)
     if SHIELD_SLOT_MIN <= sid <= SHIELD_SLOT_MAX:

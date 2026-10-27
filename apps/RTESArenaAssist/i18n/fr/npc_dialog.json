@@ -1164,6 +1164,7 @@
   "npc_dialog.A198.0": "`Votre %ni est équipé.",
   "npc_dialog.A199.0": "`Voulez-vous toujours le vendre ?",
   "npc_dialog.A200.0": "Désolé, l'ami ! Cela ne m'intéresse pas...",
+  "npc_dialog.A201.0": "Cet objet sera perdu ici. Le jeter quand même ?",
   "npc_dialog.A210.0": "Quelle catégorie ?",
   "npc_dialog.A211.0": "Pas assez de place pour stocker le sort.",
   "npc_dialog.A212.0": "Vous devez donner un nom à ce sort !",

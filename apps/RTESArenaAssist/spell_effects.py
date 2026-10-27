@@ -17,6 +17,7 @@ _BUFFS_OFFSET = 1632
 _BUFF_SIZE = 60
 _BUFF_COUNT = 16
 _BUFF_MODS_AT = 6
+_BUFF_REMAINING_AT = 2
 _BUFF_UNUSED_AT = 58
 
 @dataclass(frozen=True)
@@ -28,6 +29,7 @@ class SpellEffectSample:
     game_time: int | None = None
     attributes: tuple[int, ...] = ()
     fortify: tuple[int, int] | None = None
+    fortify_remaining: int | None = None
 
 @dataclass(frozen=True)
 class SpellEffectRow:
@@ -39,7 +41,8 @@ class SpellEffectRow:
     ratio: float | None
 _META = {'light': ('☀', '#f4ce78'), 'shield': ('◆', '#8dcbeb'), 'strength': ('↑', '#eaa09a'), 'fire': ('♨', '#ef9c67'), 'cold': ('❄', '#9bd0f0'), 'shock': ('ϟ', '#f2e07a'), 'magic': ('✦', '#c7a6f0'), 'poison': ('☣', '#9fd88a'), 'levitate': ('✧', '#bfa7eb'), 'invisible': ('◌', '#b8c4d6'), 'silence': ('∅', '#d8a0a0'), 'absorb': ('◈', '#7fd1c4'), 'reflect': ('◇', '#a0c8f0'), 'spell_resist': ('◉', '#8fb8e8'), 'regenerate': ('✚', '#9fe0a8')}
 _REGENERATE_FLAG = 128
-_WINDOW_POSITION = {**{key: effect_window_position(bit) for key, bit in _EFFECT_BIT.items()}, 'shield': SHIELD_WINDOW_POSITION, 'regenerate': flag_window_position(_REGENERATE_FLAG), 'strength': FORTIFY_WINDOW_POSITION}
+_LIGHT_POSITION = FORTIFY_WINDOW_POSITION + 1
+_WINDOW_POSITION = {**{key: effect_window_position(bit) for key, bit in _EFFECT_BIT.items()}, 'shield': SHIELD_WINDOW_POSITION, 'regenerate': flag_window_position(_REGENERATE_FLAG), 'strength': FORTIFY_WINDOW_POSITION, 'light': _LIGHT_POSITION}
 _ROUND_SAMPLES = 2
 _fortified_attribute: int | None = None
 
@@ -68,6 +71,19 @@ def fortify_from_buffs(raw: bytes) -> tuple[int, int] | None:
     best = max(gains)
     return (gains.index(best), best) if best > 0 else None
 
+def fortify_remaining_from_buffs(raw: bytes, attribute: int) -> int | None:
+    best = None
+    for index in range(min(_BUFF_COUNT, len(raw) // _BUFF_SIZE)):
+        buff = raw[index * _BUFF_SIZE:(index + 1) * _BUFF_SIZE]
+        if buff[_BUFF_UNUSED_AT] == 255 and buff[_BUFF_UNUSED_AT + 1] == 255:
+            continue
+        if not 0 < buff[_BUFF_MODS_AT + attribute] < 128:
+            continue
+        value = int.from_bytes(buff[_BUFF_REMAINING_AT:_BUFF_REMAINING_AT + 2], 'little')
+        if 0 < value <= _MAX_TIMER and (best is None or value > best):
+            best = value
+    return best
+
 def read_sample(analyzer, anchor: int) -> SpellEffectSample | None:
     fields = read_fields(analyzer, anchor)
     if fields is None:
@@ -94,9 +110,11 @@ def read_sample(analyzer, anchor: int) -> SpellEffectSample | None:
     try:
         raw_buffs = analyzer.read_bytes(anchor + _BUFFS_OFFSET, _BUFF_SIZE * _BUFF_COUNT)
         fortify = fortify_from_buffs(raw_buffs) if raw_buffs else None
+        fortify_remaining = fortify_remaining_from_buffs(raw_buffs, fortify[0]) if fortify is not None else None
     except Exception:
         fortify = None
-    return SpellEffectSample(fields=fields, strength_current=attributes[0], strength_base=attributes[8], timers=timers, game_time=game_time, attributes=tuple(attributes[0:8]), fortify=fortify)
+        fortify_remaining = None
+    return SpellEffectSample(fields=fields, strength_current=attributes[0], strength_base=attributes[8], timers=timers, game_time=game_time, attributes=tuple(attributes[0:8]), fortify=fortify, fortify_remaining=fortify_remaining)
 
 class _ObservedRoundClock:
 
@@ -208,8 +226,9 @@ class SpellEffectTracker:
         active['strength'] = fortified or (self._strength_decay and bool(strength_delta))
         amount = {key: sample.timers.get(key) for key in _EFFECT_BIT}
         amount['shield'] = fields.shield
-        amount['strength'] = strength_delta
         amount['regenerate'] = None
+        strength_remaining = sample.fortify_remaining if recorded is not None else None
+        amount['strength'] = strength_remaining if strength_remaining is not None else strength_delta
         for key in _META:
             now = amount[key] if active[key] else None
             before = self._previous.get(key)
@@ -231,6 +250,12 @@ class SpellEffectTracker:
             seconds = None
             if key == 'shield':
                 label = combat_text('spell_effect.remaining_points', value=value)
+            elif key == 'strength' and strength_remaining is not None:
+                display_current = round(current[attr] * 100 / 256)
+                display_before = round((current[attr] - recorded[1]) * 100 / 256)
+                name = f'{name} +{display_current - display_before}'
+                seconds = self._clock.remaining(value) if time_unit == 'seconds' else None
+                label = combat_text('spell_effect.remaining_seconds', value=seconds[0]) if seconds is not None else combat_text('spell_effect.remaining_rounds', value=value)
             elif key == 'strength':
                 if recorded is not None:
                     display_current = round(current[attr] * 100 / 256)

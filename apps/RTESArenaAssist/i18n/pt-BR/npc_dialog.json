@@ -1164,6 +1164,7 @@
   "npc_dialog.A198.0": "`O item %ni está equipado.",
   "npc_dialog.A199.0": "`Você ainda quer vendê-lo?",
   "npc_dialog.A200.0": "Desculpe, amigo! Não tenho interesse nisso...",
+  "npc_dialog.A201.0": "Este item será perdido aqui. Largar mesmo assim?",
   "npc_dialog.A210.0": "Qual categoria?",
   "npc_dialog.A211.0": "Não há espaço suficiente para guardar a magia.",
   "npc_dialog.A212.0": "Você precisa dar um nome a esta magia!",

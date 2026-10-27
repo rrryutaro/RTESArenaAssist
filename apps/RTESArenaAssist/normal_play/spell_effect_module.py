@@ -89,7 +89,7 @@ class SpellEffectController:
             self._overlay.clear()
             return
         layout = getattr(window, '_layout_mgr', None)
-        foreground = bool(layout and layout.is_dosbox_foreground())
+        foreground = bool(layout and layout.is_game_surface_foreground())
         if layout is None or (not foreground and (not obs_mode)):
             self._pause(f'dosbox_not_foreground layout={layout is not None}')
             return

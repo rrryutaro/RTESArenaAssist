@@ -31,10 +31,13 @@ def poll_shop_sign(w, *, door_pos, facility_info) -> Optional[str]:
     from city_viewer_bridge import extract_shop_sign, translate_shop_sign
     observed = extract_shop_sign(text, facility_info)
     list_en = getattr(facility_info, 'name_en', '') or ''
-    if not observed or observed == list_en:
-        w._shop_sign_en = observed or ''
+    if not observed:
+        w._shop_sign_en = ''
         return None
-    ja = translate_shop_sign(observed, facility_info)
+    if observed == list_en:
+        ja = getattr(facility_info, 'name_ja', '') or list_en
+    else:
+        ja = translate_shop_sign(observed, facility_info)
     if not ja:
         w._shop_sign_en = observed
         return None

@@ -213,6 +213,8 @@ def _render_list(w, img: str) -> bool:
                 setattr(w, _LIST_KEY, key_now)
                 w._ui_router.update_facility_list(LIST_OWNER, tr, title_en, title_ja)
                 _log.info('equipment_list update (img=%r items=%d source=%s)', img, len(tr), source)
+        elif (getattr(w, _LIST_KEY, None) or ('',))[0] in ('list', 'inventory'):
+            pass
         else:
             key_now = ('unparsed', img)
             if key_now != getattr(w, _LIST_KEY, None):

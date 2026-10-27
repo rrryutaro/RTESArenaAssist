@@ -46,6 +46,49 @@ _STATUS_SLOT_WINDOW_AFTER = 96
 _REPLY_ALLOWED_IMGS = frozenset({'MENU_RT.IMG', 'YESNO.IMG', 'NEWPOP.IMG', 'NEWOLD.IMG'})
 _REPAIR_ENTRY_PROMPT = 'Which job do you wish to inspect?'
 _ACTIVE_REPLY_PREFIXES = ("Can't you afford it?", "Can't you wait that long?", "Maybe you're not interested?", _REPAIR_ENTRY_PROMPT, 'Sorry, I already have my hands full.')
+_STATIC_REPLY_AKEYS = ('A200.0',)
+
+def _static_reply_pointers() -> dict:
+    try:
+        import arena_aexe
+        delta = arena_aexe.ANCHOR_TO_IMAGE_BASE['ACD.EXE']
+        return {arena_aexe.AKEY_ACD_OFFSETS[key] - delta: key for key in _STATIC_REPLY_AKEYS}
+    except Exception:
+        return {}
+
+def _read_reply_pointers(w) -> tuple:
+    try:
+        from active_template_reader import ACTIVE_TEMPLATE_PTR_OFFSETS
+    except Exception:
+        return ()
+    out = []
+    for off in (43076,) + tuple(ACTIVE_TEMPLATE_PTR_OFFSETS):
+        try:
+            raw = w._analyzer.read_bytes(w._anchor + off, 2)
+        except (OSError, AttributeError):
+            continue
+        if raw is not None and len(raw) >= 2:
+            out.append(raw[0] | raw[1] << 8)
+    return tuple(out)
+
+def _read_static_reply_candidates(w):
+    places = _static_reply_pointers()
+    if not places:
+        return []
+    out = []
+    try:
+        from popup11_response_reader import ResponseCandidate
+        import npc_dialog_lookup as ndl
+        for ptr in dict.fromkeys(_read_reply_pointers(w)):
+            if ptr not in places:
+                continue
+            raw = w._analyzer.read_bytes(w._anchor + ptr, _RAW_TEMPLATE_READ_LEN)
+            text = bytes(raw or b'').split(b'\x00', 1)[0].decode('ascii', errors='replace').strip()
+            if text and ndl.lookup(text) is not None:
+                out.append(ResponseCandidate(text=text, lookup_hit=True, source_offset=ptr))
+    except Exception:
+        return []
+    return out
 _PRESENCE_REPLY_PREFIXES = ('I can cut down the time', 'I can cut the cost', "Then I'll get started", "Good, I'll get to it", 'I understand. You might consider', 'Well, if you change your mind', 'Sorry, I already have my hands full.')
 
 def _is_no_repair_reply_text(text: str) -> bool:
@@ -244,7 +287,7 @@ def _update_and_select_reply(w, img: str):
     except Exception:
         candidates = []
         current_ptr = None
-    active_candidates = _read_active_reply_candidates(w)
+    active_candidates = _read_active_reply_candidates(w) + _read_static_reply_candidates(w)
     prev_by_offset = dict(getattr(w, '_equipment_l4_resp_prev_by_offset', {}) or {})
     baselined = bool(getattr(w, '_equipment_l4_resp_baselined', False))
     hits = [c for c in candidates if c.text and c.lookup_hit]
@@ -314,7 +357,9 @@ def _log_state_edge(w, prev_state, snap: EquipmentL4Snapshot) -> None:
     flag = getattr(w, '_equipment_l4_flag_value', None)
     list_flag = getattr(w, '_equipment_l4_list_flag_value', None)
     reply_diag = ''
-    if snap.state is EquipmentL4State.REPLY:
+    if snap.state is EquipmentL4State.NONE:
+        reply_diag = ' ptrs=' + ','.join((f'0x{int(p):04X}' for p in _read_reply_pointers(w)))
+    elif snap.state is EquipmentL4State.REPLY:
         ptr = getattr(w, '_equipment_l4_reply_ptr', None)
         src = snap.reply_source_offset
         reply_diag = f" evidence={getattr(w, '_equipment_l4_reply_evidence', None)} ptr={('None' if ptr is None else f'0x{int(ptr):04X}')} src={('None' if src is None else f'0x{int(src):04X}')} negot={getattr(w, '_equipment_l4_negot_diag', '-')} hist_age={_fmt_age(getattr(w, '_equipment_l4_reply_hist_age', None))}"

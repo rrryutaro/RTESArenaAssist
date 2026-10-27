@@ -1,6 +1,7 @@
 import ctypes
 import ctypes.wintypes
 import logging
+import os
 from enum import Enum
 from PySide6.QtCore import QObject, QTimer
 _log = logging.getLogger('layout_manager')
@@ -218,6 +219,18 @@ class LayoutManager(QObject):
         if not self._valid():
             self.find_dosbox_hwnd()
         return bool(self._valid() and ctypes.windll.user32.GetForegroundWindow() == self._dosbox_hwnd)
+
+    def is_game_surface_foreground(self) -> bool:
+        if self.is_dosbox_foreground():
+            return True
+        if not getattr(self.parent(), '_is_layout_active', False):
+            return False
+        foreground = ctypes.windll.user32.GetForegroundWindow()
+        if not foreground:
+            return False
+        pid = ctypes.wintypes.DWORD()
+        ctypes.windll.user32.GetWindowThreadProcessId(foreground, ctypes.byref(pid))
+        return pid.value == os.getpid()
 
     def place_dosbox(self, x: int, y: int, w: int, h: int) -> bool:
         if not self._valid():

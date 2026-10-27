@@ -249,6 +249,12 @@ def _active_session_name_for_log(w) -> str:
         return ''
     return getattr(active, 'name', '') if active is not None else ''
 
+def _facility_conversation_active(w) -> bool:
+    if getattr(w, '_field_temple_active_now', False):
+        return True
+    name = _active_session_name_for_log(w)
+    return bool(name) and name != 'npc_chat'
+
 def _npc_chat_session_active(w) -> bool:
     try:
         sess = w._session_manager.active_session()
@@ -1401,7 +1407,7 @@ def _poll_display_phase(w, *, _active_facility_name, _b30, _combat_map_result, _
             _log.exception('translation_feed.on_screen_context failed')
     from top_level.chargen_state import poll as _poll_chargen
     _poll_chargen(w)
-    _arena_overlay_gameplay = bool(_top_is_normal_play and _b30.get('in_gameplay') and (not getattr(w, '_travel_l4_active', False)))
+    _arena_overlay_gameplay = bool(_top_is_normal_play and _b30.get('in_gameplay') and (not getattr(w, '_travel_l4_active', False)) and (not _facility_conversation_active(w)))
     from normal_play.combat_info_module import poll_combat_info
     poll_combat_info(w, gameplay=_arena_overlay_gameplay, map_result=_combat_map_result)
     from normal_play.spell_effect_module import poll_spell_effects

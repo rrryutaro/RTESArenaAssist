@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:28033d1ed7a6b9a3273762185b2ff5827edacbf1b089b77ed0906e8dcb2afaf5",
+  "registry_hash": "sha256:be044ccaa53a3b6e9768decf91cb3b2110457a9472358b37e88d6ecfbd5957c4",
   "categories": [
     {
       "category": "assist_ui",
@@ -35157,6 +35157,13 @@
           "source": {
             "source_id": "artfact:2:227"
           }
+        },
+        {
+          "id": 112454,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:akey:A201.0"
+          }
         }
       ]
     },
@@ -68067,6 +68074,10 @@
           "text": "カジートのリングの名を出すと、カウンターの奥の端から %an が立ち上がり、あなたのところへやって来る。「ああ、またお前か、%ra。いいか、ちょうど興味を持っていそうな別の客と話していたところだ。前に話した %nap ゴールドを持っていないなら、私の時間を無駄にするな」"
         },
         {
+          "id": 112454,
+          "text": "このアイテムはここで失われます。それでも捨てますか？"
+        },
+        {
           "id": 115000,
           "text": "テオディ"
         },
@@ -97886,6 +97897,10 @@
         {
           "id": 112453,
           "text": "Al mencionar el Anillo del Khajiit, %an se levanta en el otro extremo de la barra y viene a reunirse contigo. “Oh, eres tú de nuevo, %ra. Escucha, acabo de hablar con alguien más que parece interesado, así que si no tienes las %nap monedas de oro de las que hablamos la última vez, no me hagas perder el tiempo”."
+        },
+        {
+          "id": 112454,
+          "text": "Este objeto se perderá aquí. ¿Soltarlo de todos modos?"
         },
         {
           "id": 115000,
@@ -127917,6 +127932,10 @@
           "text": "Als du den Ring des Khajiit erwähnst, steht %an am anderen Ende der Theke auf und kommt zu dir herüber. „Ach, du bist es wieder, %ra. Hör zu, ich habe gerade mit jemand anderem gesprochen, der interessiert scheint. Wenn du also nicht die %nap Gold hast, über die wir letztes Mal gesprochen haben, verschwende nicht meine Zeit.“"
         },
         {
+          "id": 112454,
+          "text": "Dieser Gegenstand geht hier verloren. Trotzdem ablegen?"
+        },
+        {
           "id": 115000,
           "text": "Theod"
         },
@@ -157436,6 +157455,10 @@
         {
           "id": 112453,
           "text": "À la mention de l'Anneau du Khajiit, %an se lève au bout du comptoir et vient vous rejoindre. « Oh, encore toi, %ra. Écoute, j'étais justement en train de parler à quelqu'un d'autre qui semble intéressé, alors si tu n'as pas les %nap pièces d'or dont on avait discuté la dernière fois, ne me fais pas perdre mon temps. »"
+        },
+        {
+          "id": 112454,
+          "text": "Cet objet sera perdu ici. Le jeter quand même ?"
         },
         {
           "id": 115000,
@@ -186959,6 +186982,10 @@
           "text": "Quando menzioni l'Anello del Khajiit, %an si alza dall'altro capo del bancone e viene a raggiungerti. «Oh, sei di nuovo tu, %ra. Ascolta, stavo giusto parlando con qualcun altro che sembra interessato, quindi se non hai i %nap oro di cui abbiamo discusso l'ultima volta, non farmi perdere tempo»."
         },
         {
+          "id": 112454,
+          "text": "Questo oggetto andrà perduto qui. Lasciarlo cadere comunque?"
+        },
+        {
           "id": 115000,
           "text": "Theod"
         },
@@ -216478,6 +216505,10 @@
         {
           "id": 112453,
           "text": "Стоит тебе упомянуть Кольцо Каджита, как %an встаёт в дальнем конце стойки и подходит к тебе. «О, снова ты, %ra. Слушай, я только что говорил с другим человеком, который тоже вроде бы заинтересован, так что если у тебя нет %nap золота, как мы обсуждали в прошлый раз, не трать моё время попусту»."
+        },
+        {
+          "id": 112454,
+          "text": "Этот предмет будет здесь потерян. Всё равно выбросить?"
         },
         {
           "id": 115000,
@@ -246001,6 +246032,10 @@
           "text": "你一提到卡吉特之戒，%an就从吧台远端站起身来找你。“哦，又是你，%ra。听着，我刚在和另一个似乎有兴趣的人谈，所以如果你没有上次我们谈过的%nap金币，就别浪费我的时间。”"
         },
         {
+          "id": 112454,
+          "text": "此物品将在这里丢失。仍要丢弃吗？"
+        },
+        {
           "id": 115000,
           "text": "西奥德"
         },
@@ -275520,6 +275555,10 @@
         {
           "id": 112453,
           "text": "%an se levanta da outra ponta do balcão e vem se juntar a você ao ouvir a menção do Anel de Khajiit. \"Ah, é você de novo, %ra. Escute, eu estava falando com outra pessoa que parece interessada, então, se você não tem os %nap de ouro de que falamos da última vez, não me faça perder tempo.\""
+        },
+        {
+          "id": 112454,
+          "text": "Este item será perdido aqui. Largar mesmo assim?"
         },
         {
           "id": 115000,
@@ -305043,6 +305082,10 @@
           "text": "%an wstaje z dalekiego końca baru i dołącza do ciebie na wzmiankę o Pierścieniu Khajiitów. „Och, to znowu ty, %ra. Słuchaj, właśnie rozmawiałem z kimś innym, kto wydaje się zainteresowany, więc jeśli nie masz %nap złota, o których rozmawialiśmy ostatnio, nie marnuj mojego czasu.”"
         },
         {
+          "id": 112454,
+          "text": "Ten przedmiot przepadnie tutaj. Upuścić mimo to?"
+        },
+        {
           "id": 115000,
           "text": "Theod"
         },
@@ -334564,6 +334607,10 @@
           "text": "%an 씨가 바 끝에서 일어나 카짓의 반지 이야기에 합석하러 온다. “아, 또 당신이군요, %ra. 들어요, 방금 관심 있어 보이는 다른 사람과 이야기하던 참이에요. 지난번에 얘기했던 %nap골드가 없다면 시간 낭비 말아요.”"
         },
         {
+          "id": 112454,
+          "text": "이 물건은 여기서 사라집니다. 그래도 버리시겠습니까?"
+        },
+        {
           "id": 115000,
           "text": "테오드"
         },
@@ -364083,6 +364130,10 @@
         {
           "id": 112453,
           "text": "你一提到卡吉特之戒，%an就從吧檯最遠端站起來，走過來加入你。「噢，又是你，%ra。聽著，我剛才正和另一個似乎有興趣的人談，所以如果你沒有上次談過的%nap金幣，就別浪費我的時間。」"
+        },
+        {
+          "id": 112454,
+          "text": "此物品將在這裡遺失。仍要丟棄嗎？"
         },
         {
           "id": 115000,

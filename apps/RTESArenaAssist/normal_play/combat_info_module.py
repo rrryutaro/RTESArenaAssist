@@ -377,7 +377,7 @@ class CombatInfoController:
         if dosbox_enabled and view is not None:
             self._overlay.record_xp(view.events, duration_seconds=xp_seconds)
         if view is not None and (dosbox_enabled and (show_lifetime or self._overlay.has_active_xp()) or low_hp_effect):
-            surface_active = bool(w._layout_mgr.is_dosbox_foreground())
+            surface_active = bool(w._layout_mgr.is_game_surface_foreground())
             rect = w._layout_mgr.get_visible_dosbox_qt_rect() if surface_active or obs_mode else None
             if not isinstance(rect, (tuple, list)) or len(rect) != 4:
                 rect = None
