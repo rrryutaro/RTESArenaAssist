@@ -915,6 +915,7 @@ def _poll_read_game_state(w):
     in_interior = resolve_in_interior(interior_raw, place_byte, _mif_for_interior)
     w._in_interior = in_interior
     w._interior_raw = interior_raw
+    w._place_byte = place_byte
     _checkpoint(w, 'gamestate')
     state = interpret_location(gs)
     if rt_x is not None:
@@ -976,7 +977,7 @@ def _log_hierarchy_recognition(w, *, stage: str, hierarchy: SeparationHierarchy,
     if transition_key != getattr(w, '_hierarchy_log_transition_key', None):
         w._hierarchy_log_transition_key = transition_key
         values = decision.values_for_log()
-        _recog(_log, 'hierarchy changed stage=%s path=%s names=%s indicator=%s top=%r area=%r interior=%s interior_raw=%s npc_active=%s npc_phase=%s mif=%r img=%r screen=%r owner=%r session=%r interior_mif=%r', stage, path, names, hierarchy.indicator, values['top'], values['area'], values['interior'], _fmt_hex_byte(values['interior_raw']), values['npc_active'], _fmt_hex_byte(values['npc_phase']), values['mif'], values['img'], values['screen'], values['owner'], values['session'], values['interior_mif'])
+        _recog(_log, 'hierarchy changed stage=%s path=%s names=%s indicator=%s top=%r area=%r interior=%s interior_raw=%s npc_active=%s npc_phase=%s mif=%r img=%r screen=%r owner=%r session=%r interior_mif=%r place=%s', stage, path, names, hierarchy.indicator, values['top'], values['area'], values['interior'], _fmt_hex_byte(values['interior_raw']), values['npc_active'], _fmt_hex_byte(values['npc_phase']), values['mif'], values['img'], values['screen'], values['owner'], values['session'], values['interior_mif'], _fmt_hex_byte(getattr(w, '_place_byte', None)))
     anomaly_key = decision.anomaly_key()
     if anomaly_key and anomaly_key != getattr(w, '_hierarchy_log_anomaly_key', None):
         w._hierarchy_log_anomaly_key = anomaly_key
@@ -1407,7 +1408,7 @@ def _poll_display_phase(w, *, _active_facility_name, _b30, _combat_map_result, _
             _log.exception('translation_feed.on_screen_context failed')
     from top_level.chargen_state import poll as _poll_chargen
     _poll_chargen(w)
-    _arena_overlay_gameplay = bool(_top_is_normal_play and _b30.get('in_gameplay') and (not getattr(w, '_travel_l4_active', False)) and (not _facility_conversation_active(w)))
+    _arena_overlay_gameplay = bool(_top_is_normal_play and _b30.get('in_gameplay') and (not getattr(w, '_travel_l4_active', False)) and (not _facility_conversation_active(w)) and (not _shop_menu_visible) and (not _shop_buy_active))
     from normal_play.combat_info_module import poll_combat_info
     poll_combat_info(w, gameplay=_arena_overlay_gameplay, map_result=_combat_map_result)
     from normal_play.spell_effect_module import poll_spell_effects
