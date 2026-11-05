@@ -1403,6 +1403,11 @@ def _poll_display_phase(w, *, _active_facility_name, _b30, _combat_map_result, _
     from top_level.chargen_state import poll as _poll_chargen
     _poll_chargen(w)
     _arena_overlay_gameplay = bool(_top_is_normal_play and _b30.get('in_gameplay') and (not getattr(w, '_travel_l4_active', False)) and (not _facility_surface_front) and (not getattr(w, '_npc_conversation_active', False)))
+    from normal_play.text_window_probe import note_text_window_signals as _note_text_window_signals, reset_text_window_probe as _reset_text_window_probe
+    if _top_is_normal_play:
+        _note_text_window_signals(w, area=_poll_hierarchy_area, in_gameplay=bool(_b30.get('in_gameplay')), fg_ptr=_b30.get('fg_ptr'), overlay_gameplay=_arena_overlay_gameplay)
+    else:
+        _reset_text_window_probe(w)
     from normal_play.combat_info_module import poll_combat_info
     poll_combat_info(w, gameplay=_arena_overlay_gameplay, map_result=_combat_map_result)
     from normal_play.spell_effect_module import poll_spell_effects

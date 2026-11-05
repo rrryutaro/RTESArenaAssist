@@ -46,7 +46,8 @@ _LIGHT_POSITION = FORTIFY_WINDOW_POSITION + 1
 _WINDOW_POSITION = {**{key: effect_window_position(bit) for key, bit in _EFFECT_BIT.items()}, 'shield': SHIELD_WINDOW_POSITION, 'regenerate': flag_window_position(_REGENERATE_FLAG), 'strength': FORTIFY_WINDOW_POSITION, 'light': _LIGHT_POSITION}
 _ROUND_SAMPLES = 9
 _ROUND_QUANTUM = 0.1
-_ROUND_MIN_SAMPLES = 3
+_ROUND_MIN_SAMPLES = 5
+_ROUND_ADOPT_DELTA = 0.3
 _fortified_attribute: int | None = None
 
 def fortified_attribute() -> int | None:
@@ -130,8 +131,11 @@ class _ObservedRoundClock:
         self._game_time: int | None = None
         self._last_tick_active: float | None = None
         self._round_seconds: float | None = None
-        self._last_measured_round_seconds: float | None = None
         self._intervals: list[float] = []
+
+    def carry_pace_from(self, other: '_ObservedRoundClock') -> None:
+        self._intervals = list(other._intervals)
+        self._round_seconds = other._round_seconds
 
     def pause(self) -> None:
         self._last_wall = None
@@ -144,7 +148,6 @@ class _ObservedRoundClock:
         if game_time is None:
             self._game_time = None
             self._last_tick_active = None
-            self._round_seconds = None
             return
         if self._game_time is None:
             self._game_time = game_time
@@ -158,19 +161,13 @@ class _ObservedRoundClock:
                 self._intervals = (self._intervals + [interval])[-_ROUND_SAMPLES:]
                 if len(self._intervals) >= _ROUND_MIN_SAMPLES:
                     period = max(_ROUND_QUANTUM, round(statistics.median(self._intervals) / _ROUND_QUANTUM) * _ROUND_QUANTUM)
-                    self._round_seconds = period
-                    self._last_measured_round_seconds = period
-                else:
-                    self._round_seconds = None
-            else:
-                self._round_seconds = None
-        else:
-            self._round_seconds = None
+                    if self._round_seconds is None or abs(period - self._round_seconds) >= _ROUND_ADOPT_DELTA - 1e-09:
+                        self._round_seconds = period
         self._last_tick_active = self._active_seconds
         self._game_time = game_time
 
     def remaining(self, rounds: int) -> tuple[int, float]:
-        period = self._round_seconds or self._last_measured_round_seconds or 5.0
+        period = self._round_seconds or 5.0
         tick = self._last_tick_active
         elapsed = min(math.floor(max(0.0, self._active_seconds - tick)), max(0.0, period - 0.001)) if tick is not None else 0
         remaining_rounds = max(0.001, rounds - elapsed / period)
@@ -182,7 +179,10 @@ class SpellEffectTracker:
         self.reset()
 
     def reset(self) -> None:
+        previous = getattr(self, '_clock', None)
         self._clock = _ObservedRoundClock()
+        if previous is not None:
+            self._clock.carry_pace_from(previous)
         self._previous: dict[str, int | None] = {}
         self._maximum: dict[str, int] = {}
         self._order: list[str] = []
