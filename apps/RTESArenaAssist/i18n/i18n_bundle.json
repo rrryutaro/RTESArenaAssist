@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:be044ccaa53a3b6e9768decf91cb3b2110457a9472358b37e88d6ecfbd5957c4",
+  "registry_hash": "sha256:82d51eb5cc857bff76c20d7fad3a793793fed1adca60899148f8543a9e2ff40b",
   "categories": [
     {
       "category": "assist_ui",
@@ -35164,6 +35164,27 @@
           "source": {
             "source_id": "aexe:akey:A201.0"
           }
+        },
+        {
+          "id": 112455,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:akey:A140.0"
+          }
+        },
+        {
+          "id": 112456,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:akey:A202.0"
+          }
+        },
+        {
+          "id": 112457,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:akey:A203.0"
+          }
         }
       ]
     },
@@ -43277,6 +43298,34 @@
         },
         {
           "id": 408494,
+          "kind": "label"
+        },
+        {
+          "id": 408495,
+          "kind": "label"
+        },
+        {
+          "id": 408496,
+          "kind": "label"
+        },
+        {
+          "id": 408497,
+          "kind": "label"
+        },
+        {
+          "id": 408498,
+          "kind": "label"
+        },
+        {
+          "id": 408499,
+          "kind": "label"
+        },
+        {
+          "id": 408500,
+          "kind": "label"
+        },
+        {
+          "id": 408501,
           "kind": "label"
         }
       ]
@@ -54791,7 +54840,7 @@
         },
         {
           "id": 103112,
-          "text": "牢の扉の向こうに、メデューサと、右手の台座で輝く\nクリスタルの鍵が見える……"
+          "text": "牢の扉の向こうに、メデューサと、右手の台座で輝く\n水晶の鍵が見える……"
         },
         {
           "id": 103113,
@@ -54799,7 +54848,7 @@
         },
         {
           "id": 103114,
-          "text": "この部屋に、リッチと、その背後の暗い壁で輝く\nダイアモンドの鍵が見える……"
+          "text": "この部屋に、リッチと、その背後の暗い壁で輝く\nダイヤの鍵が見える……"
         },
         {
           "id": 103115,
@@ -54815,7 +54864,7 @@
         },
         {
           "id": 103121,
-          "text": "第三の門を通るには、\nクリスタルの鍵を見つけなければならない……"
+          "text": "第三の門を通るには、\n水晶の鍵を見つけなければならない……"
         },
         {
           "id": 103122,
@@ -54823,7 +54872,7 @@
         },
         {
           "id": 103123,
-          "text": "最後の門を通るには、\nダイアモンドの鍵を見つけなければならない……"
+          "text": "最後の門を通るには、\nダイヤの鍵を見つけなければならない……"
         },
         {
           "id": 103125,
@@ -55263,7 +55312,7 @@
         },
         {
           "id": 103256,
-          "text": "われは愚か者だった、\nおそらくは狂った魔法使いの道具。\nしかし数えきれない年月の後、\nわれはついに自由だ。\nこの隣の房には汝への報酬、ダイアモンドの鍵がある……"
+          "text": "われは愚か者だった、\nおそらくは狂った魔法使いの道具。\nしかし数えきれない年月の後、\nわれはついに自由だ。\nこの隣の房には汝への報酬、ダイヤの鍵がある……"
         },
         {
           "id": 103257,
@@ -60823,11 +60872,11 @@
         },
         {
           "id": 110641,
-          "text": "聞いてよ、%di の %nt にいる男が、モリハウスのロードメールが本物であることだけでなく、見つけ方まで知ってると言ってたよ。情報を売る気があると言ってたけど、私はかなり厳しい状況でね。数百ゴールドがあって見知らぬ人を信頼する気があれば、そっちに向かってみなよ。"
+          "text": "聞いてよ、%di の %nt にいる男が、モリハウスのロードズ・メイルが本物であることだけでなく、見つけ方まで知ってると言ってたよ。情報を売る気があると言ってたけど、私はかなり厳しい状況でね。数百ゴールドがあって見知らぬ人を信頼する気があれば、そっちに向かってみなよ。"
         },
         {
           "id": 110642,
-          "text": "実際、最近面白いことを聞いたよ。モリハウスの伝説を聞いたことある？ まあ、%di の %nt にいる男がモリハウスの鎧、ロードメールの場所を知ってると言ってる。半分も本当かわからないけど、情報の代金を求めてるのは確かだよ。ゴールドを持ってるなら、私だったらこの機会を逃さないね。"
+          "text": "実際、最近面白いことを聞いたよ。モリハウスの伝説を聞いたことある？ まあ、%di の %nt にいる男がモリハウスの鎧、ロードズ・メイルの場所を知ってると言ってる。半分も本当かわからないけど、情報の代金を求めてるのは確かだよ。ゴールドを持ってるなら、私だったらこの機会を逃さないね。"
         },
         {
           "id": 110643,
@@ -61019,7 +61068,7 @@
         },
         {
           "id": 110690,
-          "text": "戦争が起きてきたような情報を持ってるよ。傲慢のせいでモリハウスがキナレスの精霊にロードメールを奪われたことは知ってるよね。私は同じ傲慢の罪は犯さないよ。%oap ゴールドで、キナレスがロードメールを隠した場所を教えるよ。取引しようか、%ra？"
+          "text": "戦争が起きてきたような情報を持ってるよ。傲慢のせいでモリハウスがキナレスの精霊にロードズ・メイルを奪われたことは知ってるよね。私は同じ傲慢の罪は犯さないよ。%oap ゴールドで、キナレスがロードズ・メイルを隠した場所を教えるよ。取引しようか、%ra？"
         },
         {
           "id": 110691,
@@ -68076,6 +68125,18 @@
         {
           "id": 112454,
           "text": "このアイテムはここで失われます。それでも捨てますか？"
+        },
+        {
+          "id": 112455,
+          "text": "今日は、お好きな部屋を今後 24 時間無料でお使いいただけます。"
+        },
+        {
+          "id": 112456,
+          "text": "%ni を捨てますか？"
+        },
+        {
+          "id": 112457,
+          "text": "インベントリがいっぱいです。"
         },
         {
           "id": 115000,
@@ -78016,6 +78077,34 @@
         {
           "id": 408494,
           "text": "赤き薔薇の騎士団"
+        },
+        {
+          "id": 408495,
+          "text": "捕縛"
+        },
+        {
+          "id": 408496,
+          "text": "配達"
+        },
+        {
+          "id": 408497,
+          "text": "護衛"
+        },
+        {
+          "id": 408498,
+          "text": "警護"
+        },
+        {
+          "id": 408499,
+          "text": "奪還"
+        },
+        {
+          "id": 408500,
+          "text": "救出"
+        },
+        {
+          "id": 408501,
+          "text": "討伐"
         },
         {
           "id": 409000,
@@ -93468,7 +93557,7 @@
         },
         {
           "id": 111346,
-          "text": "La Cota de Malla del Señor, a veces llamada la Armadura de Morihaus, el Don de Kynareth, es una coraza antigua de calidad insuperable. Otorga al portador el poder de regenerar la salud perdida, resistir los efectos de los hechizos y curarse del veneno cuando se usa. Se dice que cuando Kynareth considera al portador indigno, la Cota de Malla del Señor será arrebatada y escondida para el siguiente elegido."
+          "text": "La Cota de Lord, a veces llamada la Armadura de Morihaus, el Don de Kynareth, es una coraza antigua de calidad insuperable. Otorga al portador el poder de regenerar la salud perdida, resistir los efectos de los hechizos y curarse del veneno cuando se usa. Se dice que cuando Kynareth considera al portador indigno, la Cota de Lord será arrebatada y escondida para el siguiente elegido."
         },
         {
           "id": 111347,
@@ -97901,6 +97990,18 @@
         {
           "id": 112454,
           "text": "Este objeto se perderá aquí. ¿Soltarlo de todos modos?"
+        },
+        {
+          "id": 112455,
+          "text": "Hoy puedes tener la habitación que elijas gratis durante las próximas 24 horas."
+        },
+        {
+          "id": 112456,
+          "text": "¿Deseas soltar %ni?"
+        },
+        {
+          "id": 112457,
+          "text": "Tu inventario está lleno."
         },
         {
           "id": 115000,
@@ -108349,6 +108450,34 @@
         {
           "id": 408494,
           "text": "Orden de la Rosa Roja"
+        },
+        {
+          "id": 408495,
+          "text": "capturar a alguien"
+        },
+        {
+          "id": 408496,
+          "text": "entregar algo"
+        },
+        {
+          "id": 408497,
+          "text": "escoltar a alguien"
+        },
+        {
+          "id": 408498,
+          "text": "custodiar algo"
+        },
+        {
+          "id": 408499,
+          "text": "recuperar algo"
+        },
+        {
+          "id": 408500,
+          "text": "rescatar a alguien"
+        },
+        {
+          "id": 408501,
+          "text": "matar algo"
         },
         {
           "id": 409000,
@@ -120681,11 +120810,11 @@
         },
         {
           "id": 110641,
-          "text": "Hör zu, irgendein Kerl drüben in der %nt, dem Gasthaus im %di, hat mir erzählt, er wisse nicht nur, dass das Panzerhemd des Lords von Morihaus echt ist, sondern auch, wie man es findet. Er sagte, er sei bereit, die Information zu verkaufen, aber ich bin ziemlich knapp bei Kasse. Du solltest dorthin gehen, wenn du ein paar hundert Gold übrig hast und bereit bist, einem Fremden zu vertrauen."
+          "text": "Hör zu, irgendein Kerl drüben in der %nt, dem Gasthaus im %di, hat mir erzählt, er wisse nicht nur, dass Lords Panzerhemd von Morihaus echt ist, sondern auch, wie man es findet. Er sagte, er sei bereit, die Information zu verkaufen, aber ich bin ziemlich knapp bei Kasse. Du solltest dorthin gehen, wenn du ein paar hundert Gold übrig hast und bereit bist, einem Fremden zu vertrauen."
         },
         {
           "id": 110642,
-          "text": "Tatsächlich habe ich neulich etwas Interessantes gehört. Schon mal von der Legende des Morihaus gehört? Nun, dieser Kerl im %di in der %nt sagt, er wisse, wo Morihaus' Rüstung, das Panzerhemd des Lords, sei. Ich weiß nicht, ob auch nur die Hälfte davon stimmt, aber ich weiß, dass er Geld für seine Information will. Wenn du das Gold hast, ist das eine Gelegenheit, die ich nutzen würde."
+          "text": "Tatsächlich habe ich neulich etwas Interessantes gehört. Schon mal von der Legende des Morihaus gehört? Nun, dieser Kerl im %di in der %nt sagt, er wisse, wo Morihaus' Rüstung, Lords Panzerhemd, sei. Ich weiß nicht, ob auch nur die Hälfte davon stimmt, aber ich weiß, dass er Geld für seine Information will. Wenn du das Gold hast, ist das eine Gelegenheit, die ich nutzen würde."
         },
         {
           "id": 110643,
@@ -127934,6 +128063,18 @@
         {
           "id": 112454,
           "text": "Dieser Gegenstand geht hier verloren. Trotzdem ablegen?"
+        },
+        {
+          "id": 112455,
+          "text": "Heute könnt Ihr für die nächsten 24 Stunden ein Zimmer Eurer Wahl kostenlos haben."
+        },
+        {
+          "id": 112456,
+          "text": "Möchtet Ihr %ni ablegen?"
+        },
+        {
+          "id": 112457,
+          "text": "Euer Inventar ist voll."
         },
         {
           "id": 115000,
@@ -137874,6 +138015,34 @@
         {
           "id": 408494,
           "text": "Orden der Roten Rose"
+        },
+        {
+          "id": 408495,
+          "text": "jemanden gefangen nehmen"
+        },
+        {
+          "id": 408496,
+          "text": "etwas überbringen"
+        },
+        {
+          "id": 408497,
+          "text": "jemanden eskortieren"
+        },
+        {
+          "id": 408498,
+          "text": "etwas bewachen"
+        },
+        {
+          "id": 408499,
+          "text": "etwas zurückholen"
+        },
+        {
+          "id": 408500,
+          "text": "jemanden retten"
+        },
+        {
+          "id": 408501,
+          "text": "etwas erschlagen"
         },
         {
           "id": 409000,
@@ -157461,6 +157630,18 @@
           "text": "Cet objet sera perdu ici. Le jeter quand même ?"
         },
         {
+          "id": 112455,
+          "text": "Aujourd'hui, vous pouvez avoir la chambre de votre choix gratuitement pour les 24 prochaines heures."
+        },
+        {
+          "id": 112456,
+          "text": "Voulez-vous jeter %ni ?"
+        },
+        {
+          "id": 112457,
+          "text": "Votre inventaire est plein."
+        },
+        {
           "id": 115000,
           "text": "Theod"
         },
@@ -167399,6 +167580,34 @@
         {
           "id": 408494,
           "text": "Ordre de la Rose Rouge"
+        },
+        {
+          "id": 408495,
+          "text": "capturer quelqu'un"
+        },
+        {
+          "id": 408496,
+          "text": "livrer quelque chose"
+        },
+        {
+          "id": 408497,
+          "text": "escorter quelqu'un"
+        },
+        {
+          "id": 408498,
+          "text": "garder quelque chose"
+        },
+        {
+          "id": 408499,
+          "text": "récupérer quelque chose"
+        },
+        {
+          "id": 408500,
+          "text": "secourir quelqu'un"
+        },
+        {
+          "id": 408501,
+          "text": "tuer quelque chose"
         },
         {
           "id": 409000,
@@ -186986,6 +187195,18 @@
           "text": "Questo oggetto andrà perduto qui. Lasciarlo cadere comunque?"
         },
         {
+          "id": 112455,
+          "text": "Oggi puoi avere la stanza che preferisci gratis per le prossime 24 ore."
+        },
+        {
+          "id": 112456,
+          "text": "Volete lasciar cadere %ni?"
+        },
+        {
+          "id": 112457,
+          "text": "Il vostro inventario è pieno."
+        },
+        {
           "id": 115000,
           "text": "Theod"
         },
@@ -196924,6 +197145,34 @@
         {
           "id": 408494,
           "text": "Ordine della Rosa Rossa"
+        },
+        {
+          "id": 408495,
+          "text": "catturare qualcuno"
+        },
+        {
+          "id": 408496,
+          "text": "consegnare qualcosa"
+        },
+        {
+          "id": 408497,
+          "text": "scortare qualcuno"
+        },
+        {
+          "id": 408498,
+          "text": "sorvegliare qualcosa"
+        },
+        {
+          "id": 408499,
+          "text": "recuperare qualcosa"
+        },
+        {
+          "id": 408500,
+          "text": "salvare qualcuno"
+        },
+        {
+          "id": 408501,
+          "text": "uccidere qualcosa"
         },
         {
           "id": 409000,
@@ -216511,6 +216760,18 @@
           "text": "Этот предмет будет здесь потерян. Всё равно выбросить?"
         },
         {
+          "id": 112455,
+          "text": "Сегодня вы можете бесплатно занять любую комнату на ближайшие 24 часа."
+        },
+        {
+          "id": 112456,
+          "text": "Вы хотите выбросить %ni?"
+        },
+        {
+          "id": 112457,
+          "text": "Ваш инвентарь полон."
+        },
+        {
           "id": 115000,
           "text": "Теод"
         },
@@ -226449,6 +226710,34 @@
         {
           "id": 408494,
           "text": "Орден Алой Розы"
+        },
+        {
+          "id": 408495,
+          "text": "схватить кое-кого"
+        },
+        {
+          "id": 408496,
+          "text": "доставить кое-что"
+        },
+        {
+          "id": 408497,
+          "text": "сопроводить кое-кого"
+        },
+        {
+          "id": 408498,
+          "text": "охранять кое-что"
+        },
+        {
+          "id": 408499,
+          "text": "вернуть кое-что"
+        },
+        {
+          "id": 408500,
+          "text": "спасти кое-кого"
+        },
+        {
+          "id": 408501,
+          "text": "убить кое-что"
         },
         {
           "id": 409000,
@@ -246036,6 +246325,18 @@
           "text": "此物品将在这里丢失。仍要丢弃吗？"
         },
         {
+          "id": 112455,
+          "text": "今天你可以免费使用任选的一间房间，接下来的24小时内有效。"
+        },
+        {
+          "id": 112456,
+          "text": "要丢弃%ni吗？"
+        },
+        {
+          "id": 112457,
+          "text": "你的物品栏已满。"
+        },
+        {
           "id": 115000,
           "text": "西奥德"
         },
@@ -255974,6 +256275,34 @@
         {
           "id": 408494,
           "text": "红玫瑰骑士团"
+        },
+        {
+          "id": 408495,
+          "text": "抓捕某人"
+        },
+        {
+          "id": 408496,
+          "text": "递送某样东西"
+        },
+        {
+          "id": 408497,
+          "text": "护送某人"
+        },
+        {
+          "id": 408498,
+          "text": "看守某样东西"
+        },
+        {
+          "id": 408499,
+          "text": "取回某样东西"
+        },
+        {
+          "id": 408500,
+          "text": "营救某人"
+        },
+        {
+          "id": 408501,
+          "text": "消灭某个东西"
         },
         {
           "id": 409000,
@@ -275561,6 +275890,18 @@
           "text": "Este item será perdido aqui. Largar mesmo assim?"
         },
         {
+          "id": 112455,
+          "text": "Hoje você pode ficar com o quarto que quiser, de graça, pelas próximas 24 horas."
+        },
+        {
+          "id": 112456,
+          "text": "Deseja largar o item %ni?"
+        },
+        {
+          "id": 112457,
+          "text": "Seu inventário está cheio."
+        },
+        {
           "id": 115000,
           "text": "Theod"
         },
@@ -285499,6 +285840,34 @@
         {
           "id": 408494,
           "text": "Ordem da Rosa Vermelha"
+        },
+        {
+          "id": 408495,
+          "text": "capturar alguém"
+        },
+        {
+          "id": 408496,
+          "text": "entregar algo"
+        },
+        {
+          "id": 408497,
+          "text": "escoltar alguém"
+        },
+        {
+          "id": 408498,
+          "text": "guardar algo"
+        },
+        {
+          "id": 408499,
+          "text": "recuperar algo"
+        },
+        {
+          "id": 408500,
+          "text": "resgatar alguém"
+        },
+        {
+          "id": 408501,
+          "text": "matar algo"
         },
         {
           "id": 409000,
@@ -305086,6 +305455,18 @@
           "text": "Ten przedmiot przepadnie tutaj. Upuścić mimo to?"
         },
         {
+          "id": 112455,
+          "text": "Dziś możesz bezpłatnie zająć wybrany pokój na najbliższe 24 godziny."
+        },
+        {
+          "id": 112456,
+          "text": "Czy chcesz upuścić przedmiot (%ni)?"
+        },
+        {
+          "id": 112457,
+          "text": "Twój ekwipunek jest pełny."
+        },
+        {
           "id": 115000,
           "text": "Theod"
         },
@@ -315024,6 +315405,34 @@
         {
           "id": 408494,
           "text": "Zakon Czerwonej Róży"
+        },
+        {
+          "id": 408495,
+          "text": "pojmać kogoś"
+        },
+        {
+          "id": 408496,
+          "text": "dostarczyć coś"
+        },
+        {
+          "id": 408497,
+          "text": "eskortować kogoś"
+        },
+        {
+          "id": 408498,
+          "text": "pilnować czegoś"
+        },
+        {
+          "id": 408499,
+          "text": "odzyskać coś"
+        },
+        {
+          "id": 408500,
+          "text": "uratować kogoś"
+        },
+        {
+          "id": 408501,
+          "text": "zabić coś"
         },
         {
           "id": 409000,
@@ -334611,6 +335020,18 @@
           "text": "이 물건은 여기서 사라집니다. 그래도 버리시겠습니까?"
         },
         {
+          "id": 112455,
+          "text": "오늘은 원하시는 방을 앞으로 24시간 동안 무료로 쓰실 수 있습니다."
+        },
+        {
+          "id": 112456,
+          "text": "%ni, 버리시겠습니까?"
+        },
+        {
+          "id": 112457,
+          "text": "소지품이 가득 찼습니다."
+        },
+        {
           "id": 115000,
           "text": "테오드"
         },
@@ -344549,6 +344970,34 @@
         {
           "id": 408494,
           "text": "붉은 장미 기사단"
+        },
+        {
+          "id": 408495,
+          "text": "체포"
+        },
+        {
+          "id": 408496,
+          "text": "배달"
+        },
+        {
+          "id": 408497,
+          "text": "호위"
+        },
+        {
+          "id": 408498,
+          "text": "경비"
+        },
+        {
+          "id": 408499,
+          "text": "회수"
+        },
+        {
+          "id": 408500,
+          "text": "구출"
+        },
+        {
+          "id": 408501,
+          "text": "처치"
         },
         {
           "id": 409000,
@@ -364136,6 +364585,18 @@
           "text": "此物品將在這裡遺失。仍要丟棄嗎？"
         },
         {
+          "id": 112455,
+          "text": "今天你可以免費使用任選的一間房間，接下來的24小時內有效。"
+        },
+        {
+          "id": 112456,
+          "text": "要丟棄%ni嗎？"
+        },
+        {
+          "id": 112457,
+          "text": "你的物品欄已滿。"
+        },
+        {
           "id": 115000,
           "text": "西奧"
         },
@@ -374074,6 +374535,34 @@
         {
           "id": 408494,
           "text": "紅玫瑰騎士團"
+        },
+        {
+          "id": 408495,
+          "text": "抓捕某人"
+        },
+        {
+          "id": 408496,
+          "text": "遞送某樣東西"
+        },
+        {
+          "id": 408497,
+          "text": "護送某人"
+        },
+        {
+          "id": 408498,
+          "text": "看守某樣東西"
+        },
+        {
+          "id": 408499,
+          "text": "取回某樣東西"
+        },
+        {
+          "id": 408500,
+          "text": "營救某人"
+        },
+        {
+          "id": 408501,
+          "text": "消滅某個東西"
         },
         {
           "id": 409000,

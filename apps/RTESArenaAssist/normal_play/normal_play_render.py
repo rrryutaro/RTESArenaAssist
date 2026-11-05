@@ -353,23 +353,28 @@ def _poll_facility_render_dispatch(w, *, _shop_state, _shop_img_name, _facility_
     _t_facility_render = _phase_start()
     _negot_handled = False
     _active_tmpl_handled = False
+    _facility_surface_front = False
     if _story_kind:
         if _unified_node is not None:
             _unified_node.suspend_for_story(w)
+        _facility_surface_front = True
     elif _unified_node is not None:
         _negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active = _unified_node.render(w, view=_uview, shop_state=_shop_state, shop_img_name=_shop_img_name, top_level_state=_current_top_level(w))
+        _facility_surface_front = True
     elif _facility_tavern:
         from session.tavern_node import TAVERN_NODE as _TAVERN_NODE
         _negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active = _TAVERN_NODE.render(w, view=_tview, shop_state=_shop_state, shop_img_name=_shop_img_name, top_level_state=_current_top_level(w))
+        _facility_surface_front = True
     _phase_record(w, 'facility_render', _t_facility_render)
     _checkpoint(w, 'facility_render')
     if not _story_kind and _unified_node is None and (not _facility_tavern):
         _shop_buy_active, _shop_menu_visible = _render_no_session_shop(w, shop_state=_shop_state, shop_img_name=_shop_img_name, shop_buy_active=_shop_buy_active, shop_menu_visible=_shop_menu_visible)
         _negot_handled, _active_tmpl_handled = _poll_shared_negotiation_and_template(w, _shop_menu_visible=_shop_menu_visible, _shop_buy_active=_shop_buy_active, _shop_img_name=_shop_img_name, _temple_active_now=_temple_active_now, _tavern_active_now=_tavern_active_now, _tavern_l4_kind=_tavern_l4_kind, _poll_hierarchy_area=_poll_hierarchy_area, _negot_handled=_negot_handled, _active_tmpl_handled=_active_tmpl_handled)
+        _facility_surface_front = bool(_shop_menu_visible or _shop_buy_active or _negot_handled)
     else:
         from normal_play.artifact_offer_module import release_artifact_offer as _release_artifact_offer
         _release_artifact_offer(w)
-    return (_negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active)
+    return (_negot_handled, _active_tmpl_handled, _shop_menu_visible, _shop_buy_active, _facility_surface_front)
 
 def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dialog_changed, _npc_phase_raw, _img_name_now, _building_entry_active, _entry_phase_prev, _shop_state, _shop_img_name, _shop_menu_visible, _shop_buy_active, _facility_active_now, _poll_hierarchy_area, _temple_active_now, _temple_just_started, _equipment_active_now, _equipment_just_started, _mages_active_now, _mages_just_started, _negot_handled, _active_tmpl_handled, _inventory_screen=False, _b30=None):
     from arena_bridge import NPC_PHASE_BUILDING_ENTRY, NPC_PHASE_RESPONDING, NPC_PHASE_IDLE, NPC_PHASE_ASKING

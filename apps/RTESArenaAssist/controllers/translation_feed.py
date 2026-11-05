@@ -7,7 +7,7 @@ import i18n_helper as i18n
 from assist_log import recog as _recog
 _log = logging.getLogger('RTESArenaAssist')
 _ROLE_SETTING = {'situation': 'tts_target_situation', 'conversation': 'tts_target_conversation'}
-_UNIT_END_LOG_REASON = {'cleared': 'display_cleared', 'replaced': 'display_replaced', 'page_ended': 'display_page_ended', 'context_ended': 'display_context_ended'}
+_UNIT_END_LOG_REASON = {'cleared': 'display_cleared', 'replaced': 'display_replaced', 'page_ended': 'display_page_ended', 'context_ended': 'display_context_ended', 'superseded': 'display_superseded'}
 _LOG_MEANINGFUL_RE = re.compile('[0-9A-Za-z\\u3040-\\u30ff\\u3400-\\u9fff]')
 
 def _is_loggable_text(text: str) -> bool:
@@ -117,14 +117,16 @@ class TranslationFeed:
         self._spoken_keys.move_to_end(key)
         while len(self._spoken_keys) > 256:
             self._spoken_keys.popitem(last=False)
-    _UNIT_END_POLICY = {'cleared': ('tts_cancel_on_close', False, True), 'replaced': ('tts_interrupt', True, True), 'page_ended': ('tts_interrupt', True, False), 'context_ended': (None, True, True)}
+    _UNIT_END_POLICY = {'cleared': ('tts_cancel_on_close', False, True), 'replaced': ('tts_interrupt', True, True), 'page_ended': ('tts_interrupt', True, False), 'context_ended': (None, True, True), 'superseded': ('tts_interrupt', True, False)}
 
     def on_unit_ended(self, owner: str, reason: str) -> None:
         if not owner:
             return
+        if reason == 'superseded' and owner != self._speaking_owner:
+            return
         setting_key, default, closes_guard = self._UNIT_END_POLICY[reason]
         stop = setting_key is None or bool(settings.get(setting_key, default))
-        if reason in ('replaced', 'page_ended') and (not stop):
+        if reason in ('replaced', 'page_ended', 'superseded') and (not stop):
             return
         if stop:
             if owner == self._speaking_owner:

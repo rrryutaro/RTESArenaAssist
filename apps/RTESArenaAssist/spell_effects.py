@@ -1,6 +1,7 @@
 from __future__ import annotations
 from dataclasses import dataclass
 import math
+import statistics
 import time
 from player_condition import FORTIFY_WINDOW_POSITION, SHIELD_WINDOW_POSITION, ConditionFields, effect_window_position, flag_window_position, read_fields
 from combat_text_ja import text as combat_text
@@ -43,8 +44,9 @@ _META = {'light': ('☀', '#f4ce78'), 'shield': ('◆', '#8dcbeb'), 'strength': 
 _REGENERATE_FLAG = 128
 _LIGHT_POSITION = FORTIFY_WINDOW_POSITION + 1
 _WINDOW_POSITION = {**{key: effect_window_position(bit) for key, bit in _EFFECT_BIT.items()}, 'shield': SHIELD_WINDOW_POSITION, 'regenerate': flag_window_position(_REGENERATE_FLAG), 'strength': FORTIFY_WINDOW_POSITION, 'light': _LIGHT_POSITION}
-_ROUND_SAMPLES = 2
-_SECONDS_SLEW_RATIO = 0.05
+_ROUND_SAMPLES = 9
+_ROUND_QUANTUM = 0.1
+_ROUND_MIN_SAMPLES = 3
 _fortified_attribute: int | None = None
 
 def fortified_attribute() -> int | None:
@@ -134,8 +136,6 @@ class _ObservedRoundClock:
     def pause(self) -> None:
         self._last_wall = None
         self._last_tick_active = None
-        self._round_seconds = None
-        self._intervals = []
 
     def observe(self, game_time: int | None, now: float) -> None:
         if self._last_wall is not None:
@@ -156,19 +156,18 @@ class _ObservedRoundClock:
             interval = self._active_seconds - self._last_tick_active
             if interval >= 0.5:
                 self._intervals = (self._intervals + [interval])[-_ROUND_SAMPLES:]
-                period = min(self._intervals)
-                self._round_seconds = period
-                self._last_measured_round_seconds = period
+                if len(self._intervals) >= _ROUND_MIN_SAMPLES:
+                    period = max(_ROUND_QUANTUM, round(statistics.median(self._intervals) / _ROUND_QUANTUM) * _ROUND_QUANTUM)
+                    self._round_seconds = period
+                    self._last_measured_round_seconds = period
+                else:
+                    self._round_seconds = None
             else:
                 self._round_seconds = None
         else:
             self._round_seconds = None
         self._last_tick_active = self._active_seconds
         self._game_time = game_time
-
-    @property
-    def active_seconds(self) -> float:
-        return self._active_seconds
 
     def remaining(self, rounds: int) -> tuple[int, float]:
         period = self._round_seconds or self._last_measured_round_seconds or 5.0
@@ -186,7 +185,6 @@ class SpellEffectTracker:
         self._clock = _ObservedRoundClock()
         self._previous: dict[str, int | None] = {}
         self._maximum: dict[str, int] = {}
-        self._shown: dict[str, tuple[float, float, int]] = {}
         self._order: list[str] = []
         self._strength_decay = False
         self._strength_baseline: tuple[int, ...] | None = None
@@ -200,24 +198,9 @@ class SpellEffectTracker:
     def pause(self) -> None:
         self._clock.pause()
 
-    def _continuous_seconds(self, key: str, seconds: tuple[int, float], rounds: int) -> tuple[int, float]:
-        target = float(seconds[0])
-        now = self._clock.active_seconds
-        shown = target
-        before = self._shown.get(key)
-        if before is not None and rounds <= before[2]:
-            elapsed = max(0.0, now - before[1])
-            predicted = before[0] - elapsed
-            slack = max(1.0, predicted * _SECONDS_SLEW_RATIO) * elapsed
-            shown = min(max(target, predicted - slack), predicted + slack)
-        self._shown[key] = (shown, now, rounds)
-        return (max(1, math.ceil(shown)), seconds[1])
-
     def update(self, sample: SpellEffectSample, *, time_unit: str='rounds', now: float | None=None) -> list[SpellEffectRow]:
         observed_at = time.monotonic() if now is None else now
         self._clock.observe(sample.game_time, observed_at)
-        if time_unit != 'seconds':
-            self._shown.clear()
         fields = sample.fields
         fortified = bool(fields.flags & 16 and fields.counters[4])
         current = sample.attributes or (sample.strength_current,)
@@ -255,7 +238,6 @@ class SpellEffectTracker:
             before = self._previous.get(key)
             if not active[key]:
                 self._maximum.pop(key, None)
-                self._shown.pop(key, None)
                 if key in self._order:
                     self._order.remove(key)
             else:
@@ -276,7 +258,7 @@ class SpellEffectTracker:
                 display_current = round(current[attr] * 100 / 256)
                 display_before = round((current[attr] - recorded[1]) * 100 / 256)
                 name = f'{name} +{display_current - display_before}'
-                seconds = self._continuous_seconds(key, self._clock.remaining(value), value) if time_unit == 'seconds' else None
+                seconds = self._clock.remaining(value) if time_unit == 'seconds' else None
                 label = combat_text('spell_effect.remaining_seconds', value=seconds[0]) if seconds is not None else combat_text('spell_effect.remaining_rounds', value=value)
             elif key == 'strength':
                 if recorded is not None:
@@ -291,7 +273,7 @@ class SpellEffectTracker:
                     display_base = round(baseline[at] * 100 / 256)
                     label = f'+{display_current - display_base}'
             else:
-                seconds = self._continuous_seconds(key, self._clock.remaining(value), value) if time_unit == 'seconds' and value is not None else None
+                seconds = self._clock.remaining(value) if time_unit == 'seconds' and value is not None else None
                 label = combat_text('spell_effect.remaining_seconds', value=seconds[0]) if seconds is not None else combat_text('spell_effect.remaining_rounds', value=value) if value is not None else combat_text('spell_effect.active')
             maximum = self._maximum.get(key)
             meter_value = seconds[1] if seconds is not None else value

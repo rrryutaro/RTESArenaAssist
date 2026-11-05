@@ -1,4 +1,4 @@
-__version__ = '0.2.21'
+__version__ = '0.2.22'
 __build__ = 1
 __dev__ = False
 

@@ -120,7 +120,7 @@ class UiRouter:
         self._pending_order = 0
         self._pending_display_order = 0
         if intent is not None:
-            self.apply_display(intent)
+            self.apply_display(intent, previous_owner=frame.panel_owner if frame is not None else None)
         self._apply_flush_panel_mode(intent)
         self._log_flush_winner(intent, frame)
         self._log_facility_display_invariant(frame)
@@ -236,12 +236,15 @@ class UiRouter:
         self.propose_display(DisplayIntent.translation(panel_owner, en, ja, mode=mode, panel_en=panel_en, panel_ja=panel_ja, update_panel=update_panel, update_tab=update_tab, keep_owner=keep_owner, clear_place_list=clear_place_list, priority=priority, reason=reason, speech_role=speech_role, speech_text=speech_text, speech_action=speech_action, floor_mode=floor_mode))
     _RENDERERS = {'translation': '_render_translation', 'combat_info': '_render_combat_info', 'clear': '_render_clear', 'claim_owner': '_render_claim_owner', 'panel_mode': '_render_panel_mode', 'shop_buy_list': '_render_shop_buy_list', 'facility_list': '_render_facility_list', 'spellbook': '_render_spellbook', 'item_pickup_list': '_render_item_pickup_list', 'load_screen_slots': '_render_load_screen_slots', 'equipment_list': '_render_equipment_list', 'spell_detail': '_render_spell_detail', 'place_list': '_render_place_list', 'travel_table': '_render_travel_table', 'journal_entries': '_render_journal_entries'}
 
-    def apply_display(self, intent: DisplayIntent) -> None:
+    def apply_display(self, intent: DisplayIntent, *, previous_owner: Optional[str]=None) -> None:
         render = self._RENDERERS.get(intent.kind)
         if render is None:
             raise ValueError(f'unknown or unresolved display intent kind: {intent.kind!r}')
+        before = previous_owner if previous_owner is not None else self.current_owner()
         after = getattr(self, render)(intent)
         self._write_owner(intent)
+        if intent.kind == 'translation' and before and (self.current_owner() != before):
+            self._emit_unit_end(before, 'superseded', forget_key=False)
         if after is not None:
             after()
 

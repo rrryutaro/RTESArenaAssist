@@ -58,7 +58,8 @@ def render_equipment_list(table: QTableWidget, items: list, *, text_filter: str=
     mark_equipped = settings.get('equipment_mark_equipped', 'Ｅ')
     mark_equippable = settings.get('equipment_mark_equippable', '')
     mark_unequippable = settings.get('equipment_mark_unequippable', '✕')
-    for item_data in items:
+    magic_keys = magic_items.instance_keys(items)
+    for item_data, magic_key in zip(items, magic_keys):
         if not row_matches(item_data, text=text_filter, slot=slot_filter, category=category_filter):
             continue
         equipped = item_data.get('equipped', False)
@@ -102,14 +103,14 @@ def render_equipment_list(table: QTableWidget, items: list, *, text_filter: str=
         kind = ''
         if item_data.get('item_type') == 'potion' and (not is_unidentified) and bool(en):
             kind = 'potion'
-        elif magic_items.is_selectable(item_data):
+        elif magic_key is not None:
             kind = 'magic_item'
         selectable = bool(kind)
         if selectable:
             sheet_cell.setFlags(Qt.ItemFlag.ItemIsEnabled | Qt.ItemFlag.ItemIsSelectable | Qt.ItemFlag.ItemIsUserCheckable)
-            sheet_cell.setData(Qt.ItemDataRole.UserRole, en)
+            sheet_cell.setData(Qt.ItemDataRole.UserRole, magic_key if kind == 'magic_item' else en)
             sheet_cell.setData(Qt.ItemDataRole.UserRole + 1, kind)
-            sheet_cell.setCheckState(Qt.CheckState.Checked if kind == 'potion' and en in sheet_potions or (kind == 'magic_item' and en in sheet_magic_items) else Qt.CheckState.Unchecked)
+            sheet_cell.setCheckState(Qt.CheckState.Checked if kind == 'potion' and en in sheet_potions or (kind == 'magic_item' and magic_key in sheet_magic_items) else Qt.CheckState.Unchecked)
             sheet_cell.setToolTip('キャラクターシートに表示')
         else:
             sheet_cell.setFlags(Qt.ItemFlag.NoItemFlags)

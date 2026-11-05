@@ -23,6 +23,23 @@ def _normalise(names) -> tuple[str, ...]:
 
 def selected_names() -> tuple[str, ...]:
     return _normalise(settings.get(SETTING_KEY, DEFAULT_SELECTED))
+_INSTANCE_MARK = '#'
+
+def instance_key(name: str, occurrence: int) -> str:
+    name = (name or '').strip()
+    return name if occurrence <= 1 else f'{name}{_INSTANCE_MARK}{occurrence}'
+
+def instance_keys(items: Iterable[Mapping]) -> list[Optional[str]]:
+    seen: dict[str, int] = {}
+    out: list[Optional[str]] = []
+    for item in items:
+        if not is_selectable(item):
+            out.append(None)
+            continue
+        name = str(item.get('en') or '').strip()
+        seen[name] = seen.get(name, 0) + 1
+        out.append(instance_key(name, seen[name]))
+    return out
 
 def set_selected(name: str, enabled: bool) -> bool:
     name = (name or '').strip()
@@ -101,7 +118,8 @@ def fit_name(name: str) -> str:
 
 def _selected_items(inventory: Iterable[Mapping]) -> list[Mapping]:
     selected = set(selected_names())
-    return [item for item in inventory if str(item.get('en') or '').strip() in selected and is_selectable(item)]
+    items = list(inventory)
+    return [item for item, key in zip(items, instance_keys(items)) if key is not None and key in selected]
 
 def sheet_values(inventory: Optional[Iterable[Mapping]]) -> dict[str, str]:
     if inventory is None:
@@ -131,4 +149,4 @@ def state(inventory: Optional[Iterable[Mapping]]) -> tuple:
     if inventory is None:
         return (names, None)
     return (names, tuple(((str(item.get('en') or ''), int(item.get('uses'))) for item in _selected_items(inventory))))
-__all__ = ['SETTING_KEY', 'MAGIC_ITEM_SLOT_COUNT', 'DEFAULT_SELECTED', 'MAGIC_ITEM_VALUE_KEYS', 'selected_names', 'set_selected', 'is_selectable', 'effect_name', 'item_effects', 'item_effect_name', 'fit_one_line', 'fit_name', 'sheet_values', 'state']
+__all__ = ['SETTING_KEY', 'MAGIC_ITEM_SLOT_COUNT', 'DEFAULT_SELECTED', 'MAGIC_ITEM_VALUE_KEYS', 'selected_names', 'set_selected', 'is_selectable', 'instance_key', 'instance_keys', 'effect_name', 'item_effects', 'item_effect_name', 'fit_one_line', 'fit_name', 'sheet_values', 'state']
