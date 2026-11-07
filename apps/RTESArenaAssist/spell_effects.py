@@ -130,6 +130,7 @@ class _ObservedRoundClock:
         self._active_seconds = 0.0
         self._game_time: int | None = None
         self._last_tick_active: float | None = None
+        self._skip_next_interval = False
         self._round_seconds: float | None = None
         self._intervals: list[float] = []
 
@@ -139,7 +140,7 @@ class _ObservedRoundClock:
 
     def pause(self) -> None:
         self._last_wall = None
-        self._last_tick_active = None
+        self._skip_next_interval = True
 
     def observe(self, game_time: int | None, now: float) -> None:
         if self._last_wall is not None:
@@ -148,6 +149,7 @@ class _ObservedRoundClock:
         if game_time is None:
             self._game_time = None
             self._last_tick_active = None
+            self._skip_next_interval = False
             return
         if self._game_time is None:
             self._game_time = game_time
@@ -155,7 +157,7 @@ class _ObservedRoundClock:
         delta = game_time - self._game_time & 4294967295
         if delta == 0:
             return
-        if delta == 1 and self._last_tick_active is not None:
+        if delta == 1 and self._last_tick_active is not None and (not self._skip_next_interval):
             interval = self._active_seconds - self._last_tick_active
             if interval >= 0.5:
                 self._intervals = (self._intervals + [interval])[-_ROUND_SAMPLES:]
@@ -164,6 +166,7 @@ class _ObservedRoundClock:
                     if self._round_seconds is None or abs(period - self._round_seconds) >= _ROUND_ADOPT_DELTA - 1e-09:
                         self._round_seconds = period
         self._last_tick_active = self._active_seconds
+        self._skip_next_interval = False
         self._game_time = game_time
 
     def remaining(self, rounds: int) -> tuple[int, float]:

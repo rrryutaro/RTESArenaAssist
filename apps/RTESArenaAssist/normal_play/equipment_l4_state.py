@@ -30,6 +30,8 @@ class EquipmentL4Snapshot:
     status_reply: tuple = ()
     reply_text: str = ''
     reply_source_offset: int = 0
+NUMBER_INPUT_AUX_OFFSET = 43078
+NUMBER_INPUT_AUX_VALUE = 10
 VIEW_FLAG_OFFSET = 36724
 VIEW_FLAG_MENU = 81
 VIEW_FLAG_POPUP = 0
@@ -229,7 +231,18 @@ def _is_negotiation_img(img: str) -> bool:
     return get_negotiation_profile(img) is not None
 
 def _popup_reply_foreground(w) -> bool:
+    if _number_input_foreground(w):
+        return True
     return any((not c.text.startswith(_REPAIR_ENTRY_PROMPT) for c in _read_active_reply_candidates(w)))
+
+def _number_input_foreground(w) -> bool:
+    try:
+        raw = w._analyzer.read_bytes(w._anchor + NUMBER_INPUT_AUX_OFFSET, 2)
+    except Exception:
+        return False
+    if not isinstance(raw, (bytes, bytearray)) or len(raw) < 2:
+        return False
+    return int.from_bytes(bytes(raw[:2]), 'little') == NUMBER_INPUT_AUX_VALUE
 
 def _read_active_reply_candidates(w):
     out = []

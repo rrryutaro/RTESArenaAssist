@@ -169,8 +169,35 @@ def _try_chunk_decompose(name: str, lang: str) -> str | None:
             if translated is not None:
                 return translated
     return None
+_JA_VOWELS = 'アイウエオ'
+_JA_CONSONANT_ROWS: dict[str, tuple[str, str, str, str, str]] = {'ク': ('カ', 'キ', 'ク', 'ケ', 'コ'), 'グ': ('ガ', 'ギ', 'グ', 'ゲ', 'ゴ'), 'ス': ('サ', 'シ', 'ス', 'セ', 'ソ'), 'ズ': ('ザ', 'ジ', 'ズ', 'ゼ', 'ゾ'), 'ト': ('タ', 'ティ', 'トゥ', 'テ', 'ト'), 'ド': ('ダ', 'ディ', 'ドゥ', 'デ', 'ド'), 'フ': ('ファ', 'フィ', 'フ', 'フェ', 'フォ'), 'ブ': ('バ', 'ビ', 'ブ', 'ベ', 'ボ'), 'プ': ('パ', 'ピ', 'プ', 'ペ', 'ポ'), 'ム': ('マ', 'ミ', 'ム', 'メ', 'モ'), 'ル': ('ラ', 'リ', 'ル', 'レ', 'ロ'), 'ン': ('ナ', 'ニ', 'ヌ', 'ネ', 'ノ'), 'ヴ': ('ヴァ', 'ヴィ', 'ヴ', 'ヴェ', 'ヴォ')}
+_JA_YOON_ROW = ('ャ', '', 'ュ', 'ェ', 'ョ')
+_JA_H_ROW = ('ハ', 'ヒ', 'フ', 'ヘ', 'ホ')
+_EN_VOWEL_LETTERS = set('aeiouy')
+
+def _ja_joined(left_en: str, left_ja: str, right_en: str, right_ja: str) -> tuple[str, str] | None:
+    letters = [c for c in (left_en or '').lower() if c.isalpha()]
+    if not letters or letters[-1] in _EN_VOWEL_LETTERS:
+        return None
+    if not right_en or right_en[0].lower() not in 'aeiou':
+        return None
+    if not left_ja or not right_ja or right_ja[0] not in _JA_VOWELS:
+        return None
+    vowel = _JA_VOWELS.index(right_ja[0])
+    rest = right_ja[1:]
+    if letters == ['h'] and left_ja[-1] == 'フ':
+        return (left_ja[:-1] + _JA_H_ROW[vowel], rest)
+    tail = left_ja[-1]
+    if tail == 'ュ' and len(left_ja) >= 2:
+        return (left_ja[:-1] + _JA_YOON_ROW[vowel], rest)
+    row = _JA_CONSONANT_ROWS.get(tail)
+    if row is None:
+        return None
+    return (left_ja[:-1] + row[vowel], rest)
 
 def _translate_parts(parts: list[dict], lang: str) -> str | None:
+    if lang == 'ja':
+        return _translate_parts_ja(parts)
     out: list[str] = []
     for part in parts:
         if part['kind'] == 'string':
@@ -191,6 +218,31 @@ def _translate_parts(parts: list[dict], lang: str) -> str | None:
                 return None
             out.append(t)
     return ''.join(out)
+
+def _translate_parts_ja(parts: list[dict]) -> str | None:
+    pieces: list[list] = []
+    for part in parts:
+        if part['kind'] == 'string':
+            val = part['value']
+            if val == ' ':
+                pieces.append([val, '・', False])
+                continue
+            t = _literal_translation(val, 'ja')
+            if t is None:
+                return None
+            pieces.append([val, t, False])
+        else:
+            t = _chunk_translation(part['chunk'], part['entry_idx'], 'ja')
+            if t is None:
+                return None
+            pieces.append([part.get('en', ''), t, True])
+    for left, right in zip(pieces, pieces[1:]):
+        if not (left[2] and right[2]):
+            continue
+        joined = _ja_joined(left[0], left[1], right[0], right[1])
+        if joined is not None:
+            left[1], right[1] = joined
+    return ''.join((p[1] for p in pieces))
 _PLACE_NAME_RULES: list[dict] = _NAME_RULES[8][0]
 
 def _parse_place_name_part(name: str) -> list[dict] | None:

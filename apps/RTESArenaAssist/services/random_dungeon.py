@@ -151,12 +151,15 @@ def generate(seed: int, blocks: list, level_up_index: int, level_down_index: int
     return GeneratedDungeon(seed=seed, width=width, height=height, levels=tuple(levels), start=(_offset_level_change(sx), _offset_level_change(sy)), info_name=info_name, triggers=tuple(level_triggers), locks=tuple(level_locks), drawn_level_count=drawn_level_count)
 _BLOCKS_CACHE: dict[tuple, list] = {}
 _GENERATED_CACHE: dict[tuple, GeneratedDungeon] = {}
+_START_BY_MIF: dict[str, tuple[int, int]] = {}
+TRAVEL_ARRIVAL_OFFSET = (0, 1)
 _BEYOND_LOGGED: set[tuple[int, int]] = set()
 _NOT_BUILT_LOGGED: set[tuple] = set()
 
 def reset_caches() -> None:
     _BLOCKS_CACHE.clear()
     _GENERATED_CACHE.clear()
+    _START_BY_MIF.clear()
     _BEYOND_LOGGED.clear()
     _NOT_BUILT_LOGGED.clear()
 
@@ -208,7 +211,14 @@ def generated_dungeon(mif_name: str, mif_dirs) -> Optional[GeneratedDungeon]:
         _GENERATED_CACHE[key] = dungeon
         from assist_log import recog
         recog(_log, 'random dungeon generated: mif=%s seed=%d drawn_levels=%d start=%s', mif_name, seed, dungeon.drawn_level_count, dungeon.start)
+    _START_BY_MIF[mif_name.strip().upper()] = dungeon.start
     return dungeon
+
+def travel_arrival_coord(mif_name: str) -> Optional[tuple[int, int]]:
+    start = _START_BY_MIF.get((mif_name or '').strip().upper())
+    if start is None:
+        return None
+    return (start[0] + TRAVEL_ARRIVAL_OFFSET[0], start[1] + TRAVEL_ARRIVAL_OFFSET[1])
 
 def load_generated_level(mif_name: str, mif_dirs, *, level_index_override: Optional[int]=None):
     dungeon = generated_dungeon(mif_name, mif_dirs)

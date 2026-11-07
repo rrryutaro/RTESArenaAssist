@@ -37,6 +37,38 @@ class CityPlan:
     entries: tuple[CityBlockEntry, ...]
     random_after_plan: Optional[ArenaRandom]
 
+def _template_id(global_city_id: int, is_coastal: bool, location_type: ArenaLocationType) -> int:
+    is_city_state = location_type == ArenaLocationType.CITY_STATE
+    return global_city_id % get_city_template_count(is_coastal, is_city_state)
+
+def _reserved_block_list_index(global_city_id: int, is_coastal: bool, location_type: ArenaLocationType) -> int:
+    return get_city_reserved_block_list_index(is_coastal, _template_id(global_city_id, is_coastal, location_type))
+_previous_reserved_index: Optional[int] = None
+
+def note_generated_city(location: Optional['LocationRef']) -> None:
+    global _previous_reserved_index
+    if location is None:
+        return
+    province_id = location.province_id
+    location_id = location.location_id
+    location_type = _location_type_from_id(location_id)
+    if location_type is None or is_premade_city(location_id, province_id):
+        return
+    if not is_data_available():
+        return
+    city_gen = load_city_generation_data()
+    global_city_id = get_global_city_id(location_id, province_id)
+    _previous_reserved_index = _reserved_block_list_index(global_city_id, city_gen.is_coastal(global_city_id), location_type)
+
+def forget_generated_city() -> None:
+    global _previous_reserved_index
+    _previous_reserved_index = None
+
+def _previous_city_reserved_blocks(city_gen) -> Optional[list]:
+    if _previous_reserved_index is None:
+        return None
+    return list(city_gen.get_reserved_block_list(_previous_reserved_index) or [])
+
 def resolve_city_plan(province_id: int, location_id: int) -> Optional[CityPlan]:
     if not (is_data_available() and is_world_map_available()):
         return None
@@ -60,17 +92,16 @@ def resolve_city_plan(province_id: int, location_id: int) -> Optional[CityPlan]:
         base_mif_name = CENTER_PROVINCE_CITY_MIF_NAME
         entries = premade_city_entries(base_mif_name)
         start_pos = (0, 0)
-        random_after = imperial_tavern_random(city_seed)
+        previous_reserved = _previous_city_reserved_blocks(city_gen)
+        random_after = None if previous_reserved is None else imperial_tavern_random(city_seed, city_dim, previous_reserved)
     else:
-        is_city_state = location_type == ArenaLocationType.CITY_STATE
-        template_count = get_city_template_count(is_coastal, is_city_state)
-        template_id = global_city_id % template_count
+        template_id = _template_id(global_city_id, is_coastal, location_type)
         template_name_index = get_city_template_name_index(location_type, is_coastal)
         template_pattern = city_gen.get_template_filename(template_name_index)
         if not template_pattern:
             return None
         base_mif_name = template_pattern.replace('%d', str(template_id + 1)).upper()
-        rb_idx = get_city_reserved_block_list_index(is_coastal, template_id)
+        rb_idx = _reserved_block_list_index(global_city_id, is_coastal, location_type)
         sp_idx = get_city_starting_position_index(location_type, is_coastal, template_id)
         reserved = city_gen.get_reserved_block_list(rb_idx) or []
         start_pos = city_gen.get_starting_position(sp_idx) or (0, 0)

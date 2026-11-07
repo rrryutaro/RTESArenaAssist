@@ -888,6 +888,11 @@ def _poll_resolve_current_location(w, gs) -> None:
         location = None
     if location != getattr(w, '_current_location', None):
         _recog(_log, 'current location: %s', '%s province=%d location=%d' % (location.name, location.province_id, location.location_id) if location is not None else 'none (map=%r)' % (gs.get('MapName') or ''))
+        try:
+            from services.city_lookup import note_generated_city
+            note_generated_city(location)
+        except Exception:
+            _log.exception('note generated city failed')
     w._current_location = location
 
 def _poll_read_game_state(w):
@@ -1077,9 +1082,16 @@ def _poll_map_update(w, in_interior, interior_raw, player_floor, display_mif_nam
             if getattr(w, '_coord_gate_load_seq_seen', None) != _arr_seq:
                 w._coord_gate_load_seq_seen = _arr_seq
                 _load_started = _load_arrival_coord is not None
+        _gate_arrival_coord = _load_arrival_coord
+        if _gate_arrival_coord is None and _resolved_area == 'dungeon' and (not interior_mif_name) and (dungeon_floor == 0) and display_mif_name:
+            try:
+                from services.random_dungeon import travel_arrival_coord
+                _gate_arrival_coord = travel_arrival_coord(display_mif_name)
+            except Exception:
+                _gate_arrival_coord = None
         _gate_loc_was = getattr(w, '_coord_gate_loc_prev', None)
         _gate_active_was = bool(getattr(w, '_coord_gate_active', False))
-        _gate = _resolve_coord_transition(loc=_gate_loc, prev_loc=_gate_loc_was, in_transition=_gate_active_was, pre_coord=getattr(w, '_coord_gate_pre_coord', None), coord=(rt_x, rt_z), prev_coord=getattr(w, '_coord_gate_coord_prev', None), is_loading=_is_loading_for_map, arrival_coord=_load_arrival_coord, pre_loc=getattr(w, '_coord_gate_pre_loc', None), load_pending=bool(getattr(w, '_coord_gate_load_pending', False)), load_started=_load_started)
+        _gate = _resolve_coord_transition(loc=_gate_loc, prev_loc=_gate_loc_was, in_transition=_gate_active_was, pre_coord=getattr(w, '_coord_gate_pre_coord', None), coord=(rt_x, rt_z), prev_coord=getattr(w, '_coord_gate_coord_prev', None), is_loading=_is_loading_for_map, arrival_coord=_gate_arrival_coord, pre_loc=getattr(w, '_coord_gate_pre_loc', None), load_pending=bool(getattr(w, '_coord_gate_load_pending', False)), load_started=_load_started)
         w._coord_gate_loc_prev = _gate_loc
         w._coord_gate_active = _gate.in_transition
         w._coord_gate_pre_coord = _gate.pre_coord
@@ -1402,7 +1414,8 @@ def _poll_display_phase(w, *, _active_facility_name, _b30, _combat_map_result, _
             _log.exception('translation_feed.on_screen_context failed')
     from top_level.chargen_state import poll as _poll_chargen
     _poll_chargen(w)
-    _arena_overlay_gameplay = bool(_top_is_normal_play and _b30.get('in_gameplay') and (not getattr(w, '_travel_l4_active', False)) and (not _facility_surface_front) and (not getattr(w, '_npc_conversation_active', False)))
+    _passive_display_allowed = ui_router.passive_display_allowed() if ui_router is not None else True
+    _arena_overlay_gameplay = bool(_top_is_normal_play and _b30.get('in_gameplay') and (not getattr(w, '_travel_l4_active', False)) and (not _facility_surface_front) and (not getattr(w, '_npc_conversation_active', False)) and _passive_display_allowed)
     from normal_play.text_window_probe import note_text_window_signals as _note_text_window_signals, reset_text_window_probe as _reset_text_window_probe
     if _top_is_normal_play:
         _note_text_window_signals(w, area=_poll_hierarchy_area, in_gameplay=bool(_b30.get('in_gameplay')), fg_ptr=_b30.get('fg_ptr'), overlay_gameplay=_arena_overlay_gameplay)

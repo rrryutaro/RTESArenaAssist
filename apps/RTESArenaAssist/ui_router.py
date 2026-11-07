@@ -5,7 +5,7 @@ from typing import Optional
 import assist_settings as settings
 import i18n_helper as i18n
 from assist_log import recog as _recog
-from display_intent import DisplayIntent, PollFrame
+from display_intent import PASSIVE_DISPLAY_ALLOWED_OWNERS, DisplayIntent, PollFrame
 from hierarchy_state import active_facility_session_name, facility_owners_for_session, CONVERSATION_PANEL_OWNERS
 from panel_mode_resolver import closing_panel_mode as _closing_panel_mode, panel_is_effective, required_owner_for_mode, resolve_flush_mode, restore_translate_target
 _log = logging.getLogger('RTESArenaAssist')
@@ -71,6 +71,9 @@ class UiRouter:
         if intent.kind in ('clear_if_owner', 'release_if_owner') and current != intent.panel_owner:
             return False
         return True
+
+    def passive_display_allowed(self) -> bool:
+        return self._owner_gate_passes(DisplayIntent(kind='passive_display', allowed_current_owners=PASSIVE_DISPLAY_ALLOWED_OWNERS))
 
     def propose_display(self, intent: DisplayIntent) -> bool:
         resolved = self._resolve_proposed_intent(intent)
