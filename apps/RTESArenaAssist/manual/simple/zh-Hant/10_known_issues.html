@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>已知問題與注意事項</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; vertical-align: top; }
+tr:nth-child(even) { background: #111e2c; }
+.warn { background: #2a1c1c; border-left: 3px solid #a05050; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.ng { color: #ff8a8a; font-weight: bold; }
+.ok { color: #8fd18f; font-weight: bold; }
+.minor { color: #a8b4c0; font-weight: bold; }
+.src { color: #8090a0; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>已知問題與注意事項</h1>
+
+<p>這裡是 Arena 本身（遊戲本身，而非 Assist）的已知問題中，在一般遊玩時容易發生、會影響進度或存檔的問題。這些是遊戲的問題，Assist 無法修正。</p>
+<p>遊玩前請先閱讀「存檔方法」和「不能做的事」。出了問題時，請在「出問題時（依症狀查找）」中依畫面上的現象查找。</p>
+
+<h2>存檔方法</h2>
+<ul>
+  <li><b>輪流</b>使用存檔欄位（共 10 個）。不要一直覆蓋同一個欄位。</li>
+  <li>覺得不對勁時，<b>不要覆蓋</b>之前的欄位，存到空的欄位。</li>
+  <li>有些問題<b>結束並重新啟動 Arena、再讀檔就會恢復</b>（遊戲暫時記住的狀態出了亂子）。出問題時先試這個。已經寫進存檔的問題，重新啟動也無法恢復。</li>
+</ul>
+
+<h2>不能做的事</h2>
+<div class="warn">下面的操作會導致無法挽回，或使遊戲嚴重損壞。<b>不要這樣做。</b></div>
+<ol>
+  <li><span class="ng">不要把正在裝備的護甲或武器交給裝備店「修理（Repair）」，也不要賣掉。</span> 一定要先卸下再交。否則遊戲會進入異常狀態（症狀見下表）。</li>
+  <li><span class="ng">物品送修期間不要遠行。</span> 遊戲能記住的城市與地城數量有限（約 8～16 處，越大的地城佔用越多），超出後會從最早的地方開始遺忘，連送修的那家店也會忘記，物品就回不來了。修好後儘早取回。</li>
+  <li><span class="ng">主線任務中交付物品後，不要回到那件物品所在的地城再次撿取同樣的物品。</span> 同樣的物品會再次出現，但撿取後會被當作取得了下一階段的物品，階段直接跳過。被跳過階段的目的地不會標在地圖上，因此無法前往，主線任務也無法繼續。從最初逃出的地城之後要去的那座地城開始，每個階段都會發生。</li>
+  <li><span class="ng">不要拒絕主線任務的委託。</span> 拒絕後再與同一人交談，遊戲會當機，主線任務就無法繼續。接受後沒有期限，即使想以後再做也先接受。</li>
+  <li><span class="ng">遊玩途中不要在選單裡選擇「Start New Game」。</span> 會出現開始日期錯誤、不會出現神器任務、之前角色的狀態（疾病、護送對象等）殘留等問題。要開始新遊戲，請先重新啟動 Arena，不開啟讀檔畫面直接開始。</li>
+  <li><span class="ng">不要用穿牆術（Passwall）進入樓梯或門。</span> 可能卡在牆裡或來到損壞的樓層。<b>在損壞的樓層存檔後，遊戲將無法繼續。</b></li>
+  <li><span class="ng">不要在沒有存檔的情況下接受宮殿任務。</span> 失敗後，那座宮殿可能再也不會給你任務。要挽回，需要接受任務之前的存檔。</li>
+  <li><span class="ng">不要徒手戰鬥，也不要徒手破門。</span> 遊戲很容易當機。即使是弱的武器也要帶著。</li>
+  <li><span class="ng">啟動 Arena 後，不要馬上讀取野外的存檔並在那片野外「打聽傳聞（Rumors）」。</span> 遊戲可能會當機。啟動後，先讀取在城鎮中儲存的存檔，或先去一次城鎮再打聽。</li>
+</ol>
+
+<h2>出問題時（依症狀查找）</h2>
+<p>「能否恢復」的含義： <span class="ok">重啟即可恢復</span>、<span class="ok">可以自己解決</span> ＝用現在的存檔就能解決。 <span class="ng">需要之前的存檔</span> ＝只能讀取造成問題的操作之前的存檔（若已覆蓋則無法挽回）。 <span class="ng">需要重建角色</span> ＝只能重新建立角色。 <span class="minor">影響很小</span> ＝可以不管。</p>
+<table>
+  <tr><th>畫面上發生的事</th><th>原因</th><th>能否恢復</th><th>解決方法</th></tr>
+  <tr><td>角色表無法關閉，或部分數值不顯示。地圖上的標記不顯示。向人打聽到的商店或旅店名稱清單是空的。在神殿交談會當住。紮營時出現看不見的敵人。</td><td>裝備著送修（或賣掉）了</td><td><span class="ng">需要之前的存檔</span></td><td>讀取送修前的存檔。</td></tr>
+  <tr><td>修理後取回的物品顯示為紅色，無法裝備。</td><td>裝備著送修了</td><td><span class="ng">需要之前的存檔</span>（曾用取回前的存檔恢復 1 次）</td><td>結束並重新啟動 Arena，讀取取回前的存檔後重新取回。</td></tr>
+  <tr><td>送修的物品不在店裡。</td><td>送修期間去了很多地方</td><td><span class="ng">需要之前的存檔</span></td><td>讀取送修前的存檔。</td></tr>
+  <tr><td>帶回了任務物品，委託人卻只有平常的對話。</td><td>遊戲沒有識別該物品</td><td><span class="ok">重啟即可恢復</span>（宮殿任務無法恢復）</td><td>離開建築並存檔，結束並重新啟動 Arena 後再讀檔。如果法師公會有多扇門，請從北門或東北門進入。</td></tr>
+  <tr><td>主線任務中打聽到的目的地名稱是亂碼。</td><td>遊戲讀取出錯</td><td><span class="ok">重啟即可恢復</span></td><td>存檔，結束並重新啟動 Arena 後再讀檔。</td></tr>
+  <tr><td>主線任務的下一個目的地不在地圖上，哪裡都去不了。</td><td>再次撿取了已交付的物品</td><td><span class="ng">需要之前的存檔</span></td><td>讀取撿取前的存檔。覆蓋存檔後，目前沒有已知的挽回方法。</td></tr>
+  <tr><td>與主線任務的委託人交談時遊戲當機。</td><td>拒絕了委託</td><td><span class="ng">需要之前的存檔</span></td><td>讀取拒絕前的存檔，然後接受委託。</td></tr>
+  <tr><td>宮殿的主人不再給任務。宮殿裡的人換了。</td><td>宮殿任務失敗</td><td><span class="ng">需要之前的存檔</span></td><td>讀取失敗前的存檔。</td></tr>
+  <tr><td>開始日期是 1 月（Morning Star）1 日。之前角色的疾病或護送對象還在。</td><td>遊玩途中選擇了「Start New Game」</td><td><span class="ng">需要重建角色</span></td><td>重新啟動 Arena，不開啟讀檔畫面重新建立角色。</td></tr>
+  <tr><td>等級已到 5 以上，打聽傳聞卻從不出現神器任務。</td><td>同上（遊玩途中重新開始的角色）</td><td><span class="ok">可以自己解決</span>（未確認）</td><td>據官方更新說明，按 <b>Alt+F5</b> 可讓任務出現。只在沒有神器時使用一次（在神器任務進行中使用可能會破壞該任務）。</td></tr>
+  <tr><td>在旅店租的房間無法休息（租房時間消失了）。</td><td>租房後開啟了讀檔畫面</td><td><span class="minor">影響很小</span></td><td>重新租房。</td></tr>
+  <tr><td>遊戲當機了（徒手攻擊時、在野外打聽傳聞時）。</td><td>徒手戰鬥、啟動後馬上在野外打聽傳聞</td><td><span class="minor">影響很小</span>（存檔不會損壞）</td><td>從最後的存檔繼續。不要重複同樣的操作。</td></tr>
+  <tr><td>卡在牆裡動不了。</td><td>穿牆術</td><td><span class="ok">重啟即可恢復</span>（旁邊有空格時）</td><td>若自動地圖上旁邊有空格，存檔後重新啟動 Arena 再讀檔即可脫困。沒有空格時，讀取之前的存檔。</td></tr>
+  <tr><td>穿過樓梯或門之後到達的樓層是損壞的。</td><td>用穿牆術從背面進入</td><td><span class="ng">需要之前的存檔</span></td><td>不要在這裡存檔，讀取之前的存檔。</td></tr>
+  <tr><td>從台階邊緣走下來後無法移動（仍可轉向）。</td><td>台階處的碰撞判定問題</td><td><span class="ok">可以自己解決</span></td><td>正對斜坡向前跳。以後從高處下來時用跳的，不要直接走下來。</td></tr>
+  <tr><td>治好疾病並休息後，屬性仍未恢復。</td><td>裝備著能提高該屬性的物品（戒指、項鍊等）</td><td><span class="ok">可以自己解決</span></td><td>卸下該裝備並休息，屬性恢復後再裝備回去。</td></tr>
+  <tr><td>被詛咒或奪取屬性的法術降低的屬性無法恢復。</td><td>屬性處理的問題（從目標身上奪取屬性的自製法術也會引起）</td><td><span class="ok">可以自己解決</span></td><td>下次升級時會恢復。</td></tr>
+</table>
+
+<p class="src">出處：UESP「Arena:Bugs」「Arena:Patches」、主線任務各階段的頁面，以及開發 Assist 時的觀察（截至 2026 年 11 月；Steam 版＝CD 版 1.07）。</p>
+
+</body>
+</html>

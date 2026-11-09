@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Known Bugs &amp; Cautions</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; vertical-align: top; }
+tr:nth-child(even) { background: #111e2c; }
+.warn { background: #2a1c1c; border-left: 3px solid #a05050; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.ng { color: #ff8a8a; font-weight: bold; }
+.ok { color: #8fd18f; font-weight: bold; }
+.minor { color: #a8b4c0; font-weight: bold; }
+.src { color: #8090a0; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>Known Bugs &amp; Cautions</h1>
+
+<p>These are known bugs in Arena itself (the game, not Assist) that tend to happen in normal play and can affect your progress or save data. They are bugs in the game, so Assist cannot fix them.</p>
+<p>Before playing, read "How to save" and "Things you must not do". When something goes wrong, look up what you see on screen in "When something goes wrong".</p>
+
+<h2>How to save</h2>
+<ul>
+  <li><b>Rotate</b> between the save slots (there are 10). Do not keep overwriting a single slot.</li>
+  <li>If something seems wrong, <b>do not overwrite</b> your existing slots. Save to an empty slot.</li>
+  <li>Some bugs are <b>fixed by quitting Arena, starting it again and loading</b> (the game's temporary state was disturbed). Try this first when something is wrong. Damage that has been written into the save data is not fixed by restarting.</li>
+</ul>
+
+<h2>Things you must not do</h2>
+<div class="warn">The following actions can make things impossible to undo or badly break the game. <b>Do not do them.</b></div>
+<ol>
+  <li><span class="ng">Do not hand equipped armor or weapons to an equipment store for "Repair". Do not sell them.</span> Always unequip first. Otherwise the game goes into a broken state (symptoms in the table below).</li>
+  <li><span class="ng">Do not travel far while an item is in for repair.</span> The game can only remember a limited number of towns and dungeons (roughly 8 to 16; large dungeons use more), and forgets the oldest first. It forgets the shop holding your item too, and the item is lost. Pick it up soon after it is ready.</li>
+  <li><span class="ng">In the Main Quest, after delivering an item, do not go back to the dungeon where you found it and pick up the same item again.</span> The same item is there again, but picking it up counts as getting the next stage's item, so the quest skips ahead. The skipped stages' destinations never appear on your map, so you cannot go there and cannot continue the Main Quest. This happens at every stage, starting with the dungeon you go to after the one you first escape from.</li>
+  <li><span class="ng">Do not refuse a Main Quest request.</span> If you refuse and then talk to the same person again, the game crashes, and you cannot continue the Main Quest from there. There is no time limit once you accept, so accept even if you want to do it later.</li>
+  <li><span class="ng">While playing, do not choose "Start New Game" from the menu.</span> It causes bugs: the start date is wrong, artifact quests never come, and state from the previous character (a disease, an escort, etc.) remains. To start a new game, restart Arena first and start without opening the load screen.</li>
+  <li><span class="ng">Do not use Passwall to go into stairs or doors.</span> You can get stuck in a wall or end up on a broken floor. <b>If you save on a broken floor, the game cannot be continued.</b></li>
+  <li><span class="ng">Do not take a palace quest without saving first.</span> If you fail it, that palace may never give you quests again. To undo it you need a save from before you took the quest.</li>
+  <li><span class="ng">Do not fight with bare hands. Do not break doors with bare hands.</span> The game often crashes. Carry a weapon, even a weak one.</li>
+  <li><span class="ng">Right after starting Arena, do not load a wilderness save and ask for "Rumors" in that wilderness.</span> The game can crash. After starting Arena, first load a save made inside a town, or travel to a town once before asking.</li>
+</ol>
+
+<h2>When something goes wrong (look up the symptom)</h2>
+<p>How to read "Can it be fixed?": <span class="ok">Fixed by restarting</span> / <span class="ok">You can fix it</span> = fixable with your current save. <span class="ng">Needs an earlier save</span> = you can only load a save from before the cause (if you overwrote it, you cannot go back). <span class="ng">Needs a new character</span> = you can only create the character again. <span class="minor">Minor</span> = you can leave it.</p>
+<table>
+  <tr><th>What you see</th><th>Cause</th><th>Can it be fixed?</th><th>How to fix</th></tr>
+  <tr><td>The character sheet cannot be closed, or some numbers are missing. Map notes disappear. The list of shop or inn names people give you is empty. Talking in a temple freezes the game. Invisible enemies appear when you camp.</td><td>Equipped gear was handed in for repair (or sold)</td><td><span class="ng">Needs an earlier save</span></td><td>Load a save from before the repair.</td></tr>
+  <tr><td>An item returned from repair is shown in red and cannot be equipped.</td><td>It was handed in for repair while equipped</td><td><span class="ng">Needs an earlier save</span> (fixed once with a save from before pickup)</td><td>Quit and restart Arena, load a save from before you picked it up, and pick it up again.</td></tr>
+  <tr><td>The item you left for repair is not at the shop.</td><td>You visited many places while it was in for repair</td><td><span class="ng">Needs an earlier save</span></td><td>Load a save from before you handed it in.</td></tr>
+  <tr><td>You brought the quest item back, but the quest giver only shows the usual conversation.</td><td>The game does not recognize the item</td><td><span class="ok">Fixed by restarting</span> (not for palace quests)</td><td>Leave the building and save, quit and restart Arena, then load. If a Mages Guild has several doors, enter through the north or northeast door.</td></tr>
+  <tr><td>In the Main Quest, the destination name people tell you is garbled.</td><td>A loading glitch in the game</td><td><span class="ok">Fixed by restarting</span></td><td>Save, quit and restart Arena, then load.</td></tr>
+  <tr><td>The next Main Quest destination is not on your map and you cannot go anywhere.</td><td>A delivered item was picked up again</td><td><span class="ng">Needs an earlier save</span></td><td>Load a save from before that pickup. No way is known to undo it once the save is overwritten.</td></tr>
+  <tr><td>Talking to a Main Quest quest giver crashes the game.</td><td>You refused the request</td><td><span class="ng">Needs an earlier save</span></td><td>Load a save from before you refused, and accept the request.</td></tr>
+  <tr><td>The ruler of a palace no longer gives you quests. The people in the palace have been replaced.</td><td>You failed a palace quest</td><td><span class="ng">Needs an earlier save</span></td><td>Load a save from before the failure.</td></tr>
+  <tr><td>The start date is the 1st of Morning Star (month 1). A disease or escort from your previous character remains.</td><td>"Start New Game" was chosen while playing</td><td><span class="ng">Needs a new character</span></td><td>Restart Arena and create the character again without opening the load screen.</td></tr>
+  <tr><td>You are level 5 or higher, but asking for rumors never brings an artifact quest.</td><td>Same as above (a character started from inside a game)</td><td><span class="ok">You can fix it</span> (unverified)</td><td>According to the official patch notes, <b>Alt+F5</b> enables the quests. Use it only once, while you do not have an artifact (using it during an artifact quest may ruin that quest).</td></tr>
+  <tr><td>You cannot rest in the inn room you rented (the rented time is gone).</td><td>You opened the load screen after renting the room</td><td><span class="minor">Minor</span></td><td>Rent the room again.</td></tr>
+  <tr><td>The game crashed (when punching with bare hands, or asking for rumors in the wilderness).</td><td>Bare-handed combat, or wilderness rumors right after starting</td><td><span class="minor">Minor</span> (the save is not damaged)</td><td>Continue from your last save. Do not repeat the same action.</td></tr>
+  <tr><td>You are stuck in a wall.</td><td>Passwall</td><td><span class="ok">Fixed by restarting</span> (when there is an open square next to you)</td><td>If the automap shows an open square next to you, save, restart Arena and load to get out. If there is none, load an earlier save.</td></tr>
+  <tr><td>The floor you reached through stairs or a door is broken.</td><td>You entered from the back with Passwall</td><td><span class="ng">Needs an earlier save</span></td><td>Do not save here. Load an earlier save.</td></tr>
+  <tr><td>You cannot move after stepping down from a ledge (you can still turn).</td><td>A collision bug on ledges</td><td><span class="ok">You can fix it</span></td><td>Face the slope straight on and jump forward. In future, jump down from high places instead of walking off them.</td></tr>
+  <tr><td>An attribute does not come back after curing a disease and resting.</td><td>You wear an item that raises that attribute (a ring, an amulet, etc.)</td><td><span class="ok">You can fix it</span></td><td>Take the item off and rest; put it back on after the attribute has recovered.</td></tr>
+  <tr><td>An attribute lowered by a curse or by a spell that steals attributes does not come back.</td><td>A bug in attribute handling (also caused by custom spells that take attributes from the target)</td><td><span class="ok">You can fix it</span></td><td>It comes back at your next level-up.</td></tr>
+</table>
+
+<p class="src">Sources: UESP "Arena:Bugs", "Arena:Patches", the Main Quest stage pages, and observations made while developing Assist (as of November 2026; the Steam version is the CD version 1.07).</p>
+
+</body>
+</html>

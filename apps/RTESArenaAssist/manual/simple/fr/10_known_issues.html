@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Bogues connus et précautions</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; vertical-align: top; }
+tr:nth-child(even) { background: #111e2c; }
+.warn { background: #2a1c1c; border-left: 3px solid #a05050; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.ng { color: #ff8a8a; font-weight: bold; }
+.ok { color: #8fd18f; font-weight: bold; }
+.minor { color: #a8b4c0; font-weight: bold; }
+.src { color: #8090a0; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>Bogues connus et précautions</h1>
+
+<p>Voici des bogues connus d'Arena lui-même (le jeu, pas Assist) qui surviennent souvent en jeu normal et peuvent nuire à la progression ou aux sauvegardes. Ce sont des bogues du jeu ; Assist ne peut donc pas les corriger.</p>
+<p>Avant de jouer, lisez « Bien sauvegarder » et « Ce qu'il ne faut pas faire ». En cas de problème, cherchez ce que vous voyez à l'écran dans « En cas de problème ».</p>
+
+<h2>Bien sauvegarder</h2>
+<ul>
+  <li><b>Alternez</b> entre les emplacements de sauvegarde (il y en a 10). N'écrasez pas toujours le même.</li>
+  <li>Si quelque chose semble anormal, <b>n'écrasez pas</b> vos emplacements existants. Sauvegardez sur un emplacement libre.</li>
+  <li>Certains bogues <b>disparaissent si vous quittez Arena, le relancez et rechargez</b> (l'état temporaire du jeu était perturbé). Essayez d'abord cela. Ce qui a été écrit dans la sauvegarde ne disparaît pas en relançant.</li>
+</ul>
+
+<h2>Ce qu'il ne faut pas faire</h2>
+<div class="warn">Les actions suivantes peuvent devenir irréversibles ou casser gravement le jeu. <b>Ne les faites pas.</b></div>
+<ol>
+  <li><span class="ng">Ne confiez pas une armure ou une arme équipée à la « réparation » (Repair) d'une boutique d'équipement. Ne la vendez pas.</span> Retirez-la toujours avant. Sinon le jeu passe dans un état défectueux (symptômes dans le tableau ci-dessous).</li>
+  <li><span class="ng">Ne partez pas loin pendant qu'un objet est en réparation.</span> Le jeu ne retient qu'un nombre limité de villes et de donjons (environ 8 à 16 ; les grands donjons en occupent plus) et oublie d'abord les plus anciens, y compris la boutique qui a votre objet, qui est alors perdu. Récupérez-le peu après qu'il soit prêt.</li>
+  <li><span class="ng">Dans la quête principale, après avoir remis un objet, ne retournez pas dans le donjon où vous l'avez trouvé pour reprendre le même objet.</span> Il s'y trouve à nouveau, mais le ramasser compte comme obtenir l'objet de l'étape suivante, et la quête saute en avant. Les destinations des étapes sautées n'apparaissent jamais sur la carte : vous ne pouvez pas y aller ni poursuivre la quête principale. Cela arrive à chaque étape, à partir du donjon où vous allez après celui dont vous vous évadez au début.</li>
+  <li><span class="ng">Ne refusez pas une demande de la quête principale.</span> Si vous refusez puis reparlez à la même personne, le jeu plante et la quête principale ne peut plus continuer. Aucun délai une fois acceptée : acceptez même si vous voulez la faire plus tard.</li>
+  <li><span class="ng">En cours de partie, ne choisissez pas « Start New Game » dans le menu.</span> Cela provoque des bogues : date de départ erronée, aucune quête d'artefact, et l'état du personnage précédent (maladie, escorte, etc.) subsiste. Pour une nouvelle partie, relancez d'abord Arena et commencez sans ouvrir l'écran de chargement.</li>
+  <li><span class="ng">N'utilisez pas Traverse-mur (Passwall) pour entrer dans un escalier ou une porte.</span> Vous pouvez rester coincé dans un mur ou arriver sur un niveau défectueux. <b>Si vous sauvegardez sur un niveau défectueux, la partie ne peut plus continuer.</b></li>
+  <li><span class="ng">N'acceptez pas une quête du palais sans sauvegarder avant.</span> En cas d'échec, ce palais risque de ne plus jamais vous confier de quête. Pour revenir en arrière, il faut une sauvegarde d'avant l'acceptation.</li>
+  <li><span class="ng">Ne vous battez pas à mains nues. N'enfoncez pas de portes à mains nues.</span> Le jeu plante souvent. Portez une arme, même faible.</li>
+  <li><span class="ng">Juste après avoir lancé Arena, ne chargez pas une sauvegarde faite en pleine nature pour y demander des « rumeurs » (Rumors).</span> Le jeu peut planter. Après le lancement, chargez d'abord une sauvegarde faite dans une ville ou rendez-vous une fois dans une ville avant de demander.</li>
+</ol>
+
+<h2>En cas de problème (chercher par symptôme)</h2>
+<p>Comment lire « Réparable ? » : <span class="ok">Réglé en relançant</span> / <span class="ok">Réparable soi-même</span> = réparable avec votre sauvegarde actuelle. <span class="ng">Sauvegarde antérieure nécessaire</span> = seule une sauvegarde d'avant la cause aide (si elle est écrasée, pas de retour possible). <span class="ng">Nouveau personnage nécessaire</span> = seule la recréation du personnage aide. <span class="minor">Sans gravité</span> = vous pouvez laisser ainsi.</p>
+<table>
+  <tr><th>Ce que vous voyez</th><th>Cause</th><th>Réparable ?</th><th>Que faire</th></tr>
+  <tr><td>La fiche de personnage ne se ferme plus ou des valeurs manquent. Les notes de la carte disparaissent. La liste des noms de boutiques ou d'auberges qu'on vous donne est vide. Parler dans un temple fige le jeu. Des ennemis invisibles apparaissent au campement.</td><td>Un équipement porté a été confié en réparation (ou vendu)</td><td><span class="ng">Sauvegarde antérieure nécessaire</span></td><td>Chargez une sauvegarde d'avant la réparation.</td></tr>
+  <tr><td>Un objet rendu par la réparation est affiché en rouge et ne peut pas être équipé.</td><td>Il a été confié en réparation alors qu'il était porté</td><td><span class="ng">Sauvegarde antérieure nécessaire</span> (réglé une fois avec une sauvegarde d'avant le retrait)</td><td>Quittez et relancez Arena, chargez une sauvegarde d'avant le retrait et récupérez-le à nouveau.</td></tr>
+  <tr><td>L'objet laissé en réparation n'est plus à la boutique.</td><td>Vous avez visité beaucoup de lieux pendant la réparation</td><td><span class="ng">Sauvegarde antérieure nécessaire</span></td><td>Chargez une sauvegarde d'avant le dépôt.</td></tr>
+  <tr><td>Vous rapportez l'objet de quête, mais le commanditaire n'affiche que la conversation habituelle.</td><td>Le jeu ne reconnaît pas l'objet</td><td><span class="ok">Réglé en relançant</span> (pas pour les quêtes du palais)</td><td>Sortez du bâtiment et sauvegardez, quittez puis relancez Arena, et chargez. Si une Guilde des mages a plusieurs portes, entrez par la porte nord ou nord-est.</td></tr>
+  <tr><td>Dans la quête principale, le nom de la destination qu'on vous donne est illisible.</td><td>Un bogue de chargement du jeu</td><td><span class="ok">Réglé en relançant</span></td><td>Sauvegardez, quittez puis relancez Arena, et chargez.</td></tr>
+  <tr><td>La prochaine destination de la quête principale n'est pas sur la carte et vous ne pouvez aller nulle part.</td><td>Un objet déjà remis a été ramassé à nouveau</td><td><span class="ng">Sauvegarde antérieure nécessaire</span></td><td>Chargez une sauvegarde d'avant ce ramassage. Aucun moyen connu de revenir en arrière une fois la sauvegarde écrasée.</td></tr>
+  <tr><td>Parler à un commanditaire de la quête principale fait planter le jeu.</td><td>Vous avez refusé la demande</td><td><span class="ng">Sauvegarde antérieure nécessaire</span></td><td>Chargez une sauvegarde d'avant le refus et acceptez la demande.</td></tr>
+  <tr><td>Le souverain d'un palais ne vous confie plus de quêtes. Les gens du palais ont été remplacés.</td><td>Vous avez échoué à une quête du palais</td><td><span class="ng">Sauvegarde antérieure nécessaire</span></td><td>Chargez une sauvegarde d'avant l'échec.</td></tr>
+  <tr><td>La date de départ est le 1er Morning Star (mois 1). La maladie ou l'escorte du personnage précédent est encore là.</td><td>« Start New Game » a été choisi en cours de partie</td><td><span class="ng">Nouveau personnage nécessaire</span></td><td>Relancez Arena et recréez le personnage sans ouvrir l'écran de chargement.</td></tr>
+  <tr><td>Vous êtes au moins niveau 5, mais les rumeurs n'amènent jamais de quête d'artefact.</td><td>Comme ci-dessus (personnage commencé en cours de partie)</td><td><span class="ok">Réparable soi-même</span> (non vérifié)</td><td>D'après les notes officielles du correctif, <b>Alt+F5</b> active ces quêtes. Utilisez-le une seule fois, sans posséder d'artefact (pendant une quête d'artefact, il peut la gâcher).</td></tr>
+  <tr><td>Vous ne pouvez pas vous reposer dans la chambre louée (le temps loué a disparu).</td><td>Vous avez ouvert l'écran de chargement après la location</td><td><span class="minor">Sans gravité</span></td><td>Louez la chambre à nouveau.</td></tr>
+  <tr><td>Le jeu a planté (en frappant à mains nues ou en demandant des rumeurs en pleine nature).</td><td>Combat à mains nues, ou rumeurs en pleine nature juste après le lancement</td><td><span class="minor">Sans gravité</span> (la sauvegarde n'est pas abîmée)</td><td>Reprenez à votre dernière sauvegarde. Ne refaites pas la même action.</td></tr>
+  <tr><td>Vous êtes coincé dans un mur.</td><td>Traverse-mur</td><td><span class="ok">Réglé en relançant</span> (s'il y a une case libre à côté)</td><td>Si l'automap montre une case libre à côté de vous, sauvegardez, relancez Arena et chargez pour en sortir. Sinon, chargez une sauvegarde antérieure.</td></tr>
+  <tr><td>Le niveau atteint par un escalier ou une porte est défectueux.</td><td>Vous êtes entré par l'arrière avec Traverse-mur</td><td><span class="ng">Sauvegarde antérieure nécessaire</span></td><td>Ne sauvegardez pas ici. Chargez une sauvegarde antérieure.</td></tr>
+  <tr><td>Vous ne pouvez plus bouger après être descendu d'un rebord (vous pouvez encore tourner).</td><td>Un bogue de collision sur les rebords</td><td><span class="ok">Réparable soi-même</span></td><td>Placez-vous bien face à la pente et sautez en avant. À l'avenir, sautez depuis les endroits élevés au lieu de descendre en marchant.</td></tr>
+  <tr><td>Un attribut ne revient pas après avoir guéri une maladie et s'être reposé.</td><td>Vous portez un objet qui augmente cet attribut (anneau, amulette, etc.)</td><td><span class="ok">Réparable soi-même</span></td><td>Retirez l'objet et reposez-vous ; remettez-le quand l'attribut est revenu.</td></tr>
+  <tr><td>Un attribut baissé par une malédiction ou un sort qui vole des attributs ne revient pas.</td><td>Un bogue des attributs (aussi avec des sorts personnalisés qui prennent des attributs à la cible)</td><td><span class="ok">Réparable soi-même</span></td><td>Il revient au prochain gain de niveau.</td></tr>
+</table>
+
+<p class="src">Sources : UESP « Arena:Bugs », « Arena:Patches », les pages des étapes de la quête principale et des observations faites pendant le développement d'Assist (novembre 2026 ; la version Steam est la version CD 1.07).</p>
+
+</body>
+</html>

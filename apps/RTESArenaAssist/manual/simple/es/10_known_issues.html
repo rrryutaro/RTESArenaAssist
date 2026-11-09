@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Errores conocidos y precauciones</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; vertical-align: top; }
+tr:nth-child(even) { background: #111e2c; }
+.warn { background: #2a1c1c; border-left: 3px solid #a05050; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.ng { color: #ff8a8a; font-weight: bold; }
+.ok { color: #8fd18f; font-weight: bold; }
+.minor { color: #a8b4c0; font-weight: bold; }
+.src { color: #8090a0; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>Errores conocidos y precauciones</h1>
+
+<p>Aquí se recogen errores conocidos del propio Arena (el juego, no Assist) que suelen ocurrir jugando normalmente y pueden afectar al progreso o a las partidas guardadas. Son errores del juego, así que Assist no puede corregirlos.</p>
+<p>Antes de jugar, lee «Cómo guardar» y «Lo que no debes hacer». Si algo va mal, busca lo que ves en pantalla en «Si algo va mal».</p>
+
+<h2>Cómo guardar</h2>
+<ul>
+  <li><b>Alterna</b> entre las ranuras de guardado (hay 10). No sobrescribas siempre la misma.</li>
+  <li>Si algo parece ir mal, <b>no sobrescribas</b> tus ranuras anteriores. Guarda en una ranura libre.</li>
+  <li>Algunos errores <b>se arreglan saliendo de Arena, volviendo a iniciarlo y cargando</b> (se alteró el estado temporal del juego). Pruébalo primero. Lo que ya quedó escrito en la partida guardada no se arregla reiniciando.</li>
+</ul>
+
+<h2>Lo que no debes hacer</h2>
+<div class="warn">Estas acciones pueden volverse irreversibles o romper gravemente el juego. <b>No las hagas.</b></div>
+<ol>
+  <li><span class="ng">No dejes a «reparar» (Repair) en la tienda de equipo una armadura o un arma equipada. No la vendas.</span> Quítatela siempre antes. Si no, el juego queda en un estado defectuoso (síntomas en la tabla de abajo).</li>
+  <li><span class="ng">No viajes lejos mientras un objeto está en reparación.</span> El juego solo recuerda un número limitado de ciudades y mazmorras (unas 8 a 16; las grandes ocupan más) y olvida primero las más antiguas, también la tienda con tu objeto, que se pierde. Recógelo poco después de que esté listo.</li>
+  <li><span class="ng">En la misión principal, tras entregar un objeto, no vuelvas a la mazmorra donde lo encontraste para recoger el mismo objeto otra vez.</span> Vuelve a estar allí, pero recogerlo cuenta como obtener el objeto de la siguiente etapa y la misión se adelanta. Los destinos de las etapas saltadas nunca aparecen en el mapa, así que no puedes ir ni continuar la misión principal. Ocurre en todas las etapas, empezando por la mazmorra a la que vas después de la primera de la que escapas.</li>
+  <li><span class="ng">No rechaces un encargo de la misión principal.</span> Si lo rechazas y vuelves a hablar con la misma persona, el juego se cierra y la misión principal no puede continuar. Una vez aceptado no hay plazo, así que acéptalo aunque quieras hacerlo más tarde.</li>
+  <li><span class="ng">Mientras juegas, no elijas «Start New Game» en el menú.</span> Provoca errores: fecha de inicio incorrecta, nunca llegan misiones de artefactos y queda el estado del personaje anterior (enfermedad, acompañante, etc.). Para empezar de nuevo, reinicia Arena y empieza sin abrir la pantalla de carga.</li>
+  <li><span class="ng">No uses Paso de pared (Passwall) para entrar en escaleras o puertas.</span> Puedes quedar atrapado en una pared o llegar a un piso defectuoso. <b>Si guardas en un piso defectuoso, ya no podrás continuar.</b></li>
+  <li><span class="ng">No aceptes una misión del palacio sin guardar antes.</span> Si fracasas, ese palacio puede no volver a darte misiones. Para deshacerlo necesitas una partida de antes de aceptarla.</li>
+  <li><span class="ng">No luches a puñetazos. No rompas puertas a puñetazos.</span> El juego suele cerrarse. Lleva un arma, aunque sea débil.</li>
+  <li><span class="ng">Justo después de iniciar Arena, no cargues una partida de las tierras salvajes para preguntar allí por «rumores» (Rumors).</span> El juego puede cerrarse. Tras iniciar Arena, carga primero una partida guardada en una ciudad o viaja una vez a una ciudad antes de preguntar.</li>
+</ol>
+
+<h2>Si algo va mal (busca el síntoma)</h2>
+<p>Cómo leer «¿Tiene arreglo?»: <span class="ok">Se arregla al reiniciar</span> / <span class="ok">Lo puedes arreglar</span> = se arregla con tu partida actual. <span class="ng">Hace falta una partida anterior</span> = solo sirve cargar una partida de antes de la causa (si la sobrescribiste, no hay vuelta atrás). <span class="ng">Hace falta un personaje nuevo</span> = solo sirve crear el personaje de nuevo. <span class="minor">Leve</span> = puedes dejarlo así.</p>
+<table>
+  <tr><th>Qué ves</th><th>Causa</th><th>¿Tiene arreglo?</th><th>Cómo arreglarlo</th></tr>
+  <tr><td>La hoja de personaje no se cierra o faltan valores. Desaparecen las notas del mapa. La lista de nombres de tiendas o posadas que te dan está vacía. Hablar en un templo congela el juego. Al acampar aparecen enemigos invisibles.</td><td>Se dejó a reparar (o se vendió) equipo equipado</td><td><span class="ng">Hace falta una partida anterior</span></td><td>Carga una partida de antes de la reparación.</td></tr>
+  <tr><td>Un objeto devuelto de la reparación sale en rojo y no se puede equipar.</td><td>Se dejó a reparar estando equipado</td><td><span class="ng">Hace falta una partida anterior</span> (se arregló una vez con una partida de antes de recogerlo)</td><td>Sal de Arena, vuelve a iniciarlo, carga una partida de antes de recogerlo y recógelo de nuevo.</td></tr>
+  <tr><td>El objeto que dejaste a reparar no está en la tienda.</td><td>Visitaste muchos lugares mientras estaba en reparación</td><td><span class="ng">Hace falta una partida anterior</span></td><td>Carga una partida de antes de entregarlo.</td></tr>
+  <tr><td>Traes el objeto de la misión, pero quien te la encargó solo muestra la conversación habitual.</td><td>El juego no reconoce el objeto</td><td><span class="ok">Se arregla al reiniciar</span> (no en misiones del palacio)</td><td>Sal del edificio y guarda, sal de Arena, vuelve a iniciarlo y carga. Si un Gremio de Magos tiene varias puertas, entra por la puerta norte o noreste.</td></tr>
+  <tr><td>En la misión principal, el nombre del destino que te dicen está corrupto.</td><td>Un fallo de carga del juego</td><td><span class="ok">Se arregla al reiniciar</span></td><td>Guarda, sal de Arena, vuelve a iniciarlo y carga.</td></tr>
+  <tr><td>El siguiente destino de la misión principal no está en el mapa y no puedes ir a ninguna parte.</td><td>Se recogió otra vez un objeto ya entregado</td><td><span class="ng">Hace falta una partida anterior</span></td><td>Carga una partida de antes de recogerlo. No se conoce forma de deshacerlo si la sobrescribiste.</td></tr>
+  <tr><td>Hablar con quien da un encargo de la misión principal cierra el juego.</td><td>Rechazaste el encargo</td><td><span class="ng">Hace falta una partida anterior</span></td><td>Carga una partida de antes de rechazarlo y acepta el encargo.</td></tr>
+  <tr><td>El gobernante de un palacio ya no te da misiones. La gente del palacio ha cambiado.</td><td>Fracasaste en una misión del palacio</td><td><span class="ng">Hace falta una partida anterior</span></td><td>Carga una partida de antes del fracaso.</td></tr>
+  <tr><td>La fecha de inicio es el 1 de Morning Star (mes 1). Sigue la enfermedad o el acompañante del personaje anterior.</td><td>Se eligió «Start New Game» mientras jugabas</td><td><span class="ng">Hace falta un personaje nuevo</span></td><td>Reinicia Arena y crea el personaje de nuevo sin abrir la pantalla de carga.</td></tr>
+  <tr><td>Tienes nivel 5 o más, pero los rumores nunca traen una misión de artefacto.</td><td>Lo mismo que arriba (personaje empezado dentro de una partida)</td><td><span class="ok">Lo puedes arreglar</span> (sin confirmar)</td><td>Según las notas oficiales del parche, <b>Alt+F5</b> activa las misiones. Úsalo una sola vez y sin tener un artefacto (usarlo durante una misión de artefacto puede estropearla).</td></tr>
+  <tr><td>No puedes descansar en la habitación alquilada (el tiempo alquilado desapareció).</td><td>Abriste la pantalla de carga tras alquilarla</td><td><span class="minor">Leve</span></td><td>Alquila la habitación otra vez.</td></tr>
+  <tr><td>El juego se cerró (al dar puñetazos o al preguntar por rumores en las tierras salvajes).</td><td>Combate sin armas o rumores en las tierras salvajes justo tras iniciar</td><td><span class="minor">Leve</span> (la partida no se daña)</td><td>Sigue desde tu última partida. No repitas la misma acción.</td></tr>
+  <tr><td>Estás atrapado en una pared.</td><td>Paso de pared</td><td><span class="ok">Se arregla al reiniciar</span> (si hay una casilla libre a tu lado)</td><td>Si el automapa muestra una casilla libre a tu lado, guarda, reinicia Arena y carga para salir. Si no la hay, carga una partida anterior.</td></tr>
+  <tr><td>El piso al que llegaste por unas escaleras o una puerta está defectuoso.</td><td>Entraste por detrás con Paso de pared</td><td><span class="ng">Hace falta una partida anterior</span></td><td>No guardes aquí. Carga una partida anterior.</td></tr>
+  <tr><td>No puedes moverte tras bajar de un borde (aún puedes girar).</td><td>Un fallo de colisión en los bordes</td><td><span class="ok">Lo puedes arreglar</span></td><td>Ponte de frente a la pendiente y salta hacia delante. En adelante, salta desde lugares altos en vez de bajar caminando.</td></tr>
+  <tr><td>Un atributo no se recupera tras curar una enfermedad y descansar.</td><td>Llevas un objeto que aumenta ese atributo (anillo, amuleto, etc.)</td><td><span class="ok">Lo puedes arreglar</span></td><td>Quítate el objeto y descansa; vuelve a ponértelo cuando el atributo se recupere.</td></tr>
+  <tr><td>Un atributo reducido por una maldición o un hechizo que roba atributos no se recupera.</td><td>Un fallo en los atributos (también con hechizos propios que quitan atributos al objetivo)</td><td><span class="ok">Lo puedes arreglar</span></td><td>Se recupera al subir de nivel la próxima vez.</td></tr>
+</table>
+
+<p class="src">Fuentes: UESP «Arena:Bugs», «Arena:Patches», las páginas de las etapas de la misión principal y observaciones durante el desarrollo de Assist (a noviembre de 2026; la versión de Steam es la versión en CD 1.07).</p>
+
+</body>
+</html>

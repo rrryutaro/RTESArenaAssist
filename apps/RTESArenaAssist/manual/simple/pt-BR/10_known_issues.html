@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Bugs conhecidos e cuidados</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; vertical-align: top; }
+tr:nth-child(even) { background: #111e2c; }
+.warn { background: #2a1c1c; border-left: 3px solid #a05050; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.ng { color: #ff8a8a; font-weight: bold; }
+.ok { color: #8fd18f; font-weight: bold; }
+.minor { color: #a8b4c0; font-weight: bold; }
+.src { color: #8090a0; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>Bugs conhecidos e cuidados</h1>
+
+<p>Aqui estão bugs conhecidos do próprio Arena (o jogo, não o Assist) que costumam acontecer no jogo normal e podem afetar o progresso ou os jogos salvos. São bugs do jogo, então o Assist não pode corrigi-los.</p>
+<p>Antes de jogar, leia "Como salvar" e "O que não fazer". Se algo der errado, procure o que você vê na tela em "Se algo der errado".</p>
+
+<h2>Como salvar</h2>
+<ul>
+  <li><b>Alterne</b> entre os espaços de salvamento (são 10). Não sobrescreva sempre o mesmo.</li>
+  <li>Se algo parecer errado, <b>não sobrescreva</b> os espaços que você já tem. Salve num espaço livre.</li>
+  <li>Alguns bugs <b>são resolvidos fechando o Arena, abrindo de novo e carregando</b> (o estado temporário do jogo foi alterado). Tente isso primeiro. O que já foi gravado no jogo salvo não se resolve reiniciando.</li>
+</ul>
+
+<h2>O que não fazer</h2>
+<div class="warn">As ações a seguir podem se tornar irreversíveis ou quebrar seriamente o jogo. <b>Não as faça.</b></div>
+<ol>
+  <li><span class="ng">Não deixe para "consertar" (Repair) na loja de equipamentos uma armadura ou arma equipada. Não a venda.</span> Sempre desequipe antes. Caso contrário, o jogo entra num estado defeituoso (sintomas na tabela abaixo).</li>
+  <li><span class="ng">Não viaje para longe enquanto um item está no conserto.</span> O jogo só lembra um número limitado de cidades e masmorras (cerca de 8 a 16; as grandes ocupam mais) e esquece primeiro as mais antigas, inclusive a loja com o seu item, que se perde. Retire-o logo depois que ficar pronto.</li>
+  <li><span class="ng">Na missão principal, depois de entregar um item, não volte à masmorra onde o encontrou para pegar o mesmo item de novo.</span> Ele está lá outra vez, mas pegá-lo conta como obter o item da etapa seguinte, e a missão pula adiante. Os destinos das etapas puladas nunca aparecem no mapa, então você não consegue ir até eles nem continuar a missão principal. Acontece em todas as etapas, começando pela masmorra para onde você vai depois daquela de onde foge no início.</li>
+  <li><span class="ng">Não recuse um pedido da missão principal.</span> Se você recusar e falar de novo com a mesma pessoa, o jogo fecha e a missão principal não pode continuar. Depois de aceito não há prazo, então aceite mesmo que queira fazê-lo mais tarde.</li>
+  <li><span class="ng">Durante o jogo, não escolha "Start New Game" no menu.</span> Isso causa bugs: data de início errada, missões de artefato nunca aparecem e o estado do personagem anterior (doença, acompanhante etc.) permanece. Para um novo jogo, reinicie o Arena antes e comece sem abrir a tela de carregamento.</li>
+  <li><span class="ng">Não use Atravessar Muralha (Passwall) para entrar em escadas ou portas.</span> Você pode ficar preso numa parede ou ir parar num andar defeituoso. <b>Se salvar num andar defeituoso, o jogo não pode continuar.</b></li>
+  <li><span class="ng">Não aceite uma missão do palácio sem salvar antes.</span> Se falhar, aquele palácio pode nunca mais lhe dar missões. Para desfazer, é preciso um jogo salvo de antes de aceitar.</li>
+  <li><span class="ng">Não lute de mãos vazias. Não arrombe portas de mãos vazias.</span> O jogo costuma fechar. Leve uma arma, mesmo fraca.</li>
+  <li><span class="ng">Logo depois de abrir o Arena, não carregue um jogo salvo nas terras selvagens para perguntar ali sobre "boatos" (Rumors).</span> O jogo pode fechar. Depois de abrir o Arena, carregue primeiro um jogo salvo dentro de uma cidade ou vá até uma cidade uma vez antes de perguntar.</li>
+</ol>
+
+<h2>Se algo der errado (procure pelo sintoma)</h2>
+<p>Como ler "Tem conserto?": <span class="ok">Resolve reiniciando</span> / <span class="ok">Você consegue resolver</span> = resolve com o seu jogo salvo atual. <span class="ng">Precisa de um jogo salvo anterior</span> = só resolve carregando um jogo salvo de antes da causa (se sobrescreveu, não há volta). <span class="ng">Precisa de um personagem novo</span> = só resolve criando o personagem de novo. <span class="minor">Leve</span> = pode deixar assim.</p>
+<table>
+  <tr><th>O que você vê</th><th>Causa</th><th>Tem conserto?</th><th>Como resolver</th></tr>
+  <tr><td>A ficha do personagem não fecha ou faltam valores. As anotações do mapa somem. A lista de nomes de lojas ou estalagens que lhe dão está vazia. Falar num templo trava o jogo. Aparecem inimigos invisíveis ao acampar.</td><td>Equipamento equipado foi deixado para conserto (ou vendido)</td><td><span class="ng">Precisa de um jogo salvo anterior</span></td><td>Carregue um jogo salvo de antes do conserto.</td></tr>
+  <tr><td>Um item devolvido do conserto aparece em vermelho e não pode ser equipado.</td><td>Foi deixado para conserto estando equipado</td><td><span class="ng">Precisa de um jogo salvo anterior</span> (resolvido uma vez com um jogo salvo de antes da retirada)</td><td>Feche e reabra o Arena, carregue um jogo salvo de antes da retirada e retire-o de novo.</td></tr>
+  <tr><td>O item deixado para conserto não está na loja.</td><td>Você visitou muitos lugares durante o conserto</td><td><span class="ng">Precisa de um jogo salvo anterior</span></td><td>Carregue um jogo salvo de antes de entregá-lo.</td></tr>
+  <tr><td>Você traz o item da missão, mas quem a deu só mostra a conversa de sempre.</td><td>O jogo não reconhece o item</td><td><span class="ok">Resolve reiniciando</span> (não nas missões do palácio)</td><td>Saia do prédio e salve, feche e reabra o Arena e carregue. Se uma Guilda dos Magos tiver várias portas, entre pela porta norte ou nordeste.</td></tr>
+  <tr><td>Na missão principal, o nome do destino que lhe dizem aparece corrompido.</td><td>Uma falha de carregamento do jogo</td><td><span class="ok">Resolve reiniciando</span></td><td>Salve, feche e reabra o Arena e carregue.</td></tr>
+  <tr><td>O próximo destino da missão principal não está no mapa e você não consegue ir a lugar nenhum.</td><td>Um item já entregue foi pego de novo</td><td><span class="ng">Precisa de um jogo salvo anterior</span></td><td>Carregue um jogo salvo de antes de pegá-lo. Não se conhece forma de desfazer depois de sobrescrever.</td></tr>
+  <tr><td>Falar com quem dá um pedido da missão principal fecha o jogo.</td><td>Você recusou o pedido</td><td><span class="ng">Precisa de um jogo salvo anterior</span></td><td>Carregue um jogo salvo de antes da recusa e aceite o pedido.</td></tr>
+  <tr><td>O governante de um palácio não lhe dá mais missões. As pessoas do palácio foram trocadas.</td><td>Você falhou numa missão do palácio</td><td><span class="ng">Precisa de um jogo salvo anterior</span></td><td>Carregue um jogo salvo de antes da falha.</td></tr>
+  <tr><td>A data de início é 1º de Morning Star (mês 1). A doença ou o acompanhante do personagem anterior continua.</td><td>"Start New Game" foi escolhido durante o jogo</td><td><span class="ng">Precisa de um personagem novo</span></td><td>Reinicie o Arena e crie o personagem de novo sem abrir a tela de carregamento.</td></tr>
+  <tr><td>Você está no nível 5 ou mais, mas os boatos nunca trazem missão de artefato.</td><td>Mesmo caso acima (personagem começado no meio de um jogo)</td><td><span class="ok">Você consegue resolver</span> (não confirmado)</td><td>Segundo as notas oficiais do patch, <b>Alt+F5</b> ativa essas missões. Use só uma vez, sem ter um artefato (durante uma missão de artefato, pode estragá-la).</td></tr>
+  <tr><td>Você não consegue descansar no quarto alugado (o tempo alugado sumiu).</td><td>Você abriu a tela de carregamento depois de alugar</td><td><span class="minor">Leve</span></td><td>Alugue o quarto de novo.</td></tr>
+  <tr><td>O jogo fechou (ao socar de mãos vazias ou perguntar sobre boatos nas terras selvagens).</td><td>Combate de mãos vazias ou boatos nas terras selvagens logo após abrir o jogo</td><td><span class="minor">Leve</span> (o jogo salvo não é danificado)</td><td>Continue do último jogo salvo. Não repita a mesma ação.</td></tr>
+  <tr><td>Você está preso numa parede.</td><td>Atravessar Muralha</td><td><span class="ok">Resolve reiniciando</span> (se houver uma casa livre ao lado)</td><td>Se o automapa mostrar uma casa livre ao seu lado, salve, reinicie o Arena e carregue para sair. Se não houver, carregue um jogo salvo anterior.</td></tr>
+  <tr><td>O andar alcançado por uma escada ou porta está defeituoso.</td><td>Você entrou por trás com Atravessar Muralha</td><td><span class="ng">Precisa de um jogo salvo anterior</span></td><td>Não salve aqui. Carregue um jogo salvo anterior.</td></tr>
+  <tr><td>Você não consegue se mover depois de descer de uma beirada (ainda consegue girar).</td><td>Uma falha de colisão nas beiradas</td><td><span class="ok">Você consegue resolver</span></td><td>Fique de frente para a rampa e pule para a frente. Daqui em diante, pule de lugares altos em vez de descer andando.</td></tr>
+  <tr><td>Um atributo não volta depois de curar uma doença e descansar.</td><td>Você usa um item que aumenta esse atributo (anel, amuleto etc.)</td><td><span class="ok">Você consegue resolver</span></td><td>Tire o item e descanse; coloque-o de volta depois que o atributo se recuperar.</td></tr>
+  <tr><td>Um atributo reduzido por uma maldição ou magia que rouba atributos não volta.</td><td>Uma falha nos atributos (também com magias próprias que tiram atributos do alvo)</td><td><span class="ok">Você consegue resolver</span></td><td>Ele volta no próximo aumento de nível.</td></tr>
+</table>
+
+<p class="src">Fontes: UESP "Arena:Bugs", "Arena:Patches", as páginas das etapas da missão principal e observações feitas durante o desenvolvimento do Assist (novembro de 2026; a versão Steam é a versão em CD 1.07).</p>
+
+</body>
+</html>

@@ -50,6 +50,7 @@ def show_equipment_page(w) -> None:
             item_data.append(_staff)
         if inventory_ok:
             _log_armor_rating(w, items_raw)
+            _log_item_records(w, items_raw, item_data)
     except Exception:
         _log.exception('equipment read failed')
     w._ui_router.propose_equipment_list('equipment', title, item_data, panel_en='', panel_ja='', priority=SCREEN_PANEL_PRIORITY, reason='screen:equipment')
@@ -70,6 +71,31 @@ def _log_armor_rating(w, items_raw: list) -> None:
         return
     w._equipment_armor_rating_log = text
     assist_log.recog(_log, '装備画面の部位ごとの AR（計算・照合用）: %s', text)
+_EQUIP_RECORD_TYPES = ('armor', 'shield', 'weapon')
+_FLAG_CLASS_NAMES = ('armor', 'weapon', 'trinket', 'potion')
+
+def _describe_item_flags(flags: int) -> str:
+    return '0x%02X(e=%d v=%d t=%d c=%s n=%d m=%d)' % (flags, flags >> 7 & 1, flags >> 6 & 1, flags >> 4 & 3, _FLAG_CLASS_NAMES[flags >> 2 & 3], flags >> 1 & 1, flags & 1)
+
+def _log_item_records(w, items_raw: list, item_data: list) -> None:
+    import assist_log
+    prev = getattr(w, '_equipment_item_record_log', None) or {}
+    current: dict = {}
+    changed: list = []
+    for it, row in zip(items_raw, item_data):
+        if it.get('item_type') not in _EQUIP_RECORD_TYPES:
+            continue
+        record = it.get('record') or b''
+        key = it.get('inv_index')
+        value = (record, row.get('can_equip'))
+        current[key] = value
+        if prev.get(key) == value:
+            continue
+        flags = record[14] if len(record) > 14 else 0
+        changed.append('[%s] %s record=%s flags=%s Assist=%s/%s 装備可否=%s' % (key, it.get('en'), record.hex(' '), _describe_item_flags(flags), it.get('item_type'), it.get('armor_material_id'), row.get('can_equip')))
+    w._equipment_item_record_log = current
+    if changed:
+        assist_log.recog(_log, '所持品の記録（装備できる種類・変わった品だけ）: %s', ' / '.join(changed))
 _EFFECT_TEXT_FIELDS = ('effect_details', 'text_en', 'text_ja', 'effect_en', 'effect_ja')
 
 def _effect_text_matched(data: dict) -> bool:

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="UTF-8">
+<title>已知问题与注意事项</title>
+<style>
+body { font-family: "Microsoft YaHei UI", "Microsoft YaHei", "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; vertical-align: top; }
+tr:nth-child(even) { background: #111e2c; }
+.warn { background: #2a1c1c; border-left: 3px solid #a05050; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.ng { color: #ff8a8a; font-weight: bold; }
+.ok { color: #8fd18f; font-weight: bold; }
+.minor { color: #a8b4c0; font-weight: bold; }
+.src { color: #8090a0; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>已知问题与注意事项</h1>
+
+<p>这里是 Arena 本身（游戏本身，而非 Assist）的已知问题中，在正常游玩时容易发生、会影响进度或存档的问题。这些是游戏的问题，Assist 无法修复。</p>
+<p>游玩前请先阅读“存档方法”和“不能做的事”。出了问题时，请在“出问题时（按症状查找）”中按画面上的现象查找。</p>
+
+<h2>存档方法</h2>
+<ul>
+  <li><b>轮流</b>使用存档位（共 10 个）。不要一直覆盖同一个存档位。</li>
+  <li>觉得不对劲时，<b>不要覆盖</b>之前的存档位，存到空的存档位。</li>
+  <li>有些问题<b>退出并重新启动 Arena、再读档就会恢复</b>（游戏暂时记住的状态出了乱子）。出问题时先试这个。已经写进存档的问题，重新启动也无法恢复。</li>
+</ul>
+
+<h2>不能做的事</h2>
+<div class="warn">下面的操作会导致无法挽回，或使游戏严重损坏。<b>不要这样做。</b></div>
+<ol>
+  <li><span class="ng">不要把正在装备的护甲或武器交给装备店“修理（Repair）”，也不要卖掉。</span> 一定要先卸下再交。否则游戏会进入异常状态（症状见下表）。</li>
+  <li><span class="ng">物品送修期间不要远行。</span> 游戏能记住的城市和地下城数量有限（约 8～16 处，越大的地下城占用越多），超出后会从最早的地方开始遗忘，连送修的那家店也会忘掉，物品就回不来了。修好后尽早取回。</li>
+  <li><span class="ng">主线任务中交付物品后，不要回到那件物品所在的地下城再次拾取同样的物品。</span> 同样的物品会再次出现，但拾取后会被当作获得了下一阶段的物品，阶段直接跳过。被跳过阶段的目的地不会标在地图上，因此无法前往，主线任务也无法继续。从最初逃出的地下城之后要去的那座地下城开始，每个阶段都会发生。</li>
+  <li><span class="ng">不要拒绝主线任务的委托。</span> 拒绝后再与同一人交谈，游戏会崩溃，主线任务就无法继续。接受后没有期限，即使想以后再做也先接受。</li>
+  <li><span class="ng">游玩途中不要在菜单里选择“Start New Game”。</span> 会出现开始日期错误、不会出现神器任务、之前角色的状态（疾病、护送对象等）残留等问题。要开始新游戏，请先重新启动 Arena，不打开读档画面直接开始。</li>
+  <li><span class="ng">不要用穿墙术（Passwall）进入楼梯或门。</span> 可能卡在墙里或来到损坏的楼层。<b>在损坏的楼层存档后，游戏将无法继续。</b></li>
+  <li><span class="ng">不要在没有存档的情况下接受宫殿任务。</span> 失败后，那座宫殿可能再也不会给你任务。要挽回，需要接受任务之前的存档。</li>
+  <li><span class="ng">不要徒手战斗，也不要徒手破门。</span> 游戏很容易崩溃。即使是弱的武器也要带着。</li>
+  <li><span class="ng">启动 Arena 后，不要马上读取野外的存档并在那片野外“打听传闻（Rumors）”。</span> 游戏可能会崩溃。启动后，先读取在城镇中保存的存档，或先去一次城镇再打听。</li>
+</ol>
+
+<h2>出问题时（按症状查找）</h2>
+<p>“能否恢复”的含义： <span class="ok">重启即可恢复</span>、<span class="ok">可以自己解决</span> ＝用现在的存档就能解决。 <span class="ng">需要之前的存档</span> ＝只能读取造成问题的操作之前的存档（若已覆盖则无法挽回）。 <span class="ng">需要重建角色</span> ＝只能重新创建角色。 <span class="minor">影响很小</span> ＝可以不管。</p>
+<table>
+  <tr><th>画面上发生的事</th><th>原因</th><th>能否恢复</th><th>解决方法</th></tr>
+  <tr><td>角色表无法关闭，或部分数值不显示。地图上的标记不显示。向人打听到的商店或旅店名称列表是空的。在神殿交谈会卡死。扎营时出现看不见的敌人。</td><td>装备着送修（或卖掉）了</td><td><span class="ng">需要之前的存档</span></td><td>读取送修前的存档。</td></tr>
+  <tr><td>修理后取回的物品显示为红色，无法装备。</td><td>装备着送修了</td><td><span class="ng">需要之前的存档</span>（曾用取回前的存档恢复 1 次）</td><td>退出并重新启动 Arena，读取取回前的存档后重新取回。</td></tr>
+  <tr><td>送修的物品不在店里。</td><td>送修期间去了很多地方</td><td><span class="ng">需要之前的存档</span></td><td>读取送修前的存档。</td></tr>
+  <tr><td>带回了任务物品，委托人却只有平常的对话。</td><td>游戏没有识别该物品</td><td><span class="ok">重启即可恢复</span>（宫殿任务无法恢复）</td><td>离开建筑并存档，退出并重新启动 Arena 后再读档。如果法师公会有多扇门，请从北门或东北门进入。</td></tr>
+  <tr><td>主线任务中打听到的目的地名称是乱码。</td><td>游戏读取出错</td><td><span class="ok">重启即可恢复</span></td><td>存档，退出并重新启动 Arena 后再读档。</td></tr>
+  <tr><td>主线任务的下一个目的地不在地图上，哪里都去不了。</td><td>再次拾取了已交付的物品</td><td><span class="ng">需要之前的存档</span></td><td>读取拾取前的存档。覆盖存档后，尚无已知的挽回方法。</td></tr>
+  <tr><td>与主线任务的委托人交谈时游戏崩溃。</td><td>拒绝了委托</td><td><span class="ng">需要之前的存档</span></td><td>读取拒绝前的存档，然后接受委托。</td></tr>
+  <tr><td>宫殿的主人不再给任务。宫殿里的人换了。</td><td>宫殿任务失败</td><td><span class="ng">需要之前的存档</span></td><td>读取失败前的存档。</td></tr>
+  <tr><td>开始日期是 1 月（Morning Star）1 日。之前角色的疾病或护送对象还在。</td><td>游玩途中选择了“Start New Game”</td><td><span class="ng">需要重建角色</span></td><td>重新启动 Arena，不打开读档画面重新创建角色。</td></tr>
+  <tr><td>等级已到 5 以上，打听传闻却从不出现神器任务。</td><td>同上（游玩途中重新开始的角色）</td><td><span class="ok">可以自己解决</span>（未确认）</td><td>据官方更新说明，按 <b>Alt+F5</b> 可让任务出现。只在没有神器时使用一次（在神器任务进行中使用可能会破坏该任务）。</td></tr>
+  <tr><td>在旅店租的房间无法休息（租房时间消失了）。</td><td>租房后打开了读档画面</td><td><span class="minor">影响很小</span></td><td>重新租房。</td></tr>
+  <tr><td>游戏崩溃了（徒手攻击时、在野外打听传闻时）。</td><td>徒手战斗、启动后马上在野外打听传闻</td><td><span class="minor">影响很小</span>（存档不会损坏）</td><td>从最后的存档继续。不要重复同样的操作。</td></tr>
+  <tr><td>卡在墙里动不了。</td><td>穿墙术</td><td><span class="ok">重启即可恢复</span>（旁边有空格时）</td><td>若自动地图上旁边有空格，存档后重新启动 Arena 再读档即可脱出。没有空格时，读取之前的存档。</td></tr>
+  <tr><td>穿过楼梯或门之后到达的楼层是损坏的。</td><td>用穿墙术从背面进入</td><td><span class="ng">需要之前的存档</span></td><td>不要在这里存档，读取之前的存档。</td></tr>
+  <tr><td>从台阶边缘走下来后无法移动（仍可转向）。</td><td>台阶处的碰撞判定问题</td><td><span class="ok">可以自己解决</span></td><td>正对斜坡向前跳。以后从高处下来时用跳的，不要直接走下来。</td></tr>
+  <tr><td>治好疾病并休息后，属性仍未恢复。</td><td>装备着能提高该属性的物品（戒指、项链等）</td><td><span class="ok">可以自己解决</span></td><td>卸下该装备并休息，属性恢复后再装备回去。</td></tr>
+  <tr><td>被诅咒或夺取属性的法术降低的属性无法恢复。</td><td>属性处理的问题（从目标身上夺取属性的自制法术也会引起）</td><td><span class="ok">可以自己解决</span></td><td>下次升级时会恢复。</td></tr>
+</table>
+
+<p class="src">出处：UESP「Arena:Bugs」「Arena:Patches」、主线任务各阶段的页面，以及开发 Assist 时的观察（截至 2026 年 11 月；Steam 版＝CD 版 1.07）。</p>
+
+</body>
+</html>

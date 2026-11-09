@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Znane błędy i przestrogi</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; vertical-align: top; }
+tr:nth-child(even) { background: #111e2c; }
+.warn { background: #2a1c1c; border-left: 3px solid #a05050; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.ng { color: #ff8a8a; font-weight: bold; }
+.ok { color: #8fd18f; font-weight: bold; }
+.minor { color: #a8b4c0; font-weight: bold; }
+.src { color: #8090a0; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>Znane błędy i przestrogi</h1>
+
+<p>Poniżej znajdują się znane błędy samej gry Arena (nie Assista), które często zdarzają się podczas zwykłej gry i mogą zaszkodzić postępom lub zapisom. To błędy gry, więc Assist nie może ich naprawić.</p>
+<p>Przed grą przeczytaj „Jak zapisywać” i „Czego nie robić”. Gdy coś pójdzie nie tak, poszukaj tego, co widzisz na ekranie, w „Gdy coś pójdzie nie tak”.</p>
+
+<h2>Jak zapisywać</h2>
+<ul>
+  <li>Używaj miejsc zapisu (jest ich 10) <b>na zmianę</b>. Nie nadpisuj ciągle jednego.</li>
+  <li>Jeśli coś wydaje się nie tak, <b>nie nadpisuj</b> dotychczasowych miejsc. Zapisz w wolnym miejscu.</li>
+  <li>Niektóre błędy <b>znikają po zamknięciu Areny, ponownym uruchomieniu i wczytaniu</b> (zaburzył się tymczasowy stan gry). Spróbuj tego najpierw. To, co zapisało się w danych zapisu, nie zniknie po ponownym uruchomieniu.</li>
+</ul>
+
+<h2>Czego nie robić</h2>
+<div class="warn">Poniższe działania mogą stać się nieodwracalne lub poważnie zepsuć grę. <b>Nie rób ich.</b></div>
+<ol>
+  <li><span class="ng">Nie oddawaj do „naprawy” (Repair) w sklepie z ekwipunkiem założonej zbroi ani broni. Nie sprzedawaj jej.</span> Zawsze najpierw ją zdejmij. Inaczej gra przechodzi w wadliwy stan (objawy w tabeli poniżej).</li>
+  <li><span class="ng">Nie podróżuj daleko, gdy przedmiot jest w naprawie.</span> Gra pamięta tylko ograniczoną liczbę miast i lochów (około 8–16; duże lochy zajmują więcej) i zapomina najpierw najstarsze, także sklep z twoim przedmiotem, który przepada. Odbierz go wkrótce po tym, jak będzie gotowy.</li>
+  <li><span class="ng">W głównym zadaniu, po oddaniu przedmiotu, nie wracaj do lochu, w którym go znalazłeś, by podnieść ten sam przedmiot ponownie.</span> Znów tam leży, ale jego podniesienie liczy się jako zdobycie przedmiotu następnego etapu i zadanie przeskakuje dalej. Cele pominiętych etapów nigdy nie pojawiają się na mapie, więc nie dotrzesz tam ani nie będziesz kontynuować głównego zadania. Dzieje się tak na każdym etapie, począwszy od lochu, do którego udajesz się po tym, z którego uciekasz na początku.</li>
+  <li><span class="ng">Nie odmawiaj prośby w głównym zadaniu.</span> Jeśli odmówisz i znów porozmawiasz z tą samą osobą, gra się zamknie, a główne zadanie nie będzie mogło iść dalej. Po przyjęciu nie ma terminu, więc przyjmij, nawet jeśli chcesz zrobić to później.</li>
+  <li><span class="ng">W trakcie gry nie wybieraj w menu „Start New Game”.</span> To powoduje błędy: zła data początkowa, zadania z artefaktami nie przychodzą, a stan poprzedniej postaci (choroba, osoba pod eskortą itp.) pozostaje. Aby zacząć nową grę, najpierw uruchom Arenę ponownie i zacznij bez otwierania ekranu wczytywania.</li>
+  <li><span class="ng">Nie używaj Przejścia przez Mur (Passwall), by wchodzić na schody lub w drzwi.</span> Możesz utknąć w ścianie albo trafić na wadliwe piętro. <b>Jeśli zapiszesz na wadliwym piętrze, gry nie da się kontynuować.</b></li>
+  <li><span class="ng">Nie przyjmuj zadania pałacowego bez wcześniejszego zapisu.</span> Przy niepowodzeniu ten pałac może już nigdy nie dać ci zadania. Aby to cofnąć, potrzebny jest zapis sprzed przyjęcia.</li>
+  <li><span class="ng">Nie walcz gołymi rękami. Nie wyważaj drzwi gołymi rękami.</span> Gra często się zamyka. Noś broń, nawet słabą.</li>
+  <li><span class="ng">Zaraz po uruchomieniu Areny nie wczytuj zapisu z dziczy, by pytać tam o „plotki” (Rumors).</span> Gra może się zamknąć. Po uruchomieniu najpierw wczytaj zapis zrobiony w mieście albo raz udaj się do miasta, zanim zapytasz.</li>
+</ol>
+
+<h2>Gdy coś pójdzie nie tak (szukaj po objawie)</h2>
+<p>Jak czytać „Da się naprawić?”: <span class="ok">Pomaga ponowne uruchomienie</span> / <span class="ok">Możesz to naprawić</span> = da się naprawić na obecnym zapisie. <span class="ng">Potrzebny wcześniejszy zapis</span> = pomaga tylko zapis sprzed przyczyny (jeśli go nadpisałeś, nie ma powrotu). <span class="ng">Potrzebna nowa postać</span> = pomaga tylko ponowne stworzenie postaci. <span class="minor">Drobne</span> = można zostawić.</p>
+<table>
+  <tr><th>Co widzisz</th><th>Przyczyna</th><th>Da się naprawić?</th><th>Co zrobić</th></tr>
+  <tr><td>Karty postaci nie da się zamknąć albo brakuje wartości. Znikają notatki na mapie. Lista nazw sklepów lub gospód, którą ci podają, jest pusta. Rozmowa w świątyni zawiesza grę. Podczas obozowania pojawiają się niewidzialni wrogowie.</td><td>Założony ekwipunek oddano do naprawy (lub sprzedano)</td><td><span class="ng">Potrzebny wcześniejszy zapis</span></td><td>Wczytaj zapis sprzed naprawy.</td></tr>
+  <tr><td>Przedmiot odebrany z naprawy jest czerwony i nie da się go założyć.</td><td>Oddano go do naprawy, gdy był założony</td><td><span class="ng">Potrzebny wcześniejszy zapis</span> (raz pomógł zapis sprzed odbioru)</td><td>Zamknij i uruchom ponownie Arenę, wczytaj zapis sprzed odbioru i odbierz przedmiot jeszcze raz.</td></tr>
+  <tr><td>Przedmiotu oddanego do naprawy nie ma w sklepie.</td><td>Odwiedziłeś wiele miejsc w czasie naprawy</td><td><span class="ng">Potrzebny wcześniejszy zapis</span></td><td>Wczytaj zapis sprzed oddania przedmiotu.</td></tr>
+  <tr><td>Przynosisz przedmiot z zadania, ale zleceniodawca pokazuje tylko zwykłą rozmowę.</td><td>Gra nie rozpoznaje przedmiotu</td><td><span class="ok">Pomaga ponowne uruchomienie</span> (nie dotyczy zadań pałacowych)</td><td>Wyjdź z budynku i zapisz, zamknij i uruchom ponownie Arenę, a potem wczytaj. Jeśli Gildia Magów ma kilka drzwi, wchodź drzwiami północnymi lub północno-wschodnimi.</td></tr>
+  <tr><td>W głównym zadaniu nazwa celu, którą ci podają, jest zniekształcona.</td><td>Błąd wczytywania gry</td><td><span class="ok">Pomaga ponowne uruchomienie</span></td><td>Zapisz, zamknij i uruchom ponownie Arenę, a potem wczytaj.</td></tr>
+  <tr><td>Następnego celu głównego zadania nie ma na mapie i nie możesz nigdzie iść.</td><td>Oddany już przedmiot podniesiono ponownie</td><td><span class="ng">Potrzebny wcześniejszy zapis</span></td><td>Wczytaj zapis sprzed podniesienia. Po nadpisaniu nie jest znany sposób cofnięcia.</td></tr>
+  <tr><td>Rozmowa ze zleceniodawcą głównego zadania zamyka grę.</td><td>Odmówiłeś prośbie</td><td><span class="ng">Potrzebny wcześniejszy zapis</span></td><td>Wczytaj zapis sprzed odmowy i przyjmij prośbę.</td></tr>
+  <tr><td>Władca pałacu nie daje już zadań. Ludzie w pałacu zostali zamienieni.</td><td>Nie udało się zadanie pałacowe</td><td><span class="ng">Potrzebny wcześniejszy zapis</span></td><td>Wczytaj zapis sprzed niepowodzenia.</td></tr>
+  <tr><td>Data początkowa to 1 Morning Star (miesiąc 1). Choroba lub osoba pod eskortą poprzedniej postaci wciąż jest.</td><td>W trakcie gry wybrano „Start New Game”</td><td><span class="ng">Potrzebna nowa postać</span></td><td>Uruchom Arenę ponownie i stwórz postać od nowa bez otwierania ekranu wczytywania.</td></tr>
+  <tr><td>Masz co najmniej 5 poziom, ale plotki nigdy nie dają zadania z artefaktem.</td><td>Jak wyżej (postać rozpoczęta w trakcie gry)</td><td><span class="ok">Możesz to naprawić</span> (niepotwierdzone)</td><td>Według oficjalnych notatek do łatki <b>Alt+F5</b> włącza te zadania. Użyj tylko raz, gdy nie masz artefaktu (w trakcie zadania z artefaktem może je zepsuć).</td></tr>
+  <tr><td>Nie możesz odpocząć w wynajętym pokoju (wynajęty czas zniknął).</td><td>Otwarto ekran wczytywania po wynajęciu</td><td><span class="minor">Drobne</span></td><td>Wynajmij pokój ponownie.</td></tr>
+  <tr><td>Gra się zamknęła (przy biciu gołymi rękami lub pytaniu o plotki w dziczy).</td><td>Walka gołymi rękami lub plotki w dziczy tuż po uruchomieniu</td><td><span class="minor">Drobne</span> (zapis nie ulega uszkodzeniu)</td><td>Kontynuuj od ostatniego zapisu. Nie powtarzaj tego samego.</td></tr>
+  <tr><td>Utknąłeś w ścianie.</td><td>Przejście przez Mur</td><td><span class="ok">Pomaga ponowne uruchomienie</span> (gdy obok jest wolne pole)</td><td>Jeśli automapa pokazuje obok wolne pole, zapisz, uruchom ponownie Arenę i wczytaj, aby się wydostać. Jeśli nie ma, wczytaj wcześniejszy zapis.</td></tr>
+  <tr><td>Piętro za schodami lub drzwiami jest wadliwe.</td><td>Wejście od tyłu Przejściem przez Mur</td><td><span class="ng">Potrzebny wcześniejszy zapis</span></td><td>Nie zapisuj tutaj. Wczytaj wcześniejszy zapis.</td></tr>
+  <tr><td>Po zejściu z krawędzi nie możesz się ruszyć (nadal możesz się obracać).</td><td>Błąd kolizji na krawędziach</td><td><span class="ok">Możesz to naprawić</span></td><td>Ustaw się przodem do zbocza i skocz do przodu. Na przyszłość zeskakuj z wysokich miejsc zamiast schodzić.</td></tr>
+  <tr><td>Atrybut nie wraca po wyleczeniu choroby i odpoczynku.</td><td>Nosisz przedmiot podnoszący ten atrybut (pierścień, amulet itp.)</td><td><span class="ok">Możesz to naprawić</span></td><td>Zdejmij przedmiot i odpocznij; załóż go z powrotem, gdy atrybut wróci.</td></tr>
+  <tr><td>Atrybut obniżony przez klątwę lub czar odbierający atrybuty nie wraca.</td><td>Błąd obsługi atrybutów (także przy własnych czarach odbierających celowi atrybuty)</td><td><span class="ok">Możesz to naprawić</span></td><td>Wraca przy następnym awansie na wyższy poziom.</td></tr>
+</table>
+
+<p class="src">Źródła: UESP „Arena:Bugs”, „Arena:Patches”, strony etapów głównego zadania oraz obserwacje z prac nad Assistem (stan na listopad 2026; wersja Steam to wersja CD 1.07).</p>
+
+</body>
+</html>

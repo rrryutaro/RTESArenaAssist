@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Bug noti e avvertenze</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; vertical-align: top; }
+tr:nth-child(even) { background: #111e2c; }
+.warn { background: #2a1c1c; border-left: 3px solid #a05050; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.ng { color: #ff8a8a; font-weight: bold; }
+.ok { color: #8fd18f; font-weight: bold; }
+.minor { color: #a8b4c0; font-weight: bold; }
+.src { color: #8090a0; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>Bug noti e avvertenze</h1>
+
+<p>Qui sono raccolti bug noti di Arena stesso (il gioco, non Assist) che capitano spesso giocando normalmente e possono compromettere i progressi o i salvataggi. Sono bug del gioco, quindi Assist non può correggerli.</p>
+<p>Prima di giocare leggi «Come salvare» e «Cosa non fare». Se qualcosa va storto, cerca ciò che vedi sullo schermo in «Se qualcosa va storto».</p>
+
+<h2>Come salvare</h2>
+<ul>
+  <li><b>Alterna</b> gli slot di salvataggio (sono 10). Non sovrascrivere sempre lo stesso.</li>
+  <li>Se qualcosa sembra strano, <b>non sovrascrivere</b> gli slot che hai. Salva in uno slot libero.</li>
+  <li>Alcuni bug <b>si risolvono chiudendo Arena, riavviandolo e ricaricando</b> (lo stato temporaneo del gioco era alterato). Prova prima questo. Ciò che è finito nei dati di salvataggio non si risolve riavviando.</li>
+</ul>
+
+<h2>Cosa non fare</h2>
+<div class="warn">Le azioni seguenti possono diventare irreversibili o rompere gravemente il gioco. <b>Non farle.</b></div>
+<ol>
+  <li><span class="ng">Non lasciare in «riparazione» (Repair) al negozio di equipaggiamento un'armatura o un'arma indossata. Non venderla.</span> Toglila sempre prima. Altrimenti il gioco entra in uno stato difettoso (sintomi nella tabella sotto).</li>
+  <li><span class="ng">Non viaggiare lontano mentre un oggetto è in riparazione.</span> Il gioco ricorda solo un numero limitato di città e dungeon (circa da 8 a 16; quelli grandi occupano di più) e dimentica prima i più vecchi, anche il negozio con il tuo oggetto, che va perso. Ritiralo poco dopo che è pronto.</li>
+  <li><span class="ng">Nella missione principale, dopo aver consegnato un oggetto, non tornare nel dungeon dove l'hai trovato per raccogliere di nuovo lo stesso oggetto.</span> È di nuovo lì, ma raccoglierlo conta come ottenere l'oggetto della fase successiva e la missione salta avanti. Le destinazioni delle fasi saltate non compaiono mai sulla mappa: non puoi andarci né proseguire la missione principale. Succede in ogni fase, a partire dal dungeon dove vai dopo quello da cui fuggi all'inizio.</li>
+  <li><span class="ng">Non rifiutare una richiesta della missione principale.</span> Se rifiuti e poi parli di nuovo con la stessa persona, il gioco si chiude e la missione principale non può proseguire. Una volta accettata non c'è scadenza: accetta anche se vuoi farla più tardi.</li>
+  <li><span class="ng">Mentre giochi, non scegliere «Start New Game» dal menu.</span> Causa bug: data di inizio errata, nessuna missione dei manufatti e resta lo stato del personaggio precedente (malattia, accompagnatore, ecc.). Per una nuova partita riavvia prima Arena e inizia senza aprire la schermata di caricamento.</li>
+  <li><span class="ng">Non usare Attraversamuri (Passwall) per entrare in scale o porte.</span> Puoi restare bloccato in un muro o finire su un piano difettoso. <b>Se salvi su un piano difettoso, la partita non può proseguire.</b></li>
+  <li><span class="ng">Non accettare una missione del palazzo senza salvare prima.</span> Se fallisci, quel palazzo potrebbe non darti mai più missioni. Per tornare indietro serve un salvataggio di prima dell'accettazione.</li>
+  <li><span class="ng">Non combattere a mani nude. Non sfondare porte a mani nude.</span> Il gioco si chiude spesso. Porta un'arma, anche debole.</li>
+  <li><span class="ng">Subito dopo l'avvio di Arena, non caricare un salvataggio fatto in territorio selvaggio per chiedere lì delle «voci» (Rumors).</span> Il gioco può chiudersi. Dopo l'avvio, carica prima un salvataggio fatto in città o raggiungi una città prima di chiedere.</li>
+</ol>
+
+<h2>Se qualcosa va storto (cerca il sintomo)</h2>
+<p>Come leggere «Si può rimediare?»: <span class="ok">Si risolve riavviando</span> / <span class="ok">Puoi rimediare</span> = si rimedia con il salvataggio attuale. <span class="ng">Serve un salvataggio precedente</span> = serve solo un salvataggio di prima della causa (se l'hai sovrascritto, non si torna indietro). <span class="ng">Serve un nuovo personaggio</span> = serve solo ricreare il personaggio. <span class="minor">Lieve</span> = puoi lasciar perdere.</p>
+<table>
+  <tr><th>Cosa vedi</th><th>Causa</th><th>Si può rimediare?</th><th>Cosa fare</th></tr>
+  <tr><td>La scheda del personaggio non si chiude o mancano valori. Le note sulla mappa spariscono. L'elenco dei nomi di negozi o locande che ti danno è vuoto. Parlare in un tempio blocca il gioco. Accampandoti compaiono nemici invisibili.</td><td>Equipaggiamento indossato lasciato in riparazione (o venduto)</td><td><span class="ng">Serve un salvataggio precedente</span></td><td>Carica un salvataggio precedente alla riparazione.</td></tr>
+  <tr><td>Un oggetto tornato dalla riparazione è rosso e non si può equipaggiare.</td><td>È stato lasciato in riparazione mentre era indossato</td><td><span class="ng">Serve un salvataggio precedente</span> (risolto una volta con un salvataggio di prima del ritiro)</td><td>Chiudi e riavvia Arena, carica un salvataggio di prima del ritiro e ritiralo di nuovo.</td></tr>
+  <tr><td>L'oggetto lasciato in riparazione non è più al negozio.</td><td>Hai visitato molti luoghi durante la riparazione</td><td><span class="ng">Serve un salvataggio precedente</span></td><td>Carica un salvataggio precedente alla consegna.</td></tr>
+  <tr><td>Riporti l'oggetto della missione, ma il committente mostra solo la solita conversazione.</td><td>Il gioco non riconosce l'oggetto</td><td><span class="ok">Si risolve riavviando</span> (non per le missioni del palazzo)</td><td>Esci dall'edificio e salva, chiudi e riavvia Arena, poi carica. Se una Gilda dei Maghi ha più porte, entra dalla porta nord o nord-est.</td></tr>
+  <tr><td>Nella missione principale il nome della destinazione che ti dicono è illeggibile.</td><td>Un errore di caricamento del gioco</td><td><span class="ok">Si risolve riavviando</span></td><td>Salva, chiudi e riavvia Arena, poi carica.</td></tr>
+  <tr><td>La prossima destinazione della missione principale non è sulla mappa e non puoi andare da nessuna parte.</td><td>Un oggetto già consegnato è stato raccolto di nuovo</td><td><span class="ng">Serve un salvataggio precedente</span></td><td>Carica un salvataggio precedente alla raccolta. Non si conosce modo di tornare indietro se l'hai sovrascritto.</td></tr>
+  <tr><td>Parlare con un committente della missione principale fa chiudere il gioco.</td><td>Hai rifiutato la richiesta</td><td><span class="ng">Serve un salvataggio precedente</span></td><td>Carica un salvataggio di prima del rifiuto e accetta la richiesta.</td></tr>
+  <tr><td>Il sovrano di un palazzo non ti dà più missioni. Le persone del palazzo sono cambiate.</td><td>Hai fallito una missione del palazzo</td><td><span class="ng">Serve un salvataggio precedente</span></td><td>Carica un salvataggio precedente al fallimento.</td></tr>
+  <tr><td>La data di inizio è il 1° di Morning Star (mese 1). Restano la malattia o l'accompagnatore del personaggio precedente.</td><td>È stato scelto «Start New Game» durante il gioco</td><td><span class="ng">Serve un nuovo personaggio</span></td><td>Riavvia Arena e ricrea il personaggio senza aprire la schermata di caricamento.</td></tr>
+  <tr><td>Sei almeno al livello 5, ma le voci non portano mai una missione dei manufatti.</td><td>Come sopra (personaggio iniziato durante una partita)</td><td><span class="ok">Puoi rimediare</span> (non verificato)</td><td>Secondo le note ufficiali della patch, <b>Alt+F5</b> attiva le missioni. Usalo una sola volta, quando non hai un manufatto (durante una missione dei manufatti può rovinarla).</td></tr>
+  <tr><td>Non puoi riposare nella stanza affittata (il tempo affittato è sparito).</td><td>Hai aperto la schermata di caricamento dopo l'affitto</td><td><span class="minor">Lieve</span></td><td>Affitta di nuovo la stanza.</td></tr>
+  <tr><td>Il gioco si è chiuso (colpendo a mani nude o chiedendo voci in territorio selvaggio).</td><td>Combattimento a mani nude o voci in territorio selvaggio subito dopo l'avvio</td><td><span class="minor">Lieve</span> (il salvataggio non si danneggia)</td><td>Continua dall'ultimo salvataggio. Non ripetere la stessa azione.</td></tr>
+  <tr><td>Sei bloccato in un muro.</td><td>Attraversamuri</td><td><span class="ok">Si risolve riavviando</span> (se accanto c'è una casella libera)</td><td>Se la mappa automatica mostra una casella libera accanto a te, salva, riavvia Arena e carica per uscire. Altrimenti carica un salvataggio precedente.</td></tr>
+  <tr><td>Il piano raggiunto da una scala o da una porta è difettoso.</td><td>Sei entrato dal retro con Attraversamuri</td><td><span class="ng">Serve un salvataggio precedente</span></td><td>Non salvare qui. Carica un salvataggio precedente.</td></tr>
+  <tr><td>Non riesci a muoverti dopo essere sceso da un bordo (puoi ancora girarti).</td><td>Un errore di collisione sui bordi</td><td><span class="ok">Puoi rimediare</span></td><td>Mettiti di fronte al pendio e salta in avanti. In futuro, dai punti alti salta giù invece di scendere camminando.</td></tr>
+  <tr><td>Un attributo non torna dopo aver curato una malattia e riposato.</td><td>Indossi un oggetto che aumenta quell'attributo (anello, amuleto, ecc.)</td><td><span class="ok">Puoi rimediare</span></td><td>Togli l'oggetto e riposa; rimettilo quando l'attributo è tornato.</td></tr>
+  <tr><td>Un attributo abbassato da una maledizione o da un incantesimo che ruba attributi non torna.</td><td>Un errore negli attributi (anche con incantesimi personalizzati che sottraggono attributi al bersaglio)</td><td><span class="ok">Puoi rimediare</span></td><td>Torna al prossimo aumento di livello.</td></tr>
+</table>
+
+<p class="src">Fonti: UESP «Arena:Bugs», «Arena:Patches», le pagine delle fasi della missione principale e osservazioni fatte durante lo sviluppo di Assist (novembre 2026; la versione Steam è la versione CD 1.07).</p>
+
+</body>
+</html>

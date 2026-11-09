@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Bekannte Fehler &amp; Hinweise</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; vertical-align: top; }
+tr:nth-child(even) { background: #111e2c; }
+.warn { background: #2a1c1c; border-left: 3px solid #a05050; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.ng { color: #ff8a8a; font-weight: bold; }
+.ok { color: #8fd18f; font-weight: bold; }
+.minor { color: #a8b4c0; font-weight: bold; }
+.src { color: #8090a0; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>Bekannte Fehler &amp; Hinweise</h1>
+
+<p>Hier stehen bekannte Fehler von Arena selbst (des Spiels, nicht von Assist), die im normalen Spiel häufig auftreten und den Fortschritt oder die Spielstände beeinträchtigen können. Es sind Fehler des Spiels; Assist kann sie nicht beheben.</p>
+<p>Lies vor dem Spielen „Richtig speichern“ und „Was du nicht tun darfst“. Wenn etwas schiefgeht, suche unter „Wenn etwas schiefgeht“ nach dem, was du auf dem Bildschirm siehst.</p>
+
+<h2>Richtig speichern</h2>
+<ul>
+  <li><b>Wechsle</b> zwischen den Speicherplätzen (es gibt 10). Überschreibe nicht immer nur einen Platz.</li>
+  <li>Wenn dir etwas seltsam vorkommt, <b>überschreibe</b> deine bisherigen Plätze <b>nicht</b>. Speichere auf einen freien Platz.</li>
+  <li>Manche Fehler verschwinden, wenn du <b>Arena beendest, neu startest und lädst</b> (der vorübergehende Zustand des Spiels war gestört). Versuche das zuerst. Was in den Spielstand geschrieben wurde, verschwindet durch einen Neustart nicht.</li>
+</ul>
+
+<h2>Was du nicht tun darfst</h2>
+<div class="warn">Die folgenden Handlungen lassen sich nicht rückgängig machen oder beschädigen das Spiel schwer. <b>Tu sie nicht.</b></div>
+<ol>
+  <li><span class="ng">Gib angelegte Rüstung oder Waffen im Ausrüstungsladen nicht zur „Reparatur“ (Repair). Verkaufe sie nicht.</span> Lege sie immer zuerst ab. Sonst gerät das Spiel in einen fehlerhaften Zustand (Symptome in der Tabelle unten).</li>
+  <li><span class="ng">Reise nicht weit, während ein Gegenstand in Reparatur ist.</span> Das Spiel merkt sich nur eine begrenzte Zahl von Städten und Dungeons (etwa 8 bis 16; große Dungeons brauchen mehr) und vergisst die ältesten zuerst – auch den Laden mit deinem Gegenstand, der dann verloren ist. Hole ihn bald ab, wenn er fertig ist.</li>
+  <li><span class="ng">Kehre in der Hauptquest nach dem Abliefern eines Gegenstands nicht in den Dungeon zurück, in dem du ihn gefunden hast, um denselben Gegenstand erneut aufzuheben.</span> Er liegt dort wieder, aber das Aufheben zählt als Gegenstand des nächsten Abschnitts, und die Quest springt weiter. Die Ziele der übersprungenen Abschnitte erscheinen nie auf der Karte; du kannst nicht hin und die Hauptquest nicht fortsetzen. Das passiert in jedem Abschnitt, beginnend mit dem Dungeon, zu dem du nach dem ersten Ausbruch reist.</li>
+  <li><span class="ng">Lehne keinen Auftrag der Hauptquest ab.</span> Lehnst du ab und sprichst dieselbe Person erneut an, stürzt das Spiel ab, und die Hauptquest geht nicht weiter. Nach der Annahme gibt es keine Frist; nimm also an, auch wenn du es später erledigen willst.</li>
+  <li><span class="ng">Wähle während des Spiels im Menü nicht „Start New Game“.</span> Das führt zu Fehlern: falsches Startdatum, keine Artefaktquests, und Zustände der vorherigen Figur (Krankheit, Begleitperson usw.) bleiben. Für ein neues Spiel Arena erst neu starten und ohne den Ladebildschirm zu öffnen beginnen.</li>
+  <li><span class="ng">Gehe mit Wanddurchgang (Passwall) nicht in Treppen oder Türen.</span> Du kannst in der Wand stecken bleiben oder auf eine fehlerhafte Ebene geraten. <b>Speicherst du auf einer fehlerhaften Ebene, lässt sich das Spiel nicht fortsetzen.</b></li>
+  <li><span class="ng">Nimm keinen Palastauftrag an, ohne vorher zu speichern.</span> Misslingt er, vergibt dieser Palast vielleicht nie wieder Aufträge. Rückgängig machen geht nur mit einem Spielstand von vor der Annahme.</li>
+  <li><span class="ng">Kämpfe nicht mit bloßen Händen. Schlage keine Türen mit bloßen Händen ein.</span> Das Spiel stürzt oft ab. Trage eine Waffe, auch eine schwache.</li>
+  <li><span class="ng">Lade direkt nach dem Start von Arena keinen Spielstand aus der Wildnis, um dort nach „Gerüchten“ (Rumors) zu fragen.</span> Das Spiel kann abstürzen. Lade nach dem Start zuerst einen in einer Stadt gemachten Spielstand oder reise einmal in eine Stadt, bevor du fragst.</li>
+</ol>
+
+<h2>Wenn etwas schiefgeht (nach dem Symptom suchen)</h2>
+<p>So liest du „Behebbar?“: <span class="ok">Neustart behebt es</span> / <span class="ok">Selbst behebbar</span> = mit dem aktuellen Spielstand behebbar. <span class="ng">Älterer Spielstand nötig</span> = nur ein Spielstand von vor der Ursache hilft (überschrieben = kein Zurück). <span class="ng">Neue Figur nötig</span> = nur eine neu erstellte Figur hilft. <span class="minor">Harmlos</span> = kann so bleiben.</p>
+<table>
+  <tr><th>Was du siehst</th><th>Ursache</th><th>Behebbar?</th><th>Behebung</th></tr>
+  <tr><td>Der Charakterbogen lässt sich nicht schließen oder Werte fehlen. Kartennotizen verschwinden. Die Liste der Laden- oder Gasthausnamen, die man dir nennt, ist leer. Ein Gespräch im Tempel friert das Spiel ein. Beim Lagern erscheinen unsichtbare Gegner.</td><td>Angelegte Ausrüstung wurde zur Reparatur gegeben (oder verkauft)</td><td><span class="ng">Älterer Spielstand nötig</span></td><td>Einen Spielstand von vor der Reparatur laden.</td></tr>
+  <tr><td>Ein aus der Reparatur zurückerhaltener Gegenstand ist rot und lässt sich nicht anlegen.</td><td>Er wurde angelegt zur Reparatur gegeben</td><td><span class="ng">Älterer Spielstand nötig</span> (einmal mit einem Stand vor dem Abholen behoben)</td><td>Arena beenden und neu starten, einen Spielstand von vor dem Abholen laden und erneut abholen.</td></tr>
+  <tr><td>Der zur Reparatur gegebene Gegenstand ist nicht mehr im Laden.</td><td>Während der Reparatur viele Orte besucht</td><td><span class="ng">Älterer Spielstand nötig</span></td><td>Einen Spielstand von vor der Abgabe laden.</td></tr>
+  <tr><td>Du bringst den Questgegenstand zurück, aber der Auftraggeber zeigt nur das übliche Gespräch.</td><td>Das Spiel erkennt den Gegenstand nicht</td><td><span class="ok">Neustart behebt es</span> (nicht bei Palastaufträgen)</td><td>Das Gebäude verlassen und speichern, Arena beenden und neu starten, dann laden. Hat eine Magiergilde mehrere Türen, durch die Nord- oder Nordosttür eintreten.</td></tr>
+  <tr><td>In der Hauptquest ist der Name des Ziels, den man dir nennt, verstümmelt.</td><td>Ein Ladefehler des Spiels</td><td><span class="ok">Neustart behebt es</span></td><td>Speichern, Arena beenden und neu starten, dann laden.</td></tr>
+  <tr><td>Das nächste Ziel der Hauptquest ist nicht auf der Karte, und es geht nirgends weiter.</td><td>Ein abgelieferter Gegenstand wurde erneut aufgehoben</td><td><span class="ng">Älterer Spielstand nötig</span></td><td>Einen Spielstand von vor dem Aufheben laden. Ist er überschrieben, ist kein Weg zurück bekannt.</td></tr>
+  <tr><td>Ein Gespräch mit einem Auftraggeber der Hauptquest lässt das Spiel abstürzen.</td><td>Du hast den Auftrag abgelehnt</td><td><span class="ng">Älterer Spielstand nötig</span></td><td>Einen Spielstand von vor der Ablehnung laden und den Auftrag annehmen.</td></tr>
+  <tr><td>Der Herrscher eines Palasts gibt keine Aufträge mehr. Die Leute im Palast wurden ausgetauscht.</td><td>Ein Palastauftrag ist misslungen</td><td><span class="ng">Älterer Spielstand nötig</span></td><td>Einen Spielstand von vor dem Misserfolg laden.</td></tr>
+  <tr><td>Das Startdatum ist der 1. Morning Star (1. Monat). Krankheit oder Begleitperson der vorherigen Figur sind noch da.</td><td>„Start New Game“ wurde während des Spiels gewählt</td><td><span class="ng">Neue Figur nötig</span></td><td>Arena neu starten und die Figur ohne Öffnen des Ladebildschirms neu erstellen.</td></tr>
+  <tr><td>Du bist mindestens Stufe 5, aber Gerüchte bringen nie eine Artefaktquest.</td><td>Wie oben (eine im laufenden Spiel begonnene Figur)</td><td><span class="ok">Selbst behebbar</span> (unbestätigt)</td><td>Laut den offiziellen Patchnotizen schaltet <b>Alt+F5</b> die Quests frei. Nur einmal benutzen, solange du kein Artefakt hast (während einer Artefaktquest kann es diese ruinieren).</td></tr>
+  <tr><td>Du kannst im gemieteten Gasthauszimmer nicht rasten (die Mietzeit ist weg).</td><td>Nach dem Mieten den Ladebildschirm geöffnet</td><td><span class="minor">Harmlos</span></td><td>Das Zimmer erneut mieten.</td></tr>
+  <tr><td>Das Spiel ist abgestürzt (beim Faustkampf oder beim Fragen nach Gerüchten in der Wildnis).</td><td>Kampf mit bloßen Händen oder Gerüchte in der Wildnis direkt nach dem Start</td><td><span class="minor">Harmlos</span> (der Spielstand bleibt heil)</td><td>Vom letzten Spielstand weiterspielen. Dasselbe nicht wiederholen.</td></tr>
+  <tr><td>Du steckst in einer Wand fest.</td><td>Wanddurchgang</td><td><span class="ok">Neustart behebt es</span> (wenn neben dir ein freies Feld ist)</td><td>Zeigt die Automap ein freies Feld neben dir, speichern, Arena neu starten und laden. Sonst einen früheren Spielstand laden.</td></tr>
+  <tr><td>Die Ebene hinter einer Treppe oder Tür ist fehlerhaft.</td><td>Mit Wanddurchgang von hinten betreten</td><td><span class="ng">Älterer Spielstand nötig</span></td><td>Hier nicht speichern. Einen früheren Spielstand laden.</td></tr>
+  <tr><td>Nach dem Heruntersteigen von einer Kante kannst du dich nicht bewegen (drehen geht noch).</td><td>Ein Kollisionsfehler an Kanten</td><td><span class="ok">Selbst behebbar</span></td><td>Gerade zum Hang ausrichten und nach vorn springen. Künftig von hohen Stellen springen statt hinuntergehen.</td></tr>
+  <tr><td>Ein Attribut kehrt nach dem Heilen einer Krankheit und Rasten nicht zurück.</td><td>Du trägst einen Gegenstand, der dieses Attribut erhöht (Ring, Amulett usw.)</td><td><span class="ok">Selbst behebbar</span></td><td>Den Gegenstand ablegen und rasten; wieder anlegen, wenn sich das Attribut erholt hat.</td></tr>
+  <tr><td>Ein durch einen Fluch oder einen Attribute raubenden Zauber gesenktes Attribut kehrt nicht zurück.</td><td>Ein Fehler bei Attributen (auch durch selbst erstellte Zauber, die dem Ziel Attribute entziehen)</td><td><span class="ok">Selbst behebbar</span></td><td>Es kehrt beim nächsten Stufenaufstieg zurück.</td></tr>
+</table>
+
+<p class="src">Quellen: UESP „Arena:Bugs“, „Arena:Patches“, die Seiten der Hauptquest-Abschnitte und Beobachtungen bei der Entwicklung von Assist (Stand November 2026; die Steam-Version ist die CD-Version 1.07).</p>
+
+</body>
+</html>

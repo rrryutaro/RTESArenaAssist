@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>알려진 버그와 주의 사항</title>
+<style>
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
+h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
+p { margin: 0 0 8px 0; }
+ul, ol { margin: 4px 0 10px 0; padding-left: 22px; }
+li { margin-bottom: 6px; }
+table { border-collapse: collapse; width: 100%; margin: 6px 0 12px 0; }
+th { background: #1c2e3f; color: #7ec8e3; padding: 4px 8px; text-align: left; border: 1px solid #1e3a4a; font-size: 12px; }
+td { padding: 4px 8px; border: 1px solid #1e3a4a; font-size: 12px; vertical-align: top; }
+tr:nth-child(even) { background: #111e2c; }
+.warn { background: #2a1c1c; border-left: 3px solid #a05050; padding: 8px 10px; margin: 10px 0; border-radius: 3px; }
+.ng { color: #ff8a8a; font-weight: bold; }
+.ok { color: #8fd18f; font-weight: bold; }
+.minor { color: #a8b4c0; font-weight: bold; }
+.src { color: #8090a0; font-size: 11px; }
+</style>
+</head>
+<body>
+
+<h1>알려진 버그와 주의 사항</h1>
+
+<p>Arena 자체(Assist가 아닌 게임)의 알려진 버그 가운데, 평소 플레이에서 자주 일어나고 진행이나 저장 데이터에 영향을 주는 것입니다. 게임의 버그이므로 Assist로는 고칠 수 없습니다.</p>
+<p>플레이하기 전에 "저장하는 법"과 "하면 안 되는 것"을 읽어 두세요. 문제가 생기면 "문제가 생겼을 때"에서 화면에 보이는 증상으로 찾으세요.</p>
+
+<h2>저장하는 법</h2>
+<ul>
+  <li>저장 슬롯(10개)을 <b>번갈아</b> 씁니다. 한 슬롯에만 계속 덮어쓰지 않습니다.</li>
+  <li>이상하다고 느끼면 지금까지의 슬롯에 <b>덮어쓰지 않습니다</b>. 비어 있는 슬롯에 저장합니다.</li>
+  <li>버그 중에는 <b>Arena를 종료하고 다시 실행해 불러오면 고쳐지는</b> 것이 있습니다(게임이 잠시 기억하는 상태가 흐트러진 것). 이상할 때는 먼저 이것을 해 봅니다. 저장 데이터에 남은 이상은 다시 실행해도 고쳐지지 않습니다.</li>
+</ul>
+
+<h2>하면 안 되는 것</h2>
+<div class="warn">다음 조작은 되돌릴 수 없게 되거나 게임이 크게 망가집니다. <b>하지 마세요.</b></div>
+<ol>
+  <li><span class="ng">장비 중인 방어구·무기를 장비점의 "수리(Repair)"에 맡기지 않습니다. 팔지 않습니다.</span> 반드시 벗고 나서 맡깁니다. 그렇지 않으면 게임이 이상한 상태가 됩니다(증상은 아래 표).</li>
+  <li><span class="ng">수리를 맡긴 채 멀리 여행하지 않습니다.</span> 게임이 기억할 수 있는 도시·던전의 수에는 한계가 있어(대략 8~16곳, 큰 던전일수록 많이 씀) 넘으면 오래된 곳부터 잊습니다. 맡긴 가게도 잊어 물건은 돌아오지 않습니다. 완성되면 빨리 찾아옵니다.</li>
+  <li><span class="ng">메인 퀘스트에서 아이템을 전달한 뒤, 그 아이템이 있던 던전으로 돌아가 같은 아이템을 줍지 않습니다.</span> 같은 아이템이 다시 놓여 있지만, 주우면 다음 단계의 아이템을 얻은 것이 되어 단계가 앞으로 건너뜁니다. 건너뛴 단계의 목적지는 지도에 표시되지 않아 갈 수 없고, 메인 퀘스트를 진행할 수 없게 됩니다. 처음에 탈출한 던전 다음에 가는 던전부터 모든 단계에서 일어납니다.</li>
+  <li><span class="ng">메인 퀘스트의 의뢰를 거절하지 않습니다.</span> 거절한 뒤 같은 상대에게 말을 걸면 게임이 종료되고, 그대로는 메인 퀘스트를 진행할 수 없습니다. 받은 뒤에는 기한이 없으니 미루고 싶을 때도 받아 둡니다.</li>
+  <li><span class="ng">플레이 도중 메뉴의 "Start New Game"을 고르지 않습니다.</span> 시작 날짜가 어긋나고, 아티팩트 의뢰가 오지 않고, 이전 캐릭터의 상태(질병·동행자 등)가 남는 버그가 생깁니다. 새로 시작할 때는 Arena를 다시 실행한 뒤 불러오기 화면을 열지 않고 시작합니다.</li>
+  <li><span class="ng">벽 통과(Passwall)로 계단이나 문에 들어가지 않습니다.</span> 벽에 끼이거나 망가진 층으로 나올 수 있습니다. <b>망가진 층에서 저장하면 그 뒤로는 플레이할 수 없습니다.</b></li>
+  <li><span class="ng">궁전의 의뢰를 저장하지 않고 받지 않습니다.</span> 실패하면 그 궁전에서는 다시는 의뢰를 받을 수 없게 될 수 있습니다. 되돌리려면 받기 전의 저장이 필요합니다.</li>
+  <li><span class="ng">맨손으로 싸우지 않습니다. 맨손으로 문을 부수지 않습니다.</span> 게임이 자주 종료됩니다. 약한 것이라도 무기를 듭니다.</li>
+  <li><span class="ng">Arena를 실행하자마자 필드의 저장을 불러와 그 필드에서 "소문(Rumors)"을 묻지 않습니다.</span> 게임이 종료될 수 있습니다. 실행한 뒤에는 먼저 도시 안의 저장을 불러오거나, 한 번 도시로 이동한 뒤에 묻습니다.</li>
+</ol>
+
+<h2>문제가 생겼을 때(증상으로 찾기)</h2>
+<p>"고칠 수 있나" 보는 법: <span class="ok">재실행으로 고쳐짐</span>, <span class="ok">직접 고칠 수 있음</span> = 지금의 저장 그대로 고칠 수 있음. <span class="ng">이전 저장이 필요</span> = 원인이 된 조작 이전의 저장을 불러오는 수밖에 없음(덮어썼다면 되돌릴 수 없음). <span class="ng">캐릭터를 다시 만들어야 함</span> = 캐릭터를 다시 만드는 수밖에 없음. <span class="minor">피해가 작음</span> = 내버려 둬도 됨.</p>
+<table>
+  <tr><th>화면에서 일어나는 일</th><th>원인</th><th>고칠 수 있나</th><th>고치는 법</th></tr>
+  <tr><td>캐릭터 시트가 닫히지 않거나 수치 일부가 나오지 않음. 지도의 메모가 나오지 않음. 사람에게 물은 가게나 여관 이름 목록이 비어 있음. 신전에서 말하면 멈춤. 캠프하면 보이지 않는 적이 나타남.</td><td>장비한 채 수리를 맡겼음(팔았음)</td><td><span class="ng">이전 저장이 필요</span></td><td>수리를 맡기기 전의 저장을 불러옵니다.</td></tr>
+  <tr><td>수리에서 돌려받은 물건이 빨간 글자로, 장비할 수 없음.</td><td>장비한 채 수리를 맡겼음</td><td><span class="ng">이전 저장이 필요</span>(받기 전의 저장으로 고쳐진 예 1건)</td><td>Arena를 종료하고 다시 실행한 뒤, 받기 전의 저장을 불러와 다시 받습니다.</td></tr>
+  <tr><td>수리를 맡긴 물건이 가게에 없음.</td><td>맡긴 채 여러 곳을 돌아다녔음</td><td><span class="ng">이전 저장이 필요</span></td><td>맡기기 전의 저장을 불러옵니다.</td></tr>
+  <tr><td>의뢰 아이템을 가지고 돌아왔는데 의뢰인이 평소 대화만 함.</td><td>게임이 아이템을 인식하지 못함</td><td><span class="ok">재실행으로 고쳐짐</span>(궁전의 의뢰는 고쳐지지 않음)</td><td>건물을 나와 저장하고, Arena를 종료한 뒤 다시 실행해 불러옵니다. 마법사 길드에 문이 여러 개 있으면 북쪽이나 북동쪽 문으로 들어갑니다.</td></tr>
+  <tr><td>메인 퀘스트에서 사람에게 물은 목적지 이름이 깨져 있음.</td><td>게임의 불러오기 이상</td><td><span class="ok">재실행으로 고쳐짐</span></td><td>저장하고, Arena를 종료한 뒤 다시 실행해 불러옵니다.</td></tr>
+  <tr><td>메인 퀘스트의 다음 목적지가 지도에 없고 어디로도 갈 수 없음.</td><td>전달한 아이템을 다시 주웠음</td><td><span class="ng">이전 저장이 필요</span></td><td>줍기 전의 저장을 불러옵니다. 덮어쓴 뒤에 되돌리는 방법은 알려져 있지 않습니다.</td></tr>
+  <tr><td>메인 퀘스트의 의뢰인에게 말을 걸면 게임이 종료됨.</td><td>의뢰를 거절했음</td><td><span class="ng">이전 저장이 필요</span></td><td>거절하기 전의 저장을 불러와 의뢰를 받습니다.</td></tr>
+  <tr><td>궁전의 주인이 더 이상 의뢰를 주지 않음. 궁전 사람들이 바뀌었음.</td><td>궁전의 의뢰에 실패했음</td><td><span class="ng">이전 저장이 필요</span></td><td>실패하기 전의 저장을 불러옵니다.</td></tr>
+  <tr><td>시작 날짜가 1월(Morning Star) 1일임. 이전 캐릭터의 질병이나 동행자가 남아 있음.</td><td>플레이 도중 "Start New Game"을 골랐음</td><td><span class="ng">캐릭터를 다시 만들어야 함</span></td><td>Arena를 다시 실행하고, 불러오기 화면을 열지 않은 채 캐릭터를 다시 만듭니다.</td></tr>
+  <tr><td>레벨 5 이상인데 소문을 물어도 아티팩트 의뢰가 나오지 않음.</td><td>위와 같음(도중에 새로 시작한 캐릭터)</td><td><span class="ok">직접 고칠 수 있음</span>(미확인)</td><td>공식 업데이트 설명에 따르면 <b>Alt+F5</b>로 의뢰가 나오게 됩니다. 아티팩트를 가지고 있지 않을 때 한 번만 씁니다(의뢰 도중에 쓰면 그 의뢰가 망가질 수 있음).</td></tr>
+  <tr><td>여관에서 빌린 방에서 쉴 수 없음(빌린 시간이 사라짐).</td><td>방을 빌린 뒤 불러오기 화면을 열었음</td><td><span class="minor">피해가 작음</span></td><td>방을 다시 빌립니다.</td></tr>
+  <tr><td>게임이 종료됨(맨손으로 때렸을 때·필드에서 소문을 물었을 때).</td><td>맨손 전투·실행 직후 필드의 소문</td><td><span class="minor">피해가 작음</span>(저장은 망가지지 않음)</td><td>마지막 저장에서 이어 합니다. 같은 조작을 하지 않습니다.</td></tr>
+  <tr><td>벽에 끼여 움직일 수 없음.</td><td>벽 통과</td><td><span class="ok">재실행으로 고쳐짐</span>(옆에 빈 칸이 있을 때)</td><td>오토맵에서 옆에 빈 칸이 보이면 저장하고 Arena를 다시 실행해 불러오면 빠져나옵니다. 빈 칸이 없으면 이전 저장을 불러옵니다.</td></tr>
+  <tr><td>계단·문을 지나간 곳의 층이 망가져 있음.</td><td>벽 통과로 뒤쪽에서 들어갔음</td><td><span class="ng">이전 저장이 필요</span></td><td>여기서 저장하지 말고 이전 저장을 불러옵니다.</td></tr>
+  <tr><td>턱에서 내려온 곳에서 움직일 수 없음(방향은 바꿀 수 있음).</td><td>턱의 충돌 판정 버그</td><td><span class="ok">직접 고칠 수 있음</span></td><td>경사면을 똑바로 바라보고 앞으로 점프합니다. 다음부터는 높은 곳에서 걸어 내려오지 말고 점프해서 내려옵니다.</td></tr>
+  <tr><td>질병을 치료하고 쉬어도 능력치가 돌아오지 않음.</td><td>그 능력치를 올려 주는 장비(반지·목걸이 등)를 착용하고 있음</td><td><span class="ok">직접 고칠 수 있음</span></td><td>그 장비를 벗고 쉬었다가, 능력치가 돌아온 뒤 다시 착용합니다.</td></tr>
+  <tr><td>저주나 능력치를 빼앗는 마법으로 내려간 능력치가 돌아오지 않음.</td><td>능력치 처리의 버그(상대의 능력치를 빼앗는 직접 만든 주문으로도 일어남)</td><td><span class="ok">직접 고칠 수 있음</span></td><td>다음에 레벨이 오르면 돌아옵니다.</td></tr>
+</table>
+
+<p class="src">출처: UESP "Arena:Bugs", "Arena:Patches", 메인 퀘스트 각 단계의 페이지, Assist 개발 중의 관찰(2026년 11월 기준·Steam 판 = CD 판 1.07).</p>
+
+</body>
+</html>
