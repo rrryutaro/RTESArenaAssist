@@ -142,7 +142,9 @@ def _format_ja(ja_template: str, placeholders: dict[str, str]) -> str:
     for name in sorted(placeholders, key=len, reverse=True):
         value = _translate_placeholder(name, placeholders[name])
         result = result.replace(f'%{name}', value)
-    return result
+    import i18n_helper as i18n
+    from text_corrector import apply_text_corrections
+    return apply_text_corrections(result, i18n.current_lang())
 
 def _common_prefix_len(a: str, b: str) -> int:
     limit = min(len(a), len(b))

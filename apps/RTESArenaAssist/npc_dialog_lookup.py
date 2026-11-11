@@ -654,7 +654,8 @@ def _translate_date(value: str, lang: str) -> str:
         year_str = m_full.group(5)
         weekday_ja = _CALENDAR_WEEKDAYS.get(weekday_en, {}).get(lang, weekday_en)
         month_ja = _CALENDAR_MONTHS.get(month_en, {}).get(lang, month_en)
-        era_ja = i18n.value_in('eras', era_en, lang) or era_en
+        from date_translator import era_text
+        era_ja = era_text(era_en[:-1])
         return i18n.text('status_buffer_text.date_format_dialog_full').replace('{weekday}', weekday_ja).replace('{month}', month_ja).replace('{day}', day_str).replace('{era}', era_ja).replace('{year}', year_str)
     m_short = _DATE_PATTERN_SHORT.match(text)
     if m_short:
@@ -862,10 +863,19 @@ def _ph_doc(name: str, value: str, lang: str) -> str:
             continue
         result = ja_tmpl
         for ph_name, ph_val in nested.items():
-            translated_val = translate_placeholder(ph_name, ph_val, lang) if ph_val else ''
-            result = result.replace(f'%{ph_name}', translated_val)
+            if not ph_val:
+                result = _drop_empty_placeholder(result, ph_name, lang)
+                continue
+            result = result.replace(f'%{ph_name}', translate_placeholder(ph_name, ph_val, lang))
         return result
     return value
+
+def _drop_empty_placeholder(text: str, ph_name: str, lang: str) -> str:
+    import i18n_helper as i18n
+    particles = (i18n.rules(lang).get('empty_placeholder_particles') or {}).get('particles') or []
+    alt = '|'.join((re.escape(p) for p in sorted(particles, key=len, reverse=True)))
+    tail = f'\\s*(?:{alt})?\\s*' if alt else ''
+    return re.sub(f'%{re.escape(ph_name)}(?![A-Za-z]){tail}', '', text)
 
 def _ph_mn_mt(name: str, value: str, lang: str) -> str:
     if lang == 'en':

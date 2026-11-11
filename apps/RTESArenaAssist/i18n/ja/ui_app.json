@@ -770,7 +770,7 @@
   "dungeon_msg.no_gold_no_items_format": "{name}はゴールドも使えるものも持っていない。",
   "dungeon_msg.nothing_usable_format": "{name}は使えるものを持っていない。",
   "dungeon_msg.possession_format": "{name}は {item} を持っている。",
-  "dungeon_msg.gold_found_format": "{count} ゴールドを手に入れた！！",
+  "dungeon_msg.gold_found_format": "{count}ゴールドを手に入れた！！",
   "mages_list.title_targets": "対象一覧",
   "mages_list.title_effects": "効果一覧",
   "mages_list.title_effect_options": "効果オプション",

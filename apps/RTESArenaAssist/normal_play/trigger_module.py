@@ -39,7 +39,12 @@ def _riddle_display_begin(w, entry: dict) -> None:
     question = next((r for r in ranges if r['kind'] == 'question'), None)
     if question is None:
         return
-    w._riddle_display = {'entry': entry, 'ranges': ranges, 'base': ptr - question['start'], 'kind': 'question'}
+    live = {}
+    for r in ranges:
+        if r['kind'] in ('correct', 'wrong'):
+            chunk = raw[r['start']:r['start'] + r['len']]
+            live[r['kind']] = mif_trigger.extract_riddle_response(chunk.decode('ascii', errors='replace').lstrip('~'))
+    w._riddle_display = {'entry': entry, 'ranges': ranges, 'base': ptr - question['start'], 'kind': 'question', 'live': live}
 
 def poll_riddle_display(w) -> None:
     st = getattr(w, '_riddle_display', None)
@@ -55,6 +60,8 @@ def poll_riddle_display(w) -> None:
     st['kind'] = hit['kind']
     entry = dict(st['entry'])
     entry['_riddle_field'] = hit['kind']
+    if not entry.get(hit['kind']):
+        entry[hit['kind']] = (st.get('live') or {}).get(hit['kind'], '')
     _render_trigger_entry(w, entry, begin_riddle=False)
 
 def riddle_group_holds_ptr(w, ptr) -> bool:
@@ -140,6 +147,17 @@ def _map_context(w):
 
 def reset_trigger_identification(w) -> None:
     w._trigger_unresolved = None
+    w._trigger_last_position = None
+
+def _position_before_fire(w, at):
+    last = getattr(w, '_trigger_last_position', None)
+    if at is None or None in tuple(at):
+        return None
+    if not last or last['at'] == at or None in last['at']:
+        return None
+    if last['map'] != _map_context(w):
+        return None
+    return last['at']
 
 def _identify_fired_text(w, rt_x, rt_z, inf_name: str, *, retry: bool) -> bool:
     text_index = None
@@ -176,7 +194,12 @@ def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, in
     if new_trigger:
         w._trigger_unresolved = None
         at = (w._cached_rt_x, w._cached_rt_z)
-        if not _identify_fired_text(w, at[0], at[1], inf_name, retry=False):
+        identified = _identify_fired_text(w, at[0], at[1], inf_name, retry=False)
+        if not identified:
+            before = _position_before_fire(w, at)
+            if before is not None:
+                identified = _identify_fired_text(w, before[0], before[1], inf_name, retry=True)
+        if not identified:
             w._trigger_unresolved = {'at': at, 'map': _map_context(w)}
     else:
         pending = getattr(w, '_trigger_unresolved', None)
@@ -187,6 +210,8 @@ def poll_trigger(w, *, new_trigger: bool, trig_fell: bool, trigger_flag: int, in
     if trig_fell and getattr(w, '_trigger_unresolved', None):
         _recog(_log, 'trigger unresolved: 同定できないまま表示が終わった 座標=%r', w._trigger_unresolved['at'])
         w._trigger_unresolved = None
+    if position is not None:
+        w._trigger_last_position = {'at': position, 'map': _map_context(w)}
     if trig_fell and (not settings.get('keep_trigger_on_panel', False)):
         w._last_trigger_active = False
         w._riddle_display = None

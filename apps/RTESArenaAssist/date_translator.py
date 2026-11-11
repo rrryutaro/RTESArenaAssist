@@ -20,6 +20,10 @@ def _sbt_value(group: str, surface: str, en_list: tuple) -> Optional[str]:
         return None
     return i18n.text_opt(f'status_buffer_text.{group}.{idx}')
 
+def era_text(era_num: str) -> str:
+    import i18n_helper as i18n
+    return i18n.value('status_buffer_text', era_num) or i18n.text('status_buffer_text.era_fallback').replace('{era}', era_num)
+
 def parse_and_translate(text: str) -> Optional[Tuple[str, str]]:
     if not text:
         return None
@@ -36,7 +40,7 @@ def parse_and_translate(text: str) -> Optional[Tuple[str, str]]:
     month_ja = _sbt_value('month', month_key, _MONTH_EN)
     if month_ja is None:
         return None
-    era_ja = i18n.value('status_buffer_text', era_num) or i18n.text('status_buffer_text.era_fallback').replace('{era}', era_num)
+    era_ja = era_text(era_num)
     en = text.strip()
     ja = i18n.text('status_buffer_text.date_format').replace('{era}', era_ja).replace('{year}', year_num).replace('{month}', month_ja).replace('{day}', day_num).replace('{weekday}', day_ja)
     return (en, ja)

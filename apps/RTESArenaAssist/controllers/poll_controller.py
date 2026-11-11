@@ -8,6 +8,7 @@ from assist_log import recog as _recog
 import i18n_helper as i18n
 import inf_text_lookup as itl
 from display_intent import PollFrame
+from ui_router import SCREEN_CHANGE_CLEAR_PRIORITY
 from panel_mode_resolver import SCREEN_PANEL_PRIORITY, screen_panel_mode
 from hierarchy_state import HierarchyRecognitionInput, SeparationHierarchy
 from normal_play.base_location.base_location_view import resolve_area_with_indoor_fallback as _resolve_area_with_indoor_fallback
@@ -134,7 +135,7 @@ def _release_completed_load_screen_owner(w, *, img_name: str, save_detected: boo
     if loading_active or loading_post_settle:
         return
     try:
-        w._ui_router.claim_owner('', mode=_normal_play_idle_panel_mode(), priority=_SCREEN_PANEL_PRIORITY, reason='loadsave:release')
+        w._ui_router.claim_owner('', mode=_normal_play_idle_panel_mode(), priority=SCREEN_CHANGE_CLEAR_PRIORITY, reason='loadsave:release')
     except (AttributeError, RuntimeError) as exc:
         _log.debug('load_screen owner release skipped: %s', exc)
 

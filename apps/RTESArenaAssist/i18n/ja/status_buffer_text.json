@@ -29,7 +29,7 @@
   "status_buffer_text.part.4": "早朝",
   "status_buffer_text.part.5": "正午",
   "status_buffer_text.part.6": "真夜中",
-  "status_buffer_text.line_location": "あなたは {location} にいます。",
+  "status_buffer_text.line_location": "あなたは{location}にいます。",
   "status_buffer_text.line_time": "時刻: {hour}時{minute}分（{part}）",
   "status_buffer_text.line_date": "日付: {date}",
   "status_buffer_text.line_load": "重量: {current}kg / 上限 {max}kg",

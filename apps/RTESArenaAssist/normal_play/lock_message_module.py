@@ -274,7 +274,8 @@ def poll_lock_message(w, *, b30: dict, near, band) -> None:
     _obs = (band.seen, shown, bool(b30.get('red_str')), bool(b30.get('in_gameplay')), armed, near.where, near.lock is not None)
     if _obs != getattr(w, '_lock_msg_obs_prev', None):
         w._lock_msg_obs_prev = _obs
-        _recog(_log, '赤文字の描画: drawn=%s 錠前の文=%s バッファ本文=%s in_gameplay=%s 見張り=%s 場所=%s 近くの錠=%s', band.seen, '-' if shown is None else '番号%d' % shown, _obs[2], _obs[3], '動作' if armed else '休止', near.where or '-', near.lock or near.reason)
+        _tables = getattr(w, '_lock_msg_tables', None)
+        _recog(_log, '赤文字の描画: drawn=%s 錠前の文=%s バッファ本文=%s in_gameplay=%s 見張り=%s 場所=%s 近くの錠=%s 文の表=%s 写し=%d フォント=%s 読み=%r', band.seen, '-' if shown is None else '番号%d' % shown, _obs[2], _obs[3], '動作' if armed else '休止', near.where or '-', near.lock or near.reason, len((_tables or {}).get('messages') or ()), len(getattr(band, 'masks', None) or ()), getattr(band, 'font', None) is not None, (getattr(band, 'text', '') or '')[:80])
     if shown is not None and shown != prev_shown:
         w._lock_msg_pending = _PENDING_POLLS
         w._lock_msg_pending_index = shown
