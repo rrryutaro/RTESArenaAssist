@@ -97,6 +97,46 @@ def _is_no_repair_reply_text(text: str) -> bool:
     text = (text or '').strip()
     return text.startswith('Your ') and 'does not need any repairing' in text
 
+def _is_repair_flow_text(text: str) -> bool:
+    text = (text or '').strip()
+    from popup11_response_reader import _EMBEDDED_RESPONSE_MARKERS
+    return text.startswith(_ACTIVE_REPLY_PREFIXES) or text.startswith(_EMBEDDED_RESPONSE_MARKERS) or text.startswith(_PRESENCE_REPLY_PREFIXES) or _is_no_repair_reply_text(text)
+
+def _frame_is_popup(flag_value) -> bool:
+    return flag_value is None or flag_value == VIEW_FLAG_POPUP
+
+@dataclass(frozen=True)
+class _MenuResidual:
+    text: str = ''
+    jobs: bool = False
+
+def _remember_menu_residual(w, *, text: str='', jobs: bool=False) -> None:
+    prev = getattr(w, '_equipment_l4_menu_residual', None) or _MenuResidual()
+    w._equipment_l4_menu_residual = _MenuResidual(text=text if _is_repair_flow_text(text) else prev.text, jobs=jobs or prev.jobs)
+
+def _estimate_restorable(w, popup_frame: bool) -> bool:
+    if not popup_frame:
+        return False
+    prev_snap = getattr(w, '_equipment_l4_prev_snapshot', None)
+    return prev_snap is not None and prev_snap.state in (EquipmentL4State.REPAIR_JOBS, EquipmentL4State.REPAIR_ESTIMATE) and (prev_snap.reason in ('repair_struct', 'estimate_restored'))
+
+def _jobs_on_screen(w, jobs, popup_frame: bool, residual) -> bool:
+    if not popup_frame:
+        _remember_menu_residual(w, jobs=bool(jobs))
+        return False
+    return bool(jobs) and (not (residual is not None and residual.jobs))
+
+def _reply_on_screen(w, text: str, popup_frame: bool, residual) -> bool:
+    if not popup_frame:
+        _remember_menu_residual(w, text=text)
+    if not _is_repair_flow_text(text):
+        return True
+    if not popup_frame:
+        return False
+    if residual is None or residual.text != text:
+        return True
+    return getattr(w, '_equipment_l4_reply_evidence', None) in ('ptr', 'active')
+
 def _is_composite_reply_text(text: str) -> bool:
     try:
         import npc_dialog_lookup as ndl
@@ -326,13 +366,15 @@ def _decide(w, img: str) -> EquipmentL4Snapshot:
     w._equipment_l4_list_flag_value = None
     w._equipment_l4_negot_diag = '-'
     flag_value, menu_stable = _track_menu_flag(w)
+    popup_frame = _frame_is_popup(flag_value)
+    residual = getattr(w, '_equipment_l4_menu_residual', None)
     if menu_stable:
         return EquipmentL4Snapshot(state=S.MENU, img=img, reason='view_flag')
     if img == 'NEGOTBUT.IMG' or (_is_negotiation_img(img) and has_equipment_negotiation_foreground(w)):
         return EquipmentL4Snapshot(state=S.NEGOTIATION, img=img, reason='negotiation')
     if img == 'YESNO.IMG' and _estimate_template_active(w):
         return EquipmentL4Snapshot(state=S.REPAIR_ESTIMATE, img=img, reason='estimate_template')
-    if flag_value == VIEW_FLAG_POPUP and img in ('NEWPOP.IMG', 'NEWOLD.IMG'):
+    if popup_frame and img in ('NEWPOP.IMG', 'NEWOLD.IMG'):
         try:
             from normal_play.equipment_repair_reader import read_repair_status_reply
             sr = read_repair_status_reply(w._analyzer, w._anchor)
@@ -349,16 +391,14 @@ def _decide(w, img: str) -> EquipmentL4Snapshot:
         return EquipmentL4Snapshot(state=S.ITEM_SELECT, img=img, reason='item_list_slot')
     if img == 'NEWPOP.IMG':
         jobs = _read_repair_jobs(w)
-        if jobs and (not _popup_reply_foreground(w)):
+        if _jobs_on_screen(w, jobs, popup_frame, residual) and (not _popup_reply_foreground(w)):
             return EquipmentL4Snapshot(state=S.REPAIR_JOBS, img=img, reason='repair_struct', repair_job_names=tuple((j['en'] for j in jobs)))
     if img in _REPLY_ALLOWED_IMGS:
         chosen = _update_and_select_reply(w, img)
-        if chosen is not None:
+        if chosen is not None and _reply_on_screen(w, chosen.text, popup_frame, residual):
             return EquipmentL4Snapshot(state=S.REPLY, img=img, reason='response_evidence', reply_text=chosen.text, reply_source_offset=chosen.source_offset)
-    if img == 'YESNO.IMG':
-        prev_snap = getattr(w, '_equipment_l4_prev_snapshot', None)
-        if prev_snap is not None and prev_snap.state in (S.REPAIR_JOBS, S.REPAIR_ESTIMATE) and (prev_snap.reason in ('repair_struct', 'estimate_restored')):
-            return EquipmentL4Snapshot(state=S.REPAIR_ESTIMATE, img=img, reason='estimate_restored')
+    if img == 'YESNO.IMG' and _estimate_restorable(w, popup_frame):
+        return EquipmentL4Snapshot(state=S.REPAIR_ESTIMATE, img=img, reason='estimate_restored')
     if img in ('POPUP3.IMG', 'POPUP4.IMG') and _list_is_foreground(w):
         return EquipmentL4Snapshot(state=S.BUY_LIST, img=img, reason='list_img')
     return EquipmentL4Snapshot(state=S.NONE, img=img, reason='none')
@@ -380,6 +420,8 @@ def _log_state_edge(w, prev_state, snap: EquipmentL4Snapshot) -> None:
 
 def _compute(w, img: str) -> EquipmentL4Snapshot:
     snap = _decide(w, img)
+    if snap.state is not EquipmentL4State.NONE:
+        w._equipment_l4_menu_residual = None
     prev_state = getattr(w, '_equipment_l4_prev_state', None)
     if snap.state is EquipmentL4State.NONE:
         streak = int(getattr(w, '_equipment_l4_none_streak', 0) or 0) + 1
