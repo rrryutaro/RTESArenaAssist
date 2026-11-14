@@ -11,19 +11,23 @@ _POPUP_FRAME_UNSET = object()
 def _build_dialog_context(w, *, b30, in_interior, facility_active_now, screen_img: str='', popup_frame=_POPUP_FRAME_UNSET, popup_frame_drawn=_POPUP_FRAME_UNSET, npc_message_popup_closed: bool=False):
     if b30 is None:
         _fg_ptr = None
+        _fg_ptr_prev = None
         _dialog_active_now = False
         _dialog_active_prev = False
     else:
         _fg_ptr = b30.get('fg_ptr')
+        _fg_ptr_prev = b30.get('fg_ptr_prev')
         _dialog_active_now = bool(b30.get('dialog_text_fg'))
         _dialog_active_prev = bool(b30.get('dialog_text_fg_prev'))
     try:
         from active_template_reader import is_response_text_buffer_pointer, is_message_buffer_pointer
         _response_text_on_screen = is_response_text_buffer_pointer(_fg_ptr)
         _msg_text_on_screen = is_message_buffer_pointer(_fg_ptr)
+        _msg_text_was_on_screen = is_message_buffer_pointer(_fg_ptr_prev)
     except Exception:
         _response_text_on_screen = _fg_ptr is not None and any((start <= _fg_ptr < start + length for start, length in ((4164, 512), (37534, 512), (39582, 512))))
         _msg_text_on_screen = _fg_ptr is not None and 39582 <= _fg_ptr < 39582 + 512
+        _msg_text_was_on_screen = _fg_ptr_prev is not None and 39582 <= _fg_ptr_prev < 39582 + 512
     _dialog_just_opened = _dialog_active_now and (not _dialog_active_prev)
     if popup_frame is _POPUP_FRAME_UNSET or popup_frame_drawn is _POPUP_FRAME_UNSET:
         try:
@@ -34,7 +38,7 @@ def _build_dialog_context(w, *, b30, in_interior, facility_active_now, screen_im
             popup_frame = None
             popup_frame_drawn = None
     _panel_only_interior_message = in_interior and (not facility_active_now) and (not bool(getattr(w, '_npc_conversation_active', False)))
-    return SimpleNamespace(dialog_just_opened=_dialog_just_opened, response_text_on_screen=_response_text_on_screen, msg_text_on_screen=_msg_text_on_screen, screen_img=str(screen_img or '').upper(), popup_frame=popup_frame, popup_frame_drawn=popup_frame_drawn, npc_message_popup_closed=npc_message_popup_closed, panel_only_interior_message=_panel_only_interior_message)
+    return SimpleNamespace(dialog_just_opened=_dialog_just_opened, response_text_on_screen=_response_text_on_screen, msg_text_on_screen=_msg_text_on_screen, msg_text_just_entered=_msg_text_on_screen and (not _msg_text_was_on_screen), screen_img=str(screen_img or '').upper(), popup_frame=popup_frame, popup_frame_drawn=popup_frame_drawn, npc_message_popup_closed=npc_message_popup_closed, panel_only_interior_message=_panel_only_interior_message)
 
 def _show_npc_dialog_text(w, en: str, ja: str, *, panel_only: bool) -> None:
     if panel_only:

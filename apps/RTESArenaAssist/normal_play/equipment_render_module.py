@@ -194,7 +194,7 @@ def _render_list(w, img: str) -> bool:
             key_now = ('inventory', img, table_title, tuple(((r['en'], r['equipped'], r['condition'], r['effect'], r['is_unidentified'], r['can_equip']) for r in rows)))
             if key_now != getattr(w, _LIST_KEY, None):
                 setattr(w, _LIST_KEY, key_now)
-                w._ui_router.update_equipment_list(LIST_OWNER, table_title, rows)
+                w._ui_router.propose_equipment_list(LIST_OWNER, table_title, rows, panel_en=title_en, panel_ja=title_ja)
                 _log.info('equipment_list update (img=%r items=%d source=inventory_table)', img, len(rows))
             return True
     items = _stabilize_list_items(w, img, _read_list_items(w, img))

@@ -244,7 +244,8 @@ def _render_identified_text(w, lookup_inf: str, text_index: int, correct_body: s
 def idle_b30_state(w) -> dict:
     w._b30_in_gameplay_prev = False
     w._b30_dialog_active_prev = False
-    return {'dialog_flag': getattr(w, '_b30_dialog_flag_prev', 41729), 'dialog_flag_prev': getattr(w, '_b30_dialog_flag_prev', 41729), 'red_str': getattr(w, '_b30_red_str_prev', ''), 'red_changed': False, 'dialog_active': False, 'dialog_active_prev': False, 'c1_dialog_axis': None, 'c1_dialog_axis_active': False, 'img_name': '', 'in_gameplay': False, 'fg_ptr': None, 'dialog_text_fg': False, 'dialog_text_fg_prev': False}
+    w._b30_fg_ptr_prev = None
+    return {'dialog_flag': getattr(w, '_b30_dialog_flag_prev', 41729), 'dialog_flag_prev': getattr(w, '_b30_dialog_flag_prev', 41729), 'red_str': getattr(w, '_b30_red_str_prev', ''), 'red_changed': False, 'dialog_active': False, 'dialog_active_prev': False, 'c1_dialog_axis': None, 'c1_dialog_axis_active': False, 'img_name': '', 'in_gameplay': False, 'fg_ptr': None, 'fg_ptr_prev': None, 'dialog_text_fg': False, 'dialog_text_fg_prev': False}
 GAMEPLAY_SCREEN_IDS = frozenset({'game_screen', 'combat', 'npc_dialog', 'shop', 'loading'})
 
 def gameplay_screen(screen_id: str | None) -> bool:
@@ -290,6 +291,7 @@ def compute_b30_state(w, *, in_gameplay: bool, c_area: str | None=None, c1_axis=
     _dialog_active = _dialog_text_fg
     _dialog_active_prev = getattr(w, '_b30_dialog_active_prev', False)
     _dialog_text_fg_prev = bool(_dialog_active_prev)
+    _fg_ptr_prev = getattr(w, '_b30_fg_ptr_prev', None)
     _img_name = (img_name or '').upper()
     _in_gameplay = bool(in_gameplay)
     _was_in_gameplay = getattr(w, '_b30_in_gameplay_prev', False)
@@ -307,7 +309,8 @@ def compute_b30_state(w, *, in_gameplay: bool, c_area: str | None=None, c1_axis=
             _log.debug('C1 dialog axis unusable: %s', exc)
     w._b30_in_gameplay_prev = _in_gameplay
     w._b30_dialog_active_prev = _dialog_text_fg
-    return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay, 'fg_ptr': _fg_ptr, 'dialog_text_fg': bool(_dialog_text_fg), 'dialog_text_fg_prev': _dialog_text_fg_prev}
+    w._b30_fg_ptr_prev = _fg_ptr
+    return {'dialog_flag': _dialog_flag, 'dialog_flag_prev': _dialog_flag_prev, 'red_str': _red_str, 'red_changed': _red_changed, 'dialog_active': _dialog_active, 'dialog_active_prev': _dialog_active_prev, 'c1_dialog_axis': _c1_axis, 'c1_dialog_axis_active': bool(_c1_axis and _c1_axis.active), 'img_name': _img_name, 'in_gameplay': _in_gameplay, 'fg_ptr': _fg_ptr, 'fg_ptr_prev': _fg_ptr_prev, 'dialog_text_fg': bool(_dialog_text_fg), 'dialog_text_fg_prev': _dialog_text_fg_prev}
 _CORPSE_LOOK_RE = re.compile('^You see an? .+\\.\\.\\.\\s*$')
 
 def is_corpse_look_text(text: str) -> bool:

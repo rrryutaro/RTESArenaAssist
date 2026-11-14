@@ -615,6 +615,8 @@ def _field_entrance_hint(w):
         return None
 
 def reset_location_on_load(w) -> None:
+    from normal_play.instore_dialog_module import rebaseline_on_place_replaced as _rebaseline_instore_texts
+    _rebaseline_instore_texts(w)
     try:
         from controllers.map_ext_lifecycle import get_lifecycle
         entry = get_lifecycle().last_load_arrival()
@@ -630,6 +632,8 @@ def reset_location_on_load(w) -> None:
     w._last_non_interior_area = 'wilderness' if _field_entrance_hint(w) is not None else ''
 
 def reset_location_after_travel(w) -> None:
+    from normal_play.instore_dialog_module import rebaseline_on_place_replaced as _rebaseline_instore_texts
+    _rebaseline_instore_texts(w)
     wild = _wilderness_session(w)
     if wild is not None:
         try:
@@ -649,7 +653,7 @@ def _resolve_field_facility(w, interior_raw):
     try:
         from play_area_classifier import _WILDERNESS_FLAG_OFFSET
         wild_flag = w._analyzer.read_bytes(w._anchor + _WILDERNESS_FLAG_OFFSET, 1)[0]
-    except (OSError, AttributeError):
+    except (OSError, AttributeError, IndexError, TypeError):
         wild_flag = 0
     active, mif, label = resolve_field_facility_entry(hint, interior_flag_nonzero=bool(interior_raw), wild_flag=wild_flag)
     facility_name = None
@@ -677,12 +681,17 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
         _log.info('interior left')
         w._entry_door_pos = None
         w._entry_door_logged = None
-        w._instore_resp_prev = ''
-        w._instore_resp_current_key = None
-        w._instore_resp_text_by_offset = {}
+        from normal_play.instore_dialog_module import forget_on_interior_left as _forget_instore_texts
+        _forget_instore_texts(w)
         from normal_play.building_entry_module import end_entry_episode as _end_entry_episode
         _end_entry_episode(w)
     w._in_interior_prev = in_interior
+    effective_in_interior = in_interior
+    field_active, field_mif, _field_label, field_name = _resolve_field_facility(w, interior_raw)
+    if field_active and field_mif:
+        effective_in_interior = True
+    from normal_play.instore_dialog_module import note_texts_present_on_interior_poll as _note_instore_texts
+    _note_instore_texts(w, effective_in_interior, just_entered=_just_entered_interior)
     display_mif_name = mif_name
     interior_mif_name: str | None = None
     interior_mif_source: str | None = None
@@ -738,14 +747,11 @@ def _poll_resolve_interior_entry(w, *, in_interior, rt_x, rt_z, interior_raw, mi
                 interior_mif_source = 'palace'
                 display_mif_name = _palace_mif
                 _log.info('palace mif resolved door-free: %s (img=PALACE.XMI)', _palace_mif)
-    effective_in_interior = in_interior
-    field_active, field_mif, _field_label, field_name = _resolve_field_facility(w, interior_raw)
     if field_active and field_mif:
         interior_mif_name = field_mif
         interior_mif_source = 'field'
         display_mif_name = field_mif
         interior_facility_name = field_name
-        effective_in_interior = True
     _cur_location = gs.get('MapName') or ''
     _prev_location = getattr(w, '_interior_location_name', '')
     if _cur_location and _prev_location and (_cur_location != _prev_location):

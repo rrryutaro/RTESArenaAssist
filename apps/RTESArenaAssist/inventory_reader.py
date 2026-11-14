@@ -35,6 +35,12 @@ def _artifact_name_index(item: dict) -> int | None:
     if not (item['slot_id'] & 128 and item['flags'] & FLAG_MAGIC):
         return None
     return _ARTIFACT_SPELL_TO_NAME_INDEX.get(item['y'])
+_SPELL_LESS_ARTIFACT_SLOT_TO_NAME_INDEX = {141: 13}
+
+def _spell_less_artifact_name_index(item: dict, kind: str) -> int | None:
+    if kind != 'accessory':
+        return None
+    return _SPELL_LESS_ARTIFACT_SLOT_TO_NAME_INDEX.get(item['slot_id'])
 _ARTIFACT_BASE_ITEMS = {46: ('weapon', 6), 47: ('weapon', 9), 48: ('shield', 10), 49: ('armor', 2), 50: ('shield', 9), 51: ('weapon', 0), 53: ('weapon', 13), 56: ('armor', 2), 57: ('weapon', 17)}
 _ARTIFACT_BODY_ARMOR_SPELLS = frozenset((spell for spell, (kind, _) in _ARTIFACT_BASE_ITEMS.items() if kind == 'armor'))
 _ARTIFACT_JEWELRY_LABEL_IDS = {52: 'items.spellcasting_items.3.0', 54: 'items.spellcasting_items.3.0', 55: 'items.spellcasting_items.3.0', 58: 'item.slot.amulet'}
@@ -78,7 +84,7 @@ def _label_text(label_id: str) -> str:
     return s if s is not None else i18n.text(label_id)
 
 def _weight_str(weight_raw: int) -> str:
-    if weight_raw == 0:
+    if weight_raw in (0, 65535):
         return '—'
     kg = weight_raw / 256
     return f'{kg:.1f}kg' if kg != int(kg) else f'{int(kg)}.0kg'
@@ -283,6 +289,8 @@ def _get_item_name(item: dict, weapon_names: list[str], plate_names: list[str], 
     is_identified = not item['flags'] & FLAG_UNIDENTIFIED
     kind, _armor_material_id = classification if classification is not None else _classify_item(item)
     artifact_index = _artifact_name_index(item)
+    if artifact_index is None:
+        artifact_index = _spell_less_artifact_name_index(item, kind)
     if artifact_index is not None and artifact_names:
         if artifact_index < len(artifact_names) and artifact_names[artifact_index]:
             return artifact_names[artifact_index]

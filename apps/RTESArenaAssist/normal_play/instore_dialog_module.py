@@ -66,6 +66,32 @@ def _show_instore_response(w, ctx, chosen, reason, current_ptr) -> bool:
     except (ImportError, AttributeError):
         return False
 
+def _texts_seen_since_entry(w) -> dict:
+    return dict(getattr(w, '_instore_resp_text_by_offset', None) or {})
+
+def note_texts_present_on_interior_poll(w, in_interior: bool, *, just_entered: bool=False) -> None:
+    if not in_interior:
+        return
+    if not just_entered and getattr(w, '_instore_resp_text_by_offset', None) is not None:
+        return
+    w._instore_resp_text_by_offset = _snapshot_buffer_texts(w)
+
+def _snapshot_buffer_texts(w) -> dict:
+    cands, _ptr, _contains = _read_response_probe(w)
+    return {c.source_offset: c.text for c in cands if c.text}
+
+def release_current_key_on_overlay_start(w) -> None:
+    w._instore_resp_prev = ''
+    w._instore_resp_current_key = None
+
+def rebaseline_on_place_replaced(w) -> None:
+    w._instore_resp_text_by_offset = _snapshot_buffer_texts(w)
+
+def forget_on_interior_left(w) -> None:
+    w._instore_resp_prev = ''
+    w._instore_resp_current_key = None
+    w._instore_resp_text_by_offset = None
+
 def _poll_route1_instore_response(w, ctx, *, entry_handled: bool, npc_overlay_active: bool, in_interior: bool, npc_phase_raw, facility_active_now: bool, instore_resp_handled: bool, internalized_facility_active: bool=False, shop_menu_visible: bool=False, shop_buy_active: bool=False, shop_state_kind: str='none', negot_handled: bool=False, active_tmpl_handled: bool=False, c_area: str=''):
     if c_area == 'dungeon':
         return (instore_resp_handled, entry_handled)
@@ -90,7 +116,7 @@ def _poll_route1_instore_response(w, ctx, *, entry_handled: bool, npc_overlay_ac
             _log.debug('in_store_resp skipped: _entry_handled=True (phase=0x%s)', f'{npc_phase_raw:02X}' if npc_phase_raw is not None else '??')
         return (instore_resp_handled, entry_handled)
     _cands, _current_ptr, _contains_pointer = _read_probe()
-    _text_by_offset = dict(getattr(w, '_instore_resp_text_by_offset', {}))
+    _text_by_offset = _texts_seen_since_entry(w)
     _chosen, _chosen_reason, _changed_hits, _ptr_cands = _choose_instore_response(_cands, _current_ptr, _text_by_offset, _contains_pointer, view_response=_facility_response_override and _l4_surface_now)
     for c in _cands:
         if c.text:
@@ -113,8 +139,9 @@ def _poll_route1_instore_response(w, ctx, *, entry_handled: bool, npc_overlay_ac
 INSTORE_DIALOG_OWNER = 'npc_dialog'
 
 def close_on_modal_overlay(w) -> None:
+    w._instore_resp_text_by_offset = None
     try:
         w._ui_router.clear_if_owner(INSTORE_DIALOG_OWNER, mode='translate', clear_place_list=True)
     except (AttributeError, RuntimeError):
         pass
-__all__ = ['FACILITY_L4_OWNED', 'INSTORE_DIALOG_OWNER', 'close_on_modal_overlay', 'facility_l4_claim', '_poll_route1_instore_response']
+__all__ = ['FACILITY_L4_OWNED', 'INSTORE_DIALOG_OWNER', 'close_on_modal_overlay', 'facility_l4_claim', 'forget_on_interior_left', 'note_texts_present_on_interior_poll', 'rebaseline_on_place_replaced', 'release_current_key_on_overlay_start', '_poll_route1_instore_response']

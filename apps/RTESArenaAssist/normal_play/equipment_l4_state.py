@@ -81,13 +81,15 @@ def _read_static_reply_candidates(w):
     try:
         from popup11_response_reader import ResponseCandidate
         import npc_dialog_lookup as ndl
-        for ptr in dict.fromkeys(_read_reply_pointers(w)):
-            if ptr not in places:
+        ptrs = tuple(dict.fromkeys(_read_reply_pointers(w)))
+        for start in places:
+            raw = w._analyzer.read_bytes(w._anchor + start, _RAW_TEMPLATE_READ_LEN)
+            body = bytes(raw or b'').split(b'\x00', 1)[0]
+            if not any((start < p <= start + len(body) + 1 for p in ptrs)):
                 continue
-            raw = w._analyzer.read_bytes(w._anchor + ptr, _RAW_TEMPLATE_READ_LEN)
-            text = bytes(raw or b'').split(b'\x00', 1)[0].decode('ascii', errors='replace').strip()
+            text = body.decode('ascii', errors='replace').strip()
             if text and ndl.lookup(text) is not None:
-                out.append(ResponseCandidate(text=text, lookup_hit=True, source_offset=ptr))
+                out.append(ResponseCandidate(text=text, lookup_hit=True, source_offset=start))
     except Exception:
         return []
     return out
@@ -109,10 +111,28 @@ def _frame_is_popup(flag_value) -> bool:
 class _MenuResidual:
     text: str = ''
     jobs: bool = False
+    negot_img: bool = False
 
-def _remember_menu_residual(w, *, text: str='', jobs: bool=False) -> None:
+def _is_static_reply_text(w, text: str) -> bool:
+    text = (text or '').strip()
+    if not text:
+        return False
+    for start in _static_reply_pointers():
+        try:
+            raw = w._analyzer.read_bytes(w._anchor + start, _RAW_TEMPLATE_READ_LEN)
+        except (OSError, AttributeError):
+            continue
+        body = bytes(raw or b'').split(b'\x00', 1)[0]
+        if body.decode('ascii', errors='replace').strip() == text:
+            return True
+    return False
+
+def _drawn_in_popup_frame(w, text: str) -> bool:
+    return _is_repair_flow_text(text) or _is_static_reply_text(w, text)
+
+def _remember_menu_residual(w, *, text: str='', jobs: bool=False, negot_img: bool=False) -> None:
     prev = getattr(w, '_equipment_l4_menu_residual', None) or _MenuResidual()
-    w._equipment_l4_menu_residual = _MenuResidual(text=text if _is_repair_flow_text(text) else prev.text, jobs=jobs or prev.jobs)
+    w._equipment_l4_menu_residual = _MenuResidual(text=text if _drawn_in_popup_frame(w, text) else prev.text, jobs=jobs or prev.jobs, negot_img=negot_img or prev.negot_img)
 
 def _estimate_restorable(w, popup_frame: bool) -> bool:
     if not popup_frame:
@@ -129,13 +149,16 @@ def _jobs_on_screen(w, jobs, popup_frame: bool, residual) -> bool:
 def _reply_on_screen(w, text: str, popup_frame: bool, residual) -> bool:
     if not popup_frame:
         _remember_menu_residual(w, text=text)
-    if not _is_repair_flow_text(text):
+    if not _drawn_in_popup_frame(w, text):
         return True
     if not popup_frame:
         return False
     if residual is None or residual.text != text:
         return True
-    return getattr(w, '_equipment_l4_reply_evidence', None) in ('ptr', 'active')
+    evidence = getattr(w, '_equipment_l4_reply_evidence', None)
+    if evidence == 'ptr':
+        return True
+    return evidence == 'active' and (not _is_static_reply_text(w, text))
 
 def _is_composite_reply_text(text: str) -> bool:
     try:
@@ -273,7 +296,7 @@ def _is_negotiation_img(img: str) -> bool:
 def _popup_reply_foreground(w) -> bool:
     if _number_input_foreground(w):
         return True
-    return any((not c.text.startswith(_REPAIR_ENTRY_PROMPT) for c in _read_active_reply_candidates(w)))
+    return any((not c.text.startswith(_REPAIR_ENTRY_PROMPT) for c in _read_active_reply_candidates(w) + _read_static_reply_candidates(w)))
 
 def _number_input_foreground(w) -> bool:
     try:
@@ -361,6 +384,16 @@ def _update_and_select_reply(w, img: str):
             return pool[0]
     return None
 
+def _negotiation_on_screen(w, img: str, popup_frame: bool, residual) -> bool:
+    negot_img = img == 'NEGOTBUT.IMG'
+    if not popup_frame:
+        if negot_img:
+            _remember_menu_residual(w, negot_img=True)
+        return False
+    if negot_img and (not (residual is not None and residual.negot_img)):
+        return True
+    return (negot_img or _is_negotiation_img(img)) and has_equipment_negotiation_foreground(w)
+
 def _decide(w, img: str) -> EquipmentL4Snapshot:
     S = EquipmentL4State
     w._equipment_l4_list_flag_value = None
@@ -370,7 +403,7 @@ def _decide(w, img: str) -> EquipmentL4Snapshot:
     residual = getattr(w, '_equipment_l4_menu_residual', None)
     if menu_stable:
         return EquipmentL4Snapshot(state=S.MENU, img=img, reason='view_flag')
-    if img == 'NEGOTBUT.IMG' or (_is_negotiation_img(img) and has_equipment_negotiation_foreground(w)):
+    if _negotiation_on_screen(w, img, popup_frame, residual):
         return EquipmentL4Snapshot(state=S.NEGOTIATION, img=img, reason='negotiation')
     if img == 'YESNO.IMG' and _estimate_template_active(w):
         return EquipmentL4Snapshot(state=S.REPAIR_ESTIMATE, img=img, reason='estimate_template')

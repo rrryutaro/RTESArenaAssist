@@ -139,7 +139,7 @@ def _poll_route_msg_foreground(w, ctx, *, in_interior: bool, facility_active_now
         return False
     _remember_npc_message_popup(w, popup_frame=getattr(ctx, 'popup_frame', None), frame_drawn=getattr(ctx, 'popup_frame_drawn', None), screen_img=getattr(ctx, 'screen_img', ''), route='msg_foreground', keep=(en, ja))
     keep = (en, ja)
-    if ctx.dialog_just_opened or getattr(w, '_msg_foreground_keep_key', None) != keep:
+    if ctx.dialog_just_opened or getattr(ctx, 'msg_text_just_entered', False) or getattr(w, '_msg_foreground_keep_key', None) != keep:
         w._msg_foreground_keep_key = keep
         w._ui_router.update_translation(NPC_MESSAGE_OWNER, en, ja, speech_role='situation')
         _log.info('npc_message displayed (route=msg_foreground, text=%r)', en[:80])

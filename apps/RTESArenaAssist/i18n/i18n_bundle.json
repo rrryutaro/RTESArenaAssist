@@ -2,7 +2,7 @@
   "schema": "rtesaa.i18n_bundle",
   "schema_version": 1,
   "registry_version": 1,
-  "registry_hash": "sha256:82d51eb5cc857bff76c20d7fad3a793793fed1adca60899148f8543a9e2ff40b",
+  "registry_hash": "sha256:2c0784b0e01eb877b8eac14d17959dfaa6eca8b0140ffe07ccd64c2cc61018e8",
   "categories": [
     {
       "category": "assist_ui",
@@ -35190,6 +35190,13 @@
           "source": {
             "source_id": "aexe:akey:A203.0"
           }
+        },
+        {
+          "id": 112458,
+          "kind": "label",
+          "source": {
+            "source_id": "aexe:akey:A315.0"
+          }
         }
       ]
     },
@@ -58841,7 +58848,7 @@
         },
         {
           "id": 110131,
-          "text": "本日、%cn の人々は新年を祝う「新生祭」を催している。皇帝はまたしても新生演説で増税を命じ、これに対して不満の声が多く上がっている。それでも財政難にもかかわらず、%ct のすべての酒場でエールが無料で振る舞われるという新生祭の伝統は続いている。%cn の民は祝祭の催し方を実によく心得ているものだ……"
+          "text": "本日、%cn の人々は新年を祝う「ニュー・ライフ・フェスティバル」を催している。皇帝はまたしても新生演説で増税を命じ、これに対して不満の声が多く上がっている。それでも財政難にもかかわらず、%ct のすべての酒場でエールが無料で振る舞われるというニュー・ライフ・フェスティバルの伝統は続いている。%cn の民は祝祭の催し方を実によく心得ているものだ……"
         },
         {
           "id": 110132,
@@ -58849,43 +58856,43 @@
         },
         {
           "id": 110133,
-          "text": "本日は薄明の月の16日、タムリエル中で「心の日」として祝われる祝日である。どの家でも若い世代のために「恋人たちの伝説」が歌われているようだ。この恋人たち、ポリドールとエロイサを称えて、%ct の宿屋は訪れる者に無料の部屋を提供する。もしこの恋人たちにそのような親切が示されていたなら、世界は永遠に春のままだっただろうと言われている。"
+          "text": "本日は薄明の月の16日、タムリエル中で「ハーツデイ」として祝われる祝日である。どの家でも若い世代のために「恋人たちの伝説」が歌われているようだ。この恋人たち、ポリドールとエロイサを称えて、%ct の宿屋は訪れる者に無料の部屋を提供する。もしこの恋人たちにそのような親切が示されていたなら、世界は永遠に春のままだっただろうと言われている。"
         },
         {
           "id": 110134,
-          "text": "毎年、蒔種の月の7日に、%cn の人々は「初の植え付け」を祝い、秋の収穫に向けて象徴的に種をまく。これは作物にとっても、%ct の老若男女にとっても、新たな始まりの祭りである。隣人同士の争いは和解し、決意が固められ、悪習が断たれ、病が癒される。%tem の聖職者たちは一日中無料の診療所を開き、人々を毒、さまざまな病、麻痺、その他アリーナの世界に潜む災厄から治癒する。"
+          "text": "毎年、蒔種の月の7日に、%cn の人々は「初耕祭」を祝い、秋の収穫に向けて象徴的に種をまく。これは作物にとっても、%ct の老若男女にとっても、新たな始まりの祭りである。隣人同士の争いは和解し、決意が固められ、悪習が断たれ、病が癒される。%tem の聖職者たちは一日中無料の診療所を開き、人々を毒、さまざまな病、麻痺、その他アリーナの世界に潜む災厄から治癒する。"
         },
         {
           "id": 110135,
-          "text": "ご用心を。本日は %cn の %ct における「道化の日」であり、町の端から端までいたずらの仕掛けが張り巡らされている。まるで共同体に魔法がかけられたかのようで、最も寡黙で威厳ある評議員でさえ、自らの %t に悪戯を仕掛けようとするほどだ。誰もが特にすりに警戒するため、盗賊ギルドが格別の注目を集めている。"
+          "text": "ご用心を。本日は %cn の %ct における「道化師祭り」であり、町の端から端までいたずらの仕掛けが張り巡らされている。まるで共同体に魔法がかけられたかのようで、最も寡黙で威厳ある評議員でさえ、自らの %t に悪戯を仕掛けようとするほどだ。誰もが特にすりに警戒するため、盗賊ギルドが格別の注目を集めている。"
         },
         {
           "id": 110136,
-          "text": "本日、「第二の植え付け」の祝祭が華やかに執り行われている。これは「初の植え付け」と似た伝統を持つ祝日であり、最初の種まきからの改善を象徴的に表すことで、魂の向上を示唆するものだ。%tem の無料診療所が今年二度目にして最後の開設を迎え、あらゆる病や苦しみを抱える者に治癒を施す。この時期は争いではなく平和が重んじられるため、戦いの負傷だけは通常料金でしか癒されない。"
+          "text": "本日、「次耕祭」が華やかに執り行われている。これは「初耕祭」と似た伝統を持つ祝日であり、最初の種まきからの改善を象徴的に表すことで、魂の向上を示唆するものだ。%tem の無料診療所が今年二度目にして最後の開設を迎え、あらゆる病や苦しみを抱える者に治癒を施す。この時期は争いではなく平和が重んじられるため、戦いの負傷だけは通常料金でしか癒されない。"
         },
         {
           "id": 110137,
-          "text": "本日は真央の月の16日、伝統的な「年央の祝祭」の日である。皇帝の毎年恒例となった増税の報をいくらか和らげるためか、%ct の神殿は通常の半分の寄進で祝福を授けている。祝福を受けた多くの者が、十分な準備もないままに %lp のダンジョンへ踏み込むだけの自信を抱いてしまうため、この喜ばしい祭りはしばしば突如として敗北と悲劇の日へと変わることで知られている。"
+          "text": "本日は真央の月の16日、伝統的な「真央の祝典」の日である。皇帝の毎年恒例となった増税の報をいくらか和らげるためか、%ct の神殿は通常の半分の寄進で祝福を授けている。祝福を受けた多くの者が、十分な準備もないままに %lp のダンジョンへ踏み込むだけの自信を抱いてしまうため、この喜ばしい祭りはしばしば突如として敗北と悲劇の日へと変わることで知られている。"
         },
         {
           "id": 110138,
-          "text": "本日、知られた世界中の掘り出し物好きが大挙して繰り出している。それも無理はない。南中の月の10日は「商人祭」と呼ばれる祝日なのだ。すべての市場と装備店が値段を少なくとも半額にまで下げている。今日唯一にぎわっていない店は魔術師ギルドで、そこの値段はいつも通り法外なままだ。魔法の品を必要とする市民の多くは、値段がより手頃になる二か月後の「物語と灯火の祝祭」を待っている……"
+          "text": "本日、知られた世界中の掘り出し物好きが大挙して繰り出している。それも無理はない。南中の月の10日は「商人祭」と呼ばれる祝日なのだ。すべての市場と装備店が値段を少なくとも半額にまで下げている。今日唯一にぎわっていない店は魔術師ギルドで、そこの値段はいつも通り法外なままだ。魔法の品を必要とする市民の多くは、値段がより手頃になる二か月後の「物語と蝋燭の祭」を待っている……"
         },
         {
           "id": 110139,
-          "text": "装備の買い物を予定しているなら明日まで待たねばならない。「陽光の休息」を遵守して、すべての店が閉まっているのだ。むろん %ct の神殿、酒場、魔術師ギルドは通常通り開いているが、ほとんどの市民は商いでも祈りでもなく、この日を休息に充てることを選んだ。これは万人にとって都合のよい取り決めではないが、商人ギルドが営業を続ける店には重い罰金を科すため、誰もが従っている。"
+          "text": "装備の買い物を予定しているなら明日まで待たねばならない。「日の休息祭」を遵守して、すべての店が閉まっているのだ。むろん %ct の神殿、酒場、魔術師ギルドは通常通り開いているが、ほとんどの市民は商いでも祈りでもなく、この日を休息に充てることを選んだ。これは万人にとって都合のよい取り決めではないが、商人ギルドが営業を続ける店には重い罰金を科すため、誰もが従っている。"
         },
         {
           "id": 110140,
-          "text": "本日催される「収穫の終わり」ほど、%cn の %ct の心を奮い立たせる祭りはおそらく他にあるまい。種まき、植え付け、刈り入れと、一年の仕事は終わった。今こそ祝い、収穫の実りを味わう時であり、%ct を訪れる者でさえ農夫たちの輪に招かれる。酒場は一日中無料の酒を振る舞う。来たる冬の月々の倹約を前にした贅沢だ。腹を空かせた農作業の手伝いが食べ過ぎて町の広場で具合を悪くする光景こそ、「収穫の終わり」の祝祭で最もよく見られるものである。"
+          "text": "本日催される「収穫終いの祭」ほど、%cn の %ct の心を奮い立たせる祭りはおそらく他にあるまい。種まき、植え付け、刈り入れと、一年の仕事は終わった。今こそ祝い、収穫の実りを味わう時であり、%ct を訪れる者でさえ農夫たちの輪に招かれる。酒場は一日中無料の酒を振る舞う。来たる冬の月々の倹約を前にした贅沢だ。腹を空かせた農作業の手伝いが食べ過ぎて町の広場で具合を悪くする光景こそ、「収穫終いの祭」で最もよく見られるものである。"
         },
         {
           "id": 110141,
-          "text": "薪木の月の3日ほど %cn の人々を二分する祝日はない。最も年老いて迷信深い男女の一部は、死者の邪悪な霊が自らの体に入り込むのを恐れて、一日中口を開かない。ほとんどの市民はこの祝日を「物語と灯火」と呼んで楽しむが、最も陽気な者でさえ %cn の暗い通りは避ける。今夜は死者が歩き回ることを誰もが知っているからだ。この日に完全に繁盛するのは魔術師ギルドだけである。最も古い魔法の学問である死霊術を称え、本日はすべての魔法の品が半額となる。"
+          "text": "薪木の月の3日ほど %cn の人々を二分する祝日はない。最も年老いて迷信深い男女の一部は、死者の邪悪な霊が自らの体に入り込むのを恐れて、一日中口を開かない。ほとんどの市民はこの祝日を「物語と蝋燭の祭」と呼んで楽しむが、最も陽気な者でさえ %cn の暗い通りは避ける。今夜は死者が歩き回ることを誰もが知っているからだ。この日に完全に繁盛するのは魔術師ギルドだけである。最も古い魔法の学問である死霊術を称え、本日はすべての魔法の品が半額となる。"
         },
         {
           "id": 110142,
-          "text": "本日は降霜の月の13日、タムリエル中で「魔女祭」として知られる日であり、魔術と宗教の力がぶつかり合う時である。武器や品物が秘めた神秘の力を無料で鑑定してもらえ、魔法の呪文も通常の半額となるため、商いの大半は魔術師ギルドに集まる。悪魔学者、召喚術師、ラミア、ウォーロック、奇跡術師たちが %cn の外の荒れ地に集い、そこで生み出され、あるいは召喚された生き物が、幾久しくタムリエルを苦しめることもある。賢明な者の多くはこの夜、出歩かないことを選ぶ。"
+          "text": "本日は降霜の月の13日、タムリエル中で「魔女祭り」として知られる日であり、魔術と宗教の力がぶつかり合う時である。武器や品物が秘めた神秘の力を無料で鑑定してもらえ、魔法の呪文も通常の半額となるため、商いの大半は魔術師ギルドに集まる。悪魔学者、召喚術師、ラミア、ウォーロック、奇跡術師たちが %cn の外の荒れ地に集い、そこで生み出され、あるいは召喚された生き物が、幾久しくタムリエルを苦しめることもある。賢明な者の多くはこの夜、出歩かないことを選ぶ。"
         },
         {
           "id": 110143,
@@ -58893,7 +58900,7 @@
         },
         {
           "id": 110144,
-          "text": "本日は黄昏の月の20日、%cn の「戦士祭」である。地元の戦士、呪文剣士、ならず者のほとんどが、すべての武器が半額となる %ct の装備店や鍛冶屋に押し寄せる。残念ながら、その安値は未熟な少年たちに初めての剣を買わせる誘惑ともなり、普段は静かな %cn の通りが素人同士の小競り合いで騒がしくなる。%t は過去にこうした乱暴者たちの大半を赦してきたが、今年は寛大さを控えると約束している。"
+          "text": "本日は黄昏の月の20日、%cn の「戦士の祭」である。地元の戦士、呪文剣士、ならず者のほとんどが、すべての武器が半額となる %ct の装備店や鍛冶屋に押し寄せる。残念ながら、その安値は未熟な少年たちに初めての剣を買わせる誘惑ともなり、普段は静かな %cn の通りが素人同士の小競り合いで騒がしくなる。%t は過去にこうした乱暴者たちの大半を赦してきたが、今年は寛大さを控えると約束している。"
         },
         {
           "id": 110145,
@@ -63753,7 +63760,7 @@
         },
         {
           "id": 111359,
-          "text": "オーガム王の小箱は、見た目はありふれた小ぶりの箱だ。だが驚くほど軽く、ほとんど重さを感じさせない。それこそがその真の魔力を示す手がかりである。一日に一度、小箱は無からゴールドを生み出す。オーガム王自身がこの小箱を持っていたころ、その中身は尽きることがなかった。以来これを見つけた者たちの話では、小箱は最も裕福な商人さえ恥じ入るほどのゴールドを吐き出したのち、やがて姿を消してしまうという。どこへ、なぜ消えるのかは、いまだ謎のままだ。"
+          "text": "オルグナム王の宝箱は、見た目はありふれた小ぶりの箱だ。だが驚くほど軽く、ほとんど重さを感じさせない。それこそがその真の魔力を示す手がかりである。一日に一度、宝箱は無からゴールドを生み出す。オルグナム王自身がこの宝箱を持っていたころ、その中身は尽きることがなかった。以来これを見つけた者たちの話では、宝箱は最も裕福な商人さえ恥じ入るほどのゴールドを吐き出したのち、やがて姿を消してしまうという。どこへ、なぜ消えるのかは、いまだ謎のままだ。"
         },
         {
           "id": 111360,
@@ -68146,6 +68153,10 @@
         {
           "id": 112457,
           "text": "インベントリがいっぱいです。"
+        },
+        {
+          "id": 112458,
+          "text": "魔法の宝箱が %a ゴールドを生み出した。"
         },
         {
           "id": 115000,
@@ -88710,51 +88721,51 @@
         },
         {
           "id": 110131,
-          "text": "Hoy la gente de %cn celebra el Festival de Nueva Vida en celebración del nuevo año. El Emperador ha ordenado otro aumento de impuestos en su Discurso de Nueva Vida, y hay mucho malestar al respecto. Aún así, a pesar de las dificultades económicas, la tradición de Nueva Vida de cerveza gratis en todas las tabernas del %ct continúa. La gente de %cn sabe cómo celebrar..."
+          "text": "Hoy la gente de %cn celebra el Festival de la nueva vida en celebración del nuevo año. El Emperador ha ordenado otro aumento de impuestos en su Discurso de Nueva Vida, y hay mucho malestar al respecto. Aún así, a pesar de las dificultades económicas, la tradición de Nueva Vida de cerveza gratis en todas las tabernas del %ct continúa. La gente de %cn sabe cómo celebrar..."
         },
         {
           "id": 110132,
-          "text": "El 15 de Estrella Matutina es una festividad que se toma muy en serio en %cn, donde la llaman Oración del Viento del Sur, una súplica de todas las religiones de Tamriel por una buena temporada de siembra. Ciudadanos con todas las aflicciones conocidas en Tamriel acuden en masa a los oficios en el templo de %tem del %ct, pues es sabido que el clero realiza curaciones gratuitas en este día. La gente sabe que solo unos pocos serán considerados dignos de este servicio, pero pocos pueden permitirse el precio habitual del %tem..."
+          "text": "El 15 de Estrella Matutina es una festividad que se toma muy en serio en %cn, donde la llaman Oración del viento del sur, una súplica de todas las religiones de Tamriel por una buena temporada de siembra. Ciudadanos con todas las aflicciones conocidas en Tamriel acuden en masa a los oficios en el templo de %tem del %ct, pues es sabido que el clero realiza curaciones gratuitas en este día. La gente sabe que solo unos pocos serán considerados dignos de este servicio, pero pocos pueden permitirse el precio habitual del %tem..."
         },
         {
           "id": 110133,
-          "text": "Hoy es el 16 de Amanecer del Sol, una festividad celebrada en todo Tamriel como el Día del Corazón. Parece que en cada hogar se está cantando la Leyenda de los Amantes para la generación más joven. En honor a estos Amantes, Polydor y Eloisa, las posadas del %ct ofrecen una habitación gratuita a los visitantes. Si tal amabilidad les hubiera sido dada a los Amantes, se dice, siempre sería primavera en el mundo."
+          "text": "Hoy es el 16 de Amanecer del Sol, una festividad celebrada en todo Tamriel como el Día de los corazones. Parece que en cada hogar se está cantando la Leyenda de los Amantes para la generación más joven. En honor a estos Amantes, Polydor y Eloisa, las posadas del %ct ofrecen una habitación gratuita a los visitantes. Si tal amabilidad les hubiera sido dada a los Amantes, se dice, siempre sería primavera en el mundo."
         },
         {
           "id": 110134,
-          "text": "El 7 de Primera Semilla, cada año, la gente de %cn celebra la Primera Siembra, sembrando simbólicamente las semillas para la cosecha de otoño. Es un festival de nuevos comienzos, tanto para los cultivos como para los hombres y mujeres del %ct. Los vecinos se reconcilian en sus disputas, se forman resoluciones, se abandonan malos hábitos, se curan enfermedades. Los clérigos del %tem llevan a cabo una clínica gratuita durante todo el día para curar a la gente de envenenamientos, diversas enfermedades, parálisis y otras maldiciones del mundo de Arena."
+          "text": "El 7 de Primera Semilla, cada año, la gente de %cn celebra la Primera siembra, sembrando simbólicamente las semillas para la cosecha de otoño. Es un festival de nuevos comienzos, tanto para los cultivos como para los hombres y mujeres del %ct. Los vecinos se reconcilian en sus disputas, se forman resoluciones, se abandonan malos hábitos, se curan enfermedades. Los clérigos del %tem llevan a cabo una clínica gratuita durante todo el día para curar a la gente de envenenamientos, diversas enfermedades, parálisis y otras maldiciones del mundo de Arena."
         },
         {
           "id": 110135,
-          "text": "Advierte que hoy es el Día del Bufón en el %ct de %cn, y se están preparando bromas de un extremo al otro de la ciudad. Es como si un hechizo hubiera caído sobre la comunidad, pues incluso el consejero más taciturno y digno podría intentar gastarle una broma a su %t. El Gremio de Ladrones recibe especial atención ya que todos buscan carteristas en particular."
+          "text": "Advierte que hoy es el Día del bufón en el %ct de %cn, y se están preparando bromas de un extremo al otro de la ciudad. Es como si un hechizo hubiera caído sobre la comunidad, pues incluso el consejero más taciturno y digno podría intentar gastarle una broma a su %t. El Gremio de Ladrones recibe especial atención ya que todos buscan carteristas en particular."
         },
         {
           "id": 110136,
-          "text": "La celebración de la Segunda Siembra está en plena gloria este día. Es una festividad con tradiciones similares a la Primera Siembra, mejoras en la primera siembra simbólicamente para sugerir mejoras en el alma. La clínica gratuita del %tem está abierta por segunda y última vez este año, ofreciendo curas para quienes sufren de cualquier tipo de enfermedad o aflicción. Dado que en este momento se hace hincapié en la paz y no en el conflicto, las lesiones de batalla solo se curan a precio completo."
+          "text": "La celebración de la Segunda siembra está en plena gloria este día. Es una festividad con tradiciones similares a la Primera siembra, mejoras en la primera siembra simbólicamente para sugerir mejoras en el alma. La clínica gratuita del %tem está abierta por segunda y última vez este año, ofreciendo curas para quienes sufren de cualquier tipo de enfermedad o aflicción. Dado que en este momento se hace hincapié en la paz y no en el conflicto, las lesiones de batalla solo se curan a precio completo."
         },
         {
           "id": 110137,
-          "text": "Hoy es el 16 de Pleno Año, el día tradicional de la Celebración de Pleno Año. Quizás para aliviar la noticia anual del último aumento de impuestos del Emperador, los templos del %ct ofrecen bendiciones por solo la mitad de la donación que suelen sugerir. Muchos así bendecidos se sienten con confianza suficiente para entrar en los calabozos de %lp cuando no están del todo preparados, por lo que este alegre festival a menudo se ha conocido como un día de derrota y tragedia."
+          "text": "Hoy es el 16 de Pleno Año, el día tradicional de la Celebración de mitad de año. Quizás para aliviar la noticia anual del último aumento de impuestos del Emperador, los templos del %ct ofrecen bendiciones por solo la mitad de la donación que suelen sugerir. Muchos así bendecidos se sienten con confianza suficiente para entrar en los calabozos de %lp cuando no están del todo preparados, por lo que este alegre festival a menudo se ha conocido como un día de derrota y tragedia."
         },
         {
           "id": 110138,
-          "text": "Los compradores en busca de gangas del mundo conocido salen en masa hoy y no es de extrañar, pues el 10 de Cima del Sol es una festividad llamada el Festival de los Mercaderes. Todos los mercados y tiendas de equipo han reducido sus precios a al menos la mitad. La única tienda que no está siendo frecuentada hoy es el Gremio de Magos, donde los precios son tan exorbitantes como de costumbre. La mayoría de los ciudadanos que necesitan un artículo mágico están esperando dos meses para la celebración de Cuentos y Alumbres cuando los precios serán más razonables..."
+          "text": "Los compradores en busca de gangas del mundo conocido salen en masa hoy y no es de extrañar, pues el 10 de Cima del Sol es una festividad llamada el Festival de comerciantes. Todos los mercados y tiendas de equipo han reducido sus precios a al menos la mitad. La única tienda que no está siendo frecuentada hoy es el Gremio de Magos, donde los precios son tan exorbitantes como de costumbre. La mayoría de los ciudadanos que necesitan un artículo mágico están esperando dos meses para la celebración de Cuentos y sebo cuando los precios serán más razonables..."
         },
         {
           "id": 110139,
-          "text": "Tendrás que esperar hasta mañana si planeas hacer alguna compra de equipo, pues todas las tiendas están cerradas en observancia del Descanso del Sol. Por supuesto, los templos, tabernas y el Gremio de Magos del %ct siguen abiertos en su horario habitual, pero la mayoría de los ciudadanos eligen dedicar este día al descanso, no al comercio o a la oración. Esto no es un arreglo conveniente para todos, pero el Gremio de Mercaderes multa fuertemente a cualquier tienda que permanezca abierta, por lo que todos obedecen."
+          "text": "Tendrás que esperar hasta mañana si planeas hacer alguna compra de equipo, pues todas las tiendas están cerradas en observancia del Reposo del sol. Por supuesto, los templos, tabernas y el Gremio de Magos del %ct siguen abiertos en su horario habitual, pero la mayoría de los ciudadanos eligen dedicar este día al descanso, no al comercio o a la oración. Esto no es un arreglo conveniente para todos, pero el Gremio de Mercaderes multa fuertemente a cualquier tienda que permanezca abierta, por lo que todos obedecen."
         },
         {
           "id": 110140,
-          "text": "Quizás ningún otro festival enciende el espíritu del %ct de %cn tanto como el que se celebra hoy, el Fin de la Cosecha. El trabajo del año ha terminado, la siembra, el cultivo y la recolección. Ahora es el momento de celebrar y disfrutar de los frutos de la cosecha, e incluso los visitantes del %ct están invitados a unirse a los agricultores. Las tabernas ofrecen bebidas gratis todo el día, un lujo antes de los meses económicos del invierno que se avecina. Los jornaleros desnutridos hartándose hasta enfermar en la plaza del pueblo son las escenas más comunes de la celebración del Fin de la Cosecha."
+          "text": "Quizás ningún otro festival enciende el espíritu del %ct de %cn tanto como el que se celebra hoy, el Fin de la cosecha. El trabajo del año ha terminado, la siembra, el cultivo y la recolección. Ahora es el momento de celebrar y disfrutar de los frutos de la cosecha, e incluso los visitantes del %ct están invitados a unirse a los agricultores. Las tabernas ofrecen bebidas gratis todo el día, un lujo antes de los meses económicos del invierno que se avecina. Los jornaleros desnutridos hartándose hasta enfermar en la plaza del pueblo son las escenas más comunes de la celebración del Fin de la cosecha."
         },
         {
           "id": 110141,
-          "text": "Ningún otro día festivo divide tanto a la gente de %cn como el 3 de Fuego del Hogar. Algunos de los hombres y mujeres más viejos y supersticiosos no hablan en todo el día por temor a que los espíritus malignos de los muertos entren en sus cuerpos. La mayoría de los ciudadanos disfrutan del día festivo, llamándolo Cuentos y Alumbres, pero incluso los más alegres evitan las oscuras calles de %cn, pues todo el mundo sabe que los muertos caminan esta noche. Solo el Gremio de Magos prospera completamente este día. En celebración de la ciencia mágica más antigua, la nigromancia, todos los artículos mágicos cuestan la mitad hoy."
+          "text": "Ningún otro día festivo divide tanto a la gente de %cn como el 3 de Fuego del Hogar. Algunos de los hombres y mujeres más viejos y supersticiosos no hablan en todo el día por temor a que los espíritus malignos de los muertos entren en sus cuerpos. La mayoría de los ciudadanos disfrutan del día festivo, llamándolo Cuentos y sebo, pero incluso los más alegres evitan las oscuras calles de %cn, pues todo el mundo sabe que los muertos caminan esta noche. Solo el Gremio de Magos prospera completamente este día. En celebración de la ciencia mágica más antigua, la nigromancia, todos los artículos mágicos cuestan la mitad hoy."
         },
         {
           "id": 110142,
-          "text": "Hoy es el 13 de Caída del Hielo, conocido en todo Tamriel como el Festival de las Brujas, cuando las fuerzas de la hechicería y la religión chocan. El Gremio de Magos obtiene la mayor parte del negocio ya que las armas y los objetos se evalúan gratuitamente por su potencial místico y los hechizos mágicos cuestan la mitad de su precio habitual. Demonólogos, conjuradores, lamias, hechiceros y taumaturgistas se reúnen en la naturaleza a las afueras de %cn, y las criaturas creadas o invocadas allí podrían plagar a Tamriel por eones. La mayoría de los sabios prefieren no vagar esta noche."
+          "text": "Hoy es el 13 de Caída del Hielo, conocido en todo Tamriel como el Festival de brujas, cuando las fuerzas de la hechicería y la religión chocan. El Gremio de Magos obtiene la mayor parte del negocio ya que las armas y los objetos se evalúan gratuitamente por su potencial místico y los hechizos mágicos cuestan la mitad de su precio habitual. Demonólogos, conjuradores, lamias, hechiceros y taumaturgistas se reúnen en la naturaleza a las afueras de %cn, y las criaturas creadas o invocadas allí podrían plagar a Tamriel por eones. La mayoría de los sabios prefieren no vagar esta noche."
         },
         {
           "id": 110143,
@@ -88762,11 +88773,11 @@
         },
         {
           "id": 110144,
-          "text": "Hoy es el 20 de Crepúsculo del Sol, el Festival de los Guerreros en %cn. Casi todos los guerreros, guerreros arcanos y pícaros locales acuden a las tiendas de equipo y herreros del %ct donde todas las armas cuestan la mitad. Desgraciadamente, los precios bajos también tientan a muchos chicos inexpertos a comprar su primera espada y las normalmente tranquilas calles de %cn resuenan con escaramuzas amateur. El/la %t ha perdonado a la mayoría de estos alborotadores en el pasado, pero ha prometido ser menos misericordioso/a este año."
+          "text": "Hoy es el 20 de Crepúsculo del Sol, el Festival de guerreros en %cn. Casi todos los guerreros, guerreros arcanos y pícaros locales acuden a las tiendas de equipo y herreros del %ct donde todas las armas cuestan la mitad. Desgraciadamente, los precios bajos también tientan a muchos chicos inexpertos a comprar su primera espada y las normalmente tranquilas calles de %cn resuenan con escaramuzas amateur. El/la %t ha perdonado a la mayoría de estos alborotadores en el pasado, pero ha prometido ser menos misericordioso/a este año."
         },
         {
           "id": 110145,
-          "text": "Hoy es el 15 de Estrella Vespertina, una festividad observada con devoción por el %tem como la Oración del Viento del Norte. Es una acción de gracias a los Dioses por una buena cosecha y un invierno suave. Algunos años, como este, la cosecha no fue particularmente buena y el invierno fue inusualmente duro en %cn, pero como gusta decir el/la %t, 'Podría ser mucho peor'. Los templos ofrecen todos sus servicios — bendiciones, curaciones, sanaciones — por la mitad de la donación habitualmente solicitada."
+          "text": "Hoy es el 15 de Estrella Vespertina, una festividad observada con devoción por el %tem como la Oración del viento del norte. Es una acción de gracias a los Dioses por una buena cosecha y un invierno suave. Algunos años, como este, la cosecha no fue particularmente buena y el invierno fue inusualmente duro en %cn, pero como gusta decir el/la %t, 'Podría ser mucho peor'. Los templos ofrecen todos sus servicios — bendiciones, curaciones, sanaciones — por la mitad de la donación habitualmente solicitada."
         },
         {
           "id": 110146,
@@ -98015,6 +98026,10 @@
         {
           "id": 112457,
           "text": "Tu inventario está lleno."
+        },
+        {
+          "id": 112458,
+          "text": "El cofre mágico produce %a de oro."
         },
         {
           "id": 115000,
@@ -118839,7 +118854,7 @@
         },
         {
           "id": 110144,
-          "text": "Heute ist der 20. Sonnenuntergang, das Kriegerfest in %cn. Fast alle einheimischen Krieger, Zauberklingen und Schurken kommen zu den Ausrüstungsläden und Schmieden der %ct, wo alle Waffen zum halben Preis angeboten werden. Leider verleiten die niedrigen Preise auch so manchen unerfahrenen Burschen dazu, sein erstes Schwert zu kaufen, und die normalerweise ruhigen Straßen von %cn hallen wider von unerfahrenen Gefechten. %t hat in der Vergangenheit die meisten dieser Raufbolde begnadigt, doch dieses Jahr weniger Gnade versprochen."
+          "text": "Heute ist der 20. Sonnenuntergang, das Fest der Krieger in %cn. Fast alle einheimischen Krieger, Zauberklingen und Schurken kommen zu den Ausrüstungsläden und Schmieden der %ct, wo alle Waffen zum halben Preis angeboten werden. Leider verleiten die niedrigen Preise auch so manchen unerfahrenen Burschen dazu, sein erstes Schwert zu kaufen, und die normalerweise ruhigen Straßen von %cn hallen wider von unerfahrenen Gefechten. %t hat in der Vergangenheit die meisten dieser Raufbolde begnadigt, doch dieses Jahr weniger Gnade versprochen."
         },
         {
           "id": 110145,
@@ -123699,7 +123714,7 @@
         },
         {
           "id": 111359,
-          "text": "König Orghums Truhe ist eine kleine Kiste von gewöhnlichem Aussehen. Sie ist bemerkenswert leicht, fast schwerelos, was einen Hinweis auf ihre wahre Magie gibt. Einmal am Tag erschafft die Truhe Gold aus dem Nichts. Als König Orghum selbst die Truhe besaß, war der Vorrat darin unbegrenzt. Jene, die sie seither gefunden haben, berichten, dass die Truhe schließlich verschwindet, nachdem sie genug Gold verteilt hat, um selbst den reichsten Kaufmann zu beschämen. Wohin und warum sie verschwindet, bleibt ein Rätsel."
+          "text": "König Orgnums Truhe ist eine kleine Kiste von gewöhnlichem Aussehen. Sie ist bemerkenswert leicht, fast schwerelos, was einen Hinweis auf ihre wahre Magie gibt. Einmal am Tag erschafft die Truhe Gold aus dem Nichts. Als König Orgnum selbst die Truhe besaß, war der Vorrat darin unbegrenzt. Jene, die sie seither gefunden haben, berichten, dass die Truhe schließlich verschwindet, nachdem sie genug Gold verteilt hat, um selbst den reichsten Kaufmann zu beschämen. Wohin und warum sie verschwindet, bleibt ein Rätsel."
         },
         {
           "id": 111360,
@@ -128092,6 +128107,10 @@
         {
           "id": 112457,
           "text": "Euer Inventar ist voll."
+        },
+        {
+          "id": 112458,
+          "text": "Die magische Truhe bringt %a Gold hervor."
         },
         {
           "id": 115000,
@@ -153268,7 +153287,7 @@
         },
         {
           "id": 111359,
-          "text": "Le Coffre du roi Orghum est un petit coffre à l'apparence ordinaire. Il est remarquablement léger, presque sans poids, ce qui laisse entrevoir sa véritable magie. Une fois par jour, le Coffre crée de l'or à partir du néant. Lorsque le roi Orghum lui-même possédait le Coffre, la réserve à l'intérieur était sans limite. Ceux qui l'ont trouvé depuis rapportent que le Coffre finit toujours par disparaître après avoir distribué assez d'or pour faire honte même aux marchands les plus riches. Où et pourquoi il s'évanouit demeure un mystère."
+          "text": "Le Coffre du roi Orgnum est un petit coffre à l'apparence ordinaire. Il est remarquablement léger, presque sans poids, ce qui laisse entrevoir sa véritable magie. Une fois par jour, le Coffre crée de l'or à partir du néant. Lorsque le roi Orgnum lui-même possédait le Coffre, la réserve à l'intérieur était sans limite. Ceux qui l'ont trouvé depuis rapportent que le Coffre finit toujours par disparaître après avoir distribué assez d'or pour faire honte même aux marchands les plus riches. Où et pourquoi il s'évanouit demeure un mystère."
         },
         {
           "id": 111360,
@@ -157661,6 +157680,10 @@
         {
           "id": 112457,
           "text": "Votre inventaire est plein."
+        },
+        {
+          "id": 112458,
+          "text": "Le coffre magique produit %a pièces d'or."
         },
         {
           "id": 115000,
@@ -177937,7 +177960,7 @@
         },
         {
           "id": 110134,
-          "text": "Ogni anno, il 7 di Prima Semina, il popolo di %cn celebra la Prima Semina, seminando simbolicamente in vista del raccolto autunnale. È una festa di nuovi inizi, sia per i raccolti che per gli uomini e le donne di %ct. I vicini fanno pace nelle loro dispute, si prendono buoni propositi, si abbandonano cattive abitudini, i malati vengono curati. I chierici di %tem gestiscono una clinica gratuita per tutto il giorno per curare le persone da avvelenamento, varie malattie, paralisi e altri mali che si trovano nel mondo di Arena."
+          "text": "Ogni anno, il 7 di Prima Semina, il popolo di %cn celebra la Prima Semina Rituale, seminando simbolicamente in vista del raccolto autunnale. È una festa di nuovi inizi, sia per i raccolti che per gli uomini e le donne di %ct. I vicini fanno pace nelle loro dispute, si prendono buoni propositi, si abbandonano cattive abitudini, i malati vengono curati. I chierici di %tem gestiscono una clinica gratuita per tutto il giorno per curare le persone da avvelenamento, varie malattie, paralisi e altri mali che si trovano nel mondo di Arena."
         },
         {
           "id": 110135,
@@ -177945,7 +177968,7 @@
         },
         {
           "id": 110136,
-          "text": "Oggi si celebra in tutto il suo splendore la Seconda Semina. È una festività dalle tradizioni simili alla Prima Semina, un miglioramento sulla prima semina che simboleggia il miglioramento dell'anima. La clinica gratuita di %tem apre per la seconda e ultima volta quest'anno, offrendo cure a chi soffre di qualsiasi malattia o afflizione. Poiché in questo periodo si sottolinea la pace e non il conflitto, le ferite di battaglia vengono curate solo a prezzo pieno."
+          "text": "Oggi si celebra in tutto il suo splendore la Seconda Semina Rituale. È una festività dalle tradizioni simili alla Prima Semina Rituale, un miglioramento sulla prima semina che simboleggia il miglioramento dell'anima. La clinica gratuita di %tem apre per la seconda e ultima volta quest'anno, offrendo cure a chi soffre di qualsiasi malattia o afflizione. Poiché in questo periodo si sottolinea la pace e non il conflitto, le ferite di battaglia vengono curate solo a prezzo pieno."
         },
         {
           "id": 110137,
@@ -182837,7 +182860,7 @@
         },
         {
           "id": 111359,
-          "text": "Lo Scrigno di Re Orghum è un forziere di piccole dimensioni, di aspetto ordinario. È straordinariamente leggero, quasi privo di peso, il che offre un indizio sulla sua vera magia. Una volta al giorno, lo Scrigno crea oro dal nulla. Quando fu Re Orghum stesso a possedere lo Scrigno, la scorta al suo interno era illimitata. Coloro che l'hanno trovato in seguito riferiscono che lo Scrigno finisce per sparire dopo aver elargito abbastanza oro da far vergognare persino il mercante più ricco. Dove e perché svanisca resta tuttora un mistero."
+          "text": "Il Forziere di Re Orgnum è uno scrigno di piccole dimensioni, di aspetto ordinario. È straordinariamente leggero, quasi privo di peso, il che offre un indizio sulla sua vera magia. Una volta al giorno, il Forziere crea oro dal nulla. Quando fu Re Orgnum stesso a possedere il Forziere, la scorta al suo interno era illimitata. Coloro che l'hanno trovato in seguito riferiscono che il Forziere finisce per sparire dopo aver elargito abbastanza oro da far vergognare persino il mercante più ricco. Dove e perché svanisca resta tuttora un mistero."
         },
         {
           "id": 111360,
@@ -187230,6 +187253,10 @@
         {
           "id": 112457,
           "text": "Il vostro inventario è pieno."
+        },
+        {
+          "id": 112458,
+          "text": "Il forziere magico produce %a pezzi d'oro."
         },
         {
           "id": 115000,
@@ -207502,7 +207529,7 @@
         },
         {
           "id": 110133,
-          "text": "Сегодня 16-е число Восхода солнца, праздник, отмечаемый по всему Тамриэлю как День сердца. Кажется, в каждом доме младшему поколению поют Легенду о влюблённых. В честь этих влюблённых, Полидора и Элоизы, постоялые дворы %ct предлагают гостям бесплатную комнату. Говорят, что если бы такая доброта была явлена самим влюблённым, в мире всегда царила бы весна."
+          "text": "Сегодня 16-е число Восхода солнца, праздник, отмечаемый по всему Тамриэлю как День сердец. Кажется, в каждом доме младшему поколению поют Легенду о влюблённых. В честь этих влюблённых, Полидора и Элоизы, постоялые дворы %ct предлагают гостям бесплатную комнату. Говорят, что если бы такая доброта была явлена самим влюблённым, в мире всегда царила бы весна."
         },
         {
           "id": 110134,
@@ -207522,7 +207549,7 @@
         },
         {
           "id": 110138,
-          "text": "Охотники за выгодными покупками со всего известного мира сегодня высыпали на улицы в полном составе, и неудивительно: 10-е число Высокого солнца — праздник, называемый Купеческим фестивалем. Все рынки и магазины снаряжения снизили цены как минимум вдвое. Единственное заведение, куда сегодня никто не заходит, — Гильдия магов, где цены столь же непомерны, как и всегда. Большинство горожан, нуждающихся в магическом предмете, ждут ещё два месяца, до праздника Сказаний и свечей, когда цены станут разумнее..."
+          "text": "Охотники за выгодными покупками со всего известного мира сегодня высыпали на улицы в полном составе, и неудивительно: 10-е число Высокого солнца — праздник, называемый Праздником торговцев. Все рынки и магазины снаряжения снизили цены как минимум вдвое. Единственное заведение, куда сегодня никто не заходит, — Гильдия магов, где цены столь же непомерны, как и всегда. Большинство горожан, нуждающихся в магическом предмете, ждут ещё два месяца, до праздника Сказаний и свечей, когда цены станут разумнее..."
         },
         {
           "id": 110139,
@@ -216799,6 +216826,10 @@
         {
           "id": 112457,
           "text": "Ваш инвентарь полон."
+        },
+        {
+          "id": 112458,
+          "text": "Волшебный сундук приносит %a золота."
         },
         {
           "id": 115000,
@@ -237091,7 +237122,7 @@
         },
         {
           "id": 110138,
-          "text": "已知世界里精打细算的买家今天倾巢而出，这不足为奇，因为日高月10日是被称为商人节的节日。每个集市和装备店都把价格降到了至少对半。今天唯一无人光顾的店铺是法师公会，那里的价格仍和往常一样高得离谱。大多数需要魔法物品的市民，都在等两个月后的故事与烛火节，到时价格会更合理……"
+          "text": "已知世界里精打细算的买家今天倾巢而出，这不足为奇，因为日高月10日是被称为商人节的节日。每个集市和装备店都把价格降到了至少对半。今天唯一无人光顾的店铺是法师公会，那里的价格仍和往常一样高得离谱。大多数需要魔法物品的市民，都在等两个月后的故事与牛油节，到时价格会更合理……"
         },
         {
           "id": 110139,
@@ -237103,7 +237134,7 @@
         },
         {
           "id": 110141,
-          "text": "没有哪个节日像炉火月3日那样让%cn的人们意见分歧。一些最年长、较迷信的男女整天不说话，生怕死者的邪灵附入他们的身体。大多数市民喜欢这个节日，称之为故事与烛火节，但即便是最无忧无虑的人也会避开%cn黑暗的街道，因为人人都知道今晚亡者确实在行走。只有法师公会在这一天彻底兴旺起来。为庆祝最古老的魔法学问——死灵术，今天所有魔法物品都半价。"
+          "text": "没有哪个节日像炉火月3日那样让%cn的人们意见分歧。一些最年长、较迷信的男女整天不说话，生怕死者的邪灵附入他们的身体。大多数市民喜欢这个节日，称之为故事与牛油节，但即便是最无忧无虑的人也会避开%cn黑暗的街道，因为人人都知道今晚亡者确实在行走。只有法师公会在这一天彻底兴旺起来。为庆祝最古老的魔法学问——死灵术，今天所有魔法物品都半价。"
         },
         {
           "id": 110142,
@@ -241975,7 +242006,7 @@
         },
         {
           "id": 111359,
-          "text": "奥尔格姆王的宝匣是一只小巧的箱子，外表平平无奇。它轻得出奇，几乎没有重量，这正是它真正魔力的线索。每天一次，宝匣会无中生有地变出金币。奥尔格姆王本人拥有宝匣时，里面的供给是无穷无尽的。此后找到它的人都说，宝匣散出的金币多得连最富有的商人都要自惭形秽，然后便会消失。它为何消失、消失去了哪里，至今仍是一个谜。"
+          "text": "奥格农王之宝箱是一只小巧的箱子，外表平平无奇。它轻得出奇，几乎没有重量，这正是它真正魔力的线索。每天一次，宝箱会无中生有地变出金币。奥格农王本人拥有宝箱时，里面的供给是无穷无尽的。此后找到它的人都说，宝箱散出的金币多得连最富有的商人都要自惭形秽，然后便会消失。它为何消失、消失去了哪里，至今仍是一个谜。"
         },
         {
           "id": 111360,
@@ -246368,6 +246399,10 @@
         {
           "id": 112457,
           "text": "你的物品栏已满。"
+        },
+        {
+          "id": 112458,
+          "text": "魔法宝箱产出了%a金币。"
         },
         {
           "id": 115000,
@@ -266660,7 +266695,7 @@
         },
         {
           "id": 110138,
-          "text": "Os caçadores de pechinchas do mundo conhecido estão em peso por aí hoje, e não é de admirar, pois o dia 10 de Auge do Sol é um feriado chamado Festival dos Mercadores. Todos os mercados e lojas de equipamento baixaram seus preços para pelo menos a metade. A única loja que não está sendo procurada hoje é a Guilda dos Magos, onde os preços são exorbitantes como sempre. A maioria dos cidadãos que precisam de um item mágico está esperando dois meses pela celebração de Contos e Velas, quando os preços serão mais razoáveis..."
+          "text": "Os caçadores de pechinchas do mundo conhecido estão em peso por aí hoje, e não é de admirar, pois o dia 10 de Auge do Sol é um feriado chamado Festival dos Mercadores. Todos os mercados e lojas de equipamento baixaram seus preços para pelo menos a metade. A única loja que não está sendo procurada hoje é a Guilda dos Magos, onde os preços são exorbitantes como sempre. A maioria dos cidadãos que precisam de um item mágico está esperando dois meses pela celebração de Contos e Sebo, quando os preços serão mais razoáveis..."
         },
         {
           "id": 110139,
@@ -266672,7 +266707,7 @@
         },
         {
           "id": 110141,
-          "text": "Nenhum outro feriado divide tanto o povo de %cn quanto o dia 3 de Fogo do Lar. Alguns dos homens e mulheres mais velhos e mais supersticiosos não falam o dia todo, por medo de que os espíritos malignos dos mortos entrem em seus corpos. A maioria dos cidadãos aproveita o feriado, chamando-o de Contos e Velas, mas até os mais despreocupados evitam as ruas escuras de %cn, pois todos sabem que os mortos andam esta noite. Só a Guilda dos Magos prospera por completo neste dia. Em celebração à mais antiga das ciências mágicas, a necromancia, todos os itens mágicos custam metade do preço hoje."
+          "text": "Nenhum outro feriado divide tanto o povo de %cn quanto o dia 3 de Fogo do Lar. Alguns dos homens e mulheres mais velhos e mais supersticiosos não falam o dia todo, por medo de que os espíritos malignos dos mortos entrem em seus corpos. A maioria dos cidadãos aproveita o feriado, chamando-o de Contos e Sebo, mas até os mais despreocupados evitam as ruas escuras de %cn, pois todos sabem que os mortos andam esta noite. Só a Guilda dos Magos prospera por completo neste dia. Em celebração à mais antiga das ciências mágicas, a necromancia, todos os itens mágicos custam metade do preço hoje."
         },
         {
           "id": 110142,
@@ -271544,7 +271579,7 @@
         },
         {
           "id": 111359,
-          "text": "O Cofre do Rei Orghum é um baú pequeno, de aparência comum. É notavelmente leve, quase sem peso, o que dá uma pista de sua verdadeira magia. Uma vez por dia, o Cofre cria ouro do nada. Quando o próprio Rei Orghum possuía o Cofre, o suprimento em seu interior era ilimitado. Os que o encontraram depois relatam que o Cofre acaba desaparecendo depois de ter distribuído ouro suficiente para envergonhar até o mais rico dos mercadores. Onde e por que ele some ainda é um mistério."
+          "text": "O Cofre do Rei Orgnum é um baú pequeno, de aparência comum. É notavelmente leve, quase sem peso, o que dá uma pista de sua verdadeira magia. Uma vez por dia, o Cofre cria ouro do nada. Quando o próprio Rei Orgnum possuía o Cofre, o suprimento em seu interior era ilimitado. Os que o encontraram depois relatam que o Cofre acaba desaparecendo depois de ter distribuído ouro suficiente para envergonhar até o mais rico dos mercadores. Onde e por que ele some ainda é um mistério."
         },
         {
           "id": 111360,
@@ -275937,6 +275972,10 @@
         {
           "id": 112457,
           "text": "Seu inventário está cheio."
+        },
+        {
+          "id": 112458,
+          "text": "O cofre mágico produz %a de ouro."
         },
         {
           "id": 115000,
@@ -296209,7 +296248,7 @@
         },
         {
           "id": 110133,
-          "text": "Dziś jest 16. dzień miesiąca Świt Słońca, święto obchodzone w całym Tamriel jako Dzień Serca. Wygląda na to, że w każdym domu młodszemu pokoleniu śpiewa się Legendę o Kochankach. Na cześć tych Kochanków, Polydora i Eloisy, gospody osady (%ct) oferują gościom darmowy pokój. Mówi się, że gdyby Kochankom okazano taką życzliwość, na świecie zawsze byłaby wiosna."
+          "text": "Dziś jest 16. dzień miesiąca Świt Słońca, święto obchodzone w całym Tamriel jako Dzień Serc. Wygląda na to, że w każdym domu młodszemu pokoleniu śpiewa się Legendę o Kochankach. Na cześć tych Kochanków, Polydora i Eloisy, gospody osady (%ct) oferują gościom darmowy pokój. Mówi się, że gdyby Kochankom okazano taką życzliwość, na świecie zawsze byłaby wiosna."
         },
         {
           "id": 110134,
@@ -296229,7 +296268,7 @@
         },
         {
           "id": 110138,
-          "text": "Łowcy okazji z całego znanego świata wyległi dziś tłumnie i nic dziwnego, bo 10. dzień miesiąca Zenit Słońca to święto zwane Świętem Kupców. Każdy targ i sklep z wyposażeniem obniżył ceny co najmniej o połowę. Jedynym sklepem, w którym dziś nikt nie robi zakupów, jest Gildia Magów, gdzie ceny są zawyżone jak zawsze. Większość mieszkańców potrzebujących magicznego przedmiotu czeka dwa miesiące na święto Opowieści i Świec, gdy ceny będą rozsądniejsze..."
+          "text": "Łowcy okazji z całego znanego świata wyległi dziś tłumnie i nic dziwnego, bo 10. dzień miesiąca Zenit Słońca to święto zwane Świętem Kupców. Każdy targ i sklep z wyposażeniem obniżył ceny co najmniej o połowę. Jedynym sklepem, w którym dziś nikt nie robi zakupów, jest Gildia Magów, gdzie ceny są zawyżone jak zawsze. Większość mieszkańców potrzebujących magicznego przedmiotu czeka dwa miesiące na święto Opowieści i Łoju, gdy ceny będą rozsądniejsze..."
         },
         {
           "id": 110139,
@@ -296241,11 +296280,11 @@
         },
         {
           "id": 110141,
-          "text": "Żadne inne święto nie dzieli mieszkańców miejscowości %cn tak jak 3. dzień miesiąca Domowe Ognisko. Nieliczni najstarsi, bardziej przesądni mężczyźni i kobiety nie odzywają się przez cały dzień w obawie, że złe duchy zmarłych wejdą w ich ciała. Większość mieszkańców cieszy się świętem, zwanym Opowieściami i Świecami, ale nawet najbardziej beztroscy omijają ciemne ulice miejscowości %cn, bo wszyscy wiedzą, że tej nocy zmarli chodzą. Tylko Gildia Magów w pełni korzysta z tego dnia. Na cześć najstarszej nauki magicznej, nekromancji, wszystkie przedmioty magiczne kosztują dziś połowę ceny."
+          "text": "Żadne inne święto nie dzieli mieszkańców miejscowości %cn tak jak 3. dzień miesiąca Domowe Ognisko. Nieliczni najstarsi, bardziej przesądni mężczyźni i kobiety nie odzywają się przez cały dzień w obawie, że złe duchy zmarłych wejdą w ich ciała. Większość mieszkańców cieszy się świętem, zwanym Opowieściami i Łojem, ale nawet najbardziej beztroscy omijają ciemne ulice miejscowości %cn, bo wszyscy wiedzą, że tej nocy zmarli chodzą. Tylko Gildia Magów w pełni korzysta z tego dnia. Na cześć najstarszej nauki magicznej, nekromancji, wszystkie przedmioty magiczne kosztują dziś połowę ceny."
         },
         {
           "id": 110142,
-          "text": "Dziś jest 13. dzień miesiąca Pierwszy Mróz, znany w całym Tamriel jako Święto Czarownic, gdy ścierają się siły czarnoksięstwa i religii. Gildia Magów ma największy ruch, bo broń i przedmioty są bezpłatnie oceniane pod kątem mistycznego potencjału, a zaklęcia kosztują połowę zwykłej ceny. Demonolodzy, przywoływacze, lamie, czarnoksiężnicy i taumaturdzy spotykają się na odludziu poza miejscowością %cn, a stworzenia tam powołane lub przywołane mogą nękać Tamriel przez eony. Większość mądrych ludzi woli nie włóczyć się tej nocy."
+          "text": "Dziś jest 13. dzień miesiąca Pierwszy Mróz, znany w całym Tamriel jako Święto Wiedźm, gdy ścierają się siły czarnoksięstwa i religii. Gildia Magów ma największy ruch, bo broń i przedmioty są bezpłatnie oceniane pod kątem mistycznego potencjału, a zaklęcia kosztują połowę zwykłej ceny. Demonolodzy, przywoływacze, lamie, czarnoksiężnicy i taumaturdzy spotykają się na odludziu poza miejscowością %cn, a stworzenia tam powołane lub przywołane mogą nękać Tamriel przez eony. Większość mądrych ludzi woli nie włóczyć się tej nocy."
         },
         {
           "id": 110143,
@@ -301113,7 +301152,7 @@
         },
         {
           "id": 111359,
-          "text": "Szkatuła Króla Orghuma to niewielka skrzynka o zwyczajnym wyglądzie. Jest niezwykle lekka, niemal nic nie waży, co wskazuje na jej prawdziwą magię. Raz dziennie Szkatuła tworzy złoto z niczego. Gdy sam Król Orghum posiadał Szkatułę, jej zasób był nieograniczony. Ci, którzy ją później znaleźli, opowiadają, że w końcu znika ona, rozdawszy dość złota, by zawstydzić nawet najbogatszych kupców. Gdzie i dlaczego znika, pozostaje tajemnicą."
+          "text": "Szkatuła Króla Orgnuma to niewielka skrzynka o zwyczajnym wyglądzie. Jest niezwykle lekka, niemal nic nie waży, co wskazuje na jej prawdziwą magię. Raz dziennie Szkatuła tworzy złoto z niczego. Gdy sam Król Orgnum posiadał Szkatułę, jej zasób był nieograniczony. Ci, którzy ją później znaleźli, opowiadają, że w końcu znika ona, rozdawszy dość złota, by zawstydzić nawet najbogatszych kupców. Gdzie i dlaczego znika, pozostaje tajemnicą."
         },
         {
           "id": 111360,
@@ -305506,6 +305545,10 @@
         {
           "id": 112457,
           "text": "Twój ekwipunek jest pełny."
+        },
+        {
+          "id": 112458,
+          "text": "Magiczna szkatuła daje złoto: %a."
         },
         {
           "id": 115000,
@@ -325778,7 +325821,7 @@
         },
         {
           "id": 110133,
-          "text": "오늘은 해돋이의 달 16일, 탐리엘 전역에서 마음의 날로 기념하는 명절이에요. 집집마다 젊은 세대에게 연인들의 전설을 노래해 주는 모양이에요. 이 연인 폴리도르와 엘로이사를 기리며 %ct의 여관들은 손님에게 방을 무료로 내줘요. 연인들에게 그런 친절이 베풀어졌다면 세상은 언제나 봄이었을 거라고들 해요."
+          "text": "오늘은 해돋이의 달 16일, 탐리엘 전역에서 하츠 데이로 기념하는 명절이에요. 집집마다 젊은 세대에게 연인들의 전설을 노래해 주는 모양이에요. 이 연인 폴리도르와 엘로이사를 기리며 %ct의 여관들은 손님에게 방을 무료로 내줘요. 연인들에게 그런 친절이 베풀어졌다면 세상은 언제나 봄이었을 거라고들 해요."
         },
         {
           "id": 110134,
@@ -325794,11 +325837,11 @@
         },
         {
           "id": 110137,
-          "text": "오늘은 한 해 중반의 달 16일, 한 해 중반의 축제를 여는 전통적인 날이에요. 해마다 들려오는 황제의 새로운 세금 인상 소식을 달래려는 듯, %ct의 사원들은 평소 권하는 기부금의 절반만 받고 축복을 내려 줘요. 이렇게 축복받은 사람들 중 많은 이가 준비가 덜 된 채로도 %lp의 던전에 들어갈 자신감을 얻어서, 이 즐거운 축제가 갑자기 패배와 비극의 날로 바뀌는 일이 종종 있어요."
+          "text": "오늘은 한 해 중반의 달 16일, 한 해 중반 축제를 여는 전통적인 날이에요. 해마다 들려오는 황제의 새로운 세금 인상 소식을 달래려는 듯, %ct의 사원들은 평소 권하는 기부금의 절반만 받고 축복을 내려 줘요. 이렇게 축복받은 사람들 중 많은 이가 준비가 덜 된 채로도 %lp의 던전에 들어갈 자신감을 얻어서, 이 즐거운 축제가 갑자기 패배와 비극의 날로 바뀌는 일이 종종 있어요."
         },
         {
           "id": 110138,
-          "text": "알려진 세상의 알뜰 쇼핑객들이 오늘 총출동했는데 그럴 만도 해요. 해의 절정의 달 10일은 상인 축제라는 명절이거든요. 모든 시장과 장비점이 값을 적어도 절반으로 내렸어요. 오늘 유일하게 손님이 없는 가게는 마법사 길드인데, 값이 평소처럼 터무니없거든요. 마법 물건이 필요한 시민 대부분은 값이 더 합리적으로 내려가는 두 달 뒤 이야기와 촛불의 축제를 기다리고 있어요..."
+          "text": "알려진 세상의 알뜰 쇼핑객들이 오늘 총출동했는데 그럴 만도 해요. 해의 절정의 달 10일은 상인 축제라는 명절이거든요. 모든 시장과 장비점이 값을 적어도 절반으로 내렸어요. 오늘 유일하게 손님이 없는 가게는 마법사 길드인데, 값이 평소처럼 터무니없거든요. 마법 물건이 필요한 시민 대부분은 값이 더 합리적으로 내려가는 두 달 뒤 이야기와 양초의 밤을 기다리고 있어요..."
         },
         {
           "id": 110139,
@@ -325810,7 +325853,7 @@
         },
         {
           "id": 110141,
-          "text": "난롯불의 달 3일만큼 %cn 사람들의 의견을 가르는 명절도 없어요. 가장 나이 들고 미신을 많이 믿는 남녀 몇몇은 죽은 자의 악령이 몸에 들어올까 봐 하루 종일 말을 하지 않아요. 대부분의 시민은 이 명절을 이야기와 촛불이라 부르며 즐기지만, 가장 명랑한 사람들조차 %cn의 어두운 거리는 피해요. 오늘 밤 죽은 자들이 걸어 다닌다는 걸 모두가 알거든요. 이날 완전히 번창하는 곳은 마법사 길드뿐이에요. 가장 오래된 마법 학문인 강령술을 기려 오늘은 모든 마법 물건이 반값이에요."
+          "text": "난롯불의 달 3일만큼 %cn 사람들의 의견을 가르는 명절도 없어요. 가장 나이 들고 미신을 많이 믿는 남녀 몇몇은 죽은 자의 악령이 몸에 들어올까 봐 하루 종일 말을 하지 않아요. 대부분의 시민은 이 명절을 이야기와 양초의 밤이라 부르며 즐기지만, 가장 명랑한 사람들조차 %cn의 어두운 거리는 피해요. 오늘 밤 죽은 자들이 걸어 다닌다는 걸 모두가 알거든요. 이날 완전히 번창하는 곳은 마법사 길드뿐이에요. 가장 오래된 마법 학문인 강령술을 기려 오늘은 모든 마법 물건이 반값이에요."
         },
         {
           "id": 110142,
@@ -330682,7 +330725,7 @@
         },
         {
           "id": 111359,
-          "text": "오르굼 왕의 금고는 겉보기에 평범한 작은 상자예요. 놀랄 만큼 가벼워서 거의 무게가 없는데, 이것이 진짜 마법의 단서예요. 하루에 한 번, 이 상자는 무에서 골드를 만들어 내요. 오르굼 왕이 직접 가지고 있을 때는 안에 든 양이 끝이 없었어요. 그 뒤로 이것을 발견한 이들의 말로는, 가장 부유한 상인도 부끄러워할 만큼 골드를 풀어 놓은 뒤 결국 사라진다고 해요. 어디로, 왜 사라지는지는 아직도 수수께끼예요."
+          "text": "오르그넘 왕의 보물함은 겉보기에 평범한 작은 상자예요. 놀랄 만큼 가벼워서 거의 무게가 없는데, 이것이 진짜 마법의 단서예요. 하루에 한 번, 이 상자는 무에서 골드를 만들어 내요. 오르그넘 왕이 직접 가지고 있을 때는 안에 든 양이 끝이 없었어요. 그 뒤로 이것을 발견한 이들의 말로는, 가장 부유한 상인도 부끄러워할 만큼 골드를 풀어 놓은 뒤 결국 사라진다고 해요. 어디로, 왜 사라지는지는 아직도 수수께끼예요."
         },
         {
           "id": 111360,
@@ -335075,6 +335118,10 @@
         {
           "id": 112457,
           "text": "소지품이 가득 찼습니다."
+        },
+        {
+          "id": 112458,
+          "text": "마법 보물함이 %a골드를 만들어 냈습니다."
         },
         {
           "id": 115000,
@@ -355367,7 +355414,7 @@
         },
         {
           "id": 110138,
-          "text": "已知世界裡愛撿便宜的購物者今天傾巢而出，這並不奇怪，因為日高月10日是名為商人節的節日。每一處市集和裝備店都把價格降到至少五折。今天唯一無人光顧的店是法師公會，那裡的價格一如往常地高得離譜。多數需要魔法物品的市民，都在等兩個月後的故事與燭油節，到時價格會比較合理……"
+          "text": "已知世界裡愛撿便宜的購物者今天傾巢而出，這並不奇怪，因為日高月10日是名為商人節的節日。每一處市集和裝備店都把價格降到至少五折。今天唯一無人光顧的店是法師公會，那裡的價格一如往常地高得離譜。多數需要魔法物品的市民，都在等兩個月後的故事與牛脂節，到時價格會比較合理……"
         },
         {
           "id": 110139,
@@ -355379,7 +355426,7 @@
         },
         {
           "id": 110141,
-          "text": "沒有任何節日像爐火月3日那樣讓%cn的人們意見分歧。一些最年長、較為迷信的男女整天不開口說話，生怕死者的邪靈會鑽進他們的身體。大多數市民很享受這個節日，稱之為故事與燭油節，但即使是最無憂無慮的人也避開%cn的暗巷，因為大家都知道今晚死者真的會四處走動。只有法師公會在這天完全生意興隆。為了慶祝最古老的魔法學問——死靈術，今天所有魔法物品都半價。"
+          "text": "沒有任何節日像爐火月3日那樣讓%cn的人們意見分歧。一些最年長、較為迷信的男女整天不開口說話，生怕死者的邪靈會鑽進他們的身體。大多數市民很享受這個節日，稱之為故事與牛脂節，但即使是最無憂無慮的人也避開%cn的暗巷，因為大家都知道今晚死者真的會四處走動。只有法師公會在這天完全生意興隆。為了慶祝最古老的魔法學問——死靈術，今天所有魔法物品都半價。"
         },
         {
           "id": 110142,
@@ -360251,7 +360298,7 @@
         },
         {
           "id": 111359,
-          "text": "奧古姆王的寶匣是一只小巧的箱子，外觀平凡無奇。它輕得驚人，幾乎毫無重量，這正是它真正魔力的線索。寶匣每天會憑空變出一次黃金。奧古姆王本人擁有寶匣時，裡面的供給是無窮無盡的。此後發現它的人說，寶匣散出的黃金多到連最富有的商人也要自慚形穢，然後最終消失無蹤。它消失在何處、又為何消失，至今仍是個謎。"
+          "text": "奧格農王之寶箱是一只小巧的箱子，外觀平凡無奇。它輕得驚人，幾乎毫無重量，這正是它真正魔力的線索。寶箱每天會憑空變出一次黃金。奧格農王本人擁有寶箱時，裡面的供給是無窮無盡的。此後發現它的人說，寶箱散出的黃金多到連最富有的商人也要自慚形穢，然後最終消失無蹤。它消失在何處、又為何消失，至今仍是個謎。"
         },
         {
           "id": 111360,
@@ -364644,6 +364691,10 @@
         {
           "id": 112457,
           "text": "你的物品欄已滿。"
+        },
+        {
+          "id": 112458,
+          "text": "魔法寶箱產出了%a金幣。"
         },
         {
           "id": 115000,

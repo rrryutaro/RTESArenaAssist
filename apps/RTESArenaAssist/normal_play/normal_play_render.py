@@ -400,8 +400,8 @@ def _poll_dialog_unit_dispatch(w, *, in_interior, msg_buf, npc_dialog, _npc_dial
     _npc_overlay_active_prev = getattr(w, '_npc_overlay_active_prev', False)
     w._npc_overlay_active_prev = _npc_overlay_active
     if _npc_overlay_active and (not _npc_overlay_active_prev):
-        w._instore_resp_prev = ''
-        w._instore_resp_current_key = None
+        from normal_play.instore_dialog_module import release_current_key_on_overlay_start as _release_instore_key
+        _release_instore_key(w)
     _entry_handled = _poll_building_entry(w, building_entry_active=_building_entry_active, entry_phase_prev=_entry_phase_prev, msg_buf=msg_buf, npc_dialog=npc_dialog)
     if _travel_event_active or _dungeon_splash_active:
         _entry_handled = True

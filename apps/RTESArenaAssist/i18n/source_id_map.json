@@ -1,7 +1,7 @@
 {
   "schema": "rtesaa.source_id_map",
   "schema_version": 2,
-  "registry_hash": "sha256:82d51eb5cc857bff76c20d7fad3a793793fed1adca60899148f8543a9e2ff40b",
+  "registry_hash": "sha256:2c0784b0e01eb877b8eac14d17959dfaa6eca8b0140ffe07ccd64c2cc61018e8",
   "map": {
     "aexe:akey:A001.0": [
       111871
@@ -293,6 +293,9 @@
     ],
     "aexe:akey:A314.0": [
       111974
+    ],
+    "aexe:akey:A315.0": [
+      112458
     ],
     "aexe:akey:A400.0": [
       111975
