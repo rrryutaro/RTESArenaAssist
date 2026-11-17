@@ -2,8 +2,7 @@ from __future__ import annotations
 import logging
 import re
 _log = logging.getLogger('RTESArenaAssist')
-SPELLDATA_OFFSET = 22502
-_GRP_OFFS = [22502, 22508, 22514, 22520, 22526, 22532]
+from spell_record_reader import GRP_OFFS as _GRP_OFFS, SPELLDATA_OFFSET, read_record_values
 EFFECT_TO_FORM = {'Damage': 'FORM1', 'Continuous Damage': 'FORM2', 'Cause Disease': 'FORM4', 'Cause Poison': 'FORM4A', 'Cause Curse': 'FORM5', 'Fortify Attribute': 'FORM6', 'Drain Attribute': 'FORM6A', 'Light': 'FORM8', 'Create Shield': 'FORM9', 'Designate as Non-Target': 'FORM10', 'Levitate': 'FORM11', 'Create Wall': 'FORM13', 'Regenerate': 'FORM15'}
 FORM_FIELDS = {'FORM1': {0: 'Range min', 1: 'Range max', 2: 'Increase min', 3: 'Increase max', 4: 'Levels'}, 'FORM2': {0: 'Range min', 1: 'Range max', 2: 'Increase min', 3: 'Increase max', 4: 'Levels', 5: 'Strikes'}, 'FORM3': {0: 'Chance', 1: 'Increase', 4: 'per Levels'}, 'FORM4': {0: 'Chance', 1: 'Increase', 2: 'Deterioration', 3: 'per Rnds', 4: 'per Levels', 5: 'Duration'}, 'FORM5': {0: 'Chance', 1: 'Increase', 2: 'Duration per Lv', 4: 'Increase per Lv', 5: 'Duration'}, 'FORM6': {0: 'Increase', 1: 'Rate of Release', 4: 'Release per Rnds', 5: 'Duration'}, 'FORM6A': {0: 'Decrease', 1: 'Rate of Recovery', 4: 'Recovery per Rnds', 5: 'Duration'}, 'FORM7': {0: 'Decrease'}, 'FORM8': {0: 'Light level', 5: 'Duration'}, 'FORM9': {0: 'Strength', 1: 'Increase', 4: 'Levels'}, 'FORM10': {0: 'Chance', 1: 'Increase', 2: 'Duration per Lv', 4: 'Increase per Lv', 5: 'Duration'}, 'FORM11': {0: 'Base Time', 1: 'Increase', 4: 'per Levels'}, 'FORM13': {0: 'Number'}, 'FORM15': {0: 'Gain', 1: 'Every', 4: 'For'}}
 FORM_ALIASES = {'FORM4A': 'FORM4', 'FORM12': 'FORM3', 'FORM14': 'FORM5'}
@@ -13,15 +12,6 @@ FORM_FIELD_JA = {'Range min': '効果量 最小', 'Range max': '効果量 最大
 def field_label_ja(label_en: str) -> str:
     return FORM_FIELD_JA.get(label_en, label_en)
 
-def _u16(analyzer, anchor: int, off: int):
-    try:
-        raw = analyzer.read_bytes(anchor + off, 2)
-    except (OSError, AttributeError):
-        return None
-    if len(raw) < 2:
-        return None
-    return raw[0] | raw[1] << 8
-
 def resolve_form(effect_title: str) -> str | None:
     title = (effect_title or '').strip()
     if not title:
@@ -30,17 +20,6 @@ def resolve_form(effect_title: str) -> str | None:
         if title == effect or title.startswith(effect + ' ') or title.startswith(effect):
             return form
     return None
-
-def read_record_values(analyzer, anchor: int, slot: int=0) -> dict[int, int]:
-    col = 0 if slot <= 0 else min(slot, 2) * 2
-    out: dict[int, int] = {}
-    for grp, base in enumerate(_GRP_OFFS):
-        v = _u16(analyzer, anchor, base + col)
-        if v is not None:
-            out[grp] = v
-    if out and all((v == 0 for v in out.values())):
-        return {}
-    return out
 
 def read_form_values(analyzer, anchor: int, form: str, slot: int=0) -> dict[str, int]:
     form = FORM_ALIASES.get(form, form)

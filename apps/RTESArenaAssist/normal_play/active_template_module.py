@@ -1,18 +1,18 @@
 from __future__ import annotations
 import logging
 from display_intent import PASSIVE_PANEL_OWNERS
-from hierarchy_state import FACILITY_OWNER_SETS_BY_SESSION
 from screen_img_signals import YESNO_IMG
 from top_level.top_level_dispatcher import current_state as _current_top_level
 _log = logging.getLogger('RTESArenaAssist')
 _RESPONSE_PTR_RANGES = ((4164, 512), (31097, 68), (37534, 512), (39582, 512))
-_TAVERN_SHOP_L4_KINDS = frozenset({'menu', 'rooms', 'drinks', 'rumor_type'})
-_ACTIVE_TEMPLATE_REPLACEABLE_OWNERS = frozenset({'', 'active_template'}) | PASSIVE_PANEL_OWNERS | FACILITY_OWNER_SETS_BY_SESSION['tavern']
 
-def should_poll_active_template(*, shop_menu_visible: bool, shop_buy_active: bool, active_facility: str, allow_during_shop_menu: bool, response_active: bool, in_negotiation: bool, top_level_state: str, tavern_l4_kind: str='', c_area: str='') -> bool:
+def replaceable_owners(handoff_owners: frozenset=frozenset()) -> frozenset:
+    return frozenset({'', 'active_template'}) | PASSIVE_PANEL_OWNERS | frozenset(handoff_owners)
+
+def should_poll_active_template(*, shop_menu_visible: bool, shop_buy_active: bool, allow_during_shop_menu: bool, response_active: bool, in_negotiation: bool, top_level_state: str, facility_l4_surface: bool=False, c_area: str='') -> bool:
     if c_area == 'dungeon':
         return False
-    if active_facility == 'tavern' and (tavern_l4_kind or '') in _TAVERN_SHOP_L4_KINDS:
+    if facility_l4_surface:
         return False
     return not shop_buy_active and (not shop_menu_visible or allow_during_shop_menu) and (not response_active) and (not in_negotiation) and (top_level_state == 'normal-play')
 
@@ -35,7 +35,7 @@ def note_unclaimed_dialog_template(w, *, reason: str) -> None:
         from assist_log import recog as _recog
         _recog(_log, 'active_template not evaluated: ptr=0x%04X reason=%s text=%r', _key[0], _key[1], _key[2][:60])
 
-def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop_buy_active: bool, active_facility: str, allow_during_shop_menu: bool, tavern_l4_kind: str='', c_area: str='') -> bool:
+def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop_buy_active: bool, allow_during_shop_menu: bool, c_area: str='', select_candidate=None, handoff_owners: frozenset=frozenset(), diag_label: str='', input_prompt_label=None) -> bool:
     try:
         _ptr_raw = w._analyzer.read_bytes(w._anchor + 43076, 2)
         _ptr_val = _ptr_raw[0] | _ptr_raw[1] << 8
@@ -52,18 +52,20 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
     except Exception:
         _in_negot = False
     _top_level = _current_top_level(w)
-    _gate_ok = should_poll_active_template(shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, active_facility=active_facility, allow_during_shop_menu=allow_during_shop_menu, response_active=_response_active, in_negotiation=_in_negot, top_level_state=_top_level, tavern_l4_kind=tavern_l4_kind, c_area=c_area)
+    from store_surface import l4_surface_claimed as _l4_surface_claimed
+    _facility_l4_surface = _l4_surface_claimed(w)
+    _gate_ok = should_poll_active_template(shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, allow_during_shop_menu=allow_during_shop_menu, response_active=_response_active, in_negotiation=_in_negot, top_level_state=_top_level, facility_l4_surface=_facility_l4_surface, c_area=c_area)
     if not _gate_ok:
-        if c_area != 'dungeon' and (not active_facility):
+        if c_area != 'dungeon' and select_candidate is None:
             note_unclaimed_dialog_template(w, reason=f'gate(menu={shop_menu_visible} buy={shop_buy_active} response={_response_active} negot={_in_negot} top={_top_level} img={shop_img_name!r})')
-        if active_facility == 'tavern' and (tavern_l4_kind or '') in _TAVERN_SHOP_L4_KINDS:
-            _block_key = (shop_img_name, tavern_l4_kind)
-            if _block_key != getattr(w, '_active_tmpl_tavern_l4_block_key', None):
-                w._active_tmpl_tavern_l4_block_key = _block_key
-                _log.info('active_template blocked by tavern L4=%s img=%r', tavern_l4_kind, shop_img_name)
+        if _facility_l4_surface:
+            _block_key = (shop_img_name, diag_label)
+            if _block_key != getattr(w, '_active_tmpl_l4_block_key', None):
+                w._active_tmpl_l4_block_key = _block_key
+                _log.info('active_template blocked by facility L4 surface facility=%s img=%r', diag_label, shop_img_name)
         return False
     try:
-        from active_template_reader import read_active_template_candidates, read_current_text_pointer, candidate_signature, select_active_template_candidate, template_surface_kind
+        from active_template_reader import read_active_template_candidates, read_current_text_pointer, candidate_signature, select_foreground_candidate
         _candidates = read_active_template_candidates(w._analyzer, w._anchor)
         _cur_ptr = read_current_text_pointer(w._analyzer, w._anchor)
     except Exception:
@@ -91,7 +93,10 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
                 return _ndl.lookup(text) is not None
             except Exception:
                 return False
-        _selected = select_active_template_candidate(_candidates, ctx_key=_ctx_key, prev_ctx_key=_prev_ctx, prev_signatures=_prev_sigs, lookup_hit=_hit, active_facility=active_facility, img_name=shop_img_name)
+        if select_candidate is None:
+            _selected = select_foreground_candidate(_candidates, _hit)
+        else:
+            _selected = select_candidate(_candidates, img_name=shop_img_name, lookup_hit=_hit)
         if _selected is not None:
             try:
                 _r = _ndl.lookup(_selected.text)
@@ -102,11 +107,8 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
                 _ndl_result = _r
                 _active_tmpl_src = _selected.source
     if _active_tmpl is None and _candidates:
-        try:
-            from active_template_reader import input_prompt_facility as _ipf
-        except ImportError:
-            _ipf = lambda _c: ''
-        _log.debug('active_template no-select: img=%r cur_ptr=%s ctx_changed=%s candidates=%d new_sigs=%d active_facility=%r', shop_img_name, f'0x{_cur_ptr:04X}' if _cur_ptr is not None else 'None', _ctx_key != _prev_ctx, len(_candidates), len(_sigs_now - _prev_sigs), active_facility)
+        _ipf = input_prompt_label or (lambda _c: '')
+        _log.debug('active_template no-select: img=%r cur_ptr=%s ctx_changed=%s candidates=%d new_sigs=%d active_facility=%r', shop_img_name, f'0x{_cur_ptr:04X}' if _cur_ptr is not None else 'None', _ctx_key != _prev_ctx, len(_candidates), len(_sigs_now - _prev_sigs), diag_label)
         for _c in _candidates:
             try:
                 _hit_ok = _ndl.lookup(_c.text) is not None if _ndl else False
@@ -124,16 +126,13 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
         _prev_key = getattr(w, '_active_tmpl_key_prev', None)
         if _tmpl_key != _prev_key:
             w._active_tmpl_key_prev = _tmpl_key
-            try:
-                w._active_tmpl_surface_kind_prev = template_surface_kind(_selected) if _selected else ''
-            except Exception:
-                w._active_tmpl_surface_kind_prev = ''
+            w._active_tmpl_selected_ptr_prev = _selected.ptr if _selected else None
             _orig_clean = _active_tmpl.rstrip()
             try:
                 _owner_now = w._ui_router.current_owner() or ''
             except (AttributeError, RuntimeError):
                 _owner_now = getattr(w, '_panel_owner', '') or ''
-            if _owner_now not in _ACTIVE_TEMPLATE_REPLACEABLE_OWNERS:
+            if _owner_now not in replaceable_owners(handoff_owners):
                 _log.info('active_template withheld (panel-owner=%s): en=%r', _owner_now, _orig_clean[:80])
                 return True
             w._ui_router.update_translation('active_template', _orig_clean, _ja, speech_role='situation')
@@ -141,12 +140,21 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
         return True
     return False
 
+def poll_template_outside_conversation(w, *, shop_img_name: str, shop_menu_visible: bool, shop_buy_active: bool, area: str) -> bool:
+    from controllers.poll_diag import _phase_record, _phase_start
+    _t_active_tmpl = _phase_start()
+    handled = poll_active_template(w, shop_img_name=shop_img_name, shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, allow_during_shop_menu=False, c_area=area)
+    _phase_record(w, 'active_template', _t_active_tmpl)
+    if not handled:
+        cleanup_if_owner(w)
+    return handled
+
 def cleanup_if_owner(w) -> None:
     if getattr(w, '_active_tmpl_key_prev', None) is not None:
         w._ui_router.notify_display_unit_closed('active_template')
     w._active_tmpl_key_prev = None
-    w._active_tmpl_surface_kind_prev = ''
+    w._active_tmpl_selected_ptr_prev = None
     if w._ui_router.is_owner('active_template'):
         w._ui_router.clear_if_owner('active_template', notify_close=False)
         _log.info('active_template exit')
-__all__ = ['poll_active_template', 'cleanup_if_owner', 'should_poll_active_template', 'note_unclaimed_dialog_template']
+__all__ = ['poll_active_template', 'poll_template_outside_conversation', 'replaceable_owners', 'cleanup_if_owner', 'should_poll_active_template', 'note_unclaimed_dialog_template']

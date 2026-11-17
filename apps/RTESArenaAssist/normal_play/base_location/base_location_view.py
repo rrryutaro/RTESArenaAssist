@@ -29,11 +29,11 @@ def resolve_field_facility_entry(hint: Optional[FieldEntranceContext], *, interi
     return (True, hint.interior_mif_name, hint.menu_label or '')
 _AREA_TO_L2 = {'dungeon': 'C1', 'city': 'C2', 'wilderness': 'C3'}
 _L2_TO_AREA = {v: k for k, v in _AREA_TO_L2.items()}
-_INTERIOR_MIF_PREFIXES: Tuple[str, ...] = ('TAVERN', 'TEMPLE', 'EQUIP', 'ARMORS', 'MAGES', 'MAGE', 'PALACE', 'NOBLE', 'HOUSE')
+_INTERIOR_MIF_PREFIXES = frozenset({'TAVERN', 'TEMPLE', 'EQUIP', 'MAGE', 'PALACE', 'NOBLE'})
 
 def _looks_like_interior_mif(mif_name: Optional[str]) -> bool:
-    u = (mif_name or '').upper()
-    return any((u.startswith(p) for p in _INTERIOR_MIF_PREFIXES))
+    from interior_facility import mif_prefix_of
+    return mif_prefix_of(mif_name) in _INTERIOR_MIF_PREFIXES
 
 def classify_base_location(analyzer, anchor: Optional[int], mif_name: Optional[str]) -> str:
     return _AREA_TO_L2.get(detect_play_area(analyzer, anchor, mif_name), '')

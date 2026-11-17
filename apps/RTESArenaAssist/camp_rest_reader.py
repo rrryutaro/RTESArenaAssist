@@ -6,7 +6,8 @@ CAMP_BLOCK_LEN = 128
 CURRENT_TEXT_PTR_OFFSET = 43076
 CAMP_HOURS_ECHO_OFFSET = 18816
 CAMP_HOURS_TEMPLATE_OFFSET = 18820
-CAMP_INPUT_SLOT_OFFSET = 64184
+from active_template_reader import ACTIVE_TEMPLATE_PTR_OFFSETS as CAMP_INPUT_SLOT_OFFSETS
+CAMP_INPUT_SLOT_OFFSET = CAMP_INPUT_SLOT_OFFSETS[0]
 CAMP_RESPONSE_OFFSET = 37534
 CAMP_RESPONSE_READ_LEN = 64
 MENU_RELEASE_FULLSCREEN_POLLS = _POPUP_FRAME_ABSENT_POLLS_TO_END
@@ -147,9 +148,10 @@ def classify_camp_view(analyzer, anchor: int, *, menu_release_streak: int=0) -> 
             return CampView(kind='menu', title=CAMP_TITLE_TEXT, items=items, menu_release_streak=streak, reason=f'ptr=0x{ptr:04X} in span, fullscreen frame x{streak} (grace)')
         _released_streak = streak
     resp = _norm(_read_text(analyzer, anchor, CAMP_RESPONSE_OFFSET, CAMP_RESPONSE_READ_LEN))
-    slot = _read_u16(analyzer, anchor, CAMP_INPUT_SLOT_OFFSET)
-    if resp == CAMP_HOURS_PROMPT_TEXT and slot == CAMP_HOURS_ECHO_OFFSET:
-        return CampView(kind='hours_prompt', title=CAMP_TITLE_TEXT, items=items, prompt_text=resp, reason='response matches hours prompt + input slot on echo')
+    if resp == CAMP_HOURS_PROMPT_TEXT and frame_drawn is False:
+        slot_on_echo = next((off for off in CAMP_INPUT_SLOT_OFFSETS if _read_u16(analyzer, anchor, off) == CAMP_HOURS_ECHO_OFFSET), None)
+        if slot_on_echo is not None:
+            return CampView(kind='hours_prompt', title=CAMP_TITLE_TEXT, items=items, prompt_text=resp, reason=f'response matches hours prompt + input slot +0x{slot_on_echo:04X} on echo')
     if frame_drawn is True and _confirm_record_live(analyzer, anchor):
         confirm = _read_confirm_text(analyzer, anchor)
         if CAMP_CONFIRM_MARKER in confirm:
@@ -159,4 +161,4 @@ def classify_camp_view(analyzer, anchor: int, *, menu_release_streak: int=0) -> 
     if _released_streak:
         return CampView(kind='none', menu_release_streak=_released_streak, reason=f'menu released: stale ptr=0x{ptr:04X} + fullscreen frame x{_released_streak}')
     return CampView(kind='none', reason='no camp foreground signal')
-__all__ = ['CAMP_BLOCK_OFFSET', 'CAMP_BLOCK_LEN', 'CAMP_BLOCK_SPAN', 'CAMP_HOURS_ECHO_OFFSET', 'CAMP_HOURS_TEMPLATE_OFFSET', 'CAMP_INPUT_SLOT_OFFSET', 'CAMP_RESPONSE_OFFSET', 'CAMP_TITLE_TEXT', 'CAMP_MENU_ITEM_TEXTS', 'CAMP_MENU_ITEM_HOTKEYS', 'CAMP_HOURS_PROMPT_TEXT', 'MENU_RELEASE_FULLSCREEN_POLLS', 'CampMenuItem', 'CampView', 'classify_camp_view', 'ptr_in_camp_block']
+__all__ = ['CAMP_BLOCK_OFFSET', 'CAMP_BLOCK_LEN', 'CAMP_BLOCK_SPAN', 'CAMP_HOURS_ECHO_OFFSET', 'CAMP_HOURS_TEMPLATE_OFFSET', 'CAMP_INPUT_SLOT_OFFSET', 'CAMP_INPUT_SLOT_OFFSETS', 'CAMP_RESPONSE_OFFSET', 'CAMP_TITLE_TEXT', 'CAMP_MENU_ITEM_TEXTS', 'CAMP_MENU_ITEM_HOTKEYS', 'CAMP_HOURS_PROMPT_TEXT', 'MENU_RELEASE_FULLSCREEN_POLLS', 'CampMenuItem', 'CampView', 'classify_camp_view', 'ptr_in_camp_block']

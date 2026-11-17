@@ -1035,8 +1035,8 @@ def _ph_ni_i(name: str, value: str, lang: str) -> str:
     if translated:
         return translated
     try:
-        from equipment_shop_list_reader import translate_equipment_shop_name
-        translated = translate_equipment_shop_name(value)
+        from item_name_lookup import translate_item_name_opt
+        translated = translate_item_name_opt(value)
     except Exception:
         translated = None
     if translated:

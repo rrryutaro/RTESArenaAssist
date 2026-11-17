@@ -266,6 +266,22 @@ def _decide(w, b30, near, index: int):
     if not original and (not translated):
         return (None, None, f'番号 {index} の文が引けない', False)
     return (original, translated, '番号=%d %s' % (index, inputs), False)
+_READ_LOG_MIN_LETTERS = 5
+
+def _record_band_read(w, band, shown) -> None:
+    if band.seen is not True:
+        return
+    text = band.text or ''
+    if not band.live:
+        w._lock_msg_read_logged = None
+        return
+    if sum((ch.isalpha() for ch in text)) < _READ_LOG_MIN_LETTERS:
+        return
+    key = (shown, text.replace('?', ''))
+    if key == getattr(w, '_lock_msg_read_logged', None):
+        return
+    w._lock_msg_read_logged = key
+    _recog(_log, '帯の文の読み: 錠前の文=%s 写し=%d 読み=%r', '-' if shown is None else '番号%d' % shown, len(getattr(band, 'masks', None) or ()), text[:80])
 
 def poll_lock_message(w, *, b30: dict, near, band) -> None:
     armed = bool(getattr(w, '_lock_msg_armed', False))
@@ -276,6 +292,7 @@ def poll_lock_message(w, *, b30: dict, near, band) -> None:
         w._lock_msg_obs_prev = _obs
         _tables = getattr(w, '_lock_msg_tables', None)
         _recog(_log, '赤文字の描画: drawn=%s 錠前の文=%s バッファ本文=%s in_gameplay=%s 見張り=%s 場所=%s 近くの錠=%s 文の表=%s 写し=%d フォント=%s 読み=%r', band.seen, '-' if shown is None else '番号%d' % shown, _obs[2], _obs[3], '動作' if armed else '休止', near.where or '-', near.lock or near.reason, len((_tables or {}).get('messages') or ()), len(getattr(band, 'masks', None) or ()), getattr(band, 'font', None) is not None, (getattr(band, 'text', '') or '')[:80])
+    _record_band_read(w, band, shown)
     if shown is not None and shown != prev_shown:
         w._lock_msg_pending = _PENDING_POLLS
         w._lock_msg_pending_index = shown

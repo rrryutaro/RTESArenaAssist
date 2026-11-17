@@ -136,6 +136,65 @@ def _reset_state(w) -> None:
     w._temple_reply_edge_consumed = None
     w._temple_dialog_last_diag_key = None
 
+def temple_dialog_context(shop_state, *, temple_active_now: bool, window=None) -> tuple[bool, bool]:
+    from temple_signals import own_menu_of
+    by_menu = bool(own_menu_of(shop_state, window=window)[0])
+    return (bool(temple_active_now) or by_menu, by_menu)
+
+def log_temple_view_diagnostics(w, *, shop_state, img_name: str, area: str='') -> None:
+    is_ctx = (getattr(w, '_l3_facility', '') or '') == 'temple'
+    if not (is_ctx or getattr(w, '_temple_view_dbg_prev_ctx', False)):
+        return
+    try:
+        raw = w._analyzer.read_bytes(w._anchor + 36718, 2)
+        view = raw[0] | raw[1] << 8
+    except (OSError, AttributeError):
+        view = None
+    try:
+        flag = w._analyzer.read_bytes(w._anchor + 36724, 1)[0]
+    except (OSError, AttributeError):
+        flag = None
+    try:
+        from active_template_reader import input_prompt_kind as _ipk, read_active_template_candidates as _ratc, template_surface_kind as _tsk
+        from temple_signals import template_table as _temple_table
+        _table = _temple_table()
+        descs = []
+        for c in _ratc(w._analyzer, w._anchor):
+            ck = _tsk(c, _table) or ''
+            cf = 'temple' if _ipk(c, _table) else ''
+            if ck or cf:
+                descs.append(f"{c.source}:{ck or '-'}/{cf or '-'}")
+        cands = ','.join(descs[:6])
+    except Exception:
+        cands = ''
+    own_menu = False
+    if shop_state is not None:
+        try:
+            from temple_signals import own_menu_of
+            own_menu = bool(own_menu_of(shop_state, window=w)[0])
+        except Exception:
+            own_menu = False
+    l4_kind = getattr(w, '_temple_view_l4_kind', '') or ''
+    field_latch = bool(getattr(w, '_field_temple_active_now', False))
+    key = (is_ctx, l4_kind, img_name, cands, own_menu, area, field_latch)
+    if key != getattr(w, '_temple_view_dbg_key', None):
+        w._temple_view_dbg_key = key
+        _log.warning('temple view dbg: l4=%s view(+0x8F6E)=%s flag(+0x8F74)=%s img=%r cands=[%s] ctx_temple=%s own_menu=%s area=%r field_latch=%s', l4_kind or 'none', f'0x{view:04X}' if view is not None else 'None', f'0x{flag:02X}' if flag is not None else 'None', img_name, cands, is_ctx, own_menu, area, field_latch)
+    w._temple_view_dbg_prev_ctx = is_ctx
+
+def poll_temple_reply_unit(w, *, shop_state, temple_active_now: bool, temple_just_started: bool, entry_handled: bool, img_name: str, shop_menu_visible: bool, area: str='') -> tuple[bool, bool]:
+    context, by_menu = temple_dialog_context(shop_state, temple_active_now=temple_active_now, window=w)
+    prev = getattr(w, '_temple_dialog_context_prev', False)
+    if prev and (not context):
+        reset_temple_reply_on_stop(w)
+    owns = not entry_handled and context
+    handled = False
+    if owns:
+        handled = poll_temple_dialog(w, temple_active=True, temple_just_started=temple_just_started or (by_menu and (not prev)), img_name=img_name, shop_menu_visible=shop_menu_visible, menu_foreground=bool(getattr(w, '_temple_menu_fg', False)), popup_foreground=bool(getattr(w, '_temple_popup_fg', False)))
+    w._temple_dialog_context_prev = context
+    log_temple_view_diagnostics(w, shop_state=shop_state, img_name=img_name, area=area)
+    return (owns, handled)
+
 def reset_temple_dialog_state(w) -> None:
     _reset_state(w)
 

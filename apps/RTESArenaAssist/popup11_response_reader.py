@@ -42,6 +42,8 @@ def _read_one(analyzer, anchor: int, offset: int) -> str:
         return ''
     start = 0
     while start < len(raw) and (not 32 <= raw[start] <= 126):
+        if raw[start] == 0:
+            return ''
         start += 1
     if start >= len(raw):
         return ''

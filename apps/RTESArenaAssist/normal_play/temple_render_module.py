@@ -20,7 +20,8 @@ class TempleView(FacilityView):
 def classify_temple_view(w, *, shop_state=None, shop_img_name: str='', **_ignored) -> 'TempleView':
     img = (shop_img_name or '').upper()
     menu_fg = bool(getattr(w, '_temple_menu_fg', False))
-    has_menu = shop_state is not None and shop_state.kind == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'temple')
+    from temple_signals import own_menu_of
+    has_menu = own_menu_of(shop_state, window=w)[0]
     cost_eligible = not menu_fg
     cure_view = cure_foreground_view(w, img=img, shop_state=shop_state)
     cure_foreground = cure_view is not None
@@ -56,13 +57,14 @@ def _render_menu(w, shop_state, img: str) -> bool:
     try:
         from shop_menu_reader import translate_shop_menu_items, translate_ui_text
         from normal_play.shop_render_common import build_menu_display
-        items = shop_state.menu_items
-        hotkeys = shop_state.menu_item_hotkeys
+        from temple_signals import own_menu_of
+        items = list(shop_state.ptr_group_items)
+        hotkeys = list(shop_state.ptr_group_hotkeys)
         key_now = (tuple(items), tuple(hotkeys))
         if key_now != getattr(w, MENU_KEY, None):
             setattr(w, MENU_KEY, key_now)
             menu_tr = translate_shop_menu_items(items, owner_kind='temple')
-            title_en = shop_state.menu_title_en or ''
+            title_en = own_menu_of(shop_state, window=w)[1]
             title_ja = translate_ui_text('temple', title_en) or title_en if title_en else ''
             tab_en, tab_ja, panel_en, panel_ja = build_menu_display(menu_tr, hotkeys, title_en, title_ja)
             w._ui_router.update_translation(MENU_OWNER, tab_en, tab_ja, panel_en=panel_en, panel_ja=panel_ja)
@@ -85,7 +87,11 @@ def reset_keys_on_img_transition(w, *, img_name: str, temple_active_now: bool) -
     w._temple_last_img_prev = img_now
 
 def render_no_session_menu(w, *, shop_state, shop_img_name: str) -> bool:
-    _is_own = shop_state is not None and getattr(shop_state, 'kind', '') == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'temple')
+    from temple_signals import own_menu_of
+    _is_own = own_menu_of(shop_state, window=w)[0]
+    if _is_own:
+        from store_surface import publish_menu_front
+        publish_menu_front(w)
     if not _is_own:
         if getattr(w, MENU_KEY, None) is not None:
             setattr(w, MENU_KEY, None)

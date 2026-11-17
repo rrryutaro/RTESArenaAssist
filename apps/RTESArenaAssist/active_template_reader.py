@@ -178,25 +178,57 @@ def read_active_template_candidates(analyzer: 'ArenaMemoryAnalyzer', anchor: int
 
 def candidate_signature(c: 'ActiveTemplateCandidate') -> tuple[str, Optional[int], int, str]:
     return (c.source, c.ptr_slot, c.ptr, c.text.rstrip())
-_INPUT_PROMPT_FACILITY: dict[int, str] = {30199: 'temple', 29598: 'tavern', 29561: 'tavern', 26058: 'negotiation'}
-_INPUT_PROMPT_KIND: dict[int, str] = {30199: 'donate_amount', 29598: 'stay_days', 29561: 'sneak_yesno', 26058: 'counter_offer'}
+_SCREEN_IMAGES: dict[str, tuple] = {'confirm': ('YESNO.IMG',), 'popup': ('NEWPOP.IMG', 'MENU_RT.IMG')}
 
-def input_prompt_facility(c: 'ActiveTemplateCandidate') -> str:
-    return _INPUT_PROMPT_FACILITY.get(c.ptr, '')
+@dataclass(frozen=True)
+class TemplateTable:
+    input_kind: dict
+    surface_kind: dict
+    img_input: dict
+    img_surface: dict
 
-def input_prompt_kind(c: 'ActiveTemplateCandidate') -> str:
-    return _INPUT_PROMPT_KIND.get(c.ptr, '')
-_TEMPLATE_SURFACE_KIND: dict[int, str] = {29598: 'tavern_stay_days', 29537: 'tavern_sneak_result', 29561: 'tavern_sneak_confirm', 29638: 'tavern_sneak_result', 29674: 'tavern_room_contract', 29728: 'tavern_cost_show', 29748: 'tavern_cost_confirm', 30199: 'temple_donate_amount', 26058: 'negotiation_counter'}
+def build_template_table(*declaration_groups) -> TemplateTable:
+    input_kind: dict[int, str] = {}
+    surface_kind: dict[int, str] = {}
+    img_input: dict[str, set] = {i: set() for imgs in _SCREEN_IMAGES.values() for i in imgs}
+    img_surface: dict[str, set] = {i: set() for imgs in _SCREEN_IMAGES.values() for i in imgs}
+    for rows in declaration_groups:
+        for ptr, ikind, skind, iimgs, simgs in rows:
+            if ikind:
+                input_kind[ptr] = ikind
+                for img in (i for scr in iimgs for i in _SCREEN_IMAGES[scr]):
+                    img_input[img].add(ikind)
+            if skind:
+                surface_kind[ptr] = skind
+                for img in (i for scr in simgs for i in _SCREEN_IMAGES[scr]):
+                    img_surface[img].add(skind)
+    return TemplateTable(input_kind=input_kind, surface_kind=surface_kind, img_input={k: frozenset(v) for k, v in img_input.items()}, img_surface={k: frozenset(v) for k, v in img_surface.items()})
+COUNTER_OFFER_DECLARATIONS: tuple = ((26058, 'counter_offer', 'negotiation_counter', ('popup',), ('popup',)),)
+COUNTER_OFFER_TABLE: TemplateTable = build_template_table(COUNTER_OFFER_DECLARATIONS)
 
-def template_surface_kind(c: 'ActiveTemplateCandidate') -> str:
-    return _TEMPLATE_SURFACE_KIND.get(c.ptr, '')
+def declared_template_pointers(*declaration_groups) -> frozenset:
+    return frozenset((ptr for rows in declaration_groups for ptr, ikind, skind, _iimgs, _simgs in rows if ikind or skind))
 
-def select_facility_surface_candidate(candidates: list['ActiveTemplateCandidate'], accepted_surface_kinds: set, lookup_hit: callable) -> tuple[Optional['ActiveTemplateCandidate'], list[tuple[str, str]]]:
+def template_table_pointers(table: TemplateTable) -> frozenset:
+    return frozenset(table.input_kind) | frozenset(table.surface_kind)
+
+def input_prompt_kind(c: 'ActiveTemplateCandidate', table: TemplateTable) -> str:
+    return table.input_kind.get(c.ptr, '')
+
+def template_surface_kind(c: 'ActiveTemplateCandidate', table: TemplateTable) -> str:
+    return table.surface_kind.get(c.ptr, '')
+
+def surface_kind_of_pointer(ptr, table: TemplateTable) -> str:
+    if ptr is None:
+        return ''
+    return table.surface_kind.get(ptr, '')
+
+def select_facility_surface_candidate(candidates: list['ActiveTemplateCandidate'], accepted_surface_kinds: set, lookup_hit: callable, table: TemplateTable) -> tuple[Optional['ActiveTemplateCandidate'], list[tuple[str, str]]]:
     decisions: list[tuple[str, str]] = []
     selected: Optional['ActiveTemplateCandidate'] = None
     selected_priority = 999
     for c in candidates:
-        kind = template_surface_kind(c)
+        kind = template_surface_kind(c, table)
         if kind not in accepted_surface_kinds:
             decisions.append(('rejected', 'surface_mismatch'))
             continue
@@ -221,15 +253,12 @@ def select_facility_surface_candidate(candidates: list['ActiveTemplateCandidate'
             decisions.append(('rejected', 'priority_lower'))
     return (selected, decisions)
 
-def is_active_template_input_prompt(c: 'ActiveTemplateCandidate') -> bool:
-    return c.ptr in _INPUT_PROMPT_FACILITY
-
-def select_facility_yesno_candidate(candidates: list['ActiveTemplateCandidate'], expected_prompt_kind: str, lookup_hit: callable) -> tuple[Optional['ActiveTemplateCandidate'], list[tuple[str, str]]]:
+def select_facility_yesno_candidate(candidates: list['ActiveTemplateCandidate'], expected_prompt_kind: str, lookup_hit: callable, table: TemplateTable) -> tuple[Optional['ActiveTemplateCandidate'], list[tuple[str, str]]]:
     decisions: list[tuple[str, str]] = []
     selected: Optional['ActiveTemplateCandidate'] = None
     selected_priority = 999
     for c in candidates:
-        kind = input_prompt_kind(c)
+        kind = input_prompt_kind(c, table)
         if kind != expected_prompt_kind:
             decisions.append(('rejected', 'kind_mismatch'))
             continue
@@ -253,18 +282,14 @@ def select_facility_yesno_candidate(candidates: list['ActiveTemplateCandidate'],
         else:
             decisions.append(('rejected', 'priority_lower'))
     return (selected, decisions)
-_IMG_ALLOWED_INPUT_KINDS: dict[str, frozenset] = {'YESNO.IMG': frozenset({'sneak_yesno'}), 'NEWPOP.IMG': frozenset({'stay_days', 'donate_amount', 'counter_offer'}), 'MENU_RT.IMG': frozenset({'stay_days', 'donate_amount', 'counter_offer'})}
-_IMG_ALLOWED_SURFACE_KINDS: dict[str, frozenset] = {'YESNO.IMG': frozenset({'tavern_sneak_confirm', 'tavern_sneak_result', 'tavern_cost_confirm'}), 'NEWPOP.IMG': frozenset({'tavern_stay_days', 'tavern_sneak_result', 'tavern_room_contract', 'tavern_cost_show', 'temple_donate_amount', 'negotiation_counter'}), 'MENU_RT.IMG': frozenset({'tavern_stay_days', 'tavern_sneak_result', 'tavern_room_contract', 'tavern_cost_show', 'temple_donate_amount', 'negotiation_counter'})}
 
-def _allowed_input_kinds_for_img(img_name: str) -> Optional[frozenset]:
-    return _IMG_ALLOWED_INPUT_KINDS.get((img_name or '').upper())
+def _allowed_input_kinds_for_img(img_name: str, table: TemplateTable) -> Optional[frozenset]:
+    return table.img_input.get((img_name or '').upper())
 
-def _allowed_surface_kinds_for_img(img_name: str) -> Optional[frozenset]:
-    return _IMG_ALLOWED_SURFACE_KINDS.get((img_name or '').upper())
+def _allowed_surface_kinds_for_img(img_name: str, table: TemplateTable) -> Optional[frozenset]:
+    return table.img_surface.get((img_name or '').upper())
 
-def select_active_template_candidate(candidates: list['ActiveTemplateCandidate'], ctx_key: tuple, prev_ctx_key: Optional[tuple], prev_signatures: frozenset, lookup_hit: callable, active_facility: str='', img_name: str='') -> Optional['ActiveTemplateCandidate']:
-    _allowed_input_kinds = _allowed_input_kinds_for_img(img_name)
-    _allowed_surface_kinds = _allowed_surface_kinds_for_img(img_name)
+def select_foreground_candidate(candidates: list['ActiveTemplateCandidate'], lookup_hit: callable) -> Optional['ActiveTemplateCandidate']:
     for c in candidates:
         if c.source != 'current_ptr':
             continue
@@ -273,41 +298,41 @@ def select_active_template_candidate(candidates: list['ActiveTemplateCandidate']
                 return c
         except Exception:
             continue
-    if active_facility:
-        for c in candidates:
-            if c.source != 'active_slot':
-                continue
-            facility = input_prompt_facility(c)
-            if not facility:
-                continue
-            if facility != active_facility:
-                continue
-            if _allowed_input_kinds is not None:
-                if input_prompt_kind(c) not in _allowed_input_kinds:
-                    continue
-            try:
-                if lookup_hit(c.text):
-                    return c
-            except Exception:
-                continue
-    if active_facility:
-        for c in candidates:
-            if c.source != 'active_slot':
-                continue
-            kind = template_surface_kind(c)
-            if not kind:
-                continue
-            kind_facility = kind.split('_', 1)[0]
-            if kind_facility != active_facility:
-                continue
-            if _allowed_surface_kinds is not None:
-                if kind not in _allowed_surface_kinds:
-                    continue
-            try:
-                if lookup_hit(c.text):
-                    return c
-            except Exception:
-                continue
-    _ = (ctx_key, prev_ctx_key, prev_signatures)
     return None
-__all__ = ['ACTIVE_TEMPLATE_PTR_OFFSETS', 'ACTIVE_TEMPLATE_PTR_OFFSET', 'CURRENT_TEXT_PTR_OFFSET', 'DISPLAY_OCCURRENCE_OFFSET', 'TEMPLATE_RANGE_LOW', 'TEMPLATE_RANGE_HIGH', 'ActiveTemplateCandidate', 'candidate_signature', 'input_prompt_facility', 'is_active_template_input_prompt', 'is_dialog_text_pointer', 'is_message_buffer_pointer', 'message_buffer_remaining', 'is_response_buffer_pointer', 'is_response_text_buffer_pointer', 'is_runtime_message_buffer_pointer', 'read_active_template', 'read_active_templates', 'read_active_template_candidates', 'read_current_text_pointer', 'read_dialog_text_foreground', 'read_display_occurrence', 'select_active_template_candidate']
+
+def select_active_template_candidate(candidates: list['ActiveTemplateCandidate'], table: TemplateTable, lookup_hit: callable, img_name: str='') -> Optional['ActiveTemplateCandidate']:
+    _allowed_input_kinds = _allowed_input_kinds_for_img(img_name, table)
+    _allowed_surface_kinds = _allowed_surface_kinds_for_img(img_name, table)
+    _foreground = select_foreground_candidate(candidates, lookup_hit)
+    if _foreground is not None:
+        return _foreground
+    for c in candidates:
+        if c.source != 'active_slot':
+            continue
+        ikind = input_prompt_kind(c, table)
+        if not ikind:
+            continue
+        if _allowed_input_kinds is not None:
+            if ikind not in _allowed_input_kinds:
+                continue
+        try:
+            if lookup_hit(c.text):
+                return c
+        except Exception:
+            continue
+    for c in candidates:
+        if c.source != 'active_slot':
+            continue
+        kind = template_surface_kind(c, table)
+        if not kind:
+            continue
+        if _allowed_surface_kinds is not None:
+            if kind not in _allowed_surface_kinds:
+                continue
+        try:
+            if lookup_hit(c.text):
+                return c
+        except Exception:
+            continue
+    return None
+__all__ = ['ACTIVE_TEMPLATE_PTR_OFFSETS', 'ACTIVE_TEMPLATE_PTR_OFFSET', 'CURRENT_TEXT_PTR_OFFSET', 'DISPLAY_OCCURRENCE_OFFSET', 'TEMPLATE_RANGE_LOW', 'TEMPLATE_RANGE_HIGH', 'ActiveTemplateCandidate', 'COUNTER_OFFER_DECLARATIONS', 'COUNTER_OFFER_TABLE', 'TemplateTable', 'build_template_table', 'declared_template_pointers', 'template_table_pointers', 'surface_kind_of_pointer', 'candidate_signature', 'is_dialog_text_pointer', 'is_message_buffer_pointer', 'message_buffer_remaining', 'is_response_buffer_pointer', 'is_response_text_buffer_pointer', 'is_runtime_message_buffer_pointer', 'read_active_template', 'read_active_templates', 'read_active_template_candidates', 'read_current_text_pointer', 'read_dialog_text_foreground', 'read_display_occurrence', 'select_active_template_candidate', 'select_foreground_candidate']

@@ -27,12 +27,14 @@ def _with_yesno_buttons(img_name: str, kind: str, en: str, ja: str) -> tuple[str
 
 def _select(candidates, img: str, lookup_hit):
     from active_template_reader import template_surface_kind
+    from temple_signals import template_table
+    _table = template_table()
     allowed = _IMG_ALLOWED_SURFACE_KINDS.get((img or '').upper())
     for want_source in ('current_ptr', 'active_slot'):
         for c in candidates:
             if c.source != want_source:
                 continue
-            kind = template_surface_kind(c)
+            kind = template_surface_kind(c, _table)
             if kind not in _ACCEPTED_SURFACE_KINDS:
                 continue
             if allowed is not None and kind not in allowed:

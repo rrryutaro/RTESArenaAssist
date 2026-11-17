@@ -32,6 +32,14 @@ def classify_equipment_view(w, *, shop_state=None, shop_img_name: str='', **_ign
     img = (shop_img_name or '').upper()
     snap = get_equipment_l4_state(w, img=img)
     state = snap.state
+    if shop_state is not None:
+        from equipment_signals import own_list_front_of, own_menu_of as _own_menu_of
+        if _own_menu_of(shop_state)[0]:
+            from store_surface import publish_menu_front
+            publish_menu_front(w)
+        if own_list_front_of(shop_state, getattr(w, '_analyzer', None), getattr(w, '_anchor', 0)):
+            from store_surface import publish_list_front
+            publish_list_front(w, store_surface=False)
     if state is EquipmentL4State.MENU and (not is_equipment_menu_foreground(shop_state)):
         fallback_menu_state = read_menu_rt_equipment_menu_state(w, img, allow_sticky_img=True)
         if fallback_menu_state is not None:
@@ -51,7 +59,8 @@ def render_equipment_view(w, *, view, shop_state=None, shop_img_name: str='', to
     setattr(w, '_equipment_reply_polled_in_render', True)
     setattr(w, '_equipment_reply_handled_in_render', False)
     if state is EquipmentL4State.MENU:
-        if shop_state is not None and getattr(shop_state, 'menu_items', None):
+        from equipment_signals import own_menu_of
+        if own_menu_of(shop_state)[0]:
             menu_visible = _render_menu(w, shop_state, img)
     elif state is EquipmentL4State.NEGOTIATION:
         negot_visible = _render_negotiation(w, img, top_level_state)
@@ -100,14 +109,9 @@ def read_menu_rt_equipment_menu_state(w, img: str, *, allow_sticky_img: bool=Fal
             return None
         items = [it.text for it in group.items]
         hotkeys = [it.hotkey for it in group.items]
-        item_key = tuple(items)
-        if item_key == ('Buy', 'Sell', 'Repair', 'Steal', 'Exit'):
-            title = 'MENU OPTIONS'
-        elif item_key == ('Weapon', 'Armor'):
-            title = 'BUY OPTIONS'
-        else:
+        if tuple(items) not in (('Buy', 'Sell', 'Repair', 'Steal', 'Exit'), ('Weapon', 'Armor')):
             return None
-        return SimpleNamespace(kind='shop_menu', owner_kind='equipment', menu_items=items, menu_item_hotkeys=hotkeys, menu_title_en=title, ptr=ptr)
+        return SimpleNamespace(gate_open=True, ptr_group_items=items, ptr_group_hotkeys=hotkeys, ptr_is_response=False, ptr_in_control_group=False, yesno_img=False, newpop_fg=False, ptr=ptr)
     except Exception:
         return None
 
@@ -161,13 +165,14 @@ def _render_menu(w, shop_state, img: str) -> bool:
     try:
         from shop_menu_reader import translate_shop_menu_items, translate_ui_text
         from normal_play.shop_render_common import build_menu_display
-        items = shop_state.menu_items
-        hotkeys = shop_state.menu_item_hotkeys
+        from equipment_signals import own_menu_of
+        items = list(shop_state.ptr_group_items)
+        hotkeys = list(shop_state.ptr_group_hotkeys)
         key_now = (tuple(items), tuple(hotkeys))
         if key_now != getattr(w, _MENU_KEY, None):
             setattr(w, _MENU_KEY, key_now)
             menu_tr = translate_shop_menu_items(items, owner_kind='equipment')
-            title_en = shop_state.menu_title_en or ''
+            title_en = own_menu_of(shop_state)[1]
             title_ja = translate_ui_text('equipment', title_en) or title_en if title_en else ''
             tab_en, tab_ja, panel_en, panel_ja = build_menu_display(menu_tr, hotkeys, title_en, title_ja)
             w._ui_router.update_translation(MENU_OWNER, tab_en, tab_ja, panel_en=panel_en, panel_ja=panel_ja)
@@ -177,7 +182,11 @@ def _render_menu(w, shop_state, img: str) -> bool:
     return True
 
 def render_no_session_menu(w, *, shop_state, shop_img_name: str) -> bool:
-    _is_own = shop_state is not None and getattr(shop_state, 'kind', '') == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'equipment')
+    from equipment_signals import own_menu_of
+    _is_own = own_menu_of(shop_state)[0]
+    if _is_own:
+        from store_surface import publish_menu_front
+        publish_menu_front(w)
     if not _is_own:
         if getattr(w, _MENU_KEY, None) is not None:
             setattr(w, _MENU_KEY, None)
@@ -239,22 +248,16 @@ def _render_repair_jobs(w, job_names) -> bool:
     return True
 
 def is_main_equipment_menu_state(shop_state) -> bool:
-    if not (shop_state is not None and shop_state.kind == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'equipment')):
+    from equipment_signals import own_menu_of
+    own, title = own_menu_of(shop_state)
+    if not own:
         return False
-    title = getattr(shop_state, 'menu_title_en', '') or ''
-    items = tuple(getattr(shop_state, 'menu_items', []) or [])
+    items = tuple(getattr(shop_state, 'ptr_group_items', []) or [])
     return title == 'MENU OPTIONS' or items == ('Buy', 'Sell', 'Repair', 'Steal', 'Exit')
 
 def is_equipment_menu_foreground(shop_state) -> bool:
-    if not (shop_state is not None and shop_state.kind == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'equipment')):
-        return False
-    ptr = getattr(shop_state, 'ptr', None)
-    if ptr is None:
-        return True
-    try:
-        return int(ptr) != _DIALOG_PTR
-    except (TypeError, ValueError):
-        return True
+    from equipment_signals import ptr_menu_of
+    return ptr_menu_of(shop_state, None)
 
 def _cleanup(w, menu_visible: bool, list_visible: bool, negot_visible: bool=False, repair_visible: bool=False, reply_visible: bool=False) -> None:
     if not menu_visible and getattr(w, _MENU_KEY, None) is not None:

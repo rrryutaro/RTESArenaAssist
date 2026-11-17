@@ -17,6 +17,7 @@ class ActionFont:
     height: int
     widths: tuple[int, ...]
     glyphs: tuple[tuple[int, ...], ...]
+    advances: tuple[int, ...] = ()
 
 def parse(raw: bytes) -> ActionFont | None:
     if not raw or len(raw) < _GLYPH_DATA_OFFSET + 2:
@@ -44,7 +45,11 @@ def parse(raw: bytes) -> ActionFont | None:
         glyphs[i] = tuple(rows)
     widths[0] = widths[1]
     glyphs[0] = tuple([0] * height)
-    return ActionFont(height=height, widths=tuple(widths), glyphs=tuple(glyphs))
+    advances = list(widths)
+    for i in range(1, _GLYPH_DATA_OFFSET):
+        if raw[i] > 0:
+            advances[i] = raw[i]
+    return ActionFont(height=height, widths=tuple(widths), glyphs=tuple(glyphs), advances=tuple(advances))
 
 def load(vfs) -> ActionFont | None:
     if vfs is None:
@@ -131,7 +136,7 @@ def _line_template(font: ActionFont, text: str, space_advance: int) -> tuple[tup
                 if v & 32768 >> c:
                     rows[r] |= 1 << x + c
                     right = max(right, x + c)
-        x += font.widths[gi]
+        x += font.advances[gi] if font.advances else font.widths[gi]
     return (tuple(rows), right + 1)
 
 def _background_is_distinct(template, masks, x: int, width: int) -> bool:

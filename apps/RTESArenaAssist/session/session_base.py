@@ -18,7 +18,6 @@ class SessionContext:
     area: str = ''
     hierarchy: Optional[SeparationHierarchy] = None
     shop_state: Optional[object] = None
-    yesno_menu_recovery: bool = False
     loading: bool = False
     extras: dict = None
 
@@ -30,6 +29,14 @@ class SessionContext:
 
 class SessionBase:
     name: str = '<unnamed>'
+    bar_label_key: str = ''
+    is_facility_session: bool = False
+
+    def facility_l4_owners(self) -> frozenset:
+        return frozenset()
+
+    def on_facility_stopped(self, w) -> None:
+        return None
 
     def __init__(self) -> None:
         self._active: bool = False

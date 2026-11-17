@@ -58,12 +58,12 @@ def _prepare_dialog_context(w, *, b30, in_interior, facility_active_now, popup_o
         ctx.npc_message_popup_closed = poll_npc_message_popup_lifetime(w, popup_frame=ctx.popup_frame, popup_frame_drawn=ctx.popup_frame_drawn, screen_img=ctx.screen_img)
     return ctx
 
-def poll_npc_dialog(w, *, b30, entry_handled: bool, npc_overlay_active: bool, in_interior: bool, npc_phase_raw, shop_buy_active: bool, shop_menu_visible: bool, facility_active_now: bool, npc_dialog: str, npc_dialog_changed: bool=True, c_area: str='', internalized_facility_active: bool=False, shop_state_kind: str='none', negot_handled: bool=False, active_tmpl_handled: bool=False, popup_observation=_POPUP_FRAME_UNSET) -> bool:
+def poll_npc_dialog(w, *, b30, entry_handled: bool, npc_overlay_active: bool, in_interior: bool, npc_phase_raw, shop_buy_active: bool, shop_menu_visible: bool, facility_active_now: bool, npc_dialog: str, npc_dialog_changed: bool=True, c_area: str='', internalized_facility_active: bool=False, store_surface_now: bool=False, negot_handled: bool=False, active_tmpl_handled: bool=False, popup_observation=_POPUP_FRAME_UNSET) -> bool:
     ctx = _prepare_dialog_context(w, b30=b30, in_interior=in_interior, facility_active_now=facility_active_now, popup_observation=popup_observation)
     instore_resp_handled = False
     if entry_handled:
         pass
-    elif c_area != 'dungeon' and _poll_route1_instore_response(w, ctx, entry_handled=False, npc_overlay_active=npc_overlay_active, in_interior=in_interior, npc_phase_raw=npc_phase_raw, facility_active_now=facility_active_now, instore_resp_handled=False, internalized_facility_active=internalized_facility_active, shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, shop_state_kind=shop_state_kind, negot_handled=negot_handled, active_tmpl_handled=active_tmpl_handled, c_area=c_area)[0]:
+    elif c_area != 'dungeon' and _poll_route1_instore_response(w, ctx, entry_handled=False, npc_overlay_active=npc_overlay_active, in_interior=in_interior, npc_phase_raw=npc_phase_raw, facility_active_now=facility_active_now, instore_resp_handled=False, internalized_facility_active=internalized_facility_active, shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, store_surface_now=store_surface_now, negot_handled=negot_handled, active_tmpl_handled=active_tmpl_handled, c_area=c_area)[0]:
         instore_resp_handled = True
     elif _current_top_level(w) != 'normal-play' or shop_buy_active or shop_menu_visible:
         pass

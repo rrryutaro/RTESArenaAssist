@@ -74,13 +74,14 @@ def _render_menu(w, shop_state, img: str) -> bool:
     try:
         from shop_menu_reader import translate_shop_menu_items, translate_ui_text
         from normal_play.shop_render_common import build_menu_display
-        items = shop_state.menu_items
-        hotkeys = shop_state.menu_item_hotkeys
+        from mages_signals import own_menu_of
+        items = list(shop_state.ptr_group_items)
+        hotkeys = list(shop_state.ptr_group_hotkeys)
         key_now = (tuple(items), tuple(hotkeys))
         if key_now != getattr(w, _MENU_KEY, None):
             setattr(w, _MENU_KEY, key_now)
             menu_tr = translate_shop_menu_items(items, owner_kind='mages_guild')
-            title_en = shop_state.menu_title_en or ''
+            title_en = own_menu_of(shop_state)[1]
             title_ja = translate_ui_text('mages_guild', title_en) or title_en if title_en else ''
             tab_en, tab_ja, panel_en, panel_ja = build_menu_display(menu_tr, hotkeys, title_en, title_ja)
             w._ui_router.update_translation(MENU_OWNER, tab_en, tab_ja, panel_en=panel_en, panel_ja=panel_ja)
@@ -90,7 +91,11 @@ def _render_menu(w, shop_state, img: str) -> bool:
     return True
 
 def render_no_session_menu(w, *, shop_state, shop_img_name: str) -> bool:
-    _is_own = shop_state is not None and getattr(shop_state, 'kind', '') == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'mages_guild')
+    from mages_signals import own_menu_of
+    _is_own = own_menu_of(shop_state)[0]
+    if _is_own:
+        from store_surface import publish_menu_front
+        publish_menu_front(w)
     if not _is_own:
         if getattr(w, _MENU_KEY, None) is not None:
             setattr(w, _MENU_KEY, None)
@@ -647,9 +652,6 @@ def _resolve_story_from_source(w, source: tuple[int, int]) -> tuple[str, str] | 
     resolved = (en, ja) if en else None
     setattr(w, _STORY_RESOLVE_CACHE_ATTR, (cache_key, resolved))
     return resolved
-
-def is_mages_interior_mif(interior_mif_name: str | None) -> bool:
-    return (interior_mif_name or '').upper().startswith('MAGE')
 
 def poll_mages_story(w, *, guild_active: bool, foreground_ptr=_POINTER_UNSET) -> bool:
     if not guild_active:

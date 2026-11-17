@@ -218,6 +218,7 @@ class AssistWindow(QMainWindow):
         self._npc_conversation_active: bool = False
         self._npc_phase_unknown_prev: int | None = None
         from session import SessionManager, NpcChatSession, TavernSession, TempleSession, EquipmentSession, MagesGuildSession
+        import session.facility_nodes
         self._session_manager: SessionManager = SessionManager()
         self._npc_chat_session: NpcChatSession = NpcChatSession()
         self._tavern_session: TavernSession = TavernSession()
@@ -229,10 +230,11 @@ class AssistWindow(QMainWindow):
         self._session_manager.register(self._mages_guild_session)
         self._session_manager.register(self._tavern_session)
         self._session_manager.register(self._npc_chat_session)
-        self._tavern_active_prev: bool = False
-        self._temple_active_prev: bool = False
-        self._equipment_active_prev: bool = False
-        self._mages_guild_active_prev: bool = False
+        self._facility_latch_name: str = ''
+        self._facility_latch_started: str = ''
+        self._facility_latch_edge_session = None
+        self._l3_facility: str = ''
+        self._l3_by_mif: bool = False
         self._temple_menu_key_prev: tuple | None = None
         self._temple_active_template_key_prev: tuple | None = None
         self._temple_negot_key_prev: tuple | None = None

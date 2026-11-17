@@ -3,6 +3,79 @@ from dataclasses import dataclass, field
 from typing import Optional
 NEGOTIATION_IMG = 'NEGOTBUT.IMG'
 CONFIRM_IMG = 'YESNO.IMG'
+_TEMPLATE_TABLES: dict = {}
+
+def own_template_table():
+    if 'own' not in _TEMPLATE_TABLES:
+        from active_template_reader import build_template_table
+        from session.tavern_node import TavernNode
+        _TEMPLATE_TABLES['own'] = build_template_table(TavernNode.template_declarations)
+    return _TEMPLATE_TABLES['own']
+
+def signal_template_table():
+    if 'signal' not in _TEMPLATE_TABLES:
+        from active_template_reader import COUNTER_OFFER_DECLARATIONS, build_template_table
+        from session.tavern_node import TavernNode
+        _TEMPLATE_TABLES['signal'] = build_template_table(TavernNode.template_declarations, COUNTER_OFFER_DECLARATIONS)
+    return _TEMPLATE_TABLES['signal']
+
+def yesno_menu_back_of(shop_state) -> bool:
+    from active_template_reader import template_table_pointers
+    from shop_popup_detector import yesno_menu_back
+    return yesno_menu_back(shop_state, template_table_pointers(signal_template_table()))
+
+def input_prompt_label(candidate) -> str:
+    from active_template_reader import COUNTER_OFFER_TABLE, input_prompt_kind
+    if input_prompt_kind(candidate, own_template_table()):
+        return 'tavern'
+    if input_prompt_kind(candidate, COUNTER_OFFER_TABLE):
+        return 'negotiation'
+    return ''
+_LISTS_CACHE: list = [None, None]
+
+def tavern_lists_of(shop_state, analyzer, anchor) -> tuple[list, object, list]:
+    if shop_state is None or not getattr(shop_state, 'gate_open', False) or analyzer is None:
+        return ([], None, [])
+    cached = _LISTS_CACHE[0]
+    if cached is not None and cached[0] is shop_state and (cached[1] is analyzer) and (cached[2] == anchor):
+        return _LISTS_CACHE[1]
+    from session.tavern_node import TAVERN_NODE
+    buy_items, buy_span = TAVERN_NODE.read_shop_buy_span(analyzer, anchor)
+    rooms = TAVERN_NODE.read_room_items(analyzer, anchor)
+    result = (list(buy_items or []), buy_span, list(rooms or []))
+    _LISTS_CACHE[0] = (shop_state, analyzer, anchor)
+    _LISTS_CACHE[1] = result
+    return result
+
+def own_surface_of(shop_state, analyzer, anchor, *, l3_by_mif: bool) -> tuple[str, str, bool]:
+    if shop_state is None or not getattr(shop_state, 'gate_open', False):
+        return ('none', '', False)
+    from session.tavern_node import TAVERN_NODE, TavernNode
+    newpop = bool(getattr(shop_state, 'newpop_fg', False))
+    drinks = getattr(shop_state, 'price_cache', None) == TAVERN_NODE.DRINKS_PRICE_CACHE_SIG
+    buy_items, _buy_span, room_items = tavern_lists_of(shop_state, analyzer, anchor) if newpop else ([], None, [])
+    if newpop and drinks and buy_items:
+        return ('shop_buy', '', True)
+    if newpop and (not drinks) and room_items:
+        if is_room_list_context(shop_state, l3_by_mif=l3_by_mif):
+            return ('shop_rooms', '', True)
+        return ('none', '', False)
+    from shop_popup_detector import ptr_group_signature_entry_of
+    entry = ptr_group_signature_entry_of(shop_state, TavernNode.menu_signatures, menu_back_on_yesno=yesno_menu_back_of(shop_state))
+    if entry is not None:
+        return (entry[0], entry[1], True)
+    return ('none', '', False)
+
+def is_room_list_context(shop_state, *, l3_by_mif: bool) -> bool:
+    active = (getattr(shop_state, 'active_facility_name', '') or '').lower()
+    other_facility_conversation = bool(active) and active != 'tavern'
+    return not other_facility_conversation and (active == 'tavern' or bool(l3_by_mif))
+
+def shop_kind_facility_of(shop_state, analyzer, anchor, *, l3_by_mif: bool) -> tuple[str, str]:
+    kind, _title, _own = own_surface_of(shop_state, analyzer, anchor, l3_by_mif=l3_by_mif)
+    if kind == 'none':
+        return ('none', '')
+    return (kind, 'tavern')
 
 @dataclass
 class TavernSignals:
@@ -51,9 +124,10 @@ def gather_tavern_signals(analyzer, anchor: int, *, shop_kind: str, shop_facilit
     cur_ptr_surface = ''
     try:
         from active_template_reader import read_active_template_candidates, template_surface_kind
+        _table = signal_template_table()
         cands = read_active_template_candidates(analyzer, anchor)
         for c in cands:
-            k = _safe(lambda: template_surface_kind(c) or '', '')
+            k = _safe(lambda: template_surface_kind(c, _table) or '', '')
             if k:
                 active_surfaces.add(k)
                 if getattr(c, 'source', '') == 'current_ptr' and (not cur_ptr_surface):

@@ -6,11 +6,10 @@ import assist_settings as settings
 import i18n_helper as i18n
 from assist_log import recog as _recog
 from display_intent import PASSIVE_DISPLAY_ALLOWED_OWNERS, DisplayIntent, PollFrame
-from hierarchy_state import active_facility_session_name, facility_owners_for_session, CONVERSATION_PANEL_OWNERS
+from hierarchy_state import active_facility_session, conversation_panel_owners
 from panel_mode_resolver import closing_panel_mode as _closing_panel_mode, panel_is_effective, required_owner_for_mode, resolve_flush_mode, restore_translate_target
 _log = logging.getLogger('RTESArenaAssist')
 SCREEN_CHANGE_CLEAR_PRIORITY = -1
-_CONVERSATION_TAB_OWNERS = CONVERSATION_PANEL_OWNERS
 
 class UiRouter:
 
@@ -177,7 +176,7 @@ class UiRouter:
             if required_owner_for_mode(cur) is None:
                 return None
             return resolve_flush_mode(winner_mode=cur, top_level=top_level, emulate=emulate, winner_has_content=False, winner_is_tab_owner=False, fallback_setting=fb, current_owner=owner_now, panel_active=panel_active)
-        return resolve_flush_mode(winner_mode=intent.mode if intent.mode is not None else cur, winner_floor_mode=intent.floor_mode, top_level=top_level, emulate=emulate, winner_has_content=self._winner_has_content(intent), winner_is_tab_owner=bool(intent.kind == 'translation' and (intent.panel_owner or '') in _CONVERSATION_TAB_OWNERS), fallback_setting=fb, current_owner=owner_now, panel_active=panel_active)
+        return resolve_flush_mode(winner_mode=intent.mode if intent.mode is not None else cur, winner_floor_mode=intent.floor_mode, top_level=top_level, emulate=emulate, winner_has_content=self._winner_has_content(intent), winner_is_tab_owner=bool(intent.kind == 'translation' and (intent.panel_owner or '') in conversation_panel_owners()), fallback_setting=fb, current_owner=owner_now, panel_active=panel_active)
 
     def _log_flush_winner(self, intent: Optional[DisplayIntent], frame: Optional[PollFrame]) -> None:
         if intent is None:
@@ -424,13 +423,14 @@ class UiRouter:
 
     def _log_facility_display_invariant(self, frame: Optional[PollFrame]) -> None:
         w = self._window
-        session_name = active_facility_session_name(w)
+        session = active_facility_session(w)
+        session_name = getattr(session, 'name', '') if session is not None else ''
         if not session_name:
             return
         owner = self.current_owner()
-        if owner and owner in facility_owners_for_session(session_name):
+        if owner and owner in session.facility_l4_owners():
             return
-        story_owner = {'mages': 'mages_story', 'palace': 'palace_dialog', 'temple': 'temple_story'}.get(getattr(w, '_facility_story_kind_now', ''), '')
+        story_owner = getattr(w, '_facility_story_owner_now', '') or ''
         if owner and owner == story_owner:
             return
         key = (session_name, owner, getattr(w, '_screen_id_prev', None), getattr(w, '_img_name_prev', '') or '', frame.top_level if frame is not None else '')

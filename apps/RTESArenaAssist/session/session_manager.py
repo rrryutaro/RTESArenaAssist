@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import List, Optional
-from hierarchy_state import FACILITY_CONVERSATION_SESSION_NAMES, is_facility_session_area_blocked
+from hierarchy_state import is_facility_session_area_blocked
 from .session_base import SessionBase, SessionContext
 
 class SessionManager:
@@ -33,7 +33,7 @@ class SessionManager:
 
     @staticmethod
     def _facility_area_blocked(session: SessionBase, ctx: SessionContext) -> bool:
-        return getattr(session, 'name', '') in FACILITY_CONVERSATION_SESSION_NAMES and is_facility_session_area_blocked(ctx.area)
+        return bool(getattr(session, 'is_facility_session', False)) and is_facility_session_area_blocked(ctx.area)
 
     def poll(self, ctx: SessionContext) -> None:
         stopped_this_poll: Optional[SessionBase] = None

@@ -7,6 +7,16 @@ _TAVERN_NONE_HYSTERESIS_POLLS = 3
 
 class TavernSession(SessionBase):
     name = 'tavern'
+    bar_label_key = 'recognition.conv_shop_owner'
+    is_facility_session = True
+
+    def facility_l4_owners(self) -> frozenset:
+        from session.tavern_node import TAVERN_NODE
+        return frozenset(TAVERN_NODE.panel_owners)
+
+    def on_facility_stopped(self, w) -> None:
+        from session.tavern_node import TAVERN_NODE
+        TAVERN_NODE.on_exit(w)
 
     def __init__(self) -> None:
         super().__init__()
@@ -14,25 +24,11 @@ class TavernSession(SessionBase):
 
     @staticmethod
     def _is_tavern_context(ctx: SessionContext) -> bool:
-        mif = (ctx.interior_mif_name or '').upper()
-        if mif.startswith('TAVERN'):
-            return True
-        if ctx.facility_kind == 'TAVERN':
-            return True
-        return False
-
-    @staticmethod
-    def _facility_info_unknown(ctx: SessionContext) -> bool:
-        return not ctx.interior_mif_name and (not ctx.facility_kind)
+        return (ctx.facility_kind or '').upper() == 'TAVERN'
 
     @staticmethod
     def _known_non_tavern_context(ctx: SessionContext) -> bool:
-        mif = (ctx.interior_mif_name or '').upper()
-        if mif and (not mif.startswith('TAVERN')):
-            return True
-        if ctx.facility_kind and ctx.facility_kind != 'TAVERN':
-            return True
-        return False
+        return (ctx.facility_kind or '').upper() != 'TAVERN'
 
     def _shop_state_of(self, ctx: SessionContext) -> tuple[str, str]:
         extras_kind = ctx.extras.get('shop_kind') if ctx.extras else None
@@ -45,14 +41,9 @@ class TavernSession(SessionBase):
             return ('none', '')
         if not ctx.in_interior:
             return ('none', '')
-        state = ctx.shop_state
-        if state is None:
-            return ('none', '')
-        kind = getattr(state, 'kind', '') or 'none'
-        facility = getattr(state, 'owner_kind', '') or ''
-        if ctx.yesno_menu_recovery and (not facility) and (kind in _TAVERN_FACILITY_KINDS):
-            facility = 'tavern'
-        return (kind, facility)
+        from session.tavern_signals import shop_kind_facility_of
+        from l3_facility import decided_by_mif
+        return shop_kind_facility_of(ctx.shop_state, ctx.analyzer, ctx.anchor, l3_by_mif=decided_by_mif(ctx.interior_mif_name, ctx.in_interior))
 
     @staticmethod
     def _is_negotiation_active(ctx: SessionContext) -> bool:
@@ -80,9 +71,11 @@ class TavernSession(SessionBase):
         except Exception:
             return False
         _tavern_surface_kinds = ('tavern_stay_days', 'tavern_sneak_confirm', 'tavern_sneak_result')
+        from session.tavern_signals import own_template_table
+        _table = own_template_table()
         for c in candidates:
             try:
-                kind = template_surface_kind(c)
+                kind = template_surface_kind(c, _table)
             except Exception:
                 continue
             if kind in _tavern_surface_kinds:
@@ -144,7 +137,7 @@ class TavernSession(SessionBase):
             return False
         if ctx.top_level_state != 'normal-play' or not ctx.in_interior:
             return False
-        if not (self._is_tavern_context(ctx) or self._facility_info_unknown(ctx)):
+        if not self._is_tavern_context(ctx):
             return False
         kind, facility = self._shop_state_of(ctx)
         if facility == 'tavern' and kind in _TAVERN_FACILITY_KINDS:

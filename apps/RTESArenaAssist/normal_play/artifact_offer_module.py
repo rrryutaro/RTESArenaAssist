@@ -42,9 +42,9 @@ def _read_text(w) -> str | None:
 def _read_counter_prompts(w) -> dict | None:
     out: dict = {}
     try:
-        from active_template_reader import candidate_signature, read_active_template_candidates, template_surface_kind
+        from active_template_reader import COUNTER_OFFER_TABLE, candidate_signature, read_active_template_candidates, template_surface_kind
         for c in read_active_template_candidates(w._analyzer, w._anchor):
-            if template_surface_kind(c) == _COUNTER_SURFACE:
+            if template_surface_kind(c, COUNTER_OFFER_TABLE) == _COUNTER_SURFACE:
                 text = c.text.rstrip()
                 if text:
                     out[candidate_signature(c)] = text

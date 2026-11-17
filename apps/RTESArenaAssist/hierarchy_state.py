@@ -1,24 +1,26 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Optional
-from normal_play.equipment_l4_state import EQUIPMENT_OWNERS
 L1_TO_CODE_NAME = {'pregame': ('A', '起動中'), 'chargen': ('B', 'キャラクター作成中'), 'normal-play': ('C', '通常ゲーム中')}
 AREA_TO_BASE_KEY = {'dungeon': 'dungeon', 'city': 'city', 'wilderness': 'wilderness'}
 BASE_KEY_TO_AREA = {'dungeon': 'dungeon', 'city': 'city', 'wilderness': 'wilderness'}
 AREA_TO_C_CODE_NAME = {'dungeon': ('C1', 'ダンジョン'), 'city': ('C2', '街'), 'wilderness': ('C3', 'フィールド')}
-CONVERSATION_SESSION_NAMES = frozenset({'npc_chat', 'tavern', 'temple', 'equipment', 'mages_guild'})
-FACILITY_CONVERSATION_SESSION_NAMES = frozenset({'tavern', 'temple', 'equipment', 'mages_guild'})
 FACILITY_SESSION_BLOCKED_AREAS = frozenset({'dungeon', 'wilderness'})
 
 def is_facility_session_area_blocked(area: Optional[str]) -> bool:
     return (area or '') in FACILITY_SESSION_BLOCKED_AREAS
-CONVERSATION_PANEL_OWNERS = frozenset({'npc_dialog', 'npc_conversation', 'npc_message', 'active_template', 'temple_active_template', 'temple_menu', 'temple_cost', 'temple_prompt', 'temple_priest_reply', 'temple_cure', 'negotiation', 'tavern_yesno', 'tavern_rumor_type', 'tavern_negotiation', 'shop_menu', 'shop_rumor_type', 'shop_buy', 'shop_rooms', 'equipment_menu', 'equipment_list', 'equipment_negotiation', 'equipment_reply', 'equipment_repair', 'mages_menu', 'mages_list', 'mages_spellmaker', 'mages_effect_menu', 'mages_spelldetail', 'mages_prompt', 'mages_confirm', 'mages_negotiation', 'mages_reply', 'mages_story', 'palace_dialog', 'temple_story', 'artifact_offer', 'travel_hover_location', 'travel_estimate', 'travel_table', 'travel_search', 'camp_menu', 'camp_prompt', 'equipment_detail', 'equipment_drop_confirm'})
-_TAVERN_L4_MODULE_OWNERS = frozenset({'negotiation', 'active_template', 'npc_dialog'})
-FACILITY_OWNER_SETS_BY_SESSION = {'tavern': frozenset({'shop_menu', 'shop_rumor_type', 'shop_buy', 'shop_rooms', 'tavern_yesno', 'tavern_rumor_type', 'tavern_negotiation'}) | _TAVERN_L4_MODULE_OWNERS, 'temple': frozenset({'temple_menu', 'temple_active_template', 'temple_priest_reply', 'temple_cost', 'temple_prompt', 'temple_cure'}), 'equipment': EQUIPMENT_OWNERS, 'mages_guild': frozenset({'mages_menu', 'mages_list', 'mages_spellmaker', 'mages_effect_menu', 'mages_spelldetail', 'mages_prompt', 'mages_confirm', 'mages_negotiation', 'mages_reply'})}
-FACILITY_CONVERSATION_PANEL_OWNERS = frozenset().union(*FACILITY_OWNER_SETS_BY_SESSION.values())
+CONVERSATION_PANEL_OWNERS = frozenset({'npc_dialog', 'npc_conversation', 'npc_message', 'active_template', 'travel_hover_location', 'travel_estimate', 'travel_table', 'travel_search', 'camp_menu', 'camp_prompt', 'equipment_detail', 'equipment_drop_confirm'})
+_FACILITY_L4_PANEL_OWNERS: set = set()
 
-def facility_owners_for_session(session_name: str) -> frozenset:
-    return FACILITY_OWNER_SETS_BY_SESSION.get(session_name or '', frozenset())
+def register_facility_l4_panel_owners(owners) -> None:
+    _FACILITY_L4_PANEL_OWNERS.update(owners or ())
+_REGISTERED_CONVERSATION_PANEL_OWNERS: set = set()
+
+def register_conversation_panel_owners(owners) -> None:
+    _REGISTERED_CONVERSATION_PANEL_OWNERS.update((o for o in owners or () if o))
+
+def conversation_panel_owners() -> frozenset:
+    return CONVERSATION_PANEL_OWNERS | frozenset(_REGISTERED_CONVERSATION_PANEL_OWNERS)
 
 def area_from_base_location_key(key: Optional[str]) -> str:
     return BASE_KEY_TO_AREA.get(key or '', '')
@@ -26,29 +28,43 @@ def area_from_base_location_key(key: Optional[str]) -> str:
 def base_location_key_from_area(area: Optional[str]) -> str:
     return AREA_TO_BASE_KEY.get(area or '', '')
 
-def active_session_name(window, *, require_active: bool=True) -> str:
+def _active_session(window, *, require_active: bool=True):
     try:
         session = window._session_manager.active_session()
     except (AttributeError, RuntimeError):
-        return ''
+        return None
     if session is None:
-        return ''
+        return None
     if require_active:
         try:
             if not session.is_active():
-                return ''
+                return None
         except AttributeError:
             pass
         except RuntimeError:
-            return ''
+            return None
+    return session
+
+def active_session_name(window, *, require_active: bool=True) -> str:
+    session = _active_session(window, require_active=require_active)
     return getattr(session, 'name', '') if session is not None else ''
 
+def is_facility_session(session) -> bool:
+    return getattr(session, 'is_facility_session', False) is True
+
+def active_facility_session(window, *, require_active: bool=True):
+    session = _active_session(window, require_active=require_active)
+    return session if is_facility_session(session) else None
+
 def active_facility_session_name(window, *, require_active: bool=True) -> str:
-    name = active_session_name(window, require_active=require_active)
-    return name if name in FACILITY_CONVERSATION_SESSION_NAMES else ''
+    session = active_facility_session(window, require_active=require_active)
+    return getattr(session, 'name', '') if session is not None else ''
+
+def is_conversation_session(session) -> bool:
+    return is_facility_session(session) or getattr(session, 'name', '') == 'npc_chat'
 
 def is_facility_conversation_owner(owner: str) -> bool:
-    return (owner or '') in FACILITY_CONVERSATION_PANEL_OWNERS
+    return (owner or '') in _FACILITY_L4_PANEL_OWNERS
 
 def _base_location_key_from_window(window) -> str:
     return base_location_key_from_area(getattr(window, '_last_non_interior_area', '') or '')
@@ -91,8 +107,7 @@ class SeparationHierarchy:
         top = top_level_state if top_level_state is not None else getattr(window, '_top_level_state', 'pregame')
         interior = bool(in_interior if in_interior is not None else getattr(window, '_in_interior', False))
         if npc_active is None:
-            session_name = active_session_name(window)
-            npc_active = bool(getattr(window, '_npc_conversation_active', False)) or session_name in CONVERSATION_SESSION_NAMES
+            npc_active = bool(getattr(window, '_npc_conversation_active', False)) or is_conversation_session(_active_session(window))
         key = base_location_key if base_location_key is not None else _base_location_key_from_window(window)
         return cls.from_parts(top_level_state=top, c_area=c_area, base_location_key=key, in_interior=interior, npc_active=bool(npc_active))
 
@@ -121,6 +136,7 @@ class HierarchyRecognitionInput:
     screen_id: Optional[str] = None
     panel_owner: str = ''
     active_session: str = ''
+    facility_session_active: bool = False
     interior_mif_name: str = ''
     interior_raw: Optional[int] = None
 
@@ -128,7 +144,7 @@ class HierarchyRecognitionInput:
         return (hierarchy.path_codes, hierarchy.path_names)
 
     def anomaly_key(self) -> tuple:
-        if self.top_level_state == 'normal-play' and self.c_area == 'dungeon' and (self.active_session in FACILITY_CONVERSATION_SESSION_NAMES or is_facility_conversation_owner(self.panel_owner)):
+        if self.top_level_state == 'normal-play' and self.c_area == 'dungeon' and (self.facility_session_active or is_facility_conversation_owner(self.panel_owner)):
             return ('dungeon_facility_rejected', self.top_level_state, self.c_area, self.active_session, self.panel_owner, self.mif_name)
         if self.top_level_state == 'normal-play' and (not self.c_area):
             return ('normal_play_area_unknown', self.top_level_state, self.mif_name, self.img_name, self.screen_id)
@@ -140,4 +156,4 @@ class HierarchyRecognitionInput:
 
     def values_for_log(self) -> dict:
         return {'top': self.top_level_state, 'area': self.c_area or '', 'interior': self.in_interior, 'npc_active': self.npc_active, 'npc_phase': self.npc_phase, 'mif': self.mif_name or '', 'img': self.img_name or '', 'screen': self.screen_id or '', 'owner': self.panel_owner or '', 'session': self.active_session or '', 'interior_mif': self.interior_mif_name or '', 'interior_raw': self.interior_raw}
-__all__ = ['AREA_TO_C_CODE_NAME', 'BASE_KEY_TO_AREA', 'CONVERSATION_PANEL_OWNERS', 'CONVERSATION_SESSION_NAMES', 'FACILITY_CONVERSATION_PANEL_OWNERS', 'FACILITY_CONVERSATION_SESSION_NAMES', 'FACILITY_OWNER_SETS_BY_SESSION', 'FACILITY_SESSION_BLOCKED_AREAS', 'facility_owners_for_session', 'is_facility_session_area_blocked', 'HierarchyRecognitionInput', 'L1_TO_CODE_NAME', 'SeparationHierarchy', 'active_facility_session_name', 'active_session_name', 'area_from_base_location_key', 'base_location_key_from_area', 'is_facility_conversation_owner']
+__all__ = ['AREA_TO_C_CODE_NAME', 'BASE_KEY_TO_AREA', 'CONVERSATION_PANEL_OWNERS', 'FACILITY_SESSION_BLOCKED_AREAS', 'conversation_panel_owners', 'register_conversation_panel_owners', 'register_facility_l4_panel_owners', 'is_facility_session', 'is_conversation_session', 'active_facility_session', 'is_facility_session_area_blocked', 'HierarchyRecognitionInput', 'L1_TO_CODE_NAME', 'SeparationHierarchy', 'active_facility_session_name', 'active_session_name', 'area_from_base_location_key', 'base_location_key_from_area', 'is_facility_conversation_owner']

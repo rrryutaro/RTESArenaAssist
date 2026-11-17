@@ -432,7 +432,7 @@ def _decide(w, img: str) -> EquipmentL4Snapshot:
             return EquipmentL4Snapshot(state=S.REPLY, img=img, reason='response_evidence', reply_text=chosen.text, reply_source_offset=chosen.source_offset)
     if img == 'YESNO.IMG' and _estimate_restorable(w, popup_frame):
         return EquipmentL4Snapshot(state=S.REPAIR_ESTIMATE, img=img, reason='estimate_restored')
-    if img in ('POPUP3.IMG', 'POPUP4.IMG') and _list_is_foreground(w):
+    if img in ('POPUP3.IMG', 'POPUP4.IMG') and _list_is_foreground(w) and popup_frame:
         return EquipmentL4Snapshot(state=S.BUY_LIST, img=img, reason='list_img')
     return EquipmentL4Snapshot(state=S.NONE, img=img, reason='none')
 

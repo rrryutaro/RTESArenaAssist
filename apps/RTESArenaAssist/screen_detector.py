@@ -68,7 +68,9 @@ def popup_frame_is_drawn(frame: tuple[int, int, int, int] | None) -> bool | None
         return None
     if not 0 < top < bottom <= full_bottom:
         return None
-    return right < full_right or bottom < full_bottom
+    if right < full_right or bottom < full_bottom:
+        return True
+    return None
 
 def is_popup_frame_drawn(analyzer, anchor: int) -> bool | None:
     return popup_frame_is_drawn(read_popup_frame(analyzer, anchor))

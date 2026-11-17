@@ -1,16 +1,21 @@
 from __future__ import annotations
 from .session_base import SessionBase, SessionContext
-
-def _norm_facility_kind(fk: str) -> str:
-    return (fk or '').upper().replace('_', '').replace(' ', '')
-_MAGES_MIF_PREFIXES = ('MAGE',)
-_OTHER_FACILITY_MIF_PREFIXES = ('TAVERN', 'TEMPLE', 'EQUIP', 'ARMOR', 'PALACE')
 _MAGES_FACILITY_KINDS = frozenset({'shop_menu'})
 _MAGES_NPC_PHASES = frozenset({111, 112})
 _MAGES_NONE_HYSTERESIS_POLLS = 3
 
 class MagesGuildSession(SessionBase):
     name = 'mages_guild'
+    bar_label_key = 'recognition.conv_shop_owner'
+    is_facility_session = True
+
+    def facility_l4_owners(self) -> frozenset:
+        from session.mages_guild_node import MAGES_GUILD_NODE
+        return frozenset(MAGES_GUILD_NODE.panel_owners)
+
+    def on_facility_stopped(self, w) -> None:
+        from session.mages_guild_node import MAGES_GUILD_NODE
+        MAGES_GUILD_NODE.on_exit(w)
 
     def __init__(self) -> None:
         super().__init__()
@@ -19,22 +24,11 @@ class MagesGuildSession(SessionBase):
 
     @staticmethod
     def _is_mages_context(ctx: SessionContext) -> bool:
-        mif = (ctx.interior_mif_name or '').upper()
-        if mif.startswith(_MAGES_MIF_PREFIXES):
-            return True
-        if _norm_facility_kind(ctx.facility_kind) == 'MAGESGUILD':
-            return True
-        return False
+        return (ctx.facility_kind or '').upper() == 'MAGES_GUILD'
 
     @staticmethod
     def _known_non_mages_context(ctx: SessionContext) -> bool:
-        mif = (ctx.interior_mif_name or '').upper()
-        if mif and mif.startswith(_OTHER_FACILITY_MIF_PREFIXES):
-            return True
-        fk = _norm_facility_kind(ctx.facility_kind)
-        if fk and fk != 'MAGESGUILD':
-            return True
-        return False
+        return (ctx.facility_kind or '').upper() != 'MAGES_GUILD'
 
     def _shop_state_of(self, ctx: SessionContext) -> tuple[str, str]:
         extras_kind = ctx.extras.get('shop_kind') if ctx.extras else None
@@ -47,12 +41,10 @@ class MagesGuildSession(SessionBase):
             return ('none', '')
         if not ctx.in_interior:
             return ('none', '')
-        state = ctx.shop_state
-        if state is None:
-            return ('none', '')
-        kind = getattr(state, 'kind', '') or 'none'
-        facility = getattr(state, 'owner_kind', '') or ''
-        return (kind, facility)
+        from mages_signals import own_menu_of
+        if own_menu_of(ctx.shop_state)[0]:
+            return ('shop_menu', 'mages_guild')
+        return ('none', '')
 
     @staticmethod
     def _is_guild_modal_img(ctx: SessionContext) -> bool:
@@ -83,6 +75,8 @@ class MagesGuildSession(SessionBase):
         if self._active:
             return False
         if ctx.top_level_state != 'normal-play' or not ctx.in_interior:
+            return False
+        if not self._is_mages_context(ctx):
             return False
         kind, facility = self._shop_state_of(ctx)
         if facility == 'mages_guild' and kind in _MAGES_FACILITY_KINDS:

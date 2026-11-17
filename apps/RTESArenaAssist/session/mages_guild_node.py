@@ -1,7 +1,6 @@
 from __future__ import annotations
 import logging
 from assist_log import recog as _recog
-from hierarchy_state import facility_owners_for_session
 from mages_signals import BUYSPELL_IMG, CONFIRM_IMG, DESC_LO_AFTER_SELECTION, DESC_LO_DETECT_REPLY, DESC_LO_MENU_TO_LIST, DETECT_COST_HINT, DETECT_KNOWN_HINT, DIALOG_NEGOTIATION, DIALOG_NORMAL, FAMILY_MENU_DETECT_CREATE, FRAME_EDIT_EFFECTS, FRAME_MAIN_MENU, FRAME_POPUP, FRAME_SUB_MENU, INVENTORY_LIST_IMG, LIST_IMGS, LIST_ON, MENU_IMG, NEGOTIATION_IMGS, SPELLMAKER_IMG, TYPE_POPUP
 from mages_signals import CONFIRM_FAMILY as CONFIRM_FAMILY_VALUE
 from normal_play.mages_owner_names import EFFECT_MENU_OWNER, LIST_OWNER, MENU_OWNER, MENU_OWNER_CONFIRM, MENU_OWNER_PROMPT, MENU_OWNER_SPELLDETAIL, NEGOTIATION_OWNER, REPLY_OWNER, SPELLMAKER_OWNER
@@ -57,9 +56,23 @@ DECISION_TABLE = ((lambda s: s['family'] == CONFIRM_FAMILY_VALUE, ('confirm', ME
 
 class MagesGuildNode(FacilityNode):
     name = 'mages_guild'
+    has_conversation_session = True
+    panel_owners = frozenset({'mages_menu', 'mages_list', 'mages_spellmaker', 'mages_effect_menu', 'mages_spelldetail', 'mages_prompt', 'mages_confirm', 'mages_negotiation', 'mages_reply'})
+    story_kind = 'mages'
+    story_owner = 'mages_story'
+    outside_conversation_owners = frozenset({story_owner})
+
+    def bar_sub_label_key(self, w, *, active_session_name: str, screen_suppresses_conversation_label: bool, img_name: str) -> str:
+        from session.mages_bar_label import mages_bar_sub_label_key
+        return mages_bar_sub_label_key(w, active_session_name=active_session_name)
     menu_signatures = ((frozenset({'Buy', 'Detect Magic', 'Spellmaker', 'Steal', 'Exit'}), 'shop_menu', 'MENU OPTIONS'), (frozenset({'Buy', 'Detect Magic', 'Steal', 'Exit'}), 'shop_menu', 'MENU OPTIONS'), (frozenset({'Potions', 'Magic items', 'Spells'}), 'shop_menu', 'PICK ITEM'), (frozenset({'Potions', 'Spells'}), 'shop_menu', 'PICK ITEM'), (frozenset({'Potion', 'Magic item'}), 'shop_menu', 'PICK ITEM'))
 
     def classify_view(self, w, *, shop_state=None, shop_img_name: str='', **_signals) -> FacilityView:
+        if shop_state is not None:
+            from mages_signals import own_menu_of
+            if own_menu_of(shop_state)[0]:
+                from store_surface import publish_menu_front
+                publish_menu_front(w)
         cached = peek_mages_view(w)
         if cached is not None:
             return cached
@@ -118,11 +131,50 @@ class MagesGuildNode(FacilityNode):
         if view is None:
             view = self.classify_view(w, shop_state=shop_state, shop_img_name=shop_img_name)
         return poll_mages_render(w, view=view, shop_state=shop_state, shop_img_name=shop_img_name, top_level_state=top_level_state)
+    owns_shop_replies = True
+
+    def session_view(self, w, *, shop_state, shop_img_name: str, foreground_ptr):
+        view = super().session_view(w, shop_state=shop_state, shop_img_name=shop_img_name, foreground_ptr=foreground_ptr)
+        if view is not None:
+            w._mages_view_now = view
+        return view
+
+    def story_of(self, w, *, ptr, view) -> str:
+        from l3_facility import l3_decided_by_mif
+        from normal_play.mages_guild_render_module import _story_body_source, _story_hold_pointer, _STORY_BUF_OFFSET, _STORY_CHOICE_OVERLAY_PTR
+        strong = ptr in (_STORY_BUF_OFFSET, _STORY_CHOICE_OVERLAY_PTR)
+        view_owns = bool(view is not None and view.message_source_owned)
+        if l3_decided_by_mif(w) and (_story_body_source(ptr) or _story_hold_pointer(ptr)) and (strong or not view_owns):
+            return 'mages'
+        return ''
+
+    def poll_story(self, w, *, active: bool, foreground_ptr=None) -> bool:
+        from normal_play.mages_guild_render_module import poll_mages_story
+        if not active:
+            return bool(poll_mages_story(w, guild_active=False))
+        return bool(poll_mages_story(w, guild_active=True, foreground_ptr=foreground_ptr))
+
+    def prepare_render(self, w) -> None:
+        w._mages_reply_polled_in_render = False
+        w._mages_reply_handled_in_render = False
+
+    def on_l3_exit(self, w) -> None:
+        self.prepare_render(w)
+        super().on_l3_exit(w)
+
+    def poll_reply_unit(self, w, *, shop_state, entry_handled: bool, img_name: str, shop_menu_visible: bool, area: str='') -> tuple[bool, bool]:
+        active, started = self.latch(w)
+        if entry_handled or not active:
+            return (False, False)
+        if getattr(w, '_mages_reply_polled_in_render', False):
+            return (True, bool(getattr(w, '_mages_reply_handled_in_render', False)))
+        from normal_play.mages_reply_module import poll_mages_reply
+        return (True, poll_mages_reply(w, mages_active=True, mages_just_started=started, img_name=img_name, view=getattr(w, '_mages_view_now', None)))
 
     def on_exit(self, w) -> None:
         from normal_play.mages_guild_render_module import reset_mages_render_keys
         try:
-            closed = w._ui_router.clear_if_owner_in(facility_owners_for_session(self.name), mode='translate', place_list_owners=_PLACE_LIST_OWNERS)
+            closed = w._ui_router.clear_if_owner_in(frozenset(self.panel_owners), mode='translate', place_list_owners=_PLACE_LIST_OWNERS)
         except (AttributeError, RuntimeError) as exc:
             closed = ''
             _log.debug('facility stop display clear skipped: %s', exc)

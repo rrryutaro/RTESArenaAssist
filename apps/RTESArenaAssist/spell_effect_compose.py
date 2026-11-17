@@ -382,7 +382,7 @@ def _synthesize_spellmaker_effect_text(detail: dict, analyzer, anchor: int):
         return ('', '')
     slot = max(0, min(int(detail.get('slot', 0) or 0), 2))
     try:
-        from mages_spellmaker import read_record_values
+        from spell_record_reader import read_record_values
         from spell_effect_text import render_en
         values = read_record_values(analyzer, anchor, slot)
         if not values:

@@ -1,8 +1,6 @@
 from __future__ import annotations
-from screen_img_signals import YESNO_IMG
 from typing import Callable
-_FACILITY_PREFIX_KEYS: tuple[tuple[str, str], ...] = (('TAVERN', 'recognition.facility_tavern'), ('TEMPLE', 'recognition.facility_temple'), ('EQUIPMENT', 'recognition.facility_equipment'), ('ARMORS', 'recognition.facility_equipment'), ('EQUIP', 'recognition.facility_equipment'), ('MAGES', 'recognition.facility_mages'), ('MAGE', 'recognition.facility_mages'), ('WCRYPT', 'recognition.facility_crypt'), ('TOWER', 'recognition.facility_tower'), ('BS', 'recognition.facility_house'), ('PALACE', 'recognition.facility_palace'), ('TOWNPAL', 'recognition.facility_palace'), ('VILPAL', 'recognition.facility_palace'))
-_SESSION_FACILITY_KEYS = {'tavern': 'recognition.facility_tavern', 'temple': 'recognition.facility_temple', 'equipment': 'recognition.facility_equipment', 'mages_guild': 'recognition.facility_mages', 'palace': 'recognition.facility_palace'}
+_FACILITY_KEYS: dict[str, str] = {'tavern': 'recognition.facility_tavern', 'temple': 'recognition.facility_temple', 'equipment': 'recognition.facility_equipment', 'mages_guild': 'recognition.facility_mages', 'crypt': 'recognition.facility_crypt', 'tower': 'recognition.facility_tower', 'house': 'recognition.facility_house', 'palace': 'recognition.facility_palace'}
 
 def resolve_stable_screen_name(stable_id: str, raw_id: str, raw_name: str, tr: Callable[[str], str]) -> str:
     if stable_id == 'npc_dialog':
@@ -19,76 +17,14 @@ def format_recognition_label(screen_name: str, indicator: str, facility_label: s
             return f'{base} {screen_name}'
         return base
     return f'{indicator} {screen_name}{conv_label}' if indicator else f'{screen_name}{conv_label}'
-_TEMPLE_SURFACE_SUB_KEYS = {'temple_donate_amount': 'recognition.temple_sub_donate_amount', 'tavern_cost_show': 'recognition.temple_sub_cost_show', 'tavern_cost_confirm': 'recognition.temple_sub_cost_confirm'}
 
-def temple_sub_state_key(active_template_surface: str, panel_owner: str, img_name: str='', current_text: str='') -> str:
-    owner = panel_owner or ''
-    img = (img_name or '').upper()
-    surface = active_template_surface or ''
-    text = ' '.join((current_text or '').split())
-    if owner == 'temple_menu':
-        return 'recognition.temple_sub_menu'
-    if owner == 'temple_cure':
-        return 'recognition.temple_sub_curing'
-    if owner == 'temple_prompt':
-        return 'recognition.temple_sub_donate_amount'
-    if owner == 'temple_cost':
-        if surface == 'tavern_cost_confirm' or img == 'YESNO.IMG':
-            return 'recognition.temple_sub_cost_confirm'
-        return 'recognition.temple_sub_cost_show'
-    if owner == 'temple_priest_reply':
-        if text.startswith('Receive our blessings'):
-            return 'recognition.temple_sub_bless_result'
-        if text.startswith('Curing '):
-            return 'recognition.temple_sub_curing'
-        if 'thou art healed' in text or 'is in perfect condition' in text:
-            return 'recognition.temple_sub_heal_result'
-        if text.startswith('We humbly beg your forgivness'):
-            return 'recognition.temple_sub_cure_result'
-        return 'recognition.temple_sub_response'
-    if owner == 'active_template':
-        return _TEMPLE_SURFACE_SUB_KEYS.get(surface, '')
-    return ''
-_EQUIPMENT_STATE_SUB_KEYS = {'menu': 'recognition.equipment_sub_menu', 'buy_list': 'recognition.equipment_sub_list', 'item_select': 'recognition.equipment_sub_list', 'repair_entry': 'recognition.equipment_sub_repair_entry', 'repair_jobs': 'recognition.equipment_sub_repair_jobs', 'repair_status_reply': 'recognition.equipment_sub_repair_status', 'repair_done_reply': 'recognition.equipment_sub_repair_done', 'repair_estimate': 'recognition.equipment_sub_repair_estimate', 'reply': 'recognition.equipment_sub_response'}
-
-def equipment_sub_state_key(l4_state, *, active_template_surface: str='', img_name: str='', negot_counter_active: bool=False) -> str:
-    state = str(getattr(l4_state, 'value', l4_state) or '')
-    img = (img_name or '').upper()
-    surface = active_template_surface or ''
-    if negot_counter_active or surface == 'negotiation_counter':
-        return 'recognition.equipment_sub_amount_counter'
-    if state == 'negotiation':
-        if img == YESNO_IMG:
-            return 'recognition.equipment_sub_final_confirm'
-        return 'recognition.equipment_sub_amount_present'
-    return _EQUIPMENT_STATE_SUB_KEYS.get(state, '')
-_MAGES_KIND_SUB_KEYS = {'menu': 'recognition.mages_sub_menu', 'spellmaker': 'recognition.mages_sub_spellmaker', 'effect_menu': 'recognition.mages_sub_spellmaker_edit_effects', 'spelldetail': 'recognition.mages_sub_spelldetail', 'prompt': 'recognition.mages_sub_prompt', 'confirm': 'recognition.mages_sub_confirm', 'negotiation': 'recognition.mages_sub_negotiation', 'reply': 'recognition.mages_sub_response'}
-_MAGES_LIST_TITLE_SUB_KEYS = {'Targets': 'recognition.mages_sub_spellmaker_targets', 'Effects': 'recognition.mages_sub_spellmaker_effects', 'Effect Options': 'recognition.mages_sub_spellmaker_effect_options', 'Spells': 'recognition.mages_sub_buy_spells', 'Potions': 'recognition.mages_sub_buy_potions', 'Magic Items': 'recognition.mages_sub_magic_items', 'Inventory': 'recognition.mages_sub_inventory'}
-
-def mages_sub_state_key(view, list_title: str='') -> str:
-    kind = str(getattr(view, 'l4_kind', '') or '')
-    if kind == 'list':
-        return _MAGES_LIST_TITLE_SUB_KEYS.get((list_title or '').strip(), 'recognition.mages_sub_list')
-    return _MAGES_KIND_SUB_KEYS.get(kind, '')
-
-def known_facility_kind(*hints: str) -> str:
-    for h in hints:
-        if (h or '') in _SESSION_FACILITY_KEYS:
-            return h
-    return ''
-
-def facility_recognition_key(interior_mif_name: str, in_interior: bool, *, active_session_name: str='', shop_owner_kind: str='', persisted_facility_kind: str='', area: str='') -> str:
+def facility_key_of(facility: str, in_interior: bool, *, area: str='') -> str:
     if not in_interior:
         return ''
-    u = (interior_mif_name or '').upper()
-    for prefix, key in _FACILITY_PREFIX_KEYS:
-        if u.startswith(prefix):
-            return key
+    key = _FACILITY_KEYS.get(facility or '')
+    if key:
+        return key
     if area == 'dungeon':
         return ''
-    for hint in (active_session_name, shop_owner_kind, persisted_facility_kind):
-        key = _SESSION_FACILITY_KEYS.get(hint or '')
-        if key:
-            return key
     return 'recognition.facility_other'
-__all__ = ['OVERLAY_SCREEN_IDS', 'resolve_stable_screen_name', 'format_recognition_label', 'equipment_sub_state_key', 'mages_sub_state_key', 'facility_recognition_key', 'known_facility_kind', 'temple_sub_state_key']
+__all__ = ['OVERLAY_SCREEN_IDS', 'resolve_stable_screen_name', 'format_recognition_label', 'facility_key_of']

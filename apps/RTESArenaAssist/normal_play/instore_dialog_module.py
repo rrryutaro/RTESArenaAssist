@@ -1,7 +1,6 @@
 from __future__ import annotations
 import logging
 _log = logging.getLogger('RTESArenaAssist')
-_SHOP_SURFACE_KINDS = ('shop_menu', 'shop_buy', 'shop_rooms', 'shop_rumor_type')
 
 def _hex_ptr(ptr) -> str:
     return f'0x{ptr:04X}' if ptr is not None else '?'
@@ -51,6 +50,13 @@ def _log_no_display(cands, changed_hits, current_ptr, contains_pointer, npc_phas
     _summary = ', '.join((f'0x{c.source_offset:X}:hit={c.lookup_hit} changed={c in changed_hits} ptr_match={contains_pointer(c, current_ptr)} text={c.text[:60]!r}' for c in cands))
     _log.debug('in_store_resp no display candidate (ptr=%s %s)', _hex_ptr(current_ptr), _summary)
 
+def _source_head_hex(w, chosen) -> str:
+    try:
+        raw = w._analyzer.read_bytes(w._anchor + chosen.source_offset, 8)
+    except (OSError, AttributeError, TypeError):
+        return '-'
+    return raw.hex(' ') if raw else '-'
+
 def _show_instore_response(w, ctx, chosen, reason, current_ptr) -> bool:
     try:
         from normal_play.npc_dialog_module import _show_npc_dialog_text
@@ -61,7 +67,7 @@ def _show_instore_response(w, ctx, chosen, reason, current_ptr) -> bool:
         _ndl_ja_tmpl, _ndl_ph = _ndl_result
         _ndl_ja = _ndl_msg.format_japanese(_ndl_ja_tmpl, _ndl_ph)
         _show_npc_dialog_text(w, chosen.text, _ndl_ja, panel_only=ctx.panel_only_interior_message)
-        _log.info('npc_dialog message displayed (route=in_store_resp src=0x%X reason=%s panel_only=%s ptr=%s text=%r ph=%s)', chosen.source_offset, reason, ctx.panel_only_interior_message, _hex_ptr(current_ptr), chosen.text[:80], _ndl_ph)
+        _log.info('npc_dialog message displayed (route=in_store_resp src=0x%X reason=%s panel_only=%s ptr=%s text=%r ph=%s head=%s)', chosen.source_offset, reason, ctx.panel_only_interior_message, _hex_ptr(current_ptr), chosen.text[:80], _ndl_ph, _source_head_hex(w, chosen))
         return True
     except (ImportError, AttributeError):
         return False
@@ -92,10 +98,10 @@ def forget_on_interior_left(w) -> None:
     w._instore_resp_current_key = None
     w._instore_resp_text_by_offset = None
 
-def _poll_route1_instore_response(w, ctx, *, entry_handled: bool, npc_overlay_active: bool, in_interior: bool, npc_phase_raw, facility_active_now: bool, instore_resp_handled: bool, internalized_facility_active: bool=False, shop_menu_visible: bool=False, shop_buy_active: bool=False, shop_state_kind: str='none', negot_handled: bool=False, active_tmpl_handled: bool=False, c_area: str=''):
+def _poll_route1_instore_response(w, ctx, *, entry_handled: bool, npc_overlay_active: bool, in_interior: bool, npc_phase_raw, facility_active_now: bool, instore_resp_handled: bool, internalized_facility_active: bool=False, shop_menu_visible: bool=False, shop_buy_active: bool=False, store_surface_now: bool=False, negot_handled: bool=False, active_tmpl_handled: bool=False, c_area: str=''):
     if c_area == 'dungeon':
         return (instore_resp_handled, entry_handled)
-    _l4_surface_now = internalized_facility_active or shop_menu_visible or shop_buy_active or (shop_state_kind in _SHOP_SURFACE_KINDS) or negot_handled or active_tmpl_handled
+    _l4_surface_now = internalized_facility_active or shop_menu_visible or shop_buy_active or store_surface_now or negot_handled or active_tmpl_handled
     _probe = None
 
     def _read_probe():
@@ -107,8 +113,8 @@ def _poll_route1_instore_response(w, ctx, *, entry_handled: bool, npc_overlay_ac
     def _has_visible_response_hit() -> bool:
         _cands_probe, _ptr_probe, _contains = _read_probe()
         return any((c.text and c.lookup_hit and _contains(c, _ptr_probe) for c in _cands_probe))
-    _prev_poll_shop_kind = getattr(w, '_shop_kind_prev_poll', 'none')
-    _facility_response_override = not entry_handled and in_interior and facility_active_now and (_prev_poll_shop_kind in _SHOP_SURFACE_KINDS) and _has_visible_response_hit()
+    from store_surface import store_surface_prev
+    _facility_response_override = not entry_handled and in_interior and facility_active_now and store_surface_prev(w) and _has_visible_response_hit()
     _route1_active = npc_overlay_active or _facility_response_override
     _route1_surface_allowed = not _l4_surface_now or _facility_response_override
     if not (not entry_handled and _route1_active and in_interior and _route1_surface_allowed):

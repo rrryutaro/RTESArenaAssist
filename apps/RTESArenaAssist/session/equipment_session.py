@@ -1,16 +1,21 @@
 from __future__ import annotations
 from normal_play.equipment_l4_state import EQUIPMENT_OWNERS, EquipmentL4State, get_equipment_l4_state
 from .session_base import SessionBase, SessionContext
-
-def _norm_facility_kind(fk: str) -> str:
-    return (fk or '').upper().replace('_', '').replace(' ', '')
-_EQUIPMENT_MIF_PREFIXES = ('EQUIP', 'ARMOR')
-_OTHER_FACILITY_MIF_PREFIXES = ('TAVERN', 'TEMPLE', 'MAGE', 'PALACE')
 _EQUIPMENT_PANEL_OWNERS = EQUIPMENT_OWNERS
 _EQUIPMENT_NONE_HYSTERESIS_POLLS = 3
 
 class EquipmentSession(SessionBase):
     name = 'equipment'
+    bar_label_key = 'recognition.conv_shop_owner'
+    is_facility_session = True
+
+    def facility_l4_owners(self) -> frozenset:
+        from session.equipment_node import EQUIPMENT_NODE
+        return frozenset(EQUIPMENT_NODE.panel_owners)
+
+    def on_facility_stopped(self, w) -> None:
+        from session.equipment_node import EQUIPMENT_NODE
+        EQUIPMENT_NODE.on_exit(w)
 
     def __init__(self) -> None:
         super().__init__()
@@ -19,22 +24,11 @@ class EquipmentSession(SessionBase):
 
     @staticmethod
     def _is_equipment_context(ctx: SessionContext) -> bool:
-        mif = (ctx.interior_mif_name or '').upper()
-        if mif.startswith(_EQUIPMENT_MIF_PREFIXES):
-            return True
-        if _norm_facility_kind(ctx.facility_kind) == 'EQUIPMENT':
-            return True
-        return False
+        return (ctx.facility_kind or '').upper() == 'EQUIPMENT'
 
     @staticmethod
     def _known_non_equipment_context(ctx: SessionContext) -> bool:
-        mif = (ctx.interior_mif_name or '').upper()
-        if mif and mif.startswith(_OTHER_FACILITY_MIF_PREFIXES):
-            return True
-        fk = _norm_facility_kind(ctx.facility_kind)
-        if fk and fk != 'EQUIPMENT':
-            return True
-        return False
+        return (ctx.facility_kind or '').upper() != 'EQUIPMENT'
 
     def _shop_state_of(self, ctx: SessionContext) -> tuple[str, str]:
         extras_kind = ctx.extras.get('shop_kind') if ctx.extras else None
@@ -47,12 +41,10 @@ class EquipmentSession(SessionBase):
             return ('none', '')
         if not ctx.in_interior:
             return ('none', '')
-        state = ctx.shop_state
-        if state is None:
-            return ('none', '')
-        kind = getattr(state, 'kind', '') or 'none'
-        owner = getattr(state, 'owner_kind', '') or ''
-        return (kind, owner)
+        from equipment_signals import own_menu_of
+        if own_menu_of(ctx.shop_state)[0]:
+            return ('shop_menu', 'equipment')
+        return ('none', '')
 
     @staticmethod
     def _resolve_l4_state(ctx: SessionContext):
@@ -72,12 +64,7 @@ class EquipmentSession(SessionBase):
             return EquipmentL4State.NONE
 
     def _is_confirmed_equipment_facility(self, ctx: SessionContext) -> bool:
-        if self._is_equipment_context(ctx):
-            return True
-        w = ctx.extras.get('window') if ctx.extras else None
-        if w is None:
-            return False
-        return (getattr(w, '_interior_facility_kind', '') or '') == 'equipment'
+        return self._is_equipment_context(ctx)
 
     @property
     def last_img(self) -> str:

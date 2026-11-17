@@ -54,8 +54,10 @@ def poll_negotiation(w, *, img_name: str, top_level_state: str) -> bool:
         return False
     try:
         from active_template_reader import read_active_template_candidates, template_surface_kind
+        from session.tavern_signals import own_template_table
+        _tavern_table = own_template_table()
         for _c in read_active_template_candidates(w._analyzer, w._anchor):
-            _k = template_surface_kind(_c)
+            _k = template_surface_kind(_c, _tavern_table)
             if _k and _k.startswith('tavern_'):
                 return False
     except Exception:
@@ -90,13 +92,13 @@ def poll_negotiation(w, *, img_name: str, top_level_state: str) -> bool:
     _counter_rendered = False
     if _ndl is not None:
         try:
-            from active_template_reader import read_active_template_candidates, template_surface_kind
+            from active_template_reader import COUNTER_OFFER_TABLE, read_active_template_candidates, template_surface_kind
             _ap_ctx_key = (img_name, top_level_state, 'negot')
             _allow_slot = _ap_ctx_key != w._negot_prompts_ctx_prev
             w._negot_prompts_ctx_prev = _ap_ctx_key
             for c in read_active_template_candidates(w._analyzer, w._anchor):
                 try:
-                    _is_counter = template_surface_kind(c) == 'negotiation_counter'
+                    _is_counter = template_surface_kind(c, COUNTER_OFFER_TABLE) == 'negotiation_counter'
                 except Exception:
                     _is_counter = False
                 if c.source == 'active_slot' and (not _allow_slot) and (not _is_counter):

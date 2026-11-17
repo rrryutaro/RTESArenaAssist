@@ -12,10 +12,6 @@ _RESOLVE_CACHE_ATTR = '_palace_dialog_resolve_cache'
 _POINTER_UNSET = object()
 _TEXT_BYTES = frozenset(bytes(range(32, 127)) + b'\n\r\t')
 
-def is_palace_interior_mif(interior_mif_name: str | None) -> bool:
-    u = (interior_mif_name or '').upper()
-    return u.startswith(('PALACE', 'TOWNPAL', 'VILPAL', 'IMPPAL'))
-
 def _is_text_bytes(seg: bytes) -> bool:
     return bool(seg) and all((b in _TEXT_BYTES for b in seg))
 
@@ -214,4 +210,4 @@ def poll_palace_dialog(w, *, palace_active: bool, foreground_ptr=_POINTER_UNSET)
     accepted = occurrence if kind == 'new' or unit is None else unit[0]
     setattr(w, _UNIT_ATTR, (accepted, source[0], source[2], en))
     return True
-__all__ = ['poll_palace_dialog', 'is_palace_interior_mif', 'assemble_dialog_text']
+__all__ = ['poll_palace_dialog', 'assemble_dialog_text']

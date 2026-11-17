@@ -13,6 +13,9 @@ def _app_dir() -> str:
     from assist_window import _APP_DIR
     return _APP_DIR
 
+def reset_facility_on_connect(win) -> None:
+    win._interior_facility_kind = ''
+
 def on_connect_done(win, pid: int, anchor: int):
     win._analyzer = win._worker.analyzer
     win._anchor = anchor
@@ -21,7 +24,7 @@ def on_connect_done(win, pid: int, anchor: int):
     win._npc_dialog_prev = ''
     from normal_play import npc_conversation_module as _npc_conversation
     _npc_conversation.reset_on_connect(win)
-    win._interior_facility_kind = ''
+    reset_facility_on_connect(win)
     itl.load()
     win._conn_btn.setEnabled(True)
     win._conn_btn.setText(i18n.tr('connection.disconnect'))

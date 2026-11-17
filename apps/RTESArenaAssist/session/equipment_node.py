@@ -1,12 +1,21 @@
 from __future__ import annotations
 import logging
-from hierarchy_state import facility_owners_for_session
 from .facility_node import FacilityNode, register_facility_node
 _log = logging.getLogger('RTESArenaAssist')
 _PLACE_LIST_OWNERS = frozenset({'npc_dialog', 'npc_conversation', 'npc_message'})
 
 class EquipmentNode(FacilityNode):
     name = 'equipment'
+    has_conversation_session = True
+
+    @property
+    def panel_owners(self) -> frozenset:
+        from normal_play.equipment_l4_state import EQUIPMENT_OWNERS
+        return EQUIPMENT_OWNERS
+
+    def bar_sub_label_key(self, w, *, active_session_name: str, screen_suppresses_conversation_label: bool, img_name: str) -> str:
+        from session.equipment_bar_label import equipment_bar_sub_label_key
+        return equipment_bar_sub_label_key(w, active_session_name=active_session_name, img_name=img_name)
     menu_signatures = ((frozenset({'Buy', 'Sell', 'Repair', 'Steal', 'Exit'}), 'shop_menu', 'MENU OPTIONS'), (frozenset({'Weapon', 'Armor'}), 'shop_menu', 'BUY OPTIONS'))
 
     def classify_view(self, w, *, shop_state=None, shop_img_name: str='', **_signals):
@@ -23,6 +32,24 @@ class EquipmentNode(FacilityNode):
     def read_sell_repair_items(analyzer, anchor):
         from equipment_shop_list_reader import read_sell_repair_item_list
         return read_sell_repair_item_list(analyzer, anchor)
+    owns_shop_replies = True
+
+    def prepare_render(self, w) -> None:
+        w._equipment_reply_polled_in_render = False
+        w._equipment_reply_handled_in_render = False
+
+    def on_l3_exit(self, w) -> None:
+        self.prepare_render(w)
+        super().on_l3_exit(w)
+
+    def poll_reply_unit(self, w, *, shop_state, entry_handled: bool, img_name: str, shop_menu_visible: bool, area: str='') -> tuple[bool, bool]:
+        active, started = self.latch(w)
+        if entry_handled or not active:
+            return (False, False)
+        if getattr(w, '_equipment_reply_polled_in_render', False):
+            return (True, bool(getattr(w, '_equipment_reply_handled_in_render', False)))
+        from normal_play.equipment_reply_module import poll_equipment_reply
+        return (True, poll_equipment_reply(w, equipment_active=True, equipment_just_started=started, img_name=img_name, shop_menu_visible=shop_menu_visible))
 
     def on_exit(self, w) -> None:
         from normal_play.equipment_l4_state import reset_equipment_l4_state
@@ -41,7 +68,7 @@ class EquipmentNode(FacilityNode):
         except Exception:
             pass
         current = getattr(w, '_panel_owner', '') or ''
-        if current in facility_owners_for_session(self.name):
+        if current in frozenset(self.panel_owners):
             _log.info('facility session stopped -> clearing L4 display (session=%s owner=%r)', self.name, current)
             try:
                 w._ui_router.clear_if_owner(current, mode='translate', clear_place_list=current in _PLACE_LIST_OWNERS)

@@ -21,6 +21,14 @@ CONFIRM_IMG = 'YESNO.IMG'
 COST_SURFACE_KINDS = frozenset({'tavern_cost_show', 'tavern_cost_confirm'})
 COST_IMG_ALLOWED = {CONFIRM_IMG: frozenset({'tavern_cost_confirm'}), LIST_POPUP_IMG: frozenset({'tavern_cost_show'}), MENU_IMG: frozenset({'tavern_cost_show'})}
 _CURRENT_PTR_UNSET = object()
+_TEMPLATE_TABLE: list = []
+
+def template_table():
+    if not _TEMPLATE_TABLE:
+        from active_template_reader import build_template_table
+        from session.temple_node import TempleNode
+        _TEMPLATE_TABLE.append(build_template_table(TempleNode.template_declarations))
+    return _TEMPLATE_TABLE[0]
 RESULT_BASELINE_ATTR = '_temple_result_baseline'
 
 def _bytes(analyzer, anchor: int, off: int, length: int):
@@ -64,12 +72,13 @@ def is_result_text(text: str) -> bool:
 
 def select_cost_candidate(candidates, img: str):
     from active_template_reader import template_surface_kind
+    _table = template_table()
     allowed = COST_IMG_ALLOWED.get((img or '').upper())
     for want_source in ('current_ptr', 'active_slot'):
         for c in candidates:
             if getattr(c, 'source', '') != want_source:
                 continue
-            kind = template_surface_kind(c)
+            kind = template_surface_kind(c, _table)
             if kind not in COST_SURFACE_KINDS:
                 continue
             if allowed is not None and kind not in allowed:
@@ -83,6 +92,28 @@ def reset_result_baseline(window) -> None:
             delattr(window, RESULT_BASELINE_ATTR)
     except AttributeError:
         pass
+YESNO_MENU_BACK_ATTR = '_temple_yesno_menu_back'
+
+def resolve_yesno_menu_back(w, *, img_name: str, temple_active: bool) -> bool:
+    from screen_img_signals import YESNO_IMG
+    back = False
+    if (img_name or '').upper() == YESNO_IMG and temple_active:
+        try:
+            from temple_dialog_reader import classify_temple_phase
+            phase, _ = classify_temple_phase(w._analyzer, w._anchor)
+        except Exception:
+            phase = ''
+        back = phase == 'menu'
+    setattr(w, YESNO_MENU_BACK_ATTR, back)
+    return back
+
+def own_menu_of(shop_state, *, window=None) -> tuple[bool, str]:
+    from session.temple_node import TempleNode
+    from active_template_reader import template_table_pointers
+    from shop_popup_detector import ptr_group_signature_of, yesno_menu_back
+    back = bool(getattr(window, YESNO_MENU_BACK_ATTR, False)) if window is not None else False
+    back = back or yesno_menu_back(shop_state, template_table_pointers(template_table()))
+    return ptr_group_signature_of(shop_state, TempleNode.menu_signatures, menu_back_on_yesno=back)
 
 def read_signals(analyzer, anchor: int, *, foreground_ptr=_CURRENT_PTR_UNSET, img: str='', shop_state=None, window=None) -> dict:
     img_up = (img or '').upper()
@@ -94,7 +125,7 @@ def read_signals(analyzer, anchor: int, *, foreground_ptr=_CURRENT_PTR_UNSET, im
     aux = _u8(analyzer, anchor, DIALOG_ACTIVE_OFFSET)
     mode = _u8(analyzer, anchor, MODE_OFFSET)
     desc = _u16(analyzer, anchor, DIAG_DESC_OFFSET)
-    ptr_menu = bool(shop_state is not None and getattr(shop_state, 'kind', '') == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'temple'))
+    ptr_menu = own_menu_of(shop_state, window=window)[0]
     out = family == 0 and sel == 0 and (aux == 0)
     menu_box = gate not in (FRAME_POPUP, None)
     cure_view = None

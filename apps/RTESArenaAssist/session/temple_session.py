@@ -6,6 +6,16 @@ _TEMPLE_NONE_HYSTERESIS_POLLS = 3
 
 class TempleSession(SessionBase):
     name = 'temple'
+    bar_label_key = 'recognition.conv_priest'
+    is_facility_session = True
+
+    def facility_l4_owners(self) -> frozenset:
+        from session.temple_node import TEMPLE_NODE
+        return frozenset(TEMPLE_NODE.panel_owners)
+
+    def on_facility_stopped(self, w) -> None:
+        from session.temple_node import TEMPLE_NODE
+        TEMPLE_NODE.on_exit(w)
 
     def __init__(self) -> None:
         super().__init__()
@@ -14,25 +24,11 @@ class TempleSession(SessionBase):
 
     @staticmethod
     def _is_temple_context(ctx: SessionContext) -> bool:
-        mif = (ctx.interior_mif_name or '').upper()
-        if mif.startswith('TEMPLE'):
-            return True
-        if ctx.facility_kind == 'TEMPLE':
-            return True
-        return False
-
-    @staticmethod
-    def _facility_info_unknown(ctx: SessionContext) -> bool:
-        return not ctx.interior_mif_name and (not ctx.facility_kind)
+        return (ctx.facility_kind or '').upper() == 'TEMPLE'
 
     @staticmethod
     def _known_non_temple_context(ctx: SessionContext) -> bool:
-        mif = (ctx.interior_mif_name or '').upper()
-        if mif and (not mif.startswith('TEMPLE')):
-            return True
-        if ctx.facility_kind and ctx.facility_kind != 'TEMPLE':
-            return True
-        return False
+        return (ctx.facility_kind or '').upper() != 'TEMPLE'
 
     def _shop_state_of(self, ctx: SessionContext) -> tuple[str, str]:
         extras_kind = ctx.extras.get('shop_kind') if ctx.extras else None
@@ -45,12 +41,11 @@ class TempleSession(SessionBase):
             return ('none', '')
         if not ctx.in_interior:
             return ('none', '')
-        state = ctx.shop_state
-        if state is None:
-            return ('none', '')
-        kind = getattr(state, 'kind', '') or 'none'
-        owner = getattr(state, 'owner_kind', '') or ''
-        return (kind, owner)
+        from temple_signals import own_menu_of
+        _w = ctx.extras.get('window') if ctx.extras else None
+        if own_menu_of(ctx.shop_state, window=_w)[0]:
+            return ('shop_menu', 'temple')
+        return ('none', '')
 
     @staticmethod
     def _is_yesno_active(ctx: SessionContext) -> bool:
@@ -92,7 +87,8 @@ class TempleSession(SessionBase):
         if ctx.analyzer is None:
             return False
         try:
-            from active_template_reader import read_active_template_candidates, input_prompt_facility
+            from active_template_reader import read_active_template_candidates, input_prompt_kind
+            from temple_signals import template_table
             import npc_dialog_lookup as _ndl
         except ImportError:
             return False
@@ -108,7 +104,7 @@ class TempleSession(SessionBase):
                 except Exception:
                     continue
             elif c.source == 'active_slot':
-                if input_prompt_facility(c) != 'temple':
+                if not input_prompt_kind(c, template_table()):
                     continue
                 try:
                     if _ndl.lookup(c.text) is not None:
@@ -155,7 +151,7 @@ class TempleSession(SessionBase):
             return False
         if ctx.top_level_state != 'normal-play' or not ctx.in_interior:
             return False
-        if not (self._is_temple_context(ctx) or self._facility_info_unknown(ctx)):
+        if not self._is_temple_context(ctx):
             return False
         kind, owner = self._shop_state_of(ctx)
         if owner == 'temple' and kind in _TEMPLE_OWNER_KINDS:

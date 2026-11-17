@@ -108,6 +108,16 @@ def _ptr_area(ptr) -> str | None:
         return 'story'
     return 'other'
 
+def yesno_menu_back_of(shop_state) -> bool:
+    from active_template_reader import COUNTER_OFFER_TABLE, template_table_pointers
+    from shop_popup_detector import yesno_menu_back
+    return yesno_menu_back(shop_state, template_table_pointers(COUNTER_OFFER_TABLE))
+
+def own_menu_of(shop_state) -> tuple[bool, str]:
+    from session.mages_guild_node import MagesGuildNode
+    from shop_popup_detector import ptr_group_signature_of
+    return ptr_group_signature_of(shop_state, MagesGuildNode.menu_signatures, menu_back_on_yesno=yesno_menu_back_of(shop_state))
+
 def read_signals(analyzer, anchor: int, *, foreground_ptr=_CURRENT_PTR_UNSET, img: str='', shop_state=None, cache_on=None) -> dict:
     img_up = (img or '').upper()
     frame = _u8(analyzer, anchor, FRAME_OFFSET)
@@ -120,7 +130,7 @@ def read_signals(analyzer, anchor: int, *, foreground_ptr=_CURRENT_PTR_UNSET, im
     ptr = _u16(analyzer, anchor, CURRENT_TEXT_PTR_OFFSET) if foreground_ptr is _CURRENT_PTR_UNSET else foreground_ptr
     ptr = ptr if isinstance(ptr, int) else None
     family = ptr >> 8 & 255 if ptr is not None else None
-    ptr_menu = bool(shop_state is not None and getattr(shop_state, 'kind', '') == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'mages_guild'))
+    ptr_menu = own_menu_of(shop_state)[0]
     cost_text = _contains_normalized(analyzer, anchor, RESPONSE_TEXT_OFFSET, 160, DETECT_MAGIC_QUOTE_PREFIX)
     ident_text = _contains_normalized(analyzer, anchor, NEGOTIATION_TEXT_OFFSET, 256, DETECT_MAGIC_IDENTIFIED)
     known_raw = _ascii_cstr(analyzer, anchor, MAGES_MENU_TEXT_OFFSET, 96)

@@ -13,9 +13,6 @@ _POINTER_UNSET = object()
 _TEXT_BYTES = frozenset(bytes(range(32, 127)) + b'\n\r\t')
 _resolve_state: dict[str, bool] = {}
 
-def is_temple_interior_mif(interior_mif_name: str | None) -> bool:
-    return (interior_mif_name or '').upper().startswith('TEMPLE')
-
 def is_strong_story_pointer(ptr: int | None) -> bool:
     return ptr in (_DIALOG_BUF_OFFSET, _CHOICE_OVERLAY_PTR)
 
@@ -227,4 +224,4 @@ def poll_temple_story(w, *, temple_active: bool, foreground_ptr=_POINTER_UNSET) 
     accepted = occurrence if kind == 'new' or unit is None else unit[0]
     setattr(w, _UNIT_ATTR, (accepted, source[0], source[2], en))
     return True
-__all__ = ['poll_temple_story', 'is_temple_interior_mif', 'is_strong_story_pointer']
+__all__ = ['poll_temple_story', 'is_strong_story_pointer']

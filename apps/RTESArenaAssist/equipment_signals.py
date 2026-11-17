@@ -65,8 +65,32 @@ def is_estimate_rendered(text: str) -> bool:
     s = (text or '').strip()
     return bool(s) and '%' not in s and s.startswith(ESTIMATE_TEMPLATE_PREFIXES)
 
+def yesno_menu_back_of(shop_state) -> bool:
+    from active_template_reader import COUNTER_OFFER_TABLE, template_table_pointers
+    from shop_popup_detector import yesno_menu_back
+    return yesno_menu_back(shop_state, template_table_pointers(COUNTER_OFFER_TABLE))
+
+def own_menu_of(shop_state) -> tuple[bool, str]:
+    if getattr(shop_state, 'newpop_fg', False):
+        return (False, '')
+    from session.equipment_node import EquipmentNode
+    from shop_popup_detector import ptr_group_signature_of
+    return ptr_group_signature_of(shop_state, EquipmentNode.menu_signatures, menu_back_on_yesno=yesno_menu_back_of(shop_state))
+
+def own_list_front_of(shop_state, analyzer, anchor) -> bool:
+    if shop_state is None or not getattr(shop_state, 'newpop_fg', False):
+        return False
+    from session.equipment_node import EQUIPMENT_NODE, EquipmentNode
+    from shop_popup_detector import ptr_group_signature_entry_of
+    if ptr_group_signature_entry_of(shop_state, EquipmentNode.menu_signatures, menu_back_on_yesno=yesno_menu_back_of(shop_state)) is None:
+        return False
+    try:
+        return bool(EQUIPMENT_NODE.read_sell_repair_items(analyzer, anchor))
+    except Exception:
+        return False
+
 def ptr_menu_of(shop_state, ptr) -> bool:
-    if not (shop_state is not None and getattr(shop_state, 'kind', '') == 'shop_menu' and (getattr(shop_state, 'owner_kind', '') == 'equipment')):
+    if not own_menu_of(shop_state)[0]:
         return False
     state_ptr = getattr(shop_state, 'ptr', None)
     try:
@@ -264,4 +288,4 @@ def read_signals(analyzer, anchor: int, *, foreground_ptr=_CURRENT_PTR_UNSET, im
         changed = [c for c in hits or [] if baseline.get(c.source_offset) != c.text]
         reply_changed = (changed[0].text, changed[0].source_offset) if changed else False
     return {'img': img_up, **img_columns(img_up), 'gate': gate, 'menu_box': menu_box, 'ptr': ptr, 'family': family, 'ptr_menu': ptr_menu, 'list_flag': list_flag, 'list_fg': list_flag == LIST_FLAG_LIST if list_flag is not None else None, 'negot_img': negot_img, 'negot_body': negot_body, 'status': status, 'entry': entry, 'item_slot': item_slot, 'estimate_template': estimate_template, 'estimate_text': estimate_text, 'jobs': jobs, 'reply_ptr': reply_ptr, 'reply_active': reply_active, 'reply_presence': reply_presence, 'reply_changed': reply_changed}
-__all__ = ['FRAME_OFFSET', 'CURRENT_TEXT_PTR_OFFSET', 'LIST_FLAG_OFFSET', 'RAW_TEMPLATE_OFFSET', 'DIALOG_PTR', 'FRAME_POPUP', 'LIST_FLAG_LIST', 'ESTIMATE_TEMPLATE_PREFIXES', 'REPAIR_ENTRY_PROMPT', 'REPLY_ALLOWED_IMGS', 'ACTIVE_REPLY_PREFIXES', 'PRESENCE_REPLY_PREFIXES', 'PRESENCE_IMGS', 'BUY_LIST_IMGS', 'NEGOTIATION_IMG', 'REPLY_BASELINE_ATTR', 'MENU_IMG', 'WEAPON_LIST_IMG', 'ARMOR_LIST_IMG', 'INVENTORY_LIST_IMG', 'REPAIR_MANAGE_IMG', 'CONFIRM_IMG', 'LIST_IMGS', 'REPAIR_POPUP_IMGS', 'img_columns', 'is_no_repair_reply_text', 'is_estimate_template', 'is_estimate_rendered', 'ptr_menu_of', 'reset_reply_baseline', 'read_signals']
+__all__ = ['FRAME_OFFSET', 'CURRENT_TEXT_PTR_OFFSET', 'LIST_FLAG_OFFSET', 'RAW_TEMPLATE_OFFSET', 'DIALOG_PTR', 'FRAME_POPUP', 'LIST_FLAG_LIST', 'ESTIMATE_TEMPLATE_PREFIXES', 'REPAIR_ENTRY_PROMPT', 'REPLY_ALLOWED_IMGS', 'ACTIVE_REPLY_PREFIXES', 'PRESENCE_REPLY_PREFIXES', 'PRESENCE_IMGS', 'BUY_LIST_IMGS', 'NEGOTIATION_IMG', 'REPLY_BASELINE_ATTR', 'MENU_IMG', 'WEAPON_LIST_IMG', 'ARMOR_LIST_IMG', 'INVENTORY_LIST_IMG', 'REPAIR_MANAGE_IMG', 'CONFIRM_IMG', 'LIST_IMGS', 'REPAIR_POPUP_IMGS', 'img_columns', 'is_no_repair_reply_text', 'is_estimate_template', 'is_estimate_rendered', 'own_menu_of', 'ptr_menu_of', 'reset_reply_baseline', 'read_signals']

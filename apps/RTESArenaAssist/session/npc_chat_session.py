@@ -8,6 +8,7 @@ _HOLD_PHASES = frozenset({NPC_PHASE_RESPONDING_OR_LOOT, NPC_PHASE_BUILDING_ENTRY
 
 class NpcChatSession(SessionBase):
     name = 'npc_chat'
+    bar_label_key = 'recognition.conv_npc'
 
     def try_start(self, ctx: SessionContext) -> bool:
         if ctx.top_level_state != 'normal-play':
