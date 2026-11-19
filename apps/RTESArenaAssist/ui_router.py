@@ -23,6 +23,7 @@ class UiRouter:
         self._obs_last_key = None
         self._unit_end_observer = None
         self._displayed_translation: Optional[tuple[str, str, str]] = None
+        self._panel_written = False
 
     def set_translation_observer(self, callback) -> None:
         self._translation_observer = callback
@@ -243,10 +244,16 @@ class UiRouter:
         if render is None:
             raise ValueError(f'unknown or unresolved display intent kind: {intent.kind!r}')
         before = previous_owner if previous_owner is not None else self.current_owner()
+        shown = self._displayed_translation
+        self._panel_written = False
         after = getattr(self, render)(intent)
         self._write_owner(intent)
-        if intent.kind == 'translation' and before and (self.current_owner() != before):
-            self._emit_unit_end(before, 'superseded', forget_key=False)
+        if intent.kind == 'translation':
+            if before and self.current_owner() != before:
+                self._emit_unit_end(before, 'superseded', forget_key=False)
+        elif shown is not None and self._panel_written and (intent.kind not in ('clear', 'combat_info')):
+            self._displayed_translation = None
+            self._emit_unit_end(shown[0], 'superseded', forget_key=False)
         if after is not None:
             after()
 
@@ -266,6 +273,7 @@ class UiRouter:
             _log.exception('translation_observer failed')
 
     def _update_layout_panel(self, en: str, ja: str) -> None:
+        self._panel_written = True
         panel = self._window._layout_translate_panel
         if panel is not None:
             panel.update_translation(en, ja)

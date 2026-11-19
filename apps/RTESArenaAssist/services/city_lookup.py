@@ -1,4 +1,7 @@
 from __future__ import annotations
+import json
+import logging
+import os
 from dataclasses import dataclass
 from functools import lru_cache
 from typing import Optional
@@ -9,6 +12,15 @@ from .arena_random import ArenaRandom
 from .arena_types import ArenaCityType, ArenaLocationType, Int2, Rect
 from .city_data import LocationData, is_data_available, is_world_map_available, load_city_generation_data, load_world_map_data
 from .city_facility_detector import FacilityPlacement, detect_city_facilities
+_log = logging.getLogger('RTESArenaAssist')
+
+def _recog(logger, msg, *args):
+    try:
+        from assist_log import recog
+    except ImportError:
+        logger.info(msg, *args)
+        return
+    recog(logger, msg, *args)
 _CITY_TYPE_KEY = {ArenaLocationType.CITY_STATE: 'city_state', ArenaLocationType.TOWN: 'town', ArenaLocationType.VILLAGE: 'village'}
 _CITY_TYPE_ENUM = {ArenaLocationType.CITY_STATE: ArenaCityType.CITY_STATE, ArenaLocationType.TOWN: ArenaCityType.TOWN, ArenaLocationType.VILLAGE: ArenaCityType.VILLAGE}
 _CITY_DIM = {ArenaLocationType.CITY_STATE: 6, ArenaLocationType.TOWN: 5, ArenaLocationType.VILLAGE: 4}
@@ -44,9 +56,61 @@ def _template_id(global_city_id: int, is_coastal: bool, location_type: ArenaLoca
 def _reserved_block_list_index(global_city_id: int, is_coastal: bool, location_type: ArenaLocationType) -> int:
     return get_city_reserved_block_list_index(is_coastal, _template_id(global_city_id, is_coastal, location_type))
 _previous_reserved_index: Optional[int] = None
+_previous_city_name: Optional[str] = None
+_game_process: Optional[tuple[int, int]] = None
+_STATE_FILENAME = 'generated_city.json'
+
+def _state_path() -> Optional[str]:
+    try:
+        from .map_ext_store import ext_data_dir
+        return os.path.join(ext_data_dir(), _STATE_FILENAME)
+    except Exception:
+        return None
+
+def _write_state() -> None:
+    path = _state_path()
+    if path is None or _game_process is None or _previous_reserved_index is None:
+        return
+    record = {'pid': _game_process[0], 'created': _game_process[1], 'reserved_index': _previous_reserved_index, 'city': _previous_city_name or ''}
+    try:
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        tmp = path + '.tmp'
+        with open(tmp, 'w', encoding='utf-8') as fh:
+            json.dump(record, fh, ensure_ascii=False)
+        os.replace(tmp, path)
+    except OSError:
+        _log.exception('generated city state write failed')
+
+def _read_state() -> Optional[dict]:
+    path = _state_path()
+    if path is None or not os.path.exists(path):
+        return None
+    try:
+        with open(path, encoding='utf-8') as fh:
+            record = json.load(fh)
+    except (OSError, ValueError):
+        _log.exception('generated city state read failed')
+        return None
+    return record if isinstance(record, dict) else None
+
+def bind_game_process(identity: Optional[tuple[int, int]]) -> None:
+    global _game_process, _previous_reserved_index, _previous_city_name
+    identity = tuple(identity) if identity is not None else None
+    if identity == _game_process:
+        return
+    _game_process = identity
+    _previous_reserved_index = None
+    _previous_city_name = None
+    record = _read_state() if identity is not None else None
+    if record is not None and (record.get('pid'), record.get('created')) == identity and isinstance(record.get('reserved_index'), int):
+        _previous_reserved_index = record['reserved_index']
+        _previous_city_name = str(record.get('city') or '')
+        _recog(_log, 'imperial tavern start state: inherited table=%d city=%r (same game process as the previous Assist run)', _previous_reserved_index, _previous_city_name)
+    else:
+        _recog(_log, 'imperial tavern start state: nothing to inherit (game process %s)', 'unknown' if identity is None else 'pid=%d' % identity[0])
 
 def note_generated_city(location: Optional['LocationRef']) -> None:
-    global _previous_reserved_index
+    global _previous_reserved_index, _previous_city_name
     if location is None:
         return
     province_id = location.province_id
@@ -58,11 +122,19 @@ def note_generated_city(location: Optional['LocationRef']) -> None:
         return
     city_gen = load_city_generation_data()
     global_city_id = get_global_city_id(location_id, province_id)
-    _previous_reserved_index = _reserved_block_list_index(global_city_id, city_gen.is_coastal(global_city_id), location_type)
+    index = _reserved_block_list_index(global_city_id, city_gen.is_coastal(global_city_id), location_type)
+    if index == _previous_reserved_index and location.name == _previous_city_name:
+        return
+    _previous_reserved_index = index
+    _previous_city_name = location.name
+    _recog(_log, 'imperial tavern start state: table=%d from city=%r', index, location.name)
+    _write_state()
 
 def forget_generated_city() -> None:
-    global _previous_reserved_index
+    global _previous_reserved_index, _previous_city_name, _game_process
     _previous_reserved_index = None
+    _previous_city_name = None
+    _game_process = None
 
 def _previous_city_reserved_blocks(city_gen) -> Optional[list]:
     if _previous_reserved_index is None:

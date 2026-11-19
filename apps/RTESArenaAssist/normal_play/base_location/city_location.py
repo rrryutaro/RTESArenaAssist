@@ -66,6 +66,8 @@ class CityMapSession(MapSessionBase):
         self._show_grid = ctx.show_grid
         self._show_static_flats = ctx.wild_show_static_flats
         if ctx.location_ref != self._city_ref:
+            from services.facility_name_store import get_store
+            get_store().clear()
             self._city_ref = ctx.location_ref
             self._city_name = ctx.location_ref.name if ctx.location_ref is not None else None
             self._load_city_grid(ctx.location_ref)
@@ -77,6 +79,8 @@ class CityMapSession(MapSessionBase):
     def reset_progress(self) -> None:
         if self._walkable is not None:
             self._bitmap = np.full(self._walkable.shape, 3, dtype=np.uint8)
+        from services.facility_name_store import get_store
+        get_store().clear()
         if self._city_ref is not None and self._map1 is not None:
             self._load_facility_entrances(self._city_ref)
 

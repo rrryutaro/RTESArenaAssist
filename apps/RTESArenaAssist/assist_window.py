@@ -147,12 +147,6 @@ class AssistWindow(QMainWindow):
         except Exception:
             pass
         try:
-            from controllers.map_ext_lifecycle import get_lifecycle
-            from services import facility_name_store
-            get_lifecycle().add_store(facility_name_store.get_store())
-        except Exception:
-            pass
-        try:
             from reading_highlight import ReadingHighlighter
             self._reading_highlighter = ReadingHighlighter(self)
 

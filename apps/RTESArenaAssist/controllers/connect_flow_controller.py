@@ -25,6 +25,13 @@ def on_connect_done(win, pid: int, anchor: int):
     from normal_play import npc_conversation_module as _npc_conversation
     _npc_conversation.reset_on_connect(win)
     reset_facility_on_connect(win)
+    try:
+        from services.city_lookup import bind_game_process
+        identity = getattr(win._analyzer, 'process_identity', None)
+        bind_game_process(identity() if callable(identity) else None)
+    except Exception:
+        import logging
+        logging.getLogger('RTESArenaAssist').exception('bind game process failed')
     itl.load()
     win._conn_btn.setEnabled(True)
     win._conn_btn.setText(i18n.tr('connection.disconnect'))

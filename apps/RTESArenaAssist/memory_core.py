@@ -78,6 +78,8 @@ class ArenaMemoryAnalyzer:
         k.VirtualQueryEx.restype = ctypes.c_size_t
         k.QueryFullProcessImageNameW.argtypes = [wintypes.HANDLE, wintypes.DWORD, wintypes.LPWSTR, ctypes.POINTER(wintypes.DWORD)]
         k.QueryFullProcessImageNameW.restype = wintypes.BOOL
+        k.GetProcessTimes.argtypes = [wintypes.HANDLE] + [ctypes.POINTER(wintypes.FILETIME)] * 4
+        k.GetProcessTimes.restype = wintypes.BOOL
 
     def find_pid(self) -> Optional[int]:
         snapshot = self._kernel32.CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
@@ -142,6 +144,16 @@ class ArenaMemoryAnalyzer:
 
     def is_attached(self) -> bool:
         return self.handle is not None
+
+    def process_identity(self) -> Optional[tuple[int, int]]:
+        if self.handle is None or self.pid is None:
+            return None
+        times = [wintypes.FILETIME() for _ in range(4)]
+        ok = self._kernel32.GetProcessTimes(self.handle, *[ctypes.byref(t) for t in times])
+        if not ok:
+            return None
+        created = times[0].dwHighDateTime << 32 | times[0].dwLowDateTime
+        return (int(self.pid), int(created))
 
     def _get_base_address(self, pid: int) -> int:
         TH32CS_SNAPMODULE = 8
