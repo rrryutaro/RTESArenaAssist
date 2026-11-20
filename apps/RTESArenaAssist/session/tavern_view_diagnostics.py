@@ -52,9 +52,25 @@ def log_tavern_view_diagnostics(w, *, view, shop_state, img: str) -> None:
         sess = ''
     from session.tavern_signals import yesno_menu_back_of
     recov = yesno_menu_back_of(shop_state)
-    key = (is_ctx, sub_key, own_kind, own, surface, owner, cands, img or '', npcconv, sess)
+    lists = _list_inputs_of(w, shop_state)
+    key = (is_ctx, sub_key, own_kind, own, surface, owner, cands, img or '', npcconv, sess, lists)
     if key != getattr(w, '_tavern_view_dbg_key', None):
         w._tavern_view_dbg_key = key
-        _log.warning('tavern view dbg: sub=%s view(+0x8F6E)=%s flag(+0x8F74)=%s own_kind=%s own=%s surface=%r owner=%r ptr=%s img=%r cands=[%s] npcconv=%s sess=%r recov=%s ctx_tavern=%s', sub_key.rsplit('.', 1)[-1] if sub_key else 'none', f'0x{tv_view:04X}' if tv_view is not None else 'None', f'0x{tv_flag:02X}' if tv_flag is not None else 'None', own_kind, own, surface, owner, f'0x{ptr:04X}' if ptr is not None else 'None', img, cands, npcconv, sess, recov, is_ctx)
+        _log.warning('tavern view dbg: sub=%s view(+0x8F6E)=%s flag(+0x8F74)=%s own_kind=%s own=%s surface=%r owner=%r ptr=%s img=%r cands=[%s] npcconv=%s sess=%r recov=%s ctx_tavern=%s newpop_fg=%s b7c4=%s ff2=%s price(+0xA836)=%s drinks=%s rooms=%s', sub_key.rsplit('.', 1)[-1] if sub_key else 'none', f'0x{tv_view:04X}' if tv_view is not None else 'None', f'0x{tv_flag:02X}' if tv_flag is not None else 'None', own_kind, own, surface, owner, f'0x{ptr:04X}' if ptr is not None else 'None', img, cands, npcconv, sess, recov, is_ctx, *lists)
     w._tavern_view_dbg_prev_ctx = is_ctx
+
+def _hex_u8(value) -> str:
+    return f'0x{value:02X}' if value is not None else '?'
+
+def _list_inputs_of(w, shop_state) -> tuple:
+    if shop_state is None:
+        return ('?', '?', '?', '?', '?', '?')
+    price = getattr(shop_state, 'price_cache', None)
+    try:
+        from session.tavern_signals import tavern_lists_of
+        buy_items, _span, rooms = tavern_lists_of(shop_state, getattr(w, '_analyzer', None), getattr(w, '_anchor', 0))
+        n_drinks, n_rooms = (str(len(buy_items)), str(len(rooms)))
+    except Exception:
+        n_drinks = n_rooms = '?'
+    return (str(bool(getattr(shop_state, 'newpop_fg', False))), _hex_u8(getattr(shop_state, 'b7c4', None)), _hex_u8(getattr(shop_state, 'ff2', None)), price.hex() if price else '?', n_drinks, n_rooms)
 __all__ = ['log_tavern_view_diagnostics']

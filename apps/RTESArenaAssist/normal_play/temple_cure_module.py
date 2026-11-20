@@ -30,8 +30,6 @@ def cure_foreground_view(w, *, img: str='', shop_state=None):
         return None
     if getattr(shop_state, 'b7c4', None) != 0:
         return None
-    if (getattr(shop_state, 'ff2', 0) or 0) != 0:
-        return None
     try:
         from temple_cure_reader import read_cure_view, read_active_slot_values
         analyzer = getattr(w, '_analyzer', None)

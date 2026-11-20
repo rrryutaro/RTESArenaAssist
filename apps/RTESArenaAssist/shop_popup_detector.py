@@ -162,6 +162,6 @@ def detect_shop_popup_state(analyzer: 'ArenaMemoryAnalyzer', anchor: int, *, top
         state.ptr_group_hotkeys = [it.hotkey for it in active_group.items]
         state.ptr_in_control_group = _is_control_group(state.ptr_group_items)
     state.yesno_img = (img_name or '').upper() == 'YESNO.IMG'
-    state.newpop_fg = img_name == 'NEWPOP.IMG' and state.b7c4 == 0 and ((state.ff2 or 0) == 0)
+    state.newpop_fg = img_name == 'NEWPOP.IMG' and state.b7c4 == 0
     return state
 __all__ = ['CURRENT_TEXT_PTR_OFFSET', 'ShopPopupState', 'read_current_text_pointer', 'detect_shop_popup_state']
