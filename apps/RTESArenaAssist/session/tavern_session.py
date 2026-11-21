@@ -2,7 +2,6 @@ from __future__ import annotations
 from .session_base import SessionBase, SessionContext
 from .npc_chat_session import NPC_PHASE_ASKING
 from .tavern_signals import observe_ask_about as _observe_ask_about_once
-_TAVERN_FACILITY_KINDS = frozenset({'shop_menu', 'shop_buy', 'shop_rooms', 'shop_rumor_type'})
 _TAVERN_NONE_HYSTERESIS_POLLS = 3
 
 class TavernSession(SessionBase):
@@ -35,63 +34,20 @@ class TavernSession(SessionBase):
         extras_facility = ctx.extras.get('owner_kind') if ctx.extras else None
         if extras_kind is not None or extras_facility is not None:
             kind = extras_kind if extras_kind is not None else 'none'
-            facility = extras_facility if extras_facility is not None else 'tavern' if kind in _TAVERN_FACILITY_KINDS else ''
+            from session.tavern_view import l4_of_shop_kind
+            facility = extras_facility if extras_facility is not None else 'tavern' if l4_of_shop_kind(kind) else ''
             return (kind or 'none', facility or '')
         if ctx.top_level_state != 'normal-play':
             return ('none', '')
         if not ctx.in_interior:
             return ('none', '')
+        w = ctx.extras.get('window') if ctx.extras else None
+        if w is not None and getattr(w, '_analyzer', None) is not None:
+            from session.tavern_signals import kind_facility_of_surface, tavern_surface_of
+            return kind_facility_of_surface(tavern_surface_of(w, ctx.shop_state))
         from session.tavern_signals import shop_kind_facility_of
         from l3_facility import decided_by_mif
         return shop_kind_facility_of(ctx.shop_state, ctx.analyzer, ctx.anchor, l3_by_mif=decided_by_mif(ctx.interior_mif_name, ctx.in_interior))
-
-    @staticmethod
-    def _is_negotiation_active(ctx: SessionContext) -> bool:
-        img = (ctx.img_name or '').upper()
-        if not img:
-            return False
-        if img == 'YESNO.IMG':
-            return False
-        try:
-            from negotiation_reader import get_negotiation_profile
-        except ImportError:
-            return False
-        return get_negotiation_profile(img) is not None
-
-    def _is_tavern_template_surface_active(self, ctx: SessionContext) -> bool:
-        extras_flag = ctx.extras.get('tavern_template_surface_active') if ctx.extras else None
-        if extras_flag is not None:
-            return bool(extras_flag)
-        try:
-            from active_template_reader import read_active_template_candidates, template_surface_kind
-        except ImportError:
-            return False
-        try:
-            candidates = read_active_template_candidates(ctx.analyzer, ctx.anchor)
-        except Exception:
-            return False
-        _tavern_surface_kinds = ('tavern_stay_days', 'tavern_sneak_confirm', 'tavern_sneak_result')
-        from session.tavern_signals import own_template_table
-        _table = own_template_table()
-        for c in candidates:
-            try:
-                kind = template_surface_kind(c, _table)
-            except Exception:
-                continue
-            if kind in _tavern_surface_kinds:
-                return True
-        return False
-
-    def _is_tavern_rumor_type_continuation(self, ctx: SessionContext) -> bool:
-        extras_flag = ctx.extras.get('tavern_rumor_type_active') if ctx.extras else None
-        if extras_flag is not None:
-            return bool(extras_flag)
-        if ctx.npc_phase != NPC_PHASE_ASKING:
-            return False
-        marker, _parsed, title = self._observe_ask_about(ctx)
-        if not marker:
-            return False
-        return title == 'Rumor Type'
 
     @staticmethod
     def _observe_ask_about(ctx: SessionContext):
@@ -103,20 +59,20 @@ class TavernSession(SessionBase):
             ctx.extras[key] = obs
         return obs
 
-    def _view_visible(self, ctx: SessionContext, kind: str, facility: str) -> bool:
-        _extras_view = ctx.extras.get('tavern_view_l4_visible') if ctx.extras else None
-        if _extras_view is not None:
-            return bool(_extras_view)
-        w = ctx.extras.get('window') if ctx.extras else None
-        if w is None or getattr(w, '_analyzer', None) is None:
-            return False
+    def _view_of(self, ctx: SessionContext, kind: str, facility: str):
         obs = self._observe_ask_about(ctx) if ctx.npc_phase == NPC_PHASE_ASKING else None
+        w = ctx.extras.get('window') if ctx.extras else None
+        if w is None:
+            import types
+            w = types.SimpleNamespace(_analyzer=ctx.analyzer, _anchor=ctx.anchor, _poll_seq=None)
+        elif getattr(w, '_analyzer', None) is None:
+            return None
+        override = ctx.extras.get('tavern_signals_override') if ctx.extras else None
         try:
             from session.tavern_node import TAVERN_NODE
-            view = TAVERN_NODE.classify_view(w, shop_kind=kind, shop_facility=facility, img=(ctx.img_name or '').upper(), in_interior=True, facility_tavern=True, npc_phase=ctx.npc_phase, ask_about_obs=obs)
-            return bool(view.l4_visible)
+            return TAVERN_NODE.classify_view(w, shop_kind=kind, shop_facility=facility, img=(ctx.img_name or '').upper(), in_interior=True, facility_tavern=True, npc_phase=ctx.npc_phase, ask_about_obs=obs, signals_override=override)
         except Exception:
-            return False
+            return None
 
     def _stop(self, ctx: SessionContext | None=None) -> bool:
         self._none_shop_polls = 0
@@ -140,7 +96,8 @@ class TavernSession(SessionBase):
         if not self._is_tavern_context(ctx):
             return False
         kind, facility = self._shop_state_of(ctx)
-        if facility == 'tavern' and kind in _TAVERN_FACILITY_KINDS:
+        from session.tavern_view import conversation_starts
+        if conversation_starts(kind, facility):
             self._none_shop_polls = 0
             self._set_active(True)
             return True
@@ -154,23 +111,12 @@ class TavernSession(SessionBase):
         if self._known_non_tavern_context(ctx):
             return self._stop(ctx)
         kind, facility = self._shop_state_of(ctx)
-        if facility == 'tavern' and kind == 'shop_menu':
+        view = self._view_of(ctx, kind, facility)
+        if view is not None and view.l4_kind == 'menu':
             w = ctx.extras.get('window') if ctx.extras else None
             if w is not None and getattr(w, '_tavern_rumor_flow_active', False):
                 w._tavern_rumor_flow_active = False
-        if self._view_visible(ctx, kind, facility):
-            self._none_shop_polls = 0
-            return False
-        if facility == 'tavern' and kind in _TAVERN_FACILITY_KINDS:
-            self._none_shop_polls = 0
-            return False
-        if self._is_negotiation_active(ctx):
-            self._none_shop_polls = 0
-            return False
-        if self._is_tavern_rumor_type_continuation(ctx):
-            self._none_shop_polls = 0
-            return False
-        if self._is_tavern_template_surface_active(ctx):
+        if view is not None and view.continues:
             self._none_shop_polls = 0
             return False
         self._none_shop_polls += 1
@@ -186,21 +132,16 @@ class TavernSession(SessionBase):
             from ask_about_menu_parser import build_display_sub, build_panel_display_sub
         except ImportError:
             return
+        kind, facility = self._shop_state_of(ctx)
+        view = self._view_of(ctx, kind, facility)
+        if view is None or not view.session_draws_rumor_type:
+            if w._ui_router.clear_if_owner('tavern_rumor_type'):
+                w._tavern_rumor_key_prev = None
+            return
         _aa_marker, _aa_parsed, _aa_active_sub = self._observe_ask_about(ctx)
         if _aa_parsed is None:
             _aa_parsed = {}
-        _rumor_type_visible = _aa_active_sub == 'Rumor Type'
-        if not _rumor_type_visible:
-            if w._ui_router.clear_if_owner('tavern_rumor_type'):
-                w._tavern_rumor_key_prev = None
-        if ctx.npc_phase != NPC_PHASE_ASKING:
-            return
-        kind, _ = self._shop_state_of(ctx)
-        if kind in ('shop_menu', 'shop_buy', 'shop_rumor_type'):
-            return
         try:
-            if not _rumor_type_visible:
-                return
             w._tavern_rumor_flow_active = True
             _rt_key = ('tavern_rumor_type', tuple((s.get('title', '') for s in _aa_parsed.get('sub_menus', []))))
             _rt_prev_key = getattr(w, '_tavern_rumor_key_prev', None)

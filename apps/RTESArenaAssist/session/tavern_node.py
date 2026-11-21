@@ -54,38 +54,37 @@ class TavernNode(FacilityNode):
             from store_surface import publish_l4_surface_claim
             publish_l4_surface_claim(w)
 
-    def classify_view(self, w, *, shop_kind: str='none', shop_facility: str='', img: str='', in_interior: bool=False, facility_tavern: bool=False, npc_phase: Optional[int]=None, ask_about_obs=None, shop_state=None):
-        if shop_state is not None:
-            from session.tavern_signals import own_surface_of
-            from l3_facility import l3_decided_by_mif
-            _own_kind = own_surface_of(shop_state, w._analyzer, w._anchor, l3_by_mif=l3_decided_by_mif(w))[0]
-            if _own_kind in ('shop_buy', 'shop_rooms'):
-                from store_surface import publish_list_front
-                publish_list_front(w, store_surface=True)
-            elif _own_kind in ('shop_menu', 'shop_rumor_type'):
-                from store_surface import publish_menu_front
-                publish_menu_front(w)
+    def classify_view(self, w, *, shop_kind: str='none', shop_facility: str='', img: str='', in_interior: bool=False, facility_tavern: bool=False, npc_phase: Optional[int]=None, ask_about_obs=None, shop_state=None, signals_override: Optional[dict]=None):
         cached = peek_tavern_view(w)
         if cached is not None:
+            self._log_dbg_with_observation(w, cached, shop_state, img)
             self._publish_surface_claim(w, cached, facility_tavern, shop_state)
             return cached
-        from session.tavern_signals import gather_tavern_signals, shop_kind_facility_of
+        from session.tavern_signals import gather_tavern_signals, kind_facility_of_surface, tavern_surface_of
         from session.tavern_view import classify_tavern_signals
         if shop_state is not None:
-            from l3_facility import l3_decided_by_mif
-            shop_kind, shop_facility = shop_kind_facility_of(shop_state, w._analyzer, w._anchor, l3_by_mif=l3_decided_by_mif(w))
+            shop_kind, shop_facility = kind_facility_of_surface(tavern_surface_of(w, shop_state))
         sig = gather_tavern_signals(w._analyzer, w._anchor, shop_kind=shop_kind, shop_facility=shop_facility, img=img, in_interior=in_interior, facility_tavern=facility_tavern, npc_phase=npc_phase, ask_about_obs=ask_about_obs)
+        if signals_override:
+            from dataclasses import replace
+            sig = replace(sig, **signals_override)
         view = classify_tavern_signals(sig)
         setattr(w, VIEW_ATTR, view)
         setattr(w, VIEW_SEQ_ATTR, getattr(w, '_poll_seq', None))
+        self._log_dbg_with_observation(w, view, shop_state, img)
+        self._publish_surface_claim(w, view, facility_tavern, shop_state)
+        self._log_view_diag(w, sig=sig, view=view)
+        return view
+
+    @staticmethod
+    def _log_dbg_with_observation(w, view, shop_state, img) -> None:
+        if shop_state is None:
+            return
         try:
             from session.tavern_view_diagnostics import log_tavern_view_diagnostics
             log_tavern_view_diagnostics(w, view=view, shop_state=shop_state, img=img)
         except Exception:
             pass
-        self._publish_surface_claim(w, view, facility_tavern, shop_state)
-        self._log_view_diag(w, sig=sig, view=view)
-        return view
 
     @staticmethod
     def _log_view_diag(w, *, sig, view) -> None:

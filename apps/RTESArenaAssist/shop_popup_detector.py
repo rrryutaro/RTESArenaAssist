@@ -5,6 +5,7 @@ from arena_bridge import ArenaMemoryAnalyzer
 from shop_menu_reader import SHOP_MENU_BUFFER_OFFSET, SHOP_MENU_BUFFER_MAXLEN, parse_menu_groups, select_menu_group_by_ptr, MenuGroup
 CURRENT_TEXT_PTR_OFFSET = 43076
 NEWPOP_GATE_OFFSET = 47044
+POPUP_FRAME_OFFSET = 36724
 NEWPOP_COUNT_OFFSET = 4082
 POPUP_PRICE_CACHE_OFFSET = 43062
 _RESPONSE_BUFFER_PTRS = frozenset({4164, 37534, 39582})
@@ -22,6 +23,7 @@ class ShopPopupState:
     ptr_hi: Optional[int] = None
     menu_span: Optional[tuple[int, int]] = None
     b7c4: Optional[int] = None
+    frame: Optional[int] = None
     ff2: Optional[int] = None
     price_cache: Optional[bytes] = None
     menu_group_count: Optional[int] = None
@@ -135,6 +137,7 @@ def detect_shop_popup_state(analyzer: 'ArenaMemoryAnalyzer', anchor: int, *, top
     state.active_facility_name = active_facility_name or ''
     state.b7c4 = _read_u8(analyzer, anchor + NEWPOP_GATE_OFFSET)
     state.ff2 = _read_u8(analyzer, anchor + NEWPOP_COUNT_OFFSET)
+    state.frame = _read_u8(analyzer, anchor + POPUP_FRAME_OFFSET)
     try:
         state.price_cache = analyzer.read_bytes(anchor + POPUP_PRICE_CACHE_OFFSET, 4)
     except (OSError, AttributeError):
@@ -162,6 +165,6 @@ def detect_shop_popup_state(analyzer: 'ArenaMemoryAnalyzer', anchor: int, *, top
         state.ptr_group_hotkeys = [it.hotkey for it in active_group.items]
         state.ptr_in_control_group = _is_control_group(state.ptr_group_items)
     state.yesno_img = (img_name or '').upper() == 'YESNO.IMG'
-    state.newpop_fg = img_name == 'NEWPOP.IMG' and state.b7c4 == 0
+    state.newpop_fg = img_name == 'NEWPOP.IMG' and state.b7c4 == 0 and (state.frame == 0) and (not state.ptr_is_response)
     return state
 __all__ = ['CURRENT_TEXT_PTR_OFFSET', 'ShopPopupState', 'read_current_text_pointer', 'detect_shop_popup_state']

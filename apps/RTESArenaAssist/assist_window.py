@@ -229,6 +229,7 @@ class AssistWindow(QMainWindow):
         self._facility_latch_edge_session = None
         self._l3_facility: str = ''
         self._l3_by_mif: bool = False
+        self._tavern_surface_memo: tuple | None = None
         self._temple_menu_key_prev: tuple | None = None
         self._temple_active_template_key_prev: tuple | None = None
         self._temple_negot_key_prev: tuple | None = None

@@ -20,19 +20,7 @@ def poll_tavern_render(w, *, tview, shop_state, shop_img_name: str, top_level_st
     l4_kind = tview.l4_kind
     shop_menu_visible = False
     shop_buy_active = False
-    from session.tavern_signals import own_surface_of
-    from l3_facility import l3_decided_by_mif
-    _own_kind, _own_title, _ = own_surface_of(shop_state, getattr(w, '_analyzer', None), getattr(w, '_anchor', 0), l3_by_mif=l3_decided_by_mif(w))
-    if owner == 'shop_buy' and shop_state is not None:
-        if l4_kind == 'rooms' and _own_kind == 'shop_rooms':
-            shop_buy_active = True
-            _render_shop_rooms(w, shop_state)
-        elif _own_kind == 'shop_buy':
-            shop_buy_active = True
-            _render_shop_drinks(w, shop_state)
-    elif owner in ('shop_menu', 'shop_rumor_type') and shop_state is not None and (_own_kind in ('shop_menu', 'shop_rumor_type')):
-        shop_menu_visible = True
-        _render_shop_menu(w, shop_state, shop_img_name)
+    shop_buy_active, shop_menu_visible = _render_tavern_shop_l4(w, owner, l4_kind, shop_state, shop_img_name)
     if owner:
         _cleanup_shop_buy(w, shop_buy_active, shop_menu_visible, shop_img_name)
         _cleanup_shop_menu(w, shop_menu_visible, shop_buy_active, shop_img_name)
@@ -75,14 +63,56 @@ def _render_shop_drinks(w, shop_state) -> None:
         except AttributeError:
             pass
         _buy_key_now = tuple(((it['en'], it['price_display']) for it in _seen))
+        _forget_key_if_push_lost(w, '_shop_buy_key_prev', 'shop_buy')
         _prev_buy_key = getattr(w, '_shop_buy_key_prev', None)
         if _buy_key_now != _prev_buy_key:
             w._shop_buy_key_prev = _buy_key_now
             w._ui_router.update_shop_buy_list('shop_buy', _seen, 'Buy Drinks', '酒を買う')
+            _note_pushed(w, '_shop_buy_key_prev')
             if _added:
                 _log.info('shop_buy update (seen=%d added=%r visible=%r)', len(_seen), _added, [it['en'] for it in _buy_now_tr])
     except Exception:
         _log.exception('shop_buy update failed')
+
+def _render_tavern_shop_l4(w, owner: str, l4_kind: str, shop_state, shop_img_name: str) -> tuple[bool, bool]:
+    from session.tavern_view import shop_row_owner_of
+    from store_surface import publish_list_front, publish_menu_front
+    if shop_state is None or not owner or shop_row_owner_of(l4_kind) != owner:
+        return (False, False)
+    if l4_kind in ('rooms', 'drinks'):
+        publish_list_front(w, store_surface=True)
+        if l4_kind == 'rooms':
+            _render_shop_rooms(w, shop_state)
+        else:
+            _render_shop_drinks(w, shop_state)
+        return (True, False)
+    publish_menu_front(w)
+    _render_shop_menu(w, shop_state, shop_img_name, owner)
+    return (False, True)
+
+def _forget_key_if_push_lost(w, key_attr: str, owner: str) -> None:
+    serial_attr = key_attr + '_flush'
+    pushed_at = getattr(w, serial_attr, None)
+    if not isinstance(pushed_at, int):
+        return
+    try:
+        serial = w._ui_router.flush_serial()
+        winner = w._ui_router.last_flush_winner_owner()
+    except AttributeError:
+        return
+    if not isinstance(serial, int) or serial <= pushed_at:
+        return
+    setattr(w, serial_attr, None)
+    if serial == pushed_at + 1 and winner != owner:
+        setattr(w, key_attr, None)
+
+def _note_pushed(w, key_attr: str) -> None:
+    try:
+        serial = w._ui_router.flush_serial()
+    except AttributeError:
+        return
+    if isinstance(serial, int):
+        setattr(w, key_attr + '_flush', serial)
 
 def _render_shop_rooms(w, shop_state) -> None:
     try:
@@ -97,29 +127,31 @@ def _render_shop_rooms(w, shop_state) -> None:
         except AttributeError:
             pass
         _room_key_now = tuple(((it['en'], it['price_display']) for it in _room_tr))
+        _forget_key_if_push_lost(w, '_shop_buy_key_prev', 'shop_buy')
         _prev_buy_key = getattr(w, '_shop_buy_key_prev', None)
         if _room_key_now != _prev_buy_key:
             w._shop_buy_key_prev = _room_key_now
             w._ui_router.update_shop_buy_list('shop_buy', _room_tr, 'Get a Room', '部屋を取る')
+            _note_pushed(w, '_shop_buy_key_prev')
             _log.info('shop_rooms update (rooms=%d items=%r)', len(_room_tr), [it['en'] for it in _room_tr])
     except Exception:
         _log.exception('shop_rooms update failed')
 
-def _render_shop_menu(w, shop_state, shop_img_name: str) -> None:
-    from session.tavern_signals import own_surface_of
-    from l3_facility import l3_decided_by_mif
-    _shop_kind, _title_own, _ = own_surface_of(shop_state, getattr(w, '_analyzer', None), getattr(w, '_anchor', 0), l3_by_mif=l3_decided_by_mif(w))
-    if _shop_kind not in ('shop_menu', 'shop_rumor_type'):
-        return
+def _render_shop_menu(w, shop_state, shop_img_name: str, shop_kind: str) -> None:
+    from session.tavern_signals import tavern_surface_of
+    _shop_kind = shop_kind
+    _title_own = tavern_surface_of(w, shop_state)[1]
     try:
         from shop_menu_reader import translate_shop_menu_items, translate_ui_text
         from normal_play.shop_render_common import build_menu_display
         _menu_items = list(shop_state.ptr_group_items)
         _menu_hotkeys = list(shop_state.ptr_group_hotkeys)
         _menu_key = (_shop_kind, tuple(_menu_items), tuple(_menu_hotkeys))
+        _forget_key_if_push_lost(w, '_shop_menu_key_prev', _shop_kind)
         _prev_menu_key = getattr(w, '_shop_menu_key_prev', None)
         if _menu_key != _prev_menu_key:
             w._shop_menu_key_prev = _menu_key
+            _note_pushed(w, '_shop_menu_key_prev')
             _menu_tr = translate_shop_menu_items(_menu_items, owner_kind='tavern')
             _title_en = _title_own
             _title_ja = translate_ui_text('tavern', _title_en) or _title_en if _title_en else ''
@@ -213,19 +245,12 @@ def reset_tavern_render_state(w) -> None:
         pass
 
 def render_no_session_shop(w, *, shop_state, shop_img_name: str, shop_buy_active: bool, shop_menu_visible: bool) -> tuple[bool, bool]:
-    from session.tavern_signals import own_surface_of
-    from l3_facility import l3_decided_by_mif
-    _kind = own_surface_of(shop_state, getattr(w, '_analyzer', None), getattr(w, '_anchor', 0), l3_by_mif=l3_decided_by_mif(w))[0]
-    if shop_state is not None:
-        if _kind == 'shop_buy':
-            shop_buy_active = True
-            _render_shop_drinks(w, shop_state)
-        elif _kind == 'shop_rooms':
-            shop_buy_active = True
-            _render_shop_rooms(w, shop_state)
-        elif _kind in ('shop_menu', 'shop_rumor_type'):
-            shop_menu_visible = True
-            _render_shop_menu(w, shop_state, shop_img_name)
+    from session.tavern_signals import tavern_surface_of
+    from session.tavern_view import l4_of_shop_kind, shop_row_owner_of
+    _l4 = l4_of_shop_kind(tavern_surface_of(w, shop_state)[0])
+    _buy, _menu = _render_tavern_shop_l4(w, shop_row_owner_of(_l4), _l4, shop_state, shop_img_name)
+    shop_buy_active = shop_buy_active or _buy
+    shop_menu_visible = shop_menu_visible or _menu
     _cleanup_shop_buy(w, shop_buy_active, shop_menu_visible, shop_img_name)
     _cleanup_shop_menu(w, shop_menu_visible, shop_buy_active, shop_img_name)
     return (shop_buy_active, shop_menu_visible)

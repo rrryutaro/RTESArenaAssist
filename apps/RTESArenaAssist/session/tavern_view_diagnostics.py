@@ -12,9 +12,8 @@ def log_tavern_view_diagnostics(w, *, view, shop_state, img: str) -> None:
     own_kind, _own_title, own = ('none', '', False)
     if shop_state is not None:
         try:
-            from session.tavern_signals import own_surface_of
-            from l3_facility import l3_decided_by_mif
-            own_kind, _own_title, own = own_surface_of(shop_state, getattr(w, '_analyzer', None), getattr(w, '_anchor', 0), l3_by_mif=l3_decided_by_mif(w))
+            from session.tavern_signals import tavern_surface_of
+            own_kind, _own_title, own = tavern_surface_of(w, shop_state)
         except Exception:
             own_kind, own = ('none', False)
     from active_template_reader import surface_kind_of_pointer
@@ -53,7 +52,7 @@ def log_tavern_view_diagnostics(w, *, view, shop_state, img: str) -> None:
     from session.tavern_signals import yesno_menu_back_of
     recov = yesno_menu_back_of(shop_state)
     lists = _list_inputs_of(w, shop_state)
-    key = (is_ctx, sub_key, own_kind, own, surface, owner, cands, img or '', npcconv, sess, lists)
+    key = (is_ctx, sub_key, own_kind, own, surface, owner, cands, img or '', npcconv, sess, lists[:3] + lists[4:])
     if key != getattr(w, '_tavern_view_dbg_key', None):
         w._tavern_view_dbg_key = key
         _log.warning('tavern view dbg: sub=%s view(+0x8F6E)=%s flag(+0x8F74)=%s own_kind=%s own=%s surface=%r owner=%r ptr=%s img=%r cands=[%s] npcconv=%s sess=%r recov=%s ctx_tavern=%s newpop_fg=%s b7c4=%s ff2=%s price(+0xA836)=%s drinks=%s rooms=%s', sub_key.rsplit('.', 1)[-1] if sub_key else 'none', f'0x{tv_view:04X}' if tv_view is not None else 'None', f'0x{tv_flag:02X}' if tv_flag is not None else 'None', own_kind, own, surface, owner, f'0x{ptr:04X}' if ptr is not None else 'None', img, cands, npcconv, sess, recov, is_ctx, *lists)

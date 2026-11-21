@@ -19,6 +19,8 @@ class UiRouter:
         self._pending_display: Optional[DisplayIntent] = None
         self._pending_order = 0
         self._pending_display_order = 0
+        self._flush_serial = 0
+        self._last_flush_winner_owner = ''
         self._translation_observer = None
         self._obs_last_key = None
         self._unit_end_observer = None
@@ -125,6 +127,8 @@ class UiRouter:
         if intent is not None:
             self.apply_display(intent, previous_owner=frame.panel_owner if frame is not None else None)
         self._apply_flush_panel_mode(intent)
+        self._flush_serial += 1
+        self._last_flush_winner_owner = intent.panel_owner or '' if intent is not None else ''
         self._log_flush_winner(intent, frame)
         self._log_facility_display_invariant(frame)
 
@@ -449,6 +453,12 @@ class UiRouter:
 
     def current_owner(self) -> str:
         return getattr(self._window, '_panel_owner', '') or ''
+
+    def flush_serial(self) -> int:
+        return self._flush_serial
+
+    def last_flush_winner_owner(self) -> str:
+        return self._last_flush_winner_owner
 
     def applied_owner(self) -> str:
         frame = self._poll_frame

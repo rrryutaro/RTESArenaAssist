@@ -51,17 +51,18 @@ def own_surface_of(shop_state, analyzer, anchor, *, l3_by_mif: bool) -> tuple[st
     if shop_state is None or not getattr(shop_state, 'gate_open', False):
         return ('none', '', False)
     from session.tavern_node import TAVERN_NODE, TavernNode
-    newpop = bool(getattr(shop_state, 'newpop_fg', False))
-    drinks = getattr(shop_state, 'price_cache', None) == TAVERN_NODE.DRINKS_PRICE_CACHE_SIG
-    buy_items, _buy_span, room_items = tavern_lists_of(shop_state, analyzer, anchor) if newpop else ([], None, [])
-    if newpop and drinks and buy_items:
-        return ('shop_buy', '', True)
-    if newpop and (not drinks) and room_items:
-        if is_room_list_context(shop_state, l3_by_mif=l3_by_mif):
-            return ('shop_rooms', '', True)
-        return ('none', '', False)
     from shop_popup_detector import ptr_group_signature_entry_of
     entry = ptr_group_signature_entry_of(shop_state, TavernNode.menu_signatures, menu_back_on_yesno=yesno_menu_back_of(shop_state))
+    newpop = bool(getattr(shop_state, 'newpop_fg', False))
+    on_menu = entry is not None and entry[0] == 'shop_menu'
+    drinks = getattr(shop_state, 'price_cache', None) == TAVERN_NODE.DRINKS_PRICE_CACHE_SIG
+    buy_items, _buy_span, room_items = tavern_lists_of(shop_state, analyzer, anchor) if newpop else ([], None, [])
+    if newpop and on_menu and drinks and buy_items:
+        return ('shop_buy', '', True)
+    if newpop and (not drinks) and room_items:
+        if on_menu and is_room_list_context(shop_state, l3_by_mif=l3_by_mif):
+            return ('shop_rooms', '', True)
+        return ('none', '', False)
     if entry is not None:
         return (entry[0], entry[1], True)
     return ('none', '', False)
@@ -72,10 +73,24 @@ def is_room_list_context(shop_state, *, l3_by_mif: bool) -> bool:
     return not other_facility_conversation and (active == 'tavern' or bool(l3_by_mif))
 
 def shop_kind_facility_of(shop_state, analyzer, anchor, *, l3_by_mif: bool) -> tuple[str, str]:
-    kind, _title, _own = own_surface_of(shop_state, analyzer, anchor, l3_by_mif=l3_by_mif)
+    return kind_facility_of_surface(own_surface_of(shop_state, analyzer, anchor, l3_by_mif=l3_by_mif))
+
+def kind_facility_of_surface(surface) -> tuple[str, str]:
+    kind = surface[0]
     if kind == 'none':
         return ('none', '')
     return (kind, 'tavern')
+
+def tavern_surface_of(w, shop_state) -> tuple[str, str, bool]:
+    seq = getattr(w, '_poll_seq', None)
+    memo = getattr(w, '_tavern_surface_memo', None)
+    if isinstance(seq, int) and isinstance(memo, tuple) and (len(memo) == 3) and (memo[0] == seq) and (memo[1] is shop_state):
+        return memo[2]
+    from l3_facility import l3_decided_by_mif
+    surface = own_surface_of(shop_state, getattr(w, '_analyzer', None), getattr(w, '_anchor', 0), l3_by_mif=l3_decided_by_mif(w))
+    if isinstance(seq, int):
+        w._tavern_surface_memo = (seq, shop_state, surface)
+    return surface
 
 @dataclass
 class TavernSignals:
