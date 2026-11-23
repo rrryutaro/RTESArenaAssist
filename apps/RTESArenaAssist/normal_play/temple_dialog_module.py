@@ -438,8 +438,10 @@ def poll_temple_dialog(w, *, temple_active: bool, temple_just_started: bool, img
         w._temple_dialog_current_key = key
         w._temple_dialog_current_text = chosen.text
         w._temple_dialog_current_owner = owner
-        _speech_role = 'conversation' if owner == 'temple_priest_reply' else None
+        _speech_role = {'temple_priest_reply': 'conversation', 'temple_prompt': 'situation'}.get(owner)
         w._ui_router.update_translation(owner, en_text, ja_text, speech_role=_speech_role, speech_text=ja)
+        from normal_play.temple_shown_screen import SHOWN_REPLY, note_shown
+        note_shown(w, SHOWN_REPLY)
         _log.info('temple_dialog translated: owner=%s src=0x%X reason=%s ep=%d img=%r text=%r', owner, chosen.source_offset, reason, episode, img, chosen.text[:80])
     _diag(f'render:{reason}:{owner}:{chosen.text[:22]}')
     return True

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Bug noti e avvertenze</title>
 <style>
-body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 22px; }
 h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
 h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
 p { margin: 0 0 8px 0; }
@@ -58,6 +58,7 @@ tr:nth-child(even) { background: #111e2c; }
   <tr><td>L'oggetto lasciato in riparazione non è più al negozio.</td><td>Hai visitato molti luoghi durante la riparazione</td><td><span class="ng">Serve un salvataggio precedente</span></td><td>Carica un salvataggio precedente alla consegna.</td></tr>
   <tr><td>Riporti l'oggetto della missione, ma il committente mostra solo la solita conversazione.</td><td>Il gioco non riconosce l'oggetto</td><td><span class="ok">Si risolve riavviando</span> (non per le missioni del palazzo)</td><td>Esci dall'edificio e salva, chiudi e riavvia Arena, poi carica. Se una Gilda dei Maghi ha più porte, entra dalla porta nord o nord-est.</td></tr>
   <tr><td>Nella missione principale il nome della destinazione che ti dicono è illeggibile.</td><td>Un errore di caricamento del gioco</td><td><span class="ok">Si risolve riavviando</span></td><td>Salva, chiudi e riavvia Arena, poi carica.</td></tr>
+  <tr><td>Il nome di un dungeon che ti hanno indicato (ad esempio in una missione per un artefatto) appare troncato sulla mappa di viaggio o nella schermata di stato e non coincide con quello della conversazione (es. «Dungeon of Tricerigod» nella conversazione, «Dungeon of Tricerig» sulla mappa).</td><td>Il gioco memorizza i nomi dei luoghi con al massimo 19 caratteri e tronca quelli più lunghi</td><td><span class="minor">Lieve</span></td><td>È lo stesso dungeon: puoi andarci normalmente. Anche Assist non può conoscere il nome completo, quindi mostra il nome troncato così com’è (lo traduce solo quando è possibile un unico nome).</td></tr>
   <tr><td>La prossima destinazione della missione principale non è sulla mappa e non puoi andare da nessuna parte.</td><td>Un oggetto già consegnato è stato raccolto di nuovo</td><td><span class="ng">Serve un salvataggio precedente</span></td><td>Carica un salvataggio precedente alla raccolta. Non si conosce modo di tornare indietro se l'hai sovrascritto.</td></tr>
   <tr><td>Parlare con un committente della missione principale fa chiudere il gioco.</td><td>Hai rifiutato la richiesta</td><td><span class="ng">Serve un salvataggio precedente</span></td><td>Carica un salvataggio di prima del rifiuto e accetta la richiesta.</td></tr>
   <tr><td>Il sovrano di un palazzo non ti dà più missioni. Le persone del palazzo sono cambiate.</td><td>Hai fallito una missione del palazzo</td><td><span class="ng">Serve un salvataggio precedente</span></td><td>Carica un salvataggio precedente al fallimento.</td></tr>

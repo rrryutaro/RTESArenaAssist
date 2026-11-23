@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Known Bugs &amp; Cautions</title>
 <style>
-body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 22px; }
 h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
 h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
 p { margin: 0 0 8px 0; }
@@ -58,6 +58,7 @@ tr:nth-child(even) { background: #111e2c; }
   <tr><td>The item you left for repair is not at the shop.</td><td>You visited many places while it was in for repair</td><td><span class="ng">Needs an earlier save</span></td><td>Load a save from before you handed it in.</td></tr>
   <tr><td>You brought the quest item back, but the quest giver only shows the usual conversation.</td><td>The game does not recognize the item</td><td><span class="ok">Fixed by restarting</span> (not for palace quests)</td><td>Leave the building and save, quit and restart Arena, then load. If a Mages Guild has several doors, enter through the north or northeast door.</td></tr>
   <tr><td>In the Main Quest, the destination name people tell you is garbled.</td><td>A loading glitch in the game</td><td><span class="ok">Fixed by restarting</span></td><td>Save, quit and restart Arena, then load.</td></tr>
+  <tr><td>A dungeon name you were told (for example in an artifact quest) is cut short on the travel map or status screen and differs from the name in the conversation (e.g. "Dungeon of Tricerigod" in the conversation, "Dungeon of Tricerig" on the map).</td><td>The game stores place names in at most 19 characters and cuts longer names</td><td><span class="minor">Minor</span></td><td>It is the same dungeon, so just travel there. Assist cannot tell the full name either, so it shows the cut name as it is (it translates it only when only one name is possible).</td></tr>
   <tr><td>The next Main Quest destination is not on your map and you cannot go anywhere.</td><td>A delivered item was picked up again</td><td><span class="ng">Needs an earlier save</span></td><td>Load a save from before that pickup. No way is known to undo it once the save is overwritten.</td></tr>
   <tr><td>Talking to a Main Quest quest giver crashes the game.</td><td>You refused the request</td><td><span class="ng">Needs an earlier save</span></td><td>Load a save from before you refused, and accept the request.</td></tr>
   <tr><td>The ruler of a palace no longer gives you quests. The people in the palace have been replaced.</td><td>You failed a palace quest</td><td><span class="ng">Needs an earlier save</span></td><td>Load a save from before the failure.</td></tr>

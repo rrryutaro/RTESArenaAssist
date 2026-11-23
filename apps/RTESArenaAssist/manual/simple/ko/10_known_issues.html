@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>알려진 버그와 주의 사항</title>
 <style>
-body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 22px; }
 h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
 h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
 p { margin: 0 0 8px 0; }
@@ -58,6 +58,7 @@ tr:nth-child(even) { background: #111e2c; }
   <tr><td>수리를 맡긴 물건이 가게에 없음.</td><td>맡긴 채 여러 곳을 돌아다녔음</td><td><span class="ng">이전 저장이 필요</span></td><td>맡기기 전의 저장을 불러옵니다.</td></tr>
   <tr><td>의뢰 아이템을 가지고 돌아왔는데 의뢰인이 평소 대화만 함.</td><td>게임이 아이템을 인식하지 못함</td><td><span class="ok">재실행으로 고쳐짐</span>(궁전의 의뢰는 고쳐지지 않음)</td><td>건물을 나와 저장하고, Arena를 종료한 뒤 다시 실행해 불러옵니다. 마법사 길드에 문이 여러 개 있으면 북쪽이나 북동쪽 문으로 들어갑니다.</td></tr>
   <tr><td>메인 퀘스트에서 사람에게 물은 목적지 이름이 깨져 있음.</td><td>게임의 불러오기 이상</td><td><span class="ok">재실행으로 고쳐짐</span></td><td>저장하고, Arena를 종료한 뒤 다시 실행해 불러옵니다.</td></tr>
+  <tr><td>아티팩트 퀘스트 등에서 들은 던전 이름이 여행 지도나 상태 화면에서는 중간에 잘려 대화에서 들은 이름과 다르다(예: 대화에서는 'Dungeon of Tricerigod', 지도에서는 'Dungeon of Tricerig').</td><td>게임은 지명을 최대 19자까지만 저장하며 긴 이름은 잘라서 표시한다</td><td><span class="minor">피해가 작음</span></td><td>같은 던전이므로 그대로 가면 된다. Assist도 원래 이름을 구별할 수 없어, 잘린 이름은 원문 그대로 표시한다(이름이 하나로 정해질 때만 번역한다).</td></tr>
   <tr><td>메인 퀘스트의 다음 목적지가 지도에 없고 어디로도 갈 수 없음.</td><td>전달한 아이템을 다시 주웠음</td><td><span class="ng">이전 저장이 필요</span></td><td>줍기 전의 저장을 불러옵니다. 덮어쓴 뒤에 되돌리는 방법은 알려져 있지 않습니다.</td></tr>
   <tr><td>메인 퀘스트의 의뢰인에게 말을 걸면 게임이 종료됨.</td><td>의뢰를 거절했음</td><td><span class="ng">이전 저장이 필요</span></td><td>거절하기 전의 저장을 불러와 의뢰를 받습니다.</td></tr>
   <tr><td>궁전의 주인이 더 이상 의뢰를 주지 않음. 궁전 사람들이 바뀌었음.</td><td>궁전의 의뢰에 실패했음</td><td><span class="ng">이전 저장이 필요</span></td><td>실패하기 전의 저장을 불러옵니다.</td></tr>

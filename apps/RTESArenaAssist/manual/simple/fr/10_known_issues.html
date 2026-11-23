@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Bogues connus et précautions</title>
 <style>
-body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 22px; }
 h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
 h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
 p { margin: 0 0 8px 0; }
@@ -58,6 +58,7 @@ tr:nth-child(even) { background: #111e2c; }
   <tr><td>L'objet laissé en réparation n'est plus à la boutique.</td><td>Vous avez visité beaucoup de lieux pendant la réparation</td><td><span class="ng">Sauvegarde antérieure nécessaire</span></td><td>Chargez une sauvegarde d'avant le dépôt.</td></tr>
   <tr><td>Vous rapportez l'objet de quête, mais le commanditaire n'affiche que la conversation habituelle.</td><td>Le jeu ne reconnaît pas l'objet</td><td><span class="ok">Réglé en relançant</span> (pas pour les quêtes du palais)</td><td>Sortez du bâtiment et sauvegardez, quittez puis relancez Arena, et chargez. Si une Guilde des mages a plusieurs portes, entrez par la porte nord ou nord-est.</td></tr>
   <tr><td>Dans la quête principale, le nom de la destination qu'on vous donne est illisible.</td><td>Un bogue de chargement du jeu</td><td><span class="ok">Réglé en relançant</span></td><td>Sauvegardez, quittez puis relancez Arena, et chargez.</td></tr>
+  <tr><td>Le nom d’un donjon qu’on vous a indiqué (par exemple lors d’une quête d’artefact) est tronqué sur la carte de voyage ou l’écran d’état et diffère de celui de la conversation (ex. « Dungeon of Tricerigod » dans la conversation, « Dungeon of Tricerig » sur la carte).</td><td>Le jeu enregistre les noms de lieux sur 19 caractères au plus et coupe les noms plus longs</td><td><span class="minor">Sans gravité</span></td><td>C’est le même donjon : vous pouvez simplement y aller. Assist ne peut pas non plus connaître le nom complet ; il affiche le nom tronqué tel quel (il ne le traduit que si un seul nom est possible).</td></tr>
   <tr><td>La prochaine destination de la quête principale n'est pas sur la carte et vous ne pouvez aller nulle part.</td><td>Un objet déjà remis a été ramassé à nouveau</td><td><span class="ng">Sauvegarde antérieure nécessaire</span></td><td>Chargez une sauvegarde d'avant ce ramassage. Aucun moyen connu de revenir en arrière une fois la sauvegarde écrasée.</td></tr>
   <tr><td>Parler à un commanditaire de la quête principale fait planter le jeu.</td><td>Vous avez refusé la demande</td><td><span class="ng">Sauvegarde antérieure nécessaire</span></td><td>Chargez une sauvegarde d'avant le refus et acceptez la demande.</td></tr>
   <tr><td>Le souverain d'un palais ne vous confie plus de quêtes. Les gens du palais ont été remplacés.</td><td>Vous avez échoué à une quête du palais</td><td><span class="ng">Sauvegarde antérieure nécessaire</span></td><td>Chargez une sauvegarde d'avant l'échec.</td></tr>

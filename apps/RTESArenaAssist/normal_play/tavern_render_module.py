@@ -120,7 +120,7 @@ def _render_shop_rooms(w, shop_state) -> None:
         from session.tavern_signals import tavern_lists_of
         _room_items = tavern_lists_of(shop_state, getattr(w, '_analyzer', None), getattr(w, '_anchor', 0))[2]
         _room_tr = translate_room_list(_room_items, section='rooms')
-        w._shop_buy_seen_items = _room_tr
+        w._shop_buy_seen_items = []
         try:
             if w._ui_router.ensure_panel_mode('shop_buy'):
                 _log.info('panel_mode -> shop_buy (rooms initial)')

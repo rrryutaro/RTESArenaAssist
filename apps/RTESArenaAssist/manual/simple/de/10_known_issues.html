@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Bekannte Fehler &amp; Hinweise</title>
 <style>
-body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 22px; }
 h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
 h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
 p { margin: 0 0 8px 0; }
@@ -58,6 +58,7 @@ tr:nth-child(even) { background: #111e2c; }
   <tr><td>Der zur Reparatur gegebene Gegenstand ist nicht mehr im Laden.</td><td>Während der Reparatur viele Orte besucht</td><td><span class="ng">Älterer Spielstand nötig</span></td><td>Einen Spielstand von vor der Abgabe laden.</td></tr>
   <tr><td>Du bringst den Questgegenstand zurück, aber der Auftraggeber zeigt nur das übliche Gespräch.</td><td>Das Spiel erkennt den Gegenstand nicht</td><td><span class="ok">Neustart behebt es</span> (nicht bei Palastaufträgen)</td><td>Das Gebäude verlassen und speichern, Arena beenden und neu starten, dann laden. Hat eine Magiergilde mehrere Türen, durch die Nord- oder Nordosttür eintreten.</td></tr>
   <tr><td>In der Hauptquest ist der Name des Ziels, den man dir nennt, verstümmelt.</td><td>Ein Ladefehler des Spiels</td><td><span class="ok">Neustart behebt es</span></td><td>Speichern, Arena beenden und neu starten, dann laden.</td></tr>
+  <tr><td>Ein Dungeonname, den man dir genannt hat (z. B. bei einer Artefaktquest), ist auf der Reisekarte oder im Statusbildschirm abgeschnitten und weicht vom Namen im Gespräch ab (z. B. „Dungeon of Tricerigod“ im Gespräch, „Dungeon of Tricerig“ auf der Karte).</td><td>Das Spiel speichert Ortsnamen mit höchstens 19 Zeichen und schneidet längere Namen ab</td><td><span class="minor">Harmlos</span></td><td>Es ist derselbe Dungeon, du kannst einfach hinreisen. Auch Assist kann den vollen Namen nicht erkennen und zeigt den abgeschnittenen Namen unverändert an (übersetzt wird nur, wenn nur ein Name möglich ist).</td></tr>
   <tr><td>Das nächste Ziel der Hauptquest ist nicht auf der Karte, und es geht nirgends weiter.</td><td>Ein abgelieferter Gegenstand wurde erneut aufgehoben</td><td><span class="ng">Älterer Spielstand nötig</span></td><td>Einen Spielstand von vor dem Aufheben laden. Ist er überschrieben, ist kein Weg zurück bekannt.</td></tr>
   <tr><td>Ein Gespräch mit einem Auftraggeber der Hauptquest lässt das Spiel abstürzen.</td><td>Du hast den Auftrag abgelehnt</td><td><span class="ng">Älterer Spielstand nötig</span></td><td>Einen Spielstand von vor der Ablehnung laden und den Auftrag annehmen.</td></tr>
   <tr><td>Der Herrscher eines Palasts gibt keine Aufträge mehr. Die Leute im Palast wurden ausgetauscht.</td><td>Ein Palastauftrag ist misslungen</td><td><span class="ng">Älterer Spielstand nötig</span></td><td>Einen Spielstand von vor dem Misserfolg laden.</td></tr>

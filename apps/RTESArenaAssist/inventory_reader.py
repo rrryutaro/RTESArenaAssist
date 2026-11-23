@@ -35,7 +35,7 @@ def _artifact_name_index(item: dict) -> int | None:
     if not (item['slot_id'] & 128 and item['flags'] & FLAG_MAGIC):
         return None
     return _ARTIFACT_SPELL_TO_NAME_INDEX.get(item['y'])
-_SPELL_LESS_ARTIFACT_SLOT_TO_NAME_INDEX = {141: 13}
+_SPELL_LESS_ARTIFACT_SLOT_TO_NAME_INDEX = {141: 13, 143: 11}
 
 def _spell_less_artifact_name_index(item: dict, kind: str) -> int | None:
     if kind != 'accessory':

@@ -27,6 +27,27 @@ class TavernNode(FacilityNode):
     template_declarations = ((29598, 'stay_days', 'tavern_stay_days', ('popup',), ('popup',)), (29537, '', 'tavern_sneak_result', (), ('confirm', 'popup')), (29561, 'sneak_yesno', 'tavern_sneak_confirm', ('confirm',), ('confirm',)), (29638, '', 'tavern_sneak_result', (), ('confirm', 'popup')), (29674, '', 'tavern_room_contract', (), ('popup',)), (29728, '', 'tavern_cost_show', (), ('popup',)), (29748, '', 'tavern_cost_confirm', (), ('confirm',)))
     menu_signatures = ((frozenset({'Buy Drinks', 'Get a Room', 'Sneak into a Room', 'Rumors', 'Exit'}), 'shop_menu', 'MENU OPTIONS'), (frozenset({'Buy Drinks', 'Rumors', 'Exit'}), 'shop_menu', 'MENU OPTIONS'), (frozenset({'General', 'Work'}), 'shop_rumor_type', 'Rumor Type'))
     DRINKS_PRICE_CACHE_SIG = b'200\x00'
+    LIST_WINDOW_DEFS = frozenset({20486, 20571, 20656})
+
+    @classmethod
+    def list_window_running(cls, analyzer, anchor) -> Optional[bool]:
+        from active_template_reader import ACTIVE_TEMPLATE_PTR_OFFSETS
+        first = ACTIVE_TEMPLATE_PTR_OFFSETS[0]
+        size = ACTIVE_TEMPLATE_PTR_OFFSETS[-1] + 2 - first
+        try:
+            raw = analyzer.read_bytes(anchor + first, size)
+        except Exception:
+            return None
+        return cls.list_window_in(raw)
+
+    @classmethod
+    def list_window_in(cls, raw) -> Optional[bool]:
+        from active_template_reader import ACTIVE_TEMPLATE_PTR_OFFSETS
+        first = ACTIVE_TEMPLATE_PTR_OFFSETS[0]
+        size = ACTIVE_TEMPLATE_PTR_OFFSETS[-1] + 2 - first
+        if not isinstance(raw, (bytes, bytearray)) or len(raw) < size:
+            return None
+        return any((int.from_bytes(raw[off - first:off - first + 2], 'little') in cls.LIST_WINDOW_DEFS for off in ACTIVE_TEMPLATE_PTR_OFFSETS))
 
     @staticmethod
     def read_shop_buy_span(analyzer, anchor):

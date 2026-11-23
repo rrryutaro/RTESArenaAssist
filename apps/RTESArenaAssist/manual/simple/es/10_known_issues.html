@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Errores conocidos y precauciones</title>
 <style>
-body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 22px; }
 h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
 h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
 p { margin: 0 0 8px 0; }
@@ -58,6 +58,7 @@ tr:nth-child(even) { background: #111e2c; }
   <tr><td>El objeto que dejaste a reparar no está en la tienda.</td><td>Visitaste muchos lugares mientras estaba en reparación</td><td><span class="ng">Hace falta una partida anterior</span></td><td>Carga una partida de antes de entregarlo.</td></tr>
   <tr><td>Traes el objeto de la misión, pero quien te la encargó solo muestra la conversación habitual.</td><td>El juego no reconoce el objeto</td><td><span class="ok">Se arregla al reiniciar</span> (no en misiones del palacio)</td><td>Sal del edificio y guarda, sal de Arena, vuelve a iniciarlo y carga. Si un Gremio de Magos tiene varias puertas, entra por la puerta norte o noreste.</td></tr>
   <tr><td>En la misión principal, el nombre del destino que te dicen está corrupto.</td><td>Un fallo de carga del juego</td><td><span class="ok">Se arregla al reiniciar</span></td><td>Guarda, sal de Arena, vuelve a iniciarlo y carga.</td></tr>
+  <tr><td>El nombre de una mazmorra que te dijeron (por ejemplo, en una misión de artefacto) aparece cortado en el mapa de viaje o en la pantalla de estado y no coincide con el de la conversación (p. ej. «Dungeon of Tricerigod» en la conversación y «Dungeon of Tricerig» en el mapa).</td><td>El juego guarda los nombres de lugar con 19 caracteres como máximo y corta los más largos</td><td><span class="minor">Leve</span></td><td>Es la misma mazmorra; puedes viajar allí sin más. Assist tampoco puede saber el nombre completo, así que muestra el nombre cortado tal cual (solo lo traduce cuando solo hay un nombre posible).</td></tr>
   <tr><td>El siguiente destino de la misión principal no está en el mapa y no puedes ir a ninguna parte.</td><td>Se recogió otra vez un objeto ya entregado</td><td><span class="ng">Hace falta una partida anterior</span></td><td>Carga una partida de antes de recogerlo. No se conoce forma de deshacerlo si la sobrescribiste.</td></tr>
   <tr><td>Hablar con quien da un encargo de la misión principal cierra el juego.</td><td>Rechazaste el encargo</td><td><span class="ng">Hace falta una partida anterior</span></td><td>Carga una partida de antes de rechazarlo y acepta el encargo.</td></tr>
   <tr><td>El gobernante de un palacio ya no te da misiones. La gente del palacio ha cambiado.</td><td>Fracasaste en una misión del palacio</td><td><span class="ng">Hace falta una partida anterior</span></td><td>Carga una partida de antes del fracaso.</td></tr>

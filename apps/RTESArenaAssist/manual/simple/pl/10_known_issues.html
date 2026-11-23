@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Znane błędy i przestrogi</title>
 <style>
-body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 22px; }
 h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
 h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
 p { margin: 0 0 8px 0; }
@@ -58,6 +58,7 @@ tr:nth-child(even) { background: #111e2c; }
   <tr><td>Przedmiotu oddanego do naprawy nie ma w sklepie.</td><td>Odwiedziłeś wiele miejsc w czasie naprawy</td><td><span class="ng">Potrzebny wcześniejszy zapis</span></td><td>Wczytaj zapis sprzed oddania przedmiotu.</td></tr>
   <tr><td>Przynosisz przedmiot z zadania, ale zleceniodawca pokazuje tylko zwykłą rozmowę.</td><td>Gra nie rozpoznaje przedmiotu</td><td><span class="ok">Pomaga ponowne uruchomienie</span> (nie dotyczy zadań pałacowych)</td><td>Wyjdź z budynku i zapisz, zamknij i uruchom ponownie Arenę, a potem wczytaj. Jeśli Gildia Magów ma kilka drzwi, wchodź drzwiami północnymi lub północno-wschodnimi.</td></tr>
   <tr><td>W głównym zadaniu nazwa celu, którą ci podają, jest zniekształcona.</td><td>Błąd wczytywania gry</td><td><span class="ok">Pomaga ponowne uruchomienie</span></td><td>Zapisz, zamknij i uruchom ponownie Arenę, a potem wczytaj.</td></tr>
+  <tr><td>Nazwa lochu, o którym ci powiedziano (np. w zadaniu z artefaktem), jest ucięta na mapie podróży lub na ekranie stanu i różni się od nazwy z rozmowy (np. „Dungeon of Tricerigod” w rozmowie, „Dungeon of Tricerig” na mapie).</td><td>Gra przechowuje nazwy miejsc o długości najwyżej 19 znaków i ucina dłuższe</td><td><span class="minor">Drobne</span></td><td>To ten sam loch, możesz po prostu tam ruszyć. Assist także nie zna pełnej nazwy, więc pokazuje uciętą nazwę bez zmian (tłumaczy ją tylko wtedy, gdy możliwa jest tylko jedna nazwa).</td></tr>
   <tr><td>Następnego celu głównego zadania nie ma na mapie i nie możesz nigdzie iść.</td><td>Oddany już przedmiot podniesiono ponownie</td><td><span class="ng">Potrzebny wcześniejszy zapis</span></td><td>Wczytaj zapis sprzed podniesienia. Po nadpisaniu nie jest znany sposób cofnięcia.</td></tr>
   <tr><td>Rozmowa ze zleceniodawcą głównego zadania zamyka grę.</td><td>Odmówiłeś prośbie</td><td><span class="ng">Potrzebny wcześniejszy zapis</span></td><td>Wczytaj zapis sprzed odmowy i przyjmij prośbę.</td></tr>
   <tr><td>Władca pałacu nie daje już zadań. Ludzie w pałacu zostali zamienieni.</td><td>Nie udało się zadanie pałacowe</td><td><span class="ng">Potrzebny wcześniejszy zapis</span></td><td>Wczytaj zapis sprzed niepowodzenia.</td></tr>

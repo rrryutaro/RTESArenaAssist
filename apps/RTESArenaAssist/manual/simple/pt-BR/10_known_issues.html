@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>Bugs conhecidos e cuidados</title>
 <style>
-body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+body { font-family: "Segoe UI", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 22px; }
 h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
 h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
 p { margin: 0 0 8px 0; }
@@ -58,6 +58,7 @@ tr:nth-child(even) { background: #111e2c; }
   <tr><td>O item deixado para conserto não está na loja.</td><td>Você visitou muitos lugares durante o conserto</td><td><span class="ng">Precisa de um jogo salvo anterior</span></td><td>Carregue um jogo salvo de antes de entregá-lo.</td></tr>
   <tr><td>Você traz o item da missão, mas quem a deu só mostra a conversa de sempre.</td><td>O jogo não reconhece o item</td><td><span class="ok">Resolve reiniciando</span> (não nas missões do palácio)</td><td>Saia do prédio e salve, feche e reabra o Arena e carregue. Se uma Guilda dos Magos tiver várias portas, entre pela porta norte ou nordeste.</td></tr>
   <tr><td>Na missão principal, o nome do destino que lhe dizem aparece corrompido.</td><td>Uma falha de carregamento do jogo</td><td><span class="ok">Resolve reiniciando</span></td><td>Salve, feche e reabra o Arena e carregue.</td></tr>
+  <tr><td>O nome de uma masmorra que lhe disseram (por exemplo, numa missão de artefato) aparece cortado no mapa de viagem ou na tela de status e difere do nome da conversa (ex.: "Dungeon of Tricerigod" na conversa, "Dungeon of Tricerig" no mapa).</td><td>O jogo guarda nomes de lugares com no máximo 19 caracteres e corta os nomes mais longos</td><td><span class="minor">Leve</span></td><td>É a mesma masmorra; pode viajar para lá normalmente. O Assist também não consegue saber o nome completo, então mostra o nome cortado como está (só o traduz quando apenas um nome é possível).</td></tr>
   <tr><td>O próximo destino da missão principal não está no mapa e você não consegue ir a lugar nenhum.</td><td>Um item já entregue foi pego de novo</td><td><span class="ng">Precisa de um jogo salvo anterior</span></td><td>Carregue um jogo salvo de antes de pegá-lo. Não se conhece forma de desfazer depois de sobrescrever.</td></tr>
   <tr><td>Falar com quem dá um pedido da missão principal fecha o jogo.</td><td>Você recusou o pedido</td><td><span class="ng">Precisa de um jogo salvo anterior</span></td><td>Carregue um jogo salvo de antes da recusa e aceite o pedido.</td></tr>
   <tr><td>O governante de um palácio não lhe dá mais missões. As pessoas do palácio foram trocadas.</td><td>Você falhou numa missão do palácio</td><td><span class="ng">Precisa de um jogo salvo anterior</span></td><td>Carregue um jogo salvo de antes da falha.</td></tr>

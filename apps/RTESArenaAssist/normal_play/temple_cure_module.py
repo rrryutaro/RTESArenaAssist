@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from normal_play.temple_shown_screen import SHOWN_CURE, note_shown
 _log = logging.getLogger('RTESArenaAssist')
 CURE_OWNER = 'temple_cure'
 CURE_KEY = '_temple_cure_key_prev'
@@ -52,6 +53,7 @@ def poll_temple_cure(w, *, cure) -> bool:
         key_now = (cure.title_en, tuple(((r['en'], r['price_raw']) for r in rows)))
         if key_now != getattr(w, CURE_KEY, None):
             setattr(w, CURE_KEY, key_now)
+            note_shown(w, SHOWN_CURE)
             import i18n_helper as i18n
             w._ui_router.update_facility_list(CURE_OWNER, rows, cure.title_en, _title_ja(cure.char_name), list_title_ja=i18n.text_opt(_LIST_TITLE_KEY) or '')
             _log.info('temple_cure update (name=%r rows=%r)', cure.char_name, [r['en'] for r in rows])
@@ -59,4 +61,7 @@ def poll_temple_cure(w, *, cure) -> bool:
     except Exception:
         _log.exception('temple_cure update failed')
         return False
-__all__ = ['poll_temple_cure', 'cure_foreground_view', 'CURE_OWNER', 'CURE_KEY']
+
+def forget_cure_key(w) -> None:
+    setattr(w, CURE_KEY, None)
+__all__ = ['poll_temple_cure', 'cure_foreground_view', 'forget_cure_key', 'CURE_OWNER', 'CURE_KEY']

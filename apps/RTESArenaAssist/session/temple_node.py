@@ -127,6 +127,10 @@ class TempleNode(FacilityNode):
             reset_temple_cost_on_stop(w)
         except Exception:
             pass
+        from normal_play.temple_cure_module import forget_cure_key
+        from normal_play.temple_shown_screen import SHOWN_NONE, note_shown
+        forget_cure_key(w)
+        note_shown(w, SHOWN_NONE)
 
     def suspend_for_story(self, w) -> None:
         current = getattr(w, '_panel_owner', '') or ''

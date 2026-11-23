@@ -10,16 +10,13 @@ _EQUIP_Z: dict[str, int] = {'armor': 10, 'shield': 20, 'weapon': 30}
 _ARMOR_FRAME_BASE: dict[int, int] = {2: 18, 1: 29, 0: 36}
 _EQUIP_MATERIAL_START = 238
 _EQUIP_MATERIAL_END = 250
-_PALETTE_MATERIAL_FIRST = 16
-_PALETTE_MATERIAL_STRIDE = 16
-_METAL_MIN = 0
-_METAL_MAX = 7
+_METAL_RAMPS: dict[int, tuple[int, ...]] = {0: tuple(range(238, 251)), 1: tuple(range(224, 237)), 2: (209, 210, 211, 212, 213, 214, 215, 216, 129, 130, 131, 132, 208), 3: tuple(range(64, 77)), 4: tuple(range(80, 93)), 5: tuple(range(48, 61)), 6: tuple(range(32, 45)), 7: tuple(range(128, 141))}
 
 def _recolor_equipment(pixels: bytes, metal) -> bytes:
-    if not isinstance(metal, int) or not _METAL_MIN <= metal <= _METAL_MAX:
+    ramp = _METAL_RAMPS.get(metal) if isinstance(metal, int) else None
+    if ramp is None:
         return pixels
-    target = _PALETTE_MATERIAL_FIRST + metal * _PALETTE_MATERIAL_STRIDE
-    return bytes((target + (value - _EQUIP_MATERIAL_START) if _EQUIP_MATERIAL_START <= value <= _EQUIP_MATERIAL_END else value for value in pixels))
+    return bytes((ramp[value - _EQUIP_MATERIAL_START] if _EQUIP_MATERIAL_START <= value <= _EQUIP_MATERIAL_END else value for value in pixels))
 
 def _equip_frame_index(item: dict) -> int | None:
     item_type = item.get('item_type', '')
@@ -27,6 +24,10 @@ def _equip_frame_index(item: dict) -> int | None:
         return None
     hands = item.get('hands', 0)
     slot_id = item.get('slot_id', 0)
+    if item_type in ('weapon', 'shield'):
+        slot_id = item.get('base_slot', slot_id)
+    elif item.get('armor_slot') is not None:
+        slot_id = item['armor_slot']
     if item_type == 'weapon' and hands in (1, 2) and (0 <= slot_id <= 17):
         return slot_id
     if item_type == 'shield' and 7 <= slot_id <= 10:

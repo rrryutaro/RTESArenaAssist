@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <title>既知の不具合と注意点</title>
 <style>
-body { font-family: "メイリオ", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 1.7; }
+body { font-family: "メイリオ", sans-serif; font-size: 13px; background: #0d1b2a; color: #c9d1e0; margin: 0; padding: 16px; line-height: 22px; }
 h1 { font-size: 17px; color: #7ec8e3; border-bottom: 1px solid #1e3a4a; padding-bottom: 6px; margin-bottom: 14px; }
 h2 { font-size: 14px; color: #a0c4d8; margin-top: 20px; margin-bottom: 4px; }
 p { margin: 0 0 8px 0; }
@@ -58,6 +58,7 @@ tr:nth-child(even) { background: #111e2c; }
   <tr><td>修理に預けた品が、店に無い。</td><td>預けたまま多くの場所を回った</td><td><span class="ng">前のセーブが要る</span></td><td>預ける前のセーブをロードする。</td></tr>
   <tr><td>依頼の品を持ち帰ったのに、依頼主がいつもの会話しかしない。</td><td>ゲームが品を認めていない</td><td><span class="ok">再起動で直る</span>（宮殿の依頼は直らない）</td><td>建物を出てセーブし、Arena を終了して起動し直してからロードする。魔術師ギルドに扉が複数ある時は、北か北東の扉から入る。</td></tr>
   <tr><td>メインクエストで人に聞いた行き先の名前が、文字化けしている。</td><td>ゲームの読み込みの乱れ</td><td><span class="ok">再起動で直る</span></td><td>セーブし、Arena を終了して起動し直してからロードする。</td></tr>
+  <tr><td>アーティファクトの依頼などで教わったダンジョンの名前が、旅の地図やステータスでは途中で切れていて、会話で聞いた名前と違う（例: 会話では「Dungeon of Tricerigod」、地図では「Dungeon of Tricerig」）。</td><td>ゲームは地名を 19 文字までしか持てず、長い名前を切って表示する</td><td><span class="minor">害は小さい</span></td><td>同じダンジョンなので、そのまま向かってよい。Assist も元の名前を区別できないため、切れた名前は原文のまま表示する（名前が 1 つに決まる時だけ訳す）。</td></tr>
   <tr><td>メインクエストの次の行き先が地図に無く、どこへも進めない。</td><td>届けた品を、もう一度拾った</td><td><span class="ng">前のセーブが要る</span></td><td>拾う前のセーブをロードする。上書きした後に戻す方法は知られていない。</td></tr>
   <tr><td>メインクエストの依頼主に話しかけると、ゲームが落ちる。</td><td>依頼を断った</td><td><span class="ng">前のセーブが要る</span></td><td>断る前のセーブをロードして、依頼を受ける。</td></tr>
   <tr><td>宮殿の主が、もう依頼をくれない。宮殿の人が入れ替わった。</td><td>宮殿の依頼に失敗した</td><td><span class="ng">前のセーブが要る</span></td><td>失敗する前のセーブをロードする。</td></tr>

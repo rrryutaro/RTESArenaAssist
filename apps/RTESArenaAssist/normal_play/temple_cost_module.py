@@ -1,5 +1,6 @@
 from __future__ import annotations
 import logging
+from normal_play.temple_shown_screen import SHOWN_COST, note_shown
 _log = logging.getLogger('RTESArenaAssist')
 COST_OWNER = 'temple_cost'
 PROMPT_OWNER = 'temple_prompt'
@@ -71,6 +72,8 @@ def poll_temple_cost(w, *, img_name: str) -> bool:
                 return False
         selected, kind = _select(candidates, img, _hit)
     if selected is None or _ndl is None:
+        if _ndl is not None and _cur_ptr is not None:
+            _end_unit(w)
         return False
     en = selected.text.rstrip()
     try:
@@ -89,9 +92,17 @@ def poll_temple_cost(w, *, img_name: str) -> bool:
     key = (owner, en_text, ja_text)
     if key != getattr(w, _KEY, None):
         setattr(w, _KEY, key)
-        w._ui_router.update_translation(owner, en_text, ja_text)
+        w._ui_router.update_translation(owner, en_text, ja_text, speech_role='situation' if kind in _PROMPT_SURFACE_KINDS else None, speech_text=ja)
+        note_shown(w, SHOWN_COST)
         _log.info('temple_cost translated: owner=%s kind=%s img=%r en=%r ja=%r', owner, kind, img, en[:80], ja[:80])
     return True
+
+def _end_unit(w) -> None:
+    key = getattr(w, _KEY, None)
+    if key is None:
+        return
+    setattr(w, _KEY, None)
+    w._ui_router.notify_display_unit_closed(key[0])
 
 def reset_temple_cost_on_stop(w) -> None:
     if getattr(w, _KEY, None) is not None:

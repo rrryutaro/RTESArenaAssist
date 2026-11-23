@@ -5,7 +5,8 @@ from session.facility_node import FacilityView
 _log = logging.getLogger('RTESArenaAssist')
 MENU_OWNER = 'temple_menu'
 MENU_KEY = '_temple_menu_key_prev'
-from normal_play.temple_cure_module import CURE_OWNER, cure_foreground_view
+from normal_play.temple_cure_module import CURE_OWNER, cure_foreground_view, forget_cure_key
+from normal_play.temple_shown_screen import SHOWN_COST, SHOWN_CURE, SHOWN_MENU, last_shown, note_shown
 
 @dataclass(frozen=True)
 class TempleView(FacilityView):
@@ -40,6 +41,7 @@ def render_temple_view(w, *, view, shop_state=None, shop_img_name: str='', **_ig
         from normal_play.temple_cure_module import poll_temple_cure
         list_visible = poll_temple_cure(w, cure=view.cure_view)
         return (False, False, False, list_visible)
+    forget_cure_key(w)
     from normal_play.temple_cost_module import poll_temple_cost
     active_tmpl_handled = False
     if view.cost_eligible:
@@ -61,8 +63,11 @@ def _render_menu(w, shop_state, img: str) -> bool:
         items = list(shop_state.ptr_group_items)
         hotkeys = list(shop_state.ptr_group_hotkeys)
         key_now = (tuple(items), tuple(hotkeys))
+        if last_shown(w) in (SHOWN_COST, SHOWN_CURE):
+            forget_menu_key(w)
         if key_now != getattr(w, MENU_KEY, None):
             setattr(w, MENU_KEY, key_now)
+            note_shown(w, SHOWN_MENU)
             menu_tr = translate_shop_menu_items(items, owner_kind='temple')
             title_en = own_menu_of(shop_state, window=w)[1]
             title_ja = translate_ui_text('temple', title_en) or title_en if title_en else ''

@@ -61,6 +61,8 @@ def own_surface_of(shop_state, analyzer, anchor, *, l3_by_mif: bool) -> tuple[st
         return ('shop_buy', '', True)
     if newpop and (not drinks) and room_items:
         if on_menu and is_room_list_context(shop_state, l3_by_mif=l3_by_mif):
+            if TAVERN_NODE.list_window_running(analyzer, anchor) is False:
+                return (entry[0], entry[1], True)
             return ('shop_rooms', '', True)
         return ('none', '', False)
     if entry is not None:

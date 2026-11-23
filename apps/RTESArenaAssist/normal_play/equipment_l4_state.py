@@ -188,7 +188,7 @@ def read_list_flag(w):
 def _list_is_foreground(w) -> bool:
     val = read_list_flag(w)
     w._equipment_l4_list_flag_value = val
-    return val is None or val == LIST_FLAG_LIST
+    return (val is None or val == LIST_FLAG_LIST) and _list_window_running(w) is not False
 
 def _track_menu_flag(w):
     val = read_view_flag(w)
@@ -230,6 +230,19 @@ def _active_slot_points_item_list(w) -> bool:
     except Exception:
         return False
     return False
+_LIST_WINDOW_DEFS = frozenset({20486, 20571, 20656})
+
+def _list_window_running(w):
+    try:
+        from active_template_reader import ACTIVE_TEMPLATE_PTR_OFFSETS
+        first = ACTIVE_TEMPLATE_PTR_OFFSETS[0]
+        size = ACTIVE_TEMPLATE_PTR_OFFSETS[-1] + 2 - first
+        raw = w._analyzer.read_bytes(w._anchor + first, size)
+    except Exception:
+        return None
+    if not isinstance(raw, (bytes, bytearray)) or len(raw) < size:
+        return None
+    return any((raw[i] | raw[i + 1] << 8 in _LIST_WINDOW_DEFS for i in range(0, size, 2)))
 
 def _active_slot_hits_status_window(w, start: int) -> bool:
     try:
@@ -468,6 +481,8 @@ def _compute(w, img: str) -> EquipmentL4Snapshot:
         _record_reply_history_while_negotiating(w)
     if snap.state is not prev_state:
         _log_state_edge(w, prev_state, snap)
+    from normal_play.equipment_reply_probe import note_reply_place_change
+    note_reply_place_change(w, img=img, state=snap.state.value)
     w._equipment_l4_prev_state = snap.state
     w._equipment_l4_prev_snapshot = snap
     if snap.state is EquipmentL4State.REPLY:
