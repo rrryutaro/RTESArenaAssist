@@ -588,6 +588,7 @@
   "spellbook.header_original": "Original",
   "spellbook.header_translation": "Übersetzung",
   "spellmaker.form_label_type": "Typ",
+  "spellmaker.form_label_may_cast": "Angriffszauber wirken?",
   "screen.system_menu": "Systemmenü",
   "screen.automap": "Automatische Karte",
   "screen.logbook": "Journal",

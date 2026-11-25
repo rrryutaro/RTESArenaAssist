@@ -588,6 +588,7 @@
   "spellbook.header_original": "Oryginał",
   "spellbook.header_translation": "Tłumaczenie",
   "spellmaker.form_label_type": "Typ",
+  "spellmaker.form_label_may_cast": "Można rzucać zaklęcia ofensywne?",
   "screen.system_menu": "Menu systemowe",
   "screen.automap": "Automapa",
   "screen.logbook": "Dziennik",

@@ -1393,6 +1393,11 @@ class PollController:
         ui_router = getattr(w, '_ui_router', None)
         _poll_file_lifecycle(w)
         try:
+            from spellmaker_tables import ensure as _ensure_spellmaker_tables
+            _ensure_spellmaker_tables(w._analyzer, getattr(w, '_anchor', 0))
+        except Exception:
+            pass
+        try:
             from arena_bridge import read_game_state, interpret_location, check_trigger_flag, TRIGGER_BLOCK_OFFSET, TRIGGER_BLOCK_READ, RT_COORD_X_OFFSET, RT_COORD_Z_OFFSET, RT_ANGLE_OFFSET, RT_ANGLE_BYTE_SIZE, RT_ANGLE_MASK, RT_ANGLE_RANGE, RT_ANGLE_NORTH_RAW, read_live_buffer, NPC_DIALOG_OFFSET, NPC_DIALOG_MAXLEN, CHARGEN_STATE_OFFSET, CHARGEN_Q_SEQ_OFFSET, CHARGEN_Q_ARRAY_OFFSET, CHARGEN_DONE_OFFSET, NPC_PHASE_ASKING, NPC_PHASE_IDLE, NPC_PHASE_RESPONDING, NPC_PHASE_BUILDING_ENTRY, read_interior_flag, is_in_interior
             gs, rt_x, rt_z, in_interior, interior_raw, state, inf_name, mif_name, player_floor = _poll_read_game_state(w)
             _top_is_normal_play = _current_top_level(w) == 'normal-play'

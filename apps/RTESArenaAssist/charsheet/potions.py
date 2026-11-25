@@ -2,12 +2,11 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping
 import re
 from typing import Optional
-import assist_settings as settings
 import dungeon_msg_lookup as dml
+from charsheet import selection_store
 from inventory_reader import POTION_COUNT
-SETTING_KEY = 'charsheet_potions'
+SELECTION_KIND = selection_store.KIND_POTIONS
 POTION_TYPE_COUNT = POTION_COUNT
-DEFAULT_SELECTED: tuple[str, ...] = ('Potion of Healing', 'Potion of Stamina', 'Potion of Cure Disease')
 POTION_VALUE_KEYS: tuple[str, ...] = tuple((key for index in range(1, POTION_TYPE_COUNT + 1) for key in (f'potion_{index}_name', f'potion_{index}_short', f'potion_{index}_compact', f'potion_{index}_count')))
 COMPACT_NAME_LENGTH = 14
 _SHORT_NAME_PATTERNS: tuple[re.Pattern[str], ...] = tuple((re.compile(pattern, re.IGNORECASE) for pattern in ('\\s*のポーション\\s*$', '^\\s*Potion of\\s+', '^\\s*Poción de\\s+', '^\\s*Trank der\\s+', '^\\s*Potion de\\s+', "^\\s*Potion d['’]", '^\\s*Pozione di\\s+', '^\\s*Зелье\\s+')))
@@ -28,7 +27,7 @@ def compact_name(localized_name: str) -> str:
 
 def _normalise(names) -> tuple[str, ...]:
     if not isinstance(names, (list, tuple)):
-        names = DEFAULT_SELECTED
+        names = ()
     out: list[str] = []
     for value in names:
         name = value.strip() if isinstance(value, str) else ''
@@ -39,7 +38,7 @@ def _normalise(names) -> tuple[str, ...]:
     return tuple(out)
 
 def selected_names() -> tuple[str, ...]:
-    return _normalise(settings.get(SETTING_KEY, DEFAULT_SELECTED))
+    return _normalise(selection_store.get_store().get(SELECTION_KIND))
 
 def set_selected(name: str, enabled: bool) -> bool:
     name = (name or '').strip()
@@ -54,7 +53,7 @@ def set_selected(name: str, enabled: bool) -> bool:
         names.append(name)
     elif name in names:
         names.remove(name)
-    settings.set_val(SETTING_KEY, names)
+    selection_store.get_store().set(SELECTION_KIND, names)
     return True
 
 def _counts(inventory: Iterable[Mapping]) -> dict[str, int]:
@@ -91,4 +90,4 @@ def state(inventory: Optional[Iterable[Mapping]]) -> tuple:
         return (names, None)
     counts = _counts(inventory)
     return (names, tuple((counts.get(name, 0) for name in names)))
-__all__ = ['SETTING_KEY', 'POTION_TYPE_COUNT', 'DEFAULT_SELECTED', 'POTION_VALUE_KEYS', 'COMPACT_NAME_LENGTH', 'short_name', 'compact_name', 'selected_names', 'set_selected', 'sheet_values', 'state']
+__all__ = ['SELECTION_KIND', 'POTION_TYPE_COUNT', 'POTION_VALUE_KEYS', 'COMPACT_NAME_LENGTH', 'short_name', 'compact_name', 'selected_names', 'set_selected', 'sheet_values', 'state']

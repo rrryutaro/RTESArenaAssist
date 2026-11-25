@@ -1,18 +1,5 @@
 from __future__ import annotations
 import re
-_DAMAGE_TARGET_IDS = {0: 'mages.Health', 1: 'mages.Fatigue', 2: 'mages.Spell Points'}
-_HEAL_TARGET_IDS = {0: 'mages.Fatigue', 1: 'mages.Health', 2: 'mages.Spell Points'}
-_ELEMENT_SUB_IDS = {0: 'mages.Fire', 1: 'mages.Cold', 2: 'mages.Shock', 3: 'mages.Magic', 4: 'mages.Poison'}
-_ATTRIBUTE_IDS = {0: 'mages.Strength', 1: 'mages.Intelligence', 2: 'mages.Willpower', 3: 'mages.Agility', 4: 'mages.Speed', 5: 'mages.Endurance', 6: 'mages.Personality', 7: 'mages.Luck'}
-_DAMAGE_COMPOSITE_IDS = {0: 'mages.Damage Health', 1: 'mages.Damage Fatigue', 2: 'mages.Damage Spell Points'}
-_CONT_DAMAGE_COMPOSITE_IDS = {0: 'mages.Continuous Damage Health', 1: 'mages.Continuous Damage Fatigue', 2: 'mages.Continuous Damage Spell Points'}
-_HEAL_COMPOSITE_IDS = {0: 'mages.Heal Fatigue', 1: 'mages.Heal Health', 2: 'mages.Heal Spell Points'}
-_CAUSE_COMPOSITE_IDS = {0: 'mages.Cause Disease', 1: 'mages.Cause Poison', 2: 'mages.Cause Paralyzation', 3: 'mages.Cause Curse'}
-_CURE_COMPOSITE_IDS = {0: 'mages.Cure Disease', 1: 'mages.Cure Poison', 2: 'mages.Cure Paralyzation', 3: 'mages.Cure Curse'}
-_CREATE_COMPOSITE_IDS = {0: 'mages.Create Shield', 1: 'mages.Create Wall', 2: 'mages.Create Floor'}
-_DESTROY_COMPOSITE_IDS = {0: 'mages.Destroy Wall', 1: 'mages.Destroy Floor'}
-_SIMPLE_EFFECT_IDS = {5: 'mages.Designate as Non-Target', 7: 'mages.Disintegrate', 8: 'mages.Dispel', 14: 'mages.Imprison', 15: 'mages.Invisibility', 16: 'mages.Levitate', 17: 'mages.Light', 18: 'mages.Lock', 19: 'mages.Open', 20: 'mages.Regenerate', 21: 'mages.Silence', 22: 'mages.Spell Absorption', 23: 'mages.Spell Reflection', 24: 'mages.Spell Resistance'}
-_PREFIX_ID = {9: 'mages.Drain Attribute', 10: 'mages.Elemental Resistance', 11: 'mages.Fortify Attribute', 13: 'mages.Transfer Attribute'}
 _EFFECT_TARGET_JA = {'health': 'ヘルス', 'Health': 'ヘルス', 'spell pts': '呪文ポイント', 'Spell Pts': '呪文ポイント', 'fatigue': '疲労', 'Fatigue': '疲労'}
 _TEMPLATES = [(re.compile('^(\\d+)\\s+to\\s+(\\d+)\\s+pts\\s+damage\\s+to\\s+(\\w+(?:\\s+\\w+)?)\\s*\\+\\s*(\\d+)\\s+to\\s+(\\d+)\\s+pts\\s+per\\s+(\\d+)\\s+level\\(s\\)\\.?$'), 'damage'), (re.compile('^\\+\\s*(\\d+)\\s+to\\s+(\\d+)\\s+pts\\s+to\\s+(\\w+(?:\\s+\\w+)?)\\s*\\+\\s*(\\d+)\\s+to\\s+(\\d+)\\s+pts\\s+per\\s+(\\d+)\\s+level\\(s\\)\\.?$'), 'heal'), (re.compile('^(\\d+)\\s+to\\s+(\\d+)\\s+pts\\s+drain\\s+to\\s+(\\w+(?:\\s+\\w+)?)\\s*\\+\\s*(\\d+)\\s+to\\s+(\\d+)\\s+pts\\s+per\\s+(\\d+)\\s+level\\(s\\)\\.?$'), 'drain')]
 
@@ -20,7 +7,7 @@ def _lookup_pair(table: dict, key: int) -> tuple[str, str]:
     pair = table.get(key)
     if pair is not None:
         return pair
-    return (f'Unknown({key})', '—')
+    return ('—', '—')
 
 def _active_effect_slot(effects: list[int]) -> int:
     for i, effect_id in enumerate(effects[:3]):
@@ -28,38 +15,24 @@ def _active_effect_slot(effects: list[int]) -> int:
             return i
     return 0
 
+def _has_id(id_str: str) -> bool:
+    import i18n_helper as i18n
+    return i18n.text_opt(id_str) is not None
+
+def _words_to_ids(words: list[str]) -> list[str]:
+    for head in range(len(words), 0, -1):
+        cid = 'mages.' + ' '.join(words[:head])
+        if _has_id(cid):
+            return [cid] + [f'mages.{w}' for w in words[head:]]
+    return [f'mages.{w}' for w in words]
+
 def _effect_display_ids(effect_id: int, sub_id: int, attr_id: int) -> list[str]:
-    if effect_id == 0:
-        cid = _CAUSE_COMPOSITE_IDS.get(sub_id)
-        return [cid] if cid else []
-    if effect_id == 1:
-        cid = _CONT_DAMAGE_COMPOSITE_IDS.get(sub_id)
-        return [cid] if cid else []
-    if effect_id == 2:
-        cid = _CREATE_COMPOSITE_IDS.get(sub_id)
-        return [cid] if cid else []
-    if effect_id == 3:
-        cid = _CURE_COMPOSITE_IDS.get(sub_id)
-        return [cid] if cid else []
-    if effect_id == 4:
-        cid = _DAMAGE_COMPOSITE_IDS.get(sub_id) or _DAMAGE_COMPOSITE_IDS.get(attr_id)
-        return [cid] if cid else []
-    if effect_id == 6:
-        cid = _DESTROY_COMPOSITE_IDS.get(sub_id)
-        return [cid] if cid else []
-    if effect_id in (9, 11):
-        comp = _ATTRIBUTE_IDS.get(sub_id) or _ATTRIBUTE_IDS.get(attr_id)
-        return [_PREFIX_ID[effect_id], comp] if comp else [_PREFIX_ID[effect_id]]
-    if effect_id == 10:
-        comp = _ELEMENT_SUB_IDS.get(sub_id)
-        return [_PREFIX_ID[10], comp] if comp else [_PREFIX_ID[10]]
-    if effect_id == 12:
-        cid = _HEAL_COMPOSITE_IDS.get(sub_id)
-        return [cid] if cid else []
-    if effect_id == 13:
-        return [_PREFIX_ID[13]]
-    sid = _SIMPLE_EFFECT_IDS.get(effect_id)
-    return [sid] if sid else []
+    from spellmaker_tables import current
+    tables = current()
+    if tables is None:
+        return []
+    words = tables.name_words(effect_id, sub_id, attr_id)
+    return _words_to_ids(words) if words else []
 
 def _id_anchor(id_str: str) -> str:
     import i18n_helper as i18n
@@ -71,7 +44,7 @@ def _resolve_effect_name(effect_id: int, sub_id: int, attr_id: int) -> tuple[str
         return ('(none)', '(なし)')
     ids = _effect_display_ids(effect_id, sub_id, attr_id)
     if not ids:
-        return (f'Unknown({effect_id})', '—')
+        return ('—', '—')
     import i18n_helper as i18n
     en_parts, ja_parts = ([], [])
     for id_str in ids:
@@ -131,7 +104,7 @@ def effect_display_names(effects, sub_effects=(), affected_attrs=(), *, short: b
 def _decode_spell_effect_segments(raw: bytes) -> list[str]:
     if not raw:
         return []
-    m = re.search(b'\\x00{4,}', raw)
+    m = re.search(b'\\x00{2,}', raw)
     end = m.start() if m else len(raw)
     segments: list[str] = []
     for seg in raw[:end].split(b'\x00'):
@@ -150,26 +123,19 @@ def _decode_spell_effect_text(raw: bytes) -> str:
     return ' '.join(_decode_spell_effect_segments(raw)).strip()
 
 def _effect_template_ids(effect_en: str) -> set[int]:
-    effect = (effect_en or '').strip()
-    table = {'Cause Disease': {0}, 'Cause Poison': {1}, 'Cause Paralyzation': {3}, 'Cause Curse': {4}, 'Continuous Damage Health': {6}, 'Continuous Damage Fatigue': {7}, 'Continuous Damage Spell Points': {8}, 'Create Shield': {9, 32}, 'Create Wall': {10}, 'Create Floor': {11}, 'Cure Disease': {12}, 'Cure Poison': {13}, 'Cure Paralyzation': {15}, 'Cure Curse': {16}, 'Damage Health': {18, 24}, 'Damage Fatigue': {19}, 'Damage Spell Points': {20}, 'Designate as Non-Target': {21}, 'Destroy Wall': {22}, 'Destroy Floor': {23}, 'Disintegrate': {25}, 'Dispel': {26}, 'Drain Attribute': {27}, 'Elemental Resistance': {28}, 'Fortify Attribute': {29}, 'Heal Fatigue': {30}, 'Heal Health': {30}, 'Heal Spell Points': {30}, 'Transfer Attribute': {31}, 'Invisibility': {33}, 'Levitate': {34}, 'Light': {35}, 'Lock': {36}, 'Open': {37}, 'Regenerate': {38}, 'Silence': {39}, 'Spell Absorption': {40}, 'Spell Reflection': {41}, 'Spell Resistance': {42}}
-    if effect.startswith('Elemental Resistance '):
-        return {28}
-    if effect.startswith('Drain Attribute '):
-        return {27}
-    if effect.startswith('Fortify Attribute '):
-        return {29}
-    if effect.startswith('Transfer Attribute '):
-        return {31}
-    return table.get(effect, set())
-_SAME_SENTENCE_TEMPLATE = {'Damage Health': 18}
+    from spellmaker_tables import current
+    tables = current()
+    if tables is None:
+        return set()
+    key = tables.full_names().get((effect_en or '').strip())
+    if key is None:
+        return set()
+    template_id = tables.template_id(*key)
+    return {template_id} if template_id is not None else set()
 
 def _synthesis_template_id(effect_en: str) -> int | None:
-    effect = (effect_en or '').strip()
-    candidates = _effect_template_ids(effect)
-    if len(candidates) == 1:
-        return next(iter(candidates))
-    template_id = _SAME_SENTENCE_TEMPLATE.get(effect)
-    return template_id if template_id in candidates else None
+    candidates = _effect_template_ids(effect_en)
+    return next(iter(candidates)) if len(candidates) == 1 else None
 
 def _normalize_spell_effect_text(text_en: str, effect_en: str, *, allow_mismatch_fallback: bool=False) -> tuple[str, str]:
     if not text_en:
@@ -188,15 +154,6 @@ def _normalize_spell_effect_text(text_en: str, effect_en: str, *, allow_mismatch
             return ('', '')
         return (normalized_en, ja)
     return (text_en, translate_effect_text(text_en))
-
-def _strip_effect_heading(text_en: str, effect_en: str) -> str:
-    text = (text_en or '').strip()
-    effect = (effect_en or '').strip()
-    if not text or not effect:
-        return text
-    if text.startswith(effect):
-        return text[len(effect):].lstrip(' :-\t\r\n')
-    return text
 
 def _is_effect_heading_text(text_en: str, effect_en: str) -> bool:
     text = (text_en or '').strip()
@@ -324,56 +281,33 @@ def _attach_effect_texts(text_en: str, details: list[dict], segments: list[str] 
         return out
     if not text:
         return out
-    occurrences: list[tuple[int, int, str]] = []
-    for detail in out:
-        effect = detail.get('effect_en', '')
-        if not effect or effect == '(none)':
-            continue
-        pattern = '(?<![A-Za-z])' + re.escape(effect) + '(?![A-Za-z])'
-        for match in re.finditer(pattern, text):
-            occurrences.append((match.start(), match.end(), effect))
-    occurrences.sort(key=lambda x: x[0])
-    if not occurrences:
-        if len(out) == 1:
-            effect = out[0].get('effect_en', '')
-            normalized_en, text_ja = _normalize_spell_effect_text(text, effect)
-            out[0]['text_en'] = normalized_en
-            out[0]['text_ja'] = text_ja
-        else:
-            by_template = _attach_effect_texts_by_template_starts(text, out)
-            if by_template is not None:
-                return by_template
+    if len(out) == 1:
+        effect = out[0].get('effect_en', '')
+        normalized_en, text_ja = _normalize_spell_effect_text(text, effect)
+        out[0]['text_en'] = normalized_en
+        out[0]['text_ja'] = text_ja
         return out
-    detail_indexes_by_effect: dict[str, list[int]] = {}
-    for idx, detail in enumerate(out):
-        detail_indexes_by_effect.setdefault(detail.get('effect_en', ''), []).append(idx)
-    used_occurrence_indexes: list[tuple[int, int, int]] = []
-    for occ_idx, (_, _, effect) in enumerate(occurrences):
-        candidates = detail_indexes_by_effect.get(effect, [])
-        if not candidates:
-            continue
-        detail_idx = candidates.pop(0)
-        used_occurrence_indexes.append((occ_idx, detail_idx, occurrences[occ_idx][0]))
-    for order, (occ_idx, detail_idx, _) in enumerate(used_occurrence_indexes):
-        start = occurrences[occ_idx][0]
-        end = used_occurrence_indexes[order + 1][2] if order + 1 < len(used_occurrence_indexes) else len(text)
-        detail = out[detail_idx]
-        effect = detail.get('effect_en', '')
-        segment = _strip_effect_heading(text[start:end], effect)
-        normalized_en, text_ja = _normalize_spell_effect_text(segment, effect, allow_mismatch_fallback=True)
-        if not normalized_en and segment:
-            normalized_en = segment
-            text_ja = translate_effect_text(segment)
-        detail['text_en'] = normalized_en
-        detail['text_ja'] = text_ja
+    by_template = _attach_effect_texts_by_template_starts(text, out)
+    if by_template is not None:
+        return by_template
     return out
-_COMPONENT_PREFIXES = ('Drain Attribute ', 'Fortify Attribute ', 'Transfer Attribute ', 'Elemental Resistance ', 'Heal ')
+_COMPONENT_PREFIXES = ('Drain Attribute ', 'Fortify Attribute ', 'Transfer Attribute ', 'Transfer Figured Attribute ', 'Elemental Resistance ', 'Heal ')
 
 def _component_word(effect_en: str) -> str:
     for prefix in _COMPONENT_PREFIXES:
         if effect_en.startswith(prefix):
             return effect_en[len(prefix):].strip()
     return ''
+_B_WORD_BY_CHOICE = {0: '', 1: 'not'}
+
+def _record_b_word(analyzer, anchor: int) -> str | None:
+    try:
+        from mages_spellmaker import FORM_CHOICES
+        from spell_reader import read_spell_choice_index
+        index = read_spell_choice_index(analyzer, anchor, FORM_CHOICES['FORM10']['flag_values'])
+    except Exception:
+        return None
+    return _B_WORD_BY_CHOICE.get(index)
 
 def _synthesize_spellmaker_effect_text(detail: dict, analyzer, anchor: int):
     effect = (detail.get('effect_en') or '').strip()
@@ -391,7 +325,11 @@ def _synthesize_spellmaker_effect_text(detail: dict, analyzer, anchor: int):
         if 5 in values:
             numbers['a'] = values[5]
         word = _component_word(effect)
-        text = render_en(template_id, numbers, {'c': word} if word else {})
+        words = {'c': word} if word else {}
+        b_word = _record_b_word(analyzer, anchor)
+        if b_word is not None:
+            words['b'] = b_word
+        text = render_en(template_id, numbers, words)
     except Exception:
         return ('', '')
     if not text:

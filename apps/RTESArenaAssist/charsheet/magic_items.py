@@ -1,19 +1,17 @@
 from __future__ import annotations
 from collections.abc import Iterable, Mapping
 from typing import Optional
-import assist_settings as settings
 import dungeon_msg_lookup as dml
 import i18n_helper as i18n
-from charsheet import text_fit
+from charsheet import selection_store, text_fit
 from inventory_reader import INV_SLOTS
-SETTING_KEY = 'charsheet_magic_items'
+SELECTION_KIND = selection_store.KIND_MAGIC_ITEMS
 MAGIC_ITEM_SLOT_COUNT = INV_SLOTS
-DEFAULT_SELECTED: tuple[str, ...] = ()
 MAGIC_ITEM_VALUE_KEYS: tuple[str, ...] = tuple((key for index in range(1, MAGIC_ITEM_SLOT_COUNT + 1) for key in (f'magic_item_{index}_name', f'magic_item_{index}_label', f'magic_item_{index}_effect', f'magic_item_{index}_more', f'magic_item_{index}_small', f'magic_item_{index}_uses')))
 
 def _normalise(names) -> tuple[str, ...]:
     if not isinstance(names, (list, tuple)):
-        names = DEFAULT_SELECTED
+        names = ()
     out: list[str] = []
     for value in names:
         name = value.strip() if isinstance(value, str) else ''
@@ -22,7 +20,7 @@ def _normalise(names) -> tuple[str, ...]:
     return tuple(out)
 
 def selected_names() -> tuple[str, ...]:
-    return _normalise(settings.get(SETTING_KEY, DEFAULT_SELECTED))
+    return _normalise(selection_store.get_store().get(SELECTION_KIND))
 _INSTANCE_MARK = '#'
 
 def instance_key(name: str, occurrence: int) -> str:
@@ -50,7 +48,7 @@ def set_selected(name: str, enabled: bool) -> bool:
         names.append(name)
     elif not enabled and name in names:
         names.remove(name)
-    settings.set_val(SETTING_KEY, names)
+    selection_store.get_store().set(SELECTION_KIND, names)
     return True
 
 def is_selectable(item: Mapping) -> bool:
@@ -149,4 +147,4 @@ def state(inventory: Optional[Iterable[Mapping]]) -> tuple:
     if inventory is None:
         return (names, None)
     return (names, tuple(((str(item.get('en') or ''), int(item.get('uses'))) for item in _selected_items(inventory))))
-__all__ = ['SETTING_KEY', 'MAGIC_ITEM_SLOT_COUNT', 'DEFAULT_SELECTED', 'MAGIC_ITEM_VALUE_KEYS', 'selected_names', 'set_selected', 'is_selectable', 'instance_key', 'instance_keys', 'effect_name', 'item_effects', 'item_effect_name', 'fit_one_line', 'fit_name', 'sheet_values', 'state']
+__all__ = ['SELECTION_KIND', 'MAGIC_ITEM_SLOT_COUNT', 'MAGIC_ITEM_VALUE_KEYS', 'selected_names', 'set_selected', 'is_selectable', 'instance_key', 'instance_keys', 'effect_name', 'item_effects', 'item_effect_name', 'fit_one_line', 'fit_name', 'sheet_values', 'state']

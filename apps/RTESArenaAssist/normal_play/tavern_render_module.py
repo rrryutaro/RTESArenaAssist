@@ -11,6 +11,10 @@ def _tavern_input_prompt_label(candidate) -> str:
     from session.tavern_signals import input_prompt_label
     return input_prompt_label(candidate)
 
+def _tavern_choice_buttons(candidate):
+    from session.tavern_signals import choice_buttons
+    return choice_buttons(candidate)
+
 def template_handoff_owners() -> frozenset:
     from session.tavern_node import TAVERN_NODE
     return TAVERN_NODE.panel_owners
@@ -37,7 +41,7 @@ def poll_tavern_render(w, *, tview, shop_state, shop_img_name: str, top_level_st
     elif owner != 'active_template':
         active_tmpl_handled = False
     else:
-        active_tmpl_handled = _poll_active_template(w, shop_img_name=shop_img_name, shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, allow_during_shop_menu=True, select_candidate=select_tavern_template, handoff_owners=template_handoff_owners(), diag_label='tavern', input_prompt_label=_tavern_input_prompt_label)
+        active_tmpl_handled = _poll_active_template(w, shop_img_name=shop_img_name, shop_menu_visible=shop_menu_visible, shop_buy_active=shop_buy_active, allow_during_shop_menu=True, select_candidate=select_tavern_template, handoff_owners=template_handoff_owners(), diag_label='tavern', input_prompt_label=_tavern_input_prompt_label, choice_buttons=_tavern_choice_buttons)
     if owner and owner != 'active_template' and (not negot_handled):
         _cleanup_active_template(w)
     return (negot_handled, active_tmpl_handled, shop_menu_visible, shop_buy_active)

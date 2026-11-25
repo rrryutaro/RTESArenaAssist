@@ -588,6 +588,7 @@
   "spellbook.header_original": "原文名稱",
   "spellbook.header_translation": "翻譯名稱",
   "spellmaker.form_label_type": "類型",
+  "spellmaker.form_label_may_cast": "可以施放攻擊法術？",
   "screen.system_menu": "系統選單",
   "screen.automap": "自動地圖",
   "screen.logbook": "日誌",

@@ -20,7 +20,7 @@
   "spell_effect_text.template.18": "체력에 %0~%1 포인트의 피해를 준다. %4 레벨마다 +%2~%3 포인트.",
   "spell_effect_text.template.19": "피로에 %0~%1 포인트의 피해를 준다. %4 레벨마다 +%2~%3 포인트.",
   "spell_effect_text.template.20": "마력에 %0~%1 포인트의 피해를 준다. %4 레벨마다 +%2~%3 포인트.",
-  "spell_effect_text.template.21": "%0%% 확률로 시전자가 남의 눈에 띄지 않는다. %4 레벨마다 확률 +%1%%. %2 레벨당 %5 라운드. 그동안 다른 주문을 %b 시전할 수 있다.",
+  "spell_effect_text.template.21": "%0%% 확률로 시전자가 남의 눈에 띄지 않는다. %4 레벨마다 확률 +%1%%. %2 레벨당 %5 라운드. 그동안 다른 주문을 %b.",
   "spell_effect_text.template.22": "벽 %0개를 영구적으로 제거한다.",
   "spell_effect_text.template.23": "바닥 %0칸을 영구적으로 제거한다.",
   "spell_effect_text.template.24": "체력에 %0~%1 포인트의 피해를 준다. %4 레벨마다 +%2~%3 포인트.",

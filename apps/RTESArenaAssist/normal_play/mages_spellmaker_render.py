@@ -1,6 +1,6 @@
 from __future__ import annotations
-from normal_play.mages_render_common import _NPC_DIALOG_OFFSET, _PROMPT_EXTRA_SCAN_OFFSETS, _casting_cost_from_spell_cost
-_SPELLMAKER_LIVE_COST_HALF_OFFSET = 64164
+from normal_play.mages_render_common import _NPC_DIALOG_OFFSET, _PROMPT_EXTRA_SCAN_OFFSETS
+_SPELLMAKER_LIVE_COST_HALF_OFFSETS = (22697, 22699, 22701)
 _SPELLMAKER_COST_CACHE_ATTR = '_mages_spellmaker_cost_cache'
 _SPELLMAKER_RECORD_OFFSET = 22502
 _SPELLMAKER_RECORD_COST_KEY_LEN = 52
@@ -16,32 +16,32 @@ _SPELLMAKER_PROMPT_FRAGMENT_LITERALS = ((('money', 'to purchase this spell'), 'Y
 _SPELLMAKER_REFRESH_DETAIL_PROMPTS = frozenset({'The spell has been inscribed in your spellbook'})
 _SPELLMAKER_LIST_TITLES = frozenset({'Targets', 'Effects', 'Effect Options'})
 
-def _read_spellmaker_live_spell_cost(w, *, casting_cost: int | None=None, player_level=None) -> int | None:
-    if casting_cost is None or casting_cost <= 0:
+def _read_spellmaker_live_spell_cost(w, effects) -> int | None:
+    total = 0
+    for slot, effect in enumerate(effects or ()):
+        if effect == 255:
+            continue
+        if slot >= len(_SPELLMAKER_LIVE_COST_HALF_OFFSETS):
+            return None
+        try:
+            raw = w._analyzer.read_bytes(w._anchor + _SPELLMAKER_LIVE_COST_HALF_OFFSETS[slot], 2)
+        except (OSError, AttributeError):
+            return None
+        if len(raw) < 2:
+            return None
+        total += raw[0] | raw[1] << 8
+    if total <= 0:
         return None
-    try:
-        raw = w._analyzer.read_bytes(w._anchor + _SPELLMAKER_LIVE_COST_HALF_OFFSET, 2)
-    except (OSError, AttributeError):
-        return None
-    if len(raw) < 2:
-        return None
-    half_cost = raw[0] | raw[1] << 8
-    if half_cost <= 0:
-        return None
-    spell_cost = half_cost * 2
-    expected = _casting_cost_from_spell_cost(spell_cost, player_level)
-    if expected != casting_cost:
-        return None
-    return spell_cost
+    return total * 2
 
-def _spellmaker_cost_cache_key(w, data: dict, casting_cost: int | None) -> tuple:
+def _spellmaker_cost_cache_key(w, data: dict) -> tuple:
     try:
         raw_record = w._analyzer.read_bytes(w._anchor + _SPELLMAKER_RECORD_OFFSET, _SPELLMAKER_RECORD_COST_KEY_LEN)
     except (OSError, AttributeError):
         raw_record = b''
-    return (raw_record, data.get('target_id'), data.get('element_id'), tuple(data.get('effects', [])), tuple(data.get('sub_effects', [])), tuple(data.get('affected_attrs', [])), data.get('player_level'), casting_cost)
+    return (raw_record, data.get('target_id'), data.get('element_id'), tuple(data.get('effects', [])), tuple(data.get('sub_effects', [])), tuple(data.get('affected_attrs', [])), data.get('player_level'))
 
-def _resolve_spellmaker_spell_cost(w, data: dict, *, casting_cost: int | None) -> int:
+def _resolve_spellmaker_spell_cost(w, data: dict) -> int:
     try:
         record_cost = int(data.get('cost') or 0)
     except (TypeError, ValueError):
@@ -49,12 +49,12 @@ def _resolve_spellmaker_spell_cost(w, data: dict, *, casting_cost: int | None) -
     if all((x == 255 for x in data.get('effects', []))):
         setattr(w, _SPELLMAKER_COST_CACHE_ATTR, None)
         return 0
-    key = _spellmaker_cost_cache_key(w, data, casting_cost)
+    key = _spellmaker_cost_cache_key(w, data)
     if record_cost > 0:
         spell_cost = record_cost * 2
         setattr(w, _SPELLMAKER_COST_CACHE_ATTR, (key, spell_cost))
         return spell_cost
-    live_spell_cost = _read_spellmaker_live_spell_cost(w, casting_cost=casting_cost, player_level=data.get('player_level'))
+    live_spell_cost = _read_spellmaker_live_spell_cost(w, data.get('effects'))
     if live_spell_cost:
         setattr(w, _SPELLMAKER_COST_CACHE_ATTR, (key, live_spell_cost))
         return live_spell_cost

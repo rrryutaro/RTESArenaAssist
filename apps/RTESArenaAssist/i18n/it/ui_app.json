@@ -588,6 +588,7 @@
   "spellbook.header_original": "Originale",
   "spellbook.header_translation": "Traduzione",
   "spellmaker.form_label_type": "Tipo",
+  "spellmaker.form_label_may_cast": "Può lanciare incantesimi offensivi?",
   "screen.system_menu": "Menu di sistema",
   "screen.automap": "Mappa automatica",
   "screen.logbook": "Diario",

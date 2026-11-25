@@ -25,7 +25,7 @@ _value_index: dict[str, dict[str, str]] = {}
 _PUBLIC_RUNTIME = False
 _USER_TRANSLATIONS_DIR: str | None = None
 _USER = _user.UserPacks()
-_PUBLIC_RUNTIME_EN_FILES = frozenset({'ui_app.json', 'ui.json', 'setup.json'})
+_PUBLIC_RUNTIME_EN_FILES = frozenset({'ui_app.json', 'ui.json', 'setup.json', 'pregame_intro.json'})
 try:
     from PySide6.QtCore import QObject, Signal
 

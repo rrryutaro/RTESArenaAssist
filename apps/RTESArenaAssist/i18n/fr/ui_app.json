@@ -588,6 +588,7 @@
   "spellbook.header_original": "Original",
   "spellbook.header_translation": "Traduction",
   "spellmaker.form_label_type": "Type",
+  "spellmaker.form_label_may_cast": "Sorts offensifs autorisés ?",
   "screen.system_menu": "Menu système",
   "screen.automap": "Carte automatique",
   "screen.logbook": "Journal",

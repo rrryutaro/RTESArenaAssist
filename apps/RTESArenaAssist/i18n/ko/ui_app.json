@@ -588,6 +588,7 @@
   "spellbook.header_original": "원문 이름",
   "spellbook.header_translation": "번역 이름",
   "spellmaker.form_label_type": "종류",
+  "spellmaker.form_label_may_cast": "공격 주문 시전 가능?",
   "screen.system_menu": "시스템 메뉴",
   "screen.automap": "오토맵",
   "screen.logbook": "일지",

@@ -1,5 +1,5 @@
 from __future__ import annotations
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Optional
 from arena_bridge import ArenaMemoryAnalyzer
 CURRENT_TEXT_PTR_OFFSET = 43076
@@ -186,14 +186,18 @@ class TemplateTable:
     surface_kind: dict
     img_input: dict
     img_surface: dict
+    confirm_only: frozenset = field(default_factory=frozenset)
 
 def build_template_table(*declaration_groups) -> TemplateTable:
     input_kind: dict[int, str] = {}
     surface_kind: dict[int, str] = {}
     img_input: dict[str, set] = {i: set() for imgs in _SCREEN_IMAGES.values() for i in imgs}
     img_surface: dict[str, set] = {i: set() for imgs in _SCREEN_IMAGES.values() for i in imgs}
+    confirm_only: set[int] = set()
     for rows in declaration_groups:
         for ptr, ikind, skind, iimgs, simgs in rows:
+            if skind and tuple(simgs) == ('confirm',):
+                confirm_only.add(ptr)
             if ikind:
                 input_kind[ptr] = ikind
                 for img in (i for scr in iimgs for i in _SCREEN_IMAGES[scr]):
@@ -202,7 +206,7 @@ def build_template_table(*declaration_groups) -> TemplateTable:
                 surface_kind[ptr] = skind
                 for img in (i for scr in simgs for i in _SCREEN_IMAGES[scr]):
                     img_surface[img].add(skind)
-    return TemplateTable(input_kind=input_kind, surface_kind=surface_kind, img_input={k: frozenset(v) for k, v in img_input.items()}, img_surface={k: frozenset(v) for k, v in img_surface.items()})
+    return TemplateTable(input_kind=input_kind, surface_kind=surface_kind, img_input={k: frozenset(v) for k, v in img_input.items()}, img_surface={k: frozenset(v) for k, v in img_surface.items()}, confirm_only=frozenset(confirm_only))
 COUNTER_OFFER_DECLARATIONS: tuple = ((26058, 'counter_offer', 'negotiation_counter', ('popup',), ('popup',)),)
 COUNTER_OFFER_TABLE: TemplateTable = build_template_table(COUNTER_OFFER_DECLARATIONS)
 
@@ -217,6 +221,9 @@ def input_prompt_kind(c: 'ActiveTemplateCandidate', table: TemplateTable) -> str
 
 def template_surface_kind(c: 'ActiveTemplateCandidate', table: TemplateTable) -> str:
     return table.surface_kind.get(c.ptr, '')
+
+def is_confirm_only_template(c: 'ActiveTemplateCandidate', table: TemplateTable) -> bool:
+    return c.ptr in table.confirm_only
 
 def surface_kind_of_pointer(ptr, table: TemplateTable) -> str:
     if ptr is None:

@@ -35,7 +35,7 @@ def note_unclaimed_dialog_template(w, *, reason: str) -> None:
         from assist_log import recog as _recog
         _recog(_log, 'active_template not evaluated: ptr=0x%04X reason=%s text=%r', _key[0], _key[1], _key[2][:60])
 
-def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop_buy_active: bool, allow_during_shop_menu: bool, c_area: str='', select_candidate=None, handoff_owners: frozenset=frozenset(), diag_label: str='', input_prompt_label=None) -> bool:
+def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop_buy_active: bool, allow_during_shop_menu: bool, c_area: str='', select_candidate=None, handoff_owners: frozenset=frozenset(), diag_label: str='', input_prompt_label=None, choice_buttons=None) -> bool:
     try:
         _ptr_raw = w._analyzer.read_bytes(w._anchor + 43076, 2)
         _ptr_val = _ptr_raw[0] | _ptr_raw[1] << 8
@@ -135,7 +135,11 @@ def poll_active_template(w, *, shop_img_name: str, shop_menu_visible: bool, shop
             if _owner_now not in replaceable_owners(handoff_owners):
                 _log.info('active_template withheld (panel-owner=%s): en=%r', _owner_now, _orig_clean[:80])
                 return True
-            w._ui_router.update_translation('active_template', _orig_clean, _ja, speech_role='situation')
+            _buttons = choice_buttons(_selected) if choice_buttons is not None and _selected is not None else None
+            if _buttons:
+                w._ui_router.update_translation('active_template', f'{_buttons[0]}\n{_orig_clean}', f'{_buttons[1]}\n{_ja}', speech_role='situation', speech_text=_ja)
+            else:
+                w._ui_router.update_translation('active_template', _orig_clean, _ja, speech_role='situation')
             _log.info('active_template translated: src=%s en=%r ja=%r', _active_tmpl_src, _orig_clean[:80], _ja[:80])
         return True
     return False

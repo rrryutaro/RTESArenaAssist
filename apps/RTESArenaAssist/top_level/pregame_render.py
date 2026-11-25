@@ -7,18 +7,25 @@ def show_startup_intro(w, img_name: str) -> None:
     page_id = STARTUP_PAGE_IDS.get(img_name)
     slide_en = source_text(page_id)
     slide_ja = display_text(page_id)
-    all_en = '\n'.join((source_text(i) for i in STARTUP_PAGE_ORDER))
-    all_ja = '\n'.join((display_text(i) for i in STARTUP_PAGE_ORDER))
+    all_en = '\n'.join((s for i in STARTUP_PAGE_ORDER if (s := source_text(i))))
+    all_ja = '\n'.join((s for i in STARTUP_PAGE_ORDER if (s := display_text(i))))
     if not getattr(w, '_startup_intro_prewarmed', False):
         from tts_prewarm import prewarm_fixed_sequence
         prewarm_fixed_sequence(w, [all_ja], '_startup_intro_prewarmed')
     w._set_chargen_ui_state(True)
-    update_panel = not w._startup_layout_pushed and w._layout_translate_panel is not None
-    if update_panel:
-        w._ui_router.update_translation('pregame_startup_intro', slide_en, slide_ja, panel_en=all_en, panel_ja=all_ja, speech_role='situation', speech_text=all_ja)
-        w._startup_layout_pushed = True
+    w._ui_router.update_translation('pregame_startup_intro', slide_en, slide_ja, **_intro_page_args(w, all_en, all_ja, layout_attr='_startup_layout_pushed', speech_attr='_startup_intro_speech_declared'))
+
+def _intro_page_args(w, all_en: str, all_ja: str, *, layout_attr: str, speech_attr: str) -> dict:
+    args: dict = {}
+    if not getattr(w, speech_attr, False):
+        args.update(speech_role='situation', speech_text=all_ja)
+        setattr(w, speech_attr, True)
+    if not getattr(w, layout_attr) and w._layout_translate_panel is not None:
+        args.update(panel_en=all_en, panel_ja=all_ja)
+        setattr(w, layout_attr, True)
     else:
-        w._ui_router.update_translation('pregame_startup_intro', slide_en, slide_ja, update_panel=False, speech_role='situation', speech_text=all_ja)
+        args.update(update_panel=False)
+    return args
 
 def show_menu_screen(w) -> None:
     from intro_texts import MENU_ITEM_IDS, source_text, display_text
@@ -71,10 +78,5 @@ def show_newgame_slide(w, img_name: str) -> None:
         from tts_prewarm import prewarm_fixed_sequence
         prewarm_fixed_sequence(w, [all_ja], '_newgame_intro_prewarmed')
     w._set_chargen_ui_state(True)
-    update_panel = not w._newgame_layout_pushed and w._layout_translate_panel is not None
-    if update_panel:
-        w._ui_router.update_translation('pregame_newgame_slide', slide_en, slide_ja, panel_en=all_en, panel_ja=all_ja, speech_role='situation', speech_text=all_ja)
-        w._newgame_layout_pushed = True
-    else:
-        w._ui_router.update_translation('pregame_newgame_slide', slide_en, slide_ja, update_panel=False, speech_role='situation', speech_text=all_ja)
+    w._ui_router.update_translation('pregame_newgame_slide', slide_en, slide_ja, **_intro_page_args(w, all_en, all_ja, layout_attr='_newgame_layout_pushed', speech_attr='_newgame_intro_speech_declared'))
 __all__ = ['show_startup_intro', 'show_menu_screen', 'show_load_screen', 'show_newgame_slide']

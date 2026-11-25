@@ -10,10 +10,14 @@ NEGOT_MESSAGE_OFFSET = NEGOT_RENDERED_OFFSET
 NEGOT_MESSAGE_MAXLEN = NEGOT_RENDERED_MAXLEN
 BUTTON_LABELS_EN: tuple[str, ...] = ('ACCEPT', 'COUNTER', 'REJECT')
 BUTTON_LABELS_JA: tuple[str, ...] = ('承諾', '対案', '拒否')
-NEGOTIATION_PROFILES: dict[str, dict[str, tuple[str, ...]]] = {'NEGOTBUT.IMG': {'buttons_en': ('ACCEPT', 'COUNTER', 'REJECT'), 'buttons_ja': ('承諾', '対案', '拒否')}, 'YESNO.IMG': {'buttons_en': ('YES', 'NO', 'CANCEL'), 'buttons_ja': ('はい', 'いいえ', 'キャンセル')}}
+_CONFIRM_BUTTONS: dict[str, tuple[str, ...]] = {'buttons_en': ('YES', 'NO', 'CANCEL'), 'buttons_ja': ('はい', 'いいえ', 'キャンセル')}
+NEGOTIATION_PROFILES: dict[str, dict[str, tuple[str, ...]]] = {'NEGOTBUT.IMG': {'buttons_en': ('ACCEPT', 'COUNTER', 'REJECT'), 'buttons_ja': ('承諾', '対案', '拒否')}, 'YESNO.IMG': _CONFIRM_BUTTONS}
 
 def get_negotiation_profile(img_name: str) -> Optional[dict]:
     return NEGOTIATION_PROFILES.get(img_name)
+
+def confirm_choice_buttons() -> tuple[str, str]:
+    return ('  '.join(_CONFIRM_BUTTONS['buttons_en']), '  '.join(_CONFIRM_BUTTONS['buttons_ja']))
 _PLACEHOLDER_MAP = {'%i': '%nr', '%lu': '%a', '%u': '%a', '%d': '%a', '%mm': '%a'}
 _C_PH_PATTERN = re.compile('%(?:lu|mm|s|i|u|d)')
 _ARENA_PH_PATTERN = re.compile('%([a-z][a-z0-9]*)\\b')

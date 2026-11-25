@@ -9,7 +9,7 @@ _PLACEHOLDER_RE = re.compile('%(\\d|a|b|c|f)')
 
 def _parse_spellmkr(data: str) -> dict[int, str]:
     out: dict[int, str] = {}
-    for m in re.finditer('#(\\d+)\\r?\\n(.*?)(?=#\\d+\\r?\\n|$)', data, re.S):
+    for m in re.finditer('#(\\d+)\\r?\\n(.*?)(?=#\\d+\\r?\\n|#?\\s*$)', data, re.S):
         out[int(m.group(1))] = ' '.join(m.group(2).split())
     return out
 _log = logging.getLogger(__name__)
@@ -93,9 +93,13 @@ def _build() -> list[tuple[re.Pattern, list[str], int]]:
                     seen[name] = gid
                     order.append(name)
                     if name in ('b',):
+                        if parts and parts[-1].endswith('\\ ') and en[m.end():].startswith(' '):
+                            parts.append(f'(?:(?P<{gid}>\\w+)\\ )?')
+                            last = m.end() + 1
+                            continue
                         parts.append(f'(?P<{gid}>\\w*)')
                     elif name in ('c',):
-                        parts.append(f'(?P<{gid}>[A-Za-z]+)')
+                        parts.append(f'(?P<{gid}>[A-Za-z]+(?: [A-Za-z]+)?)')
                     elif name in ('f',):
                         parts.append(f'(?P<{gid}>[^.]+?)')
                     else:
@@ -133,6 +137,10 @@ def _translate_value(name: str, value: str) -> str:
         t = i18n.text_opt(_id)
         if t:
             return t
+    if name == 'c':
+        t = i18n.text_opt(f'mages.{v}')
+        if t:
+            return t
     return i18n.value('spell_effect_text', v) or v
 
 def match_template(text_en: str) -> tuple[int, str, str] | None:
@@ -150,7 +158,7 @@ def match_template(text_en: str) -> tuple[int, str, str] | None:
                 continue
             ja = _template_ja(idx) or ''
             for name in order:
-                val = _translate_value(name, m.group(f'p_{name}'))
+                val = _translate_value(name, m.group(f'p_{name}') or '')
                 ja = ja.replace(f'%{name}', val)
             ja = ja.replace('%%', '%')
             return (idx, s, ja)

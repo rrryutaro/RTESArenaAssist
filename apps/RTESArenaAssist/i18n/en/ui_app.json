@@ -539,6 +539,7 @@
   "spellbook.header_original": "Original",
   "spellbook.header_translation": "Translation",
   "spellmaker.form_label_type": "Type",
+  "spellmaker.form_label_may_cast": "May Cast Offensive Spells?",
   "screen.system_menu": "System Menu",
   "screen.automap": "Automap",
   "screen.logbook": "Journal",

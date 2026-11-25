@@ -588,6 +588,7 @@
   "spellbook.header_original": "Оригинал",
   "spellbook.header_translation": "Перевод",
   "spellmaker.form_label_type": "Тип",
+  "spellmaker.form_label_may_cast": "Можно творить атакующие заклинания?",
   "screen.system_menu": "Системное меню",
   "screen.automap": "Автокарта",
   "screen.logbook": "Журнал",

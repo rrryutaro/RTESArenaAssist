@@ -24,6 +24,13 @@ def yesno_menu_back_of(shop_state) -> bool:
     from shop_popup_detector import yesno_menu_back
     return yesno_menu_back(shop_state, template_table_pointers(signal_template_table()))
 
+def choice_buttons(candidate):
+    from active_template_reader import is_confirm_only_template
+    if not is_confirm_only_template(candidate, own_template_table()):
+        return None
+    from negotiation_reader import confirm_choice_buttons
+    return confirm_choice_buttons()
+
 def input_prompt_label(candidate) -> str:
     from active_template_reader import COUNTER_OFFER_TABLE, input_prompt_kind
     if input_prompt_kind(candidate, own_template_table()):

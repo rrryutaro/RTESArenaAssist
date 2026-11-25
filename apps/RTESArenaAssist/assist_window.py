@@ -147,6 +147,13 @@ class AssistWindow(QMainWindow):
         except Exception:
             pass
         try:
+            from controllers.map_ext_lifecycle import get_lifecycle
+            from charsheet import selection_store
+            get_lifecycle().add_store(selection_store.get_store())
+            get_lifecycle().add_on_load(lambda: self._tab_translate._render_equipment_list())
+        except Exception:
+            pass
+        try:
             from reading_highlight import ReadingHighlighter
             self._reading_highlighter = ReadingHighlighter(self)
 
@@ -199,6 +206,8 @@ class AssistWindow(QMainWindow):
         self._img_name_prev: str = ''
         self._newgame_layout_pushed: bool = False
         self._startup_layout_pushed: bool = False
+        self._newgame_intro_speech_declared: bool = False
+        self._startup_intro_speech_declared: bool = False
         self._trigger_flag_prev: int = 0
         self._trigger_axis_live_prev: bool = False
         self._cached_rt_x: int | None = None
@@ -559,6 +568,8 @@ class AssistWindow(QMainWindow):
             pass
         self._newgame_layout_pushed = False
         self._startup_layout_pushed = False
+        self._newgame_intro_speech_declared = False
+        self._startup_intro_speech_declared = False
         self._tab_translate.set_connected(False)
         self._tab_status.clear_memory_target()
         try:

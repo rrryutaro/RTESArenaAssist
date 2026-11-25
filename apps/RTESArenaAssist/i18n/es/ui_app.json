@@ -509,6 +509,7 @@
   "spellbook.header_original": "Original",
   "spellbook.header_translation": "Traducción",
   "spellmaker.form_label_type": "Tipo",
+  "spellmaker.form_label_may_cast": "¿Puede lanzar hechizos ofensivos?",
   "screen.system_menu": "Menú del sistema",
   "screen.automap": "Automapa",
   "screen.logbook": "Diario",

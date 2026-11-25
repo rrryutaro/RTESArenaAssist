@@ -21,11 +21,6 @@ _MAGIC_RE = re.compile('\\d{3}([^\\n]+)\\n\\D*?(\\d+)\\s*gp', re.DOTALL)
 _magic_offset_cache: int | None = None
 _PRICE_RE = re.compile('(\\d+)\\s*gp\\s*\\n?(.*)', re.DOTALL)
 _KEEP_RE = re.compile('[^\\x20-\\x7E]')
-SPELLMAKER_TARGET_NAMES = frozenset({'None', 'Caster only', '1 Target, Touch', '1 Target at Range', 'Area - Centered on Caster', 'Area - Centered On Caster', 'Area - at Range, Explosion'})
-SPELLMAKER_EFFECT_CATEGORY_NAMES = frozenset({'Cause', 'Continuous Damage', 'Create', 'Cure', 'Damage', 'Designate as Non-Target', 'Destroy', 'Drain Attribute', 'Elemental Resistance', 'Fortify Attribute', 'Heal', 'Transfer', 'Invisibility', 'Levitate', 'Light', 'Lock', 'Open', 'Regenerate', 'Silence', 'Spell Absorption', 'Spell Reflection', 'Spell Resistance'})
-SPELLMAKER_EFFECT_OPTION_NAMES = frozenset({'Disease', 'Poison', 'Paralyzation', 'Curse', 'Fear', 'Death', 'Health', 'Fatigue', 'Spell Points', 'Shield', 'Wall', 'Floor', 'Fire', 'Cold', 'Shock', 'Magic', 'Energy', 'Attribute', 'Figured Attribute', 'Strength', 'Intelligence', 'Willpower', 'Agility', 'Speed', 'Endurance', 'Personality', 'Luck', 'Follows caster', 'Projectile', 'Yes', 'No'})
-_FULL_EFFECT_SUFFIXES = {'Cause': ('Disease', 'Poison', 'Paralyzation', 'Curse', 'Fear', 'Death'), 'Continuous Damage': ('Health', 'Fatigue', 'Spell Points'), 'Create': ('Shield', 'Wall', 'Floor'), 'Cure': ('Disease', 'Poison', 'Paralyzation', 'Curse', 'Fear'), 'Damage': ('Health', 'Fatigue', 'Spell Points'), 'Destroy': ('Wall', 'Floor'), 'Heal': ('Fatigue', 'Health', 'Spell Points'), 'Elemental Resistance': ('Fire', 'Cold', 'Shock', 'Magic', 'Poison')}
-SPELLMAKER_EFFECT_FULL_NAMES = frozenset({f'{prefix} {suffix}' for prefix, suffixes in _FULL_EFFECT_SUFFIXES.items() for suffix in suffixes}) | frozenset({'Designate as Non-Target', 'Drain Attribute', 'Fortify Attribute', 'Transfer Attribute', 'Invisibility', 'Levitate', 'Light', 'Lock', 'Open', 'Regenerate', 'Silence', 'Spell Absorption', 'Spell Reflection', 'Spell Resistance'})
 
 def _read_raw(analyzer, anchor: int, offset: int, length: int=_READ_LEN) -> bytes:
     try:
@@ -145,11 +140,13 @@ def read_magic_item_list(analyzer, anchor: int) -> list[dict]:
         pass
     return []
 
-def read_name_list(analyzer, anchor: int, offset: int) -> list[dict]:
+def read_name_list(analyzer, anchor: int, offset: int, *, stop_at_empty: bool=False) -> list[dict]:
     raw = _read_raw(analyzer, anchor, offset)
     items: list[dict] = []
     blanks = 0
     for seg in _segments(raw):
+        if stop_at_empty and items and (seg == ''):
+            break
         if items and _PRICE_RE.search(seg):
             break
         name = _clean(seg)
@@ -177,26 +174,33 @@ def filter_known_items(items: list[dict], allowed: set[str] | frozenset[str]) ->
         out.append(copied)
     return out
 
-def classify_spellmaker_name_items(items: list[dict]) -> tuple[str, str, list[dict]] | None:
-    if not items:
+def spellmaker_static_list(tables, offset: int) -> tuple[str, str, list[dict]] | None:
+    if tables is None:
+        return None
+    from spellmaker_tables import ELEMENT_NAMES_OFFSET, SAVE_VS_SHOWN, TARGET_NAMES_OFFSET
+    if offset in tables.sublist_offsets.values():
+        effect_id = next((e for e, off in tables.sublist_offsets.items() if off == offset))
+        names, title, title_id = (tables.sublists[effect_id], 'Effect Options', 'mages_list.title_effect_options')
+    elif offset == ELEMENT_NAMES_OFFSET:
+        names, title, title_id = (tables.elements[:SAVE_VS_SHOWN], 'Effect Options', 'mages_list.title_effect_options')
+    elif offset == TARGET_NAMES_OFFSET:
+        names, title, title_id = (tables.targets, 'Targets', 'mages_list.title_targets')
+    else:
+        return None
+    return (title, i18n.text(title_id), [{'en': name, 'ja': translate_name(name)} for name in names])
+
+def classify_spellmaker_name_items(items: list[dict], tables) -> tuple[str, str, list[dict]] | None:
+    if not items or tables is None:
         return None
     first = (items[0].get('en') or '').strip()
-    if first in SPELLMAKER_TARGET_NAMES:
-        filtered = filter_known_items(items, SPELLMAKER_TARGET_NAMES)
-        if filtered:
-            return ('Targets', i18n.text('mages_list.title_targets'), filtered)
-    if first in SPELLMAKER_EFFECT_CATEGORY_NAMES:
-        filtered = filter_known_items(items, SPELLMAKER_EFFECT_CATEGORY_NAMES)
-        if filtered:
-            return ('Effects', i18n.text('mages_list.title_effects'), filtered)
-    if first in SPELLMAKER_EFFECT_OPTION_NAMES:
-        filtered = filter_known_items(items, SPELLMAKER_EFFECT_OPTION_NAMES)
-        if filtered:
-            return ('Effect Options', i18n.text('mages_list.title_effect_options'), filtered)
-    if first in SPELLMAKER_EFFECT_FULL_NAMES:
-        filtered = filter_known_items(items, SPELLMAKER_EFFECT_FULL_NAMES)
-        if filtered:
-            return ('Effects', i18n.text('mages_list.title_effects'), filtered)
+    effects = frozenset(tables.effects)
+    options = frozenset((name for names in tables.sublists.values() for name in names))
+    groups = ((frozenset(tables.targets), 'Targets', 'mages_list.title_targets'), (effects, 'Effects', 'mages_list.title_effects'), (options, 'Effect Options', 'mages_list.title_effect_options'), (frozenset(tables.full_names()), 'Effects', 'mages_list.title_effects'))
+    for names, title, title_id in groups:
+        if first in names:
+            filtered = filter_known_items(items, names)
+            if filtered:
+                return (title, i18n.text(title_id), filtered)
     return None
 
 def enrich_unidentified_by_index(analyzer, anchor: int, items: list[dict]) -> list[dict]:
@@ -229,4 +233,4 @@ def translate_name(en: str) -> str:
     key = (en or '').strip()
     translated = _translate_name_opt(key)
     return translated if translated is not None else key
-__all__ = ['POTION_LIST_OFFSET', 'SPELL_LIST_OFFSET', 'INVENTORY_LIST_OFFSET', 'SPELLMAKER_TARGET_OFFSET', 'SPELLMAKER_EFFECT_OFFSET', 'SPELLMAKER_SUBLIST_OFFSET', 'EFFECT_PICK_OFFSET', 'read_priced_list', 'read_name_list', 'read_magic_item_list', 'read_active_priced_list', 'read_active_list_offset', 'looks_like_potion_list', 'LIST_KIND_POTION', 'LIST_KIND_SPELL', 'ACTIVE_LIST_PTR_OFFSET', 'translate_name', 'enrich_unidentified_by_index', 'filter_known_items', 'classify_spellmaker_name_items', 'SPELLMAKER_TARGET_NAMES', 'SPELLMAKER_EFFECT_CATEGORY_NAMES', 'SPELLMAKER_EFFECT_OPTION_NAMES', 'SPELLMAKER_EFFECT_FULL_NAMES']
+__all__ = ['POTION_LIST_OFFSET', 'SPELL_LIST_OFFSET', 'INVENTORY_LIST_OFFSET', 'SPELLMAKER_TARGET_OFFSET', 'SPELLMAKER_EFFECT_OFFSET', 'SPELLMAKER_SUBLIST_OFFSET', 'EFFECT_PICK_OFFSET', 'read_priced_list', 'read_name_list', 'read_magic_item_list', 'read_active_priced_list', 'read_active_list_offset', 'looks_like_potion_list', 'LIST_KIND_POTION', 'LIST_KIND_SPELL', 'ACTIVE_LIST_PTR_OFFSET', 'translate_name', 'enrich_unidentified_by_index', 'filter_known_items', 'classify_spellmaker_name_items', 'spellmaker_static_list']

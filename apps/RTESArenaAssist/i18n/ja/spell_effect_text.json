@@ -20,7 +20,7 @@
   "spell_effect_text.template.18": "ヘルスに %0〜%1 ポイントのダメージ。%4 レベルごとに +%2〜%3 ポイント。",
   "spell_effect_text.template.19": "疲労に %0〜%1 ポイントのダメージ。%4 レベルごとに +%2〜%3 ポイント。",
   "spell_effect_text.template.20": "呪文ポイントに %0〜%1 ポイントのダメージ。%4 レベルごとに +%2〜%3 ポイント。",
-  "spell_effect_text.template.21": "%0%%の確率で術者は無視される。%4 レベルごとに +%1%%。%2 レベルあたり %5 ラウンド。あなたは他の呪文を %b 唱えられる。",
+  "spell_effect_text.template.21": "%0%%の確率で術者は無視される。%4 レベルごとに +%1%%。%2 レベルあたり %5 ラウンド。あなたは他の呪文を%b。",
   "spell_effect_text.template.22": "%0 枚の壁を恒久的に消去。",
   "spell_effect_text.template.23": "%0 枚の床を恒久的に消去。",
   "spell_effect_text.template.24": "ヘルスに %0〜%1 ポイントのダメージ。%4 レベルごとに +%2〜%3 ポイント。",

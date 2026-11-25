@@ -25,7 +25,7 @@ def _casting_cost_divisor(player_level) -> int:
         level = int(player_level or 0)
     except (TypeError, ValueError):
         level = 0
-    return max(1, level + 2) if level > 0 else 4
+    return 2 * level if level > 0 else 4
 
 def _casting_cost_from_spell_cost(spell_cost: int, player_level) -> int:
     return int(spell_cost) // _casting_cost_divisor(player_level)

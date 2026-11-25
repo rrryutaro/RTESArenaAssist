@@ -1,6 +1,7 @@
 from __future__ import annotations
 import logging
 import i18n_helper as i18n
+from assist_log import recog
 from mages_signals import INVENTORY_LIST_IMG, LIST_IMGS, MAGIC_ITEM_LIST_IMG, SPELLMAKER_IMG, BUYSPELL_IMG, is_form_img
 from normal_play.mages_owner_names import MENU_OWNER, LIST_OWNER, SPELLMAKER_OWNER, EFFECT_MENU_OWNER, MENU_OWNER_CONFIRM, MENU_OWNER_SPELLDETAIL, MENU_OWNER_PROMPT, NEGOTIATION_OWNER, STORY_OWNER
 from normal_play.mages_render_common import _SPELLDETAIL_KEY, _read_cost_string, _casting_cost_from_spell_cost, _buy_price_for, _translate_ui
@@ -34,11 +35,19 @@ def poll_mages_render(w, *, view=None, shop_state=None, shop_img_name: str='', t
         sig = {}
     form_img = is_form_img(img)
     view_kind = getattr(view, 'l4_kind', '') or ''
+    if img in LIST_IMGS or img == SPELLMAKER_IMG or form_img:
+        from normal_play.mages_spellmaker_probe import note_list_signals
+        note_list_signals(w, sig, img, view_kind)
+    from normal_play.mages_spellmaker_probe import forget_form_values, note_form_values
+    if view_kind == 'spellmaker' and form_img:
+        note_form_values(w, img)
+    else:
+        forget_form_values(w)
     if view_kind == 'confirm':
         confirm_visible = _render_confirm(w)
         spell_visible = confirm_visible
     elif view_kind == 'effect_menu':
-        effect_menu_visible = _render_effect_menu(w)
+        effect_menu_visible, spell_visible = _render_effect_menu(w)
     elif view_kind == 'menu':
         menu_visible = _render_menu(w, shop_state, img)
     elif view_kind == 'negotiation':
@@ -59,6 +68,8 @@ def poll_mages_render(w, *, view=None, shop_state=None, shop_img_name: str='', t
         reply_visible = _render_reply(w, img, view=view)
     elif view_kind == 'list':
         list_visible = _render_list(w, sig, img)
+    elif view_kind == 'between':
+        _cleanup(w, False, False, False)
     if menu_visible or list_visible or spell_visible or confirm_visible or prompt_visible or detail_visible or negot_visible or effect_menu_visible or reply_visible:
         _cleanup(w, menu_visible, list_visible, spell_visible, confirm_visible, prompt_visible, detail_visible, negot_visible, effect_menu_visible, reply_visible)
     return (negot_visible, False, menu_visible, list_visible or spell_visible or confirm_visible or prompt_visible or detail_visible or effect_menu_visible or reply_visible)
@@ -103,33 +114,53 @@ def render_no_session_menu(w, *, shop_state, shop_img_name: str) -> bool:
         return False
     return _render_menu(w, shop_state, shop_img_name)
 
-def _render_effect_menu(w) -> bool:
+def _render_effect_menu(w) -> tuple[bool, bool]:
     title_en = 'Edit Effects'
     items = ['Add', 'Modify', 'Delete']
     en = title_en + ''.join((f'\n  {item}' for item in items))
     title_ja = _translate_ui(title_en)
     ja = title_ja + ''.join((f'\n  {_translate_ui(item)}' for item in items))
+    detail_shown = False
     try:
         key_now = ('effect_menu', en)
         changed = key_now != getattr(w, _EFFECT_MENU_KEY, None)
         if changed:
             setattr(w, _EFFECT_MENU_KEY, key_now)
             _log.info('mages_effect_menu update')
-        if not _render_spellmaker_detail(w, panel_en=en, panel_ja=ja, reason='mages_effect_menu_overlay') and changed:
+        detail_shown = _render_spellmaker_detail(w, panel_en=en, panel_ja=ja, reason='mages_effect_menu_overlay')
+        if not detail_shown and changed:
             w._ui_router.update_translation(EFFECT_MENU_OWNER, en, ja, panel_en=en, panel_ja=ja, update_tab=False, update_panel=True, keep_owner=True, mode=None, priority=95, reason='mages_effect_menu')
     except Exception:
         _log.exception('mages_effect_menu update failed')
-    return True
+    return (True, detail_shown)
 
 def _select_list_source(w, sig: dict, img: str):
+    return _select_list_source_with_origin(w, sig, img)[0]
+
+def _select_list_source_with_origin(w, sig: dict, img: str):
+    origin = {'fixed': False}
+    return (_select_list_source_core(w, sig, img, origin), origin['fixed'])
+
+def _select_list_source_core(w, sig: dict, img: str, origin: dict):
     from mages_list_reader import POTION_LIST_OFFSET, SPELL_LIST_OFFSET, INVENTORY_LIST_OFFSET, SPELLMAKER_TARGET_OFFSET, SPELLMAKER_EFFECT_OFFSET, SPELLMAKER_SUBLIST_OFFSET, EFFECT_PICK_OFFSET, read_name_list, read_magic_item_list, read_active_priced_list, looks_like_potion_list, read_active_list_offset, classify_spellmaker_name_items, enrich_unidentified_by_index
     family = sig.get('family')
     cur = sig.get('foreground_ptr') if 'foreground_ptr' in sig else _read_current_ptr(w)
     cur = cur if isinstance(cur, int) else 0
 
     def _classified(offset: int):
-        items = read_name_list(w._analyzer, w._anchor, offset)
-        return classify_spellmaker_name_items(items)
+        from spellmaker_tables import ensure as _spellmaker_tables
+        from mages_list_reader import spellmaker_static_list
+        tables = _spellmaker_tables(w._analyzer, w._anchor)
+        result = spellmaker_static_list(tables, offset)
+        from_fixed_table = result is not None
+        if result is None:
+            items = read_name_list(w._analyzer, w._anchor, offset, stop_at_empty=True)
+            result = classify_spellmaker_name_items(items, tables)
+        if result:
+            origin['fixed'] = from_fixed_table
+            from normal_play.mages_spellmaker_probe import note_name_list
+            note_name_list(w, offset, result[0], len(result[2]))
+        return result
     if family == 89:
         tried: set[int] = set()
         ptr = read_active_list_offset(w._analyzer, w._anchor)
@@ -185,10 +216,26 @@ def _select_list_source(w, sig: dict, img: str):
         if classified:
             return classified
         return ('Effects', '効果一覧', [])
+    if sig.get('spellmaker_screen') == 'list':
+        ptr = read_active_list_offset(w._analyzer, w._anchor)
+        classified = _classified(ptr) if ptr is not None else None
+        if classified:
+            return classified
+        return ('Items', i18n.text('mages_list.title_items'), [])
     return ('Items', '一覧', [])
 
 def _list_signature(items: list[dict]) -> tuple:
     return tuple(((it.get('en', ''), it.get('price_display', ''), it.get('is_unidentified', False)) for it in items))
+
+def _set_stable_list(w, list_key: str, items: list[dict]) -> None:
+    if not list_key or not items:
+        return
+    stable_by_key = dict(getattr(w, _LIST_STABLE_ATTR, None) or {})
+    pending_by_key = dict(getattr(w, _LIST_PENDING_ATTR, None) or {})
+    stable_by_key[list_key] = [dict(it) for it in items]
+    pending_by_key.pop(list_key, None)
+    setattr(w, _LIST_STABLE_ATTR, stable_by_key)
+    setattr(w, _LIST_PENDING_ATTR, pending_by_key)
 
 def _stabilize_list(w, list_key: str, items: list[dict]) -> list[dict]:
     if not list_key:
@@ -229,20 +276,24 @@ def _stabilize_list(w, list_key: str, items: list[dict]) -> list[dict]:
     return items
 
 def _render_list(w, sig: dict, img: str) -> bool:
+    from_fixed_table = False
     try:
-        title_en, title_ja, items = _select_list_source(w, sig, img)
+        (title_en, title_ja, items), from_fixed_table = _select_list_source_with_origin(w, sig, img)
     except Exception:
         _log.exception('mages_list source select failed')
         title_en, title_ja, items = ('Items', i18n.text('mages_list.title_items'), [])
     setattr(w, _LIST_TITLE_ATTR, title_en)
-    items = _stabilize_list(w, title_en, items)
+    if from_fixed_table:
+        _set_stable_list(w, title_en, items)
+    else:
+        items = _stabilize_list(w, title_en, items)
     try:
         if items:
             key_now = ('list', title_en, tuple(((it.get('en', ''), it.get('price_display', ''), it.get('is_unidentified', False)) for it in items)))
             if key_now != getattr(w, _LIST_KEY, None):
                 setattr(w, _LIST_KEY, key_now)
                 w._ui_router.update_facility_list(LIST_OWNER, items, title_en, title_ja, priority=90, reason=f'mages_list:{title_en}')
-                _log.info('mages_list update (img=%r title=%r items=%d)', img, title_en, len(items))
+                recog(_log, 'mages_list update (img=%r title=%r items=%r)', img, title_en, [it.get('en', '') for it in items])
         else:
             key_now = ('unparsed', img)
             if key_now != getattr(w, _LIST_KEY, None):
@@ -266,7 +317,7 @@ def _render_spellmaker(w, sig: dict, form_img: str='') -> bool:
         if key_now != getattr(w, _SPELL_KEY, None):
             setattr(w, _SPELL_KEY, key_now)
             w._ui_router.update_facility_list(SPELLMAKER_OWNER, rows, panel_en, panel_ja, list_title_ja=tab_title, priority=90, reason='mages_form')
-            _log.info('mages_spellmaker form update: %r', panel_en[:60])
+            recog(_log, 'mages_spellmaker form update: img=%r panel=%r rows=%r', form_img, panel_en[:60], [(r.get('en', ''), r.get('ja', '')) for r in rows])
     except Exception:
         _log.exception('mages_spellmaker update failed')
     return True
@@ -279,16 +330,18 @@ def _render_spellmaker_detail(w, *, panel_en: str='', panel_ja: str='', reason: 
     except Exception:
         _log.exception('mages_spellmaker detail read failed')
         return False
+    from normal_play.mages_spellmaker_probe import note_record
+    note_record(w, data)
+    setattr(w, _EFFECTS_BEFORE_FORM_ATTR, (w._anchor, tuple(data.get('effects') or ())))
     name = (data.get('name') or '').strip()
     translated_name = translate_name(name) if name else ''
     data['name_ja'] = translated_name if translated_name != name else ''
-    casting_cost = _read_cost_string(w)
-    spell_cost = _resolve_spellmaker_spell_cost(w, data, casting_cost=casting_cost)
+    spell_cost = _resolve_spellmaker_spell_cost(w, data)
     data['spell_cost'] = spell_cost
-    if casting_cost is not None:
-        data['casting_cost'] = casting_cost
+    if spell_cost:
+        data['casting_cost'] = _casting_cost_from_spell_cost(spell_cost, data.get('player_level'))
     else:
-        data['casting_cost'] = _casting_cost_from_spell_cost(spell_cost, data.get('player_level')) if spell_cost else 0
+        data['casting_cost'] = _read_cost_string(w) or 0
     if all((x == 255 for x in data.get('effects', []))):
         data['effect_en'] = ''
         data['effect_ja'] = ''
@@ -302,17 +355,22 @@ def _render_spellmaker_detail(w, *, panel_en: str='', panel_ja: str='', reason: 
         if key_now != getattr(w, _SPELL_KEY, None):
             setattr(w, _SPELL_KEY, key_now)
             w._ui_router.propose_spell_detail(SPELLMAKER_OWNER, data, panel_en=panel_en, panel_ja=panel_ja, priority=90, reason=reason)
-            _log.info('mages_spellmaker detail update: %r', name)
+            recog(_log, 'mages_spellmaker detail update: name=%r target=%r element=%r spell_cost=%r casting_cost=%r effects=%r', name, data.get('target_en'), data.get('element_en'), data.get('spell_cost'), data.get('casting_cost'), [(d.get('effect_en', ''), d.get('effect_ja', '')) for d in data.get('effect_details') or [] if isinstance(d, dict)])
     except Exception:
         _log.exception('mages_spellmaker detail update failed')
     return True
+_EFFECTS_BEFORE_FORM_ATTR = '_mages_spellmaker_effects_before_form'
+
+def _effects_before_form(w):
+    seen = getattr(w, _EFFECTS_BEFORE_FORM_ATTR, None)
+    if not seen or seen[0] != w._anchor or (not seen[1]):
+        return None
+    return seen[1]
 
 def _spellmaker_form_display(w, form_img: str) -> tuple[list[dict], str, str, str]:
-    from mages_spellmaker import FORM_CHOICES, read_form_values, format_form_assist, resolve_edit_slot, resolve_effect_title_from_record
+    from mages_spellmaker import FORM_CHOICES, read_form_values, format_form_assist, resolve_edit_effect
     form = form_img[:-4] if form_img.endswith('.IMG') else form_img
-    title = _read_effect_title(w)
-    if not title:
-        title = resolve_effect_title_from_record(w._analyzer, w._anchor, form)
+    slot, title = resolve_edit_effect(w._analyzer, w._anchor, form, _effects_before_form(w))
     title_en = title or ''
     title_ja = ''
     if title:
@@ -321,8 +379,7 @@ def _spellmaker_form_display(w, form_img: str) -> tuple[list[dict], str, str, st
             title_ja = translate_name(title)
         except Exception:
             title_ja = _translate_ui(title)
-    slot = resolve_edit_slot(w._analyzer, w._anchor, title)
-    vals = read_form_values(w._analyzer, w._anchor, form, slot=slot)
+    vals = {} if slot is None else read_form_values(w._analyzer, w._anchor, form, slot=slot)
     cost = _read_cost_string(w)
     choice = _resolve_form_choice(w, FORM_CHOICES.get(form))
     return format_form_assist(form, vals, cost=cost, title_en=title_en, title_ja=title_ja, choice=choice)
@@ -335,7 +392,8 @@ def _resolve_form_choice(w, spec: dict | None) -> dict | None:
     if not options:
         return None
     label = spec.get('label', {})
-    return {'label_en': label.get('en', ''), 'label_ja': _term(label), 'options': options, 'selected': read_spell_choice_index(w._analyzer, w._anchor)}
+    selected = read_spell_choice_index(w._analyzer, w._anchor, spec.get('flag_values'))
+    return {'label_en': label.get('en', ''), 'label_ja': _term(label), 'options': options, 'selected': selected}
 
 def _term(entry: dict) -> str:
     en = entry.get('en', '') if entry else ''
@@ -364,20 +422,6 @@ def _render_spellmaker_prompt_overlay(w, sig: dict) -> bool:
     except Exception:
         _log.exception('mages_prompt overlay update failed')
     return True
-
-def _read_effect_title(w) -> str:
-    try:
-        from popup11_response_reader import read_response_candidates_all
-        from mages_spellmaker import EFFECT_TO_FORM
-        cands = read_response_candidates_all(w._analyzer, w._anchor)
-    except Exception:
-        return ''
-    for cand in cands:
-        text = (getattr(cand, 'text', '') or '').strip()
-        for effect in EFFECT_TO_FORM:
-            if text == effect or text.startswith(effect):
-                return text
-    return ''
 
 def _is_negotiation_img(img: str) -> bool:
     try:
@@ -793,4 +837,4 @@ def _cleanup(w, menu_visible: bool, list_visible: bool, spell_visible: bool, con
         to_clear.append((SPELLMAKER_OWNER, {}))
     for owner, kwargs in to_clear:
         w._ui_router.clear_if_owner(owner, **kwargs)
-__all__ = ['poll_mages_render', 'reset_mages_render_keys', 'MENU_OWNER', 'LIST_OWNER', 'SPELLMAKER_OWNER', 'EFFECT_MENU_OWNER', 'MENU_OWNER_CONFIRM', 'MENU_OWNER_SPELLDETAIL', 'MENU_OWNER_PROMPT', 'NEGOTIATION_OWNER', 'STORY_OWNER', 'LIST_IMGS', 'SPELLMAKER_IMG', 'BUYSPELL_IMG', '_read_cost_string', '_casting_cost_from_spell_cost', '_buy_price_for', '_read_spellmaker_live_spell_cost', '_resolve_spellmaker_spell_cost', '_read_effect_title']
+__all__ = ['poll_mages_render', 'reset_mages_render_keys', 'MENU_OWNER', 'LIST_OWNER', 'SPELLMAKER_OWNER', 'EFFECT_MENU_OWNER', 'MENU_OWNER_CONFIRM', 'MENU_OWNER_SPELLDETAIL', 'MENU_OWNER_PROMPT', 'NEGOTIATION_OWNER', 'STORY_OWNER', 'LIST_IMGS', 'SPELLMAKER_IMG', 'BUYSPELL_IMG', '_read_cost_string', '_casting_cost_from_spell_cost', '_buy_price_for', '_read_spellmaker_live_spell_cost', '_resolve_spellmaker_spell_cost']

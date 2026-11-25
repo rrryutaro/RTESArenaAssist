@@ -6,7 +6,7 @@ from spell_record_reader import GRP_OFFS as _GRP_OFFS, SPELLDATA_OFFSET, read_re
 EFFECT_TO_FORM = {'Damage': 'FORM1', 'Continuous Damage': 'FORM2', 'Cause Disease': 'FORM4', 'Cause Poison': 'FORM4A', 'Cause Curse': 'FORM5', 'Fortify Attribute': 'FORM6', 'Drain Attribute': 'FORM6A', 'Light': 'FORM8', 'Create Shield': 'FORM9', 'Designate as Non-Target': 'FORM10', 'Levitate': 'FORM11', 'Create Wall': 'FORM13', 'Regenerate': 'FORM15'}
 FORM_FIELDS = {'FORM1': {0: 'Range min', 1: 'Range max', 2: 'Increase min', 3: 'Increase max', 4: 'Levels'}, 'FORM2': {0: 'Range min', 1: 'Range max', 2: 'Increase min', 3: 'Increase max', 4: 'Levels', 5: 'Strikes'}, 'FORM3': {0: 'Chance', 1: 'Increase', 4: 'per Levels'}, 'FORM4': {0: 'Chance', 1: 'Increase', 2: 'Deterioration', 3: 'per Rnds', 4: 'per Levels', 5: 'Duration'}, 'FORM5': {0: 'Chance', 1: 'Increase', 2: 'Duration per Lv', 4: 'Increase per Lv', 5: 'Duration'}, 'FORM6': {0: 'Increase', 1: 'Rate of Release', 4: 'Release per Rnds', 5: 'Duration'}, 'FORM6A': {0: 'Decrease', 1: 'Rate of Recovery', 4: 'Recovery per Rnds', 5: 'Duration'}, 'FORM7': {0: 'Decrease'}, 'FORM8': {0: 'Light level', 5: 'Duration'}, 'FORM9': {0: 'Strength', 1: 'Increase', 4: 'Levels'}, 'FORM10': {0: 'Chance', 1: 'Increase', 2: 'Duration per Lv', 4: 'Increase per Lv', 5: 'Duration'}, 'FORM11': {0: 'Base Time', 1: 'Increase', 4: 'per Levels'}, 'FORM13': {0: 'Number'}, 'FORM15': {0: 'Gain', 1: 'Every', 4: 'For'}}
 FORM_ALIASES = {'FORM4A': 'FORM4', 'FORM12': 'FORM3', 'FORM14': 'FORM5'}
-FORM_CHOICES = {'FORM8': {'label': {'en': 'Type', 'id': 'spellmaker.form_label_type'}, 'options': [{'en': 'Follows caster', 'id': 'mages.Follows caster'}, {'en': 'Projectile', 'id': 'mages.Projectile'}]}}
+FORM_CHOICES = {'FORM8': {'label': {'en': 'Type', 'id': 'spellmaker.form_label_type'}, 'options': [{'en': 'Follows caster', 'id': 'mages.Follows caster'}, {'en': 'Projectile', 'id': 'mages.Projectile'}]}, 'FORM10': {'label': {'en': 'May Cast Offensive Spells?', 'id': 'spellmaker.form_label_may_cast'}, 'options': [{'en': 'Yes', 'id': 'mages.Yes'}, {'en': 'No', 'id': 'mages.No'}], 'flag_values': {0: 0, 256: 1}}}
 FORM_FIELD_JA = {'Range min': '効果量 最小', 'Range max': '効果量 最大', 'Increase min': '増加 最小', 'Increase max': '増加 最大', 'Levels': 'レベル', 'Strikes': '回数', 'Chance': '確率', 'Increase': '増加', 'Deterioration': '悪化', 'per Rnds': '毎ラウンド', 'per Levels': '毎レベル', 'Duration': '持続', 'Duration per Lv': '持続/レベル', 'Increase per Lv': '増加/レベル', 'Rate of Release': '解放率', 'Release per Rnds': '解放/ラウンド', 'Rate of Recovery': '回復率', 'Recovery per Rnds': '回復/ラウンド', 'Decrease': '減少', 'Light level': '光量', 'Strength': '強度', 'Base Time': '基本時間', 'Number': '数', 'Gain': '獲得', 'Every': '毎', 'For': '期間'}
 
 def field_label_ja(label_en: str) -> str:
@@ -115,32 +115,18 @@ def _same_form(form_a: str | None, form_b: str | None) -> bool:
         return False
     return FORM_ALIASES.get(form_a, form_a) == FORM_ALIASES.get(form_b, form_b)
 
-def resolve_edit_slot(analyzer, anchor: int, effect_title: str='') -> int:
-    title = (effect_title or '').strip()
-    details = _effect_details(analyzer, anchor)
-    if title:
-        for detail in details:
-            if detail.get('effect_en') == title:
-                slot = detail.get('slot', 0)
-                return max(0, min(int(slot or 0), 2))
-    used = [int(detail.get('slot', idx) or 0) for idx, detail in enumerate(details) if detail.get('effect_en') and detail.get('effect_en') != '(none)']
-    if used:
-        return max(0, min(len(set(used)), 2))
-    return 0
-
-def resolve_effect_title_from_record(analyzer, anchor: int, form: str='') -> str:
-    details = _effect_details(analyzer, anchor)
-    if not details:
-        return ''
-    wanted_form = FORM_ALIASES.get(form, form)
-    if wanted_form:
-        for detail in reversed(details):
-            effect = detail.get('effect_en', '')
-            if _same_form(resolve_form(effect), wanted_form):
-                return effect
-    for detail in reversed(details):
-        effect = detail.get('effect_en', '')
-        if effect and effect != '(none)':
-            return effect
-    return ''
-__all__ = ['SPELLDATA_OFFSET', 'EFFECT_TO_FORM', 'FORM_FIELDS', 'FORM_ALIASES', 'resolve_form', 'read_form_values', 'all_form_labels', 'format_form_layout', 'format_form_assist', 'FORM_LAYOUT_EN', 'FORM_LAYOUT_JA', 'resolve_edit_slot', 'resolve_effect_title_from_record']
+def resolve_edit_effect(analyzer, anchor: int, form: str, effects_before=None) -> tuple[int | None, str]:
+    details = [d for d in _effect_details(analyzer, anchor) if d.get('effect_en') and d.get('effect_en') != '(none)']
+    slots = {int(d.get('slot', 0) or 0): d.get('effect_en', '') for d in details}
+    if effects_before is not None:
+        added = [s for s in slots if s < len(effects_before) and effects_before[s] == 255]
+        if len(added) == 1:
+            return (added[0], slots[added[0]])
+    wanted = FORM_ALIASES.get(form, form)
+    same = [s for s, name in slots.items() if _same_form(resolve_form(name), wanted)]
+    if not same:
+        same = [s for s, name in slots.items() if resolve_form(name) is None]
+    if len(same) == 1:
+        return (same[0], slots[same[0]])
+    return (None, '')
+__all__ = ['SPELLDATA_OFFSET', 'EFFECT_TO_FORM', 'FORM_FIELDS', 'FORM_ALIASES', 'resolve_form', 'read_form_values', 'all_form_labels', 'format_form_layout', 'format_form_assist', 'FORM_LAYOUT_EN', 'FORM_LAYOUT_JA', 'resolve_edit_effect']

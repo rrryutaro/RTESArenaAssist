@@ -102,6 +102,8 @@ def on_connect_done(win, pid: int, anchor: int):
     win._equipment_marker: bytes | None = None
     win._newgame_layout_pushed = False
     win._startup_layout_pushed = False
+    win._newgame_intro_speech_declared = False
+    win._startup_intro_speech_declared = False
     win._chargen_state_prev = 0
     win._chargen_q_seq_prev = 0
     win._in_chargen_name = False

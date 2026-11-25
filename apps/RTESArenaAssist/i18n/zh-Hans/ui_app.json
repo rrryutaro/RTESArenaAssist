@@ -588,6 +588,7 @@
   "spellbook.header_original": "原文",
   "spellbook.header_translation": "译文",
   "spellmaker.form_label_type": "类型",
+  "spellmaker.form_label_may_cast": "可以施放攻击法术？",
   "screen.system_menu": "系统菜单",
   "screen.automap": "自动地图",
   "screen.logbook": "日志",

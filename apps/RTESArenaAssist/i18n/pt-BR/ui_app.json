@@ -588,6 +588,7 @@
   "spellbook.header_original": "Original",
   "spellbook.header_translation": "Tradução",
   "spellmaker.form_label_type": "Tipo",
+  "spellmaker.form_label_may_cast": "Pode lançar magias ofensivas?",
   "screen.system_menu": "Menu do sistema",
   "screen.automap": "Mapa automático",
   "screen.logbook": "Diário",

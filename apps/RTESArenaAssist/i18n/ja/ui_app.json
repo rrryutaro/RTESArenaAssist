@@ -588,6 +588,7 @@
   "spellbook.header_original": "原文名",
   "spellbook.header_translation": "翻訳名",
   "spellmaker.form_label_type": "種別",
+  "spellmaker.form_label_may_cast": "攻撃呪文を唱えられるか",
   "screen.system_menu": "システムメニュー",
   "screen.automap": "オートマップ",
   "screen.logbook": "ジャーナル",

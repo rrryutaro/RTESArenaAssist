@@ -94,14 +94,15 @@ SPELL_DETAIL_TEXT_OFFSET = 4164
 SPELL_DETAIL_TEXT_LEN = 512
 SPELL_CHOICE_FLAG_VALUES = {0: 0, 128: 1}
 
-def read_spell_choice_index(analyzer, anchor: int) -> int | None:
+def read_spell_choice_index(analyzer, anchor: int, values: dict[int, int] | None=None) -> int | None:
     try:
         raw = analyzer.read_bytes(anchor + SPELL_DETAIL_FLAGS_OFFSET, 2)
     except OSError:
         return None
     if not raw or len(raw) < 2:
         return None
-    return SPELL_CHOICE_FLAG_VALUES.get(raw[0] | raw[1] << 8)
+    table = SPELL_CHOICE_FLAG_VALUES if values is None else values
+    return table.get(raw[0] | raw[1] << 8)
 PLAYER_NAME_OFFSET = 429
 PLAYER_LEVEL_OFFSET = 426
 PLAYER_GOLD_OFFSET = 1474
@@ -157,6 +158,8 @@ def read_spell_detail(analyzer, anchor: int) -> dict:
     effects = _u8_array(SPELL_DETAIL_EFFECTS_OFFSET, 3, 255)
     sub_effects = _u8_array(SPELL_DETAIL_SUB_EFFECTS_OFFSET, 3, 0)
     affected_attrs = _u8_array(SPELL_DETAIL_AFFECTED_ATTRS_OFFSET, 3, 0)
+    from spellmaker_tables import ensure as _ensure_spellmaker_tables
+    _ensure_spellmaker_tables(analyzer, anchor)
     effect_details = _effect_details_from_arrays(effects, sub_effects, affected_attrs)
     effect_slot = _active_effect_slot(effects)
     effect_id = effects[effect_slot]

@@ -14,6 +14,7 @@ FRAME_POPUP = 0
 FRAME_EDIT_EFFECTS = 129
 FRAME_MAIN_MENU = 81
 FRAME_SUB_MENU = 101
+FRAME_SPELLMAKER_MENU = 107
 TYPE_POPUP = 199
 LIST_ON = 0
 DIALOG_NEGOTIATION = 0
@@ -33,6 +34,9 @@ DETECT_MAGIC_ALREADY_KNOWN = 'You already know what that is!'
 DETECT_MAGIC_IDENTIFIED = 'The item is now identified in your inventory.'
 SPELLMAKER_LIST_TITLES = frozenset({'Targets', 'Effects', 'Effect Options'})
 LIST_TITLE_ATTR = '_mages_list_title_en'
+SPELLMAKER_MENU_DESC_ATTR = '_mages_spellmaker_menu_desc'
+SPELLMAKER_SCREEN_BY_DESC_OFFSET = {5625: 'background', 2260: 'list_open', 5037: 'list', 5301: 'effect_menu', 954: 'after_menu_selection', 5416: 'exit', -339 & 65535: 'exit', 5708: 'exit', -46 & 65535: 'leave'}
+CASTER_MAIN_MENU_ITEMS = frozenset({'Buy', 'Detect Magic', 'Spellmaker', 'Steal', 'Exit'})
 MENU_IMG = 'MENU_RT.IMG'
 MAGIC_ITEM_LIST_IMG = 'POPUP7.IMG'
 SPELL_LIST_IMG = 'POPUP.IMG'
@@ -118,6 +122,19 @@ def own_menu_of(shop_state) -> tuple[bool, str]:
     from shop_popup_detector import ptr_group_signature_of
     return ptr_group_signature_of(shop_state, MagesGuildNode.menu_signatures, menu_back_on_yesno=yesno_menu_back_of(shop_state))
 
+def _spellmaker_screen(analyzer, anchor, cache_on, *, frame, view_desc, shop_state):
+    if cache_on is None or not isinstance(view_desc, int):
+        return None
+    if frame == FRAME_SPELLMAKER_MENU:
+        from shop_popup_detector import ptr_group_menu_items
+        if frozenset(ptr_group_menu_items(shop_state)) == CASTER_MAIN_MENU_ITEMS:
+            setattr(cache_on, SPELLMAKER_MENU_DESC_ATTR, (anchor, view_desc))
+        return None
+    base = getattr(cache_on, SPELLMAKER_MENU_DESC_ATTR, None)
+    if not (isinstance(base, tuple) and len(base) == 2 and (base[0] == anchor)):
+        return None
+    return SPELLMAKER_SCREEN_BY_DESC_OFFSET.get(view_desc - base[1] & 65535)
+
 def read_signals(analyzer, anchor: int, *, foreground_ptr=_CURRENT_PTR_UNSET, img: str='', shop_state=None, cache_on=None) -> dict:
     img_up = (img or '').upper()
     frame = _u8(analyzer, anchor, FRAME_OFFSET)
@@ -143,6 +160,7 @@ def read_signals(analyzer, anchor: int, *, foreground_ptr=_CURRENT_PTR_UNSET, im
     if cache_on is not None:
         title = (getattr(cache_on, LIST_TITLE_ATTR, '') or '').strip()
     spellmaker_list_title = title if title in SPELLMAKER_LIST_TITLES else ''
+    spellmaker_screen = _spellmaker_screen(analyzer, anchor, cache_on, frame=frame, view_desc=view_desc, shop_state=shop_state)
     prompt_text = None
     if img_up in LIST_IMGS and list_flag not in (None, LIST_ON) and (not spellmaker_list_title):
         try:
@@ -150,5 +168,5 @@ def read_signals(analyzer, anchor: int, *, foreground_ptr=_CURRENT_PTR_UNSET, im
             prompt_text = resolve_response_prompt(analyzer, anchor, foreground_ptr=ptr, cache_on=cache_on)
         except Exception:
             prompt_text = None
-    return {'img': img_up, 'outside_ui': is_outside_shop_ui_img(img_up), 'form': is_form_img(img_up), 'frame': frame, 'ptr': ptr, 'ptr_menu': ptr_menu, 'ptr_area': _ptr_area(ptr), 'ptr_in_menu_range': MAGES_MENU_PTR_START <= ptr < MAGES_MENU_PTR_END if ptr is not None else None, 'dialog': dialog, 'sub': sub, 'list_flag': list_flag, 'view_desc_lo': view_desc & 255 if view_desc is not None else None, 'result_hint': result_hint, 'confirm_family': family == CONFIRM_FAMILY if family is not None else None, 'cost_text': cost_text, 'ident_text': ident_text, 'ident_at_ptr': ident_at_ptr, 'known_text': known_text, 'spellmaker_list_title': spellmaker_list_title, 'prompt_text': prompt_text, 'view': frame, 'type': type_, 'list': list_flag, 'family': family, 'foreground_ptr': ptr}
-__all__ = ['FRAME_OFFSET', 'TYPE_OFFSET', 'LIST_FLAG_OFFSET', 'DIALOG_ACTIVE_OFFSET', 'SUBSTATE_OFFSET', 'CURRENT_TEXT_PTR_OFFSET', 'RESPONSE_TEXT_OFFSET', 'MAGES_MENU_TEXT_OFFSET', 'NEGOTIATION_TEXT_OFFSET', 'VIEW_DESC_OFFSET', 'RESULT_HINT_OFFSET', 'FRAME_POPUP', 'FRAME_EDIT_EFFECTS', 'FRAME_MAIN_MENU', 'FRAME_SUB_MENU', 'TYPE_POPUP', 'LIST_ON', 'DIALOG_NEGOTIATION', 'DIALOG_NORMAL', 'FAMILY_MENU_DETECT_CREATE', 'CONFIRM_FAMILY', 'SUB_IDENTIFIED', 'DESC_LO_DETECT_REPLY', 'DESC_LO_MENU_TO_LIST', 'DESC_LO_AFTER_SELECTION', 'DETECT_KNOWN_HINT', 'DETECT_COST_HINT', 'MAGES_MENU_PTR_START', 'MAGES_MENU_PTR_END', 'SPELLMAKER_LIST_TITLES', 'LIST_TITLE_ATTR', 'DETECT_MAGIC_QUOTE_PREFIX', 'DETECT_MAGIC_ALREADY_KNOWN', 'DETECT_MAGIC_IDENTIFIED', 'LIST_IMGS', 'SPELLMAKER_IMG', 'BUYSPELL_IMG', 'CONFIRM_IMG', 'NEGOTIATION_IMGS', 'is_form_img', 'is_outside_shop_ui_img', 'MENU_IMG', 'MAGIC_ITEM_LIST_IMG', 'SPELL_LIST_IMG', 'INVENTORY_LIST_IMG', 'NEGOTIATION_IMG', 'GUILD_MODAL_IMGS', 'is_guild_modal_img', 'read_signals']
+    return {'img': img_up, 'outside_ui': is_outside_shop_ui_img(img_up), 'form': is_form_img(img_up), 'frame': frame, 'ptr': ptr, 'ptr_menu': ptr_menu, 'ptr_area': _ptr_area(ptr), 'ptr_in_menu_range': MAGES_MENU_PTR_START <= ptr < MAGES_MENU_PTR_END if ptr is not None else None, 'dialog': dialog, 'sub': sub, 'list_flag': list_flag, 'view_desc_lo': view_desc & 255 if view_desc is not None else None, 'view_desc': view_desc, 'spellmaker_screen': spellmaker_screen, 'result_hint': result_hint, 'confirm_family': family == CONFIRM_FAMILY if family is not None else None, 'cost_text': cost_text, 'ident_text': ident_text, 'ident_at_ptr': ident_at_ptr, 'known_text': known_text, 'spellmaker_list_title': spellmaker_list_title, 'prompt_text': prompt_text, 'view': frame, 'type': type_, 'list': list_flag, 'family': family, 'foreground_ptr': ptr}
+__all__ = ['FRAME_OFFSET', 'TYPE_OFFSET', 'LIST_FLAG_OFFSET', 'DIALOG_ACTIVE_OFFSET', 'SUBSTATE_OFFSET', 'CURRENT_TEXT_PTR_OFFSET', 'RESPONSE_TEXT_OFFSET', 'MAGES_MENU_TEXT_OFFSET', 'NEGOTIATION_TEXT_OFFSET', 'VIEW_DESC_OFFSET', 'SPELLMAKER_MENU_DESC_ATTR', 'SPELLMAKER_SCREEN_BY_DESC_OFFSET', 'RESULT_HINT_OFFSET', 'FRAME_POPUP', 'FRAME_EDIT_EFFECTS', 'FRAME_MAIN_MENU', 'FRAME_SUB_MENU', 'TYPE_POPUP', 'LIST_ON', 'DIALOG_NEGOTIATION', 'DIALOG_NORMAL', 'FAMILY_MENU_DETECT_CREATE', 'CONFIRM_FAMILY', 'SUB_IDENTIFIED', 'DESC_LO_DETECT_REPLY', 'DESC_LO_MENU_TO_LIST', 'DESC_LO_AFTER_SELECTION', 'DETECT_KNOWN_HINT', 'DETECT_COST_HINT', 'MAGES_MENU_PTR_START', 'MAGES_MENU_PTR_END', 'SPELLMAKER_LIST_TITLES', 'LIST_TITLE_ATTR', 'DETECT_MAGIC_QUOTE_PREFIX', 'DETECT_MAGIC_ALREADY_KNOWN', 'DETECT_MAGIC_IDENTIFIED', 'LIST_IMGS', 'SPELLMAKER_IMG', 'BUYSPELL_IMG', 'CONFIRM_IMG', 'NEGOTIATION_IMGS', 'is_form_img', 'is_outside_shop_ui_img', 'MENU_IMG', 'MAGIC_ITEM_LIST_IMG', 'SPELL_LIST_IMG', 'INVENTORY_LIST_IMG', 'NEGOTIATION_IMG', 'GUILD_MODAL_IMGS', 'is_guild_modal_img', 'read_signals']

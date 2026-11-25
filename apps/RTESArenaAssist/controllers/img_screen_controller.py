@@ -70,6 +70,8 @@ class ImgScreenController:
         else:
             self._w._newgame_layout_pushed = False
             self._w._startup_layout_pushed = False
+            self._w._newgame_intro_speech_declared = False
+            self._w._startup_intro_speech_declared = False
             try:
                 self._w._ui_router.reset_panel_mode_if(('load_screen',))
             except AttributeError:
